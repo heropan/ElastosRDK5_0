@@ -463,62 +463,6 @@ module
 //         interface IIDevicePolicyManager;
 //     }
 
-     namespace Am {
-
-//     class CActivityManagerService {
-//         constructor();
-
-//         interface IIActivityManager;
-//         interface IBatteryCallback;
-//     }
-
-//     class CShutdownReceiver {
-//         constructor(
-//             [in] Handle32 host,
-//             [in] Handle32 uss);
-
-//         interface IIntentReceiver;
-//     }
-
-//     class CStoppingReceiver {
-//         constructor(
-//             [in] Handle32 host,
-//             [in] Handle32 uss,
-//             [in] IIntent* shutdownIntent,
-//             [in] IIntentReceiver* shutdownReceiver,
-//             [in] Int32 userId);
-
-//         interface IIntentReceiver;
-//     }
-
-     class CBatteryStatsService {
-         constructor(
-             [in] IFile* systemDir,
-             [in] IHandler* handler);
-
-         interface IBinder;
-         interface IIBatteryStats;
-         interface ILowPowerModeListener;
-     }
-
-     class CActivityContainer {
-         constructor(
-             [in] Int32 stackId,
-             [in] IInterface* owner);
-
-         interface IBinder;
-         interface IActivityContainer;
-     }
-
-//     class CUsageStatsService {
-//         constructor(
-//             [in] String dir);
-
-//         interface IIUsageStats;
-//     }
-
-     } // namespace Am
-
 //     namespace Location {
 
 //     [local]
@@ -1350,20 +1294,38 @@ module
     namespace Server {
     namespace Am {
 
+    //     class CActivityManagerService {
+    //         constructor();
+
+    //         interface IIActivityManager;
+    //         interface IBatteryCallback;
+    //     }
+
+     class CBatteryStatsService {
+         constructor(
+             [in] IFile* systemDir,
+             [in] IHandler* handler);
+
+         interface IBinder;
+         interface IIBatteryStats;
+         interface ILowPowerModeListener;
+     }
+
+     class CActivityContainer {
+         constructor(
+             [in] Int32 stackId,
+             [in] IInterface* owner);
+
+         interface IBinder;
+         interface IActivityContainer;
+     }
+
     [local]
     class CActivityRecordToken {
         constructor(
             [in] IActivityRecord* activity);
 
         interface IApplicationToken;
-        interface IBinder;
-    }
-
-    class CBootCompletedReceiver {
-        constructor(
-            [in] Handle32 host);
-
-        interface IIntentReceiver;
         interface IBinder;
     }
 

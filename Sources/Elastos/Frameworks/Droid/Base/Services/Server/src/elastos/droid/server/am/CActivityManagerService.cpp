@@ -147,7 +147,7 @@ using Elastos::Droid::Server::AttributeCache;
 using Elastos::Droid::Text::Format::ITime;
 using Elastos::Droid::Text::Format::CTime;
 using Elastos::Droid::R;
-using Elastos::Droid::Manifest;
+using Manifest;
 using Elastos::Droid::Content::EIID_IIIntentSender;
 
 using Elastos::Droid::Os::IDebug;
@@ -189,40 +189,108 @@ const char* ToChars(
     return "NULL";
 }
 
-static void DumpMemery(const char* filename)
+static AutoPtr<IUserHandleHelper> InitUserHandleHelper()
 {
-    AutoPtr<IOsConstants> osConstans;
-    COsConstants::AcquireSingleton((IOsConstants**)&osConstans);
-    Int32 m1, m2, m3;
-    osConstans->GetOsConstant(String("O_RDWR"), &m1);
-    osConstans->GetOsConstant(String("O_CREAT"), &m2);
-    osConstans->GetOsConstant(String("O_TRUNC"), &m3);
-
-    AutoPtr<IFile> file;
-    CFile::New(String("/data/debug"), (IFile**)&file);
-    Boolean res;
-    file->Mkdirs(&res);
-    AutoPtr<IFileDescriptor> ifd;
-    CFileDescriptor::New((IFileDescriptor**)&ifd);
-    AutoPtr<IIoBridge> ioBridge;
-    CIoBridge::AcquireSingleton((IIoBridge**)&ioBridge);
-    String path("/data/debug/");
-    path.AppendFormat("%s.txt", filename);
-    Int32 fd;
-    ECode ec = ioBridge->Open(path, m1 | m2 | m3, &fd);
-    if (FAILED(ec)) {
-        ALOGE("Please run 'chmod 777 /data/debug' in adb shell.");
-        return;
-    }
-
-    ifd->SetDescriptor(fd);
-
-    AutoPtr<IDebug> dbg;
-    CDebug::AcquireSingleton((IDebug**)&dbg);
-    dbg->DumpHeap(ifd);
-
-    ALOGD(" >> dump memery to %s", path.string());
+    AutoPtr<IUserHandleHelper> uhHelper;
+    CUserHandleHelper::AcquireSingleton((IUserHandleHelper**)&uhHelper);
+    return uhHelper;
 }
+
+static AutoPtr<IUserHandleHelper> sUserHandleHelper = InitUserHandleHelper();
+
+Int32 UserHandleGetUserId(
+    /* [in] */ Int32 uid)
+{
+    Int32 userId;
+    sUserHandleHelper->GetUserId(uid, &userId);
+    return userId;
+}
+
+Int32 UserHandleGetAppId(
+    /* [in] */ Int32 uid)
+{
+    Int32 appId;
+    sUserHandleHelper->GetAppId(uid, &appId);
+    return appId;
+}
+
+Int32 UserHandleGetCallingUserId()
+{
+    Int32 userId;
+    sUserHandleHelper->GetCallingUserId(&userId);
+    return userId;
+}
+
+static AutoPtr<IBinderHelper> InitBinderHelper()
+{
+    AutoPtr<IBinderHelper> bHelper;
+    CBinderHelper::AcquireSingleton((IBinderHelper**)&bHelper);
+    return bHelper;
+}
+
+static AutoPtr<IBinderHelper> sBinderHelper = InitBinderHelper();
+
+Int32 BinderGetCallingUid()
+{
+    Int32 uid;
+    sBinderHelper->GetCallingUid(&uid);
+    return uid;
+}
+
+Int32 BinderGetCallingPid()
+{
+    Int32 pid;
+    sBinderHelper->GetCallingPid(&pid);
+    return pid;
+}
+
+Int64 BinderClearCallingIdentity()
+{
+    Int64 ident;
+    sBinderHelper->ClearCallingIdentity(&ident);
+    return ident;
+}
+
+void BinderRestoreCallingIdentity(
+    /* [in] */ Int64 origId)
+{
+    sBinderHelper->RestoreCallingIdentity(origId);
+}
+
+// static void DumpMemery(const char* filename)
+// {
+//     AutoPtr<IOsConstants> osConstans;
+//     COsConstants::AcquireSingleton((IOsConstants**)&osConstans);
+//     Int32 m1, m2, m3;
+//     osConstans->GetOsConstant(String("O_RDWR"), &m1);
+//     osConstans->GetOsConstant(String("O_CREAT"), &m2);
+//     osConstans->GetOsConstant(String("O_TRUNC"), &m3);
+
+//     AutoPtr<IFile> file;
+//     CFile::New(String("/data/debug"), (IFile**)&file);
+//     Boolean res;
+//     file->Mkdirs(&res);
+//     AutoPtr<IFileDescriptor> ifd;
+//     CFileDescriptor::New((IFileDescriptor**)&ifd);
+//     AutoPtr<IIoBridge> ioBridge;
+//     CIoBridge::AcquireSingleton((IIoBridge**)&ioBridge);
+//     String path("/data/debug/");
+//     path.AppendFormat("%s.txt", filename);
+//     Int32 fd;
+//     ECode ec = ioBridge->Open(path, m1 | m2 | m3, &fd);
+//     if (FAILED(ec)) {
+//         ALOGE("Please run 'chmod 777 /data/debug' in adb shell.");
+//         return;
+//     }
+
+//     ifd->SetDescriptor(fd);
+
+//     AutoPtr<IDebug> dbg;
+//     CDebug::AcquireSingleton((IDebug**)&dbg);
+//     dbg->DumpHeap(ifd);
+
+//     ALOGD(" >> dump memery to %s", path.string());
+// }
 
 // static ECode GetInt32Prop(
 //    /* [in] */ const String& name,
@@ -310,12 +378,13 @@ static AutoPtr< ArrayOf<Int64> > InitDumpMemBuckets()
 static AutoPtr< ArrayOf<Int32> > InitDumpMemOomAdj()
 {
     Int32 DUMP_MEM_OOM_ADJ[] = {
+        ProcessList::NATIVE_ADJ,
         ProcessList::SYSTEM_ADJ, ProcessList::PERSISTENT_PROC_ADJ,
-        ProcessList::FOREGROUND_APP_ADJ, ProcessList::VISIBLE_APP_ADJ,
-        ProcessList::PERCEPTIBLE_APP_ADJ, ProcessList::HEAVY_WEIGHT_APP_ADJ,
-        ProcessList::BACKUP_APP_ADJ, ProcessList::SERVICE_ADJ,
-        ProcessList::HOME_APP_ADJ, ProcessList::PREVIOUS_APP_ADJ,
-        ProcessList::SERVICE_B_ADJ, ProcessList::HIDDEN_APP_MAX_ADJ
+        ProcessList::PERSISTENT_SERVICE_ADJ, ProcessList::FOREGROUND_APP_ADJ,
+        ProcessList::VISIBLE_APP_ADJ, ProcessList::PERCEPTIBLE_APP_ADJ,
+        ProcessList::BACKUP_APP_ADJ, ProcessList::HEAVY_WEIGHT_APP_ADJ,
+        ProcessList::SERVICE_ADJ, ProcessList::HOME_APP_ADJ,
+        ProcessList::PREVIOUS_APP_ADJ, ProcessList::SERVICE_B_ADJ, ProcessList::CACHED_APP_MAX_ADJ
     };
 
     Int32 size = ArraySize(DUMP_MEM_OOM_ADJ);
@@ -326,19 +395,41 @@ static AutoPtr< ArrayOf<Int32> > InitDumpMemOomAdj()
 
 static AutoPtr< ArrayOf<String> > InitDumpMemOomLabel()
 {
-    AutoPtr< ArrayOf<String> > array = ArrayOf<String>::Alloc(12);
-    (*array)[0] = String("System");
-    (*array)[1] = String("Persistent");
-    (*array)[2] = String("Foreground");
-    (*array)[3] = String("Visible");
-    (*array)[4] = String("Perceptible");
-    (*array)[5] = String("Heavy Weight");
-    (*array)[6] = String("Backup");
-    (*array)[7] = String("A Services");
-    (*array)[8] = String("Home");
-    (*array)[9] = String("Previous");
-    (*array)[10] = String("B Services");
-    (*array)[11] = String("Background");
+    AutoPtr< ArrayOf<String> > array = ArrayOf<String>::Alloc(14);
+    (*array)[0] = String("Native");
+    (*array)[1] = String("System");
+    (*array)[2] = String("Persistent");
+    (*array)[3] = String("Persistent Service");
+    (*array)[4] = String("Foreground");
+    (*array)[5] = String("Visible");
+    (*array)[6] = String("Perceptible");
+    (*array)[7] = String("Heavy Weight");
+    (*array)[8] = String("Backup");
+    (*array)[9] = String("A Services");
+    (*array)[10] = String("Home");
+    (*array)[11] = String("Previous");
+    (*array)[12] = String("B Services");
+    (*array)[13] = String("Cached");
+    return array;
+}
+
+static AutoPtr< ArrayOf<String> > InitDumpMemOomCompactLabel()
+{
+    AutoPtr< ArrayOf<String> > array = ArrayOf<String>::Alloc(14);
+    (*array)[0] = String("native");
+    (*array)[1] = String("sys");
+    (*array)[2] = String("pers");
+    (*array)[3] = String("persvc");
+    (*array)[4] = String("fore");
+    (*array)[5] = String("vis");
+    (*array)[6] = String("percept");
+    (*array)[7] = String("heavy");
+    (*array)[8] = String("backup");
+    (*array)[9] = String("servicea");
+    (*array)[10] = String("home");
+    (*array)[11] = String("prev");
+    (*array)[12] = String("serviceb");
+    (*array)[13] = String("cached");
     return array;
 }
 
@@ -491,9 +582,10 @@ const Int32 CActivityManagerService::FIRST_BROADCAST_QUEUE_MSG = 200;
 const Int32 CActivityManagerService::FIRST_COMPAT_MODE_MSG = 300;
 const Int32 CActivityManagerService::FIRST_SUPERVISOR_STACK_MSG = 100;
 
-const AutoPtr< ArrayOf<Int64> > CActivityManagerService::DUMP_MEM_BUCKETS = InitDumpMemBuckets();
-const AutoPtr< ArrayOf<Int32> > CActivityManagerService::DUMP_MEM_OOM_ADJ = InitDumpMemOomAdj();
-const AutoPtr< ArrayOf<String> > CActivityManagerService::DUMP_MEM_OOM_LABEL = InitDumpMemOomLabel();
+const AutoPtr<ArrayOf<Int64> > CActivityManagerService::DUMP_MEM_BUCKETS = InitDumpMemBuckets();
+const AutoPtr<ArrayOf<Int32> > CActivityManagerService::DUMP_MEM_OOM_ADJ = InitDumpMemOomAdj();
+const AutoPtr<ArrayOf<String> > CActivityManagerService::DUMP_MEM_OOM_LABEL = InitDumpMemOomLabel();
+const AutoPtr<ArrayOf<String> > CActivityManagerService::DUMP_MEM_OOM_COMPACT_LABEL = InitDumpMemOomCompactLabel();
 
 const String CActivityManagerService::USER_DATA_DIR = String("/data/user/");
 const String CActivityManagerService::SYSTEM_DEBUGGABLE = String("ro.debuggable");
@@ -527,7 +619,7 @@ ECode CActivityManagerService::ForegroundToken::ProxyDied()
     return NOERROR;
 }
 
-CAR_INTERFACE_IMPL(CActivityManagerService::ForegroundToken, IProxyDeathRecipient)
+CAR_INTERFACE_IMPL(CActivityManagerService::ForegroundToken, Object, IProxyDeathRecipient)
 
 //==============================================================================
 // GrantUri
@@ -707,9 +799,6 @@ CActivityManagerService::ItemMatcher::ItemMatcher()
 
 CActivityManagerService::ItemMatcher::~ItemMatcher()
 {
-    mComponents.Clear();
-    mStrings.Clear();
-    mObjects.Clear();
 }
 
 void CActivityManagerService::ItemMatcher::Build(
@@ -720,22 +809,31 @@ void CActivityManagerService::ItemMatcher::Build(
     AutoPtr<IComponentName> componentName;
     componentNameHelper->UnflattenFromString(name, (IComponentName**)&componentName);
     if (componentName != NULL) {
-        mComponents.PushBack(componentName);
+        if (mComponents == NULL) {
+            mComponents = new List<AutoPtr<IComponentName> >;
+        }
+        mComponents->PushBack(componentName);
         mAll = FALSE;
     }
     else {
         Int32 objectId = 0;
         // Not a '/' separated full component name; maybe an object ID?
         //try {
-        ECode ec = StringUtils::ParseInt32(name, 16, &objectId);
+        ECode ec = StringToIntegral::Parse(name, 16, &objectId);
+        if (mObjects == NULL) {
+            mObjects = new List<Int32>;
+        }
         if (SUCCEEDED(ec)) {
-            mObjects.PushBack(objectId);
+            mObjects->PushBack(objectId);
             mAll = FALSE;
         }
         else {
         //} catch (RuntimeException e) {
             // Not an integer; just do string match.
-            mStrings.PushBack(name);
+            if (mStrings == NULL) {
+                mStrings = new List<String>;
+            }
+            mStrings->PushBack(name);
             mAll = FALSE;
         }
         //}
@@ -748,7 +846,7 @@ Int32 CActivityManagerService::ItemMatcher::Build(
 {
     for (; opti < args->GetLength(); opti++) {
         String name = (*args)[opti];
-        if (CString("--").Equals(name)) {
+        if (name.Equal("--"))
             return opti + 1;
         }
         Build(name);
@@ -764,29 +862,38 @@ Boolean CActivityManagerService::ItemMatcher::Match(
         return TRUE;
     }
 
-    Int32 size = mComponents.GetSize();
-    for (Int32 i = 0; i < size; i++) {
-        Boolean equals;
-        if (mComponents[i]->Equals(comp, &equals), equals) {
-            return TRUE;
+    if (mComponents != NULL) {
+        List<AutoPtr<IComponentName> >::Iterator it;
+        for (it = mComponents->Begin(); it != mComponents->End(); ++it) {
+            Boolean res;
+            if (IObject::Probe(*it)->Equals(comp, &res), res) {
+                return TRUE;
+            }
+        }
+    }
+    if (mObjects != NULL) {
+        List<Int32>::Iterator it;
+        for (it = mObjects->Begin(); it != mObjects->End(); ++it) {
+            Int32 obj = *it;
+            Int32 hashCode;
+            IObject::Probe(object)->GetHashCode(&hashCode);
+            if (/*System.identityHashCode(object)*/hashCode == obj) {
+                return TRUE;
+            }
+        }
+    }
+    if (mStrings != NULL) {
+        String flat;
+        comp->FlattenToString(&flat);
+        List<String>::Iterator it;
+        for (it = mStrings->Begin(); it != mStrings->End(); ++it) {
+            String str = *it;
+            if (flat.Contains(str)) {
+                return TRUE;
+            }
         }
     }
 
-    // for (Int32 i=0; i<mObjects.GetSize(); i++) {
-    //     assert(0);
-    //     // if (System.identityHashCode(object) == mObjects[i]) {
-    //     //     return TRUE;
-    //     // }
-    // }
-
-    String flat;
-    comp->FlattenToString(&flat);
-    size = mStrings.GetSize();
-    for (Int32 i = 0; i < size; i++) {
-        if (flat.Contains(mStrings[i])) {
-            return TRUE;
-        }
-    }
     return FALSE;
 }
 
@@ -797,16 +904,44 @@ CActivityManagerService::MemItem::MemItem(
     /* [in] */ const String& label,
     /* [in] */ const String& shortLabel,
     /* [in] */ Int64 pss,
-    /* [in] */ Int32 id)
-    : mLabel(label)
+    /* [in] */ Int32 id,
+    /* [in] */ Boolean hasActivities)
+    : mIsProc(TRUE)
+    , mLabel(label)
     , mShortLabel(shortLabel)
     , mPss(pss)
     , mId(id)
+    , mEmpty(hasActivities)
+{}
+
+CActivityManagerService::MemItem::MemItem(
+    /* [in] */ const String& label,
+    /* [in] */ const String& shortLabel,
+    /* [in] */ Int64 pss,
+    /* [in] */ Int32 id)
+    : mIsProc(FALSE)
+    , mLabel(label)
+    , mShortLabel(shortLabel)
+    , mPss(pss)
+    , mId(id)
+    , mEmpty(FALSE)
 {}
 
 CActivityManagerService::MemItem::~MemItem()
 {
-    mSubitems = NULL;
+}
+
+Int32 CActivityManagerService::MemItem::Compare(
+    /* [in] */ MemItem* lhs,
+    /* [in] */ MemItem* rhs)
+{
+    if (lhs->mPss < rhs->mPss) {
+        return 1;
+    }
+    else if (lhs->mPss > rhs->mPss) {
+        return -1;
+    }
+    return 0;
 }
 
 //==============================================================================
@@ -897,8 +1032,47 @@ ECode CActivityManagerService::AppDeathRecipient::ProxyDied()
     return mOwner->AppDiedLocked(mApp, mPid, mAppThread);
 }
 
-CAR_INTERFACE_IMPL(CActivityManagerService::AppDeathRecipient, IProxyDeathRecipient)
+CAR_INTERFACE_IMPL(CActivityManagerService::AppDeathRecipient, Object, IProxyDeathRecipient)
 
+//==============================================================================
+// CActivityManagerService::SwitchUserIntentReceiver
+//==============================================================================
+
+CAR_INTERFACE_IMPL_2(CActivityManagerService::BootCompletedReceiver, Object, IIntentReceiver, IBinder)
+
+ECode CActivityManagerService::BootCompletedReceiver::BootCompletedReceiver(
+    /* [in] */ CActivityManagerService* host)
+    : mHost(host)
+{
+}
+
+ECode CActivityManagerService::BootCompletedReceiver::PerformReceive(
+    /* [in] */ IIntent* intent,
+    /* [in] */ Int32 resultCode,
+    /* [in] */ const String& data,
+    /* [in] */ IBundle* extras,
+    /* [in] */ Boolean ordered,
+    /* [in] */ Boolean sticky,
+    /* [in] */ Int32 sendingUser)
+{
+    synchronized (mHost) {
+        mHost->RequestPssAllProcsLocked(SystemClock::GetUptimeMillis(),
+            TRUE, FALSE);
+    }
+    return NOERROR;
+}
+
+ECode CActivityManagerService::BootCompletedReceiver::ToString(
+    /* [out] */ String* str)
+{
+    return Object::ToString(str);
+}
+
+//==============================================================================
+// CActivityManagerService::SwitchUserIntentReceiver
+//==============================================================================
+
+CAR_INTERFACE_IMPL_2(CActivityManagerService::SwitchUserIntentReceiver, Object, IIntentReceiver, IBinder);
 
 ECode CActivityManagerService::SwitchUserIntentReceiver::PerformReceive(
     /* [in] */ IIntent* intent,
@@ -909,12 +1083,38 @@ ECode CActivityManagerService::SwitchUserIntentReceiver::PerformReceive(
     /* [in] */ Boolean sticky,
     /* [in] */ Int32 sendingUser)
 {
-    return mHost->UserInitialized(mUss, mUserId);
+    return mHost->OnUserInitialized(mUss, mForeground, mOldUserId, mUserId);
 }
 
-CAR_INTERFACE_IMPL(CActivityManagerService::SwitchUserIntentReceiver, IIntentReceiver);
+ECode CActivityManagerService::SwitchUserIntentReceiver::ToString(
+    /* [out] */ String* str)
+{
+    return Object::ToString(str);
+}
 
-CAR_INTERFACE_IMPL(CActivityManagerService::NeedStartIntentReceiver, IIntentReceiver);
+//==============================================================================
+// CActivityManagerService::NeedStartIntentReceiver
+//==============================================================================
+
+CAR_INTERFACE_IMPL_2(CActivityManagerService::NeedStartIntentReceiver, Object, IIntentReceiver, IBinder);
+
+ECode CActivityManagerService::NeedStartIntentReceiver::PerformReceive(
+    /* [in] */ IIntent* intent,
+    /* [in] */ Int32 resultCode,
+    /* [in] */ const String& data,
+    /* [in] */ IBundle* extras,
+    /* [in] */ Boolean ordered,
+    /* [in] */ Boolean sticky,
+    /* [in] */ Int32 sendingUser)
+{
+    return E_REMOTE_EXCEPTION;
+}
+
+ECode CActivityManagerService::NeedStartIntentReceiver::ToString(
+    /* [out] */ String* str)
+{
+    return Object::ToString(str);
+}
 
 //==============================================================================
 // CActivityManagerService::ReportMemUsageThread
@@ -1251,7 +1451,7 @@ ECode CActivityManagerService::SetProcessForegroundToken::ProxyDied()
 // CActivityManagerService::HangWhoDeathRecipient
 //==============================================================================
 
-CAR_INTERFACE_IMPL(CActivityManagerService::HangWhoDeathRecipient, IProxyDeathRecipient)
+CAR_INTERFACE_IMPL(CActivityManagerService::HangWhoDeathRecipient, Object, IProxyDeathRecipient)
 
 ECode CActivityManagerService::HangWhoDeathRecipient::ProxyDied()
 {
@@ -1283,7 +1483,7 @@ ECode CActivityManagerService::RestartBroadcastReceiver::OnReceive(
 // CActivityManagerService::PreBootCompletedIntentReceiver
 //==============================================================================
 
-CAR_INTERFACE_IMPL(CActivityManagerService::PreBootCompletedIntentReceiver, Object, IIntentReceiver)
+CAR_INTERFACE_IMPL_2(CActivityManagerService::PreBootCompletedIntentReceiver, Object, IIntentReceiver, IBinder)
 
 ECode CActivityManagerService::PreBootCompletedIntentReceiver::PerformReceive(
     /* [in] */ IIntent* intent,
@@ -1296,6 +1496,12 @@ ECode CActivityManagerService::PreBootCompletedIntentReceiver::PerformReceive(
 {
     Boolean res;
     return mHandler->Post(mOnFinishCallback, &res);
+}
+
+ECode CActivityManagerService::PreBootCompletedIntentReceiver::ToString(
+    /* [out] */ String* str)
+{
+    return Object::ToString(str);
 }
 
 //==============================================================================
@@ -1329,13 +1535,13 @@ ECode CActivityManagerService::ErrorMsgButtonOnClickListener::OnClick(
         CActivityManagerService::IM_FEELING_LUCKY_MSG, &result);
 }
 
-CAR_INTERFACE_IMPL(CActivityManagerService::ErrorMsgButtonOnClickListener, IDialogInterfaceOnClickListener)
+CAR_INTERFACE_IMPL(CActivityManagerService::ErrorMsgButtonOnClickListener, Object, IDialogInterfaceOnClickListener)
 
 //==============================================================================
 // CActivityManagerService::SystemBroadcastReceiver
 //==============================================================================
 
-CAR_INTERFACE_IMPL(CActivityManagerService::SystemBroadcastReceiver, Object, IIntentReceiver)
+CAR_INTERFACE_IMPL_2(CActivityManagerService::SystemBroadcastReceiver, Object, IIntentReceiver, IBinder)
 
 ECode CActivityManagerService::SystemBroadcastReceiver::PerformReceive(
     /* [in] */ IIntent* intent,
@@ -1347,6 +1553,12 @@ ECode CActivityManagerService::SystemBroadcastReceiver::PerformReceive(
     /* [in] */ Int32 sendingUser)
 {
     return E_REMOTE_EXCEPTION;
+}
+
+ECode CActivityManagerService::SystemBroadcastReceiver::ToString(
+    /* [out] */ String* str)
+{
+    return Object::ToString(str);
 }
 
 //==============================================================================
@@ -1522,6 +1734,18 @@ ECode CActivityManagerService::WorkerThread::Run()
 }
 
 //==============================================================================
+// CActivityManagerService::WriteStateRunnable
+//==============================================================================
+
+ECode CActivityManagerService::WriteStateRunnable::Run()
+{
+    synchronized (mHost) {
+        mHost->mProcessStats->WriteStateAsyncLocked();
+    }
+    return NOERROR;
+}
+
+//==============================================================================
 // CActivityManagerService::StopUserLockedRunnable
 //==============================================================================
 
@@ -1533,8 +1757,6 @@ ECode CActivityManagerService::StopUserLockedRunnable::Run()
     // }
     return NOERROR;
 }
-
-CAR_INTERFACE_IMPL(CActivityManagerService::StopUserLockedRunnable, IRunnable);
 
 //==============================================================================
 // CActivityManagerService::DispatchUserSwitchCallback
@@ -1553,7 +1775,7 @@ CActivityManagerService::DispatchUserSwitchCallback::SendResult(
     return NOERROR;
 }
 
-CAR_INTERFACE_IMPL(CActivityManagerService::DispatchUserSwitchCallback, IRemoteCallback)
+CAR_INTERFACE_IMPL(CActivityManagerService::DispatchUserSwitchCallback, Object, IRemoteCallback)
 
 
 //==============================================================================
@@ -1915,7 +2137,7 @@ ECode CActivityManagerService::MyPackageMonitor::OnPackageModified(
     // ActivityManagerService for long periods while checking if components exist.
     synchronized (mHost) {
         List<AutoPtr<TaskRecord> >::Iterator it = mHost->mRecentTasks->Begin();
-        for (it != mHost->mRecentTasks->End(); ++it) {
+        for (; it != mHost->mRecentTasks->End(); ++it) {
             AutoPtr<TaskRecord> tr = *it;
             if (tr->mUserId != eventUserId)
                 continue;
@@ -2010,6 +2232,279 @@ ECode CActivityManagerService::Lifecycle::OnStart()
 AutoPtr<CActivityManagerService> CActivityManagerService::Lifecycle::GetService()
 {
     return mService;
+}
+
+//==============================================================================
+// CActivityManagerService::ShutdownReceiver
+//==============================================================================
+
+CAR_INTERFACE_IMPL_2(CActivityManagerService::ShutdownReceiver, Object, IIntentReceiver, IBinder)
+
+CActivityManagerService::ShutdownReceiver::ShutdownReceiver(
+    /* [in] */ CActivityManagerService* host,
+    /* [in] */ UserStartedState* uss)
+    : mHost(host)
+    , mUss(uss)
+{
+}
+
+ECode CActivityManagerService::ShutdownReceiver::PerformReceive(
+    /* [in] */ IIntent* intent,
+    /* [in] */ Int32 resultCode,
+    /* [in] */ const String& data,
+    /* [in] */ IBundle* extras,
+    /* [in] */ Boolean ordered,
+    /* [in] */ Boolean sticky,
+    /* [in] */ Int32 sendingUser)
+{
+    mHost->FinishUserStop(mUss);
+    return NOERROR;
+}
+
+ECode CActivityManagerService::ShutdownReceiver::ToString(
+    /* [out] */ String* str)
+{
+    return Object::ToString(str);
+}
+
+//==============================================================================
+// CActivityManagerService::StoppingReceiver
+//==============================================================================
+
+CAR_INTERFACE_IMPL_2(CActivityManagerService::StoppingReceiver, Object, IIntentReceiver, IBinder)
+
+CActivityManagerService::StoppingReceiver::StoppingReceiver(
+    /* [in] */ CActivityManagerService* host,
+    /* [in] */ UserStartedState* uss,
+    /* [in] */ IIntent* shutdownIntent,
+    /* [in] */ IIntentReceiver* shutdownReceiver,
+    /* [in] */ Int32 userId)
+    : mHost(host)
+    , mUss(uss)
+    , mShutdownIntent(shutdownIntent)
+    , mShutdownReceiver(shutdownReceiver)
+    , mUserId(userId)
+{
+}
+
+ECode CActivityManagerService::StoppingReceiver::PerformReceive(
+    /* [in] */ IIntent* intent,
+    /* [in] */ Int32 resultCode,
+    /* [in] */ const String& data,
+    /* [in] */ IBundle* extras,
+    /* [in] */ Boolean ordered,
+    /* [in] */ Boolean sticky,
+    /* [in] */ Int32 sendingUser)
+{
+    // On to the next.
+    {
+        AutoLock lock(mHost->mLock);
+        if (mUss->mState != UserStartedState::STATE_STOPPING) {
+            // Whoops, we are being started back up.  Abort, abort!
+            return NOERROR;
+        }
+        mUss->mState = UserStartedState::STATE_SHUTDOWN;
+    }
+    mHost->mBatteryStatsService->NoteEvent(
+            IBatteryStatsHistoryItem::EVENT_USER_RUNNING_FINISH,
+            StringUtils::ToString(mUserId), mUserId);
+    mHost->mSystemServiceManager->StopUser(mUserId);
+    Int32 result;
+    mHost->BroadcastIntentLocked(NULL, String(NULL), mShutdownIntent,
+            String(NULL), mShutdownReceiver, 0, String(NULL), NULL, String(NULL), IAppOpsManager::OP_NONE
+            TRUE, FALSE, CActivityManagerService::MY_PID, IProcess::SYSTEM_UID, mUserId, &result);
+    return NOERROR;
+}
+
+ECode CActivityManagerService::StoppingReceiver::ToString(
+    /* [out] */ String* str)
+{
+    return Object::ToString(str);
+}
+
+//==============================================================================
+// CActivityManagerService::LocalService
+//==============================================================================
+
+CAR_INTERFACE_IMPL(CActivityManagerService::LocalService, Object, IActivityManagerInternal)
+
+ECode CActivityManagerService::LocalService::GoingToSleep()
+{
+    return mHost->GoingToSleep();
+}
+
+ECode CActivityManagerService::LocalService::WakingUp()
+{
+    return mHost->WakingUp();
+}
+
+ECode CActivityManagerService::LocalService::StartIsolatedProcess(
+    /* [in] */ const String& entryPoint,
+    /* [in] */ ArrayOf<String>* entryPointArgs,
+    /* [in] */ const String& processName,
+    /* [in] */ const String& abiOverride,
+    /* [in] */ Int32 uid,
+    /* [in] */ IRunnable* crashHandler,
+    /* [in] */ Boolean* result)
+{
+    VALIDATE_NOT_NULL(result);
+    *result = mHost->StartIsolatedProcess(entryPoint, entryPointArgs,
+            processName, abiOverride, uid, crashHandler);
+    return NOERROR;
+}
+
+//==============================================================================
+// CActivityManagerService::AppTaskImpl
+//==============================================================================
+
+CAR_INTERFACE_IMPL(CActivityManagerService::AppTaskImpl, Object, IIAppTask)
+
+ECode CActivityManagerService::AppTaskImpl::constructor(
+    /* [in] */ Int32 taskId,
+    /* [in] */ Int32 callingUid,
+    /* [in] */ Handle32 host)
+{
+    mTaskId = taskId;
+    mCallingUid = callingUid;
+    mHost = (CActivityManagerService*)host;
+    return NOERROR;
+}
+
+ECode CActivityManagerService::AppTaskImpl::CheckCaller()
+{
+    if (mCallingUid != BinderGetCallingUid()) {
+        Slogger::E(TAG, "Caller %d does not match caller of getAppTasks(): %d",
+            mCallingUid, BinderGetCallingUid());
+        return E_SECURITY_EXCEPTION;
+    }
+    return NOERROR;
+}
+
+ECode CActivityManagerService::AppTaskImpl::FinishAndRemoveTask()
+{
+    FAIL_RETURN(CheckCaller());
+
+    synchronized (host) {
+        Int64 origId = BinderClearCallingIdentity();
+        AutoPtr<TaskRecord> tr = mHost->RecentTaskForIdLocked(mTaskId);
+        if (tr == NULL) {
+            Slogger::E(TAG, "Unable to find task ID %d", mTaskId);
+            BinderRestoreCallingIdentity(origId);
+            return E_ILLEGAL_ARGUMENT_EXCEPTION;
+        }
+        // Only kill the process if we are not a new document
+        Int32 flags;
+        tr->GetBaseIntent()->GetFlags(&flags);
+        Boolean isDocument = (flags & IIntent::FLAG_ACTIVITY_NEW_DOCUMENT) ==
+                IIntent::FLAG_ACTIVITY_NEW_DOCUMENT;
+        mHost->RemoveTaskByIdLocked(mTaskId,
+                !isDocument ? IActivityManager::REMOVE_TASK_KILL_PROCESS : 0);
+        BinderRestoreCallingIdentity(origId);
+    }
+    return NOERROR;
+}
+
+ECode CActivityManagerService::AppTaskImpl::GetTaskInfo(
+    /* [out] */ IActivityManagerRecentTaskInfo* info)
+{
+    VALIDATE_NOT_NULL(info);
+    *info = NULL;
+    FAIL_RETURN(CheckCaller());
+
+    synchronized (host) {
+        Int64 origId = BinderClearCallingIdentity();
+        AutoPtr<TaskRecord> tr = mHost->RecentTaskForIdLocked(mTaskId);
+        if (tr == NULL) {
+            Slogger::E(TAG, "Unable to find task ID %d", mTaskId);
+            BinderRestoreCallingIdentity(origId);
+            return E_ILLEGAL_ARGUMENT_EXCEPTION;
+        }
+        AutoPtr<IActivityManagerRecentTaskInfo> temp = mHost->CreateRecentTaskInfoFromTaskRecord(tr);
+        *info = temp;
+        REFCOUNT_ADD(*info);
+        BinderRestoreCallingIdentity(origId);
+    }
+    return NOERROR;
+}
+
+ECode CActivityManagerService::AppTaskImpl::MoveToFront()
+{
+    FAIL_RETURN(CheckCaller());
+
+    AutoPtr<TaskRecord> tr;
+    synchronized (host) {
+        tr = mHost->RecentTaskForIdLocked(mTaskId);
+        if (tr == NULL) {
+            Slogger::E(TAG, "Unable to find task ID %d", mTaskId);
+            return E_ILLEGAL_ARGUMENT_EXCEPTION;
+        }
+        if (tr->GetRootActivity() != NULL) {
+            mHost->MoveTaskToFrontLocked(tr->mTaskId, 0, NULL);
+            return NOERROR;
+        }
+    }
+
+    Boolean res;
+    mHost->StartActivityFromRecentsInner(tr->mTaskId, NULL, &res);
+    return NOERROR;
+}
+
+ECode CActivityManagerService::AppTaskImpl::StartActivity(
+    /* [in] */ IBinder* whoThread,
+    /* [in] */ const String& callingPackage,
+    /* [in] */ IIntent* intent,
+    /* [in] */ const String& resolvedType,
+    /* [in] */ IBundle* options,
+    /* [out] */ Int32* result)
+{
+    VALIDATE_NOT_NULL(result);
+    FAIL_RETURN(CheckCaller());
+
+    Int32 callingUser = UserHandleGetCallingUserId();
+    AutoPtr<TaskRecord> tr;
+    AutoPtr<IApplicationThread> appThread;
+    synchronized (host) {
+        tr = mHost->RecentTaskForIdLocked(mTaskId);
+        if (tr == NULL) {
+            Slogger::E(TAG, "Unable to find task ID %d", mTaskId);
+            return E_ILLEGAL_ARGUMENT_EXCEPTION;
+        }
+        appThread =IApplicationThread::Probe(whoThread);
+        if (appThread == NULL) {
+            Slogger::E(TAG, "Bad app thread %s", ToChars(appThread));
+            return E_ILLEGAL_ARGUMENT_EXCEPTION;
+        }
+    }
+    return mStackSupervisor->StartActivityMayWait(appThread, -1, callingPackage, intent,
+            resolvedType, NULL, NULL, NULL, String(NULL), 0, 0, NULL, NULL,
+            NULL, options, callingUser, NULL, tr, result);
+}
+
+ECode CActivityManagerService::AppTaskImpl::SetExcludeFromRecents(
+    /* [in] */ Boolean exclude)
+{
+    FAIL_RETURN(CheckCaller());
+
+    synchronized (host) {
+        Int64 origId = BinderClearCallingIdentity();
+        AutoPtr<TaskRecord> tr = mHost->RecentTaskForIdLocked(mTaskId);
+        if (tr == NULL) {
+            Slogger::E(TAG, "Unable to find task ID %d", mTaskId);
+            BinderRestoreCallingIdentity(origId);
+            return E_ILLEGAL_ARGUMENT_EXCEPTION;
+        }
+        AutoPtr<IIntent> intent = tr->GetBaseIntent();
+        if (exclude) {
+            intent->AddFlags(IIntent::FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
+        }
+        else {
+            Int32 flags;
+            intent->GetFlags(&flags);
+            intent->SetFlags(flags & ~IIntent::FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
+        }
+        BinderRestoreCallingIdentity(origId);
+    }
+    return NOERROR;
 }
 
 //==============================================================================
@@ -2400,7 +2895,7 @@ AutoPtr<CAppOpsService> CActivityManagerService::GetAppOpsService()
 //     protected void dump(FileDescriptor fd, PrintWriter pw, String[] args) {
 //         if (mActivityManagerService.checkCallingPermission(android.Manifest.permission.DUMP)
 //                 != PackageManager.PERMISSION_GRANTED) {
-//             pw.println("Permission Denial: can't dump meminfo from from pid="
+//             pw->Println(String("Permission Denial: can't dump meminfo from from pid=)"
 //                     + Binder.getCallingPid() + ", uid=" + Binder.getCallingUid()
 //                     + " without permission " + android.Manifest.permission.DUMP);
 //             return;
@@ -2420,7 +2915,7 @@ AutoPtr<CAppOpsService> CActivityManagerService::GetAppOpsService()
 //     protected void dump(FileDescriptor fd, PrintWriter pw, String[] args) {
 //         if (mActivityManagerService.checkCallingPermission(android.Manifest.permission.DUMP)
 //                 != PackageManager.PERMISSION_GRANTED) {
-//             pw.println("Permission Denial: can't dump gfxinfo from from pid="
+//             pw->Println(String("Permission Denial: can't dump gfxinfo from from pid=)"
 //                     + Binder.getCallingPid() + ", uid=" + Binder.getCallingUid()
 //                     + " without permission " + android.Manifest.permission.DUMP);
 //             return;
@@ -2440,7 +2935,7 @@ AutoPtr<CAppOpsService> CActivityManagerService::GetAppOpsService()
 //     protected void dump(FileDescriptor fd, PrintWriter pw, String[] args) {
 //         if (mActivityManagerService.checkCallingPermission(android.Manifest.permission.DUMP)
 //                 != PackageManager.PERMISSION_GRANTED) {
-//             pw.println("Permission Denial: can't dump dbinfo from from pid="
+//             pw->Println("Permission Denial: can't dump dbinfo from from pid="
 //                     + Binder.getCallingPid() + ", uid=" + Binder.getCallingUid()
 //                     + " without permission " + android.Manifest.permission.DUMP);
 //             return;
@@ -2460,15 +2955,15 @@ AutoPtr<CAppOpsService> CActivityManagerService::GetAppOpsService()
 //     protected void dump(FileDescriptor fd, PrintWriter pw, String[] args) {
 //         if (mActivityManagerService.checkCallingPermission(android.Manifest.permission.DUMP)
 //                 != PackageManager.PERMISSION_GRANTED) {
-//             pw.println("Permission Denial: can't dump cpuinfo from from pid="
+//             pw->Println("Permission Denial: can't dump cpuinfo from from pid="
 //                     + Binder.getCallingPid() + ", uid=" + Binder.getCallingUid()
 //                     + " without permission " + android.Manifest.permission.DUMP);
 //             return;
 //         }
 
 //         synchronized (mActivityManagerService.mProcessCpuTracker) {
-//             pw.print(mActivityManagerService.mProcessCpuTracker.printCurrentLoad());
-//             pw.print(mActivityManagerService.mProcessCpuTracker.printCurrentState(
+//             pw->Print(mActivityManagerService.mProcessCpuTracker.printCurrentLoad());
+//             pw->Print(mActivityManagerService.mProcessCpuTracker.printCurrentState(
 //                     SystemClock.uptimeMillis()));
 //         }
 //     }
@@ -2538,7 +3033,7 @@ ECode CActivityManagerService::UpdateCpuStatsNow()
         AutoPtr<ISystemProperties> sysProp;
         CSystemProperties::AcquireSingleton((ISystemProperties**)&sysProp);
         String value;
-        if (sysProp->Get(String("events.cpu"), &value), value.Equals("true")) {
+        if (sysProp->Get(String("events.cpu"), &value), value.Equals("TRUE")) {
             Int32 user, system, iowait, irq, softIrq, idle;
             mProcessCpuTracker->GetLastUserTime(&user);
             mProcessCpuTracker->GetLastSystemTime(&system);
@@ -2914,19 +3409,19 @@ void CActivityManagerService::UpdateLruProcessLocked(
        if the process is not actually going to move.  Not yet working.
     Int32 addIndex;
     Int32 nextIndex;
-    Boolean inActivity = false, inService = false;
+    Boolean inActivity = FALSE, inService = FALSE;
     if (hasActivity) {
         // Process has activities, put it at the very tipsy-top.
         addIndex = mLruProcesses.GetSize();
         nextIndex = mLruProcessServiceStart;
-        inActivity = true;
+        inActivity = TRUE;
     }
     else if (hasService) {
         // Process has services, put it at the top of the service list.
         addIndex = mLruProcessActivityStart;
         nextIndex = mLruProcessServiceStart;
-        inActivity = true;
-        inService = true;
+        inActivity = TRUE;
+        inService = TRUE;
     }
     else  {
         // Process not otherwise of interest, it goes to the top of the non-service area.
@@ -3132,7 +3627,7 @@ AutoPtr<ProcessRecord> CActivityManagerService::GetProcessRecordLocked(
         proc->Kill(StringUtils::ToString(proc->mLastCachedPss) + "k from cached", TRUE);
     }
     else if (proc != NULL && !keepIfLarge
-        && mLastMemoryLevel > ProcessStats.ADJ_MEM_FACTOR_NORMAL
+        && mLastMemoryLevel > IProcessStats::ADJ_MEM_FACTOR_NORMAL
         && proc->mSetProcState >= IActivityManager::PROCESS_STATE_CACHED_EMPTY) {
         if (DEBUG_PSS) Slogger::D(TAG, "May not keep %s: pss=%lld", ToChars(proc), proc->mLastCachedPss);
         if (proc->mLastCachedPss >= mProcessList->GetCachedRestoreThresholdKb()) {
@@ -3451,7 +3946,7 @@ ECode CActivityManagerService::StartProcessLocked(
                 CheckTime(startTime, String("startProcess: checking external storage perm"));
                 Int32 res;
                 pm->CheckPermission(
-                        Elastos::Droid::Manifest::permission::ACCESS_ALL_EXTERNAL_STORAGE,
+                        Manifest::permission::ACCESS_ALL_EXTERNAL_STORAGE,
                         packageName, &res);
                 if (res == IPackageManager::PERMISSION_GRANTED) {
                     mountExternal = IZygote::MOUNT_EXTERNAL_MULTIUSER_ALL;
@@ -3876,7 +4371,7 @@ ECode CActivityManagerService::EnforceNotIsolatedCaller(
     AutoPtr<IUserHandleHelper> uhHelper;
     CUserHandleHelper::AcquireSingleton((IUserHandleHelper**)&uhHelper);
     Boolean isIsolated;
-    uhHelper->IsIsolated(Binder::GetCallingUid(), &isIsolated);
+    uhHelper->IsIsolated(BinderGetCallingUid(), &isIsolated);
     if (isIsolated) {
         //throw new SecurityException("Isolated process not allowed to call " + caller);
         Slogger::E(TAG, "Isolated process not allowed to call %s", caller.string());
@@ -3889,7 +4384,7 @@ ECode CActivityManagerService::EnforceShellRestriction(
     /* [in] */ const String& restriction,
     /* [in] */ Int32 userHandle)
 {
-    if (Binder::GetCallingUid() == IProcess::SHELL_UID) {
+    if (BinderGetCallingUid() == IProcess::SHELL_UID) {
         Boolean res;
         if (userHandle < 0 ||
             (mUserManager->HasUserRestriction(restriction, userHandle, &res), res)) {
@@ -3918,7 +4413,7 @@ ECode CActivityManagerService::GetFrontActivityScreenCompatMode(
 ECode CActivityManagerService::SetFrontActivityScreenCompatMode(
     /* [in] */ Int32 mode)
 {
-    FAIL_RETURN(EnforceCallingPermission(Elastos::Droid::Manifest::permission::SET_SCREEN_COMPATIBILITY,
+    FAIL_RETURN(EnforceCallingPermission(Manifest::permission::SET_SCREEN_COMPATIBILITY,
             String("setFrontActivityScreenCompatMode")));
     {
         AutoLock lock(this);
@@ -3947,7 +4442,7 @@ ECode CActivityManagerService::SetPackageScreenCompatMode(
     /* [in] */ const String& packageName,
     /* [in] */ Int32 mode)
 {
-    FAIL_RETURN(EnforceCallingPermission(Elastos::Droid::Manifest::permission::SET_SCREEN_COMPATIBILITY,
+    FAIL_RETURN(EnforceCallingPermission(Manifest::permission::SET_SCREEN_COMPATIBILITY,
             String("setPackageScreenCompatMode")));
     {
         AutoLock lock(this);
@@ -3974,7 +4469,7 @@ ECode CActivityManagerService::SetPackageAskScreenCompat(
     /* [in] */ const String& packageName,
     /* [in] */ Boolean ask)
 {
-    FAIL_RETURN(EnforceCallingPermission(Elastos::Droid::Manifest::permission::SET_SCREEN_COMPATIBILITY,
+    FAIL_RETURN(EnforceCallingPermission(Manifest::permission::SET_SCREEN_COMPATIBILITY,
             String("setPackageAskScreenCompat")));
     {
         AutoLock lock(this);
@@ -4091,7 +4586,7 @@ ECode CActivityManagerService::StartActivityAsUser(
     String nullStr;
     String name("startActivity");
     FAIL_RETURN(EnforceNotIsolatedCaller(name));
-    FAIL_RETURN(HandleIncomingUser(Binder::GetCallingPid(), Binder::GetCallingUid(),
+    FAIL_RETURN(HandleIncomingUser(BinderGetCallingPid(), BinderGetCallingUid(),
             userId, FALSE, ALLOW_FULL_ONLY, name, nullStr, &userId));
     return mStackSupervisor->StartActivityMayWait(caller, -1, callingPackage, intent,
         resolvedType, NULL, NULL, resultTo, resultWho, requestCode, startFlags,
@@ -4202,7 +4697,7 @@ ECode CActivityManagerService::StartActivityAndWait(
     String nullStr;
     String name("startActivityAndWait");
     FAIL_RETURN(EnforceNotIsolatedCaller(name));
-    FAIL_RETURN(HandleIncomingUser(Binder::GetCallingPid(), Binder::GetCallingUid(), userId,
+    FAIL_RETURN(HandleIncomingUser(BinderGetCallingPid(), BinderGetCallingUid(), userId,
             FALSE, ALLOW_FULL_ONLY, name, nullStr, &userId));
     FAIL_RETURN(CActivityManagerWaitResult::New(result));
     Int32 status;
@@ -4231,7 +4726,7 @@ ECode CActivityManagerService::StartActivityWithConfig(
     String nullStr;
     String name("startActivityWithConfig");
     FAIL_RETURN(EnforceNotIsolatedCaller(name));
-    FAIL_RETURN(HandleIncomingUser(Binder::GetCallingPid(), Binder::GetCallingUid(),
+    FAIL_RETURN(HandleIncomingUser(BinderGetCallingPid(), BinderGetCallingUid(),
             userId, FALSE, ALLOW_FULL_ONLY, name, nullStr, &userId));
     return mStackSupervisor->StartActivityMayWait(caller, -1, callingPackage, intent,
         resolvedType, NULL, NULL, resultTo, resultWho, requestCode, startFlags,
@@ -4285,7 +4780,7 @@ ECode CActivityManagerService::StartActivityIntentSender(
             stack->mResumedActivity->mInfo->GetApplicationInfo((IApplicationInfo**)&appInfo);
             Int32 uid;
             appInfo->GetUid(&uid);
-            if (uid == Binder::GetCallingUid()) {
+            if (uid == BinderGetCallingUid()) {
                 mAppSwitchesAllowedTime = 0;
             }
         }
@@ -4317,9 +4812,9 @@ ECode CActivityManagerService::StartVoiceActivity(
             != IPackageManager::PERMISSION_GRANTED) {
         StringBuilder msg;
         msg += "Permission Denial: startVoiceActivity() from pid=";
-        msg += Binder::GetCallingPid();
+        msg += BinderGetCallingPid();
         msg += ", uid=";
-        msg += Binder::GetCallingUid()
+        msg += BinderGetCallingUid()
         msg += " requires ";
         msg += Manifest::permission::BIND_VOICE_INTERACTION;
         Slogger::W(TAG, msg.ToString());
@@ -4470,14 +4965,14 @@ ECode CActivityManagerService::StartNextMatchingActivity(
             resultTo->RemoveResultsLocked(r, resultWho, requestCode);
         }
 
-        const Int64 origId = Binder::ClearCallingIdentity();
+        const Int64 origId = BinderClearCallingIdentity();
         Int32 res;
         mStackSupervisor->StartActivityLocked(r->mApp->mThread, newIntent,
                 r->mResolvedType, aInfo, NULL, NULL,
                 resultTo != NULL ? IBinder::Probe(resultTo->mAppToken) : NULL,
                 resultWho, requestCode, -1, r->mLaunchedFromUid, r->mLaunchedFromPackage, -1,
                 r->mLaunchedFromUid,  0, options, FALSE, NULL, NULL, NULL, &res);
-        Binder::RestoreCallingIdentity(origId);
+        BinderRestoreCallingIdentity(origId);
 
         r->mFinishing = wasFinishing;
         if (res != IActivityManager::START_SUCCESS) {
@@ -4553,7 +5048,7 @@ ECode CActivityManagerService::StartActivityInPackage(
 
     String nullStr;
     String name("startActivityInPackage");
-    FAIL_RETURN(HandleIncomingUser(Binder::GetCallingPid(), Binder::GetCallingUid(), userId,
+    FAIL_RETURN(HandleIncomingUser(BinderGetCallingPid(), BinderGetCallingUid(), userId,
             FALSE, ALLOW_FULL_ONLY, name, nullStr, &userId));
 
     return mStackSupervisor->StartActivityMayWait(NULL, uid, callingPackage, intent,
@@ -4577,7 +5072,7 @@ ECode CActivityManagerService::StartActivities(
     String nullStr;
     String name("startActivity");
     FAIL_RETURN(EnforceNotIsolatedCaller(name));
-    FAIL_RETURN(HandleIncomingUser(Binder::GetCallingPid(), Binder::GetCallingUid(), userId,
+    FAIL_RETURN(HandleIncomingUser(BinderGetCallingPid(), BinderGetCallingUid(), userId,
             FALSE, ALLOW_FULL_ONLY, name, nullStr, &userId));
     return mStackSupervisor->StartActivities(caller, -1, callingPackage, intents,
         resolvedTypes, resultTo, options, userId, result);
@@ -4598,7 +5093,7 @@ ECode CActivityManagerService::StartActivitiesInPackage(
 
     String nullStr;
     String name("startActivityInPackage");
-    FAIL_RETURN(HandleIncomingUser(Binder::GetCallingPid(), Binder::GetCallingUid(), userId,
+    FAIL_RETURN(HandleIncomingUser(BinderGetCallingPid(), BinderGetCallingUid(), userId,
             FALSE, ALLOW_FULL_ONLY, name, nullStr, &userId));
     return mStackSupervisor->StartActivities(NULL, uid, callerPackage, intents, resolvedTypes,
         resultTo, options, userId, status);
@@ -5219,7 +5714,7 @@ ECode CActivityManagerService::SetRequestedOrientation(
     if (r == NULL) {
         return NOERROR;;
     }
-    const Int64 origId = Binder::ClearCallingIdentity();
+    const Int64 origId = BinderClearCallingIdentity();
     mWindowManager->SetAppOrientation(r->mAppToken, requestedOrientation);
     AutoPtr<IConfiguration> config;
     mWindowManager->UpdateOrientationFromAppTokens(
@@ -5231,7 +5726,7 @@ ECode CActivityManagerService::SetRequestedOrientation(
             mStackSupervisor->ResumeTopActivitiesLocked();
         }
     }
-    Binder::RestoreCallingIdentity(origId);
+    BinderRestoreCallingIdentity(origId);
     return NOERROR;
 }
 
@@ -5302,7 +5797,7 @@ ECode CActivityManagerService::FinishActivity(
             }
         }
 
-        const Int64 origId = Binder::ClearCallingIdentity();
+        const Int64 origId = BinderClearCallingIdentity();
         ECode ec;
         if (finishTask && r == rootR) {
             // If requested, remove the task that is associated to this activity only if it
@@ -5314,18 +5809,18 @@ ECode CActivityManagerService::FinishActivity(
             ec = tr->mStack->RequestFinishActivityLocked(token, resultCode,
                     resultData, String("app-request"), TRUE, result);
         }
-        Binder::RestoreCallingIdentity(origId);
+        BinderRestoreCallingIdentity(origId);
         return ec;
     }
 }
 
 ECode CActivityManagerService::FinishHeavyWeightApp()
 {
-    if (CheckCallingPermission(Elastos::Droid::Manifest::permission::FORCE_STOP_PACKAGES)
+    if (CheckCallingPermission(Manifest::permission::FORCE_STOP_PACKAGES)
             != IPackageManager::PERMISSION_GRANTED) {
         Slogger::W(TAG, "Permission Denial: finishHeavyWeightApp() from pid=%d, uid=%d"
-            " requires Elastos::Droid::Manifest::permission::FORCE_STOP_PACKAGES",
-            Binder::GetCallingPid(), Binder::GetCallingUid());
+            " requires Manifest::permission::FORCE_STOP_PACKAGES",
+            BinderGetCallingPid(), BinderGetCallingUid());
         // throw new SecurityException(msg);
         return E_SECURITY_EXCEPTION;
     }
@@ -5363,11 +5858,11 @@ ECode CActivityManagerService::CrashApplication(
     /* [in] */ const String& packageName,
     /* [in] */ const String& message)
 {
-    if (CheckCallingPermission(Elastos::Droid::Manifest::permission::FORCE_STOP_PACKAGES)
+    if (CheckCallingPermission(Manifest::permission::FORCE_STOP_PACKAGES)
             != IPackageManager::PERMISSION_GRANTED) {
         Slogger::W(TAG, "Permission Denial: crashApplication() from pid=%d, uid=%d requires"
-            " Elastos::Droid::Manifest::permission::FORCE_STOP_PACKAGES",
-            Binder::GetCallingPid(), Binder::GetCallingUid());
+            " Manifest::permission::FORCE_STOP_PACKAGES",
+            BinderGetCallingPid(), BinderGetCallingUid());
         // throw new SecurityException(msg);
         return E_SECURITY_EXCEPTION;
     }
@@ -5391,7 +5886,8 @@ ECode CActivityManagerService::CrashApplication(
                     proc = p;
                     break;
                 }
-                if (p->mPkgList.Find(packageName) != p->mPkgList.End()) {
+                Boolean res;
+                if ((p->mPkgList->ContainsKey(packageName, &res), res)) {
                     proc = p;
                 }
             }
@@ -5408,12 +5904,12 @@ ECode CActivityManagerService::CrashApplication(
                 Logger::W(TAG, "crashApplication: trying to crash self!");
                 return NOERROR;
             }
-            Int64 ident = Binder::ClearCallingIdentity();
+            Int64 ident = BinderClearCallingIdentity();
            // try {
             proc->mThread->ScheduleCrash(message);
            // } catch (RemoteException e) {
            // }
-            Binder::RestoreCallingIdentity(ident);
+            BinderRestoreCallingIdentity(ident);
         }
     }
     return NOERROR;
@@ -5425,12 +5921,12 @@ ECode CActivityManagerService::FinishSubActivity(
     /* [in] */ Int32 requestCode)
 {
     AutoLock lock(this);
-    const Int64 origId = Binder::ClearCallingIdentity();
+    const Int64 origId = BinderClearCallingIdentity();
     AutoPtr<ActivityRecord> r = ActivityRecord::IsInStackLocked(token);
     if (r != NULL) {
         r->mTask->mStack->FinishSubActivityLocked(r, resultWho, requestCode);
     }
-    Binder::RestoreCallingIdentity(origId);
+    BinderRestoreCallingIdentity(origId);
     return NOERROR;
 }
 
@@ -5442,7 +5938,7 @@ ECode CActivityManagerService::FinishActivityAffinity(
     *finished = FALSE;
 
     AutoLock lock(this);
-    const Int64 origId = Binder::ClearCallingIdentity();
+    const Int64 origId = BinderClearCallingIdentity();
 
     AutoPtr<ActivityRecord> r = ActivityRecord::IsInStackLocked(token);
     AutoPtr<ActivityRecord> rootR = r->mTask->GetRootActivity();
@@ -5459,7 +5955,7 @@ ECode CActivityManagerService::FinishActivityAffinity(
         ec = r->mTask->mStack->FinishActivityAffinityLocked(r, finished);
     }
 _EXIT_:
-    Binder::RestoreCallingIdentity(origId);
+    BinderRestoreCallingIdentity(origId);
     return ec;
 }
 
@@ -5467,9 +5963,9 @@ ECode CActivityManagerService::FinishVoiceTask(
     /* [in] */ IIVoiceInteractionSession* session)
 {
     synchronized(this) {
-        const Int64 origId = Binder::ClearCallingIdentity();
+        const Int64 origId = BinderClearCallingIdentity();
         ECode ec = mStackSupervisor->FinishVoiceTask(session);
-        Binder::RestoreCallingIdentity(origId);
+        BinderRestoreCallingIdentity(origId);
         return ec;
     }
 
@@ -5481,7 +5977,7 @@ ECode CActivityManagerService::ReleaseActivityInstance(
 {
     VALIDATE_NOT_NULL(result)
     synchronized(this) {
-        const Int64 origId = Binder::ClearCallingIdentity();
+        const Int64 origId = BinderClearCallingIdentity();
         AutoPtr<ActivityRecord> r = ActivityRecord::IsInStackLocked(token);
         ECode ec = NOERROR;
         if (r->mTask == NULL || r->mTask->mStack == NULL) {
@@ -5490,7 +5986,7 @@ ECode CActivityManagerService::ReleaseActivityInstance(
         else
             ec = r->mTask->mStack->SafelyDestroyActivityLocked(
                 r, String("app-req"), result);
-        Binder::RestoreCallingIdentity(origId);
+        BinderRestoreCallingIdentity(origId);
         return ec;
     }
 }
@@ -5499,10 +5995,10 @@ ECode CActivityManagerService::ReleaseSomeActivities(
     /* [in] */ IApplicationThread* appInt)
 {
     synchronized(this) {
-        const Int64 origId = Binder::ClearCallingIdentity();
+        const Int64 origId = BinderClearCallingIdentity();
         AutoPtr<ProcessRecord> app = GetRecordForAppLocked(appInt);
         ECode ec = mStackSupervisor->ReleaseSomeActivitiesLocked(app, String("low-mem"));
-        Binder::RestoreCallingIdentity(origId);
+        BinderRestoreCallingIdentity(origId);
         return ec;
     }
 }
@@ -5535,7 +6031,7 @@ ECode CActivityManagerService::OverridePendingTransition(
             return NOERROR;
         }
 
-    const Int64 origId = Binder::ClearCallingIdentity();
+    const Int64 origId = BinderClearCallingIdentity();
 
     if (self->mState == ActivityState_RESUMED
             || self->mState == ActivityState_PAUSING) {
@@ -5543,7 +6039,7 @@ ECode CActivityManagerService::OverridePendingTransition(
                 enterAnim, exitAnim, NULL);
     }
 
-    Binder::RestoreCallingIdentity(origId);
+    BinderRestoreCallingIdentity(origId);
     return NOERROR;
 }
 
@@ -6266,11 +6762,11 @@ ECode CActivityManagerService::ClearApplicationUserData(
     VALIDATE_NOT_NULL(result);
 
     FAIL_RETURN(EnforceNotIsolatedCaller(String("clearApplicationUserData")));
-    Int32 uid = Binder::GetCallingUid();
-    Int32 pid = Binder::GetCallingPid();
+    Int32 uid = BinderGetCallingUid();
+    Int32 pid = BinderGetCallingPid();
     HandleIncomingUser(pid, uid, userId, FALSE, ALLOW_FULL_ONLY,
         String("clearApplicationUserData"), String(NULL), &userId);
-    Int64 callingId = Binder::ClearCallingIdentity();
+    Int64 callingId = BinderClearCallingIdentity();
 //    try {
     AutoPtr<IIPackageManager> pm = AppGlobals::GetPackageManager();
     Int32 pkgUid = -1;
@@ -6287,17 +6783,17 @@ ECode CActivityManagerService::ClearApplicationUserData(
                     Slogger::I(TAG, "Observer no longer exists.");
                 }
             }
-            Binder::RestoreCallingIdentity(callingId);
+            BinderRestoreCallingIdentity(callingId);
             return FALSE;
         }
         if (uid == pkgUid || CheckComponentPermission(
-               Elastos::Droid::Manifest::permission::CLEAR_APP_USER_DATA,
+               Manifest::permission::CLEAR_APP_USER_DATA,
                pid, uid, -1, TRUE)
                == IPackageManager::PERMISSION_GRANTED) {
             ForceStopPackageLocked(packageName, pkgUid, String("clear data"));
         }
         else {
-            Binder::RestoreCallingIdentity(callingId);
+            BinderRestoreCallingIdentity(callingId);
             Slogger::E(TAG, "PID %d does not have permission %s to clear data of package %s",
                 pid, Manifest::permission::CLEAR_APP_USER_DATA.string(), packageName.string());
             return E_SECURITY_EXCEPTION;
@@ -6347,7 +6843,7 @@ ECode CActivityManagerService::ClearApplicationUserData(
     //     } catch (RemoteException e) {
     //     }
     // } finally {
-    Binder::RestoreCallingIdentity(callingId);
+    BinderRestoreCallingIdentity(callingId);
     // }
     *result = TRUE;
     return NOERROR;
@@ -6357,19 +6853,19 @@ ECode CActivityManagerService::KillBackgroundProcesses(
     /* [in] */ const String& packageName,
     /* [in] */ Int32 userId)
 {
-    if (CheckCallingPermission(Elastos::Droid::Manifest::permission::KILL_BACKGROUND_PROCESSES)
+    if (CheckCallingPermission(Manifest::permission::KILL_BACKGROUND_PROCESSES)
             != IPackageManager::PERMISSION_GRANTED &&
-            CheckCallingPermission(Elastos::Droid::Manifest::permission::RESTART_PACKAGES)
+            CheckCallingPermission(Manifest::permission::RESTART_PACKAGES)
                 != IPackageManager::PERMISSION_GRANTED) {
-        Slogger::W(TAG, "Permission Denial: killBackgroundProcesses() from pid=%d, uid=%d requires Elastos::Droid::Manifest::permission::KILL_BACKGROUND_PROCESSES",
-                Binder::GetCallingPid(), Binder::GetCallingUid());
+        Slogger::W(TAG, "Permission Denial: killBackgroundProcesses() from pid=%d, uid=%d requires Manifest::permission::KILL_BACKGROUND_PROCESSES",
+                BinderGetCallingPid(), BinderGetCallingUid());
        // throw new SecurityException(msg);
        return E_SECURITY_EXCEPTION;
     }
 
-    HandleIncomingUser(Binder::GetCallingPid(), Binder::GetCallingUid(),
+    HandleIncomingUser(BinderGetCallingPid(), BinderGetCallingUid(),
         userId, TRUE, ALLOW_FULL_ONLY, String("killBackgroundProcesses"), String(NULL), &userId);
-    Int64 callingId = Binder::ClearCallingIdentity();
+    Int64 callingId = BinderClearCallingIdentity();
     // try {
     AutoPtr<IIPackageManager> pm = AppGlobals::GetPackageManager();
     {
@@ -6383,34 +6879,34 @@ ECode CActivityManagerService::KillBackgroundProcesses(
         // }
         if (appId == -1) {
             Slogger::W(TAG, "Invalid packageName: %s", packageName.string());
-            Binder::RestoreCallingIdentity(callingId);
+            BinderRestoreCallingIdentity(callingId);
             return NOERROR;
         }
         KillPackageProcessesLocked(packageName, appId, userId,
             ProcessList::SERVICE_ADJ, FALSE, TRUE, TRUE, FALSE, String("kill background"));
     }
     // } finally {
-    Binder::RestoreCallingIdentity(callingId);
+    BinderRestoreCallingIdentity(callingId);
     // }
     return NOERROR;
 }
 
 ECode CActivityManagerService::KillAllBackgroundProcesses()
 {
-    if (CheckCallingPermission(Elastos::Droid::Manifest::permission::KILL_BACKGROUND_PROCESSES)
+    if (CheckCallingPermission(Manifest::permission::KILL_BACKGROUND_PROCESSES)
             != IPackageManager::PERMISSION_GRANTED) {
         StringBuilder msg("Permission Denial: killAllBackgroundProcesses() from pid=");
-        msg += Binder::GetCallingPid();
+        msg += BinderGetCallingPid();
         msg += ", uid=";
-        msg += Binder::GetCallingUid();
+        msg += BinderGetCallingUid();
         msg += " requires ";
-        msg += "Elastos::Droid::Manifest::permission::KILL_BACKGROUND_PROCESSES";
+        msg += "Manifest::permission::KILL_BACKGROUND_PROCESSES";
         Slogger::W(TAG, msg.ToString().string());
         // throw new SecurityException(msg);
         return E_SECURITY_EXCEPTION;
     }
 
-    Int64 callingId = Binder::ClearCallingIdentity();
+    Int64 callingId = BinderClearCallingIdentity();
     // try {
     {
         AutoLock lock(this);
@@ -6446,7 +6942,7 @@ ECode CActivityManagerService::KillAllBackgroundProcesses()
         DoLowMemReportIfNeededLocked(NULL);
     }
     // } finally {
-    Binder::RestoreCallingIdentity(callingId);
+    BinderRestoreCallingIdentity(callingId);
     // }
     return NOERROR;
 }
@@ -6455,22 +6951,22 @@ ECode CActivityManagerService::ForceStopPackage(
     /* [in] */ const String& packageName,
     /* [in] */ Int32 userId)
 {
-    if (CheckCallingPermission(Elastos::Droid::Manifest::permission::FORCE_STOP_PACKAGES)
+    if (CheckCallingPermission(Manifest::permission::FORCE_STOP_PACKAGES)
             != IPackageManager::PERMISSION_GRANTED) {
         StringBuilder msg("Permission Denial: forceStopPackage() from pid=");
-        msg += Binder::GetCallingPid();
+        msg += BinderGetCallingPid();
         msg += ", uid=";
-        msg += Binder::GetCallingUid();
+        msg += BinderGetCallingUid();
         msg += " requires ";
-        msg += "Elastos::Droid::Manifest::permission::FORCE_STOP_PACKAGES";
+        msg += "Manifest::permission::FORCE_STOP_PACKAGES";
         Slogger::W(TAG, msg.ToString().string());
         // throw new SecurityException(msg);
         return E_SECURITY_EXCEPTION;
     }
-    Int32 callingPid = Binder::GetCallingPid();
-    HandleIncomingUser(callingPid, Binder::GetCallingUid(),
+    Int32 callingPid = BinderGetCallingPid();
+    HandleIncomingUser(callingPid, BinderGetCallingUid(),
         userId, TRUE, ALLOW_FULL_ONLY, String("forceStopPackage"), String(NULL), &userId);
-    Int64 callingId = Binder::ClearCallingIdentity();
+    Int64 callingId = BinderClearCallingIdentity();
     // try {
     AutoPtr<IIPackageManager> pm = AppGlobals::GetPackageManager();
     {
@@ -6510,7 +7006,7 @@ ECode CActivityManagerService::ForceStopPackage(
         }
     }
     // } finally {
-    Binder::RestoreCallingIdentity(callingId);
+    BinderRestoreCallingIdentity(callingId);
     // }
     return NOERROR;
 }
@@ -6519,7 +7015,7 @@ ECode CActivityManagerService::AddPackageDependency(
     /* [in] */ const String& packageName)
 {
     synchronized (this) {
-        Int32 callingPid = Binder::GetCallingPid();
+        Int32 callingPid = BinderGetCallingPid();
         if (callingPid == Process::MyPid()) {
             //  Yeah, um, no.
             Slogger::W(TAG, "Can't addPackageDependency on system process");
@@ -6528,7 +7024,7 @@ ECode CActivityManagerService::AddPackageDependency(
         AutoPtr<ProcessRecord> proc;
         synchronized (mPidsSelfLockedLock) {
             HashMap<Int32, AutoPtr<ProcessRecord> >::Iterator it =
-                mPidsSelfLocked.Find(Binder::GetCallingPid());
+                mPidsSelfLocked.Find(BinderGetCallingPid());
             if (it != mPidsSelfLocked.End()) {
                 proc = it->mSecond;
             }
@@ -6559,7 +7055,7 @@ ECode CActivityManagerService::KillApplicationWithAppId(
         Slogger::W(TAG, "Invalid appid specified for pkg : %s", pkg.string());
         return NOERROR;
     }
-    Int32 callerUid = Binder::GetCallingUid();
+    Int32 callerUid = BinderGetCallingUid();
     // Only the system server can kill an application
     if (callerUid == IProcess::SYSTEM_UID) {
         // Post an aysnc message to kill the application
@@ -6585,9 +7081,9 @@ ECode CActivityManagerService::CloseSystemDialogs(
 {
     FAIL_RETURN(EnforceNotIsolatedCaller(String("CloseSystemDialogs")));
 
-    Int32 pid = Binder::GetCallingPid();
-    Int32 uid = Binder::GetCallingUid();
-    Int64 origId = Binder::ClearCallingIdentity();
+    Int32 pid = BinderGetCallingPid();
+    Int32 uid = BinderGetCallingUid();
+    Int64 origId = BinderClearCallingIdentity();
     // try
     {
         AutoLock lock(this);
@@ -6602,14 +7098,14 @@ ECode CActivityManagerService::CloseSystemDialogs(
             if (proc->mCurRawAdj > ProcessList::PERCEPTIBLE_APP_ADJ) {
                 // Slogger::W(TAG, "Ignoring closeSystemDialogs " + reason
                 //         + " from background process " + proc);
-                Binder::RestoreCallingIdentity(origId);
+                BinderRestoreCallingIdentity(origId);
                 return NOERROR;
             }
         }
         CloseSystemDialogsLocked(reason);
     }
     // finally {
-    Binder::RestoreCallingIdentity(origId);
+    BinderRestoreCallingIdentity(origId);
     // }
     return NOERROR;
 }
@@ -6653,7 +7149,7 @@ ECode CActivityManagerService::GetProcessMemoryInfo(
         synchronized (this) {
             synchronized (mPidsSelfLockedLock) {
                 HashMap<Int32, AutoPtr<ProcessRecord> >::Iterator it =
-                    mPidsSelfLocked.Find(Binder::GetCallingPid());
+                    mPidsSelfLocked.Find(BinderGetCallingPid());
                 if (it != mPidsSelfLocked.End()) {
                     proc = it->mSecond;
                 }
@@ -6729,7 +7225,7 @@ ECode CActivityManagerService::KillApplicationProcess(
         return NOERROR;
     }
 
-    Int32 callerUid = Binder::GetCallingUid();
+    Int32 callerUid = BinderGetCallingUid();
     // Only the system server can kill an application
     if (callerUid == IProcess::SYSTEM_UID) {
         {
@@ -6864,7 +7360,8 @@ Boolean CActivityManagerService::KillPackageProcessesLocked(
                     continue;
                 }
 
-                if (app->mPkgList.Find(packageName) == app->mPkgList.End() && !isDep) {
+                Boolean res;
+                if (!(app->mPkgList->ContainsKey(packageName, &res), res) && !isDep) {
                     continue;
                 }
             }
@@ -7145,7 +7642,7 @@ Boolean CActivityManagerService::RemoveProcessLocked(
 
         if (app->mPersistent && !app->mIsolated) {
             if (!callerWillRestart) {
-                AddAppLocked(app->mInfo, FALSE, NULL /* ABI override */);
+                AddAppLocked(app->mInfo, FALSE, String(NULL) /* ABI override */);
             }
             else {
                 needRestart = TRUE;
@@ -7426,7 +7923,7 @@ Boolean CActivityManagerService::AttachApplicationLocked(
             }
         // } catch (Exception e) {
         //     Slog.wtf(TAG, "Exception thrown launching activities in " + app, e);
-        //     badApp = true;
+        //     badApp = TRUE;
         // }
     }
 
@@ -7486,10 +7983,10 @@ ECode CActivityManagerService::AttachApplication(
 {
     AutoLock lock(this);
 
-    Int32 callingPid = Binder::GetCallingPid();
-    const Int64 origId = Binder::ClearCallingIdentity();
+    Int32 callingPid = BinderGetCallingPid();
+    const Int64 origId = BinderClearCallingIdentity();
     AttachApplicationLocked(thread, callingPid);
-    Binder::RestoreCallingIdentity(origId);
+    BinderRestoreCallingIdentity(origId);
     return NOERROR;
 }
 
@@ -7498,7 +7995,7 @@ ECode CActivityManagerService::ActivityIdle(
     /* [in] */ IConfiguration* config,
     /* [in] */ Boolean stopProfiling)
 {
-    const Int64 origId = Binder::ClearCallingIdentity();
+    const Int64 origId = BinderClearCallingIdentity();
     {
         AutoLock lock(this);
         AutoPtr<ActivityStack> stack = ActivityRecord::GetStackLocked(token);
@@ -7513,7 +8010,7 @@ ECode CActivityManagerService::ActivityIdle(
             }
         }
     }
-    Binder::RestoreCallingIdentity(origId);
+    BinderRestoreCallingIdentity(origId);
     return NOERROR;
 }
 
@@ -7551,7 +8048,7 @@ ECode CActivityManagerService::ShowBootMessage(
 ECode CActivityManagerService::KeyguardWaitingForActivityDrawn()
 {
     FAIL_RETURN(EnforceNotIsolatedCaller(String("KeyguardWaitingForActivityDrawn")));
-    const Int64 token = Binder::ClearCallingIdentity();
+    const Int64 token = BinderClearCallingIdentity();
 //     try {
         {
             AutoLock lock(this);
@@ -7563,7 +8060,7 @@ ECode CActivityManagerService::KeyguardWaitingForActivityDrawn()
             }
         }
 //     } finally {
-        Binder::RestoreCallingIdentity(token);
+        BinderRestoreCallingIdentity(token);
 //     }
     return NOERROR;
 }
@@ -7631,8 +8128,7 @@ ECode CActivityManagerService::FinishBooting()
                     CIntent::New(IIntent::ACTION_BOOT_COMPLETED, NULL, (IIntent**)&intent);
                     intent->PutExtra(IIntent::EXTRA_USER_HANDLE, userId);
                     intent->AddFlags(IIntent::FLAG_RECEIVER_NO_ABORT);
-                    AutoPtr<IIntentReceiver> receiver;
-                    CBootCompletedReceiver::New((IIntentReceiver**)&receiver);
+                    AutoPtr<IIntentReceiver> receiver = new BootCompletedReceiver(this);
                     BroadcastIntentLocked(NULL, nullStr, intent,
                         nullStr, receiver, 0, nullStr, NULL,
                         Manifest::permission::RECEIVE_BOOT_COMPLETED, IAppOpsManager::OP_NONE
@@ -7683,28 +8179,28 @@ ECode CActivityManagerService::EnsureBootCompleted()
 ECode CActivityManagerService::ActivityResumed(
     /* [in] */ IBinder* token)
 {
-    const Int64 origId = Binder::ClearCallingIdentity();
+    const Int64 origId = BinderClearCallingIdentity();
     synchronized(this) {
         AutoPtr<ActivityStack> stack = ActivityRecord::GetStackLocked(token);
         if (stack != NULL) {
             ActivityRecord::ActivityResumedLocked(token);
         }
     }
-    Binder::RestoreCallingIdentity(origId);
+    BinderRestoreCallingIdentity(origId);
     return NOERROR;
 }
 
 ECode CActivityManagerService::ActivityPaused(
     /* [in] */ IBinder* token)
 {
-    const Int64 origId = Binder::ClearCallingIdentity();
+    const Int64 origId = BinderClearCallingIdentity();
     synchronized(this) {
         AutoPtr<ActivityStack> stack = ActivityRecord::GetStackLocked(token);
         if (stack != NULL) {
             ActivityRecord::ActivityPausedLocked(token);
         }
     }
-    Binder::RestoreCallingIdentity(origId);
+    BinderRestoreCallingIdentity(origId);
     return NOERROR;
 }
 
@@ -7724,7 +8220,7 @@ ECode CActivityManagerService::ActivityStopped(
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
 
-    const Int64 origId = Binder::ClearCallingIdentity();
+    const Int64 origId = BinderClearCallingIdentity();
 
     {
         AutoLock lock(this);
@@ -7736,7 +8232,7 @@ ECode CActivityManagerService::ActivityStopped(
 
     TrimApplications();
 
-    Binder::RestoreCallingIdentity(origId);
+    BinderRestoreCallingIdentity(origId);
     return NOERROR;
 }
 
@@ -7758,14 +8254,14 @@ ECode CActivityManagerService::ActivityDestroyed(
 ECode CActivityManagerService::BackgroundResourcesReleased(
     /* [in] */ IBinder token)
 {
-    const Int64 origId = Binder::ClearCallingIdentity();
+    const Int64 origId = BinderClearCallingIdentity();
     synchronized(this) {
         AutoPtr<ActivityStack> stack = ActivityRecord::GetStackLocked(token);
         if (stack != NULL) {
             stack->BackgroundResourcesReleased(token);
         }
     }
-    Binder::RestoreCallingIdentity(origId);
+    BinderRestoreCallingIdentity(origId);
     return NOERROR;
 }
 
@@ -7923,10 +8419,10 @@ ECode CActivityManagerService::GetIntentSender(
 
     {
         AutoLock lock(this);
-        Int32 callingUid = Binder::GetCallingUid();
+        Int32 callingUid = BinderGetCallingUid();
         Int32 origUserId = userId;
         Int32 result;
-        userId = HandleIncomingUser(Binder::GetCallingPid(), callingUid, userId,
+        userId = HandleIncomingUser(BinderGetCallingPid(), callingUid, userId,
                 type == IActivityManager::INTENT_SENDER_BROADCAST, ALLOW_NON_FULL,
                 String("getIntentSender"), String(NULL), &result);
         if (origUserId == IUserHandle::USER_CURRENT) {
@@ -7947,9 +8443,9 @@ ECode CActivityManagerService::GetIntentSender(
             if (!isSameApp) {
                 StringBuilder msg;
                 msg += "Permission Denial: getIntentSender() from pid=";
-                msg += Binder::GetCallingPid();
+                msg += BinderGetCallingPid();
                 msg += ", uid=";
-                msg += Binder::GetCallingUid();
+                msg += BinderGetCallingUid();
                 msg += ", (need uid=";
                 msg += uid;
                 msg += ")";
@@ -8079,10 +8575,10 @@ ECode CActivityManagerService::CancelIntentSender(
         AutoPtr<IUserHandleHelper> uhHelper;
         CUserHandleHelper::AcquireSingleton((IUserHandleHelper**)&uhHelper);
         Boolean isSameApp;
-        uhHelper->IsSameApp(uid, Binder::GetCallingUid(), &isSameApp);
+        uhHelper->IsSameApp(uid, BinderGetCallingUid(), &isSameApp);
         if (!isSameApp) {
             Slogger::W(TAG, "Permission Denial: cancelIntentSender() from pid=%d, uid=%d is not allowed to cancel packages %s",
-                Binder::GetCallingPid(), Binder::GetCallingUid(),
+                BinderGetCallingPid(), BinderGetCallingUid(),
                 rec->mKey->mPackageName.string());
            // throw new SecurityException(msg);
            return E_SECURITY_EXCEPTION;
@@ -8278,7 +8774,7 @@ ECode CActivityManagerService::GetTagForIntentSender(
 ECode CActivityManagerService::SetProcessLimit(
     /* [in] */ Int32 max)
 {
-    FAIL_RETURN(EnforceCallingPermission(Elastos::Droid::Manifest::permission::SET_PROCESS_LIMIT,
+    FAIL_RETURN(EnforceCallingPermission(Manifest::permission::SET_PROCESS_LIMIT,
             String("setProcessLimit()")));
     {
         AutoLock lock(this);
@@ -8327,7 +8823,7 @@ ECode CActivityManagerService::SetProcessForeground(
     /* [in] */ Int32 pid,
     /* [in] */ Boolean isForeground)
 {
-    FAIL_RETURN(EnforceCallingPermission(Elastos::Droid::Manifest::permission::SET_PROCESS_LIMIT,
+    FAIL_RETURN(EnforceCallingPermission(Manifest::permission::SET_PROCESS_LIMIT,
             String("setProcessForeground()")));
     {
         AutoLock lock(this);
@@ -8342,7 +8838,7 @@ ECode CActivityManagerService::SetProcessForeground(
             }
             AutoPtr<ForegroundToken> oldToken = mForegroundProcesses[pid];
             if (oldToken != NULL) {
-                AutoPtr<IProxy> proxy = (IProxy*)oldToken->mToken->Probe(EIID_IProxy);
+                AutoPtr<::IProxy> proxy = (::IProxy*)oldToken->mToken->Probe(EIID_IProxy);
                 Boolean result;
                 proxy->UnlinkToDeath(oldToken, 0, &result);
                 mForegroundProcesses.Erase(pid);
@@ -8356,7 +8852,7 @@ ECode CActivityManagerService::SetProcessForeground(
                 newToken->mPid = pid;
                 newToken->mToken = token;
                 // try {
-                AutoPtr<IProxy> proxy = (IProxy*)token->Probe(EIID_IProxy);
+                AutoPtr<::IProxy> proxy = (::IProxy*)token->Probe(EIID_IProxy);
                 proxy->LinkToDeath(newToken, 0);
                 mForegroundProcesses[pid] = newToken;
                 pr->mForcingToForeground = token;
@@ -8436,8 +8932,8 @@ Int32 CActivityManagerService::CheckCallingPermission(
 {
     Int32 result;
     CheckPermission(permission,
-            Binder::GetCallingPid(),
-            UserHandleGetAppId(Binder::GetCallingUid()),
+            BinderGetCallingPid(),
+            UserHandleGetAppId(BinderGetCallingUid()),
             &result);
     return result;
 }
@@ -8452,7 +8948,7 @@ ECode CActivityManagerService::EnforceCallingPermission(
     }
 
     Slogger::W(TAG, "Permission Denial: %s from pid=%d, uid=%d requires %s",
-            func.string(), Binder::GetCallingPid(), Binder::GetCallingUid(),
+            func.string(), BinderGetCallingPid(), BinderGetCallingUid(),
             permission.string());
     return E_SECURITY_EXCEPTION;
 }
@@ -9407,7 +9903,7 @@ ECode CActivityManagerService::GrantUriPermissionFromOwner(
     /* [in] */ Int32 sourceUserId,
     /* [in] */ Int32 targetUserId)
 {
-    FAIL_RETURN(HandleIncomingUser(Binder::GetCallingPid(), Binder::GetCallingUid(),
+    FAIL_RETURN(HandleIncomingUser(BinderGetCallingPid(), BinderGetCallingUid(),
         targetUserId, FALSE, ALLOW_FULL_ONLY, String("grantUriPermissionFromOwner"),
         String(NULL), &targetUserId));
 
@@ -9417,8 +9913,8 @@ ECode CActivityManagerService::GrantUriPermissionFromOwner(
         // throw new IllegalArgumentException("Unknown owner: " + token);
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
-    if (fromUid != Binder::GetCallingUid()) {
-        if (Binder::GetCallingUid() != Process::MyUid()) {
+    if (fromUid != BinderGetCallingUid()) {
+        if (BinderGetCallingUid() != Process::MyUid()) {
             // Only system code can grant URI permissions on behalf
             // of other users.
             // throw new SecurityException("nice try");
@@ -9683,7 +10179,7 @@ ECode CActivityManagerService::TakePersistableUriPermission(
         IIntent::FLAG_GRANT_READ_URI_PERMISSION | IIntent::FLAG_GRANT_WRITE_URI_PERMISSION));
 
     synchronized (this) {
-        Int32 callingUid = Binder::GetCallingUid();
+        Int32 callingUid = BinderGetCallingUid();
         Boolean persistChanged = FALSE;
         AutoPtr<GrantUri> grantUri = new GrantUri(userId, uri, FALSE);
         AutoPtr<GrantUri> grantUri2 = new GrantUri(userId, uri, TRUE);
@@ -9730,7 +10226,7 @@ ECode CActivityManagerService::ReleasePersistableUriPermission(
         IIntent::FLAG_GRANT_READ_URI_PERMISSION | IIntent::FLAG_GRANT_WRITE_URI_PERMISSION));
 
     synchronized (this) {
-        Int32 callingUid = Binder::GetCallingUid();
+        Int32 callingUid = BinderGetCallingUid();
         Boolean persistChanged = FALSE;
         AutoPtr<GrantUri> grantUri = new GrantUri(userId, uri, FALSE);
         AutoPtr<GrantUri> grantUri2 = new GrantUri(userId, uri, TRUE);
@@ -9813,7 +10309,7 @@ ECode CActivityManagerService::GetPersistedUriPermissions(
     CPreconditions::AcquireSingleton((IPreconditions**)&preconditions);
     FAIL_RETURN(preconditions->CheckNotNull(packageName));
 
-    Int32 callingUid = Binder::GetCallingUid();
+    Int32 callingUid = BinderGetCallingUid();
     AutoPtr<IIPackageManager> pm = AppGlobals::GetPackageManager();
     Int32 packageUid;
     if (SUCCEEDED(pm->GetPackageUid(packageName, UserHandle::GetUserId(callingUid), &packageUid))) {
@@ -9918,8 +10414,8 @@ ECode CActivityManagerService::GetAppTasks(
 {
     VALIDATE_NOT_NULL(list);
 
-    Int32 callingUid = Binder::GetCallingUid();
-    Int64 ident = Binder::ClearCallingIdentity();
+    Int32 callingUid = BinderGetCallingUid();
+    Int64 ident = BinderClearCallingIdentity();
 
     synchronized(this) {
         CArrayList::New(list);
@@ -9947,11 +10443,11 @@ ECode CActivityManagerService::GetAppTasks(
                 }
                 AutoPtr<IActivityManagerRecentTaskInfo> taskInfo = CreateRecentTaskInfoFromTaskRecord(tr);
                 AutoPtr<IAppTask> taskImpl;
-                CAppTaskImpl::New(taskInfo.persistentId, callingUid, (IAppTask**)&taskImpl);
+                CAppTaskImpl::New(taskInfo->mPersistentId, callingUid, this, (IAppTask**)&taskImpl);
                 (*list)->Add(taskImpl);
             }
         // } finally {
-            Binder::RestoreCallingIdentity(ident);
+            BinderRestoreCallingIdentity(ident);
         // }
         return NOERROR;
     }
@@ -9963,13 +10459,13 @@ ECode CActivityManagerService::GetTasks(
     /* [out] */ IList** list)
 {
     VALIDATE_NOT_NULL(list);
-    Int32 callingUid = Binder::GetCallingUid();
+    Int32 callingUid = BinderGetCallingUid();
     CArrayList::New(list);
 
     synchronized(this) {
         if (localLOGV) Slogger::V(TAG, "getTasks: max=%d, flags=%d", maxNum, flags);
 
-        Boolean allowed = IsGetTasksAllowed(String("getTasks"), Binder::GetCallingPid(),
+        Boolean allowed = IsGetTasksAllowed(String("getTasks"), BinderGetCallingPid(),
                 callingUid);
 
         // TODO: Improve with MRU list from all ActivityStacks.
@@ -10058,8 +10554,8 @@ ECode CActivityManagerService::GetRecentTasks(
     VALIDATE_NOT_NULL(tasks);
     *tasks = NULL;
 
-    Int32 callingUid = Binder::GetCallingUid();
-    Int32 callingPid = Binder::GetCallingPid();
+    Int32 callingUid = BinderGetCallingUid();
+    Int32 callingPid = BinderGetCallingPid();
     FAIL_RETURN(HandleIncomingUser(callingPid, callerUid, userId,
             FALSE, ALLOW_FULL_ONLY, String("GetRecentTasks"), String(NULL), &userId));
 
@@ -10069,7 +10565,7 @@ ECode CActivityManagerService::GetRecentTasks(
     Boolean allowed = IsGetTasksAllowed(String("getRecentTasks"), callingPid,
             callingUid);
     Boolean detailed = CheckCallingPermission(
-            Elastos::Droid::Manifest::permission::GET_DETAILED_TASKS)
+            Manifest::permission::GET_DETAILED_TASKS)
             == IPackageManager::PERMISSION_GRANTED;
 
     Int32 N = mRecentTasks->GetSize();
@@ -10123,7 +10619,7 @@ ECode CActivityManagerService::GetRecentTasks(
                 if (DEBUG_RECENTS) Slogger::D(TAG, "Skipping, auto-remove without activity: %s", ToChars(tr));
                 continue;
             }
-            if ((flags & ActivityManager.RECENT_IGNORE_UNAVAILABLE) != 0
+            if ((flags & IActivityManager::RECENT_IGNORE_UNAVAILABLE) != 0
                     && !tr->mIsAvailable) {
                 if (DEBUG_RECENTS) Slogger::D(TAG, "Skipping, unavail real act: %s", ToChars(tr));
                 continue;
@@ -10163,7 +10659,7 @@ ECode CActivityManagerService::GetTaskThumbnail(
 
     {
         AutoLock lock(this);
-        FAIL_RETURN(EnforceCallingPermission(Elastos::Droid::Manifest::permission::READ_FRAME_BUFFER,
+        FAIL_RETURN(EnforceCallingPermission(Manifest::permission::READ_FRAME_BUFFER,
                 String("getTaskThumbnail()")));
         AutoPtr<TaskRecord> tr = RecentTaskForIdLocked(id);
         if (tr != NULL) {
@@ -10185,20 +10681,20 @@ ECode CActivityManagerService::AddAppTask(
 {
     VALIDATE_NOT_NULL(result);
     *result = -1;
-    Int32 callingUid = Binder::GetCallingUid();
-    Int64 callingIdent = Binder::ClearCallingIdentity();
+    Int32 callingUid = BinderGetCallingUid();
+    Int64 callingIdent = BinderClearCallingIdentity();
 
     synchronized (this) {
         AutoPtr<ActivityRecord> r = ActivityRecord::IsInStackLocked(activityToken);
         if (r == NULL) {
-            Binder::RestoreCallingIdentity(callingIdent);
+            BinderRestoreCallingIdentity(callingIdent);
             Slogger::E(TAG, "Activity does not exist; token=%s", ToChars(activityToken));
             return E_ILLEGAL_ARGUMENT_EXCEPTION;
         }
         AutoaPtr<IComponentName> comp;
         intent->GetComponent((IComponentName**)&comp);
         if (comp == NULL) {
-            Binder::RestoreCallingIdentity(callingIdent);
+            BinderRestoreCallingIdentity(callingIdent);
             Slogger::E(TAG, "Intent %s must specify explicit component",
                 ToChars(intent));
             return E_ILLEGAL_ARGUMENT_EXCEPTION;
@@ -10207,7 +10703,7 @@ ECode CActivityManagerService::AddAppTask(
         thumbnail->GetWidth(&w);
         thumbnail->GetHeight(&h);
         if (w != mThumbnailWidth || h != mThumbnailHeight) {
-            Binder::RestoreCallingIdentity(callingIdent);
+            BinderRestoreCallingIdentity(callingIdent);
             Slogger::E(TAG, "Bad thumbnail size: got %dx%d, require %dx%d",
                 w, h, mThumbnailWidth, mThumbnailHeight);
             return E_ILLEGAL_ARGUMENT_EXCEPTION;
@@ -10242,7 +10738,7 @@ ECode CActivityManagerService::AddAppTask(
             Int32 uid;
             appInfo->GetUid(&uid);
             if (uid != callingUid) {
-                Binder::RestoreCallingIdentity(callingIdent);
+                BinderRestoreCallingIdentity(callingIdent);
                 Slogger::E(TAG, "Can't add task for another application: target uid= %d"
                     ", calling uid=%d", uid, callingUid);
                 return E_SECURITY_EXCEPTION;
@@ -10256,7 +10752,7 @@ ECode CActivityManagerService::AddAppTask(
         if (trimIdx >= 0) {
             // If this would have caused a trim, then we'll abort because that
             // means it would be added at the end of the list but then just removed.
-            Binder::RestoreCallingIdentity(callingIdent);
+            BinderRestoreCallingIdentity(callingIdent);
             return NOERROR;
         }
 
@@ -10277,7 +10773,7 @@ ECode CActivityManagerService::AddAppTask(
 
         task->SetLastThumbnail(thumbnail);
         task->FreeLastThumbnail();
-        Binder::RestoreCallingIdentity(callingIdent);
+        BinderRestoreCallingIdentity(callingIdent);
         *result = task->mTaskId;
     }
 
@@ -10357,8 +10853,10 @@ ECode CActivityManagerService::CleanUpRemovedTaskLocked(
                 if (proc->mUserId != tr->mUserId) {
                     continue;
                 }
-                HashSet<String>::Iterator pit = proc->mPkgList.Find(pkg);
-                if (pit == proc->mPkgList.End()) {
+
+                Boolean res;
+                proc->mPkgList->ContainsKey(pkg, &res);
+                if (!res) {
                     continue;
                 }
                 procs.PushBack(proc);
@@ -10410,13 +10908,13 @@ ECode CActivityManagerService::RemoveTask(
 
     {
         AutoLock lock(this);
-        FAIL_RETURN(EnforceCallingPermission(Elastos::Droid::Manifest::permission::REMOVE_TASKS,
+        FAIL_RETURN(EnforceCallingPermission(Manifest::permission::REMOVE_TASKS,
                 String("removeTask()")));
-        Int64 ident = Binder::ClearCallingIdentity();
+        Int64 ident = BinderClearCallingIdentity();
         // try {
         *removed = RemoveTaskByIdLocked(taskId, flags);
         // } finally {
-        Binder::RestoreCallingIdentity(ident);
+        BinderRestoreCallingIdentity(ident);
         // }
     }
 
@@ -10431,7 +10929,7 @@ ECode CActivityManagerService::MoveTaskToFront(
     /* [in] */ Int32 flags,
     /* [in] */ IBundle* options)
 {
-    FAIL_RETURN(EnforceCallingPermission(Elastos::Droid::Manifest::permission::REORDER_TASKS,
+    FAIL_RETURN(EnforceCallingPermission(Manifest::permission::REORDER_TASKS,
             String("moveTaskToFront()")));
     if (DEBUG_STACK) Slogger::D(TAG, "moveTaskToFront: moving taskId=%d", taskId);
     synchronized(this) {
@@ -10447,12 +10945,12 @@ ECode CActivityManagerService::MoveTaskToFrontLocked(
 {
     AutoPtr<IActivityOptionsHelper> aoHelper;
     CActivityOptionsHelper::AcquireSingleton((IActivityOptionsHelper**)&aoHelper);
-    if (!CheckAppSwitchAllowedLocked(Binder::GetCallingPid(),
-           Binder::GetCallingUid(), -1, -1, String("Task to front"))) {
+    if (!CheckAppSwitchAllowedLocked(BinderGetCallingPid(),
+           BinderGetCallingUid(), -1, -1, String("Task to front"))) {
         aoHelper->Abort(options);
         return NOERROR;
     }
-    const Int64 origId = Binder::ClearCallingIdentity();
+    const Int64 origId = BinderClearCallingIdentity();
     // try {
     AutoPtr<TaskRecord> task = mStackSupervisor->AnyTaskForIdLocked(taskId);
     if (task == NULL) {
@@ -10469,7 +10967,7 @@ ECode CActivityManagerService::MoveTaskToFrontLocked(
     }
     mStackSupervisor->FindTaskToMoveToFrontLocked(task, flags, options);
     // } finally {
-    Binder::RestoreCallingIdentity(origId);
+    BinderRestoreCallingIdentity(origId);
     // }
     aoHelper->Abort(options);
     return NOERROR;
@@ -10478,7 +10976,7 @@ ECode CActivityManagerService::MoveTaskToFrontLocked(
 ECode CActivityManagerService::MoveTaskToBack(
     /* [in] */ Int32 task)
 {
-    FAIL_RETURN(EnforceCallingPermission(Elastos::Droid::Manifest::permission::REORDER_TASKS,
+    FAIL_RETURN(EnforceCallingPermission(Manifest::permission::REORDER_TASKS,
            String("moveTaskToBack()")));
 
     AutoLock lock(this);
@@ -10491,14 +10989,14 @@ ECode CActivityManagerService::MoveTaskToBack(
         if (DEBUG_STACK) Slogger::D(TAG, "moveTaskToBack: moving task=%s", ToChars(tr));
         AutoPtr<ActivityStack> stack = tr->mStack;
         if (stack->mResumedActivity != NULL && stack->mResumedActivity->mTask == tr) {
-            if (!CheckAppSwitchAllowedLocked(Binder::GetCallingPid(),
-                Binder::GetCallingUid(), -1, -1, String("Task to back"))) {
+            if (!CheckAppSwitchAllowedLocked(BinderGetCallingPid(),
+                BinderGetCallingUid(), -1, -1, String("Task to back"))) {
                 return NOERROR;
             }
         }
-        const Int64 origId = Binder::ClearCallingIdentity();
+        const Int64 origId = BinderClearCallingIdentity();
         stack->MoveTaskToBackLocked(taskId, NULL);
-        Binder::RestoreCallingIdentity(origId);
+        BinderRestoreCallingIdentity(origId);
     }
     return NOERROR;
 }
@@ -10525,18 +11023,18 @@ ECode CActivityManagerService::MoveActivityTaskToBack(
 
     {
         AutoLock lock(this);
-        const Int64 origId = Binder::ClearCallingIdentity();
+        const Int64 origId = BinderClearCallingIdentity();
         Int32 taskId = ActivityRecord::GetTaskForActivityLocked(token, !nonRoot);
         if (taskId >= 0) {
             if ((mStackSupervisor->mLockTaskModeTask != NULL)
                 && (mStackSupervisor->mLockTaskModeTask->mTaskId == taskId)) {
                 mStackSupervisor->ShowLockTaskToast();
-                Binder::RestoreCallingIdentity(origId);
+                BinderRestoreCallingIdentity(origId);
                 return NOERROR;
             }
             *completed = ActivityRecord::GetStackLocked(token)->MoveTaskToBackLocked(taskId, NULL);
         }
-        Binder::RestoreCallingIdentity(origId);
+        BinderRestoreCallingIdentity(origId);
     }
 
     return NOERROR;
@@ -10545,17 +11043,17 @@ ECode CActivityManagerService::MoveActivityTaskToBack(
 ECode CActivityManagerService::MoveTaskBackwards(
     /* [in] */ Int32 task)
 {
-    FAIL_RETURN(EnforceCallingPermission(Elastos::Droid::Manifest::permission::REORDER_TASKS,
+    FAIL_RETURN(EnforceCallingPermission(Manifest::permission::REORDER_TASKS,
             String("moveTaskBackwards()")));
 
     AutoLock lock(this);
-    if (!CheckAppSwitchAllowedLocked(Binder::GetCallingPid(),
-        Binder::GetCallingUid(), -1, -1, String("Task backwards"))) {
+    if (!CheckAppSwitchAllowedLocked(BinderGetCallingPid(),
+        BinderGetCallingUid(), -1, -1, String("Task backwards"))) {
         return NOERROR;
     }
-    const Int64 origId = Binder::ClearCallingIdentity();
+    const Int64 origId = BinderClearCallingIdentity();
     MoveTaskBackwardsLocked(task);
-    Binder::RestoreCallingIdentity(origId);
+    BinderRestoreCallingIdentity(origId);
     return NOERROR;
 }
 
@@ -10648,13 +11146,13 @@ ECode CActivityManagerService::MoveTaskToStack(
             // new RuntimeException("here").fillInStackTrace());
     }
     synchronized (this) {
-        Int64 ident = Binder::ClearCallingIdentity();
+        Int64 ident = BinderClearCallingIdentity();
         // try {
             if (DEBUG_STACK) Slogger::D(TAG, "moveTaskToStack: moving task=%d to stackId=%d toTop=%d",
                     taskId, stackId, toTop);
             mStackSupervisor->MoveTaskToStack(taskId, stackId, toTop);
         // } finally {
-            Binder::RestoreCallingIdentity(ident);
+            BinderRestoreCallingIdentity(ident);
         // }
     }
     return NOERROR;
@@ -10666,11 +11164,11 @@ ECode CActivityManagerService::ResizeStack(
 {
     FAIL_RETURN(EnforceCallingPermission(Manifest::permission::MANAGE_ACTIVITY_STACKS,
             String("resizeStackBox()")));
-    Int64 ident = Binder::ClearCallingIdentity();
+    Int64 ident = BinderClearCallingIdentity();
     // try {
         mWindowManager->ResizeStack(stackBoxId, bounds);
     // } finally {
-        Binder::RestoreCallingIdentity(ident);
+        BinderRestoreCallingIdentity(ident);
     // }
     return NOERROR;
 }
@@ -10681,7 +11179,7 @@ ECode CActivityManagerService::GetAllStackInfos(
     VALIDATE_NOT_NULL(list);
     FAIL_RETURN(EnforceCallingPermission(Manifest::permission::MANAGE_ACTIVITY_STACKS,
             String("getAllStackInfos()")));
-    Int64 ident = Binder::ClearCallingIdentity();
+    Int64 ident = BinderClearCallingIdentity();
     // try {
         synchronized (this) {
             AutoPtr<IList> temp = IList::Probe(mStackSupervisor->GetAllStackInfosLocked());
@@ -10689,7 +11187,7 @@ ECode CActivityManagerService::GetAllStackInfos(
             REFCOUNT_ADD(*list);
         }
     // } finally {
-        Binder::RestoreCallingIdentity(ident);
+        BinderRestoreCallingIdentity(ident);
     // }
     return NOERROR;
 }
@@ -10701,7 +11199,7 @@ ECode CActivityManagerService::GetStackInfo(
     VALIDATE_NOT_NULL(info);
     FAIL_RETURN(EnforceCallingPermission(Manifest::permission::MANAGE_ACTIVITY_STACKS,
             String("getStackInfo()")));
-    Int64 ident = Binder::ClearCallingIdentity();
+    Int64 ident = BinderClearCallingIdentity();
     // try {
         synchronized (this) {
             AutoPtr<IActivityManagerStackInfo> temp = mStackSupervisor->GetStackInfoLocked(stackId);
@@ -10709,7 +11207,7 @@ ECode CActivityManagerService::GetStackInfo(
             REFCOUNT_ADD(*info);
         }
     // } finally {
-        Binder::RestoreCallingIdentity(ident);
+        BinderRestoreCallingIdentity(ident);
     // }
     return NOERROR;
 }
@@ -10721,14 +11219,14 @@ ECode CActivityManagerService::IsInHomeStack(
     VALIDATE_NOT_NULL(result);
     FAIL_RETURN(EnforceCallingPermission(Manifest::permission::MANAGE_ACTIVITY_STACKS,
             String("getStackInfo()")));
-    Int64 ident = Binder::ClearCallingIdentity();
+    Int64 ident = BinderClearCallingIdentity();
     // try {
         synchronized (this) {
             AutoPtr<TaskRecord> tr = RecentTaskForIdLocked(taskId);
             *result = tr != NULL && tr->mStack != NULL && tr->mStack->IsHomeStack();
         }
     // } finally {
-        Binder::RestoreCallingIdentity(ident);
+        BinderRestoreCallingIdentity(ident);
     // }
     return NOERROR;
 }
@@ -10764,7 +11262,7 @@ Boolean CActivityManagerService::IsLockTaskAuthorized(
     if (FAILED(pm->GetPackageUid(pkg, id, &uid)))
         return FALSE;
     Boolean res;
-    return (uid == Binder::GetCallingUid()) && dpm != NULL
+    return (uid == BinderGetCallingUid()) && dpm != NULL
         && (dpm->IsLockTaskPermitted(pkg, &res), res);
 }
 
@@ -10777,14 +11275,14 @@ ECode CActivityManagerService::StartLockTaskMode(
         task->mIntent->GetComponent((IComponentName**)&component);
         component->GetPackageName(&pkg);
     }
-    Boolean isSystemInitiated = Binder::GetCallingUid() == IProcess::SYSTEM_UID;
+    Boolean isSystemInitiated = BinderGetCallingUid() == IProcess::SYSTEM_UID;
     if (!isSystemInitiated && !IsLockTaskAuthorized(pkg)) {
         AutoPtr<Runnable> r = new LockTaskRunnable(task, mLockToAppRequest);
         Boolean res;
         mHandler->Post(r, &res);
         return NOERROR;
     }
-    Int64 ident = Binder::ClearCallingIdentity();
+    Int64 ident = BinderClearCallingIdentity();
     // try {
         synchronized (this) {
             // Since we lost lock on task, make sure it is still there.
@@ -10793,14 +11291,14 @@ ECode CActivityManagerService::StartLockTaskMode(
                 if (!isSystemInitiated && ((mFocusedActivity == NULL)
                     || (task != mFocusedActivity->mTask))) {
                     Slogger::E(TAG, "Invalid task, not in foreground");
-                    Binder::RestoreCallingIdentity(ident);
+                    BinderRestoreCallingIdentity(ident);
                     return E_ILLEGAL_ARGUMENT_EXCEPTION;
                 }
                 mStackSupervisor->SetLockTaskModeLocked(task, !isSystemInitiated);
             }
         }
     // } finally {
-        Binder::RestoreCallingIdentity(ident);
+        BinderRestoreCallingIdentity(ident);
     // }
 }
 
@@ -10808,13 +11306,13 @@ ECode CActivityManagerService::StartLockTaskMode(
     /* [in] */ Int32 taskId)
 {
     AutoPtr<TaskRecord> task;
-    Int64 ident = Binder::ClearCallingIdentity();
+    Int64 ident = BinderClearCallingIdentity();
     // try {
         synchronized (this) {
             task = mStackSupervisor->AnyTaskForIdLocked(taskId);
         }
     // } finally {
-        Binder::RestoreCallingIdentity(ident);
+        BinderRestoreCallingIdentity(ident);
     // }
     if (task != NULL) {
         StartLockTaskMode(task);
@@ -10826,18 +11324,18 @@ ECode CActivityManagerService::StartLockTaskMode(
     /* [in] */ IBinder* token)
 {
     AutoPtr<TaskRecord> task;
-    Int64 ident = Binder::ClearCallingIdentity();
+    Int64 ident = BinderClearCallingIdentity();
     // try {
         synchronized (this) {
             AutoPtr<ActivityRecord> r = ActivityRecord::ForToken(token);
             if (r == NULL) {
-                Binder::RestoreCallingIdentity(ident);
+                BinderRestoreCallingIdentity(ident);
                 return NOERROR;
             }
             task = r->mTask;
         }
     // } finally {
-        Binder::RestoreCallingIdentity(ident);
+        BinderRestoreCallingIdentity(ident);
     // }
     if (task != NULL) {
         StartLockTaskMode(task);
@@ -10862,7 +11360,7 @@ ECode CActivityManagerService::StopLockTaskMode()
     // Verify that the user matches the package of the intent for the TaskRecord
     // we are locked to or systtem.  This will ensure the same caller for startLockTaskMode
     // and stopLockTaskMode.
-    Int32 callingUid = Binder::GetCallingUid();
+    Int32 callingUid = BinderGetCallingUid();
     if (callingUid != IProcess::SYSTEM_UID) {
         AutoPtr<IComponentName> component;
         mStackSupervisor->mLockTaskModeTask->mIntent->GetComponent(
@@ -10887,7 +11385,7 @@ ECode CActivityManagerService::StopLockTaskMode()
             return E_SECURITY_EXCEPTION;
         }
     }
-    Int64 ident = Binder::ClearCallingIdentity();
+    Int64 ident = BinderClearCallingIdentity();
     // try {
         Logger::D(TAG, "stopLockTaskMode");
         // Stop lock task
@@ -10895,7 +11393,7 @@ ECode CActivityManagerService::StopLockTaskMode()
             mStackSupervisor->SetLockTaskModeLocked(NULL, FALSE);
         }
     // } finally {
-        Binder::RestoreCallingIdentity(ident);
+        BinderRestoreCallingIdentity(ident);
     // }
     return NOERROR;
 }
@@ -10904,11 +11402,11 @@ ECode CActivityManagerService::StopLockTaskModeOnCurrent()
 {
     FAIL_RETURN(EnforceCallingPermission(Manifest::permission::MANAGE_ACTIVITY_STACKS,
             String("stopLockTaskModeOnCurrent")));
-    Int64 ident = Binder::ClearCallingIdentity();
+    Int64 ident = BinderClearCallingIdentity();
     // try {
         StopLockTaskMode();
     // } finally {
-        Binder::RestoreCallingIdentity(ident);
+        BinderRestoreCallingIdentity(ident);
     // }
     return NOERROR;
 }
@@ -11010,8 +11508,8 @@ String CActivityManagerService::CheckContentProviderPermissionLocked(
     /* [in] */ Boolean checkUser)
 {
     String nullStr;
-    Int32 callingPid = (r != NULL) ? r->mPid : Binder::GetCallingPid();
-    Int32 callingUid = (r != NULL) ? r->mUid : Binder::GetCallingUid();
+    Int32 callingPid = (r != NULL) ? r->mPid : BinderGetCallingPid();
+    Int32 callingUid = (r != NULL) ? r->mUid : BinderGetCallingUid();
     Boolean checkedGrants = FALSE;
     if (checkUser) {
         // Looking for cross-user grants before enforcing the typical cross-users permissions
@@ -11294,7 +11792,7 @@ ECode CActivityManagerService::GetContentProviderImpl(
                 String callerDes;
                 IBinder::Probe(caller)->ToString(&callerDes);
                 Slogger::E(TAG, "Unable to find app for caller %s (pid=%d) when getting content provider %s",
-                        callerDes.string(), Binder::GetCallingPid(), name.string());
+                        callerDes.string(), BinderGetCallingPid(), name.string());
                 return E_SECURITY_EXCEPTION;
             }
         }
@@ -11357,7 +11855,7 @@ ECode CActivityManagerService::GetContentProviderImpl(
                 return NOERROR;
             }
 
-            const Int64 origId = Binder::ClearCallingIdentity();
+            const Int64 origId = BinderClearCallingIdentity();
 
             CheckTime(startTime, String("getContentProviderImpl: incProviderCountLocked"));
 
@@ -11410,7 +11908,7 @@ ECode CActivityManagerService::GetContentProviderImpl(
                      if (!lastRef) {
                         // This wasn't the last ref our process had on
                         // the provider...  we have now been killed, bail.
-                        Binder::RestoreCallingIdentity(origId);
+                        BinderRestoreCallingIdentity(origId);
                         return NOERROR;
                      }
                      providerRunning = FALSE;
@@ -11418,7 +11916,7 @@ ECode CActivityManagerService::GetContentProviderImpl(
                  }
             }
 
-            Binder::RestoreCallingIdentity(origId);
+            BinderRestoreCallingIdentity(origId);
         }
 
         Boolean singleton;
@@ -11488,7 +11986,7 @@ ECode CActivityManagerService::GetContentProviderImpl(
             CheckTime(startTime, String("getContentProviderImpl: after getProviderByClass"));
             Boolean firstClass = cpr == NULL;
             if (firstClass) {
-                Int64 ident = Binder::ClearCallingIdentity();
+                Int64 ident = BinderClearCallingIdentity();
                 CheckTime(startTime, String("getContentProviderImpl: before getApplicationInfo"));
                 AutoPtr<IApplicationInfo> ai;
                 AppGlobals::GetPackageManager()->GetApplicationInfo(
@@ -11497,12 +11995,12 @@ ECode CActivityManagerService::GetContentProviderImpl(
                 if (ai == NULL) {
                     Slogger::W(TAG, "No package info for content provider %s",
                             cpiName.string());
-                    Binder::RestoreCallingIdentity(ident);
+                    BinderRestoreCallingIdentity(ident);
                     return NOERROR;
                 }
                 ai = GetAppInfoForUser(ai, userId);
                 cpr = new ContentProviderRecord(this, cpi, ai, comp, singleton);
-                Binder::RestoreCallingIdentity(ident);
+                BinderRestoreCallingIdentity(ident);
             }
 
             CheckTime(startTime, String("getContentProviderImpl: now have ContentProviderRecord"));
@@ -11539,7 +12037,7 @@ ECode CActivityManagerService::GetContentProviderImpl(
             // If the provider is not already being launched, then get it
             // started.
             if (it == mLaunchingProviders.End()) {
-                const Int64 origId = Binder::ClearCallingIdentity();
+                const Int64 origId = BinderClearCallingIdentity();
 
                 CheckTime(startTime, String("getContentProviderImpl: before set stopped state"));
                 AppGlobals::GetPackageManager()->SetPackageStoppedState(
@@ -11568,14 +12066,14 @@ ECode CActivityManagerService::GetContentProviderImpl(
                     if (proc == NULL) {
                         Slogger::W(TAG, "Unable to launch app %s/%d for provider %s: process is bad",
                                 cpiAppInfoPkgName.string(), uid, name.string());
-                        Binder::RestoreCallingIdentity(origId);
+                        BinderRestoreCallingIdentity(origId);
                         return NOERROR;
                     }
                 }
 
                 cpr->mLaunchingApp = proc;
                 mLaunchingProviders.PushBack(cpr);
-                Binder::RestoreCallingIdentity(origId);
+                BinderRestoreCallingIdentity(origId);
             }
 
             CheckTime(startTime, String("getContentProviderImpl: updating data structures"));
@@ -11671,9 +12169,9 @@ ECode CActivityManagerService::GetContentProviderExternal(
     VALIDATE_NOT_NULL(providerHolder);
     *providerHolder = NULL;
 
-    FAIL_RETURN(EnforceCallingPermission(Elastos::Droid::Manifest::permission::ACCESS_CONTENT_PROVIDERS_EXTERNALLY,
+    FAIL_RETURN(EnforceCallingPermission(Manifest::permission::ACCESS_CONTENT_PROVIDERS_EXTERNALLY,
             String("Do not have permission in call getContentProviderExternal()")));
-    FAIL_RETURN(HandleIncomingUser(Binder::GetCallingPid(), Binder::GetCallingUid(), userId,
+    FAIL_RETURN(HandleIncomingUser(BinderGetCallingPid(), BinderGetCallingUid(), userId,
             FALSE, ALLOW_FULL_ONLY, String("getContentProvider"), String(NULL), &userId));
     return GetContentProviderExternalUnchecked(name, token, userId, providerHolder);
 }
@@ -11697,7 +12195,7 @@ ECode CActivityManagerService::RemoveContentProvider(
 {
     VALIDATE_NOT_NULL(connection);
     FAIL_RETURN(EnforceNotIsolatedCaller(String("removeContentProvider")));
-    Int64 ident = Binder::ClearCallingIdentity();
+    Int64 ident = BinderClearCallingIdentity();
     {
         AutoLock lock(this);
         AutoPtr<CContentProviderConnection> conn = (CContentProviderConnection*)connection;
@@ -11707,7 +12205,7 @@ ECode CActivityManagerService::RemoveContentProvider(
             Slogger::W(TAG, "removeContentProvider: %s not a CContentProviderConnection",
                     conDes.string());
             //throw new IllegalArgumentException(msg);
-            Binder::RestoreCallingIdentity(ident);
+            BinderRestoreCallingIdentity(ident);
             return E_ILLEGAL_ARGUMENT_EXCEPTION;
         }
 
@@ -11715,7 +12213,7 @@ ECode CActivityManagerService::RemoveContentProvider(
             UpdateOomAdjLocked();
         }
     }
-    Binder::RestoreCallingIdentity(ident);
+    BinderRestoreCallingIdentity(ident);
     return NOERROR;
 }
 
@@ -11723,12 +12221,12 @@ ECode CActivityManagerService::RemoveContentProviderExternal(
     /* [in] */ const String& name,
     /* [in] */ IBinder* token)
 {
-    FAIL_RETURN(EnforceCallingPermission(Elastos::Droid::Manifest::permission::ACCESS_CONTENT_PROVIDERS_EXTERNALLY,
+    FAIL_RETURN(EnforceCallingPermission(Manifest::permission::ACCESS_CONTENT_PROVIDERS_EXTERNALLY,
            String("Do not have permission in call removeContentProviderExternal()")));
     Int32 userId = UserHandleGetCallingUserId();
-    Int64 ident = Binder::ClearCallingIdentity();
+    Int64 ident = BinderClearCallingIdentity();
     ECode ec = RemoveContentProviderExternalUnchecked(name, token, userId);
-    Binder::RestoreCallingIdentity(ident);
+    BinderRestoreCallingIdentity(ident);
     return ec;
 }
 
@@ -11795,11 +12293,11 @@ ECode CActivityManagerService::PublishContentProviders(
         String callerDes;
         IBinder::Probe(caller)->ToString(&callerDes);
         Slogger::W(TAG, "Unable to find app for caller %s (pid=%d) when publishing content providers",
-                callerDes.string(), Binder::GetCallingPid());
+                callerDes.string(), BinderGetCallingPid());
         return E_SECURITY_EXCEPTION;
     }
 
-    const Int64 origId = Binder::ClearCallingIdentity();
+    const Int64 origId = BinderClearCallingIdentity();
     // for dst->Notify();
     AutoPtr<IThread> thread;
     Thread::Attach((IThread**)&thread);
@@ -11863,7 +12361,7 @@ ECode CActivityManagerService::PublishContentProviders(
         }
     }
 
-    Binder::RestoreCallingIdentity(origId);
+    BinderRestoreCallingIdentity(origId);
     return NOERROR;
 }
 
@@ -11954,7 +12452,7 @@ ECode CActivityManagerService::UnstableProviderDied(
 //         // Er, no, still looks good to us.
 //         {
 //             AutoLock lock(this);
-//             Slogger::W(TAG, "unstableProviderDied: caller %d says %p died, but we don't agree", Binder::GetCallingUid(),
+//             Slogger::W(TAG, "unstableProviderDied: caller %d says %p died, but we don't agree", BinderGetCallingUid(),
 //                     conn.Get());
 //             return NOERROR;
 //         }
@@ -11976,11 +12474,11 @@ ECode CActivityManagerService::UnstableProviderDied(
     // As far as we're concerned, this is just like receiving a
     // death notification...  just a bit prematurely.
     Slogger::I(TAG, "Process %s (pid %d) early provider death", proc->mProcessName.string(), proc->mPid);
-    const Int64 ident = Binder::ClearCallingIdentity();
+    const Int64 ident = BinderClearCallingIdentity();
     // try {
     AppDiedLocked(proc);
     // } finally {
-    Binder::RestoreCallingIdentity(ident);
+    BinderRestoreCallingIdentity(ident);
     // }
     return NOERROR;
 }
@@ -12003,9 +12501,9 @@ ECode CActivityManagerService::AppNotRespondingViaProvider(
         return NOERROR;
     }
 
-    Int64 token = Binder::ClearCallingIdentity();
+    Int64 token = BinderClearCallingIdentity();
     AppNotResponding(host, NULL, NULL, FALSE, String("ContentProvider not responding"));
-    Binder::RestoreCallingIdentity(token);
+    BinderRestoreCallingIdentity(token);
     return NOERROR;
 }
 
@@ -12071,14 +12569,14 @@ ECode CActivityManagerService::GetProviderMimeType(
     FAIL_RETURN(EnforceNotIsolatedCaller(funcName));
     String name;
     uri->GetAuthority(&name);
-    Int32 callingUid = Binder::GetCallingUid();
-    Int32 callingPid = Binder::GetCallingPid();
+    Int32 callingUid = BinderGetCallingUid();
+    Int32 callingPid = BinderGetCallingPid();
     Int64 ident = 0;
     Boolean clearedIdentity = FALSE;
     userId = UnsafeConvertIncomingUser(userId);
     if (CanClearIdentity(callingPid, callingUid, userId)) {
         clearedIdentity = TRUE;
-        ident = Binder::ClearCallingIdentity();
+        ident = BinderClearCallingIdentity();
     }
     AutoPtr<IContentProviderHolder> holder;
 
@@ -12089,10 +12587,10 @@ ECode CActivityManagerService::GetProviderMimeType(
             holder->GetContentProvider((IIContentProvider**)&provider);
             provider->GetType(uri, type);
             if (!clearedIdentity) {
-                ident = Binder::ClearCallingIdentity();
+                ident = BinderClearCallingIdentity();
             }
             RemoveContentProviderExternalUnchecked(name, NULL, userId);
-            Binder::RestoreCallingIdentity(ident);
+            BinderRestoreCallingIdentity(ident);
             return NOERROR;
         }
     }
@@ -12104,14 +12602,14 @@ ECode CActivityManagerService::GetProviderMimeType(
 
     // We need to clear the identity to call removeContentProviderExternalUnchecked
     if (!clearedIdentity) {
-        ident = Binder::ClearCallingIdentity();
+        ident = BinderClearCallingIdentity();
     }
 
     if (holder != NULL) {
         RemoveContentProviderExternalUnchecked(name, NULL, userId);
     }
 
-    Binder::RestoreCallingIdentity(ident);
+    BinderRestoreCallingIdentity(ident);
     *type = NULL;
     return NOERROR;
 }
@@ -12257,13 +12755,13 @@ AutoPtr<ProcessRecord> CActivityManagerService::AddAppLocked(
 
 ECode CActivityManagerService::UnhandledBack()
 {
-    FAIL_RETURN(EnforceCallingPermission(Elastos::Droid::Manifest::permission::FORCE_BACK,
+    FAIL_RETURN(EnforceCallingPermission(Manifest::permission::FORCE_BACK,
            String("unhandledBack()")));
 
     AutoLock lock(this);
-    const Int64 origId = Binder::ClearCallingIdentity();
+    const Int64 origId = BinderClearCallingIdentity();
     GetFocusedStack()->UnhandledBackLocked();
-    Binder::RestoreCallingIdentity(origId);
+    BinderRestoreCallingIdentity(origId);
     return NOERROR;
 }
 
@@ -12291,7 +12789,7 @@ ECode CActivityManagerService::OpenContentUri(
         // the request.
         Identity* oldIdentity = (Identity*)pthread_getspecific(sCallerIdentity);
         if (oldIdentity != NULL) oldIdentity->Release();
-        AutoPtr<Identity> identity = new Identity(Binder::GetCallingPid(), Binder::GetCallingUid());
+        AutoPtr<Identity> identity = new Identity(BinderGetCallingPid(), BinderGetCallingUid());
         pthread_setspecific(sCallerIdentity, identity.Get());
         identity->AddRef();
 //        try {
@@ -12386,10 +12884,10 @@ ECode CActivityManagerService::Shutdown(
 {
     VALIDATE_NOT_NULL(result);
 
-    if (CheckCallingPermission(Elastos::Droid::Manifest::permission::SHUTDOWN)
+    if (CheckCallingPermission(Manifest::permission::SHUTDOWN)
           != IPackageManager::PERMISSION_GRANTED) {
         // throw new SecurityException("Requires permission "
-        //         + Elastos::Droid::Manifest::permission::SHUTDOWN);
+        //         + Manifest::permission::SHUTDOWN);
         return E_SECURITY_EXCEPTION;
     }
 
@@ -12425,7 +12923,7 @@ ECode CActivityManagerService::ActivitySlept(
         Slogger::V(TAG, "Activity slept: token= %s", info.string());
     }
 
-    const Int64 origId = Binder::ClearCallingIdentity();
+    const Int64 origId = BinderClearCallingIdentity();
 
     {
         AutoLock lock(this);
@@ -12435,7 +12933,7 @@ ECode CActivityManagerService::ActivitySlept(
         }
     }
 
-    Binder::RestoreCallingIdentity(origId);
+    BinderRestoreCallingIdentity(origId);
     return NOERROR;
 }
 
@@ -12491,15 +12989,15 @@ ECode CActivityManagerService::UpdateEventDispatchingLocked()
 ECode CActivityManagerService::SetLockScreenShown(
     /* [in] */ Boolean shown)
 {
-    if (CheckCallingPermission(Elastos::Droid::Manifest::permission::DEVICE_POWER)
+    if (CheckCallingPermission(Manifest::permission::DEVICE_POWER)
             != IPackageManager::PERMISSION_GRANTED) {
         // throw new SecurityException("Requires permission "
-        //         + Elastos::Droid::Manifest::permission::DEVICE_POWER);
+        //         + Manifest::permission::DEVICE_POWER);
         return E_SECURITY_EXCEPTION;
     }
 
     AutoLock lock(this);
-    Int64 ident = Binder::ClearCallingIdentity();
+    Int64 ident = BinderClearCallingIdentity();
     if (DEBUG_LOCKSCREEN) {
         StringBuilder sb("shown=");
         sb += shown;
@@ -12507,16 +13005,16 @@ ECode CActivityManagerService::SetLockScreenShown(
     }
     mLockScreenShown = shown;
     ComeOutOfSleepIfNeededLocked();
-    Binder::RestoreCallingIdentity(ident);
+    BinderRestoreCallingIdentity(ident);
     return NOERROR;
 }
 
 ECode CActivityManagerService::StopAppSwitches()
 {
-    if (CheckCallingPermission(Elastos::Droid::Manifest::permission::STOP_APP_SWITCHES)
+    if (CheckCallingPermission(Manifest::permission::STOP_APP_SWITCHES)
            != IPackageManager::PERMISSION_GRANTED) {
         // throw new SecurityException("Requires permission "
-        //         + Elastos::Droid::Manifest::permission::STOP_APP_SWITCHES);
+        //         + Manifest::permission::STOP_APP_SWITCHES);
         return E_SECURITY_EXCEPTION;
     }
 
@@ -12532,10 +13030,10 @@ ECode CActivityManagerService::StopAppSwitches()
 
 ECode CActivityManagerService::ResumeAppSwitches()
 {
-    if (CheckCallingPermission(Elastos::Droid::Manifest::permission::STOP_APP_SWITCHES)
+    if (CheckCallingPermission(Manifest::permission::STOP_APP_SWITCHES)
           != IPackageManager::PERMISSION_GRANTED) {
         // throw new SecurityException("Requires permission "
-        //        + Elastos::Droid::Manifest::permission::STOP_APP_SWITCHES);
+        //        + Manifest::permission::STOP_APP_SWITCHES);
         return E_SECURITY_EXCEPTION;
     }
 
@@ -12559,7 +13057,7 @@ Boolean CActivityManagerService::CheckAppSwitchAllowedLocked(
     }
 
     Int32 perm = CheckComponentPermission(
-            Elastos::Droid::Manifest::permission::STOP_APP_SWITCHES, sourcePid, sourceUid, -1, TRUE);
+            Manifest::permission::STOP_APP_SWITCHES, sourcePid, sourceUid, -1, TRUE);
     if (perm == IPackageManager::PERMISSION_GRANTED) {
         return TRUE;
     }
@@ -12584,10 +13082,10 @@ ECode CActivityManagerService::SetDebugApp(
     /* [in] */ Boolean waitForDebugger,
     /* [in] */ Boolean persistent)
 {
-    FAIL_RETURN(EnforceCallingPermission(Elastos::Droid::Manifest::permission::SET_DEBUG_APP,
+    FAIL_RETURN(EnforceCallingPermission(Manifest::permission::SET_DEBUG_APP,
            String("setDebugApp()")));
 
-    Int64 ident = Binder::ClearCallingIdentity();
+    Int64 ident = BinderClearCallingIdentity();
     // Note that this is not really thread safe if there are multiple
     // callers into it at the same time, but that's not a situation we
     // care about.
@@ -12617,7 +13115,7 @@ ECode CActivityManagerService::SetDebugApp(
         ForceStopPackageLocked(packageName, -1, FALSE, FALSE, TRUE, TRUE,
             FALSE, IUserHandle::USER_ALL, String("set debug app"));
     }
-    Binder::RestoreCallingIdentity(ident);
+    BinderRestoreCallingIdentity(ident);
     return NOERROR;
 }
 
@@ -12630,7 +13128,7 @@ ECode CActivityManagerService::SetOpenGlTraceApp(
     CSystemProperties::AcquireSingleton((ISystemProperties**)&sysProp);
     String value;
     sysProp->Get(SYSTEM_DEBUGGABLE, String("0"), &value);
-    Boolean isDebuggable = CString("1").Equals(value);
+    Boolean isDebuggable = value.Equals("1");
     if (!isDebuggable) {
         Int32 flags;
         app->GetFlags(&flags);
@@ -12654,7 +13152,7 @@ ECode CActivityManagerService::SetProfileApp(
     CSystemProperties::AcquireSingleton((ISystemProperties**)&sysProp);
     String value;
     sysProp->Get(SYSTEM_DEBUGGABLE, String("0"), &value);
-    Boolean isDebuggable = CString("1").Equals(value);
+    Boolean isDebuggable = value.Equals("1");
     if (!isDebuggable) {
         Int32 flags;
         app->GetFlags(&flags);
@@ -12682,7 +13180,7 @@ ECode CActivityManagerService::SetProfileApp(
 ECode CActivityManagerService::SetAlwaysFinish(
     /* [in] */ Boolean enabled)
 {
-    FAIL_RETURN(EnforceCallingPermission(Elastos::Droid::Manifest::permission::SET_ALWAYS_FINISH,
+    FAIL_RETURN(EnforceCallingPermission(Manifest::permission::SET_ALWAYS_FINISH,
         String("setAlwaysFinish()")));
 
     AutoPtr<ISettingsGlobal> settingsGlobal;
@@ -12702,7 +13200,7 @@ ECode CActivityManagerService::SetAlwaysFinish(
 ECode CActivityManagerService::SetActivityController(
     /* [in] */ IIActivityController* controller)
 {
-    FAIL_RETURN(EnforceCallingPermission(Elastos::Droid::Manifest::permission::SET_ACTIVITY_WATCHER,
+    FAIL_RETURN(EnforceCallingPermission(Manifest::permission::SET_ACTIVITY_WATCHER,
             String("SetActivityController()")));
 
     AutoLock lock(this);
@@ -12781,10 +13279,10 @@ ECode CActivityManagerService::InputDispatchingTimedOut(
 {
     VALIDATE_NOT_NULL(timeout);
 
-    if (CheckCallingPermission(Elastos::Droid::Manifest::permission::FILTER_EVENTS)
+    if (CheckCallingPermission(Manifest::permission::FILTER_EVENTS)
             != IPackageManager::PERMISSION_GRANTED) {
         // throw new SecurityException("Requires permission "
-        //         + Elastos::Droid::Manifest::permission::FILTER_EVENTS);
+        //         + Manifest::permission::FILTER_EVENTS);
         return E_SECURITY_EXCEPTION;
     }
 
@@ -12814,10 +13312,10 @@ ECode CActivityManagerService::InputDispatchingTimedOut(
     /* [in] */ Boolean aboveSystem,
     /* [in] */ const String& reason)
 {
-    if (CheckCallingPermission(Elastos::Droid::Manifest::permission::FILTER_EVENTS)
+    if (CheckCallingPermission(Manifest::permission::FILTER_EVENTS)
             != IPackageManager::PERMISSION_GRANTED) {
         // throw new SecurityException("Requires permission "
-        //         + Elastos::Droid::Manifest::permission::FILTER_EVENTS);
+        //         + Manifest::permission::FILTER_EVENTS);
         return E_SECURITY_EXCEPTION;
     }
 
@@ -12909,7 +13407,7 @@ AutoPtr<CPendingAssistExtras> CActivityManagerService::EnqueueAssistContext(
             Slogger::W(TAG, "getAssistContextExtras failed: no process for %s", ToChars(activity));
             return NULL;
         }
-        if (activity->mApp->mPid == Binder::GetCallingPid()) {
+        if (activity->mApp->mPid == BinderGetCallingPid()) {
             Slogger::W(TAG, "getAssistContextExtras failed: request process same as %s", ToChars(activity));
             return NULL;
         }
@@ -12986,7 +13484,7 @@ ECode CActivityManagerService::LaunchAssistIntent(
 ECode CActivityManagerService::RegisterProcessObserver(
     /* [in] */ IProcessObserver* observer)
 {
-    FAIL_RETURN(EnforceCallingPermission(Elastos::Droid::Manifest::permission::SET_ACTIVITY_WATCHER,
+    FAIL_RETURN(EnforceCallingPermission(Manifest::permission::SET_ACTIVITY_WATCHER,
             String("registerProcessObserver()")));
     AutoLock lock(this);
     Boolean registed;
@@ -13008,12 +13506,12 @@ ECode CActivityManagerService::ConvertFromTranslucent(
     /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result);
-    Int64 origId = Binder::ClearCallingIdentity();
+    Int64 origId = BinderClearCallingIdentity();
     synchronized (this) {
         AutoPtr<ActivityRecord> r = ActivityRecord::IsInStackLocked(token);
         if (r == NULL) {
             *result = FALSE;
-            Binder::RestoreCallingIdentity(origId);
+            BinderRestoreCallingIdentity(origId);
             return NOERROR;
         }
         Boolean translucentChanged = r->ChangeWindowTranslucency(TRUE);
@@ -13024,7 +13522,7 @@ ECode CActivityManagerService::ConvertFromTranslucent(
         mWindowManager->SetAppFullscreen(token, TRUE);
         *result = translucentChanged;
     }
-    Binder::RestoreCallingIdentity(origId);
+    BinderRestoreCallingIdentity(origId);
     return NOERROR;
 }
 
@@ -13034,12 +13532,12 @@ ECode CActivityManagerService::ConvertToTranslucent(
     /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result);
-    Int64 origId = Binder::ClearCallingIdentity();
+    Int64 origId = BinderClearCallingIdentity();
     synchronized (this) {
         AutoPtr<ActivityRecord> r = ActivityRecord::IsInStackLocked(token);
         if (r == NULL) {
             *result = FALSE;
-            Binder::RestoreCallingIdentity(origId);
+            BinderRestoreCallingIdentity(origId);
             return NOERROR;
         }
         List<AutoPtr<ActivityRecord> >::ReverseIterator rit = r->mTask->mActivities.RBegin();
@@ -13060,7 +13558,7 @@ ECode CActivityManagerService::ConvertToTranslucent(
         mWindowManager->SetAppFullscreen(token, FALSE);
         *result = translucentChanged;
     }
-    Binder::RestoreCallingIdentity(origId);
+    BinderRestoreCallingIdentity(origId);
     return NOERROR;
 }
 
@@ -13070,17 +13568,17 @@ ECode CActivityManagerService::RequestVisibleBehind(
     /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result);
-    Int64 origId = Binder::ClearCallingIdentity();
+    Int64 origId = BinderClearCallingIdentity();
     synchronized (this) {
         AutoPtr<ActivityRecord> r = ActivityRecord::IsInStackLocked(token);
         if (r != NULL) {
             *result = mStackSupervisor->RequestVisibleBehindLocked(r, visible);
-            Binder::RestoreCallingIdentity(origId);
+            BinderRestoreCallingIdentity(origId);
             return NOERROR;
         }
     }
     *result = FALSE;
-    Binder::RestoreCallingIdentity(origId);
+    BinderRestoreCallingIdentity(origId);
     return NOERROR;
 }
 
@@ -13089,7 +13587,7 @@ ECode CActivityManagerService::IsBackgroundVisibleBehind(
     /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result);
-    Int64 origId = Binder::ClearCallingIdentity();
+    Int64 origId = BinderClearCallingIdentity();
     synchronized (this) {
         AutoPtr<ActivityStack> stack = ActivityRecord::GetStackLocked(token);
         Boolean visible = stack == NULL ? FALSE : stack->HasVisibleBehindActivity();
@@ -13098,7 +13596,7 @@ ECode CActivityManagerService::IsBackgroundVisibleBehind(
                 ToChars(stack), visible);
         *result = visible;
     }
-    Binder::RestoreCallingIdentity(origId);
+    BinderRestoreCallingIdentity(origId);
     return NOERROR;
 }
 
@@ -13107,7 +13605,7 @@ ECode CActivityManagerService::GetActivityOptions(
     /* [out] */ IActivityOptions** options)
 {
     VALIDATE_NOT_NULL(options);
-    Int64 origId = Binder::ClearCallingIdentity();
+    Int64 origId = BinderClearCallingIdentity();
     synchronized (this) {
         AutoPtr<ActivityRecord> r = ActivityRecord::IsInStackLocked(token);
         if (r != NULL) {
@@ -13118,7 +13616,7 @@ ECode CActivityManagerService::GetActivityOptions(
         else
             *options = NULL;
     }
-    Binder::RestoreCallingIdentity(origId);
+    BinderRestoreCallingIdentity(origId);
     return NOERROR;
 }
 
@@ -13249,7 +13747,7 @@ ECode CActivityManagerService::NoteWakeupAlarm(
         if (mBatteryStatsService->IsOnBattery()) {
             mBatteryStatsService->EnforceCallingPermission();
             AutoPtr<CPendingIntentRecord> rec = (CPendingIntentRecord*)sender;
-            Int32 MY_UID = Binder::GetCallingUid();
+            Int32 MY_UID = BinderGetCallingUid();
             Int32 uid = rec->mUid == MY_UID ? IProcess::SYSTEM_UID : rec->mUid;
             AutoPtr<IBatteryStatsUidPkg> pkg;
             stats->GetPackageStatsLocked(sourceUid >= 0 ? sourceUid : uid,
@@ -13269,7 +13767,7 @@ ECode CActivityManagerService::KillPids(
 {
     VALIDATE_NOT_NULL(result);
 
-    if (Binder::GetCallingUid() != IProcess::SYSTEM_UID) {
+    if (BinderGetCallingUid() != IProcess::SYSTEM_UID) {
         // throw new SecurityException("killPids only available to the system");
         return E_SECURITY_EXCEPTION;
     }
@@ -13336,7 +13834,7 @@ ECode CActivityManagerService::KillUid(
     /* [in] */ Int32 uid,
     /* [in] */ const String& reason)
 {
-    if (Binder::GetCallingUid() != IProcess::SYSTEM_UID) {
+    if (BinderGetCallingUid() != IProcess::SYSTEM_UID) {
         Slogger::E(TAG, "killUid only available to the system");
         return E_SECURITY_EXCEPTION;
     }
@@ -13354,7 +13852,7 @@ ECode CActivityManagerService::KillProcessesBelowForeground(
 {
     VALIDATE_NOT_NULL(killed);
 
-    if (Binder::GetCallingUid() != IProcess::SYSTEM_UID) {
+    if (BinderGetCallingUid() != IProcess::SYSTEM_UID) {
         Slogger::E(TAG, "killProcessesBelowForeground() only available to system");
         return E_SECURITY_EXCEPTION;
     }
@@ -13366,7 +13864,7 @@ Boolean CActivityManagerService::KillProcessesBelowAdj(
     /* [in] */ Int32 belowAdj,
     /* [in] */ const String& reason)
 {
-    if (Binder::GetCallingUid() != IProcess::SYSTEM_UID) {
+    if (BinderGetCallingUid() != IProcess::SYSTEM_UID) {
         Slogger::E(TAG, "killProcessesBelowAdj() only available to system");
         return E_SECURITY_EXCEPTION;
     }
@@ -13402,7 +13900,7 @@ ECode CActivityManagerService::Hang(
 
     AutoPtr<IProxyDeathRecipient> death = new HangWhoDeathRecipient();
 
-    AutoPtr<IProxy> proxy = (IProxy*)who->Probe(EIID_IProxy);
+    AutoPtr<::IProxy> proxy = (::IProxy*)who->Probe(EIID_IProxy);
     if (proxy == NULL || FAILED(proxy->LinkToDeath(death, 0))) {
         Slogger::W(TAG, "hang: given caller IBinder is already dead.");
         return NOERROR;
@@ -13410,7 +13908,7 @@ ECode CActivityManagerService::Hang(
 
     synchronized (this) {
         Watchdog::GetInstance()->SetAllowRestart(allowRestart);
-        Slogger::I(TAG, "Hanging system process at request of pid %s", Binder::GetCallingPid());
+        Slogger::I(TAG, "Hanging system process at request of pid %s", BinderGetCallingPid());
         synchronized (death) {
             Boolean alive;
             while (proxy->IsStubAlive(&alive), alive) {
@@ -13986,7 +14484,7 @@ ECode CActivityManagerService::SystemReady(
         // } catch (RemoteException e) {
         // }
 
-        Int64 ident = Binder::ClearCallingIdentity();
+        Int64 ident = BinderClearCallingIdentity();
         // try {
         AutoPtr<IIntent> intent;
         CIntent::New(IIntent::ACTION_USER_STARTED, (IIntent**)&intent);
@@ -14007,13 +14505,13 @@ ECode CActivityManagerService::SystemReady(
         AutoPtr<IIntentReceiver> receiver = new SystemBroadcastReceiver();
         BroadcastIntentLocked(NULL, String(NULL), newIntent,
                 String(NULL), receiver, 0, String(NULL), NULL,
-                Elastos::Droid::Manifest::permission::INTERACT_ACROSS_USERS, IAppOpsManager::OP_NONE,
+                Manifest::permission::INTERACT_ACROSS_USERS, IAppOpsManager::OP_NONE,
                 TRUE, FALSE, MY_PID, IProcess::SYSTEM_UID, IUserHandle::USER_ALL, &result);
         // catch (Throwable t) {
         //     Slog.wtf(TAG, "Failed sending first user broadcasts", t);
         // }
         // } finally {
-        Binder::RestoreCallingIdentity(ident);
+        BinderRestoreCallingIdentity(ident);
         // }
         mStackSupervisor->ResumeTopActivitiesLocked();
         SendUserSwitchBroadcastsLocked(-1, mCurrentUserId);
@@ -14055,7 +14553,7 @@ ECode CActivityManagerService::MakeAppNotRespondingLocked(
 // *
 // * @param app The ProcessRecord in which the error occurred.
 // * @param condition Crashing, Application Not Responding, etc.  Values are defined in
-// *                      ActivityManager.AppErrorStateInfo
+// *                      IActivityManager::AppErrorStateInfo
 // * @param activity The activity associated with the crash, if known.
 // * @param shortMsg Short message describing the crash.
 // * @param longMsg Long message describing the crash.
@@ -14280,8 +14778,8 @@ ECode CActivityManagerService::HandleApplicationCrashInner(
     /* [in] */ const String& processName,
     /* [in] */ IApplicationErrorReportCrashInfo* crashInfo)
 {
-//     EventLog.writeEvent(EventLogTags.AM_CRASH, Binder::GetCallingPid(),
-//             UserHandleGetUserId(Binder::GetCallingUid()), processName,
+//     EventLog.writeEvent(EventLogTags.AM_CRASH, BinderGetCallingPid(),
+//             UserHandleGetUserId(BinderGetCallingUid()), processName,
 //             r == null ? -1 : r.info.flags,
 //             crashInfo.exceptionClassName,
 //             crashInfo.exceptionMessage,
@@ -14334,7 +14832,7 @@ ECode CActivityManagerService::HandleApplicationStrictModeViolation(
         AutoPtr<AppErrorResult> result = new AppErrorResult();
         {
             AutoLock lock(this);
-            const Int64 origId = Binder::ClearCallingIdentity();
+            const Int64 origId = BinderClearCallingIdentity();
 
             AutoPtr<IInteger32> imask;
             CInteger32::New(violationMask, (IInteger32**)&imask);
@@ -14351,7 +14849,7 @@ ECode CActivityManagerService::HandleApplicationStrictModeViolation(
             Boolean bval;
             mHandler->SendMessage(msg, &bval);
 
-            Binder::RestoreCallingIdentity(origId);
+            BinderRestoreCallingIdentity(origId);
         }
 
         Int32 res = result->GetResult();
@@ -14501,8 +14999,8 @@ ECode CActivityManagerService::HandleApplicationWtf(
     /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result);
-    Int32 callingUid = Binder::GetCallingUid();
-    Int32 callingPid = Binder::GetCallingPid();
+    Int32 callingUid = BinderGetCallingUid();
+    Int32 callingPid = BinderGetCallingPid();
 
     if (system) {
         // If this is coming from the system, we could very well have low-level
@@ -14581,8 +15079,8 @@ AutoPtr<ProcessRecord> CActivityManagerService::FindAppProcess(
             }
         }
 
-        Slogger::W(TAG, "Can't find mystery application for %s from pid=%d uid=%d: %p", reason.string(), Binder::GetCallingPid(),
-                Binder::GetCallingUid(), app);
+        Slogger::W(TAG, "Can't find mystery application for %s from pid=%d uid=%d: %p", reason.string(), BinderGetCallingPid(),
+                BinderGetCallingUid(), app);
        return NULL;
     }
 }
@@ -14760,12 +15258,12 @@ ECode  CActivityManagerService::CrashApplication(
         AutoLock lock(this);
         if (mController != NULL) {
             String name = r != NULL ? r->mProcessName : String(NULL);
-            Int32 pid = r != NULL ? r->mPid : Binder::GetCallingPid();
+            Int32 pid = r != NULL ? r->mPid : BinderGetCallingPid();
             Int32 uid;
             if (r != NULL)
                 r->mInfo->GetUid(&uid);
             else
-                uid = Binder::GetCallingUid();
+                uid = BinderGetCallingUid();
             Boolean crashed;
             if (FAILED(mController->AppCrashed(name, pid,
                     shortMsg, longMsg, timeMillis, stackTrace, &crashed))) {
@@ -14800,7 +15298,7 @@ ECode  CActivityManagerService::CrashApplication(
             }
         }
 
-        const Int64 origId = Binder::ClearCallingIdentity();
+        const Int64 origId = BinderClearCallingIdentity();
 
         // If this process is running instrumentation, finish it.
         if (r != NULL && r->mInstrumentationClass != NULL) {
@@ -14812,14 +15310,14 @@ ECode  CActivityManagerService::CrashApplication(
             info->PutString(String("shortMsg"), shortMsg);
             info->PutString(String("longMsg"), longMsg);
             FinishInstrumentationLocked(r, IActivity::RESULT_CANCELED, info);
-            Binder::RestoreCallingIdentity(origId);
+            BinderRestoreCallingIdentity(origId);
             return NOERROR;
         }
 
         // If we can't identify the process or it's already exceeded its crash quota,
         // quit right away without showing a crash dialog.
         if (r == NULL || !MakeAppCrashingLocked(r, shortMsg, longMsg, stackTrace)) {
-            Binder::RestoreCallingIdentity(origId);
+            BinderRestoreCallingIdentity(origId);
             return NOERROR;
         }
 
@@ -14832,7 +15330,7 @@ ECode  CActivityManagerService::CrashApplication(
         Boolean bval;
         mHandler->SendMessage(msg, &bval);
 
-        Binder::RestoreCallingIdentity(origId);
+        BinderRestoreCallingIdentity(origId);
     }
 
     Int32 res = result->GetResult();
@@ -14947,10 +15445,10 @@ ECode CActivityManagerService::GetProcessesInErrorState(
     CActivityManagerHelper::AcquireSingleton((IActivityManagerHelper**)&helper);
     Int32 permission;
     helper->CheckUidPermission(
-           Elastos::Droid::Manifest::permission::INTERACT_ACROSS_USERS_FULL,
-           Binder::GetCallingUid(), &permission);
+           Manifest::permission::INTERACT_ACROSS_USERS_FULL,
+           BinderGetCallingUid(), &permission);
     const Boolean allUsers = permission == IPackageManager::PERMISSION_GRANTED;
-    Int32 userId = UserHandleGetUserId(Binder::GetCallingUid());
+    Int32 userId = UserHandleGetUserId(BinderGetCallingUid());
 
     {
         AutoLock lock(this);
@@ -15027,22 +15525,24 @@ ECode CActivityManagerService::FillInProcMemInfo(
         outInfo->SetFlags(flag | IActivityManagerRunningAppProcessInfo::FLAG_PERSISTENT);
     }
 
-    if (app->mHasActivities) {
+    if (app->mActivities.GetSize() > 0) {
         outInfo->GetFlags(&flag);
         outInfo->SetFlags(flag | IActivityManagerRunningAppProcessInfo::FLAG_HAS_ACTIVITIES);
     }
 
     outInfo->SetLastTrimLevel(app->mTrimMemoryLevel);
     Int32 adj = app->mCurAdj;
+    Int32 procState = app->mCurProcState;
 
-    outInfo->SetImportance(OomAdjToImportance(adj, outInfo));
+    outInfo->SetImportance(ProcStateToImportance(procState, adj, outInfo));
     outInfo->SetImportanceReasonCode(app->mAdjTypeCode);
+    outInfo->SetProcessState(app->mCurProcState);
 
     return NOERROR;
 }
 
 ECode CActivityManagerService::GetRunningAppProcesses(
-    /* [out] */ IObjectContainer** appProcs)
+    /* [out] */ IList** appProcs)
 {
     VALIDATE_NOT_NULL(appProcs);
 
@@ -15050,15 +15550,13 @@ ECode CActivityManagerService::GetRunningAppProcesses(
     FAIL_RETURN(EnforceNotIsolatedCaller(String("getRunningAppProcesses")));
 
     // Lazy instantiation of lists
-    AutoPtr<IObjectContainer> runList;
-
     AutoPtr<IActivityManagerHelper> helper;
     CActivityManagerHelper::AcquireSingleton((IActivityManagerHelper**)&helper);
     Int32 permission;
-    FAIL_RETURN(helper->CheckUidPermission(Elastos::Droid::Manifest::permission::INTERACT_ACROSS_USERS_FULL,
-            Binder::GetCallingUid(), &permission));
+    FAIL_RETURN(helper->CheckUidPermission(Manifest::permission::INTERACT_ACROSS_USERS_FULL,
+            BinderGetCallingUid(), &permission));
     Boolean allUsers = permission == IPackageManager::PERMISSION_GRANTED;
-    Int32 userId = UserHandleGetUserId(Binder::GetCallingUid());
+    Int32 userId = UserHandleGetUserId(BinderGetCallingUid());
     {
         AutoLock lock(this);
         // Iterate across all processes
@@ -15078,8 +15576,13 @@ ECode CActivityManagerService::GetRunningAppProcesses(
                     if (IProcessRecord::Probe(app->mAdjSource) != NULL) {
                         ProcessRecord* pr = (ProcessRecord*)IProcessRecord::Probe(app->mAdjSource);
                         currApp->SetImportanceReasonPid(pr->mPid);
-                        currApp->SetImportanceReasonImportance(OomAdjToImportance(
-                                    app->mAdjSourceOom, NULL));
+                        Int32 imp;
+                        assert(0);
+                        // AutoPtr<IActivityManagerRunningAppProcessInfoHelper> amrapHelper;
+                        // CActivityManagerRunningAppProcessInfoHelper::AcquireSingleton((
+                        //     IActivityManagerRunningAppProcessInfo**)&amrapHelper);
+                        // amrapHelper->ProcStateToImportance(app->mAdjSourceProcState, &imp);
+                        currApp->SetImportanceReasonImportance(imp);
                     }
                     else if (IActivityRecord::Probe(app->mAdjSource) != NULL) {
                         ActivityRecord* r = (ActivityRecord*)IActivityRecord::Probe(app->mAdjSource);
@@ -15091,38 +15594,33 @@ ECode CActivityManagerService::GetRunningAppProcesses(
                 }
                 //Slogger::v(TAG, "Proc " + app->processName + ": imp=" + currApp.importance
                 //        + " lru=" + currApp.lru);
-                if (runList == NULL) {
-                     FAIL_RETURN(CParcelableObjectContainer::New((IObjectContainer**)&runList));
+                if (*appProcs == NULL) {
+                     FAIL_RETURN(CArrayList::New(&appProcs));
                 }
-                runList->Add(currApp);
+                appProcs->Add(currApp);
             }
         }
     }
-    *appProcs = runList;
-    REFCOUNT_ADD(*appProcs);
     return NOERROR;
 }
 
 ECode CActivityManagerService::GetRunningExternalApplications(
-    /* [out] */ IObjectContainer** apps)
+    /* [out] */ IList** apps)
 {
     VALIDATE_NOT_NULL(apps);
     *apps = NULL;
 
     FAIL_RETURN(EnforceNotIsolatedCaller(String("getRunningExternalApplications")));
-    AutoPtr<IObjectContainer> runningApps;
-    GetRunningAppProcesses((IObjectContainer**)&runningApps);
-    AutoPtr<IObjectContainer> retList;
-    CParcelableObjectContainer::New((IObjectContainer**)&retList);
+    AutoPtr<IList> runningApps;
+    GetRunningAppProcesses((IList**)&runningApps);
+    CArrayList::New(apps);
     Int32 appsCount;
-    if (runningApps != NULL && (runningApps->GetObjectCount(&appsCount), appsCount > 0)) {
+    runningApps->GetSize(appsCount);
+    if (runningApps != NULL && appsCount > 0) {
         HashSet<String> extList;
-        AutoPtr<IObjectEnumerator> appsEnumerator;
-        runningApps->GetObjectEnumerator((IObjectEnumerator**)&appsEnumerator);
-        Boolean hasNext = FALSE;
-        while (appsEnumerator->MoveNext(&hasNext), hasNext) {
+        for (Int32 i = 0; i < appsCount; i++) {
             AutoPtr<IInterface> obj;
-            appsEnumerator->Current((IInterface**)&obj);
+            runningApps->Get((i, IInterface**)&obj);
             AutoPtr<IActivityManagerRunningAppProcessInfo> app = IActivityManagerRunningAppProcessInfo::Probe(obj);
             AutoPtr<ArrayOf<String> > appPkgList;
             app->GetPkgList((ArrayOf<String>**)&appPkgList);
@@ -15143,14 +15641,12 @@ ECode CActivityManagerService::GetRunningExternalApplications(
             Int32 infoFlags;
             info->GetFlags(&infoFlags);
             if ((infoFlags & IApplicationInfo::FLAG_EXTERNAL_STORAGE) != 0) {
-                retList->Add(info);
+                apps->Add(info);
             }
            // } catch (RemoteException e) {
            // }
         }
     }
-    *apps = retList;
-    REFCOUNT_ADD(*apps);
     return NOERROR;
 }
 
@@ -15163,8 +15659,9 @@ ECode CActivityManagerService::GetMyMemoryState(
         AutoPtr<ProcessRecord> proc;
         {
             AutoLock lock(mPidsSelfLockedLock);
-            HashMap<Int32, AutoPtr<ProcessRecord> >::Iterator it = mPidsSelfLocked.Find(Binder::GetCallingPid());
-            if (it != mPidsSelfLocked.End()) proc = it->mSecond;
+            HashMap<Int32, AutoPtr<ProcessRecord> >::Iterator it = mPidsSelfLocked.Find(BinderGetCallingPid());
+            if (it != mPidsSelfLocked.End())
+                proc = it->mSecond;
         }
         FillInProcMemInfo(proc, outInfo);
     }
@@ -15176,14 +15673,14 @@ ECode CActivityManagerService::Dump(
     /* [in] */ IPrintWriter* pw,
     /* [in] */ ArrayOf<String>* args)
 {
-    if (CheckCallingPermission(Elastos::Droid::Manifest::permission::DUMP)
+    if (CheckCallingPermission(Manifest::permission::DUMP)
             != IPackageManager::PERMISSION_GRANTED) {
         StringBuilder sb("Permission Denial: can't dump ActivityManager from from pid=");
-        sb += Binder::GetCallingPid();
+        sb += BinderGetCallingPid();
         sb += ", uid=";
-        sb += Binder::GetCallingUid();
+        sb += BinderGetCallingUid();
         sb += " without permission ";
-        sb += "Elastos::Droid::Manifest::permission::DUMP";
+        sb += "Manifest::permission::DUMP";
         pw->Println(sb.ToString());
         return NOERROR;
     }
@@ -15199,17 +15696,18 @@ ECode CActivityManagerService::Dump(
             break;
         }
         opti++;
-        if (CString("-a").Equals(opt)) {
+        if (opt.Equals("-a")) {
             dumpAll = TRUE;
         }
-        else if (CString("-c").Equals(opt)) {
+        else if (opt.Equals("-c")) {
             dumpClient = TRUE;
         }
-        else if (CString("-h").Equals(opt)) {
+        else if (opt.Equals("-h")) {
             pw->Println(String("Activity manager dump options:"));
             pw->Println(String("  [-a] [-c] [-h] [cmd] ..."));
             pw->Println(String("  cmd may be one of:"));
             pw->Println(String("    a[ctivities]: activity stack state"));
+            pw->Println(String("    r[recents]: recent activities state"));
             pw->Println(String("    b[roadcasts] [PACKAGE_NAME] [history [-s]]: broadcast state"));
             pw->Println(String("    i[ntents] [PACKAGE_NAME]: pending intent state"));
             pw->Println(String("    p[rocesses] [PACKAGE_NAME]: process state"));
@@ -15221,6 +15719,7 @@ ECode CActivityManagerService::Dump(
             pw->Println(String("    package [PACKAGE_NAME]: all state related to given package"));
             pw->Println(String("    all: dump all activities"));
             pw->Println(String("    top: dump the top activity"));
+            pw->Println(String("    write: write all pending state to storage"));
             pw->Println(String("  cmd may also be a COMP_SPEC to dump activities."));
             pw->Println(String("  COMP_SPEC may be a component name (com.foo/.myApp),"));
             pw->Println(String("    a partial substring in a component name, a"));
@@ -15234,17 +15733,22 @@ ECode CActivityManagerService::Dump(
         }
     }
 
-    Int64 origId = Binder::ClearCallingIdentity();
+    Int64 origId = BinderClearCallingIdentity();
     Boolean more = FALSE;
     // Is the caller requesting to dump a particular piece of data?
     if (opti < args->GetLength()) {
         String cmd = (*args)[opti];
         opti++;
-        if (CString("activities").Equals(cmd) || CString("a").Equals(cmd)) {
+        if (cmd.Equals("activities") || cmd.Equals("a")) {
             AutoLock lock(this);
             DumpActivitiesLocked(fd, pw, args, opti, TRUE, dumpClient, String(NULL));
         }
-        else if (CString("broadcasts").Equals(cmd) || CString("b").Equals(cmd)) {
+         else if (cmd.Equals("recents") || cmd.Equals("r")) {
+            synchronized (this) {
+                DumpRecentsLocked(fd, pw, args, opti, TRUE, String(NULL));
+            }
+        }
+        else if (cmd.Equals("broadcasts") || cmd.Equals("b")) {
             AutoPtr<ArrayOf<String> > newArgs;
             String name;
             if (opti >= args->GetLength()) {
@@ -15262,7 +15766,7 @@ ECode CActivityManagerService::Dump(
                 DumpBroadcastsLocked(fd, pw, args, opti, TRUE, name);
             }
         }
-        else if (CString("intents").Equals(cmd) || CString("i").Equals(cmd)) {
+        else if (cmd.Equals("intents") || cmd.Equals("i")) {
             AutoPtr<ArrayOf<String> > newArgs;
             String name;
             if (opti >= args->GetLength()) {
@@ -15280,7 +15784,7 @@ ECode CActivityManagerService::Dump(
                 DumpPendingIntentsLocked(fd, pw, args, opti, TRUE, name);
             }
         }
-        else if (CString("processes").Equals(cmd) || CString("p").Equals(cmd)) {
+        else if (cmd.Equals("processes") || cmd.Equals("p")) {
             AutoPtr<ArrayOf<String> > newArgs;
             String name;
             if (opti >= args->GetLength()) {
@@ -15298,13 +15802,13 @@ ECode CActivityManagerService::Dump(
                 DumpProcessesLocked(fd, pw, args, opti, TRUE, name);
             }
         }
-        else if (CString("oom").Equals(cmd) || CString("o").Equals(cmd)) {
+        else if (cmd.Equals("oom") || cmd.Equals("o")) {
             {
                 AutoLock lock(this);
                 DumpOomLocked(fd, pw, args, opti, TRUE);
             }
         }
-        else if (CString("provider").Equals(cmd)) {
+        else if (cmd.Equals("provider")) {
             AutoPtr<ArrayOf<String> > newArgs;
             String name;
             if (opti >= args->GetLength()) {
@@ -15322,11 +15826,11 @@ ECode CActivityManagerService::Dump(
                 pw->Println(String("Use -h for help."));
             }
         }
-        else if (CString("providers").Equals(cmd) || CString("prov").Equals(cmd)) {
+        else if (cmd.Equals("providers") || cmd.Equals("prov")) {
             AutoLock lock(this);
             DumpProvidersLocked(fd, pw, args, opti, TRUE, String(NULL));
         }
-        else if (CString("service").Equals(cmd)) {
+        else if (cmd.Equals("service")) {
             AutoPtr<ArrayOf<String> > newArgs;
             String name;
             if (opti >= args->GetLength()) {
@@ -15344,7 +15848,7 @@ ECode CActivityManagerService::Dump(
                 pw->Println(String("Use -h for help."));
             }
         }
-        else if (CString("package").Equals(cmd)) {
+        else if (cmd.Equals("package")) {
             AutoPtr<ArrayOf<String> > newArgs;
             if (opti >= args->GetLength()) {
                 pw->Println(String("package: no package name specified"));
@@ -15360,9 +15864,14 @@ ECode CActivityManagerService::Dump(
                 more = TRUE;
             }
         }
-        else if (CString("services").Equals(cmd) || CString("s").Equals(cmd)) {
+        else if (cmd.Equals("services") || cmd.Equals("s")) {
             AutoLock lock(this);
             mServices->DumpServicesLocked(fd, pw, args, opti, TRUE, dumpClient, String(NULL));
+        }
+        else if (cmd.Equals("write")) {
+            mTaskPersister->Flush();
+            pw->Println(String("All tasks persisted."));
+            return NOERROR;
         }
         else {
             // Dumping a single activity?
@@ -15372,7 +15881,7 @@ ECode CActivityManagerService::Dump(
             }
         }
         if (!more) {
-            Binder::RestoreCallingIdentity(origId);
+            BinderRestoreCallingIdentity(origId);
             return NOERROR;
         }
     }
@@ -15380,49 +15889,43 @@ ECode CActivityManagerService::Dump(
     // No piece of data specified, dump everything.
     {
         AutoLock lock(this);
-        Boolean needSep;
-        needSep = DumpPendingIntentsLocked(fd, pw, args, opti, dumpAll, dumpPackage);
-        if (needSep) {
-            pw->Println(String(" "));
-        }
+        DumpPendingIntentsLocked(fd, pw, args, opti, dumpAll, dumpPackage);
+        pw->Println();
         if (dumpAll) {
             pw->Println(String("-------------------------------------------------------------------------------"));
         }
-        needSep = DumpBroadcastsLocked(fd, pw, args, opti, dumpAll, dumpPackage);
-        if (needSep) {
-            pw->Println(String(" "));
-        }
+        DumpBroadcastsLocked(fd, pw, args, opti, dumpAll, dumpPackage);
+        pw->Println();
         if (dumpAll) {
             pw->Println(String("-------------------------------------------------------------------------------"));
         }
-        needSep = DumpProvidersLocked(fd, pw, args, opti, dumpAll, dumpPackage);
-        if (needSep) {
-            pw->Println(String(" "));
-        }
+        DumpProvidersLocked(fd, pw, args, opti, dumpAll, dumpPackage);
+        pw->Println();
         if (dumpAll) {
             pw->Println(String("-------------------------------------------------------------------------------"));
         }
-        needSep = mServices->DumpServicesLocked(fd, pw, args, opti, dumpAll, dumpClient, dumpPackage);
-        if (needSep) {
-            pw->Println(String(" "));
-        }
+        mServices->DumpServicesLocked(fd, pw, args, opti, dumpAll, dumpClient, dumpPackage);
+        pw->Println();
         if (dumpAll) {
             pw->Println(String("-------------------------------------------------------------------------------"));
         }
-        needSep = DumpActivitiesLocked(fd, pw, args, opti, dumpAll, dumpClient, dumpPackage);
-        if (needSep) {
-            pw->Println(String(" "));
+        DumpRecentsLocked(fd, pw, args, opti, dumpAll, dumpPackage);
+        pw->Println();
+        if (dumpAll) {
+            pw->Println(String("-------------------------------------------------------------------------------"));
         }
+        DumpActivitiesLocked(fd, pw, args, opti, dumpAll, dumpClient, dumpPackage);
+        pw->Println();
         if (dumpAll) {
             pw->Println(String("-------------------------------------------------------------------------------"));
         }
         DumpProcessesLocked(fd, pw, args, opti, dumpAll, dumpPackage);
     }
-    Binder::RestoreCallingIdentity(origId);
+    BinderRestoreCallingIdentity(origId);
     return NOERROR;
 }
 
-Boolean CActivityManagerService::DumpActivitiesLocked(
+void CActivityManagerService::DumpActivitiesLocked(
     /* [in] */ IFileDescriptor* fd,
     /* [in] */ IPrintWriter* pw,
     /* [in] */ ArrayOf<String>* args,
@@ -15432,100 +15935,77 @@ Boolean CActivityManagerService::DumpActivitiesLocked(
     /* [in] */ const String& dumpPackage)
 {
     pw->Println(String("ACTIVITY MANAGER ACTIVITIES (dumpsys activity activities)"));
-    pw->Println(String("  Main stack:"));
-    DumpHistoryList(fd, pw, &mMainStack->mHistory, String("  "), String("Hist"), TRUE, !dumpAll, dumpClient,
-            dumpPackage);
-    pw->Println(String(" "));
-    pw->Println(String("  Running activities (most recent first):"));
-    DumpHistoryList(fd, pw, &mMainStack->mLRUActivities, String("  "), String("Run"), FALSE, !dumpAll, FALSE,
-            dumpPackage);
-    if (mMainStack->mWaitingVisibleActivities.Begin() != mMainStack->mWaitingVisibleActivities.End()) {
-        pw->Println(String(" "));
-        pw->Println(String("  Activities waiting for another to become visible:"));
-        DumpHistoryList(fd, pw, &mMainStack->mWaitingVisibleActivities, String("  "), String("Wait"), FALSE,
-                !dumpAll, FALSE, dumpPackage);
-    }
-    if (mMainStack->mStoppingActivities.Begin() != mMainStack->mStoppingActivities.End()) {
-        pw->Println(String(" "));
-        pw->Println(String("  Activities waiting to stop:"));
-        DumpHistoryList(fd, pw, &mMainStack->mStoppingActivities, String("  "), String("Stop"), FALSE,
-                !dumpAll, FALSE, dumpPackage);
-    }
-    if (mMainStack->mGoingToSleepActivities.Begin() != mMainStack->mGoingToSleepActivities.End()) {
-        pw->Println(String(" "));
-        pw->Println(String("  Activities waiting to sleep:"));
-        DumpHistoryList(fd, pw, &mMainStack->mGoingToSleepActivities, String("  "), String("Sleep"), FALSE,
-                !dumpAll, FALSE, dumpPackage);
-    }
-    if (mMainStack->mFinishingActivities.Begin() != mMainStack->mFinishingActivities.End()) {
-        pw->Println(String(" "));
-        pw->Println(String("  Activities waiting to finish:"));
-        DumpHistoryList(fd, pw, &mMainStack->mFinishingActivities, String("  "), String("Fin"), FALSE,
-                !dumpAll, FALSE, dumpPackage);
+
+    Boolean printedAnything = mStackSupervisor->DumpActivitiesLocked(
+        fd, pw, dumpAll, dumpClient, dumpPackage);
+    Boolean needSep = printedAnything;
+
+    Boolean printed = ActivityStackSupervisor::PrintThisActivity(pw, mFocusedActivity,
+            dumpPackage, needSep, String("  mFocusedActivity: "));
+    if (printed) {
+        printedAnything = TRUE;
+        needSep = FALSE;
     }
 
-    pw->Println(String(" "));
-    if (mMainStack->mPausingActivity != NULL) {
-        String pauseString;
-        mMainStack->mPausingActivity->ToString(&pauseString);
-        pw->Println(String("  mPausingActivity: ") + pauseString);
-    }
-    String resumeString;
-    mMainStack->mResumedActivity->ToString(&resumeString);
-    pw->Println(String("  mResumedActivity: ") + resumeString);
-    String focusedString;
-    mFocusedActivity->ToString(&focusedString);
-    pw->Println(String("  mFocusedActivity: ") + focusedString);
-    if (dumpAll) {
-        String lastString;
-        mMainStack->mLastPausedActivity->ToString(&lastString);
-        pw->Println(String("  mLastPausedActivity: ") + lastString);
-        StringBuilder sb("  mSleepTimeout: ");
-        sb += mMainStack->mSleepTimeout;
-        pw->Println(sb.ToString());
-        StringBuilder sb1("  mDismissKeyguardOnNextActivity: ");
-        sb1 += mMainStack->mDismissKeyguardOnNextActivity;
-        pw->Println(sb1.ToString());
+    if (dumpPackage == NULL) {
+        if (needSep) {
+            pw->Println();
+        }
+        needSep = TRUE;
+        printedAnything = TRUE;
+        mStackSupervisor->Dump(pw, String("  "));
     }
 
-    if (mRecentTasks->Begin() != mRecentTasks->End()) {
-        pw->Println();
-        pw->Println(String("  Recent tasks:"));
+    if (!printedAnything) {
+        pw->Println(String("  (nothing)"));
+    }
+}
 
-        List< AutoPtr<TaskRecord> >::Iterator it;
-        Int32 i = 0;
-        for (it = mRecentTasks->Begin(); it != mRecentTasks->End(); ++it, ++i) {
+void CActivityManagerService::DumpRecentsLocked(
+    /* [in] */ IFileDescriptor* fd,
+    /* [in] */ IPrintWriter* pw,
+    /* [in] */ ArrayOf<String>* args,
+    /* [in] */ Int32 opti,
+    /* [in] */ Boolean dumpAll,
+    /* [in] */ const String& dumpPackage)
+{
+    pw->Println(String("ACTIVITY MANAGER ACTIVITIES (dumpsys activity recents)"));
+
+    Boolean printedAnything = FALSE;
+
+    if (mRecentTasks != NULL && mRecentTasks.GetSize() > 0) {
+        Boolean printedHeader = FALSE;
+
+        List<AutoPtr<TaskRecord> >::Iterator it = mRecentTasks->Begin();
+        for (; it != mRecentTasks->End(); ++it) {
             AutoPtr<TaskRecord> tr = *it;
             if (dumpPackage != NULL) {
-                String aStr;
                 if (tr->mRealActivity == NULL ||
-                        (tr->mRealActivity->ToString(&aStr), !dumpPackage.Equals(aStr))) {
+                    !dumpPackage.Equals(tr->mRealActivity)) {
                     continue;
                 }
             }
-            pw->PrintString(String("  * Recent #"));
-            pw->PrintInt32(i);
-            pw->PrintString(String(": "));
-        //TODO:
-        //     pw->PrintObjectln(tr);
+            if (!printedHeader) {
+                pw->Println(String("  Recent tasks:"));
+                printedHeader = TRUE;
+                printedAnything = TRUE;
+            }
+            pw->Print(String("  * Recent #"));
+            pw->Print(i);
+            pw->Print(String(": "));
+            pw->Println(tr->ToString());
             if (dumpAll) {
-                // TODO:
-                // tr->Dump(pw, String("    "));
+                tr->Dump(pw, String("    "));
             }
         }
     }
 
-    if (dumpAll) {
-        pw->Println(String(" "));
-        StringBuilder sb("  mCurTask: ");
-        sb += mCurTask;
-        pw->Println(sb.ToString());
+    if (!printedAnything) {
+        pw->Println(String("  (nothing)"));
     }
-
-    return TRUE;
 }
 
-Boolean CActivityManagerService::DumpProcessesLocked(
+void CActivityManagerService::DumpProcessesLocked(
     /* [in] */ IFileDescriptor* fd,
     /* [in] */ IPrintWriter* pw,
     /* [in] */ ArrayOf<String>* args,
@@ -15534,6 +16014,7 @@ Boolean CActivityManagerService::DumpProcessesLocked(
     /* [in] */ const String& dumpPackage)
 {
     Boolean needSep = FALSE;
+    Boolean printedAnything = FALSE;
     Int32 numPers = 0;
 
     pw->Println(String("ACTIVITY MANAGER RUNNING PROCESSES (dumpsys activity processes)"));
@@ -15547,22 +16028,21 @@ Boolean CActivityManagerService::DumpProcessesLocked(
             HashMap<Int32, AutoPtr<ProcessRecord> >::Iterator procsIt;
             for (procsIt = procs->Begin(); procsIt != procs->End(); ++procsIt) {
                 AutoPtr<ProcessRecord> r = procsIt->mSecond;
-                String rPkgName;
-                r->mInfo->GetPackageName(&rPkgName);
-                if (!dumpPackage.IsNull() && !dumpPackage.Equals(rPkgName)) {
+                Boolean res;
+                if (!dumpPackage.IsNull() && !(r->mPkgList->ContainsKey(dumpPackage, &res), res)) {
                     continue;
                 }
                 if (!needSep) {
                     pw->Println(String("  All known processes:"));
                     needSep = TRUE;
+                    printedAnything = TRUE;
                 }
-                pw->PrintString(r->mPersistent ? String("  *PERS*") : String("  *APP*"));
-                    pw->PrintString(String(" UID "));
-                    pw->PrintInt32(procsIt->mFirst);
-                    pw->PrintString(String(" "));
-                    pw->PrintObjectln((IInterface*)r);
-                //TODO:
-                // r->Dump(pw, String("    "));
+                pw->Print(r->mPersistent ? String("  *PERS*") : String("  *APP*"));
+                pw->Print(String(" UID "));
+                pw->Print(procsIt->mFirst);
+                pw->Print(String(" "));
+                pw->Println(r->ToString());
+                r->Dump(pw, String("    "));
                 if (r->mPersistent) {
                     numPers++;
                 }
@@ -15571,109 +16051,126 @@ Boolean CActivityManagerService::DumpProcessesLocked(
     }
 
     if (mIsolatedProcesses.Begin() != mIsolatedProcesses.End()) {
-        if (needSep) pw->Println(String(" "));
-        needSep = TRUE;
-        pw->Println(String("  Isolated process list (sorted by uid):"));
+        Boolean printed = FALSE;
         HashMap<Int32, AutoPtr<ProcessRecord> >::Iterator it;
         Int32 i = 0;
         for (it = mIsolatedProcesses.Begin(); it != mIsolatedProcesses.End(); ++it, ++i) {
             AutoPtr<ProcessRecord> r = it->mSecond;
-            String rPkgName;
-            r->mInfo->GetPackageName(&rPkgName);
-            if (!dumpPackage.IsNull() && !dumpPackage.Equals(rPkgName)) {
+            Boolean res;
+            if (!dumpPackage.IsNull() && !(r->mPkgList->ContainsKey(dumpPackage, &res), res)) {
                 continue;
             }
+            if (!printed) {
+                if (needSep) {
+                    pw->Println();
+                }
+                pw->Println(String("  Isolated process list (sorted by uid):"));
+                printedAnything = TRUE;
+                printed = TRUE;
+                needSep = TRUE;
+            }
             String s;
-            s.AppendFormat("%sIsolated #%2d: %s", i, r->ToString().string());
+            s.AppendFormat("    Isolated #%2d: %s", i, r->ToString().string());
             pw->Println(s);
         }
     }
 
     if (mLruProcesses.Begin() != mLruProcesses.End()) {
-        if (needSep) pw->Println(String(" "));
-        needSep = TRUE;
-        pw->Println(String("  Process LRU list (sorted by oom_adj):"));
+        if (needSep) {
+            pw->Println();
+        }
+        pw->Print(String("  Process LRU list (sorted by oom_adj, "));
+        pw->Print(mLruProcesses.GetSize());
+        pw->Print(String(" total, non-act at "));
+        pw->Print(mLruProcesses.GetSize()-mLruProcessActivityStart);
+        pw->Print(String(", non-svc at "));
+        pw->Print(mLruProcesses.GetSize()-mLruProcessServiceStart);
+        pw->Println(String("):"));
         DumpProcessOomList(pw, this, &mLruProcesses, String("    "),
                 String("Proc"), String("PERS"), FALSE, dumpPackage);
         needSep = TRUE;
+        printedAnything = TRUE;
     }
 
-    if (dumpAll) {
-        {
-            AutoLock lock(mPidsSelfLockedLock);
-            Boolean printed = FALSE;
-            HashMap<Int32, AutoPtr<ProcessRecord> >::Iterator it;
-            for (it = mPidsSelfLocked.Begin(); it != mPidsSelfLocked.End(); ++it) {
-                AutoPtr<ProcessRecord> r = it->mSecond;
-                String rPkgName;
-                r->mInfo->GetPackageName(&rPkgName);
-                if (!dumpPackage.IsNull() && !dumpPackage.Equals(rPkgName)) {
-                    continue;
-                }
-                if (!printed) {
-                    if (needSep) pw->Println(String(" "));
-                    needSep = TRUE;
-                    pw->Println(String("  PID mappings:"));
-                    printed = TRUE;
-                }
-                pw->PrintString(String("    PID #"));
-                pw->PrintInt32(it->mFirst);
-                pw->PrintString(String(": "));
-                pw->PrintObjectln((IInterface*)r);
+    if (dumpAll || dumpPackage != NULL) {
+        AutoLock lock(mPidsSelfLockedLock);
+        Boolean printed = FALSE;
+        HashMap<Int32, AutoPtr<ProcessRecord> >::Iterator it;
+        for (it = mPidsSelfLocked.Begin(); it != mPidsSelfLocked.End(); ++it) {
+            AutoPtr<ProcessRecord> r = it->mSecond;
+            String rPkgName;
+            r->mInfo->GetPackageName(&rPkgName);
+            Boolean res;
+            if (!dumpPackage.IsNull() && !(r->mPkgList->ContainsKey(dumpPackage, &res), res)) {
+                continue;
             }
+            if (!printed) {
+                if (needSep) pw->Println();
+                needSep = TRUE;
+                pw->Println(String("  PID mappings:"));
+                printed = TRUE;
+                printedAnything = TRUE;
+            }
+            pw->Print(String("    PID #"));
+            pw->Print(it->mFirst);
+            pw->Print(String(": "));
+            pw->Println(r->ToString());
         }
     }
 
     if (mForegroundProcesses.Begin() != mForegroundProcesses.End()) {
-        {
-            AutoLock lock(mPidsSelfLockedLock);
-            Boolean printed = FALSE;
-            HashMap<Int32, AutoPtr<ForegroundToken> >::Iterator it;
-            for (it = mForegroundProcesses.Begin(); it != mForegroundProcesses.End(); ++it) {
-                AutoPtr<ProcessRecord> r;
-                HashMap<Int32, AutoPtr<ProcessRecord> >::Iterator pit =
-                        mPidsSelfLocked.Find(it->mSecond->mPid);
-                if (pit != mPidsSelfLocked.End()) {
-                    r = pit->mSecond;
-                }
-                String rPkgName;
-                if (!dumpPackage.IsNull() && (r == NULL
-                        || (r->mInfo->GetPackageName(&rPkgName), !dumpPackage.Equals(rPkgName)))) {
-                    continue;
-                }
-                if (!printed) {
-                    if (needSep) pw->Println(String(" "));
-                    needSep = TRUE;
-                    pw->Println(String("  Foreground Processes:"));
-                    printed = TRUE;
-                }
-                pw->PrintString(String("    PID #"));
-                pw->PrintInt32(it->mFirst);
-                pw->PrintString(String(": "));
-                pw->PrintObjectln((IInterface*)it->mSecond);
+        AutoLock lock(mPidsSelfLockedLock);
+        Boolean printed = FALSE;
+        HashMap<Int32, AutoPtr<ForegroundToken> >::Iterator it;
+        for (it = mForegroundProcesses.Begin(); it != mForegroundProcesses.End(); ++it) {
+            AutoPtr<ProcessRecord> r;
+            HashMap<Int32, AutoPtr<ProcessRecord> >::Iterator pit =
+                    mPidsSelfLocked.Find(it->mSecond->mPid);
+            if (pit != mPidsSelfLocked.End()) {
+                r = pit->mSecond;
             }
+            Boolean res;
+            if (!dumpPackage.IsNull() && (r == NULL
+                || !(r->mPkgList->ContainsKey(dumpPackage, &res), res)) {
+                continue;
+            }
+            if (!printed) {
+                if (needSep)
+                    pw->Println();
+                needSep = TRUE;
+                pw->Println(String("  Foreground Processes:"));
+                printed = TRUE;
+                printedAnything = TRUE;
+            }
+            pw->Print(String("    PID #"));
+            pw->Print(it->mFirst);
+            pw->Print(String(": "));
+            pw->Println(it->mSecond->ToString());
         }
     }
 
     if (mPersistentStartingProcesses.Begin() != mPersistentStartingProcesses.End()) {
-        if (needSep) pw->Println(String(" "));
+        if (needSep) pw->Println();
         needSep = TRUE;
+        printedAnything = TRUE;
         pw->Println(String("  Persisent processes that are starting:"));
         DumpProcessList(pw, this, &mPersistentStartingProcesses, String("    "),
                 String("Starting Norm"), String("Restarting PERS"), dumpPackage);
     }
 
     if (mRemovedProcesses.Begin() != mRemovedProcesses.End()) {
-        if (needSep) pw->Println(String(" "));
+        if (needSep) pw->Println();
         needSep = TRUE;
+        printedAnything = TRUE;
         pw->Println(String("  Processes that are being removed:"));
         DumpProcessList(pw, this, &mRemovedProcesses, String("    "),
                 String("Removed Norm"), String("Removed PERS"), dumpPackage);
     }
 
     if (!mProcessesOnHold.IsEmpty()) {
-        if (needSep) pw->Println(String(" "));
+        if (needSep) pw->Println();
         needSep = TRUE;
+        printedAnything = TRUE;
         pw->Println(String("  Processes that are on old until the system is ready:"));
         DumpProcessList(pw, this, &mProcessesOnHold, String("    "),
                 String("OnHold Norm"), String("OnHold PERS"), dumpPackage);
@@ -15693,22 +16190,23 @@ Boolean CActivityManagerService::DumpProcessesLocked(
             for (uidsIt = uids->Begin(); uidsIt != uids->End(); ++uidsIt) {
                 Int32 puid = uidsIt->mFirst;
                 AutoPtr<ProcessRecord> r = mProcessNames->Get(pname, puid);
-                String rPkgName;
+                Boolean res;
                 if (!dumpPackage.IsNull() && (r == NULL
-                        || (r->mInfo->GetPackageName(&rPkgName), !dumpPackage.Equals(rPkgName)))) {
+                    || !(r->mPkgList->ContainsKey(dumpPackage, &res), res))) {
                     continue;
                 }
                 if (!printed) {
-                    if (needSep) pw->Println(String(" "));
+                    if (needSep) pw->Println();
                     needSep = TRUE;
                     pw->Println(String("  Time since processes crashed:"));
                     printed = TRUE;
+                    printedAnything = TRUE;
                 }
-                pw->PrintString(String("    Process "));
-                pw->PrintString(pname);
-                pw->PrintString(String(" uid "));
-                pw->PrintInt32(puid);
-                pw->PrintString(String(": last crashed "));
+                pw->Print(String("    Process "));
+                pw->Print(pname);
+                pw->Print(String(" uid "));
+                pw->Print(puid);
+                pw->Print(String(": last crashed "));
                 TimeUtils::FormatDuration(now - uidsIt->mSecond, pw);
                 pw->Println(String(" ago"));
             }
@@ -15726,77 +16224,147 @@ Boolean CActivityManagerService::DumpProcessesLocked(
             for (uidsIt = uids->Begin(); uidsIt != uids->End(); ++uidsIt) {
                 Int32 puid = uidsIt->mFirst;
                 AutoPtr<ProcessRecord> r = mProcessNames->Get(pname, puid);
-                String rPkgName;
+                Boolean res;
                 if (!dumpPackage.IsNull() && (r == NULL
-                        || (r->mInfo->GetPackageName(&rPkgName), !dumpPackage.Equals(rPkgName)))) {
+                    || !(r->mPkgList->ContainsKey(dumpPackage, &res), res))) {
                     continue;
                 }
                 if (!printed) {
-                    if (needSep) pw->Println(String(" "));
+                    if (needSep) pw->Println();
                     needSep = TRUE;
                     pw->Println(String("  Bad processes:"));
+                    printedAnything = TRUE;
                 }
-                pw->PrintString(String("    Bad process "));
-                pw->PrintString(pname);
-                pw->PrintString(String(" uid "));
-                pw->PrintInt32(puid);
-                pw->PrintString(String(": crashed at time "));
-                pw->PrintInt64ln(uidsIt->mSecond);
+                AutoPtr<BadProcessInfo> info = uidsIt->mSecond;
+                pw->Print(String("    Bad process "));
+                pw->Print(pname);
+                pw->Print(String(" uid "));
+                pw->Print(puid);
+                pw->Print(String(": crashed at time "));
+                pw->Println(info->mTime);
+                if (info->mShortMsg != NULL) {
+                    pw->Print(String("      Short msg: "));
+                    pw->Println(info->mShortMsg);
+                }
+                if (info->mLongMsg != NULL) {
+                    pw->Print(String("      Long msg: "));
+                    pw->Println(info->mLongMsg);
+                }
+                if (info->mStack != NULL) {
+                    pw->Println("      Stack:");
+                    Int32 lastPos = 0;
+                    for (Int32 pos = 0; pos < info->mStack.GetLength(); pos++) {
+                        if (info->mStack.GetChar(pos) == '\n') {
+                            pw->Print(String("        "));
+                            pw->Write(info->mStack.GetChars(), lastPos, pos-lastPos);
+                            pw->Println();
+                            lastPos = pos + 1;
+                        }
+                    }
+                    if (lastPos < info->mStack.GetLength()) {
+                        pw->Print(String("        "));
+                        pw->Write(info->mStack.GetChars(), lastPos, info->mStack->GetLength()-lastPos);
+                        pw->Println();
+                    }
+                }
             }
         }
     }
 
-    pw->Println();
-    pw->Println(String("  mStartedUsers:"));
-    HashMap<Int32, AutoPtr<UserStartedState> >::Iterator uIt;
-    for (uIt = mStartedUsers.Begin(); uIt != mStartedUsers.End(); ++uIt) {
-        AutoPtr<UserStartedState> uss = uIt->mSecond;
-        pw->PrintString(String("    User #"));
-        Int32 id;
-        uss->mHandle->GetIdentifier(&id);
-        pw->PrintInt32(id);
-        pw->PrintString(String(": "));
-        uss->Dump(String(""), pw);
-    }
-    pw->PrintString(String("  mStartedUserArray: ["));
-    for (Int32 i = 0; i < mStartedUserArray->GetLength(); i++) {
-        pw->PrintString(String(", "));
-        pw->PrintInt32((*mStartedUserArray)[i]);
-    }
-    pw->Println(String("]"));
-    pw->PrintString(String("  mUserLru: ["));
-    List<Int32>::Iterator userIt;
-    for (userIt = mUserLru.Begin(); userIt != mUserLru.End(); ++userIt) {
-        pw->PrintString(String(", "));
-        pw->Print(*userIt);
-    }
-    pw->Println(String("]"));
-    if (dumpAll) {
-        pw->PrintString(String("  mStartedUserArray: "));
-        StringBuilder sb;
-        for (Int32 i = 0; i < mStartedUserArray->GetLength(); ++i) {
-            sb += (*mStartedUserArray)[i];
+    if (dumpPackage == NULL) {
+        pw->Println();
+        needSep = FALSE;
+        pw->Println(String("  mStartedUsers:"));
+        HashMap<Int32, AutoPtr<UserStartedState> >::Iterator uIt;
+        for (uIt = mStartedUsers.Begin(); uIt != mStartedUsers.End(); ++uIt) {
+            AutoPtr<UserStartedState> uss = uIt->mSecond;
+            pw->Print(String("    User #"));
+            Int32 id;
+            uss->mHandle->GetIdentifier(&id);
+            pw->Print(id);
+            pw->Print(String(": "));
+            uss->Dump(String(""), pw);
         }
-        pw->Println(sb.ToString());
+        pw->Print(String("  mStartedUserArray: ["));
+        for (Int32 i = 0; i < mStartedUserArray->GetLength(); i++) {
+            if (i > 0)
+                pw->Print(String(", "));
+            pw->Print((*mStartedUserArray)[i]);
+        }
+        pw->Println(String("]"));
+        pw->Print(String("  mUserLru: ["));
+        List<Int32>::Iterator userIt;
+        for (userIt = mUserLru.Begin(); userIt != mUserLru.End(); ++userIt) {
+            if (i > 0)
+                pw->Print(String(", "));
+            pw->Print(*userIt);
+        }
+        pw->Println(String("]"));
+        if (dumpAll) {
+            pw->Print(String("  mStartedUserArray: "));
+            StringBuilder sb;
+            for (Int32 i = 0; i < mStartedUserArray->GetLength(); ++i) {
+                sb += (*mStartedUserArray)[i];
+            }
+            pw->Println(sb.ToString());
+        }
+
+        synchronized (mUserProfileGroupIdsSelfLockedLock) {
+            if (mUserProfileGroupIdsSelfLocked.GetSize() > 0) {
+                pw->Println(String("  mUserProfileGroupIds:"))
+                HashMap<Int32, Int32>::Iterator it = mUserProfileGroupIdsSelfLocked.Begin();
+                for (; it != mUserProfileGroupIdsSelfLocked.End(); ++it) {
+                    pw->Print(String("    User #"));
+                    pw->Print(it->mFirst);
+                    pw->Print(String(" -> profile #"));
+                    pw->Println(it->mSecond);
+                }
+            }
+        }
     }
 
-    pw->Println(String("  mHomeProcess: ") + (mHomeProcess != NULL ? mHomeProcess->ToString() : "NULL"));
-    pw->Println(String("  mPreviousProcess: ") + (mPreviousProcess != NULL ? mPreviousProcess->ToString() : "NULL"));
+    Boolean res;
+    if (mHomeProcess != NULL && (dumpPackage == NULL
+        || (mHomeProcess->mPkgList->ContainsKey(dumpPackage, &res), res))) {
+        if (needSep) {
+            pw->Println();
+            needSep = FALSE;
+        }
+        pw->Print(String("  mHomeProcess: "));
+        pw->Println(mHomeProcess->ToString());
+    }
+    if (mPreviousProcess != NULL && (dumpPackage == NULL
+        || (mPreviousProcess->mPkgList->ContainsKey(dumpPackage, &res), res))) {
+        if (needSep) {
+            pw->Println();
+            needSep = FALSE;
+        }
+        pw->Println(String("  mPreviousProcess: "));
+        pw->Println(mPreviousProcess->ToString());
+    }
     if (dumpAll) {
         StringBuilder sb(128);
         sb.Append("  mPreviousProcessVisibleTime: ");
         TimeUtils::FormatDuration(mPreviousProcessVisibleTime, sb);
         pw->Println(sb.ToString());
     }
-    if (mHeavyWeightProcess != NULL) {
-        pw->Println(String("  mHeavyWeightProcess: ") + mHeavyWeightProcess->ToString());
+    if (mHeavyWeightProcess != NULL && (dumpPackage == NULL
+        || (mHeavyWeightProcess->mPkgList->ContainsKey(dumpPackage, &res), res))) {
+         if (needSep) {
+            pw->Println();
+            needSep = FALSE;
+        }
+        pw->Println(String("  mHeavyWeightProcess: "));
+        pw->Println(mHeavyWeightProcess->ToString());
     }
-    String configString;
-    mConfiguration->ToString(&configString);
-    pw->Println(String("  mConfiguration: ") + configString);
+    if (dumpPackage == NULL) {
+        String configString;
+        mConfiguration->ToString(&configString);
+        pw->Println(String("  mConfiguration: ") + configString);
+    }
     if (dumpAll) {
         StringBuilder sb("  mConfigWillChange: ");
-        sb += mMainStack->mConfigWillChange;
+        sb += GetFocusedStack()->mConfigWillChange;
         pw->Println(sb.ToString());
         HashMap<String, Int32>& packages = mCompatModePackages->GetPackages();
         if (packages.Begin() != packages.End()) {
@@ -15812,107 +16380,157 @@ Boolean CActivityManagerService::DumpProcessesLocked(
                     pw->Println(String("  mScreenCompatPackages:"));
                     printed = TRUE;
                 }
-                pw->PrintString(String("    "));
-                pw->PrintString(pkg);
-                pw->PrintString(String(": "));
-                pw->PrintInt32(mode);
+                pw->Print(String("    "));
+                pw->Print(pkg);
+                pw->Print(String(": "));
+                pw->Print(mode);
                 pw->Println();
             }
         }
     }
-    if (mSleeping || mWentToSleep || mLockScreenShown) {
-        StringBuilder sb("  mSleeping=");
-        sb += mSleeping;
-        sb += " mWentToSleep=";
-        sb += mWentToSleep;
-        sb += " mLockScreenShown ";
-        sb += mLockScreenShown;
-        pw->Println(sb.ToString());
-    }
-    if (mShuttingDown) {
-        StringBuilder sb("  mShuttingDown=");
-        sb += mShuttingDown;
-        pw->Println(sb.ToString());
+    if (dumpPackage == NULL) {
+        if (mSleeping || mWentToSleep || mLockScreenShown) {
+            StringBuilder sb("  mSleeping=");
+            sb += mSleeping;
+            sb += " mWentToSleep=";
+            sb += mWentToSleep;
+            sb += " mLockScreenShown ";
+            sb += mLockScreenShown;
+            pw->Println(sb.ToString());
+        }
+        if (mShuttingDown || mRunningVoice) {
+            StringBuilder sb("  mShuttingDown=");
+            sb += mShuttingDown;
+            sb += "  mRunningVoice=";
+            sb += mRunningVoice;
+            pw->Println(sb.ToString());
+        }
     }
     if (!mDebugApp.IsNull() || !mOrigDebugApp.IsNull() || mDebugTransient
             || mOrigWaitForDebugger) {
-        StringBuilder sb("  mDebugApp=");
-        sb += mDebugApp + "/orig=" + mOrigDebugApp + " mDebugTransient=";
-        sb += mDebugTransient;
-        sb += " mOrigWaitForDebugger=";
-        sb += mOrigWaitForDebugger;
-        pw->Println(sb.ToString());
+        if (dumpPackage == NULL || dumpPackage.Equals(mDebugApp)
+            || dumpPackage.Equals(mOrigDebugApp)) {
+            if (needSep) {
+                pw->Println();
+                needSep = FALSE;
+            }
+            StringBuilder sb("  mDebugApp=");
+            sb += mDebugApp + "/orig=" + mOrigDebugApp + " mDebugTransient=";
+            sb += mDebugTransient;
+            sb += " mOrigWaitForDebugger=";
+            sb += mOrigWaitForDebugger;
+            pw->Println(sb.ToString());
+        }
     }
     if (!mOpenGlTraceApp.IsNull()) {
-        pw->Println(String("  mOpenGlTraceApp=") + mOpenGlTraceApp);
+        if (dumpPackage == NULL || dumpPackage.Equals(mOpenGlTraceApp)) {
+            if (needSep) {
+                pw->Println();
+                needSep = FALSE;
+            }
+            pw->Println(String("  mOpenGlTraceApp=") + mOpenGlTraceApp);
+        }
     }
     if (!mProfileApp.IsNull() || mProfileProc != NULL || !mProfileFile.IsNull()
             || mProfileFd != NULL) {
-        pw->Println(String("  mProfileApp=") + mProfileApp + " mProfileProc=" + mProfileProc->ToString());
-        StringBuilder sb("  mProfileFile=");
-        sb += mProfileFile + " mProfileFd=";
-        sb += mProfileFd;
-        pw->Println(sb.ToString());
-        StringBuilder sb1("  mProfileType=");
-        sb1 += mProfileType;
-        sb1 += " mAutoStopProfiler=";
-        sb1 += mAutoStopProfiler;
-        pw->Println(sb1.ToString());
+        if (dumpPackage == NULL || dumpPackage.Equals(mProfileApp)) {
+            if (needSep) {
+                pw->Println();
+                needSep = FALSE;
+            }
+            pw->Println(String("  mProfileApp=") + mProfileApp + " mProfileProc=" + mProfileProc->ToString());
+            StringBuilder sb("  mProfileFile=");
+            sb += mProfileFile + " mProfileFd=";
+            sb += mProfileFd;
+            pw->Println(sb.ToString());
+            StringBuilder sb1("  mSamplingInterval=");
+            sb1 += mSamplingInterval;
+            sb1 += " mAutoStopProfiler=";
+            sb1 += mAutoStopProfiler;
+            pw->Println(sb1.ToString());
+            StringBuilder sb2("  mProfileType=");
+            sb2 += mProfileType;
+            pw->Println(sb2.ToString());
+        }
     }
-    if (mAlwaysFinishActivities || mController != NULL) {
-        StringBuilder sb("  mAlwaysFinishActivities=");
-        sb += mAlwaysFinishActivities;
-        sb += " mController=";
-        sb += mController;
-        pw->Println(sb.ToString());
-    }
-    if (dumpAll) {
-        StringBuilder sb("  Total persistent processes: ");
-        sb += numPers;
-        pw->Println(sb.ToString());
-        StringBuilder sb1("  mStartRunning=");
-        sb1 += mStartRunning;
-        sb1 += " mProcessesReady=";
-        sb1 += mProcessesReady;
-        sb1 += " mSystemReady=";
-        sb1 += mSystemReady;
-        pw->Println(sb1.ToString());
-        StringBuilder sb2("  mBooting=");
-        sb2 += mBooting;
-        sb2 += " mBooted=";
-        sb2 += mBooted;
-        sb2 += " mFactoryTest=";
-        sb2 += mFactoryTest;
-        pw->Println(sb2.ToString());
-        pw->PrintString(String("  mLastPowerCheckRealtime="));
-        TimeUtils::FormatDuration(mLastPowerCheckRealtime, pw);
-        pw->Println(String(""));
-        pw->PrintString(String("  mLastPowerCheckUptime="));
-        TimeUtils::FormatDuration(mLastPowerCheckUptime, pw);
-        pw->Println(String(""));
-        StringBuilder sb3("  mGoingToSleep=");
-        sb3 += mMainStack->mGoingToSleep;
-        pw->Println(sb3.ToString());
-        StringBuilder sb4("  mLaunchingActivity=");
-        sb4 += mMainStack->mLaunchingActivity;
-        pw->Println(sb4.ToString());
-        StringBuilder sb5("  mAdjSeq=");
-        sb5 += mAdjSeq;
-        sb5 += " mLruSeq=";
-        sb5 += mLruSeq;
-        pw->Println(sb5.ToString());
-        StringBuilder sb6("  mNumNonHiddenProcs=");
-        sb6 += mNumNonHiddenProcs;
-        sb6 += " mNumHiddenProcs=";
-        sb6 += mNumHiddenProcs;
-        sb6 += " mNumServiceProcs=";
-        sb6 += mNumServiceProcs;
-        sb6 += " mNewNumServiceProcs=";
-        sb6 += mNewNumServiceProcs;
-        pw->Println(sb6.ToString());
+    if (dumpPackage == NULL) {
+        if (mAlwaysFinishActivities || mController != NULL) {
+            StringBuilder sb("  mAlwaysFinishActivities=");
+            sb += mAlwaysFinishActivities;
+            sb += " mController=";
+            sb += mController;
+            pw->Println(sb.ToString());
+        }
+        if (dumpAll) {
+            StringBuilder sb("  Total persistent processes: ");
+            sb += numPers;
+            pw->Println(sb.ToString());
+            StringBuilder sb1;
+            sb1 += " mProcessesReady=";
+            sb1 += mProcessesReady;
+            sb1 += " mSystemReady=";
+            sb1 += mSystemReady;
+            sb1 += " mBooted=";
+            sb1 += mBooted;
+            sb1 += " mFactoryTest=";
+            sb1 += mFactoryTest;
+            pw->Println(sb1.ToString());
+            StringBuilder sb2("  mBooting=");
+            sb2 += mBooting;
+            sb2 += " mCallFinishBooting=";
+            sb2 += mCallFinishBooting;
+            sb2 += " mBootAnimationComplete=";
+            sb2 += mBootAnimationComplete;
+            pw->Println(sb2.ToString());
+            pw->Print(String("  mLastPowerCheckRealtime="));
+            TimeUtils::FormatDuration(mLastPowerCheckRealtime, pw);
+            pw->Println(String(""));
+            pw->Print(String("  mLastPowerCheckUptime="));
+            TimeUtils::FormatDuration(mLastPowerCheckUptime, pw);
+            pw->Println(String(""));
+            StringBuilder sb3("  mGoingToSleep=");
+            sb3 += mMainStack->mGoingToSleep;
+            pw->Println(sb3.ToString());
+            StringBuilder sb4("  mLaunchingActivity=");
+            sb4 += mMainStack->mLaunchingActivity;
+            pw->Println(sb4.ToString());
+            StringBuilder sb5("  mAdjSeq=");
+            sb5 += mAdjSeq;
+            sb5 += " mLruSeq=";
+            sb5 += mLruSeq;
+            pw->Println(sb5.ToString());
+            StringBuilder sb6("  mNumNonCachedProcs=");
+            sb6 += mNumNonCachedProcs;
+            sb6 += " (";
+            sb6 += mLruProcesses.GetSize();
+            sb6 += " total)";
+            sb6 += " mNumCachedHiddenProcs=";
+            sb6 += mNumCachedHiddenProcs;
+            sb6 += " mNumServiceProcs=";
+            sb6 += mNumServiceProcs;
+            sb6 += " mNewNumServiceProcs=";
+            sb6 += mNewNumServiceProcs;
+            pw->Println(sb6.ToString());
+
+            StringBuilder sb7("  mAllowLowerMemLevel=");
+            sb7 += mAllowLowerMemLevel;
+            sb7 += " mLastMemoryLevel=";
+            sb7 += mLastMemoryLevel;
+            sb7 += " mLastNumProcesses=";
+            sb7 += mLastNumProcesses;
+            pw->Println(sb7.ToString());
+            Int64 now = SystemClock::GetUptimeMillis();
+            pw->Print(String("  mLastIdleTime="));
+            TimeUtils::FormatDuration(now, mLastIdleTime, pw);
+            pw->Print(String(" mLowRamSinceLastIdle="));
+            TimeUtils::FormatDuration(GetLowRamTimeSinceIdle(now), pw);
+            pw->Println();
+        }
     }
 
-    return TRUE;
+    if (!printedAnything) {
+        pw->Println(String("  (nothing)"));
+    }
 }
 
 Boolean CActivityManagerService::DumpProcessesToGc(
@@ -15936,24 +16554,45 @@ Boolean CActivityManagerService::DumpProcessesToGc(
                 continue;
             }
             if (!printed) {
-                if (needSep) pw->Println(String(" "));
+                if (needSep) pw->Println();
                 needSep = TRUE;
                 pw->Println(String("  Processes that are waiting to GC:"));
                 printed = TRUE;
             }
-            pw->PrintString(String("    Process "));
-            pw->PrintObjectln((IInterface*)proc.Get());
-            pw->PrintString(String("      lowMem="));
-            pw->PrintBoolean(proc->mReportLowMemory);
-            pw->PrintString(String(", last gced="));
-            pw->PrintInt64(now - proc->mLastRequestedGc);
-            pw->PrintString(String(" ms ago, last lowMem="));
-            pw->PrintInt64(now - proc->mLastLowMemory);
+            pw->Print(String("    Process "));
+            pw->Println(proc.Get()->ToString());
+            pw->Print(String("      lowMem="));
+            pw->Print(proc->mReportLowMemory);
+            pw->Print(String(", last gced="));
+            pw->Print(now - proc->mLastRequestedGc);
+            pw->Print(String(" ms ago, last lowMem="));
+            pw->Print(now - proc->mLastLowMemory);
             pw->Println(String(" ms ago"));
 
         }
     }
     return needSep;
+}
+
+void CActivityManagerService::PrintOomLevel(
+    /* [in] */ IPrintWriter* pw,
+    /* [in] */ const String& name,
+    /* [in] */ Int32 adj)
+{
+    pw->Print(String("    "));
+    if (adj >= 0) {
+        pw->PrintChar(' ');
+        if (adj < 10) pw->PrintChar(' ');
+    }
+    else {
+        if (adj > -10) pw->PrintChar(' ');
+    }
+    pw->Print(adj);
+    pw->Print(String(": "));
+    pw->Print(name);
+    pw->Print(String(" ("));
+    pw->Print(mProcessList->GetMemLevel(adj) / 1024);
+    pw->Println(" kB)");
 }
 
 Boolean CActivityManagerService::DumpOomLocked(
@@ -15966,45 +16605,38 @@ Boolean CActivityManagerService::DumpOomLocked(
     Boolean needSep = FALSE;
 
     if (mLruProcesses.Begin() != mLruProcesses.End()) {
-        if (needSep) pw->Println(String(" "));
+        if (needSep) pw->Println();
         needSep = TRUE;
         pw->Println(String("  OOM levels:"));
-        pw->PrintString(String("    SYSTEM_ADJ: "));
-        pw->PrintInt32ln(ProcessList::SYSTEM_ADJ);
-        pw->PrintString(String("    PERSISTENT_PROC_ADJ: "));
-        pw->PrintInt32ln(ProcessList::PERSISTENT_PROC_ADJ);
-        pw->PrintString(String("    FOREGROUND_APP_ADJ: "));
-        pw->PrintInt32ln(ProcessList::FOREGROUND_APP_ADJ);
-        pw->PrintString(String("    VISIBLE_APP_ADJ: "));
-        pw->PrintInt32ln(ProcessList::VISIBLE_APP_ADJ);
-        pw->PrintString(String("    PERCEPTIBLE_APP_ADJ: "));
-        pw->PrintInt32ln(ProcessList::PERCEPTIBLE_APP_ADJ);
-        pw->PrintString(String("    HEAVY_WEIGHT_APP_ADJ: "));
-        pw->PrintInt32ln(ProcessList::HEAVY_WEIGHT_APP_ADJ);
-        pw->PrintString(String("    BACKUP_APP_ADJ: "));
-        pw->PrintInt32ln(ProcessList::BACKUP_APP_ADJ);
-        pw->PrintString(String("    SERVICE_ADJ: "));
-        pw->PrintInt32ln(ProcessList::SERVICE_ADJ);
-        pw->PrintString(String("    HOME_APP_ADJ: "));
-        pw->PrintInt32ln(ProcessList::HOME_APP_ADJ);
-        pw->PrintString(String("    PREVIOUS_APP_ADJ: "));
-        pw->PrintInt32ln(ProcessList::PREVIOUS_APP_ADJ);
-        pw->PrintString(String("    SERVICE_B_ADJ: "));
-        pw->PrintInt32ln(ProcessList::SERVICE_B_ADJ);
-        pw->PrintString(String("    CACHED_APP_MIN_ADJ: "));
-        pw->PrintInt32ln(ProcessList::CACHED_APP_MIN_ADJ);
-        pw->PrintString(String("    CACHED_APP_MAX_ADJ: "));
-        pw->PrintInt32ln(ProcessList::HIDDEN_APP_MAX_ADJ);
+        PrintOomLevel(pw, String("SYSTEM_ADJ"), ProcessList::SYSTEM_ADJ);
+        PrintOomLevel(pw, String("PERSISTENT_PROC_ADJ"), ProcessList::PERSISTENT_PROC_ADJ);
+        PrintOomLevel(pw, String("PERSISTENT_SERVICE_ADJ"), ProcessList::PERSISTENT_SERVICE_ADJ);
+        PrintOomLevel(pw, String("FOREGROUND_APP_ADJ"), ProcessList::FOREGROUND_APP_ADJ);
+        PrintOomLevel(pw, String("VISIBLE_APP_ADJ"), ProcessList::VISIBLE_APP_ADJ);
+        PrintOomLevel(pw, String("PERCEPTIBLE_APP_ADJ"), ProcessList::PERCEPTIBLE_APP_ADJ);
+        PrintOomLevel(pw, String("BACKUP_APP_ADJ"), ProcessList::BACKUP_APP_ADJ);
+        PrintOomLevel(pw, String("HEAVY_WEIGHT_APP_ADJ"), ProcessList::HEAVY_WEIGHT_APP_ADJ);
+        PrintOomLevel(pw, String("SERVICE_ADJ"), ProcessList::SERVICE_ADJ);
+        PrintOomLevel(pw, String("HOME_APP_ADJ"), ProcessList::HOME_APP_ADJ);
+        PrintOomLevel(pw, String("PREVIOUS_APP_ADJ"), ProcessList::PREVIOUS_APP_ADJ);
+        PrintOomLevel(pw, String("SERVICE_B_ADJ"), ProcessList::SERVICE_B_ADJ);
+        PrintOomLevel(pw, String("CACHED_APP_MIN_ADJ"), ProcessList::CACHED_APP_MIN_ADJ);
+        PrintOomLevel(pw, String("CACHED_APP_MAX_ADJ"), ProcessList::CACHED_APP_MAX_ADJ);
 
-        if (needSep) pw->Println(String(" "));
-        needSep = TRUE;
-        pw->Println(String("  Process OOM control:"));
+        if (needSep) pw->Println();
+        pw->Print(String("  Process OOM control ("));
+        pw->Print(mLruProcesses.GetSize());
+        pw->Print(String(" total, non-act at "));
+        pw->Print(mLruProcesses.GetSize()-mLruProcessActivityStart);
+        pw->Print(String(", non-svc at "));
+        pw->Print(mLruProcesses.GetSize()-mLruProcessServiceStart);
+        pw->Println(String("):"));
         DumpProcessOomList(pw, this, &mLruProcesses, String("    "),
                 String("Proc"), String("PERS"), TRUE, String(NULL));
         needSep = TRUE;
     }
 
-    needSep = DumpProcessesToGc(fd, pw, args, opti, needSep, dumpAll, String(NULL));
+    DumpProcessesToGc(fd, pw, args, opti, needSep, dumpAll, String(NULL));
 
     pw->Println();
     pw->Println(String("  mHomeProcess: ") + mHomeProcess->ToString());
@@ -16024,8 +16656,7 @@ Boolean CActivityManagerService::DumpProvider(
     /* [in] */ Int32 opti,
     /* [in] */ Boolean dumpAll)
 {
-    return FALSE;
-//     return mProviderMap.dumpProvider(fd, pw, name, args, opti, dumpAll);
+    return mProviderMap->DumpProvider(fd, pw, name, args, opti, dumpAll);
 }
 
 Boolean CActivityManagerService::DumpActivity(
@@ -16036,54 +16667,27 @@ Boolean CActivityManagerService::DumpActivity(
     /* [in] */ Int32 opti,
     /* [in] */ Boolean dumpAll)
 {
-    List<AutoPtr<ActivityRecord> > activities;
-
-    if (CString("all").Equals(name)) {
-        AutoLock lock(this);
-        List< AutoPtr<ActivityRecord> >::Iterator it;
-        for (it = mMainStack->mHistory.Begin(); it != mMainStack->mHistory.End(); ++it) {
-            AutoPtr<ActivityRecord> r1 = *it;
-            activities.PushBack(r1);
-        }
-    }
-    else if (CString("top").Equals(name)) {
-        AutoLock lock(this);
-        if (mMainStack->mHistory.Begin() != mMainStack->mHistory.End()) {
-            List< AutoPtr<ActivityRecord> >::ReverseIterator rit = mMainStack->mHistory.RBegin();
-            activities.PushBack(*rit);
-        }
-    }
-    else {
-        AutoPtr<ItemMatcher> matcher = new ItemMatcher();
-        matcher->Build(name);
-
-        {
-            AutoLock lock(this);
-            List< AutoPtr<ActivityRecord> >::Iterator it;
-            for (it = mMainStack->mHistory.Begin(); it != mMainStack->mHistory.End(); ++it) {
-                AutoPtr<ActivityRecord> r1 = *it;
-                AutoPtr<IComponentName> cname;
-                r1->mIntent->GetComponent((IComponentName**)&cname);
-                if (matcher->Match(r1, cname)) {
-                    activities.PushBack(r1);
-                }
-            }
-        }
+    AutoPtr<IList> activities;
+    synchronized (this) {
+        activities = mStackSupervisor->GetDumpActivitiesLocked(name);
     }
 
-    if (activities.Begin() == activities.End()) {
+    Int32 size;
+    activities->GetSize(&size);
+    if (size <= 0) {
         return FALSE;
     }
 
     Int32 argsLength = args->GetLength();
     AutoPtr<ArrayOf<String> > newArgs = ArrayOf<String>::Alloc(argsLength - opti);
-    if (argsLength > 2) newArgs->Copy(args, opti, argsLength- opti);
+    newArgs->Copy(args, opti, argsLength- opti);
 
     AutoPtr<TaskRecord> lastTask;
     Boolean needSep = FALSE;
-    List<AutoPtr<ActivityRecord> >::ReverseIterator rit;
-    for (rit = activities.RBegin(); rit != activities.REnd(); ++rit) {
-        AutoPtr<ActivityRecord> r = *rit;
+    for (Int32 i = size - 1; i >= 0; i--) {
+        AutoPtr<IInterface> item;
+        activities->Get(i, (IInterface**)&item);
+        AutoPtr<ActivityRecord> r = (ActivityRecord*)IActivityRecord::Probe(item);
         if (needSep) {
             pw->Println();
         }
@@ -16092,10 +16696,10 @@ Boolean CActivityManagerService::DumpActivity(
             AutoLock lock(this);
             if (lastTask != r->mTask) {
                 lastTask = r->mTask;
-                pw->PrintString(String("TASK "));
-                pw->PrintString(lastTask->mAffinity);
-                pw->PrintString(String(" id="));
-                pw->PrintInt32ln(lastTask->mTaskId);
+                pw->Print(String("TASK "));
+                pw->Print(lastTask->mAffinity);
+                pw->Print(String(" id="));
+                pw->Println(lastTask->mTaskId);
                 if (dumpAll) {
                     lastTask->Dump(pw, String("  "));
                 }
@@ -16117,13 +16721,13 @@ ECode CActivityManagerService::DumpActivity(
     String innerPrefix = prefix + "  ";
     {
         AutoLock lock(this);
-        pw->PrintString(prefix);
-        pw->PrintString(String("ACTIVITY "));
-        pw->PrintString(r->mShortComponentName);
-        pw->PrintString(String(" "));
-        pw->PrintInt32((Int32)r);
-        pw->PrintString(String(" pid="));
-        if (r->mApp != NULL) pw->PrintInt32ln(r->mApp->mPid);
+        pw->Print(prefix);
+        pw->Print(String("ACTIVITY "));
+        pw->Print(r->mShortComponentName);
+        pw->Print(String(" "));
+        pw->Print((Int32)r);
+        pw->Print(String(" pid="));
+        if (r->mApp != NULL) pw->Println(r->mApp->mPid);
         else pw->Println(String("(not running)"));
         if (dumpAll) {
             r->Dump(pw, innerPrefix);
@@ -16144,15 +16748,15 @@ ECode CActivityManagerService::DumpActivity(
             tp->Kill();
             // }
         // } catch (IOException e) {
-        //     pw.println(innerPrefix + "Failure while dumping the activity: " + e);
+        //     pw->Println(innerPrefix + "Failure while dumping the activity: " + e);
         // } catch (RemoteException e) {
-        //     pw.println(innerPrefix + "Got a RemoteException while dumping the activity");
+        //     pw->Println(innerPrefix + "Got a RemoteException while dumping the activity");
         // }
     }
     return NOERROR;
 }
 
-Boolean CActivityManagerService::DumpBroadcastsLocked(
+void CActivityManagerService::DumpBroadcastsLocked(
     /* [in] */ IFileDescriptor* fd,
     /* [in] */ IPrintWriter* pw,
     /* [in] */ ArrayOf<String>* args,
@@ -16162,6 +16766,7 @@ Boolean CActivityManagerService::DumpBroadcastsLocked(
 {
     Boolean needSep = FALSE;
     Boolean onlyHistory = FALSE;
+    Boolean printedAnything = FALSE;
     String newDumpPackage = dumpPackage;
 
     if (newDumpPackage.Equals("history")) {
@@ -16189,24 +16794,26 @@ Boolean CActivityManagerService::DumpBroadcastsLocked(
                     pw->Println(String("  Registered Receivers:"));
                     needSep = TRUE;
                     printed = TRUE;
+                    printedAnything = TRUE;
                 }
-                pw->PrintString(String("  * "));
-                pw->PrintObjectln((IInterface*)r);
-                // TODO:
-                // r->Dump(pw, "    ");
+                pw->Print(String("  * "));
+                pw->Println(r->ToString());
+                r->Dump(pw, String("    "));
             }
         }
 
-//         if (mReceiverResolver.dump(pw, needSep ?
-//                 "\n  Receiver Resolver Table:" : "  Receiver Resolver Table:",
-//                 "    ", newDumpPackage, FALSE)) {
-//             needSep = TRUE;
-//         }
+        if (mReceiverResolver->Dump(pw, String(needSep ?
+                "\n  Receiver Resolver Table:" : "  Receiver Resolver Table:"),
+                String("    "), newDumpPackage, FALSE)) {
+            needSep = TRUE;
+            printedAnything = TRUE;
+        }
     }
 
     for (Int32 i = 0; i < mBroadcastQueues->GetLength(); ++i) {
         AutoPtr<BroadcastQueue> q = (*mBroadcastQueues)[i];
         needSep = q->DumpLocked(fd, pw, args, opti, dumpAll, newDumpPackage, needSep);
+        printedAnything |= needSep;
     }
 
     needSep = TRUE;
@@ -16218,15 +16825,16 @@ Boolean CActivityManagerService::DumpBroadcastsLocked(
                 pw->Println();
             }
             needSep = TRUE;
-            pw->PrintString(String("  Sticky broadcasts for user "));
-            pw->PrintInt32(it->mFirst);
+            printedAnything = TRUE;
+            pw->Print(String("  Sticky broadcasts for user "));
+            pw->Print(it->mFirst);
             pw->Println(String(":"));
             AutoPtr<StringBuilder> sb = new StringBuilder(128);
             AutoPtr<StringIntentMap> ent = it->mSecond;
             typename StringIntentMap::Iterator entIt;
             for (entIt = ent->Begin(); entIt != ent->End(); ++entIt) {
-                pw->PrintString(String("  * Sticky action "));
-                pw->PrintString(entIt->mFirst);
+                pw->Print(String("  * Sticky action "));
+                pw->Print(entIt->mFirst);
                 if (dumpAll) {
                     pw->Println(String(":"));
                     AutoPtr<StringIntentList> intents = entIt->mSecond;
@@ -16240,7 +16848,7 @@ Boolean CActivityManagerService::DumpBroadcastsLocked(
                         AutoPtr<IBundle> bundle;
                         (*intentsIt)->GetExtras((IBundle**)&bundle);
                         if (bundle != NULL) {
-                            pw->PrintString(String("      "));
+                            pw->Print(String("      "));
                             String bStr;
                             bundle->ToString(&bStr);
                             pw->Println(bStr);
@@ -16267,12 +16875,15 @@ Boolean CActivityManagerService::DumpBroadcastsLocked(
         pw->Println(String("  mHandler:"));
 //         mHandler.dump(new PrintWriterPrinter(pw), "    ");
         needSep = TRUE;
+        printedAnything = TRUE;
     }
 
-    return needSep;
+    if (!printedAnything) {
+        pw->Println(String("  (nothing)"));
+    }
 }
 
-Boolean CActivityManagerService::DumpProvidersLocked(
+void CActivityManagerService::DumpProvidersLocked(
     /* [in] */ IFileDescriptor* fd,
     /* [in] */ IPrintWriter* pw,
     /* [in] */ ArrayOf<String>* args,
@@ -16280,14 +16891,16 @@ Boolean CActivityManagerService::DumpProvidersLocked(
     /* [in] */ Boolean dumpAll,
     /* [in] */ const String& dumpPackage)
 {
-    Boolean needSep = TRUE;
+    Boolean needSep = FALSE;
+    Boolean printedAnything = FALSE;
 
     AutoPtr<ItemMatcher> matcher = new ItemMatcher();
     matcher->Build(args, opti);
 
     pw->Println(String("ACTIVITY MANAGER CONTENT PROVIDERS (dumpsys activity providers)"));
 
-//     mProviderMap.dumpProvidersLocked(pw, dumpAll);
+    needSep = mProviderMap->DumpProvidersLocked(pw, dumpAll, dumpPackage);
+    printedAnything |= needSep;
 
     if (mLaunchingProviders.Begin() != mLaunchingProviders.End()) {
         Boolean printed = FALSE;
@@ -16301,48 +16914,64 @@ Boolean CActivityManagerService::DumpProvidersLocked(
                 continue;
             }
             if (!printed) {
-                if (needSep) pw->Println(String(" "));
+                if (needSep) pw->Println();
                 needSep = TRUE;
                 pw->Println(String("  Launching content providers:"));
                 printed = TRUE;
+                printedAnything = TRUE;
             }
-            pw->PrintString(String("  Launching #"));
-            pw->PrintInt32(i);
-            pw->PrintString(String(": "));
-            pw->PrintObjectln((IInterface*)r);
+            pw->Print(String("  Launching #"));
+            pw->Print(i);
+            pw->Print(String(": "));
+            pw->Println(r->ToString());
         }
     }
 
     if (!mGrantedUriPermissions.IsEmpty()) {
-        if (needSep) pw->Println();
-        needSep = TRUE;
-
-        pw->Println(String("Granted Uri Permissions:"));
+        Boolean printed = FALSE;
+        Int32 dumpUid = -2;
+        if (dumpPackage != NULL) {
+            AutoPtr<IPackageManager> pm;
+            mContext->GetPackageManager((IPackageManager**)&pm);
+            if (FAILED(pm->GetPackageUid(dumpPackage, 0, &dumpUid))) {
+                dumpUid = -1;
+            }
+        }
         GrantUriPermissionMapMap::Iterator it = mGrantedUriPermissions.Begin();
         GrantUriPermissionMap::Iterator pIt;
         for (; it != mGrantedUriPermissions.End(); ++it) {
             Int32 uid = it->mFirst;
+            if (dumpUid >= -1 && UserHandleGetAppId(uid) != dumpUid) {
+                continue;
+            }
             AutoPtr<GrantUriPermissionMap> perms = it->mSecond;
-            pw->PrintString(String("  * UID "));
-            pw->PrintInt32(uid);
+            if (!printed) {
+                if (needSep) pw->Println();
+                needSep = TRUE;
+                pw->Println(String("  Granted Uri Permissions:"));
+                printed = TRUE;
+                printedAnything = TRUE;
+            }
+            pw->Print(String("  * UID "));
+            pw->Print(uid);
             pw->Println(String(" holds:"));
             for (pIt = perms->Begin(); pIt != perms->End(); ++pIt) {
                 AutoPtr<UriPermission> perm = pIt->mSecond;
-                pw->PrintString(String("    "));
-                // TODO:
-                // pw->Println(perm);
+                pw->Print(String("    "));
+                pw->Println(perm);
                 if (dumpAll) {
                     perm->Dump(pw, String("      "));
                 }
             }
         }
-        needSep = TRUE;
     }
 
-    return needSep;
+    if (!printedAnything) {
+        pw->Println(String("  (nothing)"));
+    }
 }
 
-Boolean CActivityManagerService::DumpPendingIntentsLocked(
+void CActivityManagerService::DumpPendingIntentsLocked(
     /* [in] */ IFileDescriptor* fd,
     /* [in] */ IPrintWriter* pw,
     /* [in] */ ArrayOf<String>* args,
@@ -16350,10 +16979,11 @@ Boolean CActivityManagerService::DumpPendingIntentsLocked(
     /* [in] */ Boolean dumpAll,
     /* [in] */ const String& dumpPackage)
 {
-    Boolean needSep = FALSE;
+    Boolean printed = FALSE;
+
+    pw->Println(String("ACTIVITY MANAGER PENDING INTENTS (dumpsys activity intents)"));
 
     if (mIntentSenderRecords.Begin() != mIntentSenderRecords.End()) {
-        Boolean printed = FALSE;
         PendingIntentRecordHashMap::Iterator it;
         for (it = mIntentSenderRecords.Begin(); it != mIntentSenderRecords.End(); ++it) {
             AutoPtr<IWeakReference> ref = it->mSecond;
@@ -16364,136 +16994,26 @@ Boolean CActivityManagerService::DumpPendingIntentsLocked(
                     || !dumpPackage.Equals(rec->mKey->mPackageName))) {
                 continue;
             }
-            if (!printed) {
-                pw->Println(String("ACTIVITY MANAGER PENDING INTENTS (dumpsys activity intents)"));
-                printed = TRUE;
-            }
-            needSep = TRUE;
+            printed = TRUE;
             if (rec != NULL) {
-                pw->PrintString(String("  * "));
-                pw->PrintObjectln((IInterface*)rec->Probe(EIID_IInterface));
+                pw->Print(String("  * "));
+                pw->Println(rec->Probe(EIID_IInterface)->ToString());
                 if (dumpAll) {
-                // TODO:
-                //     rec.dump(pw, "    ");
+                    rec->Dump(pw, String("    "));
                 }
             }
             else {
-                pw->PrintString(String("  * "));
-            // TODO:
-            //     pw.println(ref);
+                pw->Print(String("  * "));
+                pw->Println(ref);
             }
         }
+    }
+
+    if (!printed) {
+        pw->Println(String("  (nothing)"));
     }
 
     return needSep;
-}
-
-ECode CActivityManagerService::DumpHistoryList(
-    /* [in] */ IFileDescriptor* fd,
-    /* [in] */ IPrintWriter* pw,
-    /* [in] */ List< AutoPtr<ActivityRecord> >* list,
-    /* [in] */ const String& prefix,
-    /* [in] */ const String& label,
-    /* [in] */ Boolean complete,
-    /* [in] */ Boolean brief,
-    /* [in] */ Boolean client,
-    /* [in] */ const String& dumpPackage)
-{
-    AutoPtr<TaskRecord> lastTask;
-    Boolean needNL = FALSE;
-    String innerPrefix = prefix + "      ";
-    AutoPtr<ArrayOf<String> > args = ArrayOf<String>::Alloc(0);
-    List< AutoPtr<ActivityRecord> >::ReverseIterator rit;
-    Int32 i = 0;
-    for (rit = list->RBegin(); rit != list->REnd(); ++rit, ++i) {
-        AutoPtr<ActivityRecord> r = *rit;
-        if (!dumpPackage.IsNull() && !dumpPackage.Equals(r->mPackageName)) {
-            continue;
-        }
-        const Boolean full = !brief && (complete || !r->IsInHistory());
-        if (needNL) {
-            pw->Println(String(" "));
-            needNL = FALSE;
-        }
-        if (lastTask != r->mTask) {
-            lastTask = r->mTask;
-            pw->PrintString(prefix);
-            pw->PrintString(full ? String("* ") : String("  "));
-            //TODO:
-            // pw->Println(lastTask);
-            if (full) {
-                lastTask->Dump(pw, prefix + "  ");
-            }
-            else if (complete) {
-                // Complete + brief == give a summary.  Isn't that obvious?!?
-                if (lastTask->mIntent != NULL) {
-                    pw->PrintString(prefix);
-                    pw->PrintString(String("  "));
-                    String inStr;
-                    lastTask->mIntent->ToInsecureStringWithClip(&inStr);
-                    pw->Println(inStr);
-                }
-            }
-        }
-        pw->PrintString(prefix);
-        pw->PrintString(full ? String("  * ") : String("    "));
-        pw->PrintString(label);
-        pw->PrintString(String(" #"));
-        pw->PrintInt32(i);
-        pw->PrintString(String(": "));
-        pw->PrintObjectln(r);
-        if (full) {
-            r->Dump(pw, innerPrefix);
-        }
-        else if (complete) {
-            // Complete + brief == give a summary.  Isn't that obvious?!?
-            pw->PrintString(innerPrefix);
-            String inStr;
-            r->mIntent->ToInsecureStringWithClip(&inStr);
-            pw->Println(inStr);
-            if (r->mApp != NULL) {
-                pw->PrintString(innerPrefix);
-                pw->PrintObjectln((IInterface*)r->mApp);
-            }
-        }
-        if (client && r->mApp != NULL && r->mApp->mThread != NULL) {
-            // flush anything that is already in the PrintWriter since the thread is going
-            // to write to the file descriptor directly
-            IFlushable::Probe(pw)->Flush();
-            // try {
-            AutoPtr<TransferPipe> tp = new TransferPipe();
-            // try {
-            AutoPtr<IFileDescriptor> des;
-            tp->GetWriteFd()->GetFileDescriptor((IFileDescriptor**)&des);
-            r->mApp->mThread->DumpActivity(des, IBinder::Probe(r->mAppToken), innerPrefix, args);
-            // Short timeout, since blocking here can
-            // deadlock with the application.
-                    tp->Go(fd, 2000);
-                // } finally {
-                    tp->Kill();
-                // }
-            // } catch (IOException e) {
-            //     pw.println(innerPrefix + "Failure while dumping the activity: " + e);
-            // } catch (RemoteException e) {
-            //     pw.println(innerPrefix + "Got a RemoteException while dumping the activity");
-            // }
-            needNL = TRUE;
-        }
-    }
-    return NOERROR;
-}
-
-String CActivityManagerService::BuildOomTag(
-    /* [in] */ const String& prefix,
-    /* [in] */ const String& space,
-    /* [in] */ Int32 val,
-    /* [in] */ Int32 base)
-{
-    if (val == base) {
-        if (space == NULL) return prefix;
-        return prefix + "  ";
-    }
-    return prefix + "+" + StringUtils::Int32ToString(val-base);
 }
 
 Int32 CActivityManagerService::DumpProcessList(
@@ -16537,12 +17057,171 @@ Boolean CActivityManagerService::DumpProcessOomList(
     /* [in] */ Boolean inclDetails,
     /* [in] */ const String& dumpPackage)
 {
+    // ArrayList<Pair<ProcessRecord, Integer>> list
+    //         = new ArrayList<Pair<ProcessRecord, Integer>>(origList.size());
+    // for (Int32 i=0; i<origList.size(); i++) {
+    //     ProcessRecord r = origList.get(i);
+    //     if (dumpPackage != null && !r.pkgList.containsKey(dumpPackage)) {
+    //         continue;
+    //     }
+    //     list.add(new Pair<ProcessRecord, Integer>(origList.get(i), i));
+    // }
+
+    // if (list.size() <= 0) {
+    //     return FALSE;
+    // }
+
+    // Comparator<Pair<ProcessRecord, Integer>> comparator
+    //         = new Comparator<Pair<ProcessRecord, Integer>>() {
+    //     @Override
+    //     public Int32 compare(Pair<ProcessRecord, Integer> object1,
+    //             Pair<ProcessRecord, Integer> object2) {
+    //         if (object1.first.setAdj != object2.first.setAdj) {
+    //             return object1.first.setAdj > object2.first.setAdj ? -1 : 1;
+    //         }
+    //         if (object1.second.intValue() != object2.second.intValue()) {
+    //             return object1.second.intValue() > object2.second.intValue() ? -1 : 1;
+    //         }
+    //         return 0;
+    //     }
+    // };
+
+    // Collections.sort(list, comparator);
+
+    // final long curRealtime = SystemClock.elapsedRealtime();
+    // final long realtimeSince = curRealtime - service.mLastPowerCheckRealtime;
+    // final long curUptime = SystemClock.uptimeMillis();
+    // final long uptimeSince = curUptime - service.mLastPowerCheckUptime;
+
+    // for (Int32 i=list.size()-1; i>=0; i--) {
+    //     ProcessRecord r = list.get(i).first;
+    //     String oomAdj = ProcessList.makeOomAdjString(r.setAdj);
+    //     char schedGroup;
+    //     switch (r.setSchedGroup) {
+    //         case Process.THREAD_GROUP_BG_NONINTERACTIVE:
+    //             schedGroup = 'B';
+    //             break;
+    //         case Process.THREAD_GROUP_DEFAULT:
+    //             schedGroup = 'F';
+    //             break;
+    //         default:
+    //             schedGroup = '?';
+    //             break;
+    //     }
+    //     char foreground;
+    //     if (r.foregroundActivities) {
+    //         foreground = 'A';
+    //     } else if (r.foregroundServices) {
+    //         foreground = 'S';
+    //     } else {
+    //         foreground = ' ';
+    //     }
+    //     String procState = ProcessList.MakeProcStateString(r.curProcState);
+    //     pw->Print(prefix);
+    //     pw->Print(r.persistent ? persistentLabel : normalLabel);
+    //     pw->Print(" #");
+    //     Int32 num = (origList.size()-1)-list.get(i).second;
+    //     if (num < 10) pw->Print(' ');
+    //     pw->Print(num);
+    //     pw->Print(": ");
+    //     pw->Print(oomAdj);
+    //     pw->Print(' ');
+    //     pw->Print(schedGroup);
+    //     pw->Print('/');
+    //     pw->Print(foreground);
+    //     pw->Print('/');
+    //     pw->Print(procState);
+    //     pw->Print(" trm:");
+    //     if (r.trimMemoryLevel < 10) pw->Print(' ');
+    //     pw->Print(r.trimMemoryLevel);
+    //     pw->Print(' ');
+    //     pw->Print(r.toShortString());
+    //     pw->Print(" (");
+    //     pw->Print(r.adjType);
+    //     pw->Println(')');
+    //     if (r.adjSource != null || r.adjTarget != null) {
+    //         pw->Print(prefix);
+    //         pw->Print("    ");
+    //         if (r.adjTarget instanceof ComponentName) {
+    //             pw->Print(((ComponentName)r.adjTarget).flattenToShortString());
+    //         } else if (r.adjTarget != null) {
+    //             pw->Print(r.adjTarget.toString());
+    //         } else {
+    //             pw->Print("{null}");
+    //         }
+    //         pw->Print("<=");
+    //         if (r.adjSource instanceof ProcessRecord) {
+    //             pw->Print("Proc{");
+    //             pw->Print(((ProcessRecord)r.adjSource).toShortString());
+    //             pw->Println("}");
+    //         } else if (r.adjSource != null) {
+    //             pw->Println(r.adjSource.toString());
+    //         } else {
+    //             pw->Println("{null}");
+    //         }
+    //     }
+    //     if (inclDetails) {
+    //         pw->Print(prefix);
+    //         pw->Print("    ");
+    //         pw->Print("oom: max="); pw->Print(r.maxAdj);
+    //         pw->Print(" curRaw="); pw->Print(r.curRawAdj);
+    //         pw->Print(" setRaw="); pw->Print(r.setRawAdj);
+    //         pw->Print(" cur="); pw->Print(r.curAdj);
+    //         pw->Print(" set="); pw->Println(r.setAdj);
+    //         pw->Print(prefix);
+    //         pw->Print("    ");
+    //         pw->Print("state: cur="); pw->Print(ProcessList.MakeProcStateString(r.curProcState));
+    //         pw->Print(" set="); pw->Print(ProcessList.MakeProcStateString(r.setProcState));
+    //         pw->Print(" lastPss="); pw->Print(r.lastPss);
+    //         pw->Print(" lastCachedPss="); pw->Println(r.lastCachedPss);
+    //         pw->Print(prefix);
+    //         pw->Print("    ");
+    //         pw->Print("cached="); pw->Print(r.cached);
+    //         pw->Print(" empty="); pw->Print(r.empty);
+    //         pw->Print(" hasAboveClient="); pw->Println(r.hasAboveClient);
+
+    //         if (r.setProcState >= IActivityManager::PROCESS_STATE_SERVICE) {
+    //             if (r.lastWakeTime != 0) {
+    //                 long wtime;
+    //                 BatteryStatsImpl stats = service.mBatteryStatsService.getActiveStatistics();
+    //                 synchronized (stats) {
+    //                     wtime = stats.getProcessWakeTime(r.info.uid,
+    //                             r.pid, curRealtime);
+    //                 }
+    //                 long timeUsed = wtime - r.lastWakeTime;
+    //                 pw->Print(prefix);
+    //                 pw->Print("    ");
+    //                 pw->Print("keep awake over ");
+    //                 TimeUtils.formatDuration(realtimeSince, pw);
+    //                 pw->Print(" used ");
+    //                 TimeUtils.formatDuration(timeUsed, pw);
+    //                 pw->Print(" (");
+    //                 pw->Print((timeUsed*100)/realtimeSince);
+    //                 pw->Println("%)");
+    //             }
+    //             if (r.lastCpuTime != 0) {
+    //                 long timeUsed = r.curCpuTime - r.lastCpuTime;
+    //                 pw->Print(prefix);
+    //                 pw->Print("    ");
+    //                 pw->Print("run cpu over ");
+    //                 TimeUtils.formatDuration(uptimeSince, pw);
+    //                 pw->Print(" used ");
+    //                 TimeUtils.formatDuration(timeUsed, pw);
+    //                 pw->Print(" (");
+    //                 pw->Print((timeUsed*100)/uptimeSince);
+    //                 pw->Println("%)");
+    //             }
+    //         }
+    //     }
+    // }
+    // return TRUE;
     return FALSE;
 }
 
 AutoPtr<List<AutoPtr<ProcessRecord> > > CActivityManagerService::CollectProcesses(
     /* [in] */ IPrintWriter* pw,
     /* [in] */ Int32 start,
+    /* [in] */ Boolean allPkgs,
     /* [in] */ ArrayOf<String>* args)
 {
     AutoPtr<List<AutoPtr<ProcessRecord> > > procs;
@@ -16559,7 +17238,12 @@ AutoPtr<List<AutoPtr<ProcessRecord> > > CActivityManagerService::CollectProcesse
             List< AutoPtr<ProcessRecord> >::ReverseIterator rit;
             for (rit = mLruProcesses.RBegin(); rit != mLruProcesses.REnd(); ++rit) {
                 AutoPtr<ProcessRecord> proc = *rit;
+                Boolean res;
                 if (proc->mPid == pid) {
+                    procs->PushBack(proc);
+                }
+                else if (allPkgs && proc->mPkgList != NULL
+                    && proc->mPkgList->ContainsKey((*args)[start])) {
                     procs->PushBack(proc);
                 }
                 else if (proc->mProcessName.Equals((*args)[start])) {
@@ -16567,7 +17251,6 @@ AutoPtr<List<AutoPtr<ProcessRecord> > > CActivityManagerService::CollectProcesse
                 }
             }
             if (procs->Begin() == procs->End()) {
-                pw->Println(String("No process found for: ") + (*args)[start]);
                 return NULL;
             }
         }
@@ -16583,8 +17266,9 @@ ECode CActivityManagerService::DumpGraphicsHardwareUsage(
     /* [in] */ IPrintWriter* pw,
     /* [in] */ ArrayOf<String>* args)
 {
-    AutoPtr< List<AutoPtr<ProcessRecord> > > procs = CollectProcesses(pw, 0, args);
+    AutoPtr< List<AutoPtr<ProcessRecord> > > procs = CollectProcesses(pw, 0, FALSE, args);
     if (procs == NULL) {
+        pw->Println(String("No process found for: ") + (*args)[0]);
         return NOERROR;
     }
 
@@ -16620,11 +17304,11 @@ ECode CActivityManagerService::DumpGraphicsHardwareUsage(
                 tp->Kill();
                 // }
             // } catch (IOException e) {
-            //     pw.println("Failure while dumping the app: " + r);
-            //     pw.flush();
+            //     pw->Println("Failure while dumping the app: " + r);
+            //     pw->Flush();
             // } catch (RemoteException e) {
-            //     pw.println("Got a RemoteException while dumping the app " + r);
-            //     pw.flush();
+            //     pw->Println("Got a RemoteException while dumping the app " + r);
+            //     pw->Flush();
             // }
         }
     }
@@ -16636,8 +17320,9 @@ ECode CActivityManagerService::DumpDbInfo(
     /* [in] */ IPrintWriter* pw,
     /* [in] */ ArrayOf<String>* args)
 {
-    AutoPtr<List<AutoPtr<ProcessRecord> > > procs = CollectProcesses(pw, 0, args);
+    AutoPtr<List<AutoPtr<ProcessRecord> > > procs = CollectProcesses(pw, 0, FALSE, args);
     if (procs == NULL) {
+        pw->Println(String("No process found for: ") + (*args)[0]);
         return NOERROR;
     }
 
@@ -16666,11 +17351,11 @@ ECode CActivityManagerService::DumpDbInfo(
                 tp->Kill();
                 // }
             // } catch (IOException e) {
-            //     pw.println("Failure while dumping the app: " + r);
-            //     pw.flush();
+            //     pw->Println("Failure while dumping the app: " + r);
+            //     pw->Flush();
             // } catch (RemoteException e) {
-            //     pw.println("Got a RemoteException while dumping the app " + r);
-            //     pw.flush();
+            //     pw->Println("Got a RemoteException while dumping the app " + r);
+            //     pw->Flush();
             // }
         }
     }
@@ -16678,50 +17363,47 @@ ECode CActivityManagerService::DumpDbInfo(
 }
 
 ECode CActivityManagerService::DumpMemItems(
-   /* [in] */ IPrintWriter* pw,
-   /* [in] */ const String& prefix,
-   /* [in] */ List< AutoPtr<MemItem> >* items,
-   /* [in] */ Boolean sort)
+    /* [in] */ IPrintWriter* pw,
+    /* [in] */ const String& prefix,
+    /* [in] */ const String& tag,
+    /* [in] */ List< AutoPtr<MemItem> >* items,
+    /* [in] */ Boolean sort,
+    /* [in] */ Boolean isCompact)
 {
     List< AutoPtr<MemItem> >::Iterator it;
-    AutoPtr<MemItem> item;
-    if (sort) {
-        Int32 size = items->GetSize();
-        if (size > 1) {
-            Boolean finished = TRUE;
-            List< AutoPtr<MemItem> >::Iterator nextIt;
-            AutoPtr<MemItem> nextItem;
-            for (Int32 i = 0; i < size; ++i) {
-                finished = TRUE;
-
-                it = items->Begin();
-                nextIt = items->Begin();
-                ++nextIt;
-                for (Int32 j = 0; j < size - 1; ++j, ++it, ++nextIt) {
-                    item = *it;
-                    nextItem = *nextIt;
-                    if (item->mPss > nextItem->mPss) {
-                        finished = FALSE;
-                        *it = nextItem;
-                        *nextIt = item;
-                    }
-                }
-
-                if (finished) {
-                    break;
-                }
-            }
-        }
+    if (sort && !isCompact) {
+        items->Sort(MemItem::Compare);
     }
 
+    AutoPtr<MemItem> mi;
     for (it = items->Begin(); it != items->End(); ++it) {
-        item = *it;
-        pw->PrintString(prefix);
-        pw->PrintInt32(item->mPss);
-        pw->PrintString(String(" kB: "));
-        pw->Println(item->mLabel);
-        if (item->mSubitems != NULL) {
-            DumpMemItems(pw, prefix + "           ", item->mSubitems, TRUE);
+        mi = *it;
+        if (!isCompact) {
+            pw->Print(prefix);
+            pw->Print(mi->mPss);
+            pw->Print(String(" kB: "));
+            pw->Println(mi->mLabel);
+        }
+        else if (mi->mIsProc) {
+            pw->Print(String("proc,"));
+            pw->Print(tag);
+            pw->Print(String(","));
+            pw->Print(mi->mShortLabel);
+            pw->Print(String(","));
+            pw->Print(mi->mId);
+            pw->Print(String(","));
+            pw->Print(mi->mPss);
+            pw->Println(String(mi->mEmpty ? ",a" : ",e"));
+        }
+        else {
+            pw->Print(tag);
+            pw->Print(String(","));
+            pw->Print(mi->mShortLabel);
+            pw->Print(String(","));
+            pw->Println(mi->mPss);
+        }
+        if (mi->mSubitems != NULL) {
+            DumpMemItems(pw, prefix + "           ", mi->mSubitems, TRUE);
         }
     }
     return NOERROR;
@@ -16756,23 +17438,49 @@ ECode CActivityManagerService::AppendMemBucket(
     return NOERROR;
 }
 
+void CActivityManagerService::DumpApplicationMemoryUsageHeader(
+    /* [in] */ IPrintWriter* pw,
+    /* [in] */ Int64 uptime,
+    /* [in] */ Int64 realtime,
+    /* [in] */ Boolean isCheckinRequest,
+    /* [in] */ Boolean isCompact)
+{
+    if (isCheckinRequest || isCompact) {
+        // short checkin version
+        pw->Print(String("time,"));
+        pw->Print(uptime);
+        pw->Print(String(","));
+        pw->Println(realtime);
+    }
+    else {
+        pw->Println(String("Applications Memory Usage (kB):"));
+        StringBuilder sb("Uptime: ");
+        sb += uptime;
+        sb += " Realtime: ";
+        sb += realtime;
+        pw->Println(sb.ToString());
+    }
+}
+
 ECode CActivityManagerService::DumpApplicationMemoryUsage(
     /* [in] */ IFileDescriptor* fd,
     /* [in] */ IPrintWriter* pw,
     /* [in] */ const String& prefix,
     /* [in] */ ArrayOf<String>* args,
     /* [in] */ Boolean brief,
-    /* [in] */ IPrintWriter* categoryPw,
-    /* [in] */ StringBuilder& outTag,
-    /* [in] */ StringBuilder& outStack)
+    /* [in] */ IPrintWriter* categoryPw)
 {
     if (args == NULL) {
         return NOERROR;
     }
 
-    Slogger::D(TAG, "======================DumpApplicationMemoryUsage====================");
-    Boolean dumpAll = FALSE;
+    Boolean dumpDetails = FALSE;
+    Boolean dumpFullDetails = FALSE;
+    Boolean dumpDalvik = FALSE;
     Boolean oomOnly = FALSE;
+    Boolean isCompact = FALSE;
+    Boolean localOnly = FALSE;
+    Boolean packages = FALSE;
 
     Int32 opti = 0;
     String opt;
@@ -16783,15 +17491,34 @@ ECode CActivityManagerService::DumpApplicationMemoryUsage(
         }
         opti++;
         if (opt.Equals("-a")) {
-            dumpAll = TRUE;
+            dumpDetails = TRUE;
+            dumpFullDetails = TRUE;
+            dumpDalvik = TRUE;
+        }
+        else if (opt.Equals("-d")) {
+            dumpDalvik = TRUE;
+        }
+        else if (opt.Equals("-c")) {
+            isCompact = TRUE;
         }
         else if (opt.Equals("--oom")) {
             oomOnly = TRUE;
         }
+        else if (opt.Equals("--local")) {
+            localOnly = TRUE;
+        }
+        else if (opt.Equals("--package")) {
+            packages = TRUE;
+        }
         else if (opt.Equals("-h")) {
-            pw->Println(String("meminfo dump options: [-a] [--oom] [process]"));
+            pw->Println(String("meminfo dump options: [-a] [-d] [-c] [--oom] [process]"));
             pw->Println(String("  -a: include all available information for each process."));
+            pw->Println(String("  -d: include dalvik details when dumping process details."));
+            pw->Println(String("  -c: dump in a compact machine-parseable representation."));
             pw->Println(String("  --oom: only show processes organized by oom adj."));
+            pw->Println(String("  --local: only collect details locally, don't call process."));
+            pw->Println(String("  --package: interpret process arg as package, dumping all"));
+            pw->Println(String("             processes that have loaded that package."));
             pw->Println(String("If [process] is specified it can be the name or "));
             pw->Println(String("pid of a specific process to dump."));
             return NOERROR;
@@ -16801,42 +17528,93 @@ ECode CActivityManagerService::DumpApplicationMemoryUsage(
         }
     }
 
-    AutoPtr<List<AutoPtr<ProcessRecord> > > procs = CollectProcesses(pw, opti, args);
-    if (procs == NULL) {
-        return NOERROR;
-    }
-
     const Boolean isCheckinRequest = ScanArgs(args, String("--checkin"));
     Int64 uptime = SystemClock::GetUptimeMillis();
     Int64 realtime = SystemClock::GetElapsedRealtime();
+    AutoPtr<ArrayOf<Int64> > tmpLong = ArrayOf<Int64>::Alloc(1);
 
-    if (procs->GetSize() == 1 || isCheckinRequest) {
-        dumpAll = TRUE;
+    AutoPtr<List<AutoPtr<ProcessRecord> > > procs = CollectProcesses(pw, opti, packages, args);
+    if (procs == NULL) {
+        // No Java processes.  Maybe they want to print a native process.
+        if (args != NULL && args->GetLength() > opti
+                && (*args)[opti].GetChar(0) != '-') {
+            List<AutoPtr<IProcessCpuTrackerStats> > nativeProcs;
+            UpdateCpuStatsNow();
+            Int32 findPid = StringUtils::ParseInt32((*args)[opti], 10, -1);
+            synchronized (mProcessCpuTracker) {
+                Int32 N;
+                mProcessCpuTracker->CountStats(&N);
+                for (Int32 i = 0; i < N; i++) {
+                    AutoPtr<IProcessCpuTrackerStats> st;
+                    mProcessCpuTracker->GetStats(i, (IProcessCpuTrackerStats**)&st);
+                    Int32 pid;
+                    st->GetPid(&pid);
+                    String baseName;
+                    st->GetBaseName(&baseName);
+                    if (pid == findPid || (baseName != NULL
+                            && baseName.Equals((*args)[opti]))) {
+                        nativeProcs.PushBack(st);
+                    }
+                }
+            }
+            if (nativeProcs.GetSize() > 0) {
+                DumpApplicationMemoryUsageHeader(pw, uptime, realtime, isCheckinRequest,
+                        isCompact);
+                AutoPtr<IDebugMemoryInfo> mi;
+                List<AutoPtr<IProcessCpuTrackerStats> >::ReverseIterator rit;
+                for (rit = nativeProcs.Begin(); rit != nativeProcs.End(); ++rit) {
+                    AutoPtr<IProcessCpuTrackerStats> r = *rit;
+                    Int32 pid;
+                    r->GetPid(&pid);
+                    String baseName;
+                    r->GetBaseName(&baseName);
+                    if (!isCheckinRequest && dumpDetails) {
+                        String str;
+                        str.AppendFormat("\n** MEMINFO in pid %d [%s] **", pid, baseName.string());
+                        pw->Println(str);
+                    }
+                    if (mi == NULL) {
+                        assert(0);
+                        // CDebugMemoryInfo::New((IDebugMemoryInfo**)&mi);
+                    }
+                    AutoPtr<IDebug> dbg;
+                    CDebug::AcquireSingleton((IDebug**)&dbg);
+                    if (dumpDetails || (!brief && !oomOnly)) {
+                        dbg->GetMemoryInfo(pid, mi);
+                    }
+                    else {
+                        Int64 pss;
+                        dbg->GetPss(pid, tmpLong, &pss);
+                        mi->SetDalvikPss((Int32)pss);
+                        mi->SetDalvikPrivateDirty((Int32)(*tmpLong)[0]);
+                    }
+                    AutoPtr<IActivityThreadHelper> atHelper;
+                    CActivityThreadHelper::AcquireSingleton((IActivityThreadHelper**)&atHelper);
+                    atHelper->DumpMemInfoTable(pw, mi, isCheckinRequest, dumpFullDetails,
+                            dumpDalvik, pid, baseName, 0, 0, 0, 0, 0, 0);
+                    if (isCheckinRequest) {
+                        pw->Println();
+                    }
+                }
+                return NOERROR;
+            }
+        }
+        pw->Println(String("No process found for: ") + (*args)[opti]);
+        return NOERROR;
     }
 
-    if (isCheckinRequest) {
-        // short checkin version
-        StringBuilder sb("");
-        sb += uptime;
-        sb += ",";
-        sb += realtime;
-        pw->Println(sb.ToString());
-        IFlushable::Probe(pw)->Flush();
+    if (!brief && !oomOnly && (procs->GetSize() == 1 || isCheckinRequest || packages)) {
+        dumpDetails = TRUE;
     }
-    else {
-        pw->Println(String("Applications Memory Usage (kB):"));
-        StringBuilder sb("Uptime: ");
-        sb += uptime;
-        sb += " Realtime: ";
-        sb += realtime;
-        pw->Println(sb.ToString());
-    }
+
+    DumpApplicationMemoryUsageHeader(pw, uptime, realtime, isCheckinRequest, isCompact);
 
     AutoPtr<ArrayOf<String> > innerArgs = ArrayOf<String>::Alloc(args->GetLength()-opti);
     innerArgs->Copy(args, opti, args->GetLength()-opti);
 
     typedef List<AutoPtr<MemItem> > MemItemList;
     AutoPtr<MemItemList> procMems = new MemItemList();
+    HashMap<Int32, AutoPtr<MemItem> > procMemsMap;
     Int64 nativePss=0, dalvikPss=0, otherPss=0;
     AutoPtr<ArrayOf<Int64> > miscPss = ArrayOf<Int64>::Alloc(IDebugMemoryInfo::NUM_OTHER_STATS);
 
@@ -16844,6 +17622,9 @@ ECode CActivityManagerService::DumpApplicationMemoryUsage(
     AutoPtr<ArrayOf<MemItemList* > > oomProcs = ArrayOf<MemItemList* >::Alloc(DUMP_MEM_OOM_LABEL->GetLength());
 
     Int64 totalPss = 0;
+    Int64 cachedPss = 0;
+
+    AutoPtr<IDebugMemoryInfo> mi;
     Int32 mem = 0;
     AutoPtr<IDebug> dbg;
     CDebug::AcquireSingleton((IDebug**)&dbg);
@@ -16851,45 +17632,78 @@ ECode CActivityManagerService::DumpApplicationMemoryUsage(
     List<AutoPtr<ProcessRecord> >::ReverseIterator rit;
     for (rit = procs->RBegin(); rit != procs->REnd(); ++rit) {
         AutoPtr<ProcessRecord> r = *rit;
-        if (r->mThread != NULL) {
-            if (!isCheckinRequest && dumpAll) {
-                StringBuilder sb("\n** MEMINFO in pid ");
-                sb += r->mPid;
-                sb += " [";
-                sb += r->mProcessName;
-                sb += "] **";
-                pw->Println(sb.ToString());
-                IFlushable::Probe(pw)->Flush();
+        AutoPtr<IApplicationThread> thread;
+        Int32 pid;
+        Int32 oomAdj;
+        Boolean hasActivities;
+        synchronized (this) {
+            thread = r->mThread;
+            pid = r->mPid;
+            oomAdj = r->GetSetAdjWithServices();
+            hasActivities = r->mActivities.GetSize() > 0;
+        }
+        if (thread != NULL) {
+            if (!isCheckinRequest && dumpDetails) {
+                String str;
+                str.AppendFormat("\n** MEMINFO in pid %d [%s] **", pid, r->mProcessName.string());
+                pw->Println(str);
             }
-            AutoPtr<IDebugMemoryInfo> mi;
-            if (dumpAll) {
-                // try {
-                    r->mThread->DumpMemInfo(fd, isCheckinRequest, dumpAll, (ArrayOf<String>*)innerArgs, (IDebugMemoryInfo**)&mi);
-                // } catch (RemoteException e) {
-                //     if (!isCheckinRequest) {
-                //         pw.println("Got RemoteException!");
-                //         pw.flush();
-                //     }
-                // }
+            if (mi == NULL) {
+                CDebugMemoryInfo::New((IDebugMemoryInfo**)&mi);
+            }
+            if (dumpDetails || (!brief && !oomOnly)) {
+                dbg->GetMemoryInfo(pid, mi);
             }
             else {
-                CDebugMemoryInfo::New((IDebugMemoryInfo**)&mi);
-                dbg->GetMemoryInfo(r->mPid, (IDebugMemoryInfo*)mi);
+                Int64 pss;
+                dbg->GetPss(pid, tmpLong, &pss);
+                mi->SetDalvikPss((Int32)pss);
+                mi->SetDalvikPrivateDirty((Int32)(*tmpLong)[0]);
+            }
+            if (dumpDetails) {
+                if (localOnly) {
+                    AutoPtr<IActivityThreadHelper> atHelper;
+                    CActivityThreadHelper::AcquireSingleton((IActivityThreadHelper**)&atHelper);
+                    atHelper->DumpMemInfoTable(pw, mi, isCheckinRequest, dumpFullDetails,
+                            dumpDalvik, pid, r->mProcessName, 0, 0, 0, 0, 0, 0);
+                    if (isCheckinRequest) {
+                        pw->Println();
+                    }
+                }
+                else {
+                    IFlushable::Probe(pw)->Flush();
+                    if (FAILED(thread->DumpMemInfo(fd, mi, isCheckinRequest, dumpFullDetails,
+                        dumpDalvik, innerArgs))) {
+                        if (!isCheckinRequest) {
+                            pw->Println(String("Got RemoteException!"));
+                            IFlushable::Probe(pw)->Flush();
+                        }
+                    }
+                }
+            }
+
+            Int64 myTotalPss;
+            mi->GetTotalPss(&myTotalPss);
+            Int64 myTotalUss;
+            mi->GetTotalUss(&myTotalUss);
+
+            synchronized (this) {
+                if (r->mThread != NULL && oomAdj == r->GetSetAdjWithServices()) {
+                    // Record this for posterity if the process has been stable.
+                    r->mBaseProcessTracker->AddPss(myTotalPss, myTotalUss, TRUE, r->mPkgList);
+                }
             }
 
             if (!isCheckinRequest && mi != NULL) {
-                Int64 myTotalPss;
-                Int64 pss;
-                mi->GetTotalPss(&pss);
-                myTotalPss = pss;
                 totalPss += myTotalPss;
                 StringBuilder sb(r->mProcessName);
                 sb += " (pid ";
-                sb += r->mPid;
-                sb += ")";
+                sb += pid;
+                sb += (hasActivities ? " / activities)" : ")");
                 AutoPtr<MemItem> pssItem = new MemItem(sb.ToString(),
-                    r->mProcessName, myTotalPss, 0);
+                    r->mProcessName, myTotalPss, pid, hasActivities);
                 procMems->PushBack(pssItem);
+                procMemsMap[pid] = pssItem;
 
                 Int32 _nativePss;
                 mi->GetNativePss(&_nativePss);
@@ -16906,8 +17720,12 @@ ECode CActivityManagerService::DumpApplicationMemoryUsage(
                     otherPss -= mem;
                 }
 
+                if (oomAdj >= ProcessList::CACHED_APP_MIN_ADJ) {
+                    cachedPss += myTotalPss;
+                }
+
                 for (Int32 oomIndex = 0; oomIndex < oomPss->GetLength(); oomIndex++) {
-                    if (r->mSetAdj <= (*DUMP_MEM_OOM_ADJ)[oomIndex]
+                    if (oomAdj <= (*DUMP_MEM_OOM_ADJ)[oomIndex]
                             || oomIndex == (oomPss->GetLength()-1)) {
                         (*oomPss)[oomIndex] += myTotalPss;
                         if ((*oomProcs)[oomIndex] == NULL) {
@@ -16922,7 +17740,75 @@ ECode CActivityManagerService::DumpApplicationMemoryUsage(
         }
     }
 
-    if (!isCheckinRequest && procs->GetSize() > 1) {
+    Int64 nativeProcTotalPss = 0;
+
+    if (!isCheckinRequest && procs->GetSize() > 1 && !packages) {
+        // If we are showing aggregations, also look for native processes to
+        // include so that our aggregations are more accurate.
+        UpdateCpuStatsNow();
+        synchronized (mProcessCpuTracker) {
+            Int32 N;
+            mProcessCpuTracker->CountStats(&N);
+            for (Int32 i = 0; i < N; i++) {
+                AutoPtr<IProcessCpuTrackerStats> st;
+                mProcessCpuTracker->GetStats(i, (IProcessCpuTrackerStats**)&st);
+                Int32 vsize, pid;
+                st->GetVsize(&vsize);
+                st->GetPid(&pid);
+                if (vsize > 0 && procMemsMap.Find(pid) == procMemsMap.End()) {
+                    if (mi == NULL) {
+                        assert(0);
+                        // CDebugMemoryInfo::New((IDebugMemoryInfo**)&mi);
+                    }
+                    if (!brief && !oomOnly) {
+                        dbg->GetMemoryInfo(pid, mi);
+                    }
+                    else {
+                        Int64 pss;
+                        dbg->GetPss(pid, tmpLong, &pss);
+                        mi->SetNativePss((Int32)pss);
+                        mi->SetNativePrivateDirty((Int32)(*tmpLong)[0]);
+                    }
+
+                    Int64 myTotalPss;
+                    mi->GetTotalPss(&myTotalPss);
+                    totalPss += myTotalPss;
+                    nativeProcTotalPss += myTotalPss;
+
+                    String name;
+                    st->GetName(&name);
+                    StringBuilder sb;
+                    sb += name;
+                    sb +=  " (pid ";
+                    sb += pid;
+                    sb += ")";
+                    AutoPtr<MemItem> pssItem = new MemItem(sb.ToString(),
+                            name, myTotalPss, pid, FALSE);
+                    procMems->PushBack(pssItem);
+
+                    Int64 pss;
+                    mi->GetNativePss(&pss)
+                    nativePss += pss;
+                    mi->GetDalvikPss(&pss)
+                    dalvikPss += pss;
+                    mi->GetOtherPss(&pss)
+                    otherPss += pss;
+                    for (Int64 j = 0; j < IDebugMemoryInfo::NUM_OTHER_STATS; j++) {
+                        Int64 mem;
+                        mi->GetOtherPss(j, &mem);
+                        (*miscPss)[j] += mem;
+                        otherPss -= mem;
+                    }
+                    (*oomPss)[0] += myTotalPss;
+                    if ((*oomProcs)[0] == NULL) {
+                        AutoPtr<MemItemList> list = new MemItemList();
+                        oomProcs->Set(0, list);
+                    }
+                    (*oomProcs)[0]->PushBack(pssItem);
+                }
+            }
+        }
+
         AutoPtr<MemItemList> catMems = new MemItemList();
 
         AutoPtr<MemItem> nPssItem = new MemItem(String("Native"), String("Native"), nativePss, -1);
@@ -16944,126 +17830,215 @@ ECode CActivityManagerService::DumpApplicationMemoryUsage(
         AutoPtr<MemItemList> oomMems = new MemItemList();
         for (Int32 j = 0; j < oomPss->GetLength(); j++) {
             if ((*oomPss)[j] != 0) {
-                label = (*DUMP_MEM_OOM_LABEL)[j];
+                label = isCompact ? (*DUMP_MEM_OOM_COMPACT_LABEL)[j]
+                    : (*DUMP_MEM_OOM_LABEL)[j];
                 AutoPtr<MemItem> item = new MemItem(label, label, (*oomPss)[j], (*DUMP_MEM_OOM_ADJ)[j]);
                 item->mSubitems = (*oomProcs)[j];
                 oomMems->PushBack(item);
             }
         }
 
-        if (outTag.GetLength() != 0 || outStack.GetLength() != 0) {
-            if (outTag.GetLength() != 0) {
-                AppendMemBucket(outTag, totalPss, String("total"), FALSE);
-            }
-            if (outStack.GetLength() != 0) {
-                AppendMemBucket(outStack, totalPss, String("total"), TRUE);
-            }
-            Boolean firstLine = TRUE;
-            List<AutoPtr<MemItem> >::Iterator it = oomMems->Begin();
-            for (; it != oomMems->End(); ++it) {
-                AutoPtr<MemItem> miCat = *it;
-                if (miCat->mSubitems == NULL || miCat->mSubitems->IsEmpty()) {
-                    continue;
-                }
-                if (miCat->mId < ProcessList::SERVICE_ADJ
-                        || miCat->mId == ProcessList::HOME_APP_ADJ
-                        || miCat->mId == ProcessList::PREVIOUS_APP_ADJ) {
-                    if (outTag.GetLength() != 0 && miCat->mId <= ProcessList::FOREGROUND_APP_ADJ) {
-                        outTag.Append(String(" / "));
-                    }
-                    if (outStack.GetLength() != 0) {
-                        if (miCat->mId >= ProcessList::FOREGROUND_APP_ADJ) {
-                            if (firstLine) {
-                                outStack.Append(String(":"));
-                                firstLine = FALSE;
-                            }
-                            outStack.Append(String("\n\t at "));
-                        }
-                        else {
-                            outStack.Append(String("$"));
-                        }
-                    }
-
-                    List<AutoPtr<MemItem> >::Iterator subIt = miCat->mSubitems->Begin();
-                    for (Int32 j = 0; subIt != miCat->mSubitems->End(); ++subIt, ++j) {
-                        AutoPtr<MemItem> mi = *subIt;;
-                        if (j > 0) {
-                            if (outTag.GetLength() != 0) {
-                                outTag.Append(String(" "));
-                            }
-                            if (outStack.GetLength() != 0) {
-                                outStack.Append(String("$"));
-                            }
-                        }
-                        if (outTag.GetLength() != 0 && miCat->mId <= ProcessList::FOREGROUND_APP_ADJ) {
-                            AppendMemBucket(outTag, mi->mPss, mi->mShortLabel, FALSE);
-                        }
-                        if (outStack.GetLength() != 0) {
-                            AppendMemBucket(outStack, mi->mPss, mi->mShortLabel, TRUE);
-                        }
-                    }
-                    if (outStack.GetLength() != 0 && miCat->mId >= ProcessList::FOREGROUND_APP_ADJ) {
-                        outStack.Append(String("("));
-                        for (Int32 k = 0; k < DUMP_MEM_OOM_ADJ->GetLength(); k++) {
-                            if ((*DUMP_MEM_OOM_ADJ)[k] == miCat->mId) {
-                                outStack.Append((*DUMP_MEM_OOM_LABEL)[k]);
-                                outStack.Append(String(":"));
-                                outStack.Append((*DUMP_MEM_OOM_ADJ)[k]);
-                            }
-                        }
-                        outStack.Append(String(")"));
-                    }
-                }
-            }
-        }
-
-        if (!brief && !oomOnly) {
+        if (!brief && !oomOnly && !isCompact) {
             pw->Println();
             pw->Println(String("Total PSS by process:"));
-            DumpMemItems(pw, String("  "), procMems, TRUE);
+            DumpMemItems(pw, String("  "), String("proc"), procMems, TRUE, isCompact);
             pw->Println();
         }
-        pw->Println(String("Total PSS by OOM adjustment:"));
-        DumpMemItems(pw, String("  "), oomMems, FALSE);
-        if (!oomOnly) {
-            AutoPtr<IPrintWriter> out = categoryPw != NULL ? categoryPw : pw;
-            out->Println();
-            out->Println(String("Total PSS by category:"));
-            DumpMemItems(out, String("  "), catMems, TRUE);
+        if (!isCompact) {
+            pw->Println(String("Total PSS by OOM adjustment:"));
         }
-        pw->Println();
-        pw->PrintString(String("Total PSS: "));
-        pw->PrintInt64(totalPss);
-        pw->Println(String(" kB"));
-        AutoPtr<ArrayOf<Int32> > SINGLE_LONG_FORMAT = ArrayOf<Int32>::Alloc(1);
-        (*SINGLE_LONG_FORMAT)[0] = Process::PROC_SPACE_TERM | Process::PROC_OUT_LONG;
-        AutoPtr<ArrayOf<Int64> > int64Out = ArrayOf<Int64>::Alloc(1);
-        Boolean result;
-        Process::ReadProcFile(String("/sys/kernel/mm/ksm/pages_shared"),
-                *SINGLE_LONG_FORMAT, NULL, int64Out, NULL, &result);
-        Int64 shared = (*int64Out)[0] * ProcessList::MEMORY_PAGE_SIZE / 1024;
-        (*int64Out)[0] = 0;
-        Process::ReadProcFile(String("/sys/kernel/mm/ksm/pages_sharing"),
-                *SINGLE_LONG_FORMAT, NULL, int64Out, NULL, &result);
-        Int64 sharing = (*int64Out)[0] * ProcessList::MEMORY_PAGE_SIZE / 1024;
-        (*int64Out)[0] = 0;
-        Process::ReadProcFile(String("/sys/kernel/mm/ksm/pages_unshared"),
-                *SINGLE_LONG_FORMAT, NULL, int64Out, NULL, &result);
-        Int64 unshared = (*int64Out)[0] * ProcessList::MEMORY_PAGE_SIZE / 1024;
-        (*int64Out)[0] = 0;
-        Process::ReadProcFile(String("/sys/kernel/mm/ksm/pages_volatile"),
-                *SINGLE_LONG_FORMAT, NULL, int64Out, NULL, &result);
-        Int64 voltile = (*int64Out)[0] * ProcessList::MEMORY_PAGE_SIZE / 1024;
-        pw->PrintString(String("      KSM: "));
-        pw->PrintInt64(sharing);
-        pw->PrintString(String(" kB saved from shared "));
-        pw->PrintInt64(shared);
-        pw->Println(String(" kB"));
-        pw->PrintString(String("           "));
-        pw->PrintInt64(unshared);
-        pw->PrintString(String(" kB unshared; "));
-        pw->PrintInt64(voltile);
-        pw->Println(String(" kB volatile"));
+        DumpMemItems(pw, String("  "), String("oom"), oomMems, FALSE, isCompact);
+        if (!brief && !oomOnly) {
+            AutoPtr<IPrintWriter> out = categoryPw != NULL ? categoryPw : pw;
+            if (!isCompact) {
+                out->Println();
+                out->Println(String("Total PSS by category:"));
+            }
+            DumpMemItems(out, String("  "), String("cat"), catMems, TRUE, isCompact);
+        }
+        if (!isCompact) {
+            pw->Println();
+        }
+        AutoPtr<IMemInfoReader> memInfo;
+        CMemInfoReader::New((IMemInfoReader**)&menInfo);
+        memInfo->ReadMemInfo();
+        Int64 cachedSizeKb, freeSizeKb, zramTotalSizeKb,
+            buffersSizeKb, shmemSizeKb, slabSizeKb;
+        memInfo->GetCachedSizeKb(&cachedSizeKb);
+        memInfo->GetFreeSizeKb(&freeSizeKb);
+        memInfo->GetZramTotalSizeKb(&zramTotalSizeKb);
+        memInfo->GetBuffersSizeKb(&buffersSizeKb);
+        memInfo->GetShmemSizeKb(&shmemSizeKb);
+        memInfo->GetSlabSizeKb(&slabSizeKb);
+        if (nativeProcTotalPss > 0) {
+            synchronized (this) {
+                mProcessStats->AddSysMemUsageLocked(cachedSizeKb, freeSizeKb, zramTotalSizeKb,
+                    buffersSizeKb + shmemSizeKb + slabSizeKb, nativeProcTotalPss);
+            }
+        }
+        if (!brief) {
+            if (!isCompact) {
+                pw->Print(String("Total RAM: "));
+                pw->Print(totalSizeKb);
+                pw->Print(String(" kB (status "));
+                switch (mLastMemoryLevel) {
+                    case IProcessStats::ADJ_MEM_FACTOR_NORMAL:
+                        pw->Println(String("normal)"));
+                        break;
+                    case IProcessStats::ADJ_MEM_FACTOR_MODERATE:
+                        pw->Println(String("moderate)"));
+                        break;
+                    case IProcessStats::ADJ_MEM_FACTOR_LOW:
+                        pw->Println(String("low)"));
+                        break;
+                    case IProcessStats::ADJ_MEM_FACTOR_CRITICAL:
+                        pw->Println(String("critical)"));
+                        break;
+                    default:
+                        pw->Print(mLastMemoryLevel);
+                        pw->Println(String(")"));
+                        break;
+                }
+                pw->Print(String(" Free RAM: "));
+                pw->Print(cachedPss + cachedSizeKb + freeSizeKb);
+                pw->Print(String(" kB ("));
+                pw->Print(cachedPss);
+                pw->Print(String(" cached pss + "));
+                pw->Print(cachedSizeKb);
+                pw->Print(String(" cached + "));
+                pw->Print(freeSizeKb);
+                pw->Println(String(" free)"));
+            }
+            else {
+                pw->Print(String("ram,"));
+                pw->Print(totalSizeKb);
+                pw->Print(String(","));
+                pw->Print(cachedPss + cachedSizeKb + freeSizeKb);
+                pw->Print(String(","));
+                pw->Println(totalPss - cachedPss);
+            }
+        }
+        if (!isCompact) {
+            pw->Print(String(" Used RAM: "));
+            pw->Print(totalPss - cachedPss
+                + buffersSizeKb + shmemSizeKb + slabSizeKb);
+            pw->Print(String(" kB ("));
+            pw->Print(totalPss - cachedPss);
+            pw->Print(String(" used pss + "));
+            pw->Print(buffersSizeKb);
+            pw->Print(String(" buffers + "));
+            pw->Print(shmemSizeKb);
+            pw->Print(String(" shmem + "));
+            pw->Print(slabSizeKb);
+            pw->Println(String(" slab)"));
+            pw->Print(String(" Lost RAM: "));
+            pw->Print(totalSizeKb
+                - totalPss - freeSizeKb - cachedSizeKb
+                - buffersSizeKb - shmemSizeKb - slabSizeKb);
+            pw->Println(String(" kB"));
+        }
+        if (!brief) {
+            if (zramTotalSizeKb != 0) {
+                if (!isCompact) {
+                    pw->Print(String("     ZRAM: "));
+                    pw->Print(zramTotalSizeKb);
+                    pw->Print(String(" kB physical used for "));
+                    pw->Print(swapTotalSizeKb - swapFreeSizeKb);
+                    pw->Print(String(" kB in swap ("));
+                    pw->Print(swapTotalSizeKb);
+                    pw->Println(String(" kB total swap)"));
+                }
+                else {
+                    pw->Print(String("zram,"));
+                    pw->Print(zramTotalSizeKb);
+                    pw->Print(String(","));
+                    pw->Print(swapTotalSizeKb);
+                    pw->Print(String(","));
+                    pw->Println(swapFreeSizeKb);
+                }
+            }
+             AutoPtr<ArrayOf<Int32> > SINGLE_LONG_FORMAT = ArrayOf<Int32>::Alloc(1);
+            (*SINGLE_LONG_FORMAT)[0] = Process::PROC_SPACE_TERM | Process::PROC_OUT_LONG;
+            AutoPtr<ArrayOf<Int64> > int64Out = ArrayOf<Int64>::Alloc(1);
+            Boolean result;
+            Process::ReadProcFile(String("/sys/kernel/mm/ksm/pages_shared"),
+                    *SINGLE_LONG_FORMAT, NULL, int64Out, NULL, &result);
+            Int64 shared = (*int64Out)[0] * ProcessList::MEMORY_PAGE_SIZE / 1024;
+            (*int64Out)[0] = 0;
+            Process::ReadProcFile(String("/sys/kernel/mm/ksm/pages_sharing"),
+                    *SINGLE_LONG_FORMAT, NULL, int64Out, NULL, &result);
+            Int64 sharing = (*int64Out)[0] * ProcessList::MEMORY_PAGE_SIZE / 1024;
+            (*int64Out)[0] = 0;
+            Process::ReadProcFile(String("/sys/kernel/mm/ksm/pages_unshared"),
+                    *SINGLE_LONG_FORMAT, NULL, int64Out, NULL, &result);
+            Int64 unshared = (*int64Out)[0] * ProcessList::MEMORY_PAGE_SIZE / 1024;
+            (*int64Out)[0] = 0;
+            Process::ReadProcFile(String("/sys/kernel/mm/ksm/pages_volatile"),
+                    *SINGLE_LONG_FORMAT, NULL, int64Out, NULL, &result);
+
+            AutoPtr<IActivityManagerHelper> amhelper;
+            CActivityManagerHelper::AcquireSingleton((IActivityManagerHelper**)&amhelper);
+            Int32 staticGetMemoryClass, staticGetLargeMemoryClass;
+            Boolean isLowRamDeviceStatic, isHighEndGfx;
+            amhelper->StaticGetMemoryClass(&staticGetMemoryClass);
+            amhelper->StaticGetLargeMemoryClass(&staticGetLargeMemoryClass);
+            amhelper->IsLowRamDeviceStatic(&isLowRamDeviceStatic);
+            amhelper->IsHighEndGfx(&isHighEndGfx);
+            if (!isCompact) {
+                if (sharing != 0 || shared != 0 || unshared != 0 || voltile != 0) {
+                    pw->Print(String("      KSM: "));
+                    pw->Print(sharing);
+                    pw->Print(String(" kB saved from shared "));
+                    pw->Print(shared);
+                    pw->Println(String(" kB"));
+                    pw->Print(String("           "));
+                    pw->Print(unshared);
+                    pw->Print(String(" kB unshared; "));
+                    pw->Print(voltile);
+                    pw->Println(String(" kB volatile"));
+                }
+                pw->Print(String("   Tuning: "));
+                pw->Print(staticGetMemoryClass);
+                pw->Print(String(" (large "));
+                pw->Print(staticGetLargeMemoryClass);
+                pw->Print(String("), oom "));
+                pw->Print(mProcessList->GetMemLevel(ProcessList::CACHED_APP_MAX_ADJ)/1024);
+                pw->Print(String(" kB"));
+                pw->Print(String(", restore limit "));
+                pw->Print(mProcessList->GetCachedRestoreThresholdKb());
+                pw->Print(String(" kB"));
+                if (isLowRamDeviceStatic) {
+                    pw->Print(String(" (low-ram)"));
+                }
+                if (isHighEndGfx) {
+                    pw->Print(String(" (high-end-gfx)"));
+                }
+                pw->Println();
+            }
+            else {
+                pw->Print(String("ksm,"));
+                pw->Print(sharing);
+                pw->Print(String(","));
+                pw->Print(shared);
+                pw->Print(String(","));
+                pw->Print(unshared);
+                pw->Print(String(","));
+                pw->Println(voltile);
+                pw->Print(String("tuning,"));
+                pw->Print(staticGetMemoryClass);
+                pw->Print(',');
+                pw->Print(staticGetLargeMemoryClass);
+                pw->Print(',');
+                pw->Print(mProcessList->GetMemLevel(ProcessList::CACHED_APP_MAX_ADJ)/1024);
+                if (isLowRamDeviceStatic) {
+                    pw->Print(String(",low-ram"));
+                }
+                if (isHighEndGfx) {
+                    pw->Print(String(",high-end-gfx"));
+                }
+                pw->Println();
+            }
+        }
     }
     return NOERROR;
 }
@@ -17132,16 +18107,15 @@ Boolean CActivityManagerService::RemoveDyingProviderLocked(
         conn->mDead = TRUE;
         if (conn->mStableCount > 0) {
             if (!capp->mPersistent && capp->mThread != NULL
-                    && capp->mPid != 0
-                    && capp->mPid != MY_PID) {
+                    && capp->mPid != 0 && capp->mPid != MY_PID) {
                 String cprName;
-                cpr->mInfo->GetName(&cprName);
-                Slogger::I(TAG, "Kill %s (pid %d): provider %s in dying process %s", capp->mProcessName.string(),
-                       + "" + capp->mPid, cprName.string(), (proc != NULL ? proc->mProcessName.string() : String("??").string()));
-//                EventLog.writeEvent(EventLogTags.AM_KILL, capp.userId, capp.pid,
-//                        capp.processName, capp.setAdj, "dying provider "
-//                                + cpr.name.toShortString());
-                Process::KillProcess(capp->mPid);
+                cpr->mName->FlattenToShortString(&cprName);
+                StringBuilder sb;
+                sb += "depends on provider ";
+                sb += cprName;
+                sb += " in dying proc ";
+                sb += proc != NULL ? proc->mProcessName : "??";
+                capp->Kill(sb.ToString(), TRUE);
             }
         }
         else if (capp->mThread != NULL && conn->mProvider->mProvider != NULL) {
@@ -17164,23 +18138,24 @@ Boolean CActivityManagerService::RemoveDyingProviderLocked(
     return inLaunching;
 }
 
-ECode CActivityManagerService::CleanUpApplicationRecordLocked(
+Boolean CActivityManagerService::CleanUpApplicationRecordLocked(
     /* [in] */ ProcessRecord* aApp,
     /* [in] */ Boolean restarting,
     /* [in] */ Boolean allowRestart,
     /* [in] */ Int32 index)
 {
-    VALIDATE_NOT_NULL(aApp);
     AutoPtr<ProcessRecord> app = aApp;
 
     if (index >= 0) {
-        mLruProcesses.Remove(index);
+        RemoveLruProcessLocked(app);
+        ProcessList::Remove(app->mPid);
     }
 
     mProcessesToGc.Remove(app);
+    mPendingPssProcesses.Remove(app);
 
     // Dismiss any open dialogs.
-    if (app->mCrashDialog != NULL) {
+    if (app->mCrashDialog != NULL && !app->mForceCrashReport) {
         app->mCrashDialog->Dismiss();
         app->mCrashDialog = NULL;
     }
@@ -17196,38 +18171,39 @@ ECode CActivityManagerService::CleanUpApplicationRecordLocked(
     app->mCrashing = FALSE;
     app->mNotResponding = FALSE;
 
-    app->ResetPackageList();
+    app->ResetPackageList(mProcessStats);
     app->UnlinkDeathRecipient();
-    app->mThread = NULL;
+    app->MakeInactive(mProcessStats);
+    app->mWaitingToKill = NULL;
     app->mForcingToForeground = NULL;
-    app->mForegroundServices = FALSE;
+    UpdateProcessForegroundLocked(app, FALSE, FALSE);
     app->mForegroundActivities = FALSE;
     app->mHasShownUi = FALSE;
+    app->mTreatLikeActivity = FALSE;
     app->mHasAboveClient = FALSE;
+    app->mHasClientActivities = FALSE;
 
     mServices->KillServicesLocked(app, allowRestart);
 
     Boolean restart = FALSE;
 
     // Remove published content providers.
-    if (!app->mPubProviders.IsEmpty()) {
-        HashMap<String, AutoPtr<ContentProviderRecord> >::Iterator it =
-                app->mPubProviders.Begin();
-        for (; it != app->mPubProviders.End(); ++it) {
-            AutoPtr<ContentProviderRecord> cpr = it->mSecond;
+    HashMap<String, AutoPtr<ContentProviderRecord> >::Iterator it =
+            app->mPubProviders.Begin();
+    for (; it != app->mPubProviders.End(); ++it) {
+        AutoPtr<ContentProviderRecord> cpr = it->mSecond;
 
-            const Boolean always = app->mBad || !allowRestart;
-            if (RemoveDyingProviderLocked(app, cpr, always) || always) {
-                // We left the provider in the launching list, need to
-                // restart it.
-                restart = TRUE;
-            }
-
-            cpr->mProvider = NULL;
-            cpr->mProc = NULL;
+        const Boolean always = app->mBad || !allowRestart;
+        if (RemoveDyingProviderLocked(app, cpr, always) || always) {
+            // We left the provider in the launching list, need to
+            // restart it.
+            restart = TRUE;
         }
-        app->mPubProviders.Clear();
+
+        cpr->mProvider = NULL;
+        cpr->mProc = NULL;
     }
+    app->mPubProviders.Clear();
 
     // Take care of any launching providers waiting for this process.
     if (CheckAppInLaunchingProvidersLocked(app, FALSE)) {
@@ -17271,13 +18247,11 @@ ECode CActivityManagerService::CleanUpApplicationRecordLocked(
     SkipCurrentReceiverLocked(app);
 
     // Unregister any receivers.
-    if (!app->mReceivers.IsEmpty()) {
-        HashSet< AutoPtr<ReceiverList> >::Iterator it = app->mReceivers.Begin();
-        for (; it != app->mReceivers.End(); ++it) {
-            RemoveReceiverLocked(*it);
-        }
-        app->mReceivers.Clear();
+    HashSet< AutoPtr<ReceiverList> >::Iterator it = app->mReceivers.Begin();
+    for (; it != app->mReceivers.End(); ++it) {
+        RemoveReceiverLocked(*it);
     }
+    app->mReceivers.Clear();
 
     // If the app is undergoing backup, tell the backup manager about it
     if (mBackupTarget != NULL && app->mPid == mBackupTarget->mApp->mPid) {
@@ -17324,7 +18298,7 @@ ECode CActivityManagerService::CleanUpApplicationRecordLocked(
     // If the caller is restarting this app, then leave it in its
     // current lists and let the caller take care of it.
     if (restarting) {
-        return NOERROR;
+        return FALSE;
     }
 
     if (!app->mPersistent || app->mIsolated) {
@@ -17371,20 +18345,29 @@ ECode CActivityManagerService::CleanUpApplicationRecordLocked(
     if (restart && !app->mIsolated) {
         // We have components that still need to be running in the
         // process, so re-launch it.
+        if (index < 0) {
+            ProcessList::Remove(app->mPid);
+        }
         mProcessNames->Put(app->mProcessName, app->mUid, app);
         StartProcessLocked(app, String("restart"), app->mProcessName);
+        return TRUE;
     }
     else if (app->mPid > 0 && app->mPid != MY_PID) {
         // Goodbye!
+        Boolean removed;
         {
             AutoLock lock(mPidsSelfLockedLock);
 
             mPidsSelfLocked.Erase(app->mPid);
             mHandler->RemoveMessages(PROC_START_TIMEOUT_MSG, app->Probe(EIID_IInterface));
         }
+        mBatteryStatsService->NoteProcessFinish(app->mProcessName, uid);
+        if (app.isolated) {
+            mBatteryStatsService->RemoveIsolatedUid(app->mUid, uid);
+        }
         app->SetPid(0);
     }
-    return NOERROR;
+    return FALSE;
 }
 
 Boolean CActivityManagerService::CheckAppInLaunchingProvidersLocked(
@@ -17421,24 +18404,15 @@ Boolean CActivityManagerService::CheckAppInLaunchingProvidersLocked(
 ECode CActivityManagerService::GetServices(
     /* [in] */ Int32 maxNum,
     /* [in] */ Int32 flags,
-    /* [out] */ IObjectContainer** services)
+    /* [out] */ IList** services)
 {
     VALIDATE_NOT_NULL(services);
-    *services = NULL;
 
     FAIL_RETURN(EnforceNotIsolatedCaller(String("getServices")));
     AutoLock lock(this);
-    FAIL_RETURN(CParcelableObjectContainer::New(services));
-    AutoPtr<List<AutoPtr<IActivityManagerRunningServiceInfo> > > infoList = mServices->GetRunningServiceInfoLocked(maxNum, flags);
-    if (infoList) {
-        List<AutoPtr<IActivityManagerRunningServiceInfo> >::Iterator it = infoList->Begin();
-        for (; it != infoList->End(); ++it) {
-            IInterface* obj = (IInterface*)((*it).Get());
-            (*services)->Add(obj);
-        }
-
-        infoList = NULL;
-    }
+    AutoPtr<IList> infoList = mServices->GetRunningServiceInfoLocked(maxNum, flags);
+    *services = infoList;
+    REFCOUNT_ADD(*services);
     return NOERROR;
 }
 
@@ -17483,13 +18457,12 @@ ECode CActivityManagerService::StartService(
 
     AutoLock lock(this);
 
-    const Int32 callingPid = Binder::GetCallingPid();
-    const Int32 callingUid = Binder::GetCallingUid();
-    CheckValidCaller(callingUid, userId);
-    const Int64 origId = Binder::ClearCallingIdentity();
+    const Int32 callingPid = BinderGetCallingPid();
+    const Int32 callingUid = BinderGetCallingUid();
+    const Int64 origId = BinderClearCallingIdentity();
     ECode ec = mServices->StartServiceLocked(caller, service, resolvedType,
             callingPid, callingUid, userId, name);
-    Binder::RestoreCallingIdentity(origId);
+    BinderRestoreCallingIdentity(origId);
     return ec;
 }
 
@@ -17511,10 +18484,10 @@ ECode CActivityManagerService::StartServiceInPackage(
         Slogger::V(TAG, "startServiceInPackage: %s type=%s",
                 serviceDes.string(), resolvedType.string());
     }
-    const Int64 origId = Binder::ClearCallingIdentity();
+    const Int64 origId = BinderClearCallingIdentity();
     ECode ec = mServices->StartServiceLocked(NULL, service, resolvedType, -1,
             uid, userId, (IComponentName**)&name);
-    Binder::RestoreCallingIdentity(origId);
+    BinderRestoreCallingIdentity(origId);
 
     *componentName = name;
     REFCOUNT_ADD(*componentName);
@@ -17538,8 +18511,6 @@ ECode CActivityManagerService::StopService(
         Slogger::E(TAG, "File descriptors passed in Intent");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
-
-    CheckValidCaller(Binder::GetCallingUid(), userId);
 
     AutoLock lock(this);
     return mServices->StopServiceLocked(caller, service, resolvedType, userId, result);
@@ -17601,61 +18572,133 @@ ECode CActivityManagerService::HandleIncomingUser(
     /* [in] */ const String& callerPackage,
     /* [out] */ Int32* result)
 {
+    return HandleIncomingUser(callingPid, callingUid, userId, allowAll,
+            requireFull ? ALLOW_FULL_ONLY : ALLOW_NON_FULL, name, callerPackage);
+}
+
+Int32 CActivityManagerService::UnsafeConvertIncomingUser(
+    /* [in] */ Int32 userId)
+{
+    return (userId == IUserHandle::USER_CURRENT || userId == IUserHandle::USER_CURRENT_OR_SELF)
+            ? mCurrentUserId : userId;
+}
+
+ECode CActivityManagerService::HandleIncomingUser(
+    /* [in] */ Int32 callingPid,
+    /* [in] */ Int32 callingUid,
+    /* [in] */ Int32 userId,
+    /* [in] */ Boolean allowAll,
+    /* [in] */ Int32 allowMode,
+    /* [in] */ const String& name,
+    /* [in] */ const String& callerPackage,
+    /* [out] */ Int32* result)
+{
     VALIDATE_NOT_NULL(result);
     *result = IUserHandle::USER_NULL;
     Int32 callingUserId = UserHandleGetUserId(callingUid);
-    if (callingUserId != userId) {
-        if (callingUid != 0 && callingUid != IProcess::SYSTEM_UID) {
-            String INTERACT_ACROSS_USERS = String("android.permission.INTERACT_ACROSS_USERS");//TODO Elastos::Droid::Manifest::permission::INTERACT_ACROSS_USERS;
-            String INTERACT_ACROSS_USERS_FULL = String("android.permission.INTERACT_ACROSS_USERS_FULL");//TODO Elastos::Droid::Manifest::permission::INTERACT_ACROSS_USERS_FULL;
-            if ((requireFull || CheckComponentPermission(INTERACT_ACROSS_USERS,
-                    callingPid, callingUid, -1, TRUE) != IPackageManager::PERMISSION_GRANTED)
-                && CheckComponentPermission(INTERACT_ACROSS_USERS_FULL,
-                    callingPid, callingUid, -1, TRUE) != IPackageManager::PERMISSION_GRANTED)
-            {
-                if (userId == IUserHandle::USER_CURRENT_OR_SELF) {
-                    // In this case, they would like to just execute as their
-                    // owner user instead of failing.
-                    userId = callingUserId;
-                }
-                else {
-                    StringBuilder builder(128);
-                    builder += ("Permission Denial: ");
-                    builder += (name);
-                    if (callerPackage.IsNull()) {
-                        builder += (" from ");
-                        builder += (callerPackage);
-                    }
-                    builder += (" asks to run as user ");
-                    builder += (userId);
-                    builder += (" but is calling from user ");
-                    builder += (UserHandleGetUserId(callingUid));
-                    builder += ("; this requires ");
-                    builder += (INTERACT_ACROSS_USERS_FULL);
-                    if (!requireFull) {
-                        builder += (" or ");
-                        builder += (INTERACT_ACROSS_USERS);
-                    }
-                    String msg = builder.ToString();
-                    Slogger::W(TAG, msg.string());
-                    return E_SECURITY_EXCEPTION;
-                }
+    if (callingUserId == userId) {
+        *result = userId;
+        return NOERROR;
+    }
+
+    // Note that we may be accessing mCurrentUserId outside of a lock...
+    // shouldn't be a big deal, if this is being called outside
+    // of a locked context there is intrinsically a race with
+    // the value the caller will receive and someone else changing it.
+    // We assume that USER_CURRENT_OR_SELF will use the current user; later
+    // we will switch to the calling user if access to the current user fails.
+    Int32 targetUserId = UnsafeConvertIncomingUser(userId);
+
+    if (callingUid != 0 && callingUid != IProcess::SYSTEM_UID) {
+        Boolean allow;
+        if (CheckComponentPermission(Manifest::permission::INTERACT_ACROSS_USERS_FULL, callingPid,
+                callingUid, -1, TRUE) == IPackageManager::PERMISSION_GRANTED) {
+            // If the caller has this permission, they always pass go.  And collect $200.
+            allow = TRUE;
+        }
+        else if (allowMode == ALLOW_FULL_ONLY) {
+            // We require full access, sucks to be you.
+            allow = FALSE;
+        }
+        else if (CheckComponentPermission(Manifest::permission::INTERACT_ACROSS_USERS, callingPid,
+                callingUid, -1, TRUE) != IPackageManager::PERMISSION_GRANTED) {
+            // If the caller does not have either permission, they are always doomed.
+            allow = FALSE;
+        }
+        else if (allowMode == ALLOW_NON_FULL) {
+            // We are blanket allowing non-full access, you lucky caller!
+            allow = TRUE;
+        }
+        else if (allowMode == ALLOW_NON_FULL_IN_PROFILE) {
+            // We may or may not allow this depending on whether the two users are
+            // in the same profile.
+            synchronized (mUserProfileGroupIdsSelfLockedLock) {
+                HashMap<Int32, Int32>::Iterator it = mUserProfileGroupIdsSelfLocked.Find(callingUserId);
+                Int32 callingProfile = it != mUserProfileGroupIdsSelfLocked.End() ?
+                        it->mSecond : IUserInfo::NO_PROFILE_GROUP_ID);
+                it = mUserProfileGroupIdsSelfLocked.Find(targetUserId);
+                Int32 targetProfile = it != mUserProfileGroupIdsSelfLocked.End() ?
+                        it->mSecond : IUserInfo::NO_PROFILE_GROUP_ID);
+                allow = callingProfile != IUserInfo::NO_PROFILE_GROUP_ID
+                        && callingProfile == targetProfile;
             }
         }
-        if (userId == IUserHandle::USER_CURRENT || userId == IUserHandle::USER_CURRENT_OR_SELF) {
-            // Note that we may be accessing this outside of a lock...
-            // shouldn't be a big deal, if this is being called outside
-            // of a locked context there is intrinsically a race with
-            // the value the caller will receive and someone else changing it.
-            userId = mCurrentUserId;
-        }
-        if (!allowAll && userId < 0) {
-//            throw new IllegalArgumentException(
-//                 "Call does not support special user #" + userId);
+        else {
+            Slogger::E(TAG, "Unknown mode: %d", allowMode);
             return E_ILLEGAL_ARGUMENT_EXCEPTION;
         }
+
+        if (!allow) {
+            if (userId == IUserHandle::USER_CURRENT_OR_SELF) {
+                // In this case, they would like to just execute as their
+                // owner user instead of failing.
+                targetUserId = callingUserId;
+            }
+            else {
+                StringBuilder builder(128);
+                builder += "Permission Denial: ";
+                builder += name;
+                if (callerPackage.IsNull()) {
+                    builder += " from ";
+                    builder += callerPackage;
+                }
+                builder += " asks to run as user ";
+                builder += userId;
+                builder += " but is calling from user ";
+                builder += UserHandleGetUserId(callingUid);
+                builder += "; this requires ";
+                builder += Manifest::permission::INTERACT_ACROSS_USERS_FULL;
+                if (!requireFull) {
+                    builder += " or ";
+                    builder += Manifest::permission::INTERACT_ACROSS_USERS;
+                }
+                String msg = builder.ToString();
+                Slogger::W(TAG, msg.string());
+                return E_SECURITY_EXCEPTION;
+            }
+        }
     }
-    *result = userId;
+
+    if (!allowAll && targetUserId < 0) {
+        Slogger::E(TAG, "Call does not support special user #%d", targetUserId);
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
+    // Check shell permission
+    if (callingUid == IProcess::SHELL_UID && targetUserId >= IUserHandle::USER_OWNER) {
+        Boolean res,
+        mUserManager->HasUserRestriction(UserManager.DISALLOW_DEBUGGING_FEATURES,
+            targetUserId, &res);
+        if (res) {
+            AutoPtr<IDebug> dbg;
+            CDebug::AcquireSingleton((IDebug**)&dbg);
+            String callers;
+            dbg->GetCallers(3, &callers);
+            Slogger::E(TAG, "Shell does not have permission to access user %d\n %s",
+                targetUserId, callers.string());
+        }
+    }
+
+    *result = targetUserId;
     return NOERROR;
 }
 
@@ -17675,13 +18718,13 @@ Boolean CActivityManagerService::IsSingleton(
     aInfo->GetFlags(&infoFlags);
     String pkgName;
     aInfo->GetPackageName(&pkgName);
-
+    // For apps that don't have pre-defined UIDs, check for permission
     if (UserHandleGetAppId(aUid) >= IProcess::FIRST_APPLICATION_UID) {
-        if ((flags&IServiceInfo::FLAG_SINGLE_USER) != 0) {
+        if ((flags & IServiceInfo::FLAG_SINGLE_USER) != 0) {
             AutoPtr<IActivityManagerHelper> helper;
             CActivityManagerHelper::AcquireSingleton((IActivityManagerHelper**)&helper);
             Int32 permission;
-            helper->CheckUidPermission(Elastos::Droid::Manifest::permission::INTERACT_ACROSS_USERS, aUid, &permission);
+            helper->CheckUidPermission(Manifest::permission::INTERACT_ACROSS_USERS, aUid, &permission);
             if (permission != IPackageManager::PERMISSION_GRANTED) {
                 AutoPtr<IComponentName> comp;
                 CComponentName::New(pkgName, className, (IComponentName**)&comp);
@@ -17690,20 +18733,27 @@ Boolean CActivityManagerService::IsSingleton(
                 StringBuilder msg("Permission Denial: Component ");
                 msg += compString;
                 msg += " requests FLAG_SINGLE_USER, but app does not hold ";
-                msg += "Elastos::Droid::Manifest::permission::INTERACT_ACROSS_USERS";
+                msg += "Manifest::permission::INTERACT_ACROSS_USERS";
                 Slogger::W(TAG, msg.ToString().string());
                 // throw new SecurityException(msg);
                 return FALSE;
             }
+            // Permission passed
             result = TRUE;
         }
-    }
-    else if (componentProcessName == pkgName) {
-        result = (infoFlags & IApplicationInfo::FLAG_PERSISTENT) != 0;
     }
     else if (componentProcessName.Equals("system")) {
         result = TRUE;
     }
+    else if ((flags & IServiceInfo::FLAG_SINGLE_USER) != 0) {
+        // Phone app and persistent apps are allowed to export singleuser providers.
+        AutoPtr<IUserHandleHelper> uhHelper;
+        CUserHandleHelper::AcquireSingleton((IUserHandleHelper**)&uhHelper);
+        Boolean isSameApp;
+        uhHelper->IsSameApp(aUid, IProcess::PHONE_UID);
+        result = isSameApp || (infoFlags & IApplicationInfo::FLAG_PERSISTENT) != 0;
+    }
+
     if (DEBUG_MU) {
         String infoDes;
         aInfo->ToString(&infoDes);
@@ -17712,6 +18762,30 @@ Boolean CActivityManagerService::IsSingleton(
                 StringUtils::ToString(flags, 16).string(), result);
     }
     return result;
+}
+
+/**
+ * Checks to see if the caller is in the same app as the singleton
+ * component, or the component is in a special app. It allows special apps
+ * to export singleton components but prevents exporting singleton
+ * components for regular apps.
+ */
+Boolean CActivityManagerService::IsValidSingletonCall(
+    /* [in] */ Int32 callingUid,
+    /* [in] */ Int32 componentUid)
+{
+    Int32 componentAppId = UserHandleGetAppId(componentUid);
+    AutoPtr<IUserHandleHelper> uhHelper;
+    CUserHandleHelper::AcquireSingleton((IUserHandleHelper**)&uhHelper);
+    Boolean isSameApp;
+    uhHelper->IsSameApp(callingUid, componentUid);
+    AutoPtr<IActivityManagerHelper> amhelper;
+    CActivityManagerHelper::AcquireSingleton((IActivityManagerHelper**)&amhelper);
+    Int32 perm;
+    return isSameApp || componentAppId == IProcess::SYSTEM_UID
+        || componentAppId == IProcess::PHONE_UID
+        || (amhelper->CheckUidPermission(Manifest::permission::INTERACT_ACROSS_USERS_FULL,
+            componentUid, &perm), perm) == IPackageManager::PERMISSION_GRANTED;
 }
 
 ECode CActivityManagerService::BindService(
@@ -17836,7 +18910,7 @@ ECode CActivityManagerService::BindBackupAgent(
     VALIDATE_NOT_NULL(result);
 
     if (DEBUG_BACKUP) Slogger::V(TAG, "bindBackupAgent: app=%p mode=%d", app, backupMode);
-    FAIL_RETURN(EnforceCallingPermission(Elastos::Droid::Manifest::permission::BACKUP, String("bindBackupAgent")));
+    FAIL_RETURN(EnforceCallingPermission(Manifest::permission::CONFIRM_FULL_BACKUP, String("bindBackupAgent")));
 
     {
         AutoLock lock(this);
@@ -17876,7 +18950,7 @@ ECode CActivityManagerService::BindBackupAgent(
         String processName;
         app->GetProcessName(&processName);
         AutoPtr<ProcessRecord> proc = StartProcessLocked(processName, app,
-                FALSE, 0, String("backup"), hostingName, FALSE, FALSE);
+                FALSE, 0, String("backup"), hostingName, FALSE, FALSE, FALSE);
         if (proc == NULL) {
             Slogger::E(TAG, "Unable to start backup agent process %p", r.Get());
             return FALSE;
@@ -17916,7 +18990,7 @@ ECode CActivityManagerService::BindBackupAgent(
 ECode CActivityManagerService::ClearPendingBackup()
 {
     if (DEBUG_BACKUP) Slogger::V(TAG, "clearPendingBackup");
-    FAIL_RETURN(EnforceCallingPermission(Elastos::Droid::Manifest::permission::BACKUP, String("clearPendingBackup")));
+    FAIL_RETURN(EnforceCallingPermission(Manifest::permission::BACKUP, String("clearPendingBackup")));
 
     AutoLock lock(this);
     mBackupTarget = NULL;
@@ -17939,7 +19013,7 @@ ECode CActivityManagerService::BackupAgentCreated(
         }
     }
 
-    Int64 oldIdent = Binder::ClearCallingIdentity();
+    Int64 oldIdent = BinderClearCallingIdentity();
     // try {
     AutoPtr<IServiceManager> sm;
     ASSERT_SUCCEEDED(CServiceManager::AcquireSingleton((IServiceManager**)&sm));
@@ -17953,7 +19027,7 @@ ECode CActivityManagerService::BackupAgentCreated(
     //     Slogger::W(TAG, "Exception trying to deliver BackupAgent binding: ");
     //     e.printStackTrace();
     // } finally {
-    Binder::RestoreCallingIdentity(oldIdent);
+    BinderRestoreCallingIdentity(oldIdent);
     // }
     return NOERROR;
 }
@@ -18110,20 +19184,23 @@ ECode CActivityManagerService::RegisterReceiver(
         if (callerApp == NULL) {
             // throw new SecurityException(
             //         "Unable to find app for caller " + caller
-            //         + " (pid=" + Binder::GetCallingPid()
+            //         + " (pid=" + BinderGetCallingPid()
             //         + ") when registering receiver " + receiver);
             Slogger::E(TAG, "Unable to find app for caller %p (pid=%d) when registering receiver %p"
-                    , caller, Binder::GetCallingPid(), receiver);
+                    , caller, BinderGetCallingPid(), receiver);
             return E_SECURITY_EXCEPTION;
         }
 
         Int32 uid;
         callerApp->mInfo->GetUid(&uid);
+        Boolean res;
         if (uid != IProcess::SYSTEM_UID
-                && callerApp->mPkgList.Find(callerPackage) == callerApp->mPkgList.End()) {
+            && !(callerApp->mPkgList->ContainsKey(callerPackage, &res), res)
+            && !callerPackage.Equals("android")) {
             // throw new SecurityException("Given caller package " + callerPackage
             //         + " is not running in process " + callerApp);
-            Slogger::E(TAG, "Given caller package %s is not running in process %p", callerPackage.string(), callerApp.Get());
+            Slogger::E(TAG, "Given caller package %s is not running in process %s",
+                callerPackage.string(), ToChars(callerApp));
             return E_SECURITY_EXCEPTION;
         }
 
@@ -18132,12 +19209,12 @@ ECode CActivityManagerService::RegisterReceiver(
     }
     else {
         callerPackage = NULL;
-        callingUid = Binder::GetCallingUid();
-        callingPid = Binder::GetCallingPid();
+        callingUid = BinderGetCallingUid();
+        callingPid = BinderGetCallingPid();
     }
 
     FAIL_RETURN(HandleIncomingUser(callingPid, callingUid, userId,
-            TRUE, TRUE, String("registerReceiver"), callerPackage, &userId));
+            TRUE, ALLOW_FULL_ONLY, String("registerReceiver"), callerPackage, &userId));
 
     AutoPtr<List<AutoPtr<IIntent> > > allSticky;
 
@@ -18239,7 +19316,7 @@ ECode CActivityManagerService::RegisterReceiver(
             AutoPtr<IIntent> intent = *it;
             AutoPtr<BroadcastQueue> queue = BroadcastQueueForIntent(intent);
             AutoPtr<BroadcastRecord> r = new BroadcastRecord(queue, intent, NULL,
-                   String(NULL), -1, -1, nullStr, receivers, NULL, 0,
+                   String(NULL), -1, -1, nullStr, nullStr, AppOpsManager::OP_NONE, receivers, NULL, 0,
                    String(NULL), NULL, FALSE, TRUE, TRUE, -1);
             queue->EnqueueParallelBroadcastLocked(r);
             queue->ScheduleBroadcastsLocked();
@@ -18256,13 +19333,13 @@ ECode CActivityManagerService::UnregisterReceiver(
 {
     if (DEBUG_BROADCAST) Slogger::V(TAG, "Unregister receiver: %p", receiver);
 
-    const Int64 origId = Binder::ClearCallingIdentity();
+    const Int64 origId = BinderClearCallingIdentity();
     //try {
     Boolean doTrim = FALSE;
     {
         AutoLock lock(this);
         AutoPtr<ReceiverList> rl;
-        HashMap<AutoPtr<IIntentReceiver>, AutoPtr<ReceiverList> >::Iterator ite =
+        HashMap<AutoPtr<IBinder>, AutoPtr<ReceiverList> >::Iterator ite =
                 mRegisteredReceivers.Find(receiver);
         if (ite != mRegisteredReceivers.End()){
             rl = ite->mSecond;
@@ -18272,7 +19349,7 @@ ECode CActivityManagerService::UnregisterReceiver(
             if (rl->mCurBroadcast != NULL){
                 AutoPtr<BroadcastRecord> r = rl->mCurBroadcast;
                 Boolean doNext = FinishReceiverLocked(IBinder::Probe(receiver), r->mResultCode, r->mResultData,
-                        r->mResultExtras, r->mResultAbort, TRUE);
+                        r->mResultExtras, r->mResultAbort);
                 if (doNext) {
                     doTrim = TRUE;
                     r->mQueue->ProcessNextBroadcast(FALSE);
@@ -18295,7 +19372,7 @@ ECode CActivityManagerService::UnregisterReceiver(
         TrimApplications();
     }
     //} finally {
-    Binder::RestoreCallingIdentity(origId);
+    BinderRestoreCallingIdentity(origId);
     //}
     return NOERROR;
 }
@@ -18327,9 +19404,10 @@ void CActivityManagerService::SendPackageBroadcastLocked(
 AutoPtr<IList> CActivityManagerService::CollectReceiverComponents(
     /* [in] */ IIntent* intent,
     /* [in] */ const String& resolvedType,
+    /* [in] */ Int32 callingUid,
     /* [in] */ ArrayOf<Int32>* users)
 {
-    AutoPtr<IObjectContainer> receivers;
+    AutoPtr<IList> receivers;
     // try {
         HashSet<AutoPtr<IComponentName> > singleUserReceivers;
         Boolean scannedFirstReceivers = FALSE;
@@ -18338,34 +19416,40 @@ AutoPtr<IList> CActivityManagerService::CollectReceiverComponents(
         AutoPtr<IIPackageManager> pm = AppGlobals::GetPackageManager();
         for (Int32 i = 0; i < users->GetLength(); i++) {
             Int32 user = (*users)[i];
-            AutoPtr<IObjectContainer> newReceivers;
-            pm->QueryIntentReceivers(intent, resolvedType, STOCK_PM_FLAGS, user, (IObjectContainer**)&newReceivers);
+            // Skip users that have Shell restrictions
+            Boolean res;
+            if (callingUid == IProcess::SHELL_UID
+                && (GetUserManagerLocked()->HasUserRestriction(
+                IUserManager::DISALLOW_DEBUGGING_FEATURES, user, &res), res)) {
+                continue;
+            }
+            AutoPtr<IList> newReceivers;
+            pm->QueryIntentReceivers(intent, resolvedType, STOCK_PM_FLAGS, user, (IList**)&newReceivers);
             if (user != 0 && newReceivers != NULL) {
                 // If this is not the primary user, we need to check for
                 // any receivers that should be filtered out.
-                // List<AutoPtr<IResolveInfo> >::Iterator it = newReceivers->Begin();
-                // while(it != newReceivers->End())
-                AutoPtr<IObjectEnumerator> enumerator;
-                newReceivers->GetObjectEnumerator((IObjectEnumerator**)&enumerator);
-                while (enumerator->MoveNext(&hasNext), hasNext) {
-                    AutoPtr<IResolveInfo> ri;
-                    enumerator->Current((IInterface**)&ri);
+                Int32 size;
+                newReceivers->GetSize(&size);
+                for (Int32 i = 0; i < size; i++) {
+                    AutoPtr<IInterface> item;
+                    newReceivers->Get(i, (IInterface**)&item);
+                    AutoPtr<IResolveInfo> ri = IResolveInfo::Probe(item);
 
                     AutoPtr<IActivityInfo> ai;
                     ri->GetActivityInfo((IActivityInfo**)&ai);
                     ai->GetFlags(&flags);
                     if ((flags & IActivityInfo::FLAG_PRIMARY_USER_ONLY) != 0) {
-                        enumerator->MoveNext(&hasNext);
-                        newReceivers->Remove((IInterface*)ri);
-                        continue;
+                        newReceivers->Remove(i);
+                        i--;
+                        size--;
                     }
                 }
             }
 
             if (newReceivers != NULL) {
-                Int32 len;
-                newReceivers->GetObjectCount(&len);
-                if (len == 0) {
+                Int32 size;
+                newReceivers->GetSize(&size);
+                if (size == 0) {
                     newReceivers = NULL;
                 }
             }
@@ -18381,17 +19465,14 @@ AutoPtr<IList> CActivityManagerService::CollectReceiverComponents(
                 if (!scannedFirstReceivers) {
                     // Collect any single user receivers we had already retrieved.
                     scannedFirstReceivers = TRUE;
-
-                    // List<AutoPtr<IResolveInfo> >::Iterator it = receivers->Begin();
-                    // while(it != receivers->End())
-                    AutoPtr<IObjectEnumerator> enumerator;
-                    receivers->GetObjectEnumerator((IObjectEnumerator**)&enumerator);
-                    Boolean hasNext = FALSE;
                     Int32 flags;
                     String pkgName, name;
-                    while (enumerator->MoveNext(&hasNext), hasNext) {
-                        AutoPtr<IResolveInfo> ri;
-                        enumerator->Current((IInterface**)&ri);
+                    Int32 size;
+                    receivers->GetSize(&size);
+                    for (Int32 i = 0; i < size; i++) {
+                        AutoPtr<IInterface> item;
+                        receivers->Get(i, (IInterface**)&item);
+                        AutoPtr<IResolveInfo> ri = IResolveInfo::Probe(item);
                         AutoPtr<IActivityInfo> ai;
                         ri->GetActivityInfo((IActivityInfo**)&ai);
                         ai->GetFlags(&flags);
@@ -18407,16 +19488,14 @@ AutoPtr<IList> CActivityManagerService::CollectReceiverComponents(
 
                 // Add the new results to the existing results, tracking
                 // and de-dupping single user receivers.
-                // List<AutoPtr<IResolveInfo> >::Iterator it = newReceivers->Begin();
-                // while(it != newReceivers->End())
-                AutoPtr<IObjectEnumerator> enumerator;
-                receivers->GetObjectEnumerator((IObjectEnumerator**)&enumerator);
-                Boolean hasNext = FALSE;
                 Int32 flags;
                 String pkgName, name;
-                while (enumerator->MoveNext(&hasNext), hasNext) {
-                    AutoPtr<IResolveInfo> ri;
-                    enumerator->Current((IInterface**)&ri);
+                Int32 size;
+                newReceivers->GetSize(&size);
+                for (Int32 i = 0; i < size; i++) {
+                    AutoPtr<IInterface> item;
+                    newReceivers->Get(i, (IInterface**)&item);
+                    AutoPtr<IResolveInfo> ri = IResolveInfo::Probe(item);
                     AutoPtr<IActivityInfo> ai;
                     ri->GetActivityInfo((IActivityInfo**)&ai);
                     ai->GetFlags(&flags);
@@ -18441,22 +19520,7 @@ AutoPtr<IList> CActivityManagerService::CollectReceiverComponents(
     // } catch (RemoteException ex) {
     //     // pm is in same process, this will never happen.
     // }
-    if (receivers != NULL) {
-        AutoPtr<IList> list;
-        CArrayList::New((IList**)&list);
-        AutoPtr<IObjectEnumerator> enumerator;
-        receivers->GetObjectEnumerator((IObjectEnumerator**)&enumerator);
-        Boolean hasNext = FALSE;
-        while (enumerator->MoveNext(&hasNext), hasNext) {
-            AutoPtr<IInterface> ri;
-            enumerator->Current((IInterface**)&ri);
-            list->PushBack(ri);
-        }
-        return list;
-    }
-    else {
-        return NULL;
-    }
+    return receivers;
 }
 
 ECode CActivityManagerService::BroadcastIntentLocked(
@@ -18469,6 +19533,7 @@ ECode CActivityManagerService::BroadcastIntentLocked(
     /* [in] */ const String& resultData,
     /* [in] */ IBundle* map,
     /* [in] */ const String& requiredPermission,
+    /* [in] */ Int32 appOp,
     /* [in] */ Boolean ordered,
     /* [in] */ Boolean sticky,
     /* [in] */ Int32 callingPid,
@@ -18495,7 +19560,7 @@ ECode CActivityManagerService::BroadcastIntentLocked(
     }
 
    FAIL_RETURN(HandleIncomingUser(callingPid, callingUid, userId,
-           TRUE, FALSE, String("broadcast"), callerPackage, &userId));
+           TRUE, ALLOW_NON_FULL, String("broadcast"), callerPackage, &userId));
 
     // Make sure that the user who is receiving this broadcast is started.
     // If not, we will just skip it.
@@ -18520,8 +19585,8 @@ ECode CActivityManagerService::BroadcastIntentLocked(
     */
     Int32 callingAppId = UserHandleGetAppId(callingUid);
     if (callingAppId == IProcess::SYSTEM_UID || callingAppId == IProcess::PHONE_UID
-            || callingAppId == IProcess::SHELL_UID || callingAppId == IProcess::BLUETOOTH_UID ||
-            callingUid == 0) {
+        || callingAppId == IProcess::SHELL_UID || callingAppId == IProcess::BLUETOOTH_UID
+        || callingAppId == IProcess::NFC_UID || callingUid == 0) {
         // Always okay.
     }
     else if (callerApp == NULL || !callerApp->mPersistent) {
@@ -18536,9 +19601,40 @@ ECode CActivityManagerService::BroadcastIntentLocked(
             //throw new SecurityException(msg);
             return E_SECURITY_EXCEPTION;
         }
+        else if (IAppWidgetManager::ACTION_APPWIDGET_CONFIGURE.Equals(action)) {
+            // Special case for compatibility: we don't want apps to send this,
+            // but historically it has not been protected and apps may be using it
+            // to poke their own app widget.  So, instead of making it protected,
+            // just limit it to the caller.
+            AutoPtr<IComponentName> comp;
+            if (callerApp == NULL) {
+                String msg = ;
+                Slogger::W(TAG, "Permission Denial: not allowed to send broadcast %s"
+                    " from unknown caller.", action.string());
+                return E_SECURITY_EXCEPTION;
+            }
+            else if ((intent->GetComponent((IComponentName**)&comp), comp != NULL)) {
+                // They are good enough to send to an explicit component...  verify
+                // it is being sent to the calling app.
+                String pkgName, infoPkgName;
+                comp->GetPackageName(&pkgName);
+                callerApp->mInfo->GetPackageName(&infoPkgName);
+                if (!pkgName.Equals(infoPkgName)) {
+                    Slogger::W(TAG, "Permission Denial: not allowed to send broadcast %s to %s from %s",
+                        action.string(), pkgName.string(), infoPkgName.string());
+                    return E_SECURITY_EXCEPTION;
+                }
+            }
+            else {
+                String infoPkgName;
+                callerApp->mInfo->GetPackageName(&infoPkgName);
+                // Limit broadcast to their own package.
+                intent->SetPackage(infoPkgName);
+            }
+        }
         //} catch (RemoteException e) {
         //    Slogger::W(TAG, "Remote exception", e);
-        //    return ActivityManager.BROADCAST_SUCCESS;
+        //    return IActivityManager::BROADCAST_SUCCESS;
         //}
     }
 
@@ -18551,9 +19647,10 @@ ECode CActivityManagerService::BroadcastIntentLocked(
     if (action.Equals(IIntent::ACTION_PACKAGE_REMOVED)
             || action.Equals(IIntent::ACTION_PACKAGE_CHANGED)
             || action.Equals(IIntent::ACTION_EXTERNAL_APPLICATIONS_UNAVAILABLE)
+            || action.Equals(IIntent::ACTION_EXTERNAL_APPLICATIONS_AVAILABLE)
             || uidRemoved) {
         if (CheckComponentPermission(
-                    Elastos::Droid::Manifest::permission::BROADCAST_PACKAGE_REMOVED,
+                    Manifest::permission::BROADCAST_PACKAGE_REMOVED,
                     callingPid, callingUid, -1, TRUE)
                 == IPackageManager::PERMISSION_GRANTED) {
             if (uidRemoved) {
@@ -18565,8 +19662,11 @@ ECode CActivityManagerService::BroadcastIntentLocked(
                 }
                 if (uid >= 0) {
                    AutoPtr<IBatteryStatsImpl> bs = mBatteryStatsService->GetActiveStatistics();
-                   AutoLock lock(bs);
-                   bs->RemoveUidStatsLocked(uid);
+                    {
+                       AutoLock lock(bs);
+                       bs->RemoveUidStatsLocked(uid);
+                    }
+                    mAppOpsService->UidRemoved(uid);
                 }
             }
             else {
@@ -18578,29 +19678,46 @@ ECode CActivityManagerService::BroadcastIntentLocked(
                             (ArrayOf<String>**)&list);
                     if (list != NULL && (list->GetLength() > 0)) {
                         for (Int32 i = 0; i < list->GetLength(); i++) {
-                            ForceStopPackageLocked((*list)[i], -1, FALSE, TRUE, TRUE, FALSE, userId);
+                            ForceStopPackageLocked((*list)[i], -1, FALSE, TRUE, TRUE,
+                                FALSE, FALSE, userId, String("storage unmount"));
                         }
+                        CleanupRecentTasksLocked(IUserHandle::USER_ALL);
                         SendPackageBroadcastLocked(
-                                IApplicationThread::EXTERNAL_STORAGE_UNAVAILABLE, list, userId);
+                            IApplicationThread::EXTERNAL_STORAGE_UNAVAILABLE, list, userId);
                     }
+                }
+                else if (IIntent::ACTION_EXTERNAL_APPLICATIONS_AVAILABLE.Equals(action)) {
+                    CleanupRecentTasksLocked(IUserHandle::USER_ALL);
                 }
                 else {
                     AutoPtr<IUri> data;
                     intent->GetData((IUri**)&data);
                     String ssp;
                     if (data != NULL && (data->GetSchemeSpecificPart(&ssp), !ssp.IsNull())) {
+                        Boolean removed = IIntent::ACTION_PACKAGE_REMOVED.Equals(action);
+                        Boolean extraReplacing = FALSE;
+                        intent->GetBooleanExtra(IIntent::EXTRA_REPLACING, FALSE, &extraReplacing);
+                        Boolean fullUninstall = removed && !extraReplacing;
                         Boolean dontKillApp = FALSE;
                         intent->GetBooleanExtra(IIntent::EXTRA_DONT_KILL_APP, FALSE, &dontKillApp);
                         if (!dontKillApp) {
                             Int32 uid = -1;
                             intent->GetInt32Extra(IIntent::EXTRA_UID, -1, &uid);
-                            ForceStopPackageLocked(ssp, uid, FALSE, TRUE, TRUE, FALSE, userId);
+                            ForceStopPackageLocked(ssp, UserHandleGetAppId(uid), FALSE, TRUE, TRUE,
+                                FALSE, fullUninstall, userId, String(removed ? "pkg removed" : "pkg changed"));
                         }
-                        if (action.Equals(IIntent::ACTION_PACKAGE_REMOVED)) {
+                        if (removed)) {
                             AutoPtr< ArrayOf<String> > sa = ArrayOf<String>::Alloc(1);
                             (*sa)[0] = ssp;
-                            SendPackageBroadcastLocked(IApplicationThread::PACKAGE_REMOVED,
-                                                       sa, userId);
+                            SendPackageBroadcastLocked(IApplicationThread::PACKAGE_REMOVED, sa, userId);
+                            if (!extraReplacing) {
+                                Int32 uid = -1;
+                                intent->GetInt32Extra(IIntent::EXTRA_UID, -1, &uid);
+                                mAppOpsService->PackageRemoved(uid, ssp);
+
+                                // Remove all permissions granted from/to this package
+                                RemoveUriPermissionsForPackageLocked(ssp, userId, TRUE);
+                            }
                         }
                     }
                 }
@@ -18609,8 +19726,9 @@ ECode CActivityManagerService::BroadcastIntentLocked(
         else {
             String action;
             intent->GetAction(&action);
-            Slogger::W(TAG, "Permission Denial: %s broadcast from %s (pid=%d, uid=%d) requires Elastos::Droid::Manifest::permission::BROADCAST_PACKAGE_REMOVED"
-                    , action.string(), callerPackage.string(), callingPid, callingUid);
+            Slogger::W(TAG, "Permission Denial: %s broadcast from %s (pid=%d, uid=%d)"
+                " requires Manifest::permission::BROADCAST_PACKAGE_REMOVED"
+                , action.string(), callerPackage.string(), callingPid, callingUid);
             return E_SECURITY_EXCEPTION;
         }
 
@@ -18638,13 +19756,32 @@ ECode CActivityManagerService::BroadcastIntentLocked(
         mHandler->SendEmptyMessage(UPDATE_TIME_ZONE, &bval);
     }
 
+    /*
+     * If the user set the time, let all running processes know.
+     */
+    if (action.Equals(IIntent::ACTION_TIME_CHANGED)) {
+        Boolean value;
+        intent->GetBooleanExtra(
+            IIntent::EXTRA_TIME_PREF_24_HOUR_FORMAT, FALSE, &value);
+        Int32 is24Hour = value ? 1 : 0;
+        AutoPtr<IMessage> msg;
+        mHandler->ObtainMessage(UPDATE_TIME, is24Hour, 0, (IMessage**)&msg);
+        mHandler->SendMessage(msg, &bval);
+        AutoPtr<IBatteryStatsImpl> stats = mBatteryStatsService->GetActiveStatistics();
+        synchronized (stats) {
+            stats->NoteCurrentTimeChangedLocked();
+        }
+    }
+
     if (action.Equals(IIntent::ACTION_CLEAR_DNS_CACHE)) {
         mHandler->SendEmptyMessage(CLEAR_DNS_CACHE_MSG, &bval);
     }
 
     if (action.Equals(Elastos::Droid::Net::IProxy::PROXY_CHANGE_ACTION)) {
-        AutoPtr<IProxyInfo> proxy;
-        intent->GetParcelableExtra(String("proxy"),(IParcelable**)&proxy);
+        AutoPtr<IParcelable> parcelable;
+        intent->GetParcelableExtra(Elastos::Droid::Net::IProxy::EXTRA_PROXY_INFO,
+            (IParcelable**)&parcelable);
+        AutoPtr<IProxyInfo> proxy = IProxyInfo::Probe(parcelable);
 
         AutoPtr<IMessage> msg;
         mHandler->ObtainMessage(UPDATE_HTTP_PROXY_MSG, proxy->Probe(EIID_IInterface), (IMessage**)&msg);
@@ -18654,10 +19791,10 @@ ECode CActivityManagerService::BroadcastIntentLocked(
     // Add to the sticky list if requested.
     if (sticky) {
         Int32 permission;
-        CheckPermission(Elastos::Droid::Manifest::permission::BROADCAST_STICKY,
+        CheckPermission(Manifest::permission::BROADCAST_STICKY,
                         callingPid, callingUid, &permission);
         if (permission != IPackageManager::PERMISSION_GRANTED) {
-            Slogger::W(TAG, "Permission Denial: broadcastIntent() requesting a sticky broadcast from pid=%d, uid=%d requires Elastos::Droid::Manifest::permission::BROADCAST_STICKY"
+            Slogger::W(TAG, "Permission Denial: broadcastIntent() requesting a sticky broadcast from pid=%d, uid=%d requires Manifest::permission::BROADCAST_STICKY"
                     , callingPid, callingUid);
             return E_SECURITY_EXCEPTION;
         }
@@ -18758,14 +19895,37 @@ ECode CActivityManagerService::BroadcastIntentLocked(
     Int32 flags;
     intent->GetFlags(&flags);
     if ((flags & IIntent::FLAG_RECEIVER_REGISTERED_ONLY) == 0) {
-        receivers = CollectReceiverComponents(intent, resolvedType, users);
+        receivers = CollectReceiverComponents(intent, resolvedType, callingUid, users);
     }
 
     AutoPtr<IComponentName> name;
     intent->GetComponent((IComponentName**)&name);
     if (name == NULL) {
-        registeredReceivers = mReceiverResolver->QueryIntent(
+        if (userId == IUserHandle::USER_ALL && callingUid == IProcess::SHELL_UID) {
+            // Query one target user at a time, excluding shell-restricted users
+            AutoPtr<CUserManagerService> ums = GetUserManagerLocked();
+            for (Int32 i = 0; i < users->GetLength(); i++) {
+                Boolean res;
+                ums->BasUserRestriction(IUserManager::DISALLOW_DEBUGGING_FEATURES,
+                    (*users)[i], &res);
+                if (res) {
+                    continue;
+                }
+                AutoPtr<List<AutoPtr<BroadcastFilter> > > registeredReceiversForUser =
+                        mReceiverResolver->aueryIntent(intent, resolvedType, FALSE, (*users)[i]);
+                if (registeredReceivers == NULL) {
+                    registeredReceivers = registeredReceiversForUser;
+                }
+                else if (registeredReceiversForUser != NULL) {
+                    registeredReceivers->Insert(registeredReceivers.End(),
+                        registeredReceiversForUser.Begin(), registeredReceiversForUser.End());
+                }
+            }
+        }
+        else {
+            registeredReceivers = mReceiverResolver->QueryIntent(
                 intent, resolvedType, FALSE, userId);
+        }
     }
 
     Boolean replacePending =
@@ -18789,8 +19949,8 @@ ECode CActivityManagerService::BroadcastIntentLocked(
         // registered receivers separately so they don't wait for the
         // components to be launched.
         AutoPtr<BroadcastRecord> r = new BroadcastRecord(queue, intent, callerApp,
-                callerPackage, callingPid, callingUid, requiredPermission,
-                rlist, resultTo, resultCode, resultData, map,
+                callerPackage, callingPid, callingUid, resolvedType, requiredPermission,
+                appOp, rlist, resultTo, resultCode, resultData, map,
                 ordered, sticky, FALSE, userId);
         if (DEBUG_BROADCAST) Slogger::V(TAG, "Enqueueing parallel broadcast %p", r.Get());
         Boolean replaced = replacePending && queue->ReplaceParallelBroadcastLocked(r);
@@ -18886,7 +20046,7 @@ ECode CActivityManagerService::BroadcastIntentLocked(
             if (receivers == NULL) {
                 CArrayList::New((IList**)&receivers);
             }
-            receivers->PushBack((IInterface*)*ir);
+            receivers->Add((*ir)->Probe(EIID_IInterface));
             ir++;
         }
     }
@@ -18894,9 +20054,9 @@ ECode CActivityManagerService::BroadcastIntentLocked(
     if ((receivers != NULL && !receivers->IsEmpty()) || resultTo != NULL)  {
         AutoPtr<BroadcastQueue> queue = BroadcastQueueForIntent(intent);
         AutoPtr<BroadcastRecord> r = new BroadcastRecord(queue, intent, callerApp,
-                callerPackage, callingPid, callingUid, requiredPermission,
-                receivers, resultTo, resultCode, resultData, map, ordered,
-                sticky, FALSE, userId);
+                callerPackage, callingPid, callingUid, resolvedType,
+                requiredPermission, appOp, receivers, resultTo, resultCode,
+                resultData, map, ordered, sticky, FALSE, userId);
         if (DEBUG_BROADCAST) {
             Slogger::V(TAG, "Enqueueing ordered broadcast %p: prev had %d", r.Get(), queue->mOrderedBroadcasts.GetSize());
         }
@@ -18975,6 +20135,7 @@ ECode CActivityManagerService::BroadcastIntent(
     /* [in] */ const String& resultData,
     /* [in] */ IBundle* map,
     /* [in] */ const String& requiredPermission,
+    /* [in] */ Int32 appOp,
     /* [in] */ Boolean serialized,
     /* [in] */ Boolean sticky,
     /* [in] */ Int32 userId,
@@ -18988,18 +20149,18 @@ ECode CActivityManagerService::BroadcastIntent(
     FAIL_RETURN(VerifyBroadcastLocked(intent, (IIntent**)&newIntent));
     AutoPtr<ProcessRecord> callerApp = GetRecordForAppLocked(caller);
 
-    Int32 callingPid = Binder::GetCallingPid();
-    Int32 callingUid = Binder::GetCallingUid();
-    Int64 origId = Binder::ClearCallingIdentity();
+    Int32 callingPid = BinderGetCallingPid();
+    Int32 callingUid = BinderGetCallingUid();
+    Int64 origId = BinderClearCallingIdentity();
     String callerPackage;
     if (callerApp != NULL) {
         callerApp->mInfo->GetPackageName(&callerPackage);
     }
     ECode ec = BroadcastIntentLocked(callerApp,
             callerPackage, newIntent, resolvedType, resultTo,
-            resultCode, resultData, map, requiredPermission, serialized,
+            resultCode, resultData, map, requiredPermission, appOp, serialized,
             sticky, callingPid, callingUid, userId, result);
-    Binder::RestoreCallingIdentity(origId);
+    BinderRestoreCallingIdentity(origId);
     return ec;
 }
 
@@ -19022,11 +20183,11 @@ ECode CActivityManagerService::BroadcastIntentInPackage(
     AutoPtr<IIntent> intent;
     FAIL_RETURN(VerifyBroadcastLocked(_intent, (IIntent**)&intent));
 
-    Int64 origId = Binder::ClearCallingIdentity();
+    Int64 origId = BinderClearCallingIdentity();
     BroadcastIntentLocked(NULL, packageName, intent, resolvedType,
             resultTo, resultCode, resultData, map, requiredPermission,
-            serialized, sticky, -1, uid, userId, status);
-    Binder::RestoreCallingIdentity(origId);
+            IAppOpsManager::OP_NONE, serialized, sticky, -1, uid, userId, status);
+    BinderRestoreCallingIdentity(origId);
     return NOERROR;
 }
 
@@ -19046,18 +20207,18 @@ ECode CActivityManagerService::UnbroadcastIntent(
     }
 
     Int32 userId;
-    HandleIncomingUser(Binder::GetCallingPid(),
-            Binder::GetCallingUid(), _userId, TRUE, FALSE,
+    HandleIncomingUser(BinderGetCallingPid(),
+            BinderGetCallingUid(), _userId, TRUE, ALLOW_NON_FULL,
             String("removeStickyBroadcast"), String(NULL), &userId);
 
     {
         AutoLock lock(this);
-        if (CheckCallingPermission(Elastos::Droid::Manifest::permission::BROADCAST_STICKY)
+        if (CheckCallingPermission(Manifest::permission::BROADCAST_STICKY)
                 != IPackageManager::PERMISSION_GRANTED) {
             // String msg = "Permission Denial: unbroadcastIntent() from pid="
-            //         + Binder::GetCallingPid()
-            //         + ", uid=" + Binder::GetCallingUid()
-            //         + " requires " + Elastos::Droid::Manifest::permission::BROADCAST_STICKY;
+            //         + BinderGetCallingPid()
+            //         + ", uid=" + BinderGetCallingUid()
+            //         + " requires " + Manifest::permission::BROADCAST_STICKY;
             // Slogger::W(TAG, msg);
             // throw new SecurityException(msg);
             return E_SECURITY_EXCEPTION;
@@ -19097,8 +20258,7 @@ Boolean CActivityManagerService::FinishReceiverLocked(
     /* [in] */ Int32 resultCode,
     /* [in] */ const String& resultData,
     /* [in] */ IBundle* resultExtras,
-    /* [in] */ Boolean resultAbort,
-    /* [in] */ Boolean _explicit)
+    /* [in] */ Boolean resultAbort)
 {
     AutoPtr<BroadcastRecord> r = BroadcastRecordForReceiverLocked(receiver);
     if (r == NULL) {
@@ -19106,8 +20266,18 @@ Boolean CActivityManagerService::FinishReceiverLocked(
         return FALSE;
     }
 
-    return r->mQueue->FinishReceiverLocked(r, resultCode, resultData, resultExtras, resultAbort,
-            _explicit);
+    return r->mQueue->FinishReceiverLocked(r, resultCode, resultData,
+        resultExtras, resultAbort, FALSE);
+}
+
+ECode CActivityManagerService::BackgroundServicesFinishedLocked(
+    /* [in] */ Int32 userId)
+{
+    Int32 size = mBroadcastQueues->GetLength();
+    for (Int32 i = 0; i < size; ++i) {
+        (*mBroadcastQueues)[i]->BackgroundServicesFinishedLocked(userId);
+    }
+    return NOERROR;
 }
 
 ECode CActivityManagerService::FinishReceiver(
@@ -19132,7 +20302,7 @@ ECode CActivityManagerService::FinishReceiver(
             return E_ILLEGAL_ARGUMENT_EXCEPTION;
         }
     }
-    Int64 origId = Binder::ClearCallingIdentity();
+    Int64 origId = BinderClearCallingIdentity();
 
     //try {
     Boolean doNext = FALSE;
@@ -19151,7 +20321,7 @@ ECode CActivityManagerService::FinishReceiver(
     }
     TrimApplications();
     //} finally {
-    Binder::RestoreCallingIdentity(origId);
+    BinderRestoreCallingIdentity(origId);
     //}
     return NOERROR;
 }
@@ -19166,14 +20336,16 @@ ECode CActivityManagerService::StartInstrumentation(
     /* [in] */ Int32 flags,
     /* [in] */ IBundle* arguments,
     /* [in] */ IInstrumentationWatcher* watcher,
+    /* [in] */ IIUiAutomationConnection* uiAutomationConnection,
     /* [in] */ Int32 userId,
+    /* [in] */ const String& abiOverride,
     /* [out] */ Boolean* res)
 {
     VALIDATE_NOT_NULL(res);
 
     FAIL_RETURN(EnforceNotIsolatedCaller(String("startInstrumentation")));
-    HandleIncomingUser(Binder::GetCallingPid(), Binder::GetCallingUid(),
-            userId, FALSE, TRUE, String("startInstrumentation"), String(NULL), &userId);
+    HandleIncomingUser(BinderGetCallingPid(), BinderGetCallingUid(),
+            userId, FALSE, ALLOW_FULL_ONLY, String("startInstrumentation"), String(NULL), &userId);
     // Refuse possible leaked file descriptors
     Boolean hasDes;
     if (arguments != NULL && (arguments->HasFileDescriptors(&hasDes), hasDes)) {
@@ -19223,9 +20395,9 @@ ECode CActivityManagerService::StartInstrumentation(
             StringBuilder msg("Permission Denial: starting instrumentation ");
             msg += className;
             msg += " from pid=";
-            msg += Binder::GetCallingPid();
+            msg += BinderGetCallingPid();
             msg += ", uid=";
-            msg += Binder::GetCallingPid();
+            msg += BinderGetCallingPid();
             msg += " not allowed because package ";
             msg += iiPkgName;
             msg += " does not have a signature matching the target ";
@@ -19235,17 +20407,19 @@ ECode CActivityManagerService::StartInstrumentation(
             return E_SECURITY_EXCEPTION;
         }
 
-        const Int64 origId = Binder::ClearCallingIdentity();
+        const Int64 origId = BinderClearCallingIdentity();
         // Instrumentation can kill and relaunch even persistent processes
-        ForceStopPackageLocked(tPackage, -1, TRUE, FALSE, TRUE, TRUE, userId);
-        AutoPtr<ProcessRecord> app = AddAppLocked(ai, FALSE);
+        ForceStopPackageLocked(tPackage, -1, TRUE, FALSE, TRUE, TRUE, FALSE, userId,
+            String("start instr"));
+        AutoPtr<ProcessRecord> app = AddAppLocked(ai, FALSE, abiOverride);
         app->mInstrumentationClass = className;
         app->mInstrumentationInfo = ai;
         app->mInstrumentationProfileFile = profileFile;
         app->mInstrumentationArguments = arguments;
         app->mInstrumentationWatcher = watcher;
+        app->mInstrumentationUiAutomationConnection = uiAutomationConnection;
         app->mInstrumentationResultClass = className;
-        Binder::RestoreCallingIdentity(origId);
+        BinderRestoreCallingIdentity(origId);
     }
 
     *res = TRUE;
@@ -19294,6 +20468,12 @@ ECode CActivityManagerService::FinishInstrumentationLocked(
                 resultCode,
                 results);
     }
+    if (app->mInstrumentationUiAutomationConnection != NULL) {
+        app->mInstrumentationUiAutomationConnection->Shutdown();
+        // Only a UiAutomation can set this flag and now that
+        // it is finished we make sure it is reset to its default.
+        mUserIsMonkey = FALSE;
+    }
     app->mInstrumentationWatcher = NULL;
     app->mInstrumentationClass = NULL;
     app->mInstrumentationInfo = NULL;
@@ -19302,7 +20482,8 @@ ECode CActivityManagerService::FinishInstrumentationLocked(
 
     String pName;
     app->mInfo->GetProcessName(&pName);
-    ForceStopPackageLocked(pName, -1, FALSE, FALSE, TRUE, TRUE, app->mUserId);
+    ForceStopPackageLocked(pName, -1, FALSE, FALSE, TRUE, TRUE, FALSE, app->mUserId,
+        String("finished inst"));
     return NOERROR;
 }
 
@@ -19325,9 +20506,9 @@ ECode CActivityManagerService::FinishInstrumentation(
         Slogger::W(TAG, "finishInstrumentation: no app for %p", target);
         return NOERROR;
     }
-    const Int64 origId = Binder::ClearCallingIdentity();
+    const Int64 origId = BinderClearCallingIdentity();
     FinishInstrumentationLocked(app, resultCode, results);
-    Binder::RestoreCallingIdentity(origId);
+    BinderRestoreCallingIdentity(origId);
     return NOERROR;
 }
 
@@ -19371,6 +20552,11 @@ ECode CActivityManagerService::GetDeviceConfigurationInfo(
     return NOERROR;
 }
 
+AutoPtr<ActivityStack> CActivityManagerService::GetFocusedStack()
+{
+    return mStackSupervisor->GetFocusedStack();
+}
+
 ECode CActivityManagerService::GetConfiguration(
     /* [out] */ IConfiguration** config)
 {
@@ -19382,9 +20568,9 @@ ECode CActivityManagerService::GetConfiguration(
 ECode CActivityManagerService::UpdatePersistentConfiguration(
     /* [in] */ IConfiguration* values)
 {
-    FAIL_RETURN(EnforceCallingPermission(Elastos::Droid::Manifest::permission::CHANGE_CONFIGURATION,
+    FAIL_RETURN(EnforceCallingPermission(Manifest::permission::CHANGE_CONFIGURATION,
             String("updateConfiguration()")));
-    FAIL_RETURN(EnforceCallingPermission(Elastos::Droid::Manifest::permission::WRITE_SETTINGS,
+    FAIL_RETURN(EnforceCallingPermission(Manifest::permission::WRITE_SETTINGS,
             String("updateConfiguration()")));
     if (values == NULL) {
         // throw new NullPointerException("Configuration must not be null");
@@ -19393,9 +20579,9 @@ ECode CActivityManagerService::UpdatePersistentConfiguration(
 
     {
         AutoLock lock(this);
-        const Int64 origId = Binder::ClearCallingIdentity();
+        const Int64 origId = BinderClearCallingIdentity();
         UpdateConfigurationLocked(values, NULL, TRUE, FALSE);
-        Binder::RestoreCallingIdentity(origId);
+        BinderRestoreCallingIdentity(origId);
     }
     return NOERROR;
 }
@@ -19403,7 +20589,7 @@ ECode CActivityManagerService::UpdatePersistentConfiguration(
 ECode CActivityManagerService::UpdateConfiguration(
     /* [in] */ IConfiguration* _values)
 {
-    FAIL_RETURN(EnforceCallingPermission(Elastos::Droid::Manifest::permission::CHANGE_CONFIGURATION,
+    FAIL_RETURN(EnforceCallingPermission(Manifest::permission::CHANGE_CONFIGURATION,
            String("UpdateConfiguration()")));
 
     AutoPtr<IConfiguration> values = _values;
@@ -19418,14 +20604,14 @@ ECode CActivityManagerService::UpdateConfiguration(
             mProcessList->ApplyDisplaySize(mWindowManager);
         }
 
-        const Int64 origId = Binder::ClearCallingIdentity();
+        const Int64 origId = BinderClearCallingIdentity();
         if (values != NULL) {
             AutoPtr<ISettingsSystem> settingsSystem;
             CSettingsSystem::AcquireSingleton((ISettingsSystem**)&settingsSystem);
             settingsSystem->ClearConfiguration(values);
         }
         UpdateConfigurationLocked(values, NULL, FALSE, FALSE);
-        Binder::RestoreCallingIdentity(origId);
+        BinderRestoreCallingIdentity(origId);
     }
 
     return NOERROR;
@@ -19437,11 +20623,7 @@ Boolean CActivityManagerService::UpdateConfigurationLocked(
     /* [in] */ Boolean persistent,
     /* [in] */ Boolean initLocale)
 {
-    // do nothing if we are headless
-    if (mHeadless) return TRUE;
-
     Int32 changes = 0;
-    Boolean kept = TRUE;
 
     if (values != NULL) {
         AutoPtr<IConfiguration> newConfig;
@@ -19475,7 +20657,9 @@ Boolean CActivityManagerService::UpdateConfigurationLocked(
             mConfiguration = newConfig;
             String confDes;
             newConfig->ToString(&confDes);
-            Slogger::I(TAG, "Config changed: %s", confDes.string());
+            Slogger::I(TAG, "Config changed:0x%x %s", changes, confDes.string());
+             mUsageStatsService->ReportConfigurationChange(newConfig, mCurrentUserId);
+            //mUsageStatsService.noteStartConfig(newConfig);
 
             AutoPtr<IConfiguration> configCopy;
             CConfiguration::New(mConfiguration, (IConfiguration**)&configCopy);
@@ -19534,30 +20718,36 @@ Boolean CActivityManagerService::UpdateConfigurationLocked(
             Int32 result;
             String nullStr;
             BroadcastIntentLocked(NULL, nullStr, intent, nullStr, NULL, 0,
-                    nullStr, NULL, nullStr, FALSE, FALSE, MY_PID, IProcess::SYSTEM_UID, IUserHandle::USER_ALL, &result);
+                    nullStr, NULL, nullStr, IAppOpsManager::OP_NONE, FALSE, FALSE, MY_PID,
+                    IProcess::SYSTEM_UID, IUserHandle::USER_ALL, &result);
             if ((changes & IActivityInfo::CONFIG_LOCALE) != 0) {
                 AutoPtr<IIntent> newIntent;
                 CIntent::New(String(IIntent::ACTION_LOCALE_CHANGED), (IIntent**)&newIntent);
                 intent->AddFlags(IIntent::FLAG_RECEIVER_FOREGROUND);
-                BroadcastIntentLocked(NULL, nullStr,
-                        newIntent, nullStr, NULL, 0, nullStr, NULL,
-                        nullStr, FALSE, FALSE, MY_PID, IProcess::SYSTEM_UID, IUserHandle::USER_ALL, &result);
+                BroadcastIntentLocked(NULL, nullStr, newIntent,
+                    nullStr, NULL, 0, nullStr, NULL, nullStr, IAppOpsManager::OP_NONE,
+                    FALSE, FALSE, MY_PID, IProcess::SYSTEM_UID, IUserHandle::USER_ALL, &result);
             }
         }
     }
 
-    if (changes != 0 && starting == NULL) {
-        // If the configuration changed, and the caller is not already
-        // in the process of starting an activity, then find the top
-        // activity to check if its configuration needs to change.
-        starting = mMainStack->GetTopRunningActivityLocked(NULL);
-    }
+    Boolean kept = TRUE;
+    AutoPtr<ActivityStack> mainStack = mStackSupervisor->GetFocusedStack();
+    // mainStack is null during startup.
+    if (mainStack != NULL) {
+        if (changes != 0 && starting == NULL) {
+            // If the configuration changed, and the caller is not already
+            // in the process of starting an activity, then find the top
+            // activity to check if its configuration needs to change.
+            starting = mainStack->GetTopRunningActivityLocked(NULL);
+        }
 
-    if (starting != NULL) {
-        kept = mMainStack->EnsureActivityConfigurationLocked(starting, changes);
-        // And we need to make sure at this point that all other activities
-        // are made visible with the correct configuration.
-        mStackSupervisor->EnsureActivitiesVisibleLocked(starting, changes);
+        if (starting != NULL) {
+            kept = mainStack->EnsureActivityConfigurationLocked(starting, changes);
+            // And we need to make sure at this point that all other activities
+            // are made visible with the correct configuration.
+            mStackSupervisor->EnsureActivitiesVisibleLocked(starting, changes);
+        }
     }
 
     if (values != NULL && mWindowManager != NULL) {
@@ -19610,20 +20800,30 @@ ECode CActivityManagerService::SaveLocaleLocked(
         sysProp->Set(String("persist.sys.language"), language);
         sysProp->Set(String("persist.sys.country"), region);
         sysProp->Set(String("persist.sys.localevar"), variant);
+
+        AutoPtr<IMessage> msg;
+        mHandler->ObtainMessage(SEND_LOCALE_TO_MOUNT_DAEMON_MSG, l, (IMessage**)&msg);
+        Boolean res;
+        mHandler->SendMessage(msg, &res);
     }
     return NOERROR;
 }
 
-ECode CActivityManagerService::TargetTaskAffinityMatchesActivity(
+ECode CActivityManagerService::ShouldUpRecreateTask(
     /* [in] */ IBinder* token,
     /* [in] */ const String& destAffinity,
     /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result);
 
-    AutoPtr<ActivityRecord> srec = ActivityRecord::ForToken(token);
-    *result = srec != NULL && srec->mTask->mAffinity != NULL &&
-            srec->mTask->mAffinity.Equals(destAffinity);
+    synchronized (this) {
+        AutoPtr<ActivityRecord> srec = ActivityRecord::ForToken(token);
+        if (srec->mTask != NULL && srec->mTask->mStack != NULL) {
+            *result = srec->mTask->mStack->ShouldUpRecreateTaskLocked(srec, destAffinity);
+            return NOERROR;
+        }
+    }
+    *result = FALSE;
     return NOERROR;
 }
 
@@ -19635,128 +20835,15 @@ ECode CActivityManagerService::NavigateUpTo(
     /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result);
-
-    AutoPtr<IComponentName> dest;
-    destIntent->GetComponent((IComponentName**)&dest);
-
-    {
-        AutoLock lock(this);
-        AutoPtr<ActivityRecord> srec = ActivityRecord::ForToken(token);
-        if (srec == NULL) {
-            *result = FALSE;
+    synchronized (this) {
+        AutoPtr<ActivityStack> stack = ActivityRecord::GetStackLocked(token);
+        if (stack != NULL) {
+            *result = stack->NavigateUpToLocked(token, destIntent, resultCode, resultData);
             return NOERROR;
         }
-        List<AutoPtr<ActivityRecord> > history = srec->mStack->mHistory;
-        Int32 start = -1;
-        List<AutoPtr<ActivityRecord> >::Iterator it;
-        Int32 i;
-        for (it = history.Begin(), i = 0; it != history.End(); ++it, ++i) {
-            if (srec == *it) {
-                start = i;
-                break;
-            }
-        }
-        if (start < 0) {
-            // Current activity is not in history stack; do nothing.
-            *result = FALSE;
-            return NOERROR;
-        }
-        Int32 finishTo = start - 1;
-        AutoPtr<ActivityRecord> parent;
-        Boolean foundParentInTask = FALSE;
-        if (dest != NULL) {
-            AutoPtr<TaskRecord> tr = srec->mTask;
-            for (Int32 i = start - 1; i >= 0; i--) {
-                AutoPtr<ActivityRecord> r = history[i];
-                String rPkgName, destPkgName;
-                r->mInfo->GetPackageName(&rPkgName);
-                dest->GetPackageName(&destPkgName);
-                String rName, destClassName;
-                r->mInfo->GetName(&rName);
-                dest->GetClassName(&destClassName);
-                if (tr != r->mTask) {
-                    // Couldn't find parent in the same task; stop at the one above this.
-                    // (Root of current task; in-app "home" behavior)
-                    // Always at least finish the current activity.
-                    finishTo = Elastos::Core::Math::Min(start - 1, i + 1);
-                    parent = history[finishTo];
-                    break;
-                }
-                else if (rPkgName.Equals(destPkgName) &&
-                        rName.Equals(destClassName)) {
-                    finishTo = i;
-                    parent = r;
-                    foundParentInTask = TRUE;
-                    break;
-                }
-            }
-        }
-
-        if (mController != NULL) {
-            AutoPtr<ActivityRecord> next = mMainStack->GetTopRunningActivityLocked(token, 0);
-            if (next != NULL) {
-                // ask watcher if this is allowed
-                Boolean resumeOK = TRUE;
-                // try {
-                FAIL_RETURN(mController->ActivityResuming(next->mPackageName, &resumeOK));
-                // } catch (RemoteException e) {
-                //     mController = null;
-                // }
-
-                if (!resumeOK) {
-                    *result = FALSE;
-                    return NOERROR;
-                }
-            }
-        }
-        const Int64 origId = Binder::ClearCallingIdentity();
-        for (Int32 i = start; i > finishTo; i--) {
-            AutoPtr<ActivityRecord> r = history[i];
-            mMainStack->RequestFinishActivityLocked(IBinder::Probe(r->mAppToken), resultCode, resultData,
-                    String("navigate-up"), TRUE);
-            // Only return the supplied result for the first activity finished
-            resultCode = IActivity::RESULT_CANCELED;
-            resultData = NULL;
-        }
-
-        if (parent != NULL && foundParentInTask) {
-            Int32 parentLaunchMode;
-            parent->mInfo->GetLaunchMode(&parentLaunchMode);
-            Int32 destIntentFlags;
-            destIntent->GetFlags(&destIntentFlags);
-            if (parentLaunchMode == IActivityInfo::LAUNCH_SINGLE_INSTANCE ||
-                    parentLaunchMode == IActivityInfo::LAUNCH_SINGLE_TASK ||
-                    parentLaunchMode == IActivityInfo::LAUNCH_SINGLE_TOP ||
-                    (destIntentFlags & IIntent::FLAG_ACTIVITY_CLEAR_TOP) != 0) {
-                AutoPtr<IApplicationInfo> appInfo;
-                srec->mInfo->GetApplicationInfo((IApplicationInfo**)&appInfo);
-                Int32 uid;
-                appInfo->GetUid(&uid);
-                parent->DeliverNewIntentLocked(uid, destIntent);
-            }
-            else {
-                // try {
-                AutoPtr<IComponentName> comp;
-                destIntent->GetComponent((IComponentName**)&comp);
-                AutoPtr<IActivityInfo> aInfo;
-                AppGlobals::GetPackageManager()->GetActivityInfo(
-                            comp, 0, srec->mUserId, (IActivityInfo**)&aInfo);
-                Int32 res;
-                mMainStack->StartActivityLocked(srec->mApp->mThread, destIntent,
-                            String(NULL), aInfo, IBinder::Probe(parent->mAppToken), String(NULL),
-                            0, -1, parent->mLaunchedFromUid, 0, NULL, TRUE, NULL, &res);
-                    foundParentInTask = res == IActivityManager::START_SUCCESS;
-                // } catch (RemoteException e) {
-                //     foundParentInTask = FALSE;
-                // }
-                mMainStack->RequestFinishActivityLocked(IBinder::Probe(parent->mAppToken), resultCode,
-                        resultData, String("navigate-up"), TRUE);
-            }
-        }
-        Binder::RestoreCallingIdentity(origId);
-        *result = foundParentInTask;
-        return NOERROR;
     }
+    *result = FALSE;
+    return NOERROR;
 }
 
 ECode CActivityManagerService::GetLaunchedFromUid(
@@ -19770,6 +20857,20 @@ ECode CActivityManagerService::GetLaunchedFromUid(
     else{
         *result = srec->mLaunchedFromUid;
     }
+    return NOERROR;
+}
+
+ECode CActivityManagerService::GetLaunchedFromPackage(
+    /* [in] */ IBinder* activityToken,
+    /* [out] */ String* launchedFromPackage)
+{
+    AutoPtr<ActivityRecord> srec = ActivityRecord::ForToken(activityToken);
+    if (srec == NULL) {
+        *launchedFromPackage = NULL;
+    }
+    else
+        *launchedFromPackage = srec->mLaunchedFromPackage;
+
     return NOERROR;
 }
 
@@ -19809,39 +20910,23 @@ AutoPtr<BroadcastQueue> CActivityManagerService::IsReceivingBroadcast(
 
 Int32 CActivityManagerService::ComputeOomAdjLocked(
     /* [in] */ ProcessRecord* app,
-    /* [in] */ Int32 hiddenAdj,
-    /* [in] */ Int32 clientHiddenAdj,
-    /* [in] */ Int32 emptyAdj,
+    /* [in] */ Int32 cachedAdj,
     /* [in] */ ProcessRecord* TOP_APP,
-    /* [in] */ Boolean recursed,
-    /* [in] */ Boolean doingAll)
+    /* [in] */ Boolean doingAll,
+    /* [in] */ Int64 now)
 {
-// Slogger::D(TAG, "================== CActivityManagerService::ComputeOomAdjLocked[app: %p] ================", app);
     assert(app != NULL && "CActivityManagerService::ComputeOomAdjLocked: app can not be NULL.");
 
     if (mAdjSeq == app->mAdjSeq) {
-        // This adjustment has already been computed.  If we are calling
-        // from the top, we may have already computed our adjustment with
-        // an earlier hidden adjustment that isn't really for us... if
-        // so, use the new hidden adjustment.
-        if (!recursed && app->mHidden) {
-            if (app->mHasActivities) {
-                app->mCurAdj = app->mCurRawAdj = app->mNonStoppingAdj = hiddenAdj;
-            }
-            else if (app->mHasClientActivities) {
-                app->mCurAdj = app->mCurRawAdj = app->mNonStoppingAdj = clientHiddenAdj;
-            }
-            else {
-                app->mCurAdj = app->mCurRawAdj = app->mNonStoppingAdj = emptyAdj;
-            }
-        }
+        // This adjustment has already been computed.
         return app->mCurRawAdj;
     }
 
     if (app->mThread == NULL) {
         app->mAdjSeq = mAdjSeq;
         app->mCurSchedGroup = IProcess::THREAD_GROUP_BG_NONINTERACTIVE;
-        app->mCurAdj = app->mCurRawAdj = ProcessList::HIDDEN_APP_MAX_ADJ;
+        app->mCurProcState = IActivityManager::PROCESS_STATE_CACHED_EMPTY;
+        app->mCurAdj = app->mCurRawAdj = ProcessList::CACHED_APP_MAX_ADJ;
         return app->mCurAdj;
     }
 
@@ -19849,30 +20934,26 @@ Int32 CActivityManagerService::ComputeOomAdjLocked(
     app->mAdjSource = NULL;
     app->mAdjTarget = NULL;
     app->mEmpty = FALSE;
-    app->mHidden = FALSE;
-    app->mHasClientActivities = FALSE;
+    app->mCached = FALSE;
 
     Int32 activitiesSize = app->mActivities.GetSize();
 
     if (app->mMaxAdj <= ProcessList::FOREGROUND_APP_ADJ) {
         // The max adjustment doesn't allow this app to be anything
         // below foreground, so it is not worth doing work for it.
-        app->mAdjType = String("fixed");
+        app->mAdjType = "fixed";
         app->mAdjSeq = mAdjSeq;
-        app->mCurRawAdj = app->mNonStoppingAdj = app->mMaxAdj;
-        app->mHasActivities = FALSE;
+        app->mCurRawAdj = app->mMaxAdj;
         app->mForegroundActivities = FALSE;
-        app->mKeeping = TRUE;
         app->mCurSchedGroup = IProcess::THREAD_GROUP_DEFAULT;
-
-        // System process can do UI, and when they do we want to have
+        app->mCurProcState = IActivityManager::PROCESS_STATE_PERSISTENT;
+        // System processes can do UI, and when they do we want to have
         // them trim their memory after the user leaves the UI.  To
         // facilitate this, here we need to determine whether or not it
         // is currently showing UI.
         app->mSystemNoUi = TRUE;
         if (app == TOP_APP) {
             app->mSystemNoUi = FALSE;
-            app->mHasActivities = TRUE;
         }
         else if (activitiesSize > 0) {
             List<AutoPtr<ActivityRecord> >::Iterator it = app->mActivities.Begin();
@@ -19881,42 +20962,39 @@ Int32 CActivityManagerService::ComputeOomAdjLocked(
                 if (r->mVisible) {
                     app->mSystemNoUi = FALSE;
                 }
-                if (r->mApp.Get() == app) {
-                    app->mHasActivities = TRUE;
-                }
             }
+        }
+        if (!app->mSystemNoUi) {
+            app->mCurProcState = IActivityManager::PROCESS_STATE_PERSISTENT_UI;
         }
         app->mCurAdj = app->mMaxAdj;
         return app->mCurAdj;
     }
 
-    app->mKeeping = FALSE;
     app->mSystemNoUi = FALSE;
-    app->mHasActivities = FALSE;
 
     // Determine the importance of the process, starting with most
     // important to least, and assign an appropriate OOM adjustment.
     Int32 adj;
     Int32 schedGroup;
+    Int32 procState;
     Boolean foregroundActivities = FALSE;
-    Boolean interesting = FALSE;
     AutoPtr<BroadcastQueue> queue;
 
     if (app == TOP_APP) {
         // The last app on the list is the foreground app.
         adj = ProcessList::FOREGROUND_APP_ADJ;
         schedGroup = IProcess::THREAD_GROUP_DEFAULT;
-        app->mAdjType = String("top-activity");
+        app->mAdjType = "top-activity";
         foregroundActivities = TRUE;
-        interesting = TRUE;
-        app->mHasActivities = TRUE;
+        procState = IActivityManager::PROCESS_STATE_TOP;
     }
     else if (app->mInstrumentationClass != NULL) {
         // Don't want to kill running instrumentation.
         adj = ProcessList::FOREGROUND_APP_ADJ;
         schedGroup = IProcess::THREAD_GROUP_DEFAULT;
-        app->mAdjType = String("instrumentation");
-        interesting = TRUE;
+        app->mAdjType = "instrumentation";
+        procState = IActivityManager::PROCESS_STATE_IMPORTANT_FOREGROUND;
     }
     else if ((queue = IsReceivingBroadcast(app)) != NULL) {
         // An app that is currently receiving a broadcast also
@@ -19926,40 +21004,52 @@ Int32 CActivityManagerService::ComputeOomAdjLocked(
         adj = ProcessList::FOREGROUND_APP_ADJ;
         schedGroup = (queue == mFgBroadcastQueue)
                 ? IProcess::THREAD_GROUP_DEFAULT : IProcess::THREAD_GROUP_BG_NONINTERACTIVE;
-        app->mAdjType = String("broadcast");
+        app->mAdjType = "broadcast";
+        procState = IActivityManager::PROCESS_STATE_RECEIVER;
     }
     else if (app->mExecutingServices.IsEmpty() == FALSE) {
         // An app that is currently executing a service callback also
         // counts as being in the foreground.
         adj = ProcessList::FOREGROUND_APP_ADJ;
-        schedGroup = IProcess::THREAD_GROUP_DEFAULT;
-        app->mAdjType = String("exec-service");
+        schedGroup = app->mExecServicesFg ?
+                IProcess::THREAD_GROUP_DEFAULT : IProcess::THREAD_GROUP_BG_NONINTERACTIVE;
+        app->mAdjType = "exec-service";
+        procState = IActivityManager::PROCESS_STATE_SERVICE;
     }
     else {
+        // As far as we know the process is empty.  We may change our mind later.
+        schedGroup = IProcess::THREAD_GROUP_BG_NONINTERACTIVE;
         // Assume process is hidden (has activities); we will correct
         // later if this is not the case.
-        adj = hiddenAdj;
-        schedGroup = IProcess::THREAD_GROUP_BG_NONINTERACTIVE;
-        app->mHidden = TRUE;
-        app->mAdjType = String("bg-act");
+        adj = cachedAdj;
+        procState = IActivityManager::PROCESS_STATE_CACHED_EMPTY;
+        app->mCached = TRUE;
+        app->mEmpty = TRUE;
+        app->mAdjType = "cch-empty";
     }
-
-    Boolean hasStoppingActivities = FALSE;
 
     // Examine all activities if not already foreground.
     if (!foregroundActivities && activitiesSize > 0) {
         List<AutoPtr<ActivityRecord> >::Iterator it = app->mActivities.Begin();
         for (; it != app->mActivities.End(); ++it) {
             AutoPtr<ActivityRecord> r = *it;
+            if (r->mApp != app) {
+                Slogger::W(TAG, "Wtf, activity %s in proc activity list not using proc %s?!?",
+                    ToChars(r), ToChars(app));
+                continue;
+            }
             if (r->mVisible) {
                 // App has a visible activity; only upgrade adjustment.
                 if (adj > ProcessList::VISIBLE_APP_ADJ) {
                     adj = ProcessList::VISIBLE_APP_ADJ;
-                    app->mAdjType = String("visible");
+                    app->mAdjType = "visible";
+                }
+                if (procState > IActivityManager::PROCESS_STATE_TOP) {
+                    procState = IActivityManager::PROCESS_STATE_TOP;
                 }
                 schedGroup = IProcess::THREAD_GROUP_DEFAULT;
-                app->mHidden = FALSE;
-                app->mHasActivities = TRUE;
+                app->mCached = FALSE;
+                app->mEmpty = TRUE;
                 foregroundActivities = TRUE;
                 break;
             }
@@ -19967,36 +21057,43 @@ Int32 CActivityManagerService::ComputeOomAdjLocked(
                     || r->mState == ActivityState_PAUSED) {
                 if (adj > ProcessList::PERCEPTIBLE_APP_ADJ) {
                     adj = ProcessList::PERCEPTIBLE_APP_ADJ;
-                    app->mAdjType = String("pausing");
+                    app->mAdjType = "pausing";
                 }
-                app->mHidden = FALSE;
+                if (procState > IActivityManager::PROCESS_STATE_TOP) {
+                    procState = IActivityManager::PROCESS_STATE_TOP;
+                }
+                schedGroup = IProcess::THREAD_GROUP_DEFAULT;
+                app->mCached = FALSE;
+                app->mEmpty = FALSE;
                 foregroundActivities = TRUE;
             }
             else if (r->mState == ActivityState_STOPPING) {
-                // We will apply the actual adjustment later, because
-                // we want to allow this process to immediately go through
-                // any memory trimming that is in effect.
-                app->mHidden = FALSE;
+                if (adj > ProcessList::PERCEPTIBLE_APP_ADJ) {
+                    adj = ProcessList::PERCEPTIBLE_APP_ADJ;
+                    app->mAdjType = "stopping";
+                }
+                // For the process state, we will at this point consider the
+                // process to be cached.  It will be cached either as an activity
+                // or empty depending on whether the activity is finishing.  We do
+                // this so that we can treat the process as cached for purposes of
+                // memory trimming (determing current memory level, trim command to
+                // send to process) since there can be an arbitrary number of stopping
+                // processes and they should soon all go into the cached state.
+                if (!r->mFinishing) {
+                    if (procState > IActivityManager::PROCESS_STATE_LAST_ACTIVITY) {
+                        procState = IActivityManager::PROCESS_STATE_LAST_ACTIVITY;
+                    }
+                }
+                app->mCached = FALSE;
+                app->mEmpty = FALSE;
                 foregroundActivities = TRUE;
-                hasStoppingActivities = TRUE;
             }
-            if (r->mApp.Get() == app) {
-                app->mHasActivities = TRUE;
+            else {
+                if (procState > IActivityManager::PROCESS_STATE_CACHED_ACTIVITY) {
+                    procState = IActivityManager::PROCESS_STATE_CACHED_ACTIVITY;
+                    app->mAdjType = "cch-act";
+                }
             }
-        }
-    }
-
-    if (adj == hiddenAdj && !app->mHasActivities) {
-        if (app->mHasClientActivities) {
-            adj = clientHiddenAdj;
-            app->mAdjType = String("bg-client-act");
-        }
-        else {
-            // Whoops, this process is completely empty as far as we know
-            // at this point.
-            adj = emptyAdj;
-            app->mEmpty = TRUE;
-            app->mAdjType = String("bg-empty");
         }
     }
 
@@ -20004,50 +21101,62 @@ Int32 CActivityManagerService::ComputeOomAdjLocked(
         if (app->mForegroundServices) {
             // The user is aware of this app, so make it visible.
             adj = ProcessList::PERCEPTIBLE_APP_ADJ;
-            app->mHidden = FALSE;
-            app->mAdjType = String("fg-service");
+            procState = IActivityManager::PROCESS_STATE_IMPORTANT_FOREGROUND;
+            app->mCached = FALSE;
+            app->mAdjType = "fg-service";
             schedGroup = IProcess::THREAD_GROUP_DEFAULT;
         }
         else if (app->mForcingToForeground != NULL) {
             // The user is aware of this app, so make it visible.
             adj = ProcessList::PERCEPTIBLE_APP_ADJ;
-            app->mHidden = FALSE;
-            app->mAdjType = String("force-fg");
+            procState = IActivityManager::PROCESS_STATE_IMPORTANT_FOREGROUND;
+            app->mCached = FALSE;
+            app->mAdjType = "force-fg";
             app->mAdjSource = app->mForcingToForeground;
             schedGroup = IProcess::THREAD_GROUP_DEFAULT;
         }
     }
 
-    if (app->mForegroundServices) {
-        interesting = TRUE;
+    if (app == mHeavyWeightProcess) {
+        if (adj > ProcessList::HEAVY_WEIGHT_APP_ADJ) {
+            // We don't want to kill the current heavy-weight process.
+            adj = ProcessList::HEAVY_WEIGHT_APP_ADJ;
+            schedGroup = Process::THREAD_GROUP_BG_NONINTERACTIVE;
+            app->mCached = FALSE;
+            app->mAdjType = "heavy";
+        }
+        if (procState > IActivityManager::PROCESS_STATE_HEAVY_WEIGHT) {
+            procState = IActivityManager::PROCESS_STATE_HEAVY_WEIGHT;
+        }
     }
 
-    if (adj > ProcessList::HEAVY_WEIGHT_APP_ADJ && app == mHeavyWeightProcess) {
-        // We don't want to kill the current heavy-weight process.
-        adj = ProcessList::HEAVY_WEIGHT_APP_ADJ;
-        schedGroup = IProcess::THREAD_GROUP_BG_NONINTERACTIVE;
-        app->mHidden = FALSE;
-        app->mAdjType = String("heavy");
+    if (app == mHomeProcess) {
+        if (adj > ProcessList::HOME_APP_ADJ) {
+            // This process is hosting what we currently consider to be the
+            // home app, so we don't want to let it go into the background.
+            adj = ProcessList::HOME_APP_ADJ;
+            schedGroup = Process::THREAD_GROUP_BG_NONINTERACTIVE;
+            app->mCached = FALSE;
+            app->mAdjType = "home";
+        }
+        if (procState > IActivityManager::PROCESS_STATE_HOME) {
+            procState = IActivityManager::PROCESS_STATE_HOME;
+        }
     }
 
-    if (adj > ProcessList::HOME_APP_ADJ && app == mHomeProcess) {
-        // This process is hosting what we currently consider to be the
-        // home app, so we don't want to let it go into the background.
-        adj = ProcessList::HOME_APP_ADJ;
-        schedGroup = IProcess::THREAD_GROUP_BG_NONINTERACTIVE;
-        app->mHidden = FALSE;
-        app->mAdjType = String("home");
-    }
-
-    if (adj > ProcessList::PREVIOUS_APP_ADJ && app == mPreviousProcess
-            && app->mActivities.IsEmpty() == FALSE) {
-        // This was the previous process that showed UI to the user.
-        // We want to try to keep it around more aggressively, to give
-        // a good experience around switching between two apps.
-        adj = ProcessList::PREVIOUS_APP_ADJ;
-        schedGroup = IProcess::THREAD_GROUP_BG_NONINTERACTIVE;
-        app->mHidden = FALSE;
-        app->mAdjType = String("previous");
+    if (app == mPreviousProcess && app->mActivities.GetSize() > 0) {
+        if (adj > ProcessList::PREVIOUS_APP_ADJ) {
+            // This was the previous process that showed UI to the user.
+            // We want to try to keep it around more aggressively, to give
+            // a good experience around switching between two apps.
+            adj = ProcessList::PREVIOUS_APP_ADJ;
+            schedGroup = Process::THREAD_GROUP_BG_NONINTERACTIVE;
+            app->mCached = FALSE;
+            app->mAdjType = "previous";
+        }
+        if (procState > IActivityManager::PROCESS_STATE_LAST_ACTIVITY) {
+            procState = IActivityManager::PROCESS_STATE_LAST_ACTIVITY;
+        }
     }
 
     if (FALSE) Slogger::I(TAG, "OOM %s: initial adj=%d reason=%s",
@@ -20058,7 +21167,8 @@ Int32 CActivityManagerService::ComputeOomAdjLocked(
     // this gives us a baseline and makes sure we don't get into an
     // infinite recursion.
     app->mAdjSeq = mAdjSeq;
-    app->mCurRawAdj = app->mNonStoppingAdj = adj;
+    app->mCurRawAdj = adj;
+    app->mHasStartedServices = FALSE;
 
     if (mBackupTarget != NULL && app == mBackupTarget->mApp) {
         // If possible we want to avoid killing apps while they're being backed up
@@ -20067,488 +21177,459 @@ Int32 CActivityManagerService::ComputeOomAdjLocked(
                 String appDes = app->ToString();
                 Slogger::V(TAG, "oom BACKUP_APP_ADJ for %s", appDes.string());
             }
+            if (procState > IActivityManager::PROCESS_STATE_IMPORTANT_BACKGROUND) {
+                procState = IActivityManager::PROCESS_STATE_IMPORTANT_BACKGROUND;
+            }
             adj = ProcessList::BACKUP_APP_ADJ;
-            app->mAdjType = String("backup");
+            app->mAdjType = "backup";
             app->mHidden = FALSE;
+        }
+        if (procState > IActivityManager::PROCESS_STATE_BACKUP) {
+            procState = IActivityManager::PROCESS_STATE_BACKUP;
         }
     }
 
-    if (app->mServices.IsEmpty() == FALSE && (adj > ProcessList::FOREGROUND_APP_ADJ
-            || schedGroup == IProcess::THREAD_GROUP_BG_NONINTERACTIVE)) {
-        Millisecond64 now = SystemClock::GetUptimeMillis();
-        // This process is more important if the top activity is
-        // bound to the service.
-        HashSet< AutoPtr<CServiceRecord> >::Iterator it = app->mServices.Begin();
-        for (; it != app->mServices.End() && adj > ProcessList::FOREGROUND_APP_ADJ; ++it) {
-            AutoPtr<CServiceRecord> s = *it;
-            if (s->mStartRequested) {
-                if (app->mHasShownUi && app != mHomeProcess) {
-                    // If this process has shown some UI, let it immediately
-                    // go to the LRU list because it may be pretty heavy with
-                    // UI stuff.  We'll tag it with a label just to help
-                    // debug and understand what is going on.
-                    if (adj > ProcessList::SERVICE_ADJ) {
-                        app->mAdjType = String("started-bg-ui-services");
-                    }
-                }
-                else {
-                    if (now < (s->mLastActivity + ActiveServices::MAX_SERVICE_INACTIVITY)) {
-                        // This service has seen some activity within
-                        // recent memory, so we will keep its process ahead
-                        // of the background processes.
-                        if (adj > ProcessList::SERVICE_ADJ) {
-                            adj = ProcessList::SERVICE_ADJ;
-                            app->mAdjType = String("started-services");
-                            app->mHidden = FALSE;
-                        }
-                    }
-                    // If we have let the service slide into the background
-                    // state, still have some text describing what it is doing
-                    // even though the service no longer has an impact.
-                    if (adj > ProcessList::SERVICE_ADJ) {
-                        app->mAdjType = String("started-bg-services");
-                    }
-                    // Don't kill this process because it is doing work; it
-                    // has said it is doing work.
-                    app->mKeeping = TRUE;
+    Boolean mayBeTop = FALSE;
+
+    HashSet<AutoPtr<CServiceRecord> >::Iterator sit = app->mServices.Begin();
+    for (; sit != app->mServices.End() && (adj > ProcessList::FOREGROUND_APP_ADJ
+        || schedGroup == IProcess::THREAD_GROUP_BG_NONINTERACTIVE
+        || procState > IActivityManager::PROCESS_STATE_TOP); ++sit) {
+        AutoPtr<CServiceRecord> s = *sit;
+        if (s->mStartRequested) {
+            app->mHasStartedServices = TRUE;
+            if (procState > IActivityManager::PROCESS_STATE_SERVICE) {
+                procState = IActivityManager::PROCESS_STATE_SERVICE;
+            }
+            if (app->mHasShownUi && app != mHomeProcess) {
+                // If this process has shown some UI, let it immediately
+                // go to the LRU list because it may be pretty heavy with
+                // UI stuff.  We'll tag it with a label just to help
+                // debug and understand what is going on.
+                if (adj > ProcessList::SERVICE_ADJ) {
+                    app->mAdjType = "cch-started-ui-services";
                 }
             }
+            else {
+                if (now < (s->mLastActivity + ActiveServices::MAX_SERVICE_INACTIVITY)) {
+                    // This service has seen some activity within
+                    // recent memory, so we will keep its process ahead
+                    // of the background processes.
+                    if (adj > ProcessList::SERVICE_ADJ) {
+                        adj = ProcessList::SERVICE_ADJ;
+                        app->mAdjType = "started-services";
+                        app->mCached = FALSE;
+                    }
+                }
+                // If we have let the service slide into the background
+                // state, still have some text describing what it is doing
+                // even though the service no longer has an impact.
+                if (adj > ProcessList::SERVICE_ADJ) {
+                    app->mAdjType = "cch-started-services";
+                }
+            }
+        }
 
-            if (s->mConnections.IsEmpty() == FALSE && (adj > ProcessList::FOREGROUND_APP_ADJ
-                    || schedGroup == IProcess::THREAD_GROUP_BG_NONINTERACTIVE)) {
-                CServiceRecord::ConnectionIterator::Iterator kt = s->mConnections.Begin();
-                for (; kt != s->mConnections.End() && adj > ProcessList::FOREGROUND_APP_ADJ; ++kt) {
-                    AutoPtr<List< AutoPtr<ConnectionRecord> > > clist = kt->mSecond;
-                    List< AutoPtr<ConnectionRecord> >::Iterator lt = clist->Begin();
-                    for (; lt != clist->End() && adj > ProcessList::FOREGROUND_APP_ADJ; ++lt) {
-                        // XXX should compute this based on the max of
-                        // all connected clients.
-                        AutoPtr<ConnectionRecord> cr = *lt;
-                        if (cr->mBinding->mClient == app) {
-                            // Binding to ourself is not interesting.
-                            continue;
-                        }
-                        if ((cr->mFlags & IContext::BIND_WAIVE_PRIORITY) == 0) {
-                            AutoPtr<ProcessRecord> client = cr->mBinding->mClient;
-                            Int32 clientAdj = adj;
-                            Int32 myHiddenAdj = hiddenAdj;
-                            if (myHiddenAdj > client->mHiddenAdj) {
-                                if (client->mHiddenAdj >= ProcessList::VISIBLE_APP_ADJ) {
-                                    myHiddenAdj = client->mHiddenAdj;
-                                }
-                                else {
-                                    myHiddenAdj = ProcessList::VISIBLE_APP_ADJ;
-                                }
-                            }
-
-                            Int32 myClientHiddenAdj = clientHiddenAdj;
-                            if (myClientHiddenAdj > client->mClientHiddenAdj) {
-                                if (client->mClientHiddenAdj >= ProcessList::VISIBLE_APP_ADJ) {
-                                    myClientHiddenAdj = client->mClientHiddenAdj;
-                                }
-                                else {
-                                    myClientHiddenAdj = ProcessList::VISIBLE_APP_ADJ;
-                                }
-                            }
-                            Int32 myEmptyAdj = emptyAdj;
-                            if (myEmptyAdj > client->mEmptyAdj) {
-                                if (client->mEmptyAdj >= ProcessList::VISIBLE_APP_ADJ) {
-                                    myEmptyAdj = client->mEmptyAdj;
-                                }
-                                else {
-                                    myEmptyAdj = ProcessList::VISIBLE_APP_ADJ;
-                                }
-                            }
-
-                            clientAdj = ComputeOomAdjLocked(client, myHiddenAdj,
-                                    myClientHiddenAdj, myEmptyAdj, TOP_APP, TRUE, doingAll);
-                            String adjType;
-
-                            if ((cr->mFlags&IContext::BIND_ALLOW_OOM_MANAGEMENT) != 0) {
-                                // Not doing bind OOM management, so treat
-                                // this guy more like a started service.
-                                if (app->mHasShownUi && app != mHomeProcess) {
-                                    // If this process has shown some UI, let it immediately
-                                    // go to the LRU list because it may be pretty heavy with
-                                    // UI stuff.  We'll tag it with a label just to help
-                                    // debug and understand what is going on.
-                                    if (adj > clientAdj) {
-                                        adjType = String("bound-bg-ui-services");
-                                    }
-                                    app->mHidden = FALSE;
-                                    clientAdj = adj;
-                                }
-                                else {
-                                    if (now >= (s->mLastActivity
-                                            + ActiveServices::MAX_SERVICE_INACTIVITY)) {
-                                        // This service has not seen activity within
-                                        // recent memory, so allow it to drop to the
-                                        // LRU list if there is no other reason to keep
-                                        // it around.  We'll also tag it with a label just
-                                        // to help debug and undertand what is going on.
-                                        if (adj > clientAdj) {
-                                            adjType = String("bound-bg-services");
-                                        }
-                                        clientAdj = adj;
-                                    }
-                                }
-                            }
-                            else if ((cr->mFlags&IContext::BIND_AUTO_CREATE) != 0) {
-                                if ((cr->mFlags&IContext::BIND_NOT_VISIBLE) == 0) {
-                                    // If this connection is keeping the service
-                                    // created, then we want to try to better follow
-                                    // its memory management semantics for activities.
-                                    // That is, if it is sitting in the background
-                                    // LRU list as a hidden process (with activities),
-                                    // we don't want the service it is connected to
-                                    // to go into the empty LRU and quickly get killed,
-                                    // because I'll we'll do is just end up restarting
-                                    // the service.
-                                    app->mHasClientActivities |= client->mHasActivities;
-                                }
-                            }
-
+        ConnectionIterator connit = s->mConnections.Begin();
+        for (; connit != s->mConnections.End() && (adj > ProcessList::FOREGROUND_APP_ADJ
+            || schedGroup == IProcess::THREAD_GROUP_BG_NONINTERACTIVE
+            || procState > IActivityManager::PROCESS_STATE_TOP); ++connit) {
+            AutoPtr<List<AutoPtr<ConnectionRecord> > > clist = connit->mSecond;
+            AutoPtr<List<AutoPtr<ConnectionRecord> > >::Iterator it;
+            for (it = clist->Begin(); it != clist->End() && (adj > ProcessList::FOREGROUND_APP_ADJ
+                || schedGroup == IProcess::THREAD_GROUP_BG_NONINTERACTIVE
+                || procState > IActivityManager::PROCESS_STATE_TOP); ++it) {
+                // XXX should compute this based on the max of
+                // all connected clients.
+                AutoPtr<ConnectionRecord> cr = *it;
+                if (cr->mBinding->mClient == app) {
+                    // Binding to ourself is not interesting.
+                    continue;
+                }
+                if ((cr->mFlags & IContext::BIND_WAIVE_PRIORITY) == 0) {
+                    AutoPtr<ProcessRecord> client = cr->mBinding->mClient;
+                    Int32 clientAdj = ComputeOomAdjLocked(client, cachedAdj,
+                            TOP_APP, doingAll, now);
+                    Int32 clientProcState = client->mCurProcState;
+                    if (clientProcState >= IActivityManager::PROCESS_STATE_CACHED_ACTIVITY) {
+                        // If the other app is cached for any reason, for purposes here
+                        // we are going to consider it empty.  The specific cached state
+                        // doesn't propagate except under certain conditions.
+                        clientProcState = IActivityManager::PROCESS_STATE_CACHED_EMPTY;
+                    }
+                    String adjType;
+                    if ((cr->mFlags & IContext::BIND_ALLOW_OOM_MANAGEMENT) != 0) {
+                        // Not doing bind OOM management, so treat
+                        // this guy more like a started service.
+                        if (app->mHasShownUi && app != mHomeProcess) {
+                            // If this process has shown some UI, let it immediately
+                            // go to the LRU list because it may be pretty heavy with
+                            // UI stuff.  We'll tag it with a label just to help
+                            // debug and understand what is going on.
                             if (adj > clientAdj) {
-                                // If this process has recently shown UI, and
-                                // the process that is binding to it is less
-                                // important than being visible, then we don't
-                                // care about the binding as much as we care
-                                // about letting this process get into the LRU
-                                // list to be killed and restarted if needed for
-                                // memory.
-                                if (app->mHasShownUi && app != mHomeProcess
-                                        && clientAdj > ProcessList::PERCEPTIBLE_APP_ADJ) {
-                                    adjType = String("bound-bg-ui-services");
-                                }
-                                else {
-                                    if ((cr->mFlags&(IContext::BIND_ABOVE_CLIENT
-                                            | IContext::BIND_IMPORTANT)) != 0) {
-                                        adj = clientAdj;
-                                    }
-                                    else if ((cr->mFlags&IContext::BIND_NOT_VISIBLE) != 0
-                                            && clientAdj < ProcessList::PERCEPTIBLE_APP_ADJ
-                                            && adj > ProcessList::PERCEPTIBLE_APP_ADJ) {
-                                        adj = ProcessList::PERCEPTIBLE_APP_ADJ;
-                                    }
-                                    else if (clientAdj > ProcessList::VISIBLE_APP_ADJ) {
-                                        adj = clientAdj;
-                                    }
-                                    else {
-                                        app->mPendingUiClean = TRUE;
-                                        if (adj > ProcessList::VISIBLE_APP_ADJ) {
-                                            adj = ProcessList::VISIBLE_APP_ADJ;
-                                        }
-                                    }
-                                    if (!client->mHidden) {
-                                        app->mHidden = FALSE;
-                                    }
-                                    if (client->mKeeping) {
-                                        app->mKeeping = TRUE;
-                                    }
-                                    adjType = String("service");
-                                }
+                                adjType = "cch-bound-ui-services";
                             }
-
-                            if (!adjType.IsNull()) {
-                                app->mAdjType = adjType;
-                                app->mAdjTypeCode = IActivityManagerRunningAppProcessInfo::REASON_SERVICE_IN_USE;
-                                app->mAdjSource = (IInterface*)cr->mBinding->mClient;
-                                app->mAdjSourceOom = clientAdj;
-                                app->mAdjTarget = (IObject*)s->mName->Probe(EIID_IObject);
-                            }
-                            if ((cr->mFlags & IContext::BIND_NOT_FOREGROUND) == 0) {
-                                if (client->mCurSchedGroup == IProcess::THREAD_GROUP_DEFAULT) {
-                                    schedGroup = IProcess::THREAD_GROUP_DEFAULT;
-                                }
-                            }
-                        }
-
-                        AutoPtr<ActivityRecord> a = cr->mActivity;
-                        if ((cr->mFlags & IContext::BIND_ADJUST_WITH_ACTIVITY) != 0) {
-                            if (a != NULL && adj > ProcessList::FOREGROUND_APP_ADJ &&
-                                    (a->mVisible || a->mState == ActivityState_RESUMED
-                                     || a->mState == ActivityState_PAUSING)) {
-                                adj = ProcessList::FOREGROUND_APP_ADJ;
-                                if ((cr->mFlags&IContext::BIND_NOT_FOREGROUND) == 0) {
-                                    schedGroup = IProcess::THREAD_GROUP_DEFAULT;
-                                }
-                                app->mHidden = FALSE;
-                                app->mAdjType = String("service");
-                                app->mAdjTypeCode = IActivityManagerRunningAppProcessInfo::REASON_SERVICE_IN_USE;
-                                app->mAdjSource = (IInterface*)a;
-                                app->mAdjSourceOom = adj;
-                                app->mAdjTarget = (IObject*)s->mName->Probe(EIID_IObject);
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        // Finally, if this process has active services running in it, we
-        // would like to avoid killing it unless it would prevent the current
-        // application from running.  By default we put the process in
-        // with the rest of the background processes; as we scan through
-        // its services we may bump it up from there.
-        if (adj > hiddenAdj) {
-            adj = hiddenAdj;
-            app->mHidden = FALSE;
-            app->mAdjType = String("bg-services");
-        }
-    }
-
-    if (app->mPubProviders.IsEmpty() == FALSE && (adj > ProcessList::FOREGROUND_APP_ADJ
-            || schedGroup == IProcess::THREAD_GROUP_BG_NONINTERACTIVE)) {
-
-        HashMap<String, AutoPtr<ContentProviderRecord> >::Iterator jt = app->mPubProviders.Begin();
-        for (; jt != app->mPubProviders.End() && (adj > ProcessList::FOREGROUND_APP_ADJ
-                || schedGroup == IProcess::THREAD_GROUP_BG_NONINTERACTIVE); ++jt) {
-            AutoPtr<ContentProviderRecord> cpr = jt->mSecond;
-            if (cpr->mConnections.IsEmpty() == FALSE) {
-                List< AutoPtr<CContentProviderConnection> >::Iterator kt = cpr->mConnections.Begin();
-                for (; kt != cpr->mConnections.End() && adj > ProcessList::FOREGROUND_APP_ADJ; ++kt) {
-                    AutoPtr<CContentProviderConnection> conn = *kt;
-                    AutoPtr<ProcessRecord> client = conn->mClient;
-                    if (client.Get() == app) {
-                        // Being our own client is not interesting.
-                        continue;
-                    }
-                    Int32 myHiddenAdj = hiddenAdj;
-                    if (myHiddenAdj > client->mHiddenAdj) {
-                        if (client->mHiddenAdj > ProcessList::FOREGROUND_APP_ADJ) {
-                            myHiddenAdj = client->mHiddenAdj;
+                            app->mCached = FALSE;
+                            clientAdj = adj;
+                            clientProcState = procState;
                         }
                         else {
-                            myHiddenAdj = ProcessList::FOREGROUND_APP_ADJ;
+                            if (now >= (s.lastActivity
+                                    + ActiveServices::MAX_SERVICE_INACTIVITY)) {
+                                // This service has not seen activity within
+                                // recent memory, so allow it to drop to the
+                                // LRU list if there is no other reason to keep
+                                // it around.  We'll also tag it with a label just
+                                // to help debug and undertand what is going on.
+                                if (adj > clientAdj) {
+                                    adjType = "cch-bound-services";
+                                }
+                                clientAdj = adj;
+                            }
                         }
                     }
-                    Int32 myClientHiddenAdj = clientHiddenAdj;
-                    if (myClientHiddenAdj > client->mClientHiddenAdj) {
-                        if (client->mClientHiddenAdj >= ProcessList::FOREGROUND_APP_ADJ) {
-                            myClientHiddenAdj = client->mClientHiddenAdj;
-                        }
-                        else {
-                            myClientHiddenAdj = ProcessList::FOREGROUND_APP_ADJ;
-                        }
-                    }
-                    Int32 myEmptyAdj = emptyAdj;
-                    if (myEmptyAdj > client->mEmptyAdj) {
-                        if (client->mEmptyAdj > ProcessList::FOREGROUND_APP_ADJ) {
-                            myEmptyAdj = client->mEmptyAdj;
-                        }
-                        else {
-                            myEmptyAdj = ProcessList::FOREGROUND_APP_ADJ;
-                        }
-                    }
-                    Int32 clientAdj = ComputeOomAdjLocked(client, myHiddenAdj,
-                            myClientHiddenAdj, myEmptyAdj, TOP_APP, TRUE, doingAll);
                     if (adj > clientAdj) {
+                        // If this process has recently shown UI, and
+                        // the process that is binding to it is less
+                        // important than being visible, then we don't
+                        // care about the binding as much as we care
+                        // about letting this process get into the LRU
+                        // list to be killed and restarted if needed for
+                        // memory.
                         if (app->mHasShownUi && app != mHomeProcess
                                 && clientAdj > ProcessList::PERCEPTIBLE_APP_ADJ) {
-                            app->mAdjType = String("bg-ui-provider");
+                            adjType = "cch-bound-ui-services";
                         }
                         else {
-                            adj = clientAdj > ProcessList::FOREGROUND_APP_ADJ
-                                    ? clientAdj : ProcessList::FOREGROUND_APP_ADJ;
-                            app->mAdjType = String("provider");
+                            if ((cr->mFlags & (IContext::BIND_ABOVE_CLIENT
+                                    |IContext::BIND_IMPORTANT)) != 0) {
+                                adj = clientAdj >= ProcessList::PERSISTENT_SERVICE_ADJ
+                                        ? clientAdj : ProcessList::PERSISTENT_SERVICE_ADJ;
+                            }
+                            else if ((cr->mFlags & IContext::BIND_NOT_VISIBLE) != 0
+                                    && clientAdj < ProcessList::PERCEPTIBLE_APP_ADJ
+                                    && adj > ProcessList::PERCEPTIBLE_APP_ADJ) {
+                                adj = ProcessList::PERCEPTIBLE_APP_ADJ;
+                            }
+                            else if (clientAdj > ProcessList::VISIBLE_APP_ADJ) {
+                                adj = clientAdj;
+                            }
+                            else {
+                                if (adj > ProcessList::VISIBLE_APP_ADJ) {
+                                    adj = ProcessList::VISIBLE_APP_ADJ;
+                                }
+                            }
+                            if (!client->mCached) {
+                                app->mCached = FALSE;
+                            }
+                            adjType = "service";
                         }
-                        if (!client->mHiddenAdj) {
-                            app->mHidden = FALSE;
-                        }
-                        if (client->mKeeping) {
-                            app->mKeeping = TRUE;
-                        }
-                        app->mAdjType = String("provider");
-                        app->mAdjTypeCode = IActivityManagerRunningAppProcessInfo::REASON_PROVIDER_IN_USE;
-                        app->mAdjSource = (IInterface*)client;
-                        app->mAdjSourceOom = clientAdj;
-                        app->mAdjTarget = (IObject*)cpr->mName->Probe(EIID_IObject);
                     }
-                    if (client->mCurSchedGroup == IProcess::THREAD_GROUP_DEFAULT) {
-                        schedGroup = IProcess::THREAD_GROUP_DEFAULT;
+                    if ((cr->mFlags & IContext::BIND_NOT_FOREGROUND) == 0) {
+                        if (client->mCurSchedGroup == IProcess::THREAD_GROUP_DEFAULT) {
+                            schedGroup = IProcess::THREAD_GROUP_DEFAULT;
+                        }
+                        if (clientProcState <= IActivityManager::PROCESS_STATE_TOP) {
+                            if (clientProcState == IActivityManager::PROCESS_STATE_TOP) {
+                                // Special handling of clients who are in the top state.
+                                // We *may* want to consider this process to be in the
+                                // top state as well, but only if there is not another
+                                // reason for it to be running.  Being on the top is a
+                                // special state, meaning you are specifically running
+                                // for the current top app->m  If the process is already
+                                // running in the background for some other reason, it
+                                // is more important to continue considering it to be
+                                // in the background state.
+                                mayBeTop = TRUE;
+                                clientProcState = IActivityManager::PROCESS_STATE_CACHED_EMPTY;
+                            }
+                            else {
+                                // Special handling for above-top states (persistent
+                                // processes).  These should not bring the current process
+                                // into the top state, since they are not on top.  Instead
+                                // give them the best state after that.
+                                clientProcState =
+                                        IActivityManager::PROCESS_STATE_IMPORTANT_FOREGROUND;
+                            }
+                        }
+                    }
+                    else {
+                        if (clientProcState <
+                                IActivityManager::PROCESS_STATE_IMPORTANT_BACKGROUND) {
+                            clientProcState =
+                                    IActivityManager::PROCESS_STATE_IMPORTANT_BACKGROUND;
+                        }
+                    }
+                    if (procState > clientProcState) {
+                        procState = clientProcState;
+                    }
+                    if (procState < IActivityManager::PROCESS_STATE_IMPORTANT_BACKGROUND
+                            && (cr->mFlags & IContext::BIND_SHOWING_UI) != 0) {
+                        app->mPendingUiClean = TRUE;
+                    }
+                    if (adjType != NULL) {
+                        app->mAdjType = adjType;
+                        app->mAdjTypeCode = IActivityManagerRunningAppProcessInfo
+                                ::REASON_SERVICE_IN_USE;
+                        app->mAdjSource = cr->mBinding->mClient;
+                        app->mAdjSourceProcState = clientProcState;
+                        app->mAdjTarget = s->mName;
+                    }
+                }
+                if ((cr->mFlags & IContext::BIND_TREAT_LIKE_ACTIVITY) != 0) {
+                    app->mTreatLikeActivity = TRUE;
+                }
+                AutoPtr<ActivityRecord> a = cr->mActivity;
+                if ((cr->mFlags & IContext::BIND_ADJUST_WITH_ACTIVITY) != 0) {
+                    if (a != NULL && adj > ProcessList::FOREGROUND_APP_ADJ &&
+                        (a->mVisible || a->mState == ActivityState_RESUMED
+                         || a->mState == ActivityState_PAUSING)) {
+                        adj = ProcessList::FOREGROUND_APP_ADJ;
+                        if ((cr->mFlags & IContext::BIND_NOT_FOREGROUND) == 0) {
+                            schedGroup = IProcess::THREAD_GROUP_DEFAULT;
+                        }
+                        app->mCached = FALSE;
+                        app->mAdjType = "service";
+                        app->mAdjTypeCode = IActivityManagerRunningAppProcessInfo
+                                ::REASON_SERVICE_IN_USE;
+                        app->mAdjSource = a;
+                        app->mAdjSourceProcState = procState;
+                        app->mAdjTarget = s->mName;
                     }
                 }
             }
-            // If the provider has external (non-framework) process
-            // dependencies, ensure that its adjustment is at least
-            // FOREGROUND_APP_ADJ.
-            if (cpr->HasExternalProcessHandles()) {
-                if (adj > ProcessList::FOREGROUND_APP_ADJ) {
-                    adj = ProcessList::FOREGROUND_APP_ADJ;
-                    schedGroup = IProcess::THREAD_GROUP_DEFAULT;
-                    app->mHidden = FALSE;
-                    app->mKeeping = TRUE;
-                    app->mAdjType = String("provider");
-                    app->mAdjTarget = (IObject*)cpr->mName->Probe(EIID_IObject);
+        }
+    }
+
+    HashMap<String, AutoPtr<ContentProviderRecord> >::Iterator provIt;
+    for (provIt = app->mPubProviders.Begin(); provIt != app->mPubProviders.End()
+            && (adj > ProcessList::FOREGROUND_APP_ADJ
+            || schedGroup == IProcess::THREAD_GROUP_BG_NONINTERACTIVE
+            || procState > IActivityManager::PROCESS_STATE_TOP); ++provIt) {
+        AutoPtr<ContentProviderRecord> cpr = provIt->mSecond;
+        List<AutoPtr<CContentProviderConnection> >::Iterator it;
+        for (it = cpr->mConnections.Begin(); it != cpr->mConnections.End()
+                && (adj > ProcessList::FOREGROUND_APP_ADJ
+                || schedGroup == IProcess::THREAD_GROUP_BG_NONINTERACTIVE
+                || procState > IActivityManager::PROCESS_STATE_TOP); ++it) {
+            AutoPtr<CContentProviderConnection> conn = *it;
+            AutoPtr<ProcessRecord> client = conn->mClient;
+            if (client == app) {
+                // Being our own client is not interesting.
+                continue;
+            }
+            Int32 clientAdj = ComputeOomAdjLocked(client, cachedAdj, TOP_APP, doingAll, now);
+            Int32 clientProcState = client->mCurProcState;
+            if (clientProcState >= IActivityManager::PROCESS_STATE_CACHED_ACTIVITY) {
+                // If the other app is cached for any reason, for purposes here
+                // we are going to consider it empty.
+                clientProcState = IActivityManager::PROCESS_STATE_CACHED_EMPTY;
+            }
+            if (adj > clientAdj) {
+                if (app->mHasShownUi && app != mHomeProcess
+                        && clientAdj > ProcessList::PERCEPTIBLE_APP_ADJ) {
+                    app->mAdjType = "cch-ui-provider";
+                }
+                else {
+                    adj = clientAdj > ProcessList::FOREGROUND_APP_ADJ
+                            ? clientAdj : ProcessList::FOREGROUND_APP_ADJ;
+                    app->mAdjType = "provider";
+                }
+                app->mCached &= client->mCached;
+                app->mAdjTypeCode = IActivityManagerRunningAppProcessInfo
+                        ::REASON_PROVIDER_IN_USE;
+                app->mAdjSource = client;
+                app->mAdjSourceProcState = clientProcState;
+                app->mAdjTarget = cpr->mName;
+            }
+            if (clientProcState <= IActivityManager::PROCESS_STATE_TOP) {
+                if (clientProcState == IActivityManager::PROCESS_STATE_TOP) {
+                    // Special handling of clients who are in the top state.
+                    // We *may* want to consider this process to be in the
+                    // top state as well, but only if there is not another
+                    // reason for it to be running.  Being on the top is a
+                    // special state, meaning you are specifically running
+                    // for the current top app->m  If the process is already
+                    // running in the background for some other reason, it
+                    // is more important to continue considering it to be
+                    // in the background state.
+                    mayBeTop = TRUE;
+                    clientProcState = IActivityManager::PROCESS_STATE_CACHED_EMPTY;
+                }
+                else {
+                    // Special handling for above-top states (persistent
+                    // processes).  These should not bring the current process
+                    // into the top state, since they are not on top.  Instead
+                    // give them the best state after that.
+                    clientProcState =
+                            IActivityManager::PROCESS_STATE_IMPORTANT_FOREGROUND;
                 }
             }
+            if (procState > clientProcState) {
+                procState = clientProcState;
+            }
+            if (client->mCurSchedGroup == IProcess::THREAD_GROUP_DEFAULT) {
+                schedGroup = IProcess::THREAD_GROUP_DEFAULT;
+            }
+        }
+        // If the provider has external (non-framework) process
+        // dependencies, ensure that its adjustment is at least
+        // FOREGROUND_APP_ADJ.
+        if (cpr->HasExternalProcessHandles()) {
+            if (adj > ProcessList::FOREGROUND_APP_ADJ) {
+                adj = ProcessList::FOREGROUND_APP_ADJ;
+                schedGroup = IProcess::THREAD_GROUP_DEFAULT;
+                app->mCached = FALSE;
+                app->mAdjType = "provider";
+                app->mAdjTarget = cpr->mName;
+            }
+            if (procState > IActivityManager::PROCESS_STATE_IMPORTANT_FOREGROUND) {
+                procState = IActivityManager::PROCESS_STATE_IMPORTANT_FOREGROUND;
+            }
+        }
+    }
+
+    if (mayBeTop && procState > IActivityManager::PROCESS_STATE_TOP) {
+        // A client of one of our services or providers is in the top state.  We
+        // *may* want to be in the top state, but not if we are already running in
+        // the background for some other reason.  For the decision here, we are going
+        // to pick out a few specific states that we want to remain in when a client
+        // is top (states that tend to be longer-term) and otherwise allow it to go
+        // to the top state.
+        switch (procState) {
+            case IActivityManager::PROCESS_STATE_IMPORTANT_FOREGROUND:
+            case IActivityManager::PROCESS_STATE_IMPORTANT_BACKGROUND:
+            case IActivityManager::PROCESS_STATE_SERVICE:
+                // These all are longer-term states, so pull them up to the top
+                // of the background states, but not all the way to the top state.
+                procState = IActivityManager::PROCESS_STATE_IMPORTANT_FOREGROUND;
+                break;
+            default:
+                // Otherwise, top is a better choice, so take it.
+                procState = IActivityManager::PROCESS_STATE_TOP;
+                break;
+        }
+    }
+
+    if (procState >= IActivityManager::PROCESS_STATE_CACHED_EMPTY) {
+        if (app->mHasClientActivities) {
+            // This is a cached process, but with client activities.  Mark it so.
+            procState = IActivityManager::PROCESS_STATE_CACHED_ACTIVITY_CLIENT;
+            app->mAdjType = "cch-client-act";
+        }
+        else if (app->mTreatLikeActivity) {
+            // This is a cached process, but somebody wants us to treat it like it has
+            // an activity, okay!
+            procState = IActivityManager::PROCESS_STATE_CACHED_ACTIVITY;
+            app->mAdjType = "cch-as-act";
         }
     }
 
     if (adj == ProcessList::SERVICE_ADJ) {
         if (doingAll) {
-            app->mServiceb = mNewNumServiceProcs > (mNumServiceProcs/3);
+            app->mServiceb = mNewNumAServiceProcs > (mNumServiceProcs/3);
             mNewNumServiceProcs++;
+            //Slog.i(TAG, "ADJ " + app + " serviceb=" + app->mServiceb);
+            if (!app->mServiceb) {
+                // This service isn't far enough down on the LRU list to
+                // normally be a B service, but if we are low on RAM and it
+                // is large we want to force it down since we would prefer to
+                // keep launcher over it.
+                if (mLastMemoryLevel > IProcessStats::ADJ_MEM_FACTOR_NORMAL
+                        && app->mLastPss >= mProcessList->GetCachedRestoreThresholdKb()) {
+                    app->mServiceHighRam = TRUE;
+                    app->mServiceb = TRUE;
+                    //Slog.i(TAG, "ADJ " + app + " high ram!");
+                }
+                else {
+                    mNewNumAServiceProcs++;
+                    //Slog.i(TAG, "ADJ " + app + " not high ram!");
+                }
+            }
+            else {
+                app->mServiceHighRam = FALSE;
+            }
         }
         if (app->mServiceb) {
             adj = ProcessList::SERVICE_B_ADJ;
         }
     }
-    else {
-        app->mServiceb = FALSE;
-    }
-
-    app->mNonStoppingAdj = adj;
-
-    if (adj < ProcessList::CACHED_APP_MIN_ADJ) {
-        app->mKeeping = TRUE;
-    }
-
-    if (hasStoppingActivities) {
-        // Only upgrade adjustment.
-        if (adj > ProcessList::PERCEPTIBLE_APP_ADJ) {
-            adj = ProcessList::PERCEPTIBLE_APP_ADJ;
-            app->mAdjType = String("stopping");
-        }
-    }
 
     app->mCurRawAdj = adj;
 
-    //Slogger::I(TAG, "OOM ADJ " + app + ": pid=" + app.pid +
-    //      " adj=" + adj + " curAdj=" + app.curAdj + " maxAdj=" + app.maxAdj);
+    //Slog.i(TAG, "OOM ADJ " + app + ": pid=" + app->mPid +
+    //      " adj=" + adj + " curAdj=" + app->mCurAdj + " maxAdj=" + app->mMaxAdj);
     if (adj > app->mMaxAdj) {
         adj = app->mMaxAdj;
         if (app->mMaxAdj <= ProcessList::PERCEPTIBLE_APP_ADJ) {
             schedGroup = IProcess::THREAD_GROUP_DEFAULT;
         }
     }
-    if (adj < ProcessList::CACHED_APP_MIN_ADJ) {
-        app->mKeeping = TRUE;
-    }
 
-    if (app->mHasAboveClient) {
-        // If this process has bound to any services with BIND_ABOVE_CLIENT,
-        // then we need to drop its adjustment to be lower than the service's
-        // in order to honor the request.  We want to drop it by one adjustment
-        // level...  but there is special meaning applied to various levels so
-        // we will skip some of them.
-        if (adj < ProcessList::FOREGROUND_APP_ADJ) {
-            // System process will not get dropped, ever
-        }
-        else if (adj < ProcessList::VISIBLE_APP_ADJ) {
-            adj = ProcessList::VISIBLE_APP_ADJ;
-        }
-        else if (adj < ProcessList::PERCEPTIBLE_APP_ADJ) {
-            adj = ProcessList::PERCEPTIBLE_APP_ADJ;
-        }
-        else if (adj < ProcessList::CACHED_APP_MIN_ADJ) {
-            adj = ProcessList::CACHED_APP_MIN_ADJ;
-        }
-        else if (adj < ProcessList::HIDDEN_APP_MAX_ADJ) {
-            adj++;
-        }
-    }
-
-    Int32 importance = app->mMemImportance;
-    if (importance == 0 || adj != app->mCurAdj || schedGroup != app->mCurSchedGroup) {
-        app->mCurAdj = adj;
-        app->mCurSchedGroup = schedGroup;
-        if (!interesting) {
-            // For this reporting, if there is not something explicitly
-            // interesting in this process then we will push it to the
-            // background importance.
-            importance = IActivityManagerRunningAppProcessInfo::IMPORTANCE_BACKGROUND;
-        }
-        else if (adj >= ProcessList::CACHED_APP_MIN_ADJ) {
-            importance = IActivityManagerRunningAppProcessInfo::IMPORTANCE_BACKGROUND;
-        }
-        else if (adj >= ProcessList::SERVICE_B_ADJ) {
-            importance =  IActivityManagerRunningAppProcessInfo::IMPORTANCE_SERVICE;
-        }
-        else if (adj >= ProcessList::HOME_APP_ADJ) {
-            importance = IActivityManagerRunningAppProcessInfo::IMPORTANCE_BACKGROUND;
-        }
-        else if (adj >= ProcessList::SERVICE_ADJ) {
-            importance = IActivityManagerRunningAppProcessInfo::IMPORTANCE_SERVICE;
-        }
-        else if (adj >= ProcessList::HEAVY_WEIGHT_APP_ADJ) {
-            importance = IActivityManagerRunningAppProcessInfo::IMPORTANCE_CANT_SAVE_STATE;
-        }
-        else if (adj >= ProcessList::PERCEPTIBLE_APP_ADJ) {
-            importance = IActivityManagerRunningAppProcessInfo::IMPORTANCE_PERCEPTIBLE;
-        }
-        else if (adj >= ProcessList::VISIBLE_APP_ADJ) {
-            importance = IActivityManagerRunningAppProcessInfo::IMPORTANCE_VISIBLE;
-        }
-        else if (adj >= ProcessList::FOREGROUND_APP_ADJ) {
-            importance = IActivityManagerRunningAppProcessInfo::IMPORTANCE_FOREGROUND;
-        }
-        else {
-            importance = IActivityManagerRunningAppProcessInfo::IMPORTANCE_PERSISTENT;
-        }
-    }
-
-    Int32 changes = importance != app->mMemImportance ? ProcessChangeItem::CHANGE_PROCESS_STATE : 0;
-    if (foregroundActivities != app->mForegroundActivities) {
-        changes |= ProcessChangeItem::CHANGE_ACTIVITIES;
-    }
-    if (changes != 0) {
-        if (DEBUG_PROCESS_OBSERVERS) {
-            Slogger::I(TAG, "Changes in %s : %d", app->ToString().string(), changes);
-        }
-        app->mMemImportance = importance;
-        app->mForegroundActivities = foregroundActivities;
-        List< AutoPtr<ProcessChangeItem> >::Iterator it = mPendingProcessChanges.Begin();
-        AutoPtr<ProcessChangeItem> item;
-        for (; it != mPendingProcessChanges.End();) {
-            item = *it;
-            if (item->mPid == app->mPid) {
-                if (DEBUG_PROCESS_OBSERVERS) {
-                    Slogger::I(TAG, "Re-using existing item: "/* + item*/);
-                }
-                break;
-            }
-            else {
-                ++it;
-            }
-        }
-
-        if (it == mPendingProcessChanges.End()) {
-            // No existing item in pending changes; need a new one.
-            Int32 NA = mAvailProcessChanges.GetSize();
-            if (NA > 0) {
-                item = mAvailProcessChanges.GetBack();
-                mAvailProcessChanges.PopBack();
-                if (DEBUG_PROCESS_OBSERVERS) Slogger::I(TAG, "Retreiving available item: "/* + item*/);
-            }
-            else {
-                item = new ProcessChangeItem();
-                if (DEBUG_PROCESS_OBSERVERS) Slogger::I(TAG, "Allocating new item: "/* + item*/);
-            }
-            item->mChanges = 0;
-            item->mPid = app->mPid;
-            app->mInfo->GetUid(&(item->mUid));
-            if (mPendingProcessChanges.IsEmpty()) {
-                if (DEBUG_PROCESS_OBSERVERS) Slogger::I(TAG, "*** Enqueueing dispatch processes changed!");
-                AutoPtr<IMessage> msg;
-                mHandler->ObtainMessage(DISPATCH_PROCESSES_CHANGED, (IMessage**)&msg);
-                msg->SendToTarget();
-            }
-            mPendingProcessChanges.PushBack(item);
-        }
-        item->mChanges |= changes;
-        item->mProcessState = importance;
-        item->mForegroundActivities = foregroundActivities;
-        // if (DEBUG_PROCESS_OBSERVERS) Slogger::I(TAG, "Item "
-        //         + StringUtils::Int32ToHexString(System::IdentityHashCode(item))
-        //         + " " + app->ToString() + ": changes=" + item->mChanges
-        //         + " importance=" + item->mProcessState
-        //         + " foreground=" + item->mForegroundActivities
-        //         + " type=" + app->mAdjType + " source=" + app->mAdjSource
-        //         + " target=" + app->mAdjTarget);
-    }
+    // Do final modification to adj.  Everything we do between here and applying
+    // the final setAdj must be done in this function, because we will also use
+    // it when computing the final cached adj later.  Note that we don't need to
+    // worry about this for max adj above, since max adj will always be used to
+    // keep it out of the cached vaues.
+    app->mCurAdj = app->ModifyRawOomAdj(adj);
+    app->mCurSchedGroup = schedGroup;
+    app->mCurProcState = procState;
+    app->mForegroundActivities = foregroundActivities;
 
     return app->mCurRawAdj;
+}
+
+/**
+ * Schedule PSS collection of a process.
+ */
+ECode CActivityManagerService::RequestPssLocked(
+    /* [in] */ ProcessRecord* proc,
+    /* [in] */ Int32 procState)
+{
+    if (Find(mPendingPssProcesses.Begin(), mPendingPssProcesses.End(),
+        AutoPtr<ProcessRecord>(proc)) != mPendingPssProcesses.End()) {
+        return NOERROR;
+    }
+    if (mPendingPssProcesses.GetSize() == 0) {
+        Boolean res;
+        mBgHandler->SendEmptyMessage(COLLECT_PSS_BG_MSG, &res);
+    }
+    if (DEBUG_PSS) Slogger::D(TAG, "Requesting PSS of: %s", ToChars(proc));
+    proc->mPssProcState = procState;
+    mPendingPssProcesses.PushBack(proc);
+    return NOERROR;
+}
+
+/**
+ * Schedule PSS collection of all processes.
+ */
+ECode CActivityManagerService::RequestPssAllProcsLocked(
+    /* [in] */ Int64 now,
+    /* [in] */ Boolean always,
+    /* [in] */ Boolean memLowered)
+{
+    if (!always) {
+        if (now < (mLastFullPssTime +
+            (memLowered ? FULL_PSS_LOWERED_INTERVAL : FULL_PSS_MIN_INTERVAL))) {
+            return NOERROR;
+        }
+    }
+    if (DEBUG_PSS) Slogger::D(TAG, "Requesting PSS of all procs!  memLowered=%d", memLowered);
+    mLastFullPssTime = now;
+    mFullPssPending = TRUE;
+    mPendingPssProcesses.Clear();
+    List< AutoPtr<ProcessRecord> >::ReverseIterator rit;
+    for (rit = mLruProcesses.RBegin(); rit != mLruProcesses.REnd(); ++rit) {
+        AutoPtr<ProcessRecord> app = *rit;
+        if (memLowered || now > (app->mLastStateTime + ProcessList::PSS_ALL_INTERVAL)) {
+            app->mPssProcState = app->mSetProcState;
+            app->mNextPssTime = ProcessList::ComputeNextPssTime(app->mCurProcState, TRUE,
+                    IsSleeping(), now);
+            mPendingPssProcesses.PushBack(app);
+        }
+    }
+    Boolean res;
+    return mBgHandler->SendEmptyMessage(COLLECT_PSS_BG_MSG, &res);
 }
 
 /**
@@ -20587,8 +21668,7 @@ Boolean CActivityManagerService::CanGcNowLocked()
         }
     }
     return !processingBroadcasts
-            && (mSleeping || (mMainStack->mResumedActivity != NULL &&
-                    mMainStack->mResumedActivity->mIdle));
+        && (IsSleeping() || mStackSupervisor->AllResumedActivitiesIdle());
 }
 
 ECode CActivityManagerService::PerformAppGcsLocked()
@@ -20734,7 +21814,7 @@ ECode CActivityManagerService::CheckExcessivePowerUsageLocked(
     List< AutoPtr<ProcessRecord> >::ReverseIterator rit;
     for (rit = mLruProcesses.RBegin(); rit != mLruProcesses.REnd(); ++rit) {
         AutoPtr<ProcessRecord> app = *rit;
-        if (!app->mKeeping) {
+        if (app->mSetProcState >= IActivityManager::PROCESS_STATE_HOME) {
             Int64 wtime;
             synchronized (stats) {
                 Int32 uid;
@@ -20779,25 +21859,27 @@ ECode CActivityManagerService::CheckExcessivePowerUsageLocked(
                     stats->ReportExcessiveWakeLocked(uid, app->mProcessName,
                             realtimeSince, wtimeUsed);
                 }
-                Slogger::W(TAG, "Excessive wake lock in %s (pid %d): held %d during %d", app->mProcessName.string(),
-                        app->mPid, wtimeUsed, realtimeSince);
-    //             EventLog.writeEvent(EventLogTags.AM_KILL, app.userId, app.pid,
-    //                     app.processName, app.setAdj, "excessive wake lock");
-                Process::KillProcessQuiet(app->mPid);
+                StringBuilder sb("excessive wake held ");
+                sb += wtimeUsed;
+                sb += " during ";
+                sb += realtimeSince;
+                app->Kill(sb.ToString(), TRUE);
+                app->mBaseProcessTracker->ReportExcessiveWake(app->mPkgList);
             }
             else if (doCpuKills && uptimeSince > 0
                     && ((cputimeUsed*100)/uptimeSince) >= 50) {
-                    synchronized (stats) {
-                        Int32 uid;
-                        app->mInfo->GetUid(&uid);
-                        stats->ReportExcessiveCpuLocked(uid, app->mProcessName,
-                                uptimeSince, cputimeUsed);
-                    }
-                Slogger::W(TAG, "Excessive CPU in %s (pid %d): used %d during %d", app->mProcessName.string(),
-                        app->mPid, cputimeUsed, uptimeSince);
-    //             EventLog.writeEvent(EventLogTags.AM_KILL, app.userId, app.pid,
-    //                     app.processName, app.setAdj, "excessive cpu");
-                Process::KillProcessQuiet(app->mPid);
+                synchronized (stats) {
+                    Int32 uid;
+                    app->mInfo->GetUid(&uid);
+                    stats->ReportExcessiveCpuLocked(uid, app->mProcessName,
+                            uptimeSince, cputimeUsed);
+                }
+                StringBuilder sb("excessive cpu ");
+                sb += cputimeUsed;
+                sb += " during ";
+                sb += uptimeSince;
+                app->Kill(sb.ToString(), TRUE);
+                app->mBaseProcessTracker->ReportExcessiveCpu(app->mPkgList);
             }
             else {
                 app->mLastWakeTime = wtime;
@@ -20808,57 +21890,29 @@ ECode CActivityManagerService::CheckExcessivePowerUsageLocked(
     return NOERROR;
 }
 
-Boolean CActivityManagerService::UpdateOomAdjLocked(
+Boolean CActivityManagerService::ApplyOomAdjLocked(
     /* [in] */ ProcessRecord* app,
-    /* [in] */ Int32 hiddenAdj,
-    /* [in] */ Int32 clientHiddenAdj,
-    /* [in] */ Int32 emptyAdj,
     /* [in] */ ProcessRecord* TOP_APP,
-    /* [in] */ Boolean doingAll)
+    /* [in] */ Boolean doingAll,
+    /* [in] */ Int64 now)
 {
-    app->mHiddenAdj = hiddenAdj;
-    app->mClientHiddenAdj = clientHiddenAdj;
-    app->mEmptyAdj = emptyAdj;
-
-    if (app->mThread == NULL) {
-        return FALSE;
-    }
-
-    Boolean wasKeeping = app->mKeeping;
     Boolean success = TRUE;
-    ComputeOomAdjLocked(app, hiddenAdj, clientHiddenAdj, emptyAdj, TOP_APP, FALSE, doingAll);
 
     if (app->mCurRawAdj != app->mSetRawAdj) {
-        if (wasKeeping && !app->mKeeping) {
-            // This app is no longer something we want to keep.  Note
-            // its current wake lock time to later know to kill it if
-            // it is not behaving well.
-            AutoPtr<IBatteryStatsImpl> stats = mBatteryStatsService->GetActiveStatistics();
-            synchronized (stats) {
-                Int32 uid;
-                app->mInfo->GetUid(&uid);
-                app->mLastWakeTime = stats->GetProcessWakeTime(
-                    uid, app->mPid, SystemClock::GetElapsedRealtime());
-            }
-            app->mLastCpuTime = app->mCurCpuTime;
-        }
-
         app->mSetRawAdj = app->mCurRawAdj;
     }
+
+    Int32 changes = 0;
+    Int32 uid;
+    app->mInfo->GetUid(&uid);
     if (app->mCurAdj != app->mSetAdj) {
-        if (Process::SetOomAdj(app->mPid, app->mCurAdj)) {
-            if (DEBUG_SWITCH || DEBUG_OOM_ADJ) {
-                Slogger::V(TAG, "Set %d %s adj %d: %s",
-                        app->mPid, app->mProcessName.string(),
-                        app->mCurAdj, app->mAdjType.string());
-            }
-            app->mSetAdj = app->mCurAdj;
+        Process::SetOomAdj(app->mPid, uid, app->mCurAdj);
+        if (DEBUG_SWITCH || DEBUG_OOM_ADJ) {
+            Slogger::V(TAG, "Set %d %s adj %d: %s",
+                    app->mPid, app->mProcessName.string(),
+                    app->mCurAdj, app->mAdjType.string());
         }
-        else {
-            success = FALSE;
-            Slogger::W(TAG, "Failed setting oom adj of %s to %d",
-                    app->ToString().string(), app->mCurAdj);
-        }
+        app->mSetAdj = app->mCurAdj;
     }
 
     if (app->mSetSchedGroup != app->mCurSchedGroup) {
@@ -20869,22 +21923,17 @@ Boolean CActivityManagerService::UpdateOomAdjLocked(
         }
         if (!app->mWaitingToKill.IsNull() &&
                 app->mSetSchedGroup == IProcess::THREAD_GROUP_BG_NONINTERACTIVE) {
-            Slogger::I(TAG, "Killing %s: %s",
-                    app->ToShortString().string(), app->mWaitingToKill.string());
-            //EventLog.writeEvent(EventLogTags.AM_KILL, app.userId, app.pid,
-            //        app.processName, app.setAdj, app.waitingToKill);
-            app->mKilledBackground = TRUE;
-            Process::KillProcessQuiet(app->mPid);
+            app->Kill(app->mWaitingToKill, TRUE);
             success = FALSE;
         }
         else {
             if (TRUE) {
-                const Int64 oldId = Binder::ClearCallingIdentity();
+                const Int64 oldId = BinderClearCallingIdentity();
                 if (FAILED(Process::SetProcessGroup(app->mPid, app->mCurSchedGroup))) {
                     Slogger::W(TAG, "Failed setting process group of %d to %d",
                             app->mPid, app->mCurSchedGroup);
                 }
-                Binder::RestoreCallingIdentity(oldId);
+                BinderRestoreCallingIdentity(oldId);
             }
             else {
                 if (app->mThread != NULL) {
@@ -20894,22 +21943,234 @@ Boolean CActivityManagerService::UpdateOomAdjLocked(
 //                }
                 }
             }
+             Process::SetSwappiness(app->mPid,
+                app->mCurSchedGroup <= IProcess::THREAD_GROUP_BG_NONINTERACTIVE);
         }
+    }
+
+    if (app->mRepForegroundActivities != app->mForegroundActivities) {
+        app->mRepForegroundActivities = app->mForegroundActivities;
+        changes |= ProcessChangeItem::CHANGE_ACTIVITIES;
+    }
+    if (app->mRepProcState != app->mCurProcState) {
+        app->mRepProcState = app->mCurProcState;
+        changes |= ProcessChangeItem::CHANGE_PROCESS_STATE;
+        if (app->mThread != NULL) {
+            if (FALSE) {
+                //RuntimeException h = new RuntimeException("here");
+                Slogger::I(TAG, "Sending new process state %d to %s",
+                    app->mRepProcState, ToChars(app));
+            }
+            app->mThread->SetProcessState(app->mRepProcState);
+        }
+    }
+    if (app->mSetProcState < 0 || ProcessList::ProcStatesDifferForMem(app->mCurProcState,
+            app->mSetProcState)) {
+        app->mLastStateTime = now;
+        app->mNextPssTime = ProcessList::ComputeNextPssTime(app->mCurProcState, TRUE,
+                IsSleeping(), now);
+        if (DEBUG_PSS) Slogger::D(TAG, "Process state change from %s to %s next pss in %lld: %s",
+                ProcessList::MakeProcStateString(app->mSetProcState).string(),
+                ProcessList::MakeProcStateString(app->mCurProcState).string(),
+                (app->mNextPssTime-now), ToChars(app));
+    }
+    else {
+        if (now > app->mNextPssTime || (now > (app->mLastPssTime + ProcessList::PSS_MAX_INTERVAL)
+                && now > (app->mLastStateTime+ProcessList::PSS_MIN_TIME_FROM_STATE_CHANGE))) {
+            RequestPssLocked(app, app->mSetProcState);
+            app->mNextPssTime = ProcessList::ComputeNextPssTime(app->mCurProcState, FALSE,
+                    IsSleeping(), now);
+        }
+        else if (FALSE && DEBUG_PSS) {
+            Slogger::D(TAG, "Not requesting PSS of %s: next=%lld", ToChars(app), (app->mNextPssTime-now));
+        }
+    }
+    if (app->mSetProcState != app->mCurProcState) {
+        if (DEBUG_SWITCH || DEBUG_OOM_ADJ) Slogger::V(TAG,
+                "Proc state change of %s to %d", app->mProcessNames.string(),
+                app->mCurProcState);
+        Boolean setImportant = app->mSetProcState < IActivityManager::PROCESS_STATE_SERVICE;
+        Boolean curImportant = app->mCurProcState < IActivityManager::PROCESS_STATE_SERVICE;
+        if (setImportant && !curImportant) {
+            // This app is no longer something we consider important enough to allow to
+            // use arbitrary amounts of battery power.  Note
+            // its current wake lock time to later know to kill it if
+            // it is not behaving well.
+            AutoPtr<IBatteryStatsImpl> stats = mBatteryStatsService->GetActiveStatistics();
+            synchronized (stats) {
+                stats->GetProcessWakeTime(uid,
+                    app->mPid, SystemClock::GetElapsedRealtime(), &app->mLastWakeTime);
+            }
+            app->mLastCpuTime = app->mCurCpuTime;
+
+        }
+        app->mSetProcState = app->mCurProcState;
+        if (app->mSetProcState >= IActivityManager::PROCESS_STATE_HOME) {
+            app->mNotCachedSinceIdle = FALSE;
+        }
+        if (!doingAll) {
+            SetProcessTrackerStateLocked(app, mProcessStats->GetMemFactorLocked(), now);
+        }
+        else {
+            app->mProcStateChanged = TRUE;
+        }
+    }
+
+    if (changes != 0) {
+        if (DEBUG_PROCESS_OBSERVERS) Slogger::I(TAG, "Changes in %s: %d", ToChars(app), changes);
+        AutoPtr<ProcessChangeItem> item;
+        List<AutoPtr<ProcessChangeItem> >::ReverseIterator rit = mPendingProcessChanges.RBegin();
+        while (rit != mPendingProcessChanges.REnd()) {
+            item = *rit;
+            if (item->mPid == app->mPid) {
+                if (DEBUG_PROCESS_OBSERVERS) Slogger::I(TAG, "Re-using existing item: %s", ToChars(item));
+                break;
+            }
+            ++rit;
+        }
+        if (rit == mPendingProcessChanges.REnd()) {
+            // No existing item in pending changes; need a new one.
+            Int32 NA = mAvailProcessChanges.GetSize();
+            if (NA > 0) {
+                item = mAvailProcessChanges.GetBack();
+                mAvailProcessChanges.PopBack();
+                if (DEBUG_PROCESS_OBSERVERS) Slogger::I(TAG, "Retreiving available item: %s", ToChars(item));
+            }
+            else {
+                item = new ProcessChangeItem();
+                if (DEBUG_PROCESS_OBSERVERS) Slogger::I(TAG, "Allocating new item: %s", ToChars(item));
+            }
+            item->mChanges = 0;
+            item->mPid = app->mPid;
+            item->mUid = uid;
+            if (mPendingProcessChanges.GetSize() == 0) {
+                if (DEBUG_PROCESS_OBSERVERS) Slogger::I(TAG,
+                        "*** Enqueueing dispatch processes changed!");
+                mHandler->SendEmptyMessage(DISPATCH_PROCESSES_CHANGED);
+            }
+            mPendingProcessChanges.PushBack(item);
+        }
+        item->mChanges |= changes;
+        item->mProcessState = app->mRepProcState;
+        item->mForegroundActivities = app->mRepForegroundActivities;
+        if (DEBUG_PROCESS_OBSERVERS) Slogger::I(TAG,
+            "Item %p %s: changes=%d, procState=%d foreground=%d type=%s source=%s target=%s",
+            item.Get(), app->ToShortString(), item->mChanges, item->mProcessState,
+            item->mForegroundActivities, app->mAdjType.string(),
+            ToChars(app->mAdjSource), ToChars(app->mAdjTarget));
     }
 
     return success;
 }
 
-AutoPtr<ActivityRecord> CActivityManagerService::ResumedAppLocked()
+ECode CActivityManagerService::SetProcessTrackerStateLocked(
+    /* [in] */ ProcessRecord* proc,
+    /* [in] */ Int32 memFactor,
+    /* [in] */ Int64 now)
 {
-    AutoPtr<ActivityRecord> resumedActivity = mMainStack->mResumedActivity;
-    if (resumedActivity == NULL || resumedActivity->mApp == NULL) {
-        resumedActivity = mMainStack->mPausingActivity;
-        if (resumedActivity == NULL || resumedActivity->mApp == NULL) {
-            resumedActivity = mMainStack->GetTopRunningActivityLocked(NULL);
+    if (proc->mThread != NULL) {
+        if (proc->mBaseProcessTracker != NULL) {
+            proc->mBaseProcessTracker->SetState(proc->mRepProcState, memFactor, now, proc->mPkgList);
+        }
+        if (proc->mRepProcState >= 0) {
+            Int32 uid;
+            proc->mInfo->GetUid(&uid);
+            mBatteryStatsService->NoteProcessState(proc->mProcessName, uid,
+                    proc->mRepProcState);
         }
     }
-    return resumedActivity;
+    return NOERROR;
+}
+
+Boolean CActivityManagerService::UpdateOomAdjLocked(
+    /* [in] */ ProcessRecord* app,
+    /* [in] */ Int32 cachedAdj,
+    /* [in] */ ProcessRecord* TOP_APP,
+    /* [in] */ Boolean doingAll,
+    /* [in] */ Int64 now)
+{
+    if (app->mThread == NULL) {
+        return FALSE;
+    }
+
+    ComputeOomAdjLocked(app, cachedAdj, TOP_APP, doingAll, now);
+
+    return ApplyOomAdjLocked(app, TOP_APP, doingAll, now);
+}
+
+ECode UpdateProcessForegroundLocked(
+    /* [in] */ ProcessRecord* proc,
+    /* [in] */ Boolean isForeground,
+    /* [in] */ Boolean oomAdj)
+{
+    if (isForeground != proc->mForegroundServices) {
+        proc->mForegroundServices = isForeground;
+        String packageName;
+        proc->mInfo->GetPackageName(&packageName);
+        Int32 uid;
+        proc->mInfo->GetUid(&uid);
+        AutoPtr<List<AutoPtr<ProcessRecord> > > curProcs = mForegroundPackages->Get(packageName, uid);
+        if (isForeground) {
+            if (curProcs == NULL) {
+                curProcs = new List<AutoPtr<ProcessRecord> >();
+                mForegroundPackages->Put(packageName, uid, curProcs);
+            }
+            if (Find(curProcs->Begin(), curProcs->End(), AutoPtr<ProcessRecord>(proc))
+                == curProcs->End()) {
+                curProcs->PushBack(proc);
+                mBatteryStatsService->NoteEvent(IBatteryStatsHistoryItem::EVENT_FOREGROUND_START,
+                        packageName, uid);
+            }
+        }
+        else {
+            if (curProcs != NULL) {
+                if (curProcs->Remove(proc)) {
+                    mBatteryStatsService->NoteEvent(
+                        IBatteryStatsHistoryItem::EVENT_FOREGROUND_FINISH,
+                            packageName, uid);
+                    if (curProcs->GetSize() <= 0) {
+                        mForegroundPackages->Remove(packageName, uid);
+                    }
+                }
+            }
+        }
+        if (oomAdj) {
+            UpdateOomAdjLocked();
+        }
+    }
+    return NOERROR;
+}
+
+AutoPtr<ActivityRecord> CActivityManagerService::ResumedAppLocked()
+{
+    AutoPtr<ActivityRecord> act = mStackSupervisor->ResumedAppLocked();
+    String pkg;
+    Int32 uid;
+    if (act != NULL) {
+        pkg = act->mPackageName;
+        AutoPtr<IApplicationInfo> appInfo;
+        act->mInfo->GetApplicationInfo((IApplicationInfo**)&appInfo);
+        appInfo->GetUid(&uid);
+    }
+    else {
+        pkg = NULL;
+        uid = -1;
+    }
+    // Has the UID or resumed package name changed?
+    if (uid != mCurResumedUid || (pkg != mCurResumedPackage
+            && (pkg == NULL || !pkg.Equals(mCurResumedPackage)))) {
+        if (mCurResumedPackage != NULL) {
+            mBatteryStatsService->NoteEvent(IBatteryStatsHistoryItem::EVENT_TOP_FINISH,
+                    mCurResumedPackage, mCurResumedUid);
+        }
+        mCurResumedPackage = pkg;
+        mCurResumedUid = uid;
+        if (mCurResumedPackage != NULL) {
+            mBatteryStatsService->NoteEvent(IBatteryStatsHistoryItem::EVENT_TOP_START,
+                    mCurResumedPackage, mCurResumedUid);
+        }
+    }
+    return act;
 }
 
 Boolean CActivityManagerService::UpdateOomAdjLocked(
@@ -20917,19 +22178,20 @@ Boolean CActivityManagerService::UpdateOomAdjLocked(
 {
     AutoPtr<ActivityRecord> TOP_ACT = ResumedAppLocked();
     AutoPtr<ProcessRecord> TOP_APP = TOP_ACT != NULL ? TOP_ACT->mApp : NULL;
-    Int32 curAdj = app->mCurAdj;
-    UNUSED(curAdj);
-    Boolean wasHidden = app->mCurAdj >= ProcessList::CACHED_APP_MIN_ADJ
-            && app->mCurAdj <= ProcessList::HIDDEN_APP_MAX_ADJ;
+    Boolean wasCached = app->mCached;
 
     mAdjSeq++;
 
-    Boolean success = UpdateOomAdjLocked(app, app->mHiddenAdj, app->mClientHiddenAdj,
-            app->mEmptyAdj, TOP_APP, FALSE);
-    Boolean nowHidden = app->mCurAdj >= ProcessList::CACHED_APP_MIN_ADJ
-            && app->mCurAdj <= ProcessList::HIDDEN_APP_MAX_ADJ;
-    if (nowHidden != wasHidden) {
-        // Changed to/from hidden state, so apps after it in the LRU
+    // This is the desired cached adjusment we want to tell it to use.
+    // If our app is currently cached, we know it, and that is it.  Otherwise,
+    // we don't know it yet, and it needs to now be cached we will then
+    // need to do a complete oom adj.
+    Int32 cachedAdj = app->mCurRawAdj >= ProcessList::CACHED_APP_MIN_ADJ
+            ? app->mCurRawAdj : ProcessList::UNKNOWN_ADJ;
+    Boolean success = UpdateOomAdjLocked(app, cachedAdj, TOP_APP, FALSE,
+            SystemClock::GetUptimeMillis());
+    if (wasCached != app->mCached || app->mCurRawAdj == ProcessList::UNKNOWN_ADJ) {
+        // Changed to/from cached state, so apps after it in the LRU
         // list may also be changed.
         UpdateOomAdjLocked();
     }
@@ -20940,7 +22202,10 @@ ECode CActivityManagerService::UpdateOomAdjLocked()
 {
     AutoPtr<ActivityRecord> TOP_ACT = ResumedAppLocked();
     AutoPtr<ProcessRecord> TOP_APP = TOP_ACT != NULL ? TOP_ACT->mApp : NULL;
-    Int64 oldTime = SystemClock::GetUptimeMillis() - ProcessList::MAX_EMPTY_TIME;
+    Int64 now = SystemClock::GetUptimeMillis();
+    Int64 oldTime = now - ProcessList::MAX_EMPTY_TIME;
+    Int32 N = mLruProcesses.GetSize();
+
 //    if (FALSE) {
 //        RuntimeException e = new RuntimeException();
 //        e.fillInStackTrace();
@@ -20949,170 +22214,164 @@ ECode CActivityManagerService::UpdateOomAdjLocked()
 
     mAdjSeq++;
     mNewNumServiceProcs = 0;
+    mNewNumAServiceProcs = 0;
 
     Int32 emptyProcessLimit;
-    Int32 hiddenProcessLimit;
+    Int32 cachedProcessLimit;
     if (mProcessLimit <= 0) {
-        emptyProcessLimit = hiddenProcessLimit = 0;
+        emptyProcessLimit = cachedProcessLimit = 0;
     }
     else if (mProcessLimit == 1) {
         emptyProcessLimit = 1;
-        hiddenProcessLimit = 0;
+        cachedProcessLimit = 0;
     }
     else {
-        emptyProcessLimit = (mProcessLimit*2)/3;
-        hiddenProcessLimit = mProcessLimit - emptyProcessLimit;
+        emptyProcessLimit = ProcessList::ComputeEmptyProcessLimit(mProcessLimit);
+        cachedProcessLimit = mProcessLimit - emptyProcessLimit;
     }
     // Let's determine how many processes we have running vs.
     // how many slots we have for background processes; we may want
     // to put multiple processes in a slot of there are enough of
     // them.
 
-    Int32 numSlots = (ProcessList::HIDDEN_APP_MAX_ADJ
+    Int32 numSlots = (ProcessList::CACHED_APP_MAX_ADJ
                 - ProcessList::CACHED_APP_MIN_ADJ + 1) / 2;
-    Int32 numEmptyProcs = mLruProcesses.GetSize() - mNumNonHiddenProcs - mNumHiddenProcs;
-    if (numEmptyProcs > hiddenProcessLimit) {
-        // If there are more empty processes than our limit on hidden
-        // processes, then use the hidden process limit for the factor.
+    Int32 numEmptyProcs = N - mNumNonCachedProcs - mNumCachedHiddenProcs;
+    if (numEmptyProcs > cachedProcessLimit) {
+        // If there are more empty processes than our limit on cached
+        // processes, then use the cached process limit for the factor.
         // This ensures that the really old empty processes get pushed
         // down to the bottom, so if we are running low on memory we will
-        // have a better chance at keeping around more hidden processes
+        // have a better chance at keeping around more cached processes
         // instead of a gazillion empty processes.
-        numEmptyProcs = hiddenProcessLimit;
+        numEmptyProcs = cachedProcessLimit;
     }
 
     Int32 emptyFactor = numEmptyProcs/numSlots;
     if (emptyFactor < 1) emptyFactor = 1;
-    Int32 hiddenFactor = (mNumHiddenProcs > 0 ? mNumHiddenProcs : 1)/numSlots;
-    if (hiddenFactor < 1) hiddenFactor = 1;
-    Int32 stepHidden = 0;
+    Int32 cachedFactor = (mNumCachedHiddenProcs > 0 ? mNumCachedHiddenProcs : 1)/numSlots;
+    if (cachedFactor < 1) cachedFactor = 1;
+    Int32 stepCached = 0;
     Int32 stepEmpty = 0;
-    Int32 numHidden = 0;
+    Int32 numCached = 0;
     Int32 numEmpty = 0;
     Int32 numTrimming = 0;
 
-    mNumNonHiddenProcs = 0;
-    mNumHiddenProcs = 0;
+    mNumNonCachedProcs = 0;
+    mNumCachedHiddenProcs = 0;
 
     // First update the OOM adjustment for each of the
     // application processes based on their current state.
-    Int32 i = mLruProcesses.GetSize();
-    UNUSED(i);
-    Int32 curHiddenAdj = ProcessList::CACHED_APP_MIN_ADJ;
-    Int32 nextHiddenAdj = curHiddenAdj + 1;
+    Int32 curCachedAdj = ProcessList::CACHED_APP_MIN_ADJ;
+    Int32 nextCachedAdj = curCachedAdj + 1;
     Int32 curEmptyAdj = ProcessList::CACHED_APP_MIN_ADJ;
     Int32 nextEmptyAdj = curEmptyAdj + 2;
-    Int32 curClientHiddenAdj = curEmptyAdj;
 
     List< AutoPtr<ProcessRecord> >::ReverseIterator rit = mLruProcesses.RBegin();
-    for (; rit != mLruProcesses.REnd(); ++rit) {
+    for (Int32 i = 0; rit != mLruProcesses.REnd(); ++rit, i++) {
         AutoPtr<ProcessRecord> app = *rit;
-        // Slogger::I(TAG, "OOM app = %s, cur hidden = %d\n", app->ToString().string(), curHiddenAdj);
-        //printf("OOM app = %s, cur hidden = %d\n", app->ToString().string(), curHiddenAdj);
-        UpdateOomAdjLocked(app, curHiddenAdj, curClientHiddenAdj, curEmptyAdj, TOP_APP, TRUE);
-        //printf("app->mCurRawAdj = %d, app->mAdjType = %s\n", app->mCurRawAdj, app->mAdjType.string());
-        if (!app->mKilledBackground) {
-            if (app->mCurRawAdj == curHiddenAdj && app->mHasActivities) {
-                // This process was assigned as a hidden process...  step the
-                // hidden level.
-                mNumHiddenProcs++;
-                if (curHiddenAdj != nextHiddenAdj) {
-                    stepHidden++;
-                    if (stepHidden >= hiddenFactor) {
-                        stepHidden = 0;
-                        curHiddenAdj = nextHiddenAdj;
-                        nextHiddenAdj += 2;
-                        if (nextHiddenAdj > ProcessList::HIDDEN_APP_MAX_ADJ) {
-                            nextHiddenAdj = ProcessList::HIDDEN_APP_MAX_ADJ;
-                        }
-                        if (curClientHiddenAdj <= curHiddenAdj) {
-                            curClientHiddenAdj = curHiddenAdj + 1;
-                            if (curClientHiddenAdj > ProcessList::HIDDEN_APP_MAX_ADJ) {
-                                curClientHiddenAdj = ProcessList::HIDDEN_APP_MAX_ADJ;
+        if (!app->mKilledByAm && app->mThread != NULL) {
+            app->mProcStateChanged = FALSE;
+            ComputeOomAdjLocked(app, ProcessList::UNKNOWN_ADJ, TOP_APP, TRUE, now);
+
+            // If we haven't yet assigned the final cached adj
+            // to the process, do that now.
+            if (app->mCurAdj >= ProcessList::UNKNOWN_ADJ) {
+                switch (app->mCurProcState) {
+                    case IActivityManager::PROCESS_STATE_CACHED_ACTIVITY:
+                    case IActivityManager::PROCESS_STATE_CACHED_ACTIVITY_CLIENT:
+                        // This process is a cached process holding activities...
+                        // assign it the next cached value for that type, and then
+                        // step that cached level.
+                        app->mCurRawAdj = curCachedAdj;
+                        app->mCurAdj = app->ModifyRawOomAdj(curCachedAdj);
+                        if (DEBUG_LRU && FALSE) Slogger::D(TAG, "Assigning activity LRU #%d"
+                            " adj: %d (curCachedAdj=%d)", i, app->mCurAdj, curCachedAdj);
+                        if (curCachedAdj != nextCachedAdj) {
+                            stepCached++;
+                            if (stepCached >= cachedFactor) {
+                                stepCached = 0;
+                                curCachedAdj = nextCachedAdj;
+                                nextCachedAdj += 2;
+                                if (nextCachedAdj > ProcessList::CACHED_APP_MAX_ADJ) {
+                                    nextCachedAdj = ProcessList::CACHED_APP_MAX_ADJ;
+                                }
                             }
                         }
-                    }
-                }
-                numHidden++;
-                if (numHidden > hiddenProcessLimit) {
-                    Slogger::I(TAG, "No longer want %s (pid %d): hidden #%d",
-                            app->mProcessName.string(), app->mPid, numHidden);
-                    //EventLog.writeEvent(EventLogTags.AM_KILL, app.userId, app.pid,
-                    //        app.processName, app.setAdj, "too many background");
-                    app->mKilledBackground = TRUE;
-                    Process::KillProcessQuiet(app->mPid);
-                }
-            }
-            else if (app->mCurRawAdj == curHiddenAdj && app->mHasClientActivities) {
-                // This process has a client that has activities.  We will have
-                // given it the current hidden adj; here we will just leave it
-                // without stepping the hidden adj.
-                curClientHiddenAdj++;
-                if (curClientHiddenAdj > ProcessList::HIDDEN_APP_MAX_ADJ) {
-                    curClientHiddenAdj = ProcessList::HIDDEN_APP_MAX_ADJ;
-                }
-            }
-            else {
-                if (app->mCurRawAdj == curEmptyAdj || app->mCurRawAdj == curHiddenAdj) {
-                    // This process was assigned as an empty process...  step the
-                    // empty level.
-                    if (curEmptyAdj != nextEmptyAdj) {
-                        stepEmpty++;
-                        if (stepEmpty >= emptyFactor) {
-                            stepEmpty = 0;
-                            curEmptyAdj = nextEmptyAdj;
-                            nextEmptyAdj += 2;
-                            if (nextEmptyAdj > ProcessList::HIDDEN_APP_MAX_ADJ) {
-                                nextEmptyAdj = ProcessList::HIDDEN_APP_MAX_ADJ;
+                        break;
+                    default:
+                        // For everything else, assign next empty cached process
+                        // level and bump that up.  Note that this means that
+                        // long-running services that have dropped down to the
+                        // cached level will be treated as empty (since their process
+                        // state is still as a service), which is what we want.
+                        app->mCurRawAdj = curEmptyAdj;
+                        app->mCurAdj = app->ModifyRawOomAdj(curEmptyAdj);
+                        if (DEBUG_LRU && FALSE) Slogger::D(TAG, "Assigning empty LRU #%d"
+                            " adj: %d (curEmptyAdj=%d)", i, app->mCurAdj, curEmptyAdj);
+                        if (curEmptyAdj != nextEmptyAdj) {
+                            stepEmpty++;
+                            if (stepEmpty >= emptyFactor) {
+                                stepEmpty = 0;
+                                curEmptyAdj = nextEmptyAdj;
+                                nextEmptyAdj += 2;
+                                if (nextEmptyAdj > ProcessList::CACHED_APP_MAX_ADJ) {
+                                    nextEmptyAdj = ProcessList::CACHED_APP_MAX_ADJ;
+                                }
                             }
                         }
+                        break;
+                }
+            }
+
+            ApplyOomAdjLocked(app, TOP_APP, TRUE, now);
+
+            // Count the number of process types.
+            switch (app->mCurProcState) {
+                case IActivityManager::PROCESS_STATE_CACHED_ACTIVITY:
+                case IActivityManager::PROCESS_STATE_CACHED_ACTIVITY_CLIENT:
+                    mNumCachedHiddenProcs++;
+                    numCached++;
+                    if (numCached > cachedProcessLimit) {
+                        StringBuilder sb("cached #");
+                        sb += numCached;
+                        app->Kill(sb.ToString(), TRUE);
                     }
-                }
-                else if (app->mCurRawAdj < ProcessList::CACHED_APP_MIN_ADJ) {
-                    mNumNonHiddenProcs++;
-                }
-                if (app->mCurAdj >= ProcessList::CACHED_APP_MIN_ADJ
-                        && !app->mHasClientActivities) {
+                    break;
+                case IActivityManager::PROCESS_STATE_CACHED_EMPTY:
                     if (numEmpty > ProcessList::TRIM_EMPTY_APPS
                             && app->mLastActivityTime < oldTime) {
-                        Slogger::I(TAG, "No longer want %s (pid %d): empty for %d s.",
-                                app->mProcessName.string(), app->mPid,
-                                ((oldTime + ProcessList::MAX_EMPTY_TIME - app->mLastActivityTime)/ 1000));
-                        //EventLog.writeEvent(EventLogTags.AM_KILL, app.userId, app.pid,
-                        //        app.processName, app.setAdj, "old background process");
-                        app->mKilledBackground = TRUE;
-                        Process::KillProcessQuiet(app->mPid);
+                        StringBuilder sb("empty for");
+                        sb += ((oldTime + ProcessList::MAX_EMPTY_TIME - app->mLastActivityTime) / 1000);
+                        sb += "s";
+                        app->Kill(sb.ToString(), TRUE);
                     }
                     else {
                         numEmpty++;
                         if (numEmpty > emptyProcessLimit) {
-                            Slogger::I(TAG, "No longer want %s (pid %d):empty #%d",
-                                    app->mProcessName.string(), app->mPid, numEmpty);
-                            //EventLog.writeEvent(EventLogTags.AM_KILL, app.userId, app.pid,
-                            //        app.processName, app.setAdj, "too many background");
-                            app->mKilledBackground = TRUE;
-                            Process::KillProcessQuiet(app->mPid);
+                            StringBuilder sb("empty #");
+                            sb += numEmpty;
+                            app->Kill(sb.ToString(), TRUE);
                         }
                     }
-                }
+                    break;
+                default:
+                    mNumNonCachedProcs++;
+                    break;
             }
-            if (app->mIsolated && app->mServices.IsEmpty()) {
+
+            if (app->mIsolated && app->mServices.GetSize() <= 0) {
                 // If this is an isolated process, and there are no
                 // services running in it, then the process is no longer
                 // needed.  We agressively kill these because we can by
                 // definition not re-use the same process again, and it is
                 // good to avoid having whatever code was running in them
                 // left sitting around after no longer needed.
-                Slogger::I(TAG, "Isolated process %s (pid %d) no longer needed.",
-                        app->mProcessName.string(), app->mPid);
-                //EventLog.writeEvent(EventLogTags.AM_KILL, app.userId, app.pid,
-                //        app.processName, app.setAdj, "isolated not needed");
-                app->mKilledBackground = TRUE;
-                Process::KillProcessQuiet(app->mPid);
+                app->Kill(String("isolated not needed"), TRUE);
             }
-            if (app->mNonStoppingAdj >= ProcessList::HOME_APP_ADJ
-                    && app->mNonStoppingAdj != ProcessList::SERVICE_B_ADJ
-                    && !app->mKilledBackground) {
+
+            if (app->mCurProcState >= IActivityManager::PROCESS_STATE_HOME
+                    && !app->mKilledByAm) {
                 numTrimming++;
             }
         }
@@ -21126,39 +22385,76 @@ ECode CActivityManagerService::UpdateOomAdjLocked()
     // are managing to keep around is less than half the maximum we desire;
     // if we are keeping a good number around, we'll let them use whatever
     // memory they want.
-    if (numHidden <= ProcessList::TRIM_HIDDEN_APPS
-            && numEmpty <= ProcessList::TRIM_EMPTY_APPS)
-    {
-        Int32 numHiddenAndEmpty = numHidden + numEmpty;
+    Int32 numCachedAndEmpty = numCached + numEmpty;
+    Int32 memFactor;
+    if (numCached <= ProcessList::TRIM_CACHED_APPS
+            && numEmpty <= ProcessList::TRIM_EMPTY_APPS) {
+        if (numCachedAndEmpty <= ProcessList::TRIM_CRITICAL_THRESHOLD) {
+            memFactor = IProcessStats::ADJ_MEM_FACTOR_CRITICAL;
+        }
+        else if (numCachedAndEmpty <= ProcessList::TRIM_LOW_THRESHOLD) {
+            memFactor = IProcessStats::ADJ_MEM_FACTOR_LOW;
+        }
+        else {
+            memFactor = IProcessStats::ADJ_MEM_FACTOR_MODERATE;
+        }
+    }
+    else {
+        memFactor = IProcessStats::ADJ_MEM_FACTOR_NORMAL;
+    }
+    // We always allow the memory level to go up (better).  We only allow it to go
+    // down if we are in a state where that is allowed, *and* the total number of processes
+    // has gone down since last time.
+    if (DEBUG_OOM_ADJ) Slogger::D(TAG, "oom: memFactor=%d last=%d allowLow=%d numProcs=%d last=%d",
+        memFactor, mLastMemoryLevel, mAllowLowerMemLevel, mLruProcesses.GetSize(), mLastNumProcesses);
+    if (memFactor > mLastMemoryLevel) {
+        if (!mAllowLowerMemLevel || mLruProcesses.GetSize() >= mLastNumProcesses) {
+            memFactor = mLastMemoryLevel;
+            if (DEBUG_OOM_ADJ) Slogger::D(TAG, "Keeping last mem factor!");
+        }
+    }
+    mLastMemoryLevel = memFactor;
+    mLastNumProcesses = mLruProcesses.GetSize();
+    Boolean allChanged = mProcessStats->SetMemFactorLocked(memFactor, !IsSleeping(), now);
+    Int32 trackerMemFactor = mProcessStats.getMemFactorLocked();
+    if (memFactor != IProcessStats::ADJ_MEM_FACTOR_NORMAL) {
+        if (mLowRamStartTime == 0) {
+            mLowRamStartTime = now;
+        }
+        Int32 step = 0;
+        Int32 fgTrimLevel;
+        switch (memFactor) {
+            case IProcessStats::ADJ_MEM_FACTOR_CRITICAL:
+                fgTrimLevel = IComponentCallbacks2::TRIM_MEMORY_RUNNING_CRITICAL;
+                break;
+            case IProcessStats::ADJ_MEM_FACTOR_LOW:
+                fgTrimLevel = IComponentCallbacks2::TRIM_MEMORY_RUNNING_LOW;
+                break;
+            default:
+                fgTrimLevel = IComponentCallbacks2::TRIM_MEMORY_RUNNING_MODERATE;
+                break;
+        }
         Int32 factor = numTrimming/3;
         Int32 minFactor = 2;
         if (mHomeProcess != NULL) minFactor++;
         if (mPreviousProcess != NULL) minFactor++;
         if (factor < minFactor) factor = minFactor;
-        Int32 step = 0;
-        Int32 fgTrimLevel;
-        if (numHiddenAndEmpty <= ProcessList::TRIM_CRITICAL_THRESHOLD) {
-            fgTrimLevel = IComponentCallbacks2::TRIM_MEMORY_RUNNING_CRITICAL;
-        }
-        else if (numHiddenAndEmpty <= ProcessList::TRIM_LOW_THRESHOLD) {
-            fgTrimLevel = IComponentCallbacks2::TRIM_MEMORY_RUNNING_LOW;
-        }
-        else {
-            fgTrimLevel = IComponentCallbacks2::TRIM_MEMORY_RUNNING_MODERATE;
-        }
         Int32 curLevel = IComponentCallbacks2::TRIM_MEMORY_COMPLETE;
 
         rit = mLruProcesses.RBegin();
         for (; rit != mLruProcesses.REnd(); ++rit) {
             AutoPtr<ProcessRecord> app = *rit;
-            if (app->mNonStoppingAdj >= ProcessList::HOME_APP_ADJ
-                    && app->mNonStoppingAdj != ProcessList::SERVICE_B_ADJ
-                    && !app->mKilledBackground) {
+            if (allChanged || app->mProcStateChanged) {
+                SetProcessTrackerStateLocked(app, trackerMemFactor, now);
+                app->mProcStateChanged = FALSE;
+            }
+            if (app->mCurProcState >= IActivityManager::PROCESS_STATE_HOME
+                    && !app->mKilledByAm) {
                 if (app->mTrimMemoryLevel < curLevel && app->mThread != NULL) {
-                    //try {
-                        app->mThread->ScheduleTrimMemory(curLevel);
-                    //} catch (RemoteException e) {
-                    //}
+                    if (DEBUG_SWITCH || DEBUG_OOM_ADJ) Slogger::V(TAG,
+                        "Trimming memory of %s to %d",
+                        app->mProcessName.string(), curLevel);
+                    app->mThread->ScheduleTrimMemory(curLevel);
                     if (FALSE) {
                         // For now we won't do this; our memory trimming seems
                         // to be good enough at this point that destroying
@@ -21169,7 +22465,7 @@ ECode CActivityManagerService::UpdateOomAdjLocked()
                             // be in a consistent state at this point.
                             // For these apps we will also finish their activities
                             // to help them free memory.
-                            mMainStack->ScheduleDestroyActivities(app, FALSE, String("trim"));
+                            mStackSupervisor->ScheduleDestroyAllActivities(app, String("trim"));
                         }
                     }
                 }
@@ -21187,10 +22483,13 @@ ECode CActivityManagerService::UpdateOomAdjLocked()
                     }
                 }
             }
-            else if (app->mNonStoppingAdj == ProcessList::HEAVY_WEIGHT_APP_ADJ) {
+            else if (app->mCurProcState == IActivityManager::PROCESS_STATE_HEAVY_WEIGHT) {
                 if (app->mTrimMemoryLevel < IComponentCallbacks2::TRIM_MEMORY_BACKGROUND
                         && app->mThread != NULL) {
                     //try {
+                    if (DEBUG_SWITCH || DEBUG_OOM_ADJ) Slogger::V(TAG,
+                        "Trimming memory of heavy-weight %s to %d", app->mProcessName.string(),
+                        IComponentCallbacks2::TRIM_MEMORY_BACKGROUND);
                         app->mThread->ScheduleTrimMemory(
                                 IComponentCallbacks2::TRIM_MEMORY_BACKGROUND);
                     //} catch (RemoteException e) {
@@ -21199,14 +22498,17 @@ ECode CActivityManagerService::UpdateOomAdjLocked()
                 app->mTrimMemoryLevel = IComponentCallbacks2::TRIM_MEMORY_BACKGROUND;
             }
             else {
-                if ((app->mNonStoppingAdj > ProcessList::VISIBLE_APP_ADJ || app->mSystemNoUi)
-                        && app->mPendingUiClean) {
+                if ((app->mCurProcState >= IActivityManager::PROCESS_STATE_IMPORTANT_BACKGROUND
+                    || app->mSystemNoUi) && app->mPendingUiClean) {
                     // If this application is now in the background and it
                     // had done UI, then give it the special trim level to
                     // have it free UI resources.
                     Int32 level = IComponentCallbacks2::TRIM_MEMORY_UI_HIDDEN;
                     if (app->mTrimMemoryLevel < level && app->mThread != NULL) {
                         //try {
+                            if (DEBUG_SWITCH || DEBUG_OOM_ADJ) Slogger::V(TAG,
+                                "Trimming memory of bg-ui %s to %d",
+                                app->mProcessName.string(), level);
                             app->mThread->ScheduleTrimMemory(level);
                         //} catch (RemoteException e) {
                         //}
@@ -21215,6 +22517,9 @@ ECode CActivityManagerService::UpdateOomAdjLocked()
                 }
                 if (app->mTrimMemoryLevel < fgTrimLevel && app->mThread != NULL) {
                     //try {
+                        if (DEBUG_SWITCH || DEBUG_OOM_ADJ) Slogger::V(TAG,
+                            "Trimming memory of fg %s to %d",
+                            app->mProcessName.string(), fgTrimLevel);
                         app->mThread->ScheduleTrimMemory(fgTrimLevel);
                     //} catch (RemoteException e) {
                     //}
@@ -21223,16 +22528,26 @@ ECode CActivityManagerService::UpdateOomAdjLocked()
             }
         }
     }
-    else
-    {
+    else {
+        if (mLowRamStartTime != 0) {
+            mLowRamTimeSinceLastIdle += now - mLowRamStartTime;
+            mLowRamStartTime = 0;
+        }
         rit = mLruProcesses.RBegin();
         for (; rit != mLruProcesses.REnd(); ++rit) {
             AutoPtr<ProcessRecord> app = *rit;
-            if ((app->mNonStoppingAdj > ProcessList::VISIBLE_APP_ADJ || app->mSystemNoUi)
-                    && app->mPendingUiClean) {
+            if (allChanged || app->mProcStateChanged) {
+                SetProcessTrackerStateLocked(app, trackerMemFactor, now);
+                app->mProcStateChanged = FALSE;
+            }
+            if ((app->mCurProcState >= IActivityManager::PROCESS_STATE_IMPORTANT_BACKGROUND
+                    || app->mSystemNoUi) && app->mPendingUiClean) {
                 if (app->mTrimMemoryLevel < IComponentCallbacks2::TRIM_MEMORY_UI_HIDDEN
                         && app->mThread != NULL) {
                     //try {
+                    if (DEBUG_SWITCH || DEBUG_OOM_ADJ) Slogger::V(TAG,
+                        "Trimming memory of ui hidden %s to %d", app->mProcessName.string(),
+                        IComponentCallbacks2::TRIM_MEMORY_UI_HIDDEN);
                         app->mThread->ScheduleTrimMemory(
                                 IComponentCallbacks2::TRIM_MEMORY_UI_HIDDEN);
                     //} catch (RemoteException e) {
@@ -21247,8 +22562,30 @@ ECode CActivityManagerService::UpdateOomAdjLocked()
     if (mAlwaysFinishActivities) {
         // Need to do this on its own message because the stack may not
         // be in a consistent state at this point.
-        mMainStack->ScheduleDestroyActivities(NULL, FALSE, String("always-finish"));
+        mStackSupervisor->ScheduleDestroyAllActivities(NULL, String("always-finish"));
     }
+
+    if (allChanged) {
+        RequestPssAllProcsLocked(now, FALSE, mProcessStats->IsMemFactorLowered());
+    }
+
+    if (mProcessStats->ShouldWriteNowLocked(now)) {
+        AutoPtr<Runnable> runnable = new WriteStateRunnable(this);
+        Boolean res;
+        mHandler->Post(runnable, &res);
+    }
+
+    if (DEBUG_OOM_ADJ) {
+        if (FALSE) {
+            // RuntimeException here = new RuntimeException("here");
+            // here.fillInStackTrace();
+            // Slog.d(TAG, "Did OOM ADJ in " + (SystemClock.uptimeMillis()-now) + "ms", here);
+        }
+        else {
+            Slogger::D(TAG, "Did OOM ADJ in %lldms", (SystemClock::GetUptimeMillis()-now));
+        }
+    }
+
     return NOERROR;
 }
 
@@ -21271,9 +22608,7 @@ ECode CActivityManagerService::TrimApplications()
                 //     + (app.thread != NULL ? app.thread.asBinder() : NULL)
                 //     + ")\n");
                 if (app->mPid > 0 && app->mPid != MY_PID) {
-                    // EventLog.writeEvent(EventLogTags.AM_KILL, app->mUserId, app->mPid,
-                    // app->mProcessName, app->mSetAdj, "empty");
-                    Process::KillProcessQuiet(app->mPid);
+                    app->Kill(String("empty"), FALSE);
                 }
                 else {
                     // try
@@ -21290,9 +22625,7 @@ ECode CActivityManagerService::TrimApplications()
                 rit = List< AutoPtr<ProcessRecord> >::ReverseIterator(mRemovedProcesses.Erase(--(rit.GetBase())));
 
                 if (app->mPersistent) {
-                    if (app->mPersistent) {
-                        AddAppLocked(app->mInfo, FALSE);
-                    }
+                    AddAppLocked(app->mInfo, FALSE, String(NULL) /* ABI override */);
                 }
                 continue;
             }
@@ -21314,10 +22647,10 @@ ECode CActivityManagerService::SignalPersistentProcesses(
     }
 
     AutoLock lock(this);
-    if (CheckCallingPermission(Elastos::Droid::Manifest::permission::SIGNAL_PERSISTENT_PROCESSES)
+    if (CheckCallingPermission(Manifest::permission::SIGNAL_PERSISTENT_PROCESSES)
             != IPackageManager::PERMISSION_GRANTED) {
         // throw new SecurityException("Requires permission "
-        //         + Elastos::Droid::Manifest::permission::SIGNAL_PERSISTENT_PROCESSES);
+        //         + Manifest::permission::SIGNAL_PERSISTENT_PROCESSES);
         return E_SECURITY_EXCEPTION;
     }
 
@@ -21334,13 +22667,10 @@ ECode CActivityManagerService::SignalPersistentProcesses(
 
 ECode CActivityManagerService::StopProfilerLocked(
     /* [in] */ ProcessRecord* proc,
-    /* [in] */ const String& path,
     /* [in] */ Int32 profileType)
 {
-    String newPath = path;
     if (proc == NULL || proc == mProfileProc) {
         proc = mProfileProc;
-        newPath = mProfileFile;
         profileType = mProfileType;
         ClearProfilerLocked();
     }
@@ -21348,7 +22678,7 @@ ECode CActivityManagerService::StopProfilerLocked(
         return NOERROR;
     }
     //try {
-    proc->mThread->ProfilerControl(FALSE, newPath, NULL, profileType);
+    proc->mThread->ProfilerControl(FALSE, NULL, profileType);
     //} catch (RemoteException e) {
     //    throw new IllegalStateException("Process disappeared");
     //}
@@ -21368,6 +22698,7 @@ ECode CActivityManagerService::ClearProfilerLocked()
     mProfileFile = NULL;
     mProfileType = 0;
     mAutoStopProfiler = FALSE;
+    mSamplingInterval = 0;
     return NOERROR;
 }
 
@@ -21375,8 +22706,7 @@ ECode CActivityManagerService::ProfileControl(
     /* [in] */ const String& process,
     /* [in] */ Int32 userId,
     /* [in] */ Boolean start,
-    /* [in] */ const String& path,
-    /* [in] */ IParcelFileDescriptor* fd,
+    /* [in] */ IProfilerInfo* profilerInfo,
     /* [in] */ Int32 profileType,
     /* [out] */ Boolean* result)
 {
@@ -21387,21 +22717,17 @@ ECode CActivityManagerService::ProfileControl(
         AutoLock lock(this);
         // note: hijacking SET_ACTIVITY_WATCHER, but should be changed to
         // its own permission.
-        if (CheckCallingPermission(Elastos::Droid::Manifest::permission::SET_ACTIVITY_WATCHER)
+        if (CheckCallingPermission(Manifest::permission::SET_ACTIVITY_WATCHER)
                 != IPackageManager::PERMISSION_GRANTED) {
             // throw new SecurityException("Requires permission "
-            //         + Elastos::Droid::Manifest::permission::SET_ACTIVITY_WATCHER);
-            if (fd != NULL) {
-                fd->Close();
-            }
+            //         + Manifest::permission::SET_ACTIVITY_WATCHER);
             return E_SECURITY_EXCEPTION;
         }
 
-        if (start && fd == NULL) {
-            // throw new IllegalArgumentException("null fd");
-            if (fd != NULL) {
-                fd->Close();
-            }
+        AutoPtr<IParcelFileDescriptor> fd;
+        if (start && (profilerInfo == NULL || (profilerInfo->GetProfileFd((IParcelFileDescriptor**)&fd),
+            fd == NULL))) {
+            Slogger::E(TAG, "null profile info or fd");
             return E_ILLEGAL_ARGUMENT_EXCEPTION;
         }
 
@@ -21419,32 +22745,25 @@ ECode CActivityManagerService::ProfileControl(
         }
 
         if (start) {
-            StopProfilerLocked(NULL, String(NULL), 0);
-            SetProfileApp(proc->mInfo, proc->mProcessName, path, fd, FALSE);
+            StopProfilerLocked(NULL, 0);
+            SetProfileApp(proc->mInfo, proc->mProcessName, profilerInfo);
             mProfileProc = proc;
             mProfileType = profileType;
             // try {
-            AutoPtr<IFileDescriptor> descriptor;
-            fd->GetFileDescriptor((IFileDescriptor**)&descriptor);
-            AutoPtr<IParcelFileDescriptorHelper> helper;
-            CParcelFileDescriptorHelper::AcquireSingleton((IParcelFileDescriptorHelper**)&helper);
             AutoPtr<IParcelFileDescriptor> pfd;
-            if (SUCCEEDED(helper->Dup(descriptor, (IParcelFileDescriptor**)&pfd))) {
+            if (SUCCEEDED(fd->Dup((IParcelFileDescriptor**)&pfd))) {
                 fd = NULL;
                 fd = pfd;
             }
             else {
                 fd = NULL;
             }
-            // } catch (IOException e) {
-            //     fd = null;
-            // }
-            proc->mThread->ProfilerControl(start, path, fd, profileType);
-            fd = NULL;
+            profilerInfo->SetProfileFd(fd);
+            proc->mThread->ProfilerControl(start, profilerInfo, profileType);
             mProfileFd = NULL;
         }
         else {
-            StopProfilerLocked(proc, path, profileType);
+            StopProfilerLocked(proc, profileType);
             if (fd != NULL) {
                 // try {
                 fd->Close();
@@ -21476,8 +22795,8 @@ AutoPtr<ProcessRecord> CActivityManagerService::FindProcessLocked(
     /* [in] */ Int32 userId,
     /* [in] */ const String& callName)
 {
-    HandleIncomingUser(Binder::GetCallingPid(), Binder::GetCallingUid(),
-            userId, TRUE, TRUE, callName, String(NULL), &userId);
+    HandleIncomingUser(BinderGetCallingPid(), BinderGetCallingUid(),
+            userId, TRUE, ALLOW_FULL_ONLY, callName, String(NULL), &userId);
     AutoPtr<ProcessRecord> proc;
     // try {
     Int32 pid = StringUtils::ParseInt32(process);
@@ -21529,10 +22848,10 @@ ECode CActivityManagerService::DumpHeap(
             AutoLock lock(this);
             // note: hijacking SET_ACTIVITY_WATCHER, but should be changed to
             // its own permission (same as profileControl).
-            if (CheckCallingPermission(Elastos::Droid::Manifest::permission::SET_ACTIVITY_WATCHER)
+            if (CheckCallingPermission(Manifest::permission::SET_ACTIVITY_WATCHER)
                     != IPackageManager::PERMISSION_GRANTED) {
                 // throw new SecurityException("Requires permission "
-                //         + Elastos::Droid::Manifest::permission::SET_ACTIVITY_WATCHER);
+                //         + Manifest::permission::SET_ACTIVITY_WATCHER);
                 if (fd != NULL) {
                     fd->Close();
                 }
@@ -21560,7 +22879,7 @@ ECode CActivityManagerService::DumpHeap(
             CSystemProperties::AcquireSingleton((ISystemProperties**)&sysProp);
             String value;
             sysProp->Get(SYSTEM_DEBUGGABLE, String("0"), &value);
-            Boolean isDebuggable = CString("1").Equals(value);
+            Boolean isDebuggable = value.Equals("1");
             if (!isDebuggable) {
                 Int32 flags;
                 proc->mInfo->GetFlags(&flags);
@@ -21613,47 +22932,184 @@ ECode CActivityManagerService::OnCoreSettingsChange(
     return NOERROR;
 }
 
+// Multi-user methods
+
+/**
+ * Start user, if its not already running, but don't bring it to foreground.
+ */
+ECode CActivityManagerService::StartUserInBackground(
+    /* [in] */ Int32 userId,
+    /* [out] */ Boolean* result)
+{
+    VALIDATE_NOT_NULL(result);
+    *result = StartUser(userId, /* foreground */ FALSE);
+    return NOERROR;
+}
+
+/**
+ * Start user, if its not already running, and bring it to foreground.
+ */
+Boolean CActivityManagerService::StartUserInForeground(
+    /* [in] */ Int32 userId,
+    /* [in] */ IDialog* dlg)
+{
+    Boolean result = StartUser(userId, /* foreground */ TRUE);
+    dlg->Dismiss();
+    return result;
+}
+
+/**
+ * Refreshes the list of users related to the current user when either a
+ * user switch happens or when a new related user is started in the
+ * background.
+ */
+ECode CActivityManagerService::UpdateCurrentProfileIdsLocked()
+{
+    AutoPtr<IList> profiles;
+    GetUserManagerLocked()->GetProfiles(
+        mCurrentUserId, FALSE /* enabledOnly */, (IList**)&profiles);
+    Int32 size;
+    profiles->GetSize(&size);
+    AutoPtr<ArrayOf<Int32> > currentProfileIds = ArrayOf<Int32>::Alloc(size); // profiles will not be null
+    for (Int32 i = 0; i < size; i++) {
+        AutoPtr<IInterface> item;
+        profiles->Get(i, (IInterface**)&item);
+        Int32 id;
+        IUserInfo::Probe(item)->GetId(&id);
+        (*currentProfileIds)[i] = id;
+    }
+    mCurrentProfileIds = currentProfileIds;
+
+    synchronized (mUserProfileGroupIdsSelfLocked) {
+        mUserProfileGroupIdsSelfLocked.Clear();
+        AutoPtr<IList> users;
+        GetUserManagerLocked()->GetUsers(FALSE, (IList**)&users);
+        users->GetSize(&size);
+        for (Int32 i = 0; i < size; i++) {
+            AutoPtr<IInterface> item;
+            users->Get(i, (IInterface**)&item);
+            AutoPtr<IUserInfo> user = IUserInfo::Probe(item);
+            Int32 id, profileGroupId;
+            user->GetId(&id);
+            user->GetProfileGroupId(&profileGroupId);
+            if (profileGroupId != IUserInfo::NO_PROFILE_GROUP_ID) {
+                mUserProfileGroupIdsSelfLocked[id] = profileGroupId;
+            }
+        }
+    }
+    return NOERROR;
+}
+
+AutoPtr<HashSet<Int32> > CActivityManagerService::GetProfileIdsLocked(
+    /* [in] */ Int32 userId)
+{
+    AutoPtr<HashSet<Int32> > userIds = new HashSet<Int32>();
+    AutoPtr<IList> profiles;
+    GetUserManagerLocked()->GetProfiles(
+        userId, FALSE /* enabledOnly */, (IList**)&profiles);
+    Int32 size;
+    profiles->GetSize(&size);
+    for (Int32 i = 0; i < size; i++) {
+        AutoPtr<IInterface> item;
+        profiles->Get(i, (IInterface**)&item);
+        Int32 id;
+        IUserInfo::Probe(item)->GetId(&id);
+        userIds->Insert(id);
+    }
+    return userIds;
+}
+
 ECode CActivityManagerService::SwitchUser(
     /* [in] */ Int32 userId,
     /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result);
     *result = FALSE;
+    FAIL_RETURN(EnforceShellRestriction(IUserManager::DISALLOW_DEBUGGING_FEATURES, userId));
+    String userName;
+    synchronized (this) {
+        AutoPtr<IUserInfo> userInfo;
+        GetUserManagerLocked()->GetUserInfo(userId, (IUserInfo**)&userInfo);
+        if (userInfo == NULL) {
+            Slogger::W(TAG, "No user info for user #%d", userId);
+            return NOERROR;
+        }
+        if (userInfo.isManagedProfile()) {
+            Slogger::W(TAG, "Cannot switch to User #%d: not a full user", userId);
+            return NOERROR;
+        }
+        userInfo->GetName(&userName);
+        mTargetUserId = userId;
+    }
+    mHandler->RemoveMessages(START_USER_SWITCH_MSG);
+    AutoPtr<IMessage> msg;
+    mHandler->ObtainMessage(START_USER_SWITCH_MSG, userId, 0, userName, (IMessage**)&msg);
+    Boolean res;
+    mHandler->SendMessage(msg, &res);
+    *result = TRUE;
+    return NOERROR;
+}
 
-    if (CheckCallingPermission(Elastos::Droid::Manifest::permission::INTERACT_ACROSS_USERS_FULL)
+ECode CActivityManagerService::ShowUserSwitchDialog(
+    /* [in] */ Int32 userId,
+    /* [in] */ const String& userName)
+{
+    // The dialog will show and then initiate the user switch by calling startUserInForeground
+    AutoPtr<IDialog> = new UserSwitchingDialog(this, mContext, userId, userName,
+            TRUE /* above system */);
+    return d->Show();
+}
+
+Boolean CActivityManagerService::StartUser(
+    /* [in] */ Int32 userId,
+    /* [in] */ Boolean foreground)
+{
+    if (CheckCallingPermission(Manifest::permission::INTERACT_ACROSS_USERS_FULL)
             != IPackageManager::PERMISSION_GRANTED) {
         StringBuilder msg("Permission Denial: switchUser() from pid=");
-        msg += Binder::GetCallingPid();
+        msg += BinderGetCallingPid();
         msg += ", uid=";
-        msg += Binder::GetCallingUid();
+        msg += BinderGetCallingUid();
         msg += " requires ";
-        msg += "Elastos::Droid::Manifest::permission::INTERACT_ACROSS_USERS_FULL";
+        msg += "Manifest::permission::INTERACT_ACROSS_USERS_FULL";
         Slogger::W(TAG, msg.ToString().string());
         return E_SECURITY_EXCEPTION;
     }
 
-    const Int64 ident = Binder::ClearCallingIdentity();
+    if (DEBUG_MU) Slogger::I(TAG_MU, "starting userid:%d fore:%d", userId, foreground);
+
+    const Int64 ident = BinderClearCallingIdentity();
     // try {
         {
             AutoLock lock(this);
             const Int32 oldUserId = mCurrentUserId;
             if (oldUserId == userId) {
                 *result = TRUE;
-                Binder::RestoreCallingIdentity(ident);
+                BinderRestoreCallingIdentity(ident);
                 return NOERROR;
             }
+
+            mStackSupervisor->SetLockTaskModeLocked(NULL, FALSE);
 
             AutoPtr<IUserInfo> userInfo;
             GetUserManagerLocked()->GetUserInfo(userId, (IUserInfo**)&userInfo);
             if (userInfo == NULL) {
                 Slogger::W(TAG, "No user info for user #%d", userId);
                 *result = FALSE;
-                Binder::RestoreCallingIdentity(ident);
+                BinderRestoreCallingIdentity(ident);
                 return NOERROR;
             }
 
-            mWindowManager->StartFreezingScreen(R::anim::screen_user_exit,
-                    R::anim::screen_user_enter);
+            Boolean res;
+            if (foreground && (userInfo->IsManagedProfile(&res), res)) {
+                Slogger::W(TAG, "Cannot switch to User #%d: not a full user", userId);
+                return FALSE;
+            }
+
+            if (foreground) {
+                mWindowManager->StartFreezingScreen(R::anim::screen_user_exit,
+                        R::anim::screen_user_enter);
+            }
 
             Boolean needStart = FALSE;
 
@@ -21667,17 +23123,26 @@ ECode CActivityManagerService::SwitchUser(
                 needStart = TRUE;
             }
 
-            mCurrentUserId = userId;
-            mCurrentUserArray = ArrayOf<Int32>::Alloc(1);
             mCurrentUserArray->Set(0, userId);
             mUserLru.Remove(userId);
             mUserLru.PushBack(userId);
 
-            mWindowManager->SetCurrentUser(userId);
+            if (foreground) {
+                mCurrentUserId = userId;
+                mTargetUserId = IUserHandle::USER_NULL; // reset, mCurrentUserId has caught up
+                UpdateCurrentProfileIdsLocked();
+                mWindowManager->SetCurrentUser(userId);
 
-            // Once the internal notion of the active user has switched, we lock the device
-            // with the option to show the user switcher on the keyguard.
-            mWindowManager->LockNow(NULL);
+                // Once the internal notion of the active user has switched, we lock the device
+                // with the option to show the user switcher on the keyguard.
+                mWindowManager->LockNow(NULL);
+            }
+            else {
+                UpdateCurrentProfileIdsLocked();
+                mWindowManager->SetCurrentProfileIds(mCurrentProfileIds);
+                mUserLru.Remove(mCurrentUserId);
+                mUserLru.PushBack(mCurrentUserId);
+            }
 
             AutoPtr<UserStartedState> uss = mStartedUsers[userId];
 
@@ -21699,21 +23164,37 @@ ECode CActivityManagerService::SwitchUser(
                 needStart = TRUE;
             }
 
-            mHandler->RemoveMessages(REPORT_USER_SWITCH_MSG);
-            mHandler->RemoveMessages(USER_SWITCH_TIMEOUT_MSG);
+            if (uss->mState == UserStartedState::STATE_BOOTING) {
+                // Booting up a new user, need to tell system services about it.
+                // Note that this is on the same handler as scheduling of broadcasts,
+                // which is important because it needs to go first.
+                AutoPtr<IMessage> msg;
+                mHandler->ObtainMessage(SYSTEM_USER_START_MSG, userId, 0, (IMessage**)&msg);
+                Boolean result;
+                mHandler->SendMessage(msg, &result);
+            }
 
-            AutoPtr<IMessage> msg;
-            mHandler->ObtainMessage(REPORT_USER_SWITCH_MSG, oldUserId, userId,
-                uss->Probe(EIID_IInterface), (IMessage**)&msg);
-            Boolean result;
-            mHandler->SendMessage(msg, &result);
+            if (foreground) {
+                AutoPtr<IMessage> msg;
+                mHandler->ObtainMessage(SYSTEM_USER_CURRENT_MSG, userId, oldUserId, (IMessage**)&msg);
+                Boolean result;
+                mHandler->SendMessage(msg, &result);
+                mHandler->RemoveMessages(REPORT_USER_SWITCH_MSG);
+                mHandler->RemoveMessages(USER_SWITCH_TIMEOUT_MSG);
 
-            AutoPtr<IMessage> msg2;
-            mHandler->ObtainMessage(USER_SWITCH_TIMEOUT_MSG, oldUserId, userId,
-                uss->Probe(EIID_IInterface), (IMessage**)&msg2);
-            mHandler->SendMessageDelayed(msg2, USER_SWITCH_TIMEOUT, &result);
+                msg = NULL;
+                mHandler->ObtainMessage(REPORT_USER_SWITCH_MSG, oldUserId, userId,
+                    uss->Probe(EIID_IInterface), (IMessage**)&msg);
+                mHandler->SendMessage(msg, &result);
+
+                msg = NULL;
+                mHandler->ObtainMessage(USER_SWITCH_TIMEOUT_MSG, oldUserId, userId,
+                    uss->Probe(EIID_IInterface), (IMessage**)&msg);
+                mHandler->SendMessageDelayed(msg, USER_SWITCH_TIMEOUT, &result);
+            }
 
             if (needStart) {
+                // Send USER_STARTED broadcast
                 AutoPtr<IIntent> intent;
                 CIntent::New(IIntent::ACTION_USER_STARTED, (IIntent**)&intent);
                 intent->AddFlags(IIntent::FLAG_RECEIVER_REGISTERED_ONLY
@@ -21721,21 +23202,23 @@ ECode CActivityManagerService::SwitchUser(
                 intent->PutExtra(IIntent::EXTRA_USER_HANDLE, userId);
                 Int32 bValue;
                 BroadcastIntentLocked(NULL, String(NULL), intent,
-                    String(NULL), NULL, 0, String(NULL), NULL, String(NULL),
+                    String(NULL), NULL, 0, String(NULL), NULL, String(NULL), IAppOpsManager::OP_NONE,
                     FALSE, FALSE, MY_PID, IProcess::SYSTEM_UID, userId, &bValue);
             }
 
             Int32 userInfoFlags;
             userInfo->GetFlags(&userInfoFlags);
             if ((userInfoFlags&IUserInfo::FLAG_INITIALIZED) == 0) {
-                if (userId != 0) {
+                if (userId != IUserHandle::USER_OWNER) {
                     AutoPtr<IIntent> intent;
                     CIntent::New(IIntent::ACTION_USER_INITIALIZE, (IIntent**)&intent);
                     intent->AddFlags(IIntent::FLAG_RECEIVER_FOREGROUND);
-                    AutoPtr<IIntentReceiver> receiver = new SwitchUserIntentReceiver(this, uss, userId);
+                    AutoPtr<IIntentReceiver> receiver = new SwitchUserIntentReceiver(
+                        this, uss, foreground, oldUserId,  userId);
                     Int32 bValue;
                     BroadcastIntentLocked(NULL, String(NULL), intent, String(NULL),
-                            receiver, 0, String(NULL), NULL, String(NULL), TRUE, FALSE, MY_PID, IProcess::SYSTEM_UID,
+                            receiver, 0, String(NULL), NULL, String(NULL), IAppOpsManager::OP_NONE,
+                            TRUE, FALSE, MY_PID, IProcess::SYSTEM_UID,
                             userId, &bValue);
                     uss->mInitializing = TRUE;
                 }
@@ -21746,13 +23229,15 @@ ECode CActivityManagerService::SwitchUser(
                 }
             }
 
-            Boolean haveActivities = mMainStack->SwitchUserLocked(userId, uss);
-            if (!haveActivities) {
-                StartHomeActivityLocked(userId);
+            if (foreground) {
+                if (!uss->mInitializing) {
+                    MoveUserToForeground(uss, oldUserId, userId);
+                }
             }
-    //         EventLogTags.writeAmSwitchUser(userId);
-            GetUserManagerLocked()->UserForeground(userId);
-            SendUserSwitchBroadcastsLocked(oldUserId, userId);
+            else {
+                mStackSupervisor->StartBackgroundUserLocked(userId, uss);
+            }
+
             if (needStart) {
                 AutoPtr<IIntent> intent;
                 CIntent::New(IIntent::ACTION_USER_STARTING, (IIntent**)&intent);
@@ -21762,12 +23247,12 @@ ECode CActivityManagerService::SwitchUser(
                 Int32 bValue;
                 BroadcastIntentLocked(NULL, String(NULL), intent,
                         String(NULL), receiver, 0, String(NULL), NULL,
-                        Elastos::Droid::Manifest::permission::INTERACT_ACROSS_USERS,
+                        Manifest::permission::INTERACT_ACROSS_USERS, IAppOpsManager::OP_NONE,
                         TRUE, FALSE, MY_PID, IProcess::SYSTEM_UID, IUserHandle::USER_ALL, &bValue);
             }
         }
     // } finally {
-        Binder::RestoreCallingIdentity(ident);
+        BinderRestoreCallingIdentity(ident);
     // }
 
     *result = TRUE;
@@ -21778,30 +23263,52 @@ ECode CActivityManagerService::SendUserSwitchBroadcastsLocked(
     /* [in] */ Int32 oldUserId,
     /* [in] */ Int32 newUserId)
 {
-    Int64 ident = Binder::ClearCallingIdentity();
+    Int64 ident = BinderClearCallingIdentity();
     String nullStr;
     // try {
     AutoPtr<IIntent> intent;
     if (oldUserId >= 0) {
-        CIntent::New(IIntent::ACTION_USER_BACKGROUND, (IIntent**)&intent);
-        intent->AddFlags(IIntent::FLAG_RECEIVER_REGISTERED_ONLY
-                | IIntent::FLAG_RECEIVER_FOREGROUND);
-        intent->PutExtra(IIntent::EXTRA_USER_HANDLE, oldUserId);
-        Int32 result;
-        BroadcastIntentLocked(NULL, nullStr, intent,
-            nullStr, NULL, 0, nullStr, NULL, nullStr,
-            FALSE, FALSE, MY_PID, IProcess::SYSTEM_UID, oldUserId, &result);
+        // Send USER_BACKGROUND broadcast to all profiles of the outgoing user
+        AutoPtr<IList> profiles;
+        mUserManager->GetProfiles(oldUserId, FALSE, (IList**)&profiles);
+        Int32 count;
+        profiles->GetSize(&count);
+        for (Int32 i = 0; i < count; i++) {
+            AutoPtr<IInterface> item;
+            profiles->Get(i, (IInterface**)&item);
+            Int32 profileUserId;
+            IUserInfo::Probe(item)->GetId(&profileUserId);
+            intent = NULL;
+            CIntent::New(IIntent::ACTION_USER_BACKGROUND, (IIntent**)&intent);
+            intent->AddFlags(IIntent::FLAG_RECEIVER_REGISTERED_ONLY
+                    | IIntent::FLAG_RECEIVER_FOREGROUND);
+            intent->PutExtra(IIntent::EXTRA_USER_HANDLE, profileUserId);
+            Int32 result;
+            BroadcastIntentLocked(NULL, nullStr, intent,
+                nullStr, NULL, 0, nullStr, NULL, nullStr, IAppOpsManager::OP_NONE,
+                FALSE, FALSE, MY_PID, IProcess::SYSTEM_UID, profileUserId, &result);
+        }
     }
     if (newUserId >= 0) {
-        intent = NULL;
-        CIntent::New(IIntent::ACTION_USER_FOREGROUND, (IIntent**)&intent);
-        intent->AddFlags(IIntent::FLAG_RECEIVER_REGISTERED_ONLY
-                | IIntent::FLAG_RECEIVER_FOREGROUND);
-        intent->PutExtra(IIntent::EXTRA_USER_HANDLE, newUserId);
-        Int32 result;
-        BroadcastIntentLocked(NULL, nullStr, intent,
-            nullStr, NULL, 0, nullStr, NULL, nullStr,
-            FALSE, FALSE, MY_PID, IProcess::SYSTEM_UID, newUserId, &result);
+        AutoPtr<IList> profiles;
+        mUserManager->GetProfiles(newUserId, FALSE, (IList**)&profiles);
+        Int32 count;
+        profiles->GetSize(&count);
+        for (Int32 i = 0; i < count; i++) {
+            AutoPtr<IInterface> item;
+            profiles->Get(i, (IInterface**)&item);
+            Int32 profileUserId;
+            IUserInfo::Probe(item)->GetId(&profileUserId);
+            intent = NULL;
+            CIntent::New(IIntent::ACTION_USER_FOREGROUND, (IIntent**)&intent);
+            intent->AddFlags(IIntent::FLAG_RECEIVER_REGISTERED_ONLY
+                    | IIntent::FLAG_RECEIVER_FOREGROUND);
+            intent->PutExtra(IIntent::EXTRA_USER_HANDLE, profileUserId);
+            Int32 result;
+            BroadcastIntentLocked(NULL, nullStr, intent,
+                nullStr, NULL, 0, nullStr, NULL, nullStr, IAppOpsManager::OP_NONE,
+                FALSE, FALSE, MY_PID, IProcess::SYSTEM_UID, profileUserId, &result);
+        }
         intent = NULL;
         CIntent::New(IIntent::ACTION_USER_SWITCHED, (IIntent**)&intent);
         intent->AddFlags(IIntent::FLAG_RECEIVER_REGISTERED_ONLY
@@ -21810,11 +23317,12 @@ ECode CActivityManagerService::SendUserSwitchBroadcastsLocked(
 
         BroadcastIntentLocked(NULL, nullStr, intent,
                 nullStr, NULL, 0, nullStr, NULL,
-                Elastos::Droid::Manifest::permission::MANAGE_USERS,
-                FALSE, FALSE, MY_PID, IProcess::SYSTEM_UID, IUserHandle::USER_ALL, &result);
+                Manifest::permission::MANAGE_USERS, IAppOpsManager::OP_NONE,
+                FALSE, FALSE, MY_PID, IProcess::SYSTEM_UID,
+                IUserHandle::USER_ALL, &result);
     }
     // } finally {
-    Binder::RestoreCallingIdentity(ident);
+    BinderRestoreCallingIdentity(ident);
     // }
     return NOERROR;
 }
@@ -21877,11 +23385,37 @@ ECode CActivityManagerService::SendContinueUserSwitchLocked(
     return mHandler->SendMessage(msg, &result);
 }
 
-ECode CActivityManagerService::UserInitialized(
+ECode CActivityManagerService::OnUserInitialized(
     /* [in] */ UserStartedState* uss,
+    /* [in] */ Boolean foreground,
+    /* [in] */ Int32 oldUserId,
     /* [in] */ Int32 newUserId)
 {
+    synchronized (this) {
+        if (foreground) {
+            MoveUserToForeground(uss, oldUserId, newUserId);
+        }
+    }
+
     return CompleteSwitchAndInitalize(uss, newUserId, TRUE, FALSE);
+}
+
+ECode CActivityManagerService::MoveUserToForeground(
+    /* [in] */ UserStartedState* uss,
+    /* [in] */ Int32 oldUserId,
+    /* [in] */ Int32 newUserId)
+{
+    Boolean homeInFront = mStackSupervisor->SwitchUserLocked(newUserId, uss);
+    if (homeInFront) {
+        StartHomeActivityLocked(newUserId);
+    }
+    else {
+        mStackSupervisor->ResumeTopActivitiesLocked();
+    }
+    // EventLogTags.writeAmSwitchUser(newUserId);
+    GetUserManagerLocked()->UserForeground(newUserId);
+    SendUserSwitchBroadcastsLocked(oldUserId, newUserId);
+    return NOERROR;
 }
 
 ECode CActivityManagerService::ContinueUserSwitch(
@@ -21934,7 +23468,56 @@ ECode CActivityManagerService::CompleteSwitchAndInitalize(
     return NOERROR;
 }
 
-ECode CActivityManagerService::FinishUserSwitch(
+ECode CActivityManagerService::ScheduleStartProfilesLocked()
+{
+    Boolean res;
+    mHandler->HasMessages(START_PROFILES_MSG, &res);
+    if (!res) {
+        mHandler->SendEmptyMessageDelayed(START_PROFILES_MSG,
+            IDateUtils::SECOND_IN_MILLIS, &res);
+    }
+    return NOERROR;
+}
+
+ECode CActivityManagerService::StartProfilesLocked()
+{
+    if (DEBUG_MU) Slogger::I(TAG_MU, "startProfilesLocked");
+    AutoPtr<IList> profiles;
+    GetUserManagerLocked()->GetProfiles(
+        mCurrentUserId, FALSE /* enabledOnly */, (IList**)&profiles);
+    Int32 size;
+    profiles->GetSize(&size);
+    AutoPtr<IList> toStart;
+    CArrayList::New(size, (IList**)&toStart);
+    for (Int32 i = 0; i < size; i++) {
+        AutoPtr<IInterface> item;
+        profiles->Get(i, (IInterface**)&item);
+        AutoPtr<IUserInfo> user = IUserInfo::Probe(item);
+        Int32 flags, id;
+        user->GetFlags(&flags);
+        user->GetId(&id);
+        if ((flags & IUserInfo::FLAG_INITIALIZED) == IUserInfo::FLAG_INITIALIZED
+                && id != mCurrentUserId) {
+            toStart->Add(user);
+        }
+    }
+    Int32 n;
+    toStart->GetSize(&n);
+    Int32 i = 0;
+    for (; i < n && i < (MAX_RUNNING_USERS - 1); ++i) {
+        AutoPtr<IInterface> item;
+        toStart->Get(i, (IInterface**)&item);
+        Int32 id;
+        IUserInfo::Probe(item)->GetId(&id);
+        StartUserInBackground(id);
+    }
+    if (i < n) {
+        Slogger::W(TAG_MU, "More profiles than MAX_RUNNING_USERS");
+    }
+    return NOERROR;
+}
+
+ECode CActivityManagerService::FinishUserBoot(
     /* [in] */ UserStartedState* uss)
 {
     VALIDATE_NOT_NULL(uss);
@@ -21944,7 +23527,8 @@ ECode CActivityManagerService::FinishUserSwitch(
     uss->mHandle->GetIdentifier(&id);
     HashMap<Int32, AutoPtr<UserStartedState> >::Iterator it = mStartedUsers.Find(id);
     AutoPtr<UserStartedState> state;
-    if (it != mStartedUsers.End()) state = it->mSecond;
+    if (it != mStartedUsers.End())
+        state = it->mSecond;
     if (uss->mState == UserStartedState::STATE_BOOTING
             && state.Get() == uss) {
         uss->mState = UserStartedState::STATE_RUNNING;
@@ -21953,13 +23537,25 @@ ECode CActivityManagerService::FinishUserSwitch(
         AutoPtr<IIntent> intent;
         CIntent::New(IIntent::ACTION_BOOT_COMPLETED, NULL, (IIntent**)&intent);
         intent->PutExtra(IIntent::EXTRA_USER_HANDLE, userId);
+        intent->AddFlags(IIntent::FLAG_RECEIVER_NO_ABORT);
         Int32 result;
         String nullStr;
         BroadcastIntentLocked(NULL, nullStr, intent,
             nullStr, NULL, 0, nullStr, NULL,
-            Elastos::Droid::Manifest::permission::RECEIVE_BOOT_COMPLETED,
+            Manifest::permission::RECEIVE_BOOT_COMPLETED, IAppOpsManager::OP_NONE,
             FALSE, FALSE, MY_PID, IProcess::SYSTEM_UID, userId, &result);
     }
+}
+
+ECode CActivityManagerService::FinishUserSwitch(
+    /* [in] */ UserStartedState* uss)
+{
+    AutoLock lock(this);
+
+    FinishUserBoot(uss);
+
+    StartProfilesLocked();
+
     Int32 num = mUserLru.GetSize();
     Int32 i = 0;
     List<Int32>::Iterator lit = mUserLru.Begin();
@@ -22001,14 +23597,14 @@ ECode CActivityManagerService::StopUser(
 {
     VALIDATE_NOT_NULL(result);
 
-    if (CheckCallingPermission(Elastos::Droid::Manifest::permission::INTERACT_ACROSS_USERS_FULL)
+    if (CheckCallingPermission(Manifest::permission::INTERACT_ACROSS_USERS_FULL)
            != IPackageManager::PERMISSION_GRANTED) {
         StringBuilder msg("Permission Denial: switchUser() from pid=");
-        msg += Binder::GetCallingPid();
+        msg += BinderGetCallingPid();
         msg += ", uid=";
-        msg += Binder::GetCallingUid();
+        msg += BinderGetCallingUid();
         msg += " requires ";
-        msg += "Elastos::Droid::Manifest::permission::INTERACT_ACROSS_USERS_FULL";
+        msg += "Manifest::permission::INTERACT_ACROSS_USERS_FULL";
         Slogger::W(TAG, msg.ToString());
         //throw new SecurityException(msg);
         return E_SECURITY_EXCEPTION;
@@ -22017,6 +23613,7 @@ ECode CActivityManagerService::StopUser(
         //throw new IllegalArgumentException("Can't stop primary user " + userId);
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
+    FAIL_RETURN(EnforceShellRestriction(IUserManager::DISALLOW_DEBUGGING_FEATURES, userId));
 
     AutoLock lock(this);
     *result = StopUserLocked(userId, callback);
@@ -22027,7 +23624,8 @@ Int32 CActivityManagerService::StopUserLocked(
     /* [in] */ Int32 userId,
     /* [in] */ IStopUserCallback* callback)
 {
-    if (mCurrentUserId == userId) {
+    if (DEBUG_MU) Slogger::I(TAG_MU, "stopUserLocked userId=%d", userId);
+    if (mCurrentUserId == userId && mTargetUserId == IUserHandle::USER_NULL) {
         return IActivityManager::USER_OP_IS_CURRENT;
     }
 
@@ -22054,7 +23652,7 @@ Int32 CActivityManagerService::StopUserLocked(
         uss->mState = UserStartedState::STATE_STOPPING;
         UpdateStartedUserArrayLocked();
 
-        Int64 ident = Binder::ClearCallingIdentity();
+        Int64 ident = BinderClearCallingIdentity();
         // try {
             // We are going to broadcast ACTION_USER_STOPPING and then
             // once that is done send a final ACTION_SHUTDOWN and then
@@ -22063,26 +23661,25 @@ Int32 CActivityManagerService::StopUserLocked(
             CIntent::New(IIntent::ACTION_USER_STOPPING, (IIntent**)&stoppingIntent);
             stoppingIntent->AddFlags(IIntent::FLAG_RECEIVER_REGISTERED_ONLY);
             stoppingIntent->PutExtra(IIntent::EXTRA_USER_HANDLE, userId);
+            stoppingIntent->PutExtra(IIntent::EXTRA_SHUTDOWN_USERSPACE_ONLY, TRUE);
             AutoPtr<IIntent> shutdownIntent;
             CIntent::New(IIntent::ACTION_SHUTDOWN, (IIntent**)&shutdownIntent);
 
             // This is the result receiver for the final shutdown broadcast.
-            AutoPtr<IIntentReceiver> shutdownReceiver;
-            CShutdownReceiver::New((Handle32)this, (Handle32)uss.Get(), (IIntentReceiver**)&shutdownReceiver);
+            AutoPtr<IIntentReceiver> shutdownReceiver = new ShutdownReceiver(this, uss);
 
             // This is the result receiver for the initial stopping broadcast.
-            AutoPtr<IIntentReceiver> stoppingReceiver;
-            CStoppingReceiver::New((Handle32)this, (Handle32)uss.Get(), shutdownIntent,
-                    shutdownReceiver, userId, (IIntentReceiver**)&stoppingReceiver);
+            AutoPtr<IIntentReceiver> stoppingReceiver = new StoppingReceiver(
+                this, uss, shutdownIntent, shutdownReceiver, userId);
             // Kick things off.
             Int32 result;
             String nullStr;
             BroadcastIntentLocked(NULL, nullStr, stoppingIntent,
                 nullStr, stoppingReceiver, 0, nullStr, NULL,
-                Elastos::Droid::Manifest::permission::INTERACT_ACROSS_USERS,
+                Manifest::permission::INTERACT_ACROSS_USERS, IAppOpsManager::OP_NONE,
                 TRUE, FALSE, MY_PID, IProcess::SYSTEM_UID, IUserHandle::USER_ALL, &result);
         // } finally {
-        Binder::RestoreCallingIdentity(ident);
+        BinderRestoreCallingIdentity(ident);
         // }
     }
 
@@ -22117,12 +23714,11 @@ ECode CActivityManagerService::FinishUserStop(
 
             // Clean up all state and processes associated with the user.
             // Kill all the processes for the user.
-            ForceStopUserLocked(userId);
-            AutoPtr<AttributeCache> ac = AttributeCache::GetInstance();
-            if (ac != NULL) {
-                ac->RemoveUser(userId);
-            }
+            ForceStopUserLocked(userId, String("finish user"));
         }
+
+        // Explicitly remove the old information in mRecentTasks.
+        RemoveRecentTasksForUserLocked(userId);
     }
 
     List<AutoPtr<IStopUserCallback> >::Iterator it;
@@ -22133,6 +23729,13 @@ ECode CActivityManagerService::FinishUserStop(
         //} catch (RemoteException e) {
         //}
     }
+
+    if (stopped) {
+        mSystemServiceManager->CleanupUser(userId);
+        synchronized (this) {
+            mStackSupervisor->RemoveUserLocked(userId);
+        }
+    }
     return NOERROR;
 }
 
@@ -22140,18 +23743,20 @@ ECode CActivityManagerService::GetCurrentUser(
     /* [out] */ IUserInfo** userInfo)
 {
     VALIDATE_NOT_NULL(userInfo);
-    if ((CheckCallingPermission(Elastos::Droid::Manifest::permission::INTERACT_ACROSS_USERS)
+    if ((CheckCallingPermission(Manifest::permission::INTERACT_ACROSS_USERS)
             != IPackageManager::PERMISSION_GRANTED) && (
-            CheckCallingPermission(Elastos::Droid::Manifest::permission::INTERACT_ACROSS_USERS_FULL)
+            CheckCallingPermission(Manifest::permission::INTERACT_ACROSS_USERS_FULL)
             != IPackageManager::PERMISSION_GRANTED)) {
-        Slogger::W(TAG, "Permission Denial: getCurrentUser() from pid=%d, uid=%d requires Elastos::Droid::Manifest::permission::INTERACT_ACROSS_USERS", Binder::GetCallingPid, Binder::GetCallingUid);
+        Slogger::W(TAG, "Permission Denial: getCurrentUser() from pid=%d, uid=%d requires Manifest::permission::INTERACT_ACROSS_USERS",
+            BinderGetCallingPid(), BinderGetCallingUid());
         //throw new SecurityException(msg);
         return E_SECURITY_EXCEPTION;
     }
 
     {
         AutoLock lock(this);
-        return GetUserManagerLocked()->GetUserInfo(mCurrentUserId, userInfo);
+        Int32 userId = mTargetUserId != IUserHandle::USER_NULL ? mTargetUserId : mCurrentUserId;
+        return GetUserManagerLocked()->GetUserInfo(userId, userInfo);
     }
 
     return NOERROR;
@@ -22159,7 +23764,7 @@ ECode CActivityManagerService::GetCurrentUser(
 
 Int32 CActivityManagerService::GetCurrentUserIdLocked()
 {
-    return mCurrentUserId;
+    return mTargetUserId != IUserHandle::USER_NULL ? mTargetUserId : mCurrentUserId;
 }
 
 ECode CActivityManagerService::IsUserRunning(
@@ -22169,14 +23774,14 @@ ECode CActivityManagerService::IsUserRunning(
 {
     VALIDATE_NOT_NULL(result);
 
-    if (CheckCallingPermission(Elastos::Droid::Manifest::permission::INTERACT_ACROSS_USERS)
+    if (CheckCallingPermission(Manifest::permission::INTERACT_ACROSS_USERS)
             != IPackageManager::PERMISSION_GRANTED) {
         StringBuilder msg("Permission Denial: isUserRunning() from pid=");
-        msg += Binder::GetCallingPid();
+        msg += BinderGetCallingPid();
         msg += ", uid=";
-        msg += Binder::GetCallingUid();
+        msg += BinderGetCallingUid();
         msg += " requires ";
-        msg += "Elastos::Droid::Manifest::permission::INTERACT_ACROSS_USERS";
+        msg += "Manifest::permission::INTERACT_ACROSS_USERS";
         Slogger::W(TAG, msg.ToString());
         //throw new SecurityException(msg);
         return E_SECURITY_EXCEPTION;
@@ -22210,14 +23815,14 @@ ECode CActivityManagerService::GetRunningUserIds(
     VALIDATE_NOT_NULL(userIds);
     *userIds = NULL;
 
-   if (CheckCallingPermission(Elastos::Droid::Manifest::permission::INTERACT_ACROSS_USERS)
+   if (CheckCallingPermission(Manifest::permission::INTERACT_ACROSS_USERS)
            != IPackageManager::PERMISSION_GRANTED) {
         StringBuilder msg("Permission Denial: isUserRunning() from pid=");
-        msg += Binder::GetCallingPid();
+        msg += BinderGetCallingPid();
         msg += ", uid=";
-        msg += Binder::GetCallingUid();
+        msg += BinderGetCallingUid();
         msg += " requires ";
-        msg += "Elastos::Droid::Manifest::permission::INTERACT_ACROSS_USERS";
+        msg += "Manifest::permission::INTERACT_ACROSS_USERS";
         Slogger::W(TAG, msg.ToString());
         //throw new SecurityException(msg);
         return E_SECURITY_EXCEPTION;
@@ -22258,14 +23863,14 @@ ECode CActivityManagerService::UpdateStartedUserArrayLocked()
 ECode CActivityManagerService::RegisterUserSwitchObserver(
     /* [in] */ IUserSwitchObserver* observer)
 {
-   if (CheckCallingPermission(Elastos::Droid::Manifest::permission::INTERACT_ACROSS_USERS_FULL)
+   if (CheckCallingPermission(Manifest::permission::INTERACT_ACROSS_USERS_FULL)
            != IPackageManager::PERMISSION_GRANTED) {
         StringBuilder msg("Permission Denial: registerUserSwitchObserver() from pid=");
-        msg += Binder::GetCallingPid();
+        msg += BinderGetCallingPid();
         msg += ", uid=";
-        msg += Binder::GetCallingUid();
+        msg += BinderGetCallingUid();
         msg += " requires ";
-        msg += "Elastos::Droid::Manifest::permission::INTERACT_ACROSS_USERS_FULL";
+        msg += "Manifest::permission::INTERACT_ACROSS_USERS_FULL";
         Slogger::W(TAG, msg.ToString());
         //throw new SecurityException(msg);
         return E_SECURITY_EXCEPTION;
@@ -22321,18 +23926,6 @@ AutoPtr<CUserManagerService> CActivityManagerService::GetUserManagerLocked()
        mUserManager = (CUserManagerService*)IIUserManager::Probe(iface);
    }
    return mUserManager;
-}
-
-ECode CActivityManagerService::CheckValidCaller(
-    /* [in] */ Int32 uid,
-    /* [in] */ Int32 userId)
-{
-    Int32 id = UserHandleGetUserId(uid);
-    if (id == userId || uid == IProcess::SYSTEM_UID || uid == 0) return NOERROR;
-
-    // throw new SecurityException("Caller uid=" + uid
-    //         + " is not privileged to communicate with user=" + userId);
-    return E_SECURITY_EXCEPTION;
 }
 
 Int32 CActivityManagerService::ApplyUserId(
@@ -22998,35 +24591,6 @@ void CActivityManagerService::HandleCollectPssBgMsg()
             }
         }
     } while (TRUE);
-}
-
-Int32 CActivityManagerService::UserHandleGetUserId(
-    /* [in] */ Int32 uid)
-{
-    AutoPtr<IUserHandleHelper> uhHelper;
-    CUserHandleHelper::AcquireSingleton((IUserHandleHelper**)&uhHelper);
-    Int32 userId;
-    uhHelper->GetUserId(uid, &userId);
-    return userId;
-}
-
-Int32 CActivityManagerService::UserHandleGetAppId(
-    /* [in] */ Int32 uid)
-{
-    AutoPtr<IUserHandleHelper> uhHelper;
-    CUserHandleHelper::AcquireSingleton((IUserHandleHelper**)&uhHelper);
-    Int32 appId;
-    uhHelper->GetAppId(uid, &appId);
-    return appId;
-}
-
-Int32 CActivityManagerService::UserHandleGetCallingUserId()
-{
-    AutoPtr<IUserHandleHelper> uhHelper;
-    CUserHandleHelper::AcquireSingleton((IUserHandleHelper**)&uhHelper);
-    Int32 userId;
-    uhHelper->GetCallingUserId(&userId);
-    return userId;
 }
 
 } // namespace Am

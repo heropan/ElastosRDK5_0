@@ -2807,11 +2807,12 @@ AutoPtr<IActivityManagerRunningServiceInfo> ActiveServices::MakeRunningServiceIn
     return info;
 }
 
-AutoPtr< List<AutoPtr<IActivityManagerRunningServiceInfo> > > ActiveServices::GetRunningServiceInfoLocked(
+AutoPtr<IList> ActiveServices::GetRunningServiceInfoLocked(
     /* [in] */ Int32 maxNum,
     /* [in] */ Int32 flags)
 {
-    AutoPtr< List<AutoPtr<IActivityManagerRunningServiceInfo> > > res = new List<AutoPtr<IActivityManagerRunningServiceInfo> >();
+    AutoPtr<IList> res;
+    CArrayList::New((IList**)&res);
 
     AutoPtr<IBinderHelper> bHelper;
     CBinderHelper::AcquireSingleton((IBinderHelper**)&bHelper);
@@ -2828,22 +2829,23 @@ AutoPtr< List<AutoPtr<IActivityManagerRunningServiceInfo> > > ActiveServices::Ge
                 uid, &result);
     if (result == IPackageManager::PERMISSION_GRANTED) {
         AutoPtr< ArrayOf<Int32> > users = mAm->GetUsersLocked();
-        for (Int32 ui = 0; ui < users->GetLength() && (Int32)res->GetSize() < maxNum; ui++) {
+        Int32 size;
+        for (Int32 ui = 0; ui < users->GetLength() && (res->GetSize(&size), size < maxNum); ui++) {
             IComponentNameCServiceRecordHashMap::Iterator it;
             AutoPtr<IComponentNameCServiceRecordHashMap> alls = GetServices((*users)[ui]);
-            for (it = alls->Begin(); it != alls->End() && (Int32)res->GetSize() < maxNum; ++it) {
+            for (it = alls->Begin(); it != alls->End() && (res->GetSize(&size), size < maxNum); ++it) {
                 AutoPtr<CServiceRecord> r = it->mSecond;
-                res->PushBack(MakeRunningServiceInfoLocked(r));
+                res->Add(MakeRunningServiceInfoLocked(r));
             }
         }
 
         List< AutoPtr<CServiceRecord> >::Iterator srit = mRestartingServices.Begin();
-        for (; srit != mRestartingServices.End() && (Int32)res->GetSize() < maxNum; ++srit) {
+        for (; srit != mRestartingServices.End() && (res->GetSize(&size), size < maxNum); ++srit) {
             AutoPtr<CServiceRecord> r = *srit;
             AutoPtr<IActivityManagerRunningServiceInfo> info =
                     MakeRunningServiceInfoLocked(r);
             info->SetRestarting(r->mNextRestartTime);
-            res->PushBack(info);
+            res->Add(info);
         }
     }
     else {
@@ -2853,19 +2855,19 @@ AutoPtr< List<AutoPtr<IActivityManagerRunningServiceInfo> > > ActiveServices::Ge
         uhHelper->GetUserId(uid, &userId);
         IComponentNameCServiceRecordHashMap::Iterator it;
         AutoPtr<IComponentNameCServiceRecordHashMap> alls = GetServices(userId);
-        for (it = alls->Begin(); it != alls->End() && (Int32)res->GetSize() < maxNum; ++it) {
+        for (it = alls->Begin(); it != alls->End() && (res->GetSize(&size), size < maxNum); ++it) {
             AutoPtr<CServiceRecord> r = it->mSecond;
-            res->PushBack(MakeRunningServiceInfoLocked(r));
+            res->Add(MakeRunningServiceInfoLocked(r));
         }
 
         List< AutoPtr<CServiceRecord> >::Iterator srit = mRestartingServices.Begin();
-        for (; srit != mRestartingServices.End() && (Int32)res->GetSize() < maxNum; ++srit) {
+        for (; srit != mRestartingServices.End() && (res->GetSize(&size), size < maxNum); ++srit) {
             AutoPtr<CServiceRecord> r = *srit;
             if (r->mUserId == userId) {
                 AutoPtr<IActivityManagerRunningServiceInfo> info =
                         MakeRunningServiceInfoLocked(r);
                 info->SetRestarting(r->mNextRestartTime);
-                res->PushBack(info);
+                res->Add(info);
             }
         }
     }

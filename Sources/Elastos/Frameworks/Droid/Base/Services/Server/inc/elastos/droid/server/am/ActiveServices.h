@@ -231,7 +231,7 @@ public:
     CARAPI_(AutoPtr<IActivityManagerRunningServiceInfo>) MakeRunningServiceInfoLocked(
         /* [in] */ CServiceRecord* r);
 
-    CARAPI_(AutoPtr<List<AutoPtr<IActivityManagerRunningServiceInfo> > >) GetRunningServiceInfoLocked(
+    CARAPI_(AutoPtr<IList>) GetRunningServiceInfoLocked(
         /* [in] */ Int32 maxNum,
         /* [in] */ Int32 flags);
 
