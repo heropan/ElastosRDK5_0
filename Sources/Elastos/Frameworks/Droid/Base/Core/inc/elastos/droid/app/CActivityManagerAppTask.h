@@ -19,6 +19,8 @@ CarClass(CActivityManagerAppTask)
     , public IActivityManagerAppTask
 {
 public:
+    CAR_INTERFACE_DECL()
+
     CARAPI constructor(
         /* [in] */ IIAppTask* task);
 
