@@ -1,19 +1,22 @@
 #ifndef __ELASTOS_DROID_SERVER_WM_TASKSTACK_H__
 #define __ELASTOS_DROID_SERVER_WM_TASKSTACK_H__
 
-#include "wm/CWindowManagerService.h"
-#include "wm/DimLayer.h"
-#include "wm/WindowStateAnimator.h"
-#include "wm/AppWindowToken.h"
+#include "_Elastos.Droid.Server.h"
+#include "elastos/droid/server/wm/Task.h"
+#include "elastos/droid/server/wm/DimLayer.h"
+// #include "elastos/droid/server/wm/CWindowManagerService.h"
+// #include "elastos/droid/server/wm/AppWindowToken.h"
+#include <elastos/utility/etl/List.h>
 
 using Elastos::Droid::Graphics::IRect;
+using Elastos::Utility::Etl::List;
 
 namespace Elastos {
 namespace Droid {
 namespace Server {
 namespace Wm {
 
-class Task;
+class DisplayContent;
 
 class TaskStack : public Object
 {
@@ -121,6 +124,7 @@ public:
      * then stop any dimming. */
     Boolean mDimmingTag;
 
+    typedef List<AutoPtr<AppWindowToken> > AppTokenList;
     /** Application tokens that are exiting, but still on screen for animations. */
     AppTokenList mExitingAppTokens;
 

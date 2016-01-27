@@ -1,12 +1,12 @@
 #ifndef __ELASTOS_DROID_SERVER_WM_APPWINDOWTOKEN_H__
 #define __ELASTOS_DROID_SERVER_WM_APPWINDOWTOKEN_H__
 
-#include "wm/WindowState.h"
-#include "wm/WindowToken.h"
-#include "wm/AppWindowAnimator.h"
-#include "wm/WindowAnimator.h"
-#include "wm/StartingData.h"
-#include "input/InputApplicationHandle.h"
+// #include "elastos/droid/server/wm/WindowState.h"
+#include "elastos/droid/server/wm/WindowToken.h"
+#include "elastos/droid/server/wm/AppWindowAnimator.h"
+// #include "elastos/droid/server/wm/WindowAnimator.h"
+#include "elastos/droid/server/wm/StartingData.h"
+#include "elastos/droid/server/input/InputApplicationHandle.h"
 
 using Elastos::Droid::View::IApplicationToken;
 using Elastos::Droid::View::IView;
@@ -38,13 +38,14 @@ public:
     CARAPI_(void) RemoveAllWindows();
 
     CARAPI ToString(
-        /* [out] */ String* str;);
+        /* [out] */ String* str);
 
 public:
     AutoPtr<IApplicationToken> mAppToken;
 
     // All of the windows and child windows that are included in this
     // application token.  Note this list is NOT sorted!
+    typedef List<AutoPtr<WindowState> > WindowList;
     WindowList mAllAppWindows;
     AutoPtr<AppWindowAnimator> mAppAnimator;
 

@@ -2,6 +2,7 @@
 #define __ELASTOS_DROID_SERVER_WM_STARTINGDATA_H__
 
 #include "_Elastos.Droid.Server.h"
+#include <elastos/core/Object.h>
 
 using Elastos::Core::ICharSequence;
 using Elastos::Droid::Content::Res::ICompatibilityInfo;
@@ -11,7 +12,7 @@ namespace Droid {
 namespace Server {
 namespace Wm {
 
-class StartingData : public ElRefBase
+class StartingData : public Object
 {
 public:
     StartingData(

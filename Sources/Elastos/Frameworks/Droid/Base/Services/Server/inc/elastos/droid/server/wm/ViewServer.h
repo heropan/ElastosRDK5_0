@@ -1,10 +1,11 @@
 #ifndef __ELASTOS_DROID_SERVER_WM_VIEWSERVER_H__
 #define __ELASTOS_DROID_SERVER_WM_VIEWSERVER_H__
 
-#include "wm/CWindowManagerService.h"
+#include "_Elastos.Droid.Server.h"
+#include "elastos/droid/server/wm/CWindowManagerService.h"
 
-using Elastos::Core::IRunnable;
 using Elastos::Net::IServerSocket;
+using Elastos::Core::IThread;
 
 namespace Elastos {
 namespace Droid {

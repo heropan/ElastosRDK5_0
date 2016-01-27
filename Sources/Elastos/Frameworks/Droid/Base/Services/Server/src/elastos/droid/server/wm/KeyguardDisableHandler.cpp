@@ -60,9 +60,9 @@ ECode KeyguardDisableHandler::KeyguardTokenWatcher::Released()
 }
 
 const String KeyguardDisableHandler::TAG("KeyguardDisableHandler");
-const Int32 KeyguardDisableHandler::ALLOW_DISABLE_YES = 1;
-const Int32 KeyguardDisableHandler::ALLOW_DISABLE_NO = 0;
-const Int32 KeyguardDisableHandler::ALLOW_DISABLE_UNKNOWN = -1;
+const Int32 KeyguardDisableHandler::ALLOW_DISABLE_YES;
+const Int32 KeyguardDisableHandler::ALLOW_DISABLE_NO;
+const Int32 KeyguardDisableHandler::ALLOW_DISABLE_UNKNOWN;
 
 const Int32 KeyguardDisableHandler::KEYGUARD_DISABLE;
 const Int32 KeyguardDisableHandler::KEYGUARD_REENABLE;

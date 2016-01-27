@@ -3,6 +3,7 @@
 
 #include "elastos/droid/ext/frameworkext.h"
 #include "_Elastos.Droid.Server.h"
+#include <elastos/core/Object.h>
 #include <elastos/utility/etl/List.h>
 
 using Elastos::Utility::Etl::List;
@@ -18,8 +19,7 @@ class CWindowManagerService;
 class WindowState;
 
 class WindowToken
-    : public ElRefBase
-    , public IWeakReferenceSource
+    : public Object
 {
 public:
     CAR_INTERFACE_DECL()

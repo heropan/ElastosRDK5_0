@@ -1,8 +1,9 @@
 #ifndef __ELASTOS_DROID_SERVER_WM_SCREENROTATIONANIMATION_H__
 #define __ELASTOS_DROID_SERVER_WM_SCREENROTATIONANIMATION_H__
 
-#include "wm/BlackFrame.h"
-#include "wm/DisplayContent.h"
+#include "_Elastos.Droid.Server.h"
+#include "elastos/droid/server/wm/BlackFrame.h"
+#include "elastos/droid/server/wm/DisplayContent.h"
 
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Graphics::IMatrix;

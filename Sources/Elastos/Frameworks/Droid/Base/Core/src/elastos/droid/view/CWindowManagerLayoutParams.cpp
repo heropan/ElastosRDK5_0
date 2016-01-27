@@ -605,6 +605,21 @@ ECode CWindowManagerLayoutParams::SetScreenOrientation(
     return NOERROR;
 }
 
+ECode CWindowManagerLayoutParams::GetPreferredRefreshRate(
+    /* [out] */ Float* rate)
+{
+    VALIDATE_NOT_NULL(rate)
+    *rate = mPreferredRefreshRate;
+    return NOERROR;
+}
+
+ECode CWindowManagerLayoutParams::SetPreferredRefreshRate(
+    /* [in] */ Float rate)
+{
+    mPreferredRefreshRate = rate;
+    return NOERROR;
+}
+
 ECode CWindowManagerLayoutParams::GetSystemUiVisibility(
     /* [out] */ Int32* systemUiVisibility)
 {

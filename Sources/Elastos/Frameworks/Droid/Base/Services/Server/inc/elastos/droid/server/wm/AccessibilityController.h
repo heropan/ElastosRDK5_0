@@ -25,6 +25,7 @@ using Elastos::Droid::View::IMagnificationSpec;
 using Elastos::Droid::View::IWindowsForAccessibilityCallback;
 using Elastos::Droid::View::ISurfaceControl;
 using Elastos::Droid::View::ISurface;
+using Elastos::Droid::View::IWindowInfo;
 using Elastos::Utility::IList;
 using Elastos::Utility::Etl::HashMap;
 using Elastos::Utility::Etl::List;
@@ -244,7 +245,7 @@ private:
         CARAPI_(void) DrawMagnifiedRegionBorderIfNeededLocked();
 
     private:
-        static const String LOG_TAG;
+        static const String TAG;
 
         static const Boolean DEBUG_WINDOW_TRANSITIONS = FALSE;
         static const Boolean DEBUG_ROTATION = FALSE;
@@ -333,7 +334,7 @@ private:
             /* [in] */ HashMap<Int32, AutoPtr<WindowState> >& outWindows);
 
     private:
-        static const String LOG_TAG;
+        static const String TAG;
 
         static const Boolean DEBUG = FALSE;
 

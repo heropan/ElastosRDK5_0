@@ -175,6 +175,12 @@ public:
     CARAPI SetScreenOrientation(
         /* [in] */ Int32 orientation);
 
+    CARAPI GetPreferredRefreshRate(
+        /* [out] */ Float* rate);
+
+    CARAPI SetPreferredRefreshRate(
+        /* [in] */ Float rate);
+
     CARAPI GetSystemUiVisibility(
         /* [out] */ Int32* systemUiVisibility);
 

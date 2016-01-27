@@ -1,9 +1,9 @@
 #ifndef __ELASTOS_DROID_SERVER_WM_WINDOWSTATE_H__
 #define __ELASTOS_DROID_SERVER_WM_WINDOWSTATE_H__
 
-#include "wm/CWindowManagerService.h"
-#include "wm/TaskStack.h"
-#include "input/InputWindowHandle.h"
+#include "elastos/droid/server/wm/CSession.h"
+#include "elastos/droid/server/wm/TaskStack.h"
+#include "elastos/droid/server/input/InputWindowHandle.h"
 
 using Elastos::Core::ICharSequence;
 using Elastos::Droid::View::IWindowState;
@@ -12,6 +12,8 @@ using Elastos::Droid::View::IApplicationToken;
 using Elastos::Droid::View::IInputChannel;
 using Elastos::Droid::View::IWindowManagerPolicy;
 using Elastos::Droid::View::IIWindow;
+using Elastos::Droid::View::IIWindowId;
+using Elastos::Droid::View::IIWindowFocusObserver;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Content::Res::IConfiguration;
 using Elastos::Droid::Graphics::IRect;
@@ -20,11 +22,12 @@ using Elastos::Droid::Graphics::IRectF;
 using Elastos::Droid::Graphics::IMatrix;
 using Elastos::Droid::Server::Input::InputWindowHandle;
 
-
 namespace Elastos {
 namespace Droid {
 namespace Server {
 namespace Wm {
+
+class DisplayContent;
 
 class WindowState
     : public Object
@@ -75,6 +78,8 @@ private:
     };
 
 public:
+    typedef List<AutoPtr<WindowState> > WindowList;
+
     WindowState(
         /* [in] */ CWindowManagerService* service,
         /* [in] */ CSession* s,
@@ -661,12 +666,9 @@ public:
      * the status bar */
     Boolean mUnderStatusBar;
 
-    typedef List<AutoPtr<WindowState> > WindowList;
-
 private:
     /** When true this window can be displayed on screens owther than mOwnerUid's */
     Boolean mShowToOwnerOnly;
-
 };
 
 } // Wm

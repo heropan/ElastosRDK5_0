@@ -1,13 +1,18 @@
 #ifndef __ELASTOS_DROID_SERVER_WM_WINDOWSTATEANIMATOR_H__
 #define __ELASTOS_DROID_SERVER_WM_WINDOWSTATEANIMATOR_H__
 
-#include "wm/CWindowManagerService.h"
+#include "_Elastos.Droid.Server.h"
+#include "elastos/droid/server/wm/WindowAnimator.h"
+// #include "elastos/droid/server/wm/WindowState.h"
 
 using Elastos::Droid::View::Animation::ITransformation;
 using Elastos::Droid::View::Animation::IAnimation;
 using Elastos::Droid::View::IWindowManagerPolicy;
+using Elastos::Droid::View::ISurfaceControl;
+using Elastos::Droid::View::IView;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Graphics::IRect;
+using Elastos::Droid::Graphics::IRectF;
 using Elastos::Droid::Graphics::IRegion;
 
 namespace Elastos {
@@ -61,8 +66,7 @@ public:
 
     CARAPI_(AutoPtr<ISurfaceControl>) CreateSurfaceLocked();
 
-    CARAPI_(void) DestroySurfaceLocked(
-        /* [in] */ Boolean fromAnimator);
+    CARAPI_(void) DestroySurfaceLocked();
 
     CARAPI_(void) DestroyDeferredSurfaceLocked();
 
@@ -84,7 +88,7 @@ public:
         /* [in] */ IRegion* region);
 
     CARAPI_(void) SetWallpaperOffset(
-        /* [in] */ IRect* shownFrame);
+        /* [in] */ IRectF* shownFrame);
 
     CARAPI_(void) SetOpaqueLocked(
         /* [in] */ Boolean isOpaque);

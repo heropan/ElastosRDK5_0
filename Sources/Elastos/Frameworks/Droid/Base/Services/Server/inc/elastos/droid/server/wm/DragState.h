@@ -1,12 +1,13 @@
 #ifndef __ELASTOS_DROID_SERVER_WM_DRAGSTATE_H__
 #define __ELASTOS_DROID_SERVER_WM_DRAGSTATE_H__
 
-#include "wm/CWindowManagerService.h"
-#include "input/InputApplicationHandle.h"
-#include "input/InputWindowHandle.h"
+#include "_Elastos.Droid.Server.h"
+// #include "elastos/droid/server/wm/CWindowManagerService.h"
+#include "elastos/droid/server/input/InputApplicationHandle.h"
+#include "elastos/droid/server/input/InputWindowHandle.h"
 
 using Elastos::Droid::Os::IBinder;
-using Elastos::Droid::View::ISurfacecontrol;
+using Elastos::Droid::View::ISurfaceControl;
 using Elastos::Droid::View::IDisplay;
 using Elastos::Droid::View::IDragEvent;
 using Elastos::Droid::View::IInputChannel;

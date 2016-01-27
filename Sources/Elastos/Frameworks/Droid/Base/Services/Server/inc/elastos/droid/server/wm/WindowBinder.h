@@ -9,7 +9,7 @@ namespace Droid {
 namespace Server {
 namespace Wm {
 
-class WindowBinder : public ElRefBase
+class WindowBinder : public Object
 {
 public:
     WindowBinder();

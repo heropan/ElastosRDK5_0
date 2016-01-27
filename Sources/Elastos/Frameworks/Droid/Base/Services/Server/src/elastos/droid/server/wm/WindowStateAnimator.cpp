@@ -669,8 +669,7 @@ AutoPtr<ISurfaceControl> WindowStateAnimator::CreateSurfaceLocked()
     return mSurfaceControl;
 }
 
-void WindowStateAnimator::DestroySurfaceLocked(
-    /* [in] */ Boolean fromAnimator)
+void WindowStateAnimator::DestroySurfaceLocked()
 {
     if (mWin->mAppToken != NULL && mWin == mWin->mAppToken->mStartingWindow) {
         mWin->mAppToken->mStartingDisplayed = FALSE;
@@ -1513,7 +1512,7 @@ void WindowStateAnimator::SetTransparentRegionHintLocked(
 }
 
 void WindowStateAnimator::SetWallpaperOffset(
-    /* [in] */ IRect* shownFrame)
+    /* [in] */ IRectF* shownFrame)
 {
     AutoPtr<IWindowManagerLayoutParams> attrs;
     mWin->GetAttrs((IWindowManagerLayoutParams**)&attrs);

@@ -1,5 +1,7 @@
 
-#include "wm/StackTapPointerEventListener.h"
+#include "elastos/droid/server/wm/StackTapPointerEventListener.h"
+
+using Elastos::Droid::View::EIID_IPointerEventListener;
 
 namespace Elastos {
 namespace Droid {
@@ -25,6 +27,8 @@ StackTapPointerEventListener::StackTapPointerEventListener(
     info->GetLogicalDensityDpi(&dpi);
     mMotionSlop = (Int32)(dpi * TAP_MOTION_SLOP_INCHES);
 }
+
+CAR_INTERFACE_IMPL(StackTapPointerEventListener, Object, IPointerEventListener)
 
 ECode StackTapPointerEventListener::OnPointerEvent(
     /* [in] */ IMotionEvent* motionEvent)

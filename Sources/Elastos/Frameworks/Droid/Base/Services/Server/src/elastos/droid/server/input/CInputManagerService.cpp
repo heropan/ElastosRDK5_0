@@ -682,7 +682,7 @@ ECode CInputManagerService::HasKeys(
  */
 ECode CInputManagerService::MonitorInput(
     /* [in] */ const String& inputChannelName,
-    /* [in] */ IInputChannel* ic)
+    /* [out] */ IInputChannel** ic)
 {
     return NOERROR;
 }
@@ -722,10 +722,10 @@ ECode CInputManagerService::UnregisterInputChannel(
  * @param filter The input filter, or null to remove the current filter.
  */
 void CInputManagerService::SetInputFilter(
-    /* [in] */ IInputFilter* filter)
+    /* [in] */ IIInputFilter* filter)
 {
     synchronized (mInputFilterLock) {
-        IInputFilter* oldFilter = mInputFilter;
+        IIInputFilter* oldFilter = mInputFilter;
         if (oldFilter == filter) {
             return; // nothing to do
         }

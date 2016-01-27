@@ -2,10 +2,11 @@
 #ifndef __ELASTOS_DROID_SERVER_WM_AppTransition_H__
 #define __ELASTOS_DROID_SERVER_WM_AppTransition_H__
 
-#include "AttributeCache.h"
-#include <elastos/core/Object.h>
+#include <Elastos.Droid.Animation.h>
+#include "elastos/droid/server/AttributeCache.h"
 #include <elastos/utility/etl/List.h>
 
+using Elastos::Droid::Animation::ITimeInterpolator;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Graphics::IBitmap;
 using Elastos::Droid::Graphics::IRect;
@@ -14,7 +15,7 @@ using Elastos::Droid::Os::IIRemoteCallback;
 using Elastos::Droid::View::IWindowManagerLayoutParams;
 using Elastos::Droid::View::Animation::IAnimation;
 using Elastos::Droid::View::Animation::IInterpolator;
-using Elastos::Droid::View::Animation::ITimeInterpolator;
+using Elastos::Droid::Server::Entry;
 
 namespace Elastos {
 namespace Droid {
@@ -235,10 +236,10 @@ public:
         /* [in] */ Int32 newUserId);
 
 private:
-    CARAPI_(AutoPtr<AttributeCache::Entry>) GetCachedAnimations(
+    CARAPI_(AutoPtr<Entry>) GetCachedAnimations(
         /* [in] */ IWindowManagerLayoutParams* lp);
 
-    CARAPI_(AutoPtr<AttributeCache::Entry>) GetCachedAnimations(
+    CARAPI_(AutoPtr<Entry>) GetCachedAnimations(
         /* [in] */ const String& packageName,
         /* [in] */ Int32 resId);
 

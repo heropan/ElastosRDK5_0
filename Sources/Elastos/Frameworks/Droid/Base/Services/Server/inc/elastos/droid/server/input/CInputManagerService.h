@@ -32,8 +32,8 @@ using Elastos::Droid::Os::IBinder;
 using Elastos::Droid::Os::Handler;
 using Elastos::Droid::Os::IHandler;
 using Elastos::Droid::Os::IMessageQueue;
-using Elastos::Droid::Text::IInputFilter;
 using Elastos::Droid::Utility::ISparseArray;
+using Elastos::Droid::View::IIInputFilter;
 using Elastos::Droid::View::IInputDevice;
 using Elastos::Droid::View::IInputEvent;
 using Elastos::Droid::View::IInputEvent;
@@ -304,7 +304,7 @@ public:
      */
     CARAPI MonitorInput(
         /* [in] */ const String& inputChannelName,
-        /* [in] */ IInputChannel* ic);
+        /* [out] */ IInputChannel** ic);
 
     /**
      * Registers an input channel so that it can be used as an input event target.
@@ -335,7 +335,7 @@ public:
      * @param filter The input filter, or null to remove the current filter.
      */
     CARAPI_(void) SetInputFilter(
-        /* [in] */ IInputFilter* filter);
+        /* [in] */ IIInputFilter* filter);
 
     //// @Override // Binder call
     CARAPI InjectInputEvent(
@@ -809,59 +809,6 @@ public:
     const static String TAG;
     const static Boolean DEBUG = FALSE;
 
-private:
-    const static String EXCLUDED_DEVICES_PATH;
-
-    const static Int32 MSG_DELIVER_INPUT_DEVICES_CHANGED = 1;
-    const static Int32 MSG_SWITCH_KEYBOARD_LAYOUT = 2;
-    const static Int32 MSG_RELOAD_KEYBOARD_LAYOUTS = 3;
-    const static Int32 MSG_UPDATE_KEYBOARD_LAYOUTS = 4;
-    const static Int32 MSG_RELOAD_DEVICE_ALIASES = 5;
-
-    // Pointer to native input manager service object.
-    Int64 mPtr;
-
-    AutoPtr<IContext> mContext;
-    AutoPtr<InputManagerHandler> mHandler;
-
-    AutoPtr<IWindowManagerCallbacks> mWindowManagerCallbacks;
-    AutoPtr<IWiredAccessoryCallbacks> mWiredAccessoryCallbacks;
-    Boolean mSystemReady;
-    AutoPtr<INotificationManager> mNotificationManager;
-
-    // Persistent data store.  Must be locked each time during use.
-    AutoPtr<PersistentDataStore> mDataStore;
-
-    // List of currently registered input devices changed listeners by process id.
-    Object mInputDevicesLock;
-    Boolean mInputDevicesChangedPending;        // guarded by mInputDevicesLock
-    AutoPtr< ArrayOf<IInputDevice*> > mInputDevices;
-    AutoPtr<ISparseArray> mInputDevicesChangedListeners; // guarded by mInputDevicesLock
-    AutoPtr<IArrayList> mTempInputDevicesChangedListenersToNotify; // handler thread only
-    AutoPtr<IArrayList> mTempFullKeyboards;    // handler thread only
-    Boolean mKeyboardLayoutNotificationShown;
-    AutoPtr<IPendingIntent> mKeyboardLayoutIntent;
-    AutoPtr<IToast> mSwitchedKeyboardLayoutToast;
-
-    // State for vibrator tokens.
-    Object mVibratorLock;
-    HashMap< AutoPtr<IBinder>, AutoPtr<VibratorToken> > mVibratorTokens;
-    Int32 mNextVibratorTokenValue;
-
-    // State for the currently installed input filter.
-    Object mInputFilterLock;
-    AutoPtr<IInputFilter> mInputFilter;         // guarded by mInputFilterLock
-    AutoPtr<InputFilterHost> mInputFilterHost;  // guarded by mInputFilterLock
-
-    // Input event injection constants defined in InputDispatcher.h.
-    const static Int32 INPUT_EVENT_INJECTION_SUCCEEDED = 0;
-    const static Int32 INPUT_EVENT_INJECTION_PERMISSION_DENIED = 1;
-    const static Int32 INPUT_EVENT_INJECTION_FAILED = 2;
-    const static Int32 INPUT_EVENT_INJECTION_TIMED_OUT = 3;
-
-    // Maximum number of milliseconds to wait for input event injection.
-    const static Int32 INJECTION_TIMEOUT_MILLIS = 30 * 1000;
-
     // Key states (may be returned by queries about the current state of a
     // particular key code, scan code or switch).
 
@@ -911,6 +858,59 @@ private:
     const static Int32 SW_JACK_BITS =
             SW_HEADPHONE_INSERT_BIT | SW_MICROPHONE_INSERT_BIT | SW_JACK_PHYSICAL_INSERT_BIT | SW_LINEOUT_INSERT_BIT;
     const static Int32 SW_CAMERA_LENS_COVER_BIT = 1 << SW_CAMERA_LENS_COVER;
+
+private:
+    const static String EXCLUDED_DEVICES_PATH;
+
+    const static Int32 MSG_DELIVER_INPUT_DEVICES_CHANGED = 1;
+    const static Int32 MSG_SWITCH_KEYBOARD_LAYOUT = 2;
+    const static Int32 MSG_RELOAD_KEYBOARD_LAYOUTS = 3;
+    const static Int32 MSG_UPDATE_KEYBOARD_LAYOUTS = 4;
+    const static Int32 MSG_RELOAD_DEVICE_ALIASES = 5;
+
+    // Pointer to native input manager service object.
+    Int64 mPtr;
+
+    AutoPtr<IContext> mContext;
+    AutoPtr<InputManagerHandler> mHandler;
+
+    AutoPtr<IWindowManagerCallbacks> mWindowManagerCallbacks;
+    AutoPtr<IWiredAccessoryCallbacks> mWiredAccessoryCallbacks;
+    Boolean mSystemReady;
+    AutoPtr<INotificationManager> mNotificationManager;
+
+    // Persistent data store.  Must be locked each time during use.
+    AutoPtr<PersistentDataStore> mDataStore;
+
+    // List of currently registered input devices changed listeners by process id.
+    Object mInputDevicesLock;
+    Boolean mInputDevicesChangedPending;        // guarded by mInputDevicesLock
+    AutoPtr< ArrayOf<IInputDevice*> > mInputDevices;
+    AutoPtr<ISparseArray> mInputDevicesChangedListeners; // guarded by mInputDevicesLock
+    AutoPtr<IArrayList> mTempInputDevicesChangedListenersToNotify; // handler thread only
+    AutoPtr<IArrayList> mTempFullKeyboards;    // handler thread only
+    Boolean mKeyboardLayoutNotificationShown;
+    AutoPtr<IPendingIntent> mKeyboardLayoutIntent;
+    AutoPtr<IToast> mSwitchedKeyboardLayoutToast;
+
+    // State for vibrator tokens.
+    Object mVibratorLock;
+    HashMap< AutoPtr<IBinder>, AutoPtr<VibratorToken> > mVibratorTokens;
+    Int32 mNextVibratorTokenValue;
+
+    // State for the currently installed input filter.
+    Object mInputFilterLock;
+    AutoPtr<IIInputFilter> mInputFilter;         // guarded by mInputFilterLock
+    AutoPtr<InputFilterHost> mInputFilterHost;  // guarded by mInputFilterLock
+
+    // Input event injection constants defined in InputDispatcher.h.
+    const static Int32 INPUT_EVENT_INJECTION_SUCCEEDED = 0;
+    const static Int32 INPUT_EVENT_INJECTION_PERMISSION_DENIED = 1;
+    const static Int32 INPUT_EVENT_INJECTION_FAILED = 2;
+    const static Int32 INPUT_EVENT_INJECTION_TIMED_OUT = 3;
+
+    // Maximum number of milliseconds to wait for input event injection.
+    const static Int32 INJECTION_TIMEOUT_MILLIS = 30 * 1000;
 
     /** Whether to use the dev/input/event or uevent subsystem for the audio jack. */
     Boolean mUseDevInputEventForAudioJack;

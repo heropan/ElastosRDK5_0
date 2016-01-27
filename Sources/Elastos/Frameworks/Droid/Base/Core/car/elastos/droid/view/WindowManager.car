@@ -1148,6 +1148,12 @@ module
         SetScreenOrientation(
             [in] Int32 orientation);
 
+        GetPreferredRefreshRate(
+            [out] Float* rate);
+
+        SetPreferredRefreshRate(
+            [in] Float rate);
+
         GetSystemUiVisibility(
             [out] Int32* systemUiVisibility);
 

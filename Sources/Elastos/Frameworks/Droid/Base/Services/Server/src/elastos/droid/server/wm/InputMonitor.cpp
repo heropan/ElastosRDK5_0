@@ -1,10 +1,15 @@
 
-#include "wm/InputMonitor.h"
-#include "wm/DragState.h"
-#include "wm/CWindowManagerService.h"
+#include "elastos/droid/server/wm/InputMonitor.h"
+#include "elastos/droid/server/wm/DragState.h"
+#include "elastos/droid/server/wm/CWindowManagerService.h"
+#include "elastos/droid/server/input/InputApplicationHandle.h"
+#include "elastos/droid/server/input/InputWindowHandle.h"
 #include "elastos/droid/app/ActivityManagerNative.h"
 
 using Elastos::Droid::Graphics::CRect;
+using Elastos::Droid::Server::Input::EIID_IWindowManagerCallbacks;
+using Elastos::Droid::Server::Input::InputApplicationHandle;
+using Elastos::Droid::Server::Input::InputWindowHandle;
 
 namespace Elastos {
 namespace Droid {
@@ -23,9 +28,13 @@ InputMonitor::InputMonitor(
     CRect::New((IRect**)&mTmpRect);
 }
 
-void InputMonitor::NotifyInputChannelBroken(
-    /* [in] */ InputWindowHandle* inputWindowHandle)
+CAR_INTERFACE_IMPL(InputMonitor, Object, IWindowManagerCallbacks)
+
+ECode InputMonitor::NotifyInputChannelBroken(
+    /* [in] */ IInputWindowHandle* _inputWindowHandle)
 {
+    AutoPtr<InputWindowHandle> inputWindowHandle = (InputWindowHandle*)_inputWindowHandle;
+
     if (inputWindowHandle == NULL) {
         return;
     }
@@ -36,13 +45,21 @@ void InputMonitor::NotifyInputChannelBroken(
         // Slog.i(WindowManagerService.TAG, "WINDOW DIED " + windowState);
         mService->RemoveWindowLocked(windowState->mSession, windowState);
     }
+
+    return NOERROR;
 }
 
-Int64 InputMonitor::NotifyANR(
-    /* [in] */ InputApplicationHandle* inputApplicationHandle,
-    /* [in] */ InputWindowHandle* inputWindowHandle,
-    /* [in] */ const String& reason)
+ECode InputMonitor::NotifyANR(
+    /* [in] */ IInputApplicationHandle* _inputApplicationHandle,
+    /* [in] */ IInputWindowHandle* _inputWindowHandle,
+    /* [in] */ const String& reason,
+    /* [out] */ Int64* timeout)
 {
+    VALIDATE_NOT_NULL(_timeout)
+
+    AutoPtr<InputApplicationHandle> inputApplicationHandle = (InputApplicationHandle*)_inputApplicationHandle;
+    AutoPtr<InputWindowHandle> inputWindowHandle = (InputWindowHandle*)_inputWindowHandle;
+
     AutoPtr<AppWindowToken> appWindowToken;
     AutoPtr<WindowState> windowState;
     Boolean aboveSystem = FALSE;
@@ -93,7 +110,8 @@ Int64 InputMonitor::NotifyANR(
         if (!abort) {
             // The activity manager declined to abort dispatching.
             // Wait a bit longer and timeout again later.
-            return appWindowToken->mInputDispatchingTimeoutNanos;
+            *_timeout = appWindowToken->mInputDispatchingTimeoutNanos;
+            return NOERROR;
         }
         // } catch (RemoteException ex) {
         // }
@@ -109,12 +127,14 @@ Int64 InputMonitor::NotifyANR(
         if (timeout >= 0) {
             // The activity manager declined to abort dispatching.
             // Wait a bit longer and timeout again later.
-            return timeout;
+            *_timeout = timeout;
+            return NOERROR;
         }
         // } catch (RemoteException ex) {
         // }
     }
-    return 0; // abort dispatching
+    *_timeout = 0; // abort dispatching
+    return NOERROR;
 }
 
 void InputMonitor::AddInputWindowHandleLw(
@@ -309,7 +329,7 @@ void InputMonitor::UpdateInputWindowsLw(
     // if (false) Slog.d(WindowManagerService.TAG, "<<<<<<< EXITED updateInputWindowsLw");
 }
 
-void InputMonitor::NotifyConfigurationChanged()
+ECode InputMonitor::NotifyConfigurationChanged()
 {
     mService->SendNewConfiguration();
 
@@ -318,6 +338,7 @@ void InputMonitor::NotifyConfigurationChanged()
         mInputDevicesReady = TRUE;
         mInputDevicesReadyMonitor.NotifyAll();
     }
+    return NOERROR;
 }
 
 Boolean InputMonitor::WaitForInputDevicesReady(
@@ -333,68 +354,71 @@ Boolean InputMonitor::WaitForInputDevicesReady(
     return mInputDevicesReady;
 }
 
-void InputMonitor::NotifyLidSwitchChanged(
+ECode InputMonitor::NotifyLidSwitchChanged(
     /* [in] */ Int64 whenNanos,
     /* [in] */ Boolean lidOpen)
 {
-    mService->mPolicy->NotifyLidSwitchChanged(whenNanos, lidOpen);
+    return mService->mPolicy->NotifyLidSwitchChanged(whenNanos, lidOpen);
 }
 
-void InputMonitor::NotifyCameraLensCoverSwitchChanged(
+ECode InputMonitor::NotifyCameraLensCoverSwitchChanged(
     /* [in] */ Int64 whenNanos,
     /* [in] */ Boolean lensCovered)
 {
-    mService->mPolicy->NotifyCameraLensCoverSwitchChanged(whenNanos, lensCovered);
+    return mService->mPolicy->NotifyCameraLensCoverSwitchChanged(whenNanos, lensCovered);
 }
 
-Int32 InputMonitor::InterceptKeyBeforeQueueing(
+ECode InputMonitor::InterceptKeyBeforeQueueing(
     /* [in] */ IKeyEvent* event,
-    /* [in] */ Int32 policyFlags)
+    /* [in] */ Int32 policyFlags,
+    /* [out] */ Int32* result)
 {
-    Int32 result = 0;
-    mService->mPolicy->InterceptMotionBeforeQueueingNonInteractive(whenNanos, policyFlags, &result);
-    return result;
+    VALIDATE_NOT_NULL(result)
+    return mService->mPolicy->InterceptMotionBeforeQueueingNonInteractive(whenNanos, policyFlags, result);
 }
 
-Int32 InputMonitor::InterceptMotionBeforeQueueingWhenScreenOff(
-    /* [in] */ Int32 policyFlags)
+ECode InputMonitor::InterceptMotionBeforeQueueingNonInteractive(
+    /* [in] */ Int64 whenNanos,
+    /* [in] */ Int32 policyFlags,
+    /* [out] */ Int32* ret)
 {
-    Int32 result;
-    mService->mPolicy->InterceptMotionBeforeQueueingWhenScreenOff(policyFlags, &result);
-    return result;
+    VALIDATE_NOT_NULL(ret)
+    return mService->mPolicy->InterceptMotionBeforeQueueingNonInteractive(
+                whenNanos, policyFlags, ret);
 }
 
-Int64 InputMonitor::InterceptKeyBeforeDispatching(
-    /* [in] */ InputWindowHandle* focus,
+ECode InputMonitor::InterceptKeyBeforeDispatching(
+    /* [in] */ IInputWindowHandle* focus,
     /* [in] */ IKeyEvent* event,
-    /* [in] */ Int32 policyFlags)
+    /* [in] */ Int32 policyFlags,
+    /* [out] */ Int64* ret)
 {
     AutoPtr<WindowState> windowState = focus != NULL ?
-            (WindowState*)focus->mWindowState : NULL;
-    Int64 result = 0;
-    mService->mPolicy->InterceptKeyBeforeDispatching(windowState, event, policyFlags, &result);
-    return result;
+            (WindowState*)((InputWindowHandle*)focus)->mWindowState : NULL;
+    return mService->mPolicy->InterceptKeyBeforeDispatching(windowState, event, policyFlags, ret);
 }
 
-AutoPtr<IKeyEvent> InputMonitor::DispatchUnhandledKey(
-    /* [in] */ InputWindowHandle* focus,
+ECode InputMonitor::DispatchUnhandledKey(
+    /* [in] */ IInputWindowHandle* focus,
     /* [in] */ IKeyEvent* event,
-    /* [in] */ Int32 policyFlags)
+    /* [in] */ Int32 policyFlags,
+    /* [out] */ IKeyEvent** keyEvent)
 {
+    VALIDATE_NOT_NULL(keyEvent)
     AutoPtr<WindowState> windowState = focus != NULL ?
-            (WindowState*)focus->mWindowState : NULL;
-    AutoPtr<IKeyEvent> keyEvent;
-    mService->mPolicy->DispatchUnhandledKey(windowState, event, policyFlags,
-            (IKeyEvent**)&keyEvent);
-    return keyEvent;
+            (WindowState*)((InputWindowHandle*)focus)->mWindowState : NULL;
+    return mService->mPolicy->DispatchUnhandledKey(windowState, event, policyFlags, keyEvent);
 }
 
-Int32 InputMonitor::GetPointerLayer()
+ECode InputMonitor::GetPointerLayer(
+    /* [out] */ Int32* ret)
 {
-    Int32 result;
-    mService->mPolicy->WindowTypeToLayerLw(IWindowManagerLayoutParams::TYPE_POINTER, &result);
-    return result * CWindowManagerService::TYPE_LAYER_MULTIPLIER
+    VALIDATE_NOT_NULL(ret)
+    Int32 value;
+    mService->mPolicy->WindowTypeToLayerLw(IWindowManagerLayoutParams::TYPE_POINTER, &value);
+    *ret = value * CWindowManagerService::TYPE_LAYER_MULTIPLIER
             + CWindowManagerService::TYPE_LAYER_OFFSET;
+    return NOERROR;
 }
 
 void InputMonitor::SetInputFocusLw(

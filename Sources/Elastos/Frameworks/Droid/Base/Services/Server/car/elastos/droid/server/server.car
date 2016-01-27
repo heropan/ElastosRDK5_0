@@ -121,6 +121,7 @@ module
     using interface Elastos.Droid.Internal.StatusBar.IIStatusBarService;
     using interface Elastos.Droid.Internal.TextService.IITextServicesManager;
     using interface Elastos.Droid.Internal.Telephony.IITelephonyRegistry;
+    using interface Elastos.Droid.Internal.View.IInputMethodClient;
     using interface Elastos.Droid.Location.IICountryDetector;
     using interface Elastos.Droid.Bluetooth.IIBluetoothManager;
     using interface Elastos.Droid.Bluetooth.IIBluetoothCallback;
@@ -146,6 +147,12 @@ module
     using interface Elastos.Droid.View.IApplicationToken;
     using interface Elastos.Droid.View.IIInputFilterHost;
     using interface Elastos.Droid.View.IIWindowManager;
+    using interface Elastos.Droid.View.IWindowManagerPolicyWindowManagerFuncs;
+    using interface Elastos.Droid.View.IIWindowSessionCallback;
+    using interface Elastos.Droid.View.IWindowState;
+    using interface Elastos.Droid.View.IIWindowId;
+    using interface Elastos.Droid.View.IWindowSession;
+    using interface Elastos.Droid.Internal.View.IInputContext;
     using interface Elastos.Droid.Service.Dreams.IIDreamManager;
     using interface Elastos.Droid.Service.Wallpaper.IIWallpaperConnection;
 
@@ -595,41 +602,43 @@ module
 //             interface IBinder;
 //         }
 //     }
-//     namespace Wm {
 
-//     [local]
-//     class CWindowManagerService {
-//         constructor(
-//             [in] IContext* ctx,
-//             [in] Handle64 inputManager,
-//             [in] Boolean haveInputMethods,
-//             [in] Boolean showBootMsgs,
-//             [in] Boolean onlyCore);
-
-//         interface IIWindowManager;
-//         interface IWindowManagerPolicyWindowManagerFuncs;
-//         interface IBinder;
-//     }
-
-//     class CSession {
-//         constructor(
-//             [in] Handle64 service,
-//             [in] IInputMethodClient* client,
-//             [in] IIWindowSessionCallback* callback,
-//             [in] IInputContext* inputContext);
-
-//         interface IIWindowId;
-//         interface IProxyDeathRecipient;
-//     }
-
-//     class CWindowId {
-//         constructor(
-//             [in] IWindowState* host);
-
-//         interface IIWindowId;
-//     }
-
-//     } // Wm
+    //namespace Wm {
+//
+    //[local]
+    //class CWindowManagerService {
+    //    constructor(
+    //        [in] IContext* ctx,
+    //        [in] Handle64 inputManager,
+    //        [in] Boolean haveInputMethods,
+    //        [in] Boolean showBootMsgs,
+    //        [in] Boolean onlyCore);
+//
+    //    interface IIWindowManager;
+    //    interface IWindowManagerPolicyWindowManagerFuncs;
+    //    interface IBinder;
+    //}
+//
+    //class CSession {
+    //    constructor(
+    //        [in] Handle64 service,
+    //        [in] IInputMethodClient* client,
+    //        [in] IIWindowSessionCallback* cb,
+    //        [in] IInputContext* inputContext);
+//
+    //    interface IWindowSession;
+    //    interface IProxyDeathRecipient;
+    //}
+//
+    //[local]
+    //class CWindowId {
+    //    constructor(
+    //        [in] IWindowState* host);
+//
+    //    interface IIWindowId;
+    //}
+//
+    //} // Wm
 
 
 //     [local]

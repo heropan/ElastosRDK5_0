@@ -63,7 +63,7 @@ void DisplaySettings::GetOverscanLocked(
 }
 
 void DisplaySettings::SetOverscanLocked(
-    /* [in] */ const String* name,
+    /* [in] */ const String& name,
     /* [in] */ Int32 left,
     /* [in] */ Int32 top,
     /* [in] */ Int32 right,

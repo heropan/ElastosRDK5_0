@@ -256,7 +256,7 @@ void AppTransition::Freeze()
     SetReady();
 }
 
-AutoPtr<AttributeCache::Entry> AppTransition::GetCachedAnimations(
+AutoPtr<Entry> AppTransition::GetCachedAnimations(
     /* [in] */ IWindowManagerLayoutParams* lp)
 {
     if (DEBUG_ANIM) {
@@ -293,7 +293,7 @@ AutoPtr<AttributeCache::Entry> AppTransition::GetCachedAnimations(
     return NULL;
 }
 
-AutoPtr<AttributeCache::Entry> AppTransition::GetCachedAnimations(
+AutoPtr<Entry> AppTransition::GetCachedAnimations(
     /* [in] */ const String& packageName,
     /* [in] */ Int32 resId)
 {
@@ -319,7 +319,7 @@ AutoPtr<IAnimation> AppTransition::LoadAnimationAttr(
     Int32 anim = 0;
     AutoPtr<IContext> context = mContext;
     if (animAttr >= 0) {
-        AutoPtr<AttributeCache::Entry> ent = GetCachedAnimations(lp);
+        AutoPtr<Entry> ent = GetCachedAnimations(lp);
         if (ent != NULL) {
             context = ent->mContext;
             ent->mArray->GetResourceId(animAttr, 0, &anim);
@@ -341,7 +341,7 @@ AutoPtr<IAnimation> AppTransition::LoadAnimationRes(
 {
     AutoPtr<IContext> context = mContext;
     if (resId >= 0) {
-        AutoPtr<AttributeCache::Entry> ent = GetCachedAnimations(lp);
+        AutoPtr<Entry> ent = GetCachedAnimations(lp);
         if (ent != NULL) {
             context = ent->mContext;
         }
@@ -361,7 +361,7 @@ AutoPtr<IAnimation> AppTransition::LoadAnimationRes(
     Int32 anim = 0;
     AutoPtr<IContext> context = mContext;
     if (resId >= 0) {
-        AutoPtr<AttributeCache::Entry> ent = GetCachedAnimations(packageName, resId);
+        AutoPtr<Entry> ent = GetCachedAnimations(packageName, resId);
         if (ent != NULL) {
             context = ent->mContext;
             anim = resId;

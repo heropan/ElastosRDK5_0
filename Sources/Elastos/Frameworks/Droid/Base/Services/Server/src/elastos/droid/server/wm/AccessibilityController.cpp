@@ -223,7 +223,7 @@ void AccessibilityController::DisplayMagnifier::MagnifiedViewport::ViewportWindo
         mShown = shown;
         mAnimationController->OnFrameShownStateChanged(shown, animate);
         if (DEBUG_VIEWPORT_WINDOW) {
-            Slogger::I(LOG_TAG, "ViewportWindow shown: %d", mShown);
+            Slogger::I(TAG, "ViewportWindow shown: %d", mShown);
         }
     }
 }
@@ -245,7 +245,7 @@ void AccessibilityController::DisplayMagnifier::MagnifiedViewport::ViewportWindo
         mAlpha = alpha;
         Invalidate(NULL);
         if (DEBUG_VIEWPORT_WINDOW) {
-            Slogger::I(LOG_TAG, "ViewportWindow set alpha: %d", alpha);
+            Slogger::I(TAG, "ViewportWindow set alpha: %d", alpha);
         }
     }
 }
@@ -262,7 +262,7 @@ void AccessibilityController::DisplayMagnifier::MagnifiedViewport::ViewportWindo
         mBounds->Set(bounds);
         Invalidate(mDirtyRect);
         if (DEBUG_VIEWPORT_WINDOW) {
-            Slogger::I(LOG_TAG, "ViewportWindow set bounds: %p", bounds);
+            Slogger::I(TAG, "ViewportWindow set bounds: %p", bounds);
         }
     }
 }
@@ -313,7 +313,7 @@ void AccessibilityController::DisplayMagnifier::MagnifiedViewport::ViewportWindo
         mDirtyRect->Inset(-mHalfBorderWidth, -mHalfBorderWidth);
         mSurface->LockCanvas(mDirtyRect, (ICanvas**)&canvas);
         if (DEBUG_VIEWPORT_WINDOW) {
-            Slogger::I(LOG_TAG, "Dirty rect: %p", mDirtyRect.Get());
+            Slogger::I(TAG, "Dirty rect: %p", mDirtyRect.Get());
         }
         // } catch (IllegalArgumentException iae) {
         //     /* ignore */
@@ -324,7 +324,7 @@ void AccessibilityController::DisplayMagnifier::MagnifiedViewport::ViewportWindo
             return;
         }
         if (DEBUG_VIEWPORT_WINDOW) {
-            Slogger::I(LOG_TAG, "Bounds: %p", mBounds.Get());
+            Slogger::I(TAG, "Bounds: %p", mBounds.Get());
         }
         canvas->DrawColor(IColor::TRANSPARENT, PorterDuffMode_CLEAR);
         mPaint->SetAlpha(mAlpha);
@@ -706,7 +706,7 @@ ECode AccessibilityController::DisplayMagnifier::MyHandler::HandleMessage(
 //                  AccessibilityController::DisplayMagnifier
 //==============================================================================
 
-const String AccessibilityController::DisplayMagnifier::LOG_TAG("DisplayMagnifier");
+const String AccessibilityController::DisplayMagnifier::TAG("DisplayMagnifier");
 const Boolean AccessibilityController::DisplayMagnifier::DEBUG_WINDOW_TRANSITIONS;
 const Boolean AccessibilityController::DisplayMagnifier::DEBUG_ROTATION;
 const Boolean AccessibilityController::DisplayMagnifier::DEBUG_LAYERS;
@@ -749,7 +749,7 @@ void AccessibilityController::DisplayMagnifier::OnRectangleOnScreenRequestedLock
     /* [in] */ IRect* rectangle)
 {
     if (DEBUG_RECTANGLE_REQUESTED) {
-        Slogger::I(LOG_TAG, "Rectangle on screen requested: %p", rectangle);
+        Slogger::I(TAG, "Rectangle on screen requested: %p", rectangle);
     }
     if (!mMagnifedViewport->IsMagnifyingLocked()) {
         return;
@@ -782,7 +782,7 @@ void AccessibilityController::DisplayMagnifier::OnRectangleOnScreenRequestedLock
 void AccessibilityController::DisplayMagnifier::OnWindowLayersChangedLocked()
 {
     if (DEBUG_LAYERS) {
-        Slogger::I(LOG_TAG, "Layers changed.");
+        Slogger::I(TAG, "Layers changed.");
     }
     mMagnifedViewport->RecomputeBoundsLocked();
     mWindowManagerService->ScheduleAnimationLocked();
@@ -793,7 +793,7 @@ void AccessibilityController::DisplayMagnifier::OnRotationChangedLocked(
     /* [in] */ Int32 rotation)
 {
     // if (DEBUG_ROTATION) {
-    //     Slog.i(LOG_TAG, "Rotaton: " + Surface.rotationToString(rotation)
+    //     Slog.i(TAG, "Rotaton: " + Surface.rotationToString(rotation)
     //             + " displayId: " + displayContent.getDisplayId());
     // }
     mMagnifedViewport->OnRotationChangedLocked();
@@ -805,7 +805,7 @@ void AccessibilityController::DisplayMagnifier::OnAppWindowTransitionLocked(
     /* [in] */ Int32 transition)
 {
     if (DEBUG_WINDOW_TRANSITIONS) {
-        Slogger::I(LOG_TAG, "Window transition: %s displayId: %d",
+        Slogger::I(TAG, "Window transition: %s displayId: %d",
                 AppTransition::AppTransitionToString(transition).string(), windowState->GetDisplayId());
     }
     Boolean magnifying = mMagnifedViewport->IsMagnifyingLocked();
@@ -829,7 +829,7 @@ void AccessibilityController::DisplayMagnifier::OnWindowTransitionLocked(
     /* [in] */ Int32 transition)
 {
     if (DEBUG_WINDOW_TRANSITIONS) {
-        Slogger::I(LOG_TAG, "Window transition: %s displayId: %d",
+        Slogger::I(TAG, "Window transition: %s displayId: %d",
                 AppTransition::AppTransitionToString(transition).string(), windowState->GetDisplayId());
     }
     Boolean magnifying = mMagnifedViewport->IsMagnifyingLocked();
@@ -951,7 +951,7 @@ ECode AccessibilityController::WindowsForAccessibilityObserver::MyHandler::Handl
 //                  AccessibilityController::WindowsForAccessibilityObserver
 //==============================================================================
 
-const String AccessibilityController::WindowsForAccessibilityObserver::LOG_TAG("WindowsForAccessibilityObserver");
+const String AccessibilityController::WindowsForAccessibilityObserver::TAG("WindowsForAccessibilityObserver");
 
 const Boolean AccessibilityController::WindowsForAccessibilityObserver::DEBUG;
 
@@ -999,7 +999,7 @@ void AccessibilityController::WindowsForAccessibilityObserver::ScheduleComputeCh
 void AccessibilityController::WindowsForAccessibilityObserver::ComputeChangedWindows()
 {
     if (DEBUG) {
-        Slogger::I(LOG_TAG, "computeChangedWindows()");
+        Slogger::I(TAG, "computeChangedWindows()");
     }
 
     Object& lock = mWindowManagerService->mWindowMapLock;
@@ -1175,7 +1175,7 @@ void AccessibilityController::WindowsForAccessibilityObserver::ComputeChangedWin
 
         if (windowsChanged) {
             if (DEBUG) {
-                Slogger::I(LOG_TAG, "Windows changed:%p", windows.Get());
+                Slogger::I(TAG, "Windows changed:%p", windows.Get());
             }
             // Remember the old windows to detect changes.
             CacheWindows(windows);
@@ -1187,7 +1187,7 @@ void AccessibilityController::WindowsForAccessibilityObserver::ComputeChangedWin
         }
         else {
             if (DEBUG) {
-                Slogger::I(LOG_TAG, "No windows changed.");
+                Slogger::I(TAG, "No windows changed.");
             }
             // Recycle the nodes as we do not need them.
             ClearAndRecycleWindows(windows);

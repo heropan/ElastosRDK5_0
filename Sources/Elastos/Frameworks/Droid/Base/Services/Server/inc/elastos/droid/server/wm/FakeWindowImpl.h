@@ -1,9 +1,9 @@
 #ifndef __ELASTOS_DROID_SERVER_WM_FAKEWINDOWIMPL_H__
 #define __ELASTOS_DROID_SERVER_WM_FAKEWINDOWIMPL_H__
 
-#include "wm/CWindowManagerService.h"
-#include "input/InputApplicationHandle.h"
-#include "input/InputWindowHandle.h"
+// #include "elastos/droid/server/wm/CWindowManagerService.h"
+#include "elastos/droid/server/input/InputApplicationHandle.h"
+#include "elastos/droid/server/input/InputWindowHandle.h"
 
 using Elastos::Droid::View::IFakeWindow;
 using Elastos::Droid::View::IInputEventReceiverFactory;
