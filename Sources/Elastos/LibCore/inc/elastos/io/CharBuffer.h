@@ -517,9 +517,6 @@ public:
         /* [in] */ Char32 c);
 
     virtual CARAPI Append(
-        /* [in] */ Char32 c);
-
-    virtual CARAPI Append(
         /* [in] */ ICharSequence* csq);
 
     virtual CARAPI Append(

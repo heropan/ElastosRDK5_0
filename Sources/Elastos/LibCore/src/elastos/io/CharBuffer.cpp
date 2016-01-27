@@ -342,12 +342,6 @@ ECode CharBuffer::AppendChar(
 }
 
 ECode CharBuffer::Append(
-    /* [in] */ Char32 c)
-{
-    return Put(c);
-}
-
-ECode CharBuffer::Append(
     /* [in] */ ICharSequence* csq)
 {
     if (csq != NULL) {
