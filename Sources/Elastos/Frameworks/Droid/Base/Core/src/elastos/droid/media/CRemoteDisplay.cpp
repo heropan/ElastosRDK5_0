@@ -37,7 +37,7 @@ CRemoteDisplay::NotifyDisplayConnectedRun::NotifyDisplayConnectedRun(
 
 ECode CRemoteDisplay::NotifyDisplayConnectedRun::Run()
 {
-    return mOwner->mListener->OnDisplayConnected(mSurface, mWidth, mHeight, mFlags);
+    return mOwner->mListener->OnDisplayConnected(mSurface, mWidth, mHeight, mFlags, session);
 }
 
 //------------------------------------------------
@@ -219,7 +219,7 @@ private:
 };
 
 class NativeRemoteDisplay
-    : public ElRefBase
+    : public Object
 {
 public:
     NativeRemoteDisplay(
@@ -232,6 +232,16 @@ public:
     ~NativeRemoteDisplay()
     {
         mDisplay->dispose();
+    }
+
+    void Pause()
+    {
+        mDisplay->pause();
+    }
+
+    void resume()
+    {
+        mDisplay->resume();
     }
 
 private:
@@ -268,7 +278,30 @@ void CRemoteDisplay::NativeDispose(
     delete wrapper;
 }
 
+void CRemoteDisplay::NativePause(
+    /* [in] */ Handle32 ptr)
+{
+    NativeRemoteDisplay* wrapper = reinterpret_cast<NativeRemoteDisplay*>(ptr);
+    wrapper->pause();
+}
+
+void CRemoteDisplay::NativeResume(
+    /* [in] */ Handle32 ptr)
+{
+    NativeRemoteDisplay* wrapper = reinterpret_cast<NativeRemoteDisplay*>(ptr);
+    wrapper->resume();
+}
+
 //------------------------------------------------
+void CRemoteDisplay::Pause()
+{
+    NativePause(mPtr);
+}
+
+void CRemoteDisplay::Resume()
+{
+    NativeResume(mPtr);
+}
 
 void CRemoteDisplay::Dispose(
     /* [in] */ Boolean finalized)
@@ -302,7 +335,8 @@ void CRemoteDisplay::NotifyDisplayConnected(
     /* [in] */ ISurface* surface,
     /* [in] */ Int32 width,
     /* [in] */ Int32 height,
-    /* [in] */ Int32 flags)
+    /* [in] */ Int32 flags,
+    /* [in] */ Int32 session)
 {
     Boolean tempState;
     AutoPtr<IRunnable> runnable = new NotifyDisplayConnectedRun(this, surface, width, height, flags);

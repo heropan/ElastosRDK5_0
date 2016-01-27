@@ -81,6 +81,10 @@ public:
      */
     CARAPI Dispose();
 
+    CARAPI Pause();
+
+    CARAPI Resume();
+
     /**
      * Starts listening for displays to be connected on the specified interface.
      *
@@ -99,7 +103,8 @@ public:
         /* [in] */ ISurface* surface,
         /* [in] */ Int32 width,
         /* [in] */ Int32 height,
-        /* [in] */ Int32 flags);
+        /* [in] */ Int32 flags,
+        /* [in] */ Int32 session);
 
     // Called from native.
     CARAPI_(void) NotifyDisplayDisconnected();
@@ -117,6 +122,12 @@ private:
         /* [in] */ const String& iface);
 
     CARAPI_(void) NativeDispose(
+        /* [in] */ Handle32 ptr);
+
+    CARAPI_(void) NativePause(
+        /* [in] */ Handle32 ptr);
+
+    CARAPI_(void) NativeResume(
         /* [in] */ Handle32 ptr);
 
     CARAPI_(void) Dispose(
