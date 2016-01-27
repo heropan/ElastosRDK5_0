@@ -3,7 +3,7 @@
 #include <Elastos.CoreLibrary.Utility.h>
 #include "elastos/droid/app/CActivityManager.h"
 #include "elastos/droid/app/ActivityManagerNative.h"
-// #include "elastos/droid/app/CActivityManagerAppTask.h"
+#include "elastos/droid/app/CActivityManagerAppTask.h"
 // #include "elastos/droid/app/CActivityManagerTaskDescription.h"
 #include "elastos/droid/app/AppGlobals.h"
 #include "elastos/droid/os/UserHandle.h"
@@ -300,9 +300,8 @@ ECode CActivityManager::GetAppTasks(
         appTasks->Get(i, (IInterface**)&obj);
         IIAppTask* at = IIAppTask::Probe(obj);
         AutoPtr<IActivityManagerAppTask> ama;
-        assert(0 && "TODO");
-        // CActivityManagerAppTask::New(at, (IActivityManagerAppTask**)&ama);
-        tasks->Add(TO_IINTERFACE(ama));
+        CActivityManagerAppTask::New(at, (IActivityManagerAppTask**)&ama);
+        tasks->Add(ama);
     }
     *result = IList::Probe(tasks);
     REFCOUNT_ADD(*result)
@@ -378,7 +377,8 @@ ECode CActivityManager::AddAppTask(
         if (tw * sx > sy * th) {
             scale = (Float) sx / (Float) th;
             dx = (sy - tw * scale) * 0.5f;
-        } else {
+        }
+        else {
             scale = (Float) sy / (Float) tw;
             dy = (sx - th * scale) * 0.5f;
         }
