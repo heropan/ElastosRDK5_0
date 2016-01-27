@@ -3,13 +3,13 @@
 #define __ELASTOS_DROID_CONTENT_INTENT_H__
 
 #include "Elastos.Droid.Content.h"
-#include <elastos/core/Object.h>
 #include <elastos/core/StringBuilder.h>
 #include <elastos/utility/etl/HashSet.h>
 
 using Elastos::Droid::Net::IUri;
 using Elastos::Droid::Os::IBundle;
 using Elastos::Droid::Graphics::IRect;
+using Elastos::Droid::Content::IIntent;
 using Elastos::Droid::Content::Pm::IPackageManager;
 using Elastos::Droid::Content::Pm::IActivityInfo;
 using Elastos::Droid::Content::Res::IResources;

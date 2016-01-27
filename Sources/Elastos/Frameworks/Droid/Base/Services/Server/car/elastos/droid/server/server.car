@@ -332,6 +332,14 @@ module
         interface IBinder;
     }
 
+    class CAlarmManagerBinderService {
+        constructor(
+            [in] ISystemService* alarmManagerService);
+
+        interface IIAlarmManager;
+        interface IBinder;
+    }
+
 //     class CBootReceiver {
 //         interface IBroadcastReceiver;
 //     }
@@ -387,15 +395,6 @@ module
 //             [in] IIPowerManager* pm);
 
 //         interface IIDisplayManagerAw;
-//         interface IBinder;
-//     }
-
-//     [local]
-//     class CAlarmManagerService {
-//         constructor(
-//             [in] IContext* ctx);
-
-//         interface IIAlarmManager;
 //         interface IBinder;
 //     }
 

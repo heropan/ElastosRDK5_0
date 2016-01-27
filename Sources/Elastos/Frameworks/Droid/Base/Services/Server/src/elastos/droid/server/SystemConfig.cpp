@@ -193,7 +193,7 @@ ECode SystemConfig::ReadPermissionsFromXml(
     AutoPtr<IFileReader> permReader;
 
     ECode ec = CFileReader::New(permFile, (IFileReader**)&permReader);
-    if (ec = (ECode)E_FILE_NOT_FOUND_EXCEPTION){
+    if (ec == (ECode)E_FILE_NOT_FOUND_EXCEPTION){
         Slogger::W(TAG, "Couldn't find or open permissions file %s", TO_CSTR(permFile));
         return NOERROR;
     }

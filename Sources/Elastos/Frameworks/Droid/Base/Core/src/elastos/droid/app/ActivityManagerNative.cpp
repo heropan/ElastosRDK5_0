@@ -44,11 +44,13 @@ void ActivityManagerNative::BroadcastStickyIntent(
 }
 
 void ActivityManagerNative::NoteWakeupAlarm(
-    /* [in] */ IPendingIntent* ps)
+    /* [in] */ IPendingIntent* ps,
+    /* [in] */ Int32 sourceUid,
+    /* [in] */ const String& sourcePkg)
 {
     AutoPtr<IIIntentSender> target;
     ps->GetTarget((IIIntentSender**)&target);
-    GetDefault()->NoteWakeupAlarm(target);
+    GetDefault()->NoteWakeupAlarm(target, sourceUid, sourcePkg);
 }
 
 

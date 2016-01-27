@@ -641,7 +641,9 @@ module
         EnterSafeMode();
 
         NoteWakeupAlarm(
-            [in] IIIntentSender* sender);
+            [in] IIIntentSender* sender,
+            [in] Int32 sourceUid,
+            [in] String sourcePkg);
 
         KillPids(
             [in] ArrayOf<Int32>* pids,

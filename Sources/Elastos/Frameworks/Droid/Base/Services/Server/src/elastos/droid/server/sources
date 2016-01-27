@@ -41,6 +41,7 @@ SOURCES += SystemConfig.cpp
 SOURCES += MasterClearReceiver.cpp
 SOURCES += Watchdog.cpp
 SOURCES += NetworkTimeUpdateService.cpp
+SOURCES += AlarmManagerService.cpp
 SOURCES += CBluetoothManagerService.cpp
 SOURCES += CCertBlacklister.cpp
 SOURCES += CCommonTimeManagementService.cpp
@@ -75,7 +76,6 @@ SOURCES += TwilightCalculator.cpp
 # TODO
 #=========================================
 
-#SOURCES += CAlarmManagerService.cpp
 #SOURCES += CBootReceiver.cpp
 #SOURCES += CaptivePortalTracker.cpp
 #SOURCES += CThrottleService.cpp
