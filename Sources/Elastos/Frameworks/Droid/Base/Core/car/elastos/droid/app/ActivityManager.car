@@ -1165,7 +1165,7 @@ module
      * @Invovle
      * interface IParcelable
      */
-    [local]
+    [local, parcelable]
     interface IActivityManagerRecentTaskInfo {
         GetId(
             [out] Int32* id);

@@ -133,8 +133,6 @@ namespace Elastos {
 namespace Droid {
 namespace App {
 
-#define UNUSED(x) (void)x
-
 const String CActivityThread::TAG("CActivityThread");
 const Boolean CActivityThread::localLOGV = FALSE;
 const Boolean CActivityThread::DEBUG_MESSAGES = FALSE;

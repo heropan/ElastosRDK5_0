@@ -18,6 +18,7 @@ SOURCES += ActivityGroup.cpp
 SOURCES += ActivityManagerNative.cpp
 SOURCES += CActivityManager.cpp
 SOURCES += CActivityManagerHelper.cpp
+SOURCES += CActivityManagerAppTask.cpp
 SOURCES += CActivityManagerMemoryInfo.cpp
 SOURCES += CActivityManagerProcessErrorStateInfo.cpp
 SOURCES += CActivityManagerRecentTaskInfo.cpp
