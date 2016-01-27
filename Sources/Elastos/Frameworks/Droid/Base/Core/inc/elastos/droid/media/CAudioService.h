@@ -6,6 +6,7 @@
 #include <Elastos.CoreLibrary.Utility.h>
 #include <Elastos.CoreLibrary.Utility.Concurrent.h>
 #include "Elastos.Droid.App.h"
+#include "Elastos.Droid.Bluetooth.h"
 #include "Elastos.Droid.Content.h"
 #include "Elastos.Droid.Database.h"
 #include "Elastos.Droid.Hardware.h"
@@ -24,7 +25,6 @@
 
 using Elastos::Droid::App::IAppOpsManager;
 using Elastos::Droid::App::IKeyguardManager;
-// TODO: Need Bluetooth
 // using Elastos::Droid::Bluetooth::IBluetoothA2dp;
 // using Elastos::Droid::Bluetooth::IBluetoothAdapter;
 // using Elastos::Droid::Bluetooth::IBluetoothClass;
@@ -157,9 +157,9 @@ public:
             VolumeDeathHandler(
                 /* [in] */ VolumeStreamState* host,
                 /* [in] */ IBinder* cb)
-                : mHost(host)
-                , mCallback(cb)
+                : mCallback(cb)
                 , mMuteCount(0)
+                , mHost(host)
             {}
 
             CARAPI ProxyDied();
@@ -378,9 +378,9 @@ public:
             /* [in] */ CAudioService* host,
             /* [in] */ IAudioPolicyConfig* config,
             /* [in] */ IBinder* cb)
-            : mHost(host)
+            : mToken(cb)
             , mConfig(config)
-            , mToken(cb)
+            , mHost(host)
         {}
 
         CARAPI ProxyDied();
@@ -468,9 +468,9 @@ private:
             /* [in] */ CAudioService* host,
             /* [in] */ IBinder* cb,
             /* [in] */ Int32 pid)
-            : mHost(host)
+            : mPid(pid)
+            , mHost(host)
             , mCb(cb)
-            , mPid(pid)
             , mMode(IAudioSystem::MODE_NORMAL)
         {}
 

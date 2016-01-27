@@ -349,6 +349,7 @@ protected:
     AutoPtr<IHandler> mHandler;
     /** @hide */
     AutoPtr<IMediaTimeProvider> mTimeProvider;
+
 private:
     Int64 mLastUpdateTimeMs;
     Int64 mLastTimeMs;

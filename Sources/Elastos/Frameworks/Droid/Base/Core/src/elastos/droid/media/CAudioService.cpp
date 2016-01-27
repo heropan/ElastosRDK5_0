@@ -590,13 +590,12 @@ ECode CAudioService::VolumeStreamState::SetIndex(
                 }
             }
             *result = TRUE;
-            return NOERROR;
         }
         else {
             *result = FALSE;
-            return NOERROR;
         }
     }
+    return NOERROR;
 }
 
 ECode CAudioService::VolumeStreamState::GetIndex(
@@ -1028,7 +1027,8 @@ ECode CAudioService::VolumeController::ToString(
     AsBinder((IBinder**)&binder);
     String str;
     binder->ToString(&str);
-    *result = String("VolumeController(") + str + ",mVisible=" + mVisible + ")";
+    *result = String("VolumeController(") + str + ",mVisible="
+            + StringUtils::BooleanToString(mVisible) + ")";
     return NOERROR;
 }
 
@@ -1158,7 +1158,7 @@ ECode CAudioService::ForceControlStreamClient::ProxyDied()
     Object& lock = mHost->mForceControlStreamLock;
     synchronized(lock) {
         Logger::W(TAG, "SCO client died");
-        if (mHost->mForceControlStreamClient != this) {
+        if (mHost->mForceControlStreamClient.Get() != this) {
             Logger::W(TAG, "unregistered control stream client died");
         }
         else {
@@ -1499,8 +1499,8 @@ ECode CAudioService::ScoClient::TotalCount(
             count += tmp;
         }
         *result = count;
-        return NOERROR;
     }
+    return NOERROR;
 }
 
 void CAudioService::ScoClient::RequestScoState(
@@ -1934,6 +1934,7 @@ ECode CAudioService::AudioHandler::HandleMessage(
             break;
         }
     }
+    return NOERROR;
 }
 
 void CAudioService::AudioHandler::SetDeviceVolume(
@@ -2443,7 +2444,7 @@ ECode CAudioService::AudioServiceBroadcastReceiver::OnReceive(
         intent->GetInt32Extra(String("device"), -1, &alsaDevice);
 
         String params = (alsaCard == -1 && alsaDevice == -1 ? String("")
-                            : String("card=") + alsaCard + ";device=" + alsaDevice);
+                : String("card=") + StringUtils::ToString(alsaCard) + ";device=" + StringUtils::ToString(alsaDevice));
 
         // Playback Device
         outDevice = IAudioSystem::DEVICE_OUT_USB_ACCESSORY;
@@ -2476,7 +2477,7 @@ ECode CAudioService::AudioServiceBroadcastReceiver::OnReceive(
         intent->GetBooleanExtra(String("hasMIDI"), FALSE, &hasMIDI);
 
         String params = (alsaCard == -1 && alsaDevice == -1 ? String("")
-                            : String("card=") + alsaCard + ";device=" + alsaDevice);
+                : String("card=") + StringUtils::ToString(alsaCard) + ";device=" + StringUtils::ToString(alsaDevice));
 
         // Playback Device
         if (hasPlayback) {
@@ -2490,16 +2491,13 @@ ECode CAudioService::AudioServiceBroadcastReceiver::OnReceive(
             mHost->SetWiredDeviceConnectionState(inDevice, state, params);
         }
     }
-// TODO: Need Bluetooth
-    else if (action.Equals("android.bluetooth.headset.profile.action.AUDIO_STATE_CHANGED"
-            /*IBluetoothHeadset::ACTION_AUDIO_STATE_CHANGED*/)) {
+    else if (action.Equals(IBluetoothHeadset::ACTION_AUDIO_STATE_CHANGED)) {
         Boolean broadcast = FALSE;
         Int32 scoAudioState = IAudioManager::SCO_AUDIO_STATE_ERROR;
         AutoPtr<IArrayList> lock = mHost->mScoClients;
         synchronized(lock) {
             Int32 btState;
-// TODO: Need Bluetooth
-            // intent->GetInt32Extra(IBluetoothProfile::EXTRA_STATE, -1, &btState);
+            intent->GetInt32Extra(IBluetoothProfile::EXTRA_STATE, -1, &btState);
             // broadcast intent if the connection was initated by AudioService
             Boolean b;
             if ((mHost->mScoClients->IsEmpty(&b), !b) &&
@@ -2509,8 +2507,7 @@ ECode CAudioService::AudioServiceBroadcastReceiver::OnReceive(
                 broadcast = TRUE;
             }
             switch (btState) {
-// TODO: Need Bluetooth
-            case 12: /*IBluetoothHeadset::STATE_AUDIO_CONNECTED:*/
+            case IBluetoothHeadset::STATE_AUDIO_CONNECTED:
                 scoAudioState = IAudioManager::SCO_AUDIO_STATE_CONNECTED;
                 if (mHost->mScoAudioState != SCO_STATE_ACTIVE_INTERNAL &&
                     mHost->mScoAudioState != SCO_STATE_DEACTIVATE_REQ &&
@@ -2518,12 +2515,12 @@ ECode CAudioService::AudioServiceBroadcastReceiver::OnReceive(
                     mHost->mScoAudioState = SCO_STATE_ACTIVE_EXTERNAL;
                 }
                 break;
-            case 10: /*IBluetoothHeadset::STATE_AUDIO_DISCONNECTED:*/
+            case IBluetoothHeadset::STATE_AUDIO_DISCONNECTED:
                 scoAudioState = IAudioManager::SCO_AUDIO_STATE_DISCONNECTED;
                 mHost->mScoAudioState = SCO_STATE_INACTIVE;
                 mHost->ClearAllScoClients(0, FALSE);
                 break;
-            case 11: /*IBluetoothHeadset::STATE_AUDIO_CONNECTING:*/
+            case IBluetoothHeadset::STATE_AUDIO_CONNECTING:
                 if (mHost->mScoAudioState != SCO_STATE_ACTIVE_INTERNAL &&
                     mHost->mScoAudioState != SCO_STATE_DEACTIVATE_REQ &&
                     mHost->mScoAudioState != SCO_STATE_DEACTIVATE_EXT_REQ) {
@@ -3094,7 +3091,7 @@ ECode CAudioService::StreamToString(
         *result = String("USE_DEFAULT_STREAM_TYPE");
         return NOERROR;
     }
-    *result = String("UNKNOWN_STREAM_") + stream;
+    *result = String("UNKNOWN_STREAM_") + StringUtils::ToString(stream);
     return NOERROR;
 }
 
@@ -3434,7 +3431,7 @@ ECode CAudioService::SetMicrophoneMute(
         return NOERROR;
     }
     Boolean b;
-    if (CheckAudioSettingsPermission(String("setMicrophoneMute()"), &b), b) {
+    if (CheckAudioSettingsPermission(String("setMicrophoneMute()"), &b), !b) {
         return NOERROR;
     }
 
@@ -3452,8 +3449,8 @@ ECode CAudioService::GetRingerMode(
 
     synchronized(mSettingsLock) {
         *result = mRingerMode;
-        return NOERROR;
     }
+    return NOERROR;
 }
 
 ECode CAudioService::SetRingerMode(
@@ -3569,7 +3566,7 @@ ECode CAudioService::SetMode(
     if (DEBUG_MODE) { Logger::V(TAG, "setMode(mode=%d)", mode); }
 
     Boolean b;
-    if (!CheckAudioSettingsPermission(String("setMode()"), &b), b) {
+    if (CheckAudioSettingsPermission(String("setMode()"), &b), !b) {
         return NOERROR;
     }
 
@@ -3751,6 +3748,7 @@ ECode CAudioService::IsBluetoothA2dpOn(
         *result = mBluetoothA2dpEnabled;
         return NOERROR;
     }
+    return NOERROR;
 }
 
 ECode CAudioService::StartBluetoothSco(
@@ -4007,6 +4005,7 @@ ECode CAudioService::IsCameraSoundForced(
         mCameraSoundForced->GetValue(result);
         return NOERROR;
     }
+    return NOERROR;
 }
 
 ECode CAudioService::RegisterAudioPolicy(
@@ -4167,10 +4166,15 @@ ECode CAudioService::CheckAudioSettingsPermission(
         *result = TRUE;
         return NOERROR;
     }
-    String msg = String("Audio Settings Permission Denial: ") + method + " from pid="
-            + Binder::GetCallingPid()
-            + ", uid=" + Binder::GetCallingUid();
-    Logger::W(TAG, msg);
+
+    StringBuilder sb;
+    sb += "Audio Settings Permission Denial: ";
+    sb += method;
+    sb += " from pid=";
+    sb += Binder::GetCallingPid();
+    sb += ", uid=";
+    sb += Binder::GetCallingUid();
+    Logger::W(TAG, sb.ToString().string());
     *result = FALSE;
     return NOERROR;
 }
@@ -4216,6 +4220,7 @@ ECode CAudioService::StartWatchingRoutes(
         REFCOUNT_ADD(*result)
         return NOERROR;
     }
+    return NOERROR;
 }
 
 ECode CAudioService::DisableSafeMediaVolume()
@@ -5001,7 +5006,7 @@ void CAudioService::SendBroadcastToAll(
     // try {
     mContext->SendBroadcastAsUser(intent, UserHandle::ALL);
     // } finally {
-    //     Binder::RestoreCallingIdentity(ident);
+    Binder::RestoreCallingIdentity(ident);
     // }
 }
 
@@ -5012,7 +5017,7 @@ void CAudioService::SendStickyBroadcastToAll(
     // try {
     mContext->SendStickyBroadcastAsUser(intent, UserHandle::ALL);
     // } finally {
-    //     Binder::RestoreCallingIdentity(ident);
+    Binder::RestoreCallingIdentity(ident);
     // }
 }
 
@@ -5186,7 +5191,7 @@ void CAudioService::CheckZen(
     // leave zen when callers set ringer-mode = normal or vibrate
     Int32 zen;
     Settings::Global::GetInt32(mContentResolver,
-            ISettingsGlobal::ZEN_MODE, ISettingsGlobal::ZEN_MODE_OFF);
+            ISettingsGlobal::ZEN_MODE, ISettingsGlobal::ZEN_MODE_OFF, &zen);
     if (ringerMode != IAudioManager::RINGER_MODE_SILENT &&
             zen != ISettingsGlobal::ZEN_MODE_OFF) {
         Int64 ident = Binder::ClearCallingIdentity();
@@ -5195,7 +5200,7 @@ void CAudioService::CheckZen(
         Settings::Global::PutInt32(mContentResolver,
                 ISettingsGlobal::ZEN_MODE, ISettingsGlobal::ZEN_MODE_OFF, &b);
         // } finally {
-        //     Binder::RestoreCallingIdentity(ident);
+        Binder::RestoreCallingIdentity(ident);
         // }
     }
 }
@@ -5321,15 +5326,15 @@ Int32 CAudioService::SetModeInt(
     do {
         if (mode == IAudioSystem::MODE_NORMAL) {
             // get new mode from client at top the list if any
-            if (!mSetModeDeathHandlers->IsEmpty(&b), b) {
+            if (mSetModeDeathHandlers->IsEmpty(&b), !b) {
                 AutoPtr<IInterface> obj;
                 mSetModeDeathHandlers->Get(0, (IInterface**)&obj);
                 hdlr = (SetModeDeathHandler*)(IObject*)obj.Get();
                 hdlr->GetBinder((IBinder**)&cb);
                 hdlr->GetMode(&mode);
                 if (DEBUG_MODE) {
-                    Logger::W(TAG, " using mode=%d instead due to death hdlr at pid=%d"
-                            ,mode, hdlr->mPid);
+                    Logger::W(TAG, " using mode=%d instead due to death hdlr at pid=%d",
+                            mode, hdlr->mPid);
                 }
             }
         }
@@ -5587,8 +5592,9 @@ AutoPtr<CAudioService::ScoClient> CAudioService::GetScoClient(
             client = (ScoClient*)(IObject*)obj.Get();
             AutoPtr<IBinder> binder;
             client->GetBinder((IBinder**)&binder);
-            if (binder == cb)
+            if (binder.Get() == cb) {
                 return client;
+            }
         }
         if (create) {
             client = new ScoClient(this, cb);
@@ -5596,6 +5602,7 @@ AutoPtr<CAudioService::ScoClient> CAudioService::GetScoClient(
         }
         return client;
     }
+    return NULL;
 }
 
 Boolean CAudioService::GetBluetoothHeadset()
@@ -5865,6 +5872,7 @@ ECode CAudioService::EnsureValidDirection(
         // throw new IllegalArgumentException("Bad direction " + direction);
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
+    return NOERROR;
 }
 
 ECode CAudioService::EnsureValidSteps(
@@ -5874,6 +5882,7 @@ ECode CAudioService::EnsureValidSteps(
         // throw new IllegalArgumentException("Bad volume adjust steps " + steps);
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
+    return NOERROR;
 }
 
 ECode CAudioService::EnsureValidStreamType(
@@ -5883,6 +5892,7 @@ ECode CAudioService::EnsureValidStreamType(
         // throw new IllegalArgumentException("Bad stream type " + streamType);
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
+    return NOERROR;
 }
 
 Boolean CAudioService::IsInCommunication()
@@ -6802,6 +6812,7 @@ Boolean CAudioService::CheckSafeMediaVolume(
         }
         return TRUE;
     }
+    return TRUE;
 }
 
 void CAudioService::DumpRingerMode(

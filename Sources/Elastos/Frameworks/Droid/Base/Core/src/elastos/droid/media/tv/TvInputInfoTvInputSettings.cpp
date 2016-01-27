@@ -225,6 +225,7 @@ ECode TvInputInfoTvInputSettings::EnsureValidField(
         // throw new IllegalArgumentException(value + " should not empty ");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
+    return NOERROR;
 }
 
 } // namespace Tv

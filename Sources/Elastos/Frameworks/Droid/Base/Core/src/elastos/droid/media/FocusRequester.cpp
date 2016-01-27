@@ -1,6 +1,10 @@
 #include "elastos/droid/media/FocusRequester.h"
+#include <elastos/core/StringBuilder.h>
+#include <elastos/core/StringUtils.h>
 #include <elastos/utility/logging/Logger.h>
 
+using Elastos::Core::StringBuilder;
+using Elastos::Core::StringUtils;
 using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
@@ -113,13 +117,22 @@ ECode FocusRequester::Dump(
 {
     String str;
     mSourceRef->ToString(&str);
-    return pw->Println(String("  source:") + str
-            + " -- pack: " + mPackageName
-            + " -- client: " + mClientId
-            + " -- gain: " + FocusGainToString()
-            + " -- loss: " + FocusLossToString()
-            + " -- uid: " + mCallingUid
-            + " -- stream: " + mStreamType);
+    StringBuilder sb;
+    sb += "  source:";
+    sb += str;
+    sb += " -- pack: ";
+    sb += mPackageName;
+    sb += " -- client: ";
+    sb += mClientId;
+    sb += " -- gain: ";
+    sb += FocusGainToString();
+    sb += " -- loss: ";
+    sb += FocusLossToString();
+    sb += " -- uid: ";
+    sb += mCallingUid;
+    sb += " -- stream: ";
+    sb += mStreamType;
+    return pw->Println(sb.ToString());
 }
 
 ECode FocusRequester::ReleaseResources()
@@ -205,7 +218,7 @@ String FocusRequester::FocusChangeToString(
         case IAudioManager::AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK:
             return String("LOSS_TRANSIENT_CAN_DUCK");
         default:
-            return String("[invalid focus change") + focus + "]";
+            return String("[invalid focus change") + StringUtils::ToString(focus) + "]";
     }
 }
 
@@ -253,7 +266,7 @@ Int32 FocusRequester::FocusLossForGainRequest(
             }
         default:
             Logger::E(TAG, "focusLossForGainRequest() for invalid focus request %d", gainRequest);
-                    return IAudioManager::AUDIOFOCUS_NONE;
+            return IAudioManager::AUDIOFOCUS_NONE;
     }
 }
 

@@ -734,8 +734,8 @@ ECode CMediaCodec::SetCallback(
         // it may cause the callback to be delayed and set in a wrong state,
         // and MediaCodec is already doing it on looper.
         NativeSetCallback(cb);
-        return NOERROR;
     }
+    return NOERROR;
 }
 
 ECode CMediaCodec::GetCodecInfo(

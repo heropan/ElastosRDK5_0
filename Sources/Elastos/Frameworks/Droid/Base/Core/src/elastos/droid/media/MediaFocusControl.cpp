@@ -189,6 +189,7 @@ ECode MediaFocusControl::MediaEventHandler::HandleMessage(
             break;
         }
     }
+    return NOERROR;
 }
 
 //==============================================================================
@@ -521,6 +522,7 @@ Int32 MediaFocusControl::GetCurrentAudioFocus()
             return val;
         }
     }
+    return 0;
 }
 
 Int32 MediaFocusControl::RequestAudioFocus(
@@ -1008,6 +1010,7 @@ Int32 MediaFocusControl::GetRemoteStreamMaxVolume()
     //     }
     //     return mMainRemote->mVolumeMax;
     }
+    return 0;
 }
 
 Int32 MediaFocusControl::GetRemoteStreamVolume()
@@ -1019,6 +1022,7 @@ Int32 MediaFocusControl::GetRemoteStreamVolume()
     //     }
     //     return mMainRemote->mVolume;
     }
+    return 0;
 }
 
 void MediaFocusControl::SetRemoteStreamVolume(
@@ -1630,13 +1634,13 @@ void MediaFocusControl::DumpRCCStack(
             prse->Dump(pw, FALSE);
         }
         synchronized(mCurrentRcLock) {
-            pw->Println(String("\nCurrent remote control generation ID = ") + mCurrentRcClientGen);
+            pw->Println(String("\nCurrent remote control generation ID = ") + StringUtils::ToString(mCurrentRcClientGen));
         }
     }
     synchronized(mMainRemote) {
         pw->Println(String("\nRemote Volume State:"));
-        pw->Println(String("  has remote: ") + mHasRemotePlayback);
-        pw->Println(String("  is remote active: ") + mMainRemoteIsActive);
+        pw->Println(String("  has remote: ") + StringUtils::BooleanToString(mHasRemotePlayback));
+        pw->Println(String("  is remote active: ") + StringUtils::BooleanToString(mMainRemoteIsActive));
 // TODO: Need PlayerRecordRemotePlaybackState
         // pw->Println(String("  rccId: ") + mMainRemote->mRccId);
         // pw->Println(String("  volume handling: ")

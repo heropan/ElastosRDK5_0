@@ -464,8 +464,8 @@ ECode CMediaPlayer::TimeProvider::GetCurrentTimeUs(
         }
 
         *result = GetEstimatedTime(nanoTime, monotonic);
-        return NOERROR;
     }
+    return NOERROR;
 }
 
 void CMediaPlayer::TimeProvider::ScheduleNotification(
@@ -1402,7 +1402,7 @@ _EXIT_:
         afd = NULL;
     }
 
-    if (ec != E_SECURITY_EXCEPTION && ec != E_IO_EXCEPTION) {
+    if (ec != (ECode)E_SECURITY_EXCEPTION && ec != (ECode)E_IO_EXCEPTION) {
         return ec;
     }
 
@@ -2091,7 +2091,7 @@ ECode CMediaPlayer::NativeSetAudioStreamType(
         mp->setAudioStreamType((audio_stream_type_t)streamtype), NOERROR, "SetAudioStreamType");
 }
 
-Boolean CMediaPlayer::NativeSetParameter(
+ECode CMediaPlayer::NativeSetParameter(
     /* [in] */ Int32 key,
     /* [in] */ IParcel* value)
 {
@@ -2101,16 +2101,10 @@ Boolean CMediaPlayer::NativeSetParameter(
         return E_ILLEGAL_STATE_EXCEPTION;
     }
 
-// TODO: Need jni code
     android::Parcel *request;
-    // request = parcelForJavaObject(env, java_request);
-    android::status_t err = mp->setParameter(key, *request);
-    if (err == android::OK) {
-        return TRUE;
-    }
-    else {
-        return FALSE;
-    }
+    value->GetElementPayload((Handle32*)&request);
+    android::status_t UNUSED(err) = mp->setParameter(key, *request);
+    return NOERROR;
 }
 
 ECode CMediaPlayer::SetAudioAttributes(
@@ -2164,7 +2158,7 @@ ECode CMediaPlayer::SetVolume(
     if (IsRestricted()) {
         return NOERROR;
     }
-    NativeSetVolume(leftVolume, rightVolume);
+    return NativeSetVolume(leftVolume, rightVolume);
 }
 
 ECode CMediaPlayer::NativeSetVolume(
@@ -2230,7 +2224,7 @@ ECode CMediaPlayer::SetAuxEffectSendLevel(
     if (IsRestricted()) {
         return NOERROR;
     }
-    NativeSetAuxEffectSendLevel(level);
+    return NativeSetAuxEffectSendLevel(level);
 }
 
 ECode CMediaPlayer::NativeSetAuxEffectSendLevel(
@@ -2603,7 +2597,6 @@ ECode CMediaPlayer::AddTimedTextSource(
     CLibcore::AcquireSingleton((ILibcore**)&lc);
     AutoPtr<IOs> os;
     lc->GetOs((IOs**)&os);
-    Int64 size = 0;
     os->Dup(fd, (IFileDescriptor**)&fd2);
 
     // } catch (ErrnoException ex) {

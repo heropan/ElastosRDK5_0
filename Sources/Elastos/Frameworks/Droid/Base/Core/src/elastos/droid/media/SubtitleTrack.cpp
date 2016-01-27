@@ -52,7 +52,7 @@ ECode SubtitleTrack::CueList::Add(
 
     Boolean flag = AddEvent(cue, ((Cue*)cue)->mStartTimeMs);
     if (!flag) return NOERROR;
-    Int64 lastTimeMs = ((Cue*)cue)->mStartTimeMs;
+    Int64 UNUSED(lastTimeMs) = ((Cue*)cue)->mStartTimeMs;
     AutoPtr<ArrayOf<Int64> > array = ((Cue*)cue)->mInnerTimesMs;
     if (array != NULL) {
         Int64 length = array->GetLength();
@@ -351,7 +351,6 @@ ECode SubtitleTrack::CueList::CueListIterable::GetIterator(
     /* [out] */ IIterator** it)
 {
     VALIDATE_NOT_NULL(it);
-    ECode ec = NOERROR;
     Boolean bDeBug = FALSE;
     mHost->GetDEBUG(&bDeBug);
     if (bDeBug) {
@@ -644,8 +643,7 @@ ECode SubtitleTrack::Hide()
 ECode SubtitleTrack::SetTimeProvider(
     /* [in] */ IMediaTimeProvider* timeProvider)
 {
-
-    if (mTimeProvider == timeProvider) {
+    if (mTimeProvider.Get() == timeProvider) {
         return NOERROR;
     }
     if (mTimeProvider != NULL) {
@@ -718,9 +716,8 @@ ECode SubtitleTrack::UpdateActiveCues(
     mCues->EntriesBetween(mLastUpdateTimeMs, timeMs, (IIterable**)&iterable);
     AutoPtr<IIterator> it;
     iterable->GetIterator((IIterator**)&it);
-
     Boolean flag = FALSE;
-    for(it; (it->HasNext(&flag), flag); ) {
+    while(it->HasNext(&flag), flag) {
         AutoPtr<IInterface> obj;
         it->GetNext((IInterface**)&obj);
         AutoPtr<IPair> event = IPair::Probe(obj);
@@ -740,7 +737,8 @@ ECode SubtitleTrack::UpdateActiveCues(
             if (cue->mRunID == 0) {
                 it->Remove();
             }
-        } else if (cue->mStartTimeMs == vlfst) {
+        }
+        else if (cue->mStartTimeMs == vlfst) {
             // add new cues
             // TRICKY: this will happen in start order
             if (DEBUG) Slogger::V(TAG, "Adding %p", cue);
@@ -748,7 +746,8 @@ ECode SubtitleTrack::UpdateActiveCues(
                 cue->OnTime(timeMs);
             }
             mActiveCues->Add(st);
-        } else if (cue->mInnerTimesMs != NULL) {
+        }
+        else if (cue->mInnerTimesMs != NULL) {
             // cue is modified
             cue->OnTime(timeMs);
         }
@@ -853,7 +852,6 @@ ECode SubtitleTrack::AddCue(
         if (mRunnable != NULL) {
             mHandler->RemoveCallbacks(mRunnable.Get());
         }
-        SubtitleTrack* track = this;
         Int64 thenMs = nowMs;
         mRunnable = new SubTrackRunnable();
         // delay update so we don't update view on every cue.  TODO why 10?
