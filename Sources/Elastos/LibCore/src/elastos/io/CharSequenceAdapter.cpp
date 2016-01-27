@@ -7,8 +7,6 @@ using Elastos::Core::EIID_ICharSequence;
 namespace Elastos {
 namespace IO {
 
-CAR_INTERFACE_IMPL(CharSequenceAdapter, CharBuffer, ICharSequence)
-
 CharSequenceAdapter::CharSequenceAdapter()
 {
 }

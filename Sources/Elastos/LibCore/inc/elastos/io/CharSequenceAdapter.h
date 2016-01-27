@@ -18,11 +18,8 @@ namespace IO {
  */
 class CharSequenceAdapter
     : public CharBuffer
-    , public ICharSequence
 {
 public:
-    CAR_INTERFACE_DECL()
-
     CharSequenceAdapter();
 
     CARAPI constructor(
