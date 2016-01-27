@@ -213,9 +213,9 @@ CMediaSessionLegacyHelper::SessionHolder::SessionHolder(
     /* [in] */ IMediaSession * session,
     /* [in] */ IPendingIntent * pi,
     /* [in] */ CMediaSessionLegacyHelper * host)
-    : mFlags(0)
-    , mSession(session)
+    : mSession(session)
     , mPi(pi)
+    , mFlags(0)
     , mHost(host)
 {
 }
@@ -379,7 +379,7 @@ ECode CMediaSessionLegacyHelper::AddRccListener(
         return NOERROR;
     }
     if (holder->mRccListener != NULL) {
-        if (holder->mRccListener == listener) {
+        if (holder->mRccListener.Get() == listener) {
             if (DEBUG) {
                 Logger::D(TAG, "addRccListener listener already added.");
             }

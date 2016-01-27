@@ -185,7 +185,7 @@ Boolean RippleBackground::Draw(
 Boolean RippleBackground::ShouldDraw()
 {
     Int32 outerAlpha = (Int32) (mColorAlpha * mOuterOpacity + 0.5f);
-    return mCanUseHardware && mHardwareAnimating || outerAlpha > 0 && mOuterRadius > 0;
+    return (mCanUseHardware && mHardwareAnimating) || (outerAlpha > 0 && mOuterRadius > 0);
 }
 
 Boolean RippleBackground::DrawHardware(

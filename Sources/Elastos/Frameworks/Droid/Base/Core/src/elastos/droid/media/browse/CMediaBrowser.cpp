@@ -1,12 +1,14 @@
 
 #include "Elastos.Droid.Utility.h"
 #include <Elastos.CoreLibrary.Utility.h>
+#include <elastos/core/StringUtils.h>
 #include <elastos/utility/logging/Logger.h>
 #include "elastos/droid/media/browse/CMediaBrowser.h"
 #include "elastos/droid/content/CIntent.h"
 
 using Elastos::Core::CString;
 using Elastos::Core::ICharSequence;
+using Elastos::Core::StringUtils;
 using Elastos::Utility::CCollections;
 using Elastos::Utility::ISet;
 using Elastos::Utility::IList;
@@ -115,7 +117,7 @@ ECode CMediaBrowser::MediaServiceConnection::OnServiceDisconnected(
 Boolean CMediaBrowser::MediaServiceConnection::IsCurrent(
     /* [in] */ const String& funcName)
 {
-    if (mHost->mServiceConnection != this) {
+    if (mHost->mServiceConnection.Get() != this) {
         if (mHost->mState != CMediaBrowser::CONNECT_STATE_DISCONNECTED) {
             // Check mState, because otherwise this log is noisy.
             // Log.i(TAG, funcName + " for " + mServiceComponent + " with mServiceConnection="
@@ -582,7 +584,7 @@ String CMediaBrowser::GetStateLabel(
         case CMediaBrowser::CONNECT_STATE_SUSPENDED:
             return String("CONNECT_STATE_SUSPENDED");
         default:
-            return String("UNKNOWN/") + state;
+            return String("UNKNOWN/") + StringUtils::ToString(state);
     }
 }
 
@@ -619,7 +621,7 @@ Boolean CMediaBrowser::IsCurrent(
     /* [in] */ IIMediaBrowserServiceCallbacks * callback,
     /* [in] */ const String& funcName)
 {
-    if (mServiceCallbacks != callback) {
+    if (mServiceCallbacks.Get() != callback) {
         if (mState != CMediaBrowser::CONNECT_STATE_DISCONNECTED) {
             // Logger::I(TAG, funcName + " for " + mServiceComponent + " with mServiceConnection="
             //         + mServiceCallbacks + " this=" + this);

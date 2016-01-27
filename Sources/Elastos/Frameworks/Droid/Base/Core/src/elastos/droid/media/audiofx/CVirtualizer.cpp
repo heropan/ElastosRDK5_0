@@ -178,8 +178,8 @@ ECode CVirtualizer::ForceVirtualizationMode(
         CheckStatus(status);
     }
     // unexpected virtualizer behavior
-    Logger::E(TAG, String("unexpected status code ") + status
-            + " after setParameter(PARAM_FORCE_VIRTUALIZATION_MODE)");
+    Logger::E(TAG, "unexpected status code %d after"
+            " setParameter(PARAM_FORCE_VIRTUALIZATION_MODE)", status);
     *result = FALSE;
     return NOERROR;
 }
@@ -205,8 +205,8 @@ ECode CVirtualizer::GetVirtualizationMode(
         CheckStatus(status);
     }
     // unexpected virtualizer behavior
-    Logger::E(TAG, String("unexpected status code ") + status
-            + " after getParameter(PARAM_VIRTUALIZATION_MODE)");
+    Logger::E(TAG, "unexpected status code %d after"
+            " getParameter(PARAM_VIRTUALIZATION_MODE)", status);
     *result = VIRTUALIZATION_MODE_OFF;
     return NOERROR;
 }
@@ -273,8 +273,8 @@ ECode CVirtualizer::GetAnglesInt(
     afHelper->ChannelCountFromOutChannelMask(channelMask, &nbChannels);
 
     if ((angles != NULL) && (angles->GetLength() < (nbChannels * 3))) {
-        Logger::E(TAG, String("Size of array for angles cannot accomodate number of channels in mask (")
-                + nbChannels + ")");
+        Logger::E(TAG, "Size of array for angles cannot accomodate number of channels in mask (%d)",
+                nbChannels);
         // throw (new IllegalArgumentException(
         //         "Virtualizer: array for channel / angle pairs is too small: is " + angles.length
         //         + ", should be " + (nbChannels * 3)));
@@ -346,8 +346,8 @@ ECode CVirtualizer::GetAnglesInt(
         CheckStatus(status);
     }
     // unexpected virtualizer behavior
-    Logger::E(TAG, String("unexpected status code ") + status
-            + " after getParameter(PARAM_VIRTUAL_SPEAKER_ANGLES)");
+    Logger::E(TAG, "unexpected status code %d"
+            " after getParameter(PARAM_VIRTUAL_SPEAKER_ANGLES)", status);
     *result = FALSE;
     return NOERROR;
 }

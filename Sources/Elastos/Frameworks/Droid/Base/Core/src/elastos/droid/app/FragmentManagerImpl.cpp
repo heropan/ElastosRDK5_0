@@ -397,7 +397,6 @@ ECode FragmentManagerImpl::Dump(
 {
     String innerPrefix = prefix + "    ";
 
-    Int32 N;
     if (!mActive.IsEmpty()) {
         writer->Print(prefix);
         writer->Print(String("Active Fragments in "));
@@ -1628,7 +1627,7 @@ ECode FragmentManagerImpl::PopBackStackState(
         ReportBackStackChanged();
     }
     else {
-        List<AutoPtr<IBackStackRecord> >::ReverseIterator index;
+        List<AutoPtr<IBackStackRecord> >::ReverseIterator index = mBackStack.REnd();
         if (!name.IsNull() || id >= 0) {
             // If a name or ID is specified, look for that place in
             // the stack.

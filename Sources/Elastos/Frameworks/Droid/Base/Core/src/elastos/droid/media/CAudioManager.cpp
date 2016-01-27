@@ -1109,8 +1109,6 @@ ECode CAudioManager::SetParameter(
 ECode CAudioManager::SetParameters(
     /* [in] */ const String& keyValuePairs)
 {
-    Int32 value;
-    //value return keyValuePairs list of parameters key value pairs in the form: key1=value1;key2=value2;...
     return AudioSystem::SetParameters(keyValuePairs);
 }
 

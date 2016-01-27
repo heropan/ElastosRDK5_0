@@ -173,7 +173,7 @@ ECode DroidRuntime::CallMain(
 static void BlockSignals()
 {
     sigset_t mask;
-    int cc;
+    int UNUSED(cc);
 
     sigemptyset(&mask);
     sigaddset(&mask, SIGQUIT);
@@ -184,7 +184,6 @@ static void BlockSignals()
     //sigaddset(&mask, SIGPIPE);
     cc = sigprocmask(SIG_BLOCK, &mask, NULL);
     assert(cc == 0);
-    UNUSED(cc);
 
 //    if (false) {
 //        /* TODO: save the old sigaction in a global */

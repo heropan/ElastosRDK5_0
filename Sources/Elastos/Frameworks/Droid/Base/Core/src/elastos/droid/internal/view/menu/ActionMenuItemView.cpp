@@ -5,7 +5,7 @@
 #include "elastos/droid/internal/view/menu/ActionMenuItemView.h"
 #include "elastos/droid/R.h"
 #include "elastos/droid/text/TextUtils.h"
-// #include "elastos/droid/widget/CToastHelper.h"
+#include "elastos/droid/widget/Toast.h"
 #include <elastos/core/Math.h>
 
 using Elastos::Droid::Content::Res::IResources;
@@ -13,13 +13,13 @@ using Elastos::Droid::Content::Res::ITypedArray;
 using Elastos::Droid::Graphics::CRect;
 using Elastos::Droid::Text::TextUtils;
 using Elastos::Droid::Utility::IDisplayMetrics;
+using Elastos::Droid::View::IGravity;
 using Elastos::Droid::View::IMenuItem;
 using Elastos::Droid::View::EIID_IViewOnClickListener;
 using Elastos::Droid::View::EIID_IViewOnLongClickListener;
 using Elastos::Droid::View::Accessibility::IAccessibilityRecord;
-// using Elastos::Droid::Widget::IToast;
-// using Elastos::Droid::Widget::IToastHelper;
-// using Elastos::Droid::Widget::CToastHelper;
+using Elastos::Droid::Widget::IToast;
+using Elastos::Droid::Widget::Toast;
 using Elastos::Droid::Widget::EIID_IActionMenuChildView;
 
 namespace Elastos {
@@ -498,22 +498,19 @@ ECode ActionMenuItemView::OnLongClick(
     AutoPtr<ICharSequence> title;
     IMenuItem::Probe(mItemData)->GetTitle((ICharSequence**)&title);
 
-    assert(0);
-    // AutoPtr<IToast> cheatSheet;
-    // AutoPtr<IToastHelper> helper;
-    // CToastHelper::AcquireSingleton((IToastHelper**)&helper);
-    // helper->MakeText(context, title, IToast::LENGTH_SHORT, (IToast**)&cheatSheet);
+    AutoPtr<IToast> cheatSheet;
+    Toast::MakeText(context, title, IToast::LENGTH_SHORT, (IToast**)&cheatSheet);
 
-    // Int32 fHeight = 0;
-    // if (midy < (displayFrame->GetHeight(&fHeight), fHeight)) {
-    //     // Show along the top; follow action buttons
-    //     cheatSheet->SetGravity(IGravity::TOP | IGravity::END, referenceX, height);
-    // }
-    // else {
-    //     // Show along the bottom center
-    //     cheatSheet->SetGravity(IGravity::BOTTOM | IGravity::CENTER_HORIZONTAL, 0, height);
-    // }
-    // cheatSheet->Show();
+    Int32 fHeight = 0;
+    if (midy < (displayFrame->GetHeight(&fHeight), fHeight)) {
+        // Show along the top; follow action buttons
+        cheatSheet->SetGravity(IGravity::TOP | IGravity::END, referenceX, height);
+    }
+    else {
+        // Show along the bottom center
+        cheatSheet->SetGravity(IGravity::BOTTOM | IGravity::CENTER_HORIZONTAL, 0, height);
+    }
+    cheatSheet->Show();
 
     *result = TRUE;
     return NOERROR;

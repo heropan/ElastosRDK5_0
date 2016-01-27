@@ -4,6 +4,7 @@ TARGET_TYPE= lib
 include $(MAKEDIR)/../../../../../../sources.inc
 
 C_DEFINES += -DDROID_CORE
+C_DEFINES += -DSK_BUILD_FOR_ELASTOS_FRAMEWORK
 
 INCLUDES += ../
 INCLUDES += $(MAKEDIR)/../../../../inc/

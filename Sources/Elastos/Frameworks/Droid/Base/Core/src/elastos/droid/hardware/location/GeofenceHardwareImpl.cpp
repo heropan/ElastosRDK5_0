@@ -653,8 +653,8 @@ ECode GeofenceHardwareImpl::GetMonitoringTypes(
 {
     VALIDATE_NOT_NULL(types);
 
-    Boolean gpsSupported;
-    Boolean fusedSupported;
+    Boolean gpsSupported = FALSE;
+    Boolean fusedSupported = FALSE;
     synchronized(mSupportedMonitorTypesLock) {
         gpsSupported = (*mSupportedMonitorTypes)[IGeofenceHardware::MONITORING_TYPE_GPS_HARDWARE]
                 != IGeofenceHardware::MONITOR_UNSUPPORTED;

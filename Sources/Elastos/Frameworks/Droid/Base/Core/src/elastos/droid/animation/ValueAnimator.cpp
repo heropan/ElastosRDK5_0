@@ -181,7 +181,7 @@ static void ThreadDestructor(void* st)
 
 static Boolean InitTLS()
 {
-    Int32 result = pthread_key_create(&ValueAnimator::sAnimationHandler, ThreadDestructor);
+    Int32 UNUSED(result) = pthread_key_create(&ValueAnimator::sAnimationHandler, ThreadDestructor);
     assert(result == 0);
     return TRUE;
 }

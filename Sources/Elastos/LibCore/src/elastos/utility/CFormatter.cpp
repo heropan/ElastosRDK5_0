@@ -94,9 +94,8 @@ static void CachedDecimalFormatDestructor(void* st)
 
 static Boolean InitTLS()
 {
-    Int32 result = pthread_key_create(&CFormatter::sCachedDecimalFormat, CachedDecimalFormatDestructor);
+    Int32 UNUSED(result) = pthread_key_create(&CFormatter::sCachedDecimalFormat, CachedDecimalFormatDestructor);
     assert(result == 0);
-    UNUSED(result);
     return TRUE;
 }
 

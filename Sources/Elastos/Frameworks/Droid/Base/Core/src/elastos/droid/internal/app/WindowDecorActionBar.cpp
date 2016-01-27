@@ -633,7 +633,7 @@ ECode WindowDecorActionBar::constructor(
 ECode WindowDecorActionBar::constructor(
     /* [in] */ IView* layout)
 {
-    Boolean isInEditMode = FALSE;
+    Boolean UNUSED(isInEditMode) = FALSE;
     assert((layout->IsInEditMode(&isInEditMode), isInEditMode));
     return Init(layout);
 }

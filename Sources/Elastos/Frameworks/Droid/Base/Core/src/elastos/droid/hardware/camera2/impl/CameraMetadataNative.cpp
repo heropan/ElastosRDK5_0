@@ -392,7 +392,7 @@ ECode CameraMetadataNative::SetCommand_AvailableFormats::SetValue(
     }
 
     CameraMetadataNative* metadataNative = (CameraMetadataNative*)metadata;
-    Boolean res = metadataNative->SetAvailableFormats(values);
+    metadataNative->SetAvailableFormats(values);
     return NOERROR;
 }
 
@@ -414,7 +414,7 @@ ECode CameraMetadataNative::SetCommand_FaceRectangles::SetValue(
     }
 
     CameraMetadataNative* metadataNative = (CameraMetadataNative*)metadata;
-    Boolean res = metadataNative->SetFaceRectangles(values);
+    metadataNative->SetFaceRectangles(values);
     return NOERROR;
 }
 
@@ -436,7 +436,7 @@ ECode CameraMetadataNative::SetCommand_Faces::SetValue(
     }
 
     CameraMetadataNative* metadataNative = (CameraMetadataNative*)metadata;
-    Boolean res = metadataNative->SetFaces(values);
+    metadataNative->SetFaces(values);
     return NOERROR;
 }
 
@@ -449,7 +449,7 @@ ECode CameraMetadataNative::SetCommand_TonemapCurve::SetValue(
 
     AutoPtr<ITonemapCurve> _value = ITonemapCurve::Probe(value);
     CameraMetadataNative* metadataNative = (CameraMetadataNative*)metadata;
-    Boolean res = metadataNative->SetTonemapCurve(_value);
+    metadataNative->SetTonemapCurve(_value);
     return NOERROR;
 }
 
@@ -461,7 +461,7 @@ ECode CameraMetadataNative::SetCommand_GpsLocation::SetValue(
 {
     AutoPtr<ILocation> _value = ILocation::Probe(value);
     CameraMetadataNative* metadataNative = (CameraMetadataNative*)metadata;
-    Boolean res = metadataNative->SetGpsLocation(_value);
+    metadataNative->SetGpsLocation(_value);
     return NOERROR;
 }
 
@@ -1991,8 +1991,8 @@ ECode CameraMetadataNative::NativeWriteToParcel(
             return NOERROR;
         }
 
-        android::Parcel* parcelNative;// = parcelForJavaObject(env, parcel);
-        assert(0);
+        android::Parcel* parcelNative;
+        parcel->GetElementPayload((Handle32*)&parcelNative);
         if (parcelNative == NULL) {
             //jniThrowNullPointerException(env, "parcel");
             Slogger::E(TAG, "parcel");
@@ -2021,8 +2021,8 @@ ECode CameraMetadataNative::NativeReadFromParcel(
             return NOERROR;
         }
 
-        android::Parcel* parcelNative;// = parcelForJavaObject(env, parcel);
-        assert(0);
+        android::Parcel* parcelNative;
+        source->GetElementPayload((Handle32*)&parcelNative);
         if (parcelNative == NULL) {
             //jniThrowNullPointerException(env, "parcel");
             Slogger::E(TAG, "parcel");
@@ -2086,7 +2086,7 @@ ECode CameraMetadataNative::NativeIsEmpty(
     VALIDATE_NOT_NULL(result);
     *result = FALSE;
 
-    Boolean empty;
+    Boolean empty = FALSE;
     synchronized(this) {
         ALOGV("%s", __FUNCTION__);
 
@@ -2116,7 +2116,7 @@ ECode CameraMetadataNative::NativeGetEntryCount(
     VALIDATE_NOT_NULL(count);
     *count = 0;
 
-    Int32 res;
+    Int32 res = 0;
     synchronized(this) {
         ALOGV("%s", __FUNCTION__);
 
@@ -2266,7 +2266,7 @@ ECode CameraMetadataNative::NativeWriteValues(
             Slogger::E(TAG, "Tag (%d) did not have a type", tag);
             return E_ILLEGAL_ARGUMENT_EXCEPTION;
         }
-        size_t tagSize = Helpers::getTypeSize(tagType);
+        size_t UNUSED(tagSize) = Helpers::getTypeSize(tagType);
 
         android::status_t res;
 

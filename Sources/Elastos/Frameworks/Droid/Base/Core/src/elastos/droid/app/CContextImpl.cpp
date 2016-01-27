@@ -48,7 +48,7 @@
 // #include "elastos/droid/net/wifi/p2p/CWifiP2pManager.h"
 #include "elastos/droid/view/accessibility/CAccessibilityManager.h"
 #include "elastos/droid/view/inputmethod/CInputMethodManager.h"
-// #include "elastos/droid/view/CContextThemeWrapper.h"
+#include "elastos/droid/view/CContextThemeWrapper.h"
 #include "elastos/droid/view/WindowManagerImpl.h"
 #include "elastos/droid/view/DisplayAdjustments.h"
 // #include "elastos/droid/view/CDisplayManagerAw.h"
@@ -105,7 +105,7 @@ using Elastos::Droid::Os::Storage::IStorageManager;
 using Elastos::Droid::View::DisplayAdjustments;
 using Elastos::Droid::View::WindowManagerImpl;
 using Elastos::Droid::View::IContextThemeWrapper;
-// using Elastos::Droid::View::CContextThemeWrapper;
+using Elastos::Droid::View::CContextThemeWrapper;
 using Elastos::Droid::View::Accessibility::IAccessibilityManager;
 using Elastos::Droid::View::Accessibility::CAccessibilityManager;
 using Elastos::Droid::View::InputMethod::IInputMethodManager;
@@ -2433,7 +2433,7 @@ ECode CContextImpl::GetSystemService(
             R::style::Theme_DeviceDefault_Dialog,
             R::style::Theme_DeviceDefault_Light_Dialog);
         AutoPtr<IContext> wrapper;
-        // CContextThemeWrapper::New(ctx, value, (IContext**)&wrapper);
+        CContextThemeWrapper::New(ctx, value, (IContext**)&wrapper);
         AutoPtr<INotificationManager> nm;
         CNotificationManager::New(wrapper, mMainThread->GetHandler(), (INotificationManager**)&nm);
         *object = TO_IINTERFACE(nm);

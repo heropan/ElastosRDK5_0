@@ -298,7 +298,7 @@ ECode CBitSet::Get(
 
     // shift all the elements in the new BitSet to the right
     Int32 numBitsToShift = fromIndex % 64;
-    Int32 actualLen = newBits->GetLength();
+    Int32 UNUSED(actualLen) = newBits->GetLength();
     if (numBitsToShift != 0) {
         for (Int32 i = 0; i < newBits->GetLength(); i++) {
             // shift the current element to the right regardless of
@@ -315,7 +315,6 @@ ECode CBitSet::Get(
             }
         }
     }
-    UNUSED(actualLen);
     return CBitSet::New(newBits, bs);
 }
 

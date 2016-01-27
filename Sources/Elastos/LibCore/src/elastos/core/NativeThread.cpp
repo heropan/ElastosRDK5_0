@@ -2092,7 +2092,7 @@ static ECode WaitMonitor(
     struct timespec ts;
     Boolean wasInterrupted = FALSE;
     Boolean timed;
-    Int32 ret;
+    Int32 UNUSED(ret);
     String savedFileName;
     UInt32 savedLineNumber;
 
@@ -2187,7 +2187,6 @@ static ECode WaitMonitor(
     if (!timed) {
         ret = pthread_cond_wait(&self->mWaitCond, &self->mWaitMutex);
         assert(ret == 0);
-        UNUSED(ret);
     }
     else {
 #ifdef HAVE_TIMEDWAIT_MONOTONIC
@@ -2196,7 +2195,6 @@ static ECode WaitMonitor(
         ret = pthread_cond_timedwait(&self->mWaitCond, &self->mWaitMutex, &ts);
 #endif
         assert(ret == 0 || ret == ETIMEDOUT);
-        UNUSED(ret);
     }
     if (self->mInterrupted) {
         wasInterrupted = TRUE;

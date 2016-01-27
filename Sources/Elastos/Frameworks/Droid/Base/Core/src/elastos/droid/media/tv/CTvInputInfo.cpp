@@ -10,8 +10,9 @@
 #include "elastos/droid/graphics/drawable/CDrawableHelper.h"
 #include "elastos/droid/os/CUserHandle.h"
 #include "elastos/droid/utility/SparseInt32Array.h"
-#include "elastos/droid/R.h"
 #include "elastos/droid/utility/Xml.h"
+#include "elastos/droid/R.h"
+#include <elastos/core/StringUtils.h>
 
 using Elastos::Droid::Content::CComponentName;
 using Elastos::Droid::Content::CIntent;
@@ -28,6 +29,7 @@ using Elastos::Droid::R;
 using Elastos::Droid::Utility::SparseInt32Array;
 using Elastos::Droid::Utility::Xml;
 using Elastos::Core::CString;
+using Elastos::Core::StringUtils;
 using Elastos::IO::IInputStream;
 using Org::Xmlpull::V1::IXmlPullParser;
 
@@ -575,7 +577,7 @@ String CTvInputInfo::GenerateInputIdForHdmiDevice(
     Int32 addr, id;
     deviceInfo->GetId(&id);
     deviceInfo->GetPhysicalAddress(&addr);
-    return str + "/HDMI" + addr + id;
+    return str + "/HDMI" + StringUtils::ToString(addr) + StringUtils::ToString(id);
 }
 
 String CTvInputInfo::GenerateInputIdForHardware(
@@ -588,7 +590,7 @@ String CTvInputInfo::GenerateInputIdForHardware(
     name->FlattenToShortString(&str);
     Int32 deviceId;
     hardwareInfo->GetDeviceId(&deviceId);
-    return str + "/HW" + deviceId;
+    return str + "/HW" + StringUtils::ToString(deviceId);
 }
 
 } // namespace Tv

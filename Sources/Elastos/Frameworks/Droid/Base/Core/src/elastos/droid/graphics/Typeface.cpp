@@ -427,19 +427,6 @@ private:
     const void* fMemoryBase;
 };
 
-#define MIN_GAMMA   (0.1f)
-#define MAX_GAMMA   (10.0f)
-static float pinGamma(float gamma)
-{
-    if (gamma < MIN_GAMMA) {
-        gamma = MIN_GAMMA;
-    }
-    else if (gamma > MAX_GAMMA) {
-        gamma = MAX_GAMMA;
-    }
-    return gamma;
-}
-
 AutoPtr<IFontFamily> Typeface::MakeFamilyFromParsed(
     /* [in] */ FontListParser::Family* family)
 {
@@ -534,14 +521,17 @@ void Typeface::Init()
 Error:
     String filename;
     configFilename->GetName(&filename);
-    if (E_RUNTIME_EXCEPTION == ec) {
+    if ((ECode)E_RUNTIME_EXCEPTION == ec) {
         Logger::W(TAG, String("Didn't create default family (most likely, non-Minikin build)"));
         // TODO: normal in non-Minikin case, remove or make error when Minikin-only
-    } else if (E_FILE_NOT_FOUND_EXCEPTION == ec) {
+    }
+    else if ((ECode)E_FILE_NOT_FOUND_EXCEPTION == ec) {
         Logger::E(TAG, String("Error opening: %s"), filename.string());
-    } else if (E_IO_EXCEPTION == ec) {
+    }
+    else if ((ECode)E_IO_EXCEPTION == ec) {
         Logger::E(TAG, String("Error reading: %s"), filename.string());
-    } else if (E_XML_PULL_PARSER_EXCEPTION == ec) {
+    }
+    else if ((ECode)E_XML_PULL_PARSER_EXCEPTION == ec) {
         Logger::E(TAG, String("XML parse exception for: %s"), filename.string());
     }
 }

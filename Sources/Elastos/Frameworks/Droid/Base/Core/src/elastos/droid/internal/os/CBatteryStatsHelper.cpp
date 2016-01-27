@@ -849,6 +849,7 @@ void CBatteryStatsHelper::ProcessAppUsage(
                         userPower = power;
                     }
                     else {
+                        userPower = find->mSecond;
                         userPower += power;
                     }
                     mUserPower[userId] = userPower;

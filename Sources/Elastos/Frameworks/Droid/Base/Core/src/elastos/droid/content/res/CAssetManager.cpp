@@ -1833,7 +1833,7 @@ ECode CAssetManager::ResolveAttrs(
                 newBlock = res.resolveReference(&value, block, &resid,
                         &typeSetFlags, &config);
 #if THROW_ON_BAD_ID
-                if (newBlock == BAD_INDEX) {
+                if (newBlock == android::BAD_INDEX) {
                     // jniThrowException(env, "java/lang/IllegalStateException", "Bad resource!");
                     return E_ILLEGAL_STATE_EXCEPTION;
                 }
@@ -2565,7 +2565,7 @@ void CAssetManager::DumpTheme(
     /* [in] */ const String& prefix)
 {
     android::ResTable::Theme* theme = (android::ResTable::Theme*)themeToken;
-    const android::ResTable& res(theme->getResTable());
+    const android::ResTable& __attribute__((__unused__)) res(theme->getResTable());
 
     // XXX Need to use params.
     theme->dumpToLog();

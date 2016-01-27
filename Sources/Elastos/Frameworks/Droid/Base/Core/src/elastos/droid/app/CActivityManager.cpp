@@ -373,7 +373,7 @@ ECode CActivityManager::AddAppTask(
 
         // Use ScaleType.CENTER_CROP, except we leave the top edge at the top.
         Float scale;
-        Float dx = 0, dy = 0;
+        Float dx = 0, UNUSED(dy) = 0;
         if (tw * sx > sy * th) {
             scale = (Float) sx / (Float) th;
             dx = (sy - tw * scale) * 0.5f;

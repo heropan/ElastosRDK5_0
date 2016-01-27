@@ -451,9 +451,9 @@ ECode CAudioRecord::AudioParamCheck(
     //--------------
     // audio source
     Int32 tempValue;
-    if ( (audioSource < IMediaRecorderAudioSource::DEFAULT) ||
-         (audioSource > (CMediaRecorder::GetAudioSourceMax(&tempValue), tempValue)) &&
-         (audioSource != IMediaRecorderAudioSource::HOTWORD) ) {
+    if ((audioSource < IMediaRecorderAudioSource::DEFAULT) ||
+         ((audioSource > (CMediaRecorder::GetAudioSourceMax(&tempValue), tempValue)) &&
+         (audioSource != IMediaRecorderAudioSource::HOTWORD))) {
         //throw (new IllegalArgumentException("Invalid audio source."));
         Logger::E(TAG, "Invalid audio source.");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;

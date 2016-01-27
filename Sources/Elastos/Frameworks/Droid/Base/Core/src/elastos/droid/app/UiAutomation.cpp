@@ -339,7 +339,7 @@ ECode UiAutomation::GetWindows(
     VALIDATE_NOT_NULL(windows)
     *windows = NULL;
 
-    Int32 connectionId;
+    Int32 connectionId = 0;
     synchronized(mLock) {
         FAIL_RETURN(ThrowIfNotConnectedLocked())
         connectionId = mConnectionId;
@@ -354,7 +354,7 @@ ECode UiAutomation::GetRootInActiveWindow(
     VALIDATE_NOT_NULL(info)
     *info = NULL;
 
-    Int32 connectionId;
+    Int32 connectionId = 0;
     synchronized(mLock) {
         FAIL_RETURN(ThrowIfNotConnectedLocked())
         connectionId = mConnectionId;

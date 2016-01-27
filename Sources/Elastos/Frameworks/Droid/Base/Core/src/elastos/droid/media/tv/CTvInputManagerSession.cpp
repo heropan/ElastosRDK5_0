@@ -64,6 +64,7 @@ ECode CTvInputManagerSession::InputEventHandler::HandleMessage(
             return NOERROR;
         }
     }
+    return NOERROR;
 }
 
 //==============================================================================
@@ -387,7 +388,7 @@ ECode CTvInputManagerSession::DispatchInputEvent(
     /* [out] */ Int32* result)
 {
     VALIDATE_NOT_NULL(result)
-    *result = NULL;
+    *result = 0;
 
     if (event == NULL) {
         // throw new IllegalArgumentException("event cannot be NULL");
@@ -426,6 +427,7 @@ ECode CTvInputManagerSession::DispatchInputEvent(
         *result = ITvInputManagerSession::DISPATCH_IN_PROGRESS;
         return NOERROR;
     }
+    return NOERROR;
 }
 
 ECode CTvInputManagerSession::SetMain()

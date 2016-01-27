@@ -1210,7 +1210,7 @@ static void IntentDestructor(void* st)
 void CActivityThread::InitTLS()
 {
     if (!sHaveKey) {
-        Int32 result = pthread_key_create(&sKey, ActivityThreadDestructor);
+        Int32 UNUSED(result) = pthread_key_create(&sKey, ActivityThreadDestructor);
         assert(result == 0);
 
         result = pthread_key_create(&sCurrentBroadcastIntentKey, IntentDestructor);
@@ -4457,8 +4457,7 @@ ECode CActivityThread::HandleDestroyActivity(
 
     if (finishing) {
         AutoPtr<IIActivityManager> amService = ActivityManagerNative::GetDefault();
-        ECode ec = amService->ActivityDestroyed(token);
-        UNUSED(ec);
+        amService->ActivityDestroyed(token);
     }
 
     mSomeActivitiesChanged = TRUE;
@@ -5297,7 +5296,7 @@ ECode CActivityThread::HandleBindApplication(
     // Allow application-generated systrace messages if we're debuggable.
     Int32 flags;
     data->mAppInfo->GetFlags(&flags);
-    Boolean appTracingAllowed = (flags & IApplicationInfo::FLAG_DEBUGGABLE) != 0;
+    Boolean UNUSED(appTracingAllowed) = (flags & IApplicationInfo::FLAG_DEBUGGABLE) != 0;
     // Trace.setAppTracingAllowed(appTracingAllowed);
 
     /**
