@@ -207,11 +207,7 @@ ECode FileChannelImpl::CheckWritable()
 
 ECode FileChannelImpl::ImplCloseChannel()
 {
-    if (ICloseable::Probe(mStream) != NULL)
-    {
-        return ((ICloseable*) mStream.Get())->Close();
-    }
-    return NOERROR;
+    return mStream->Close();
 }
 
 ECode FileChannelImpl::BasicLock(
