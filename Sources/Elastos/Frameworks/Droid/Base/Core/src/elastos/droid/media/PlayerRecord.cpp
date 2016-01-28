@@ -1,4 +1,10 @@
 #include "elastos/droid/media/PlayerRecord.h"
+#include "elastos/droid/media/MediaFocusControl.h"
+#include <elastos/core/StringUtils.h>
+#include <elastos/utility/logging/Slogger.h>
+
+using Elastos::Utility::Logging::Slogger;
+using Elastos::Core::StringUtils;
 
 namespace Elastos{
 namespace Droid {
@@ -6,18 +12,20 @@ namespace Media {
 //================================================================================
 //                      PlayerRecord::RccPlaybackState
 //================================================================================
-PlayerRecord::RccPlaybackState()
+PlayerRecord::RccPlaybackState::RccPlaybackState()
     : mState(0)
     , mPositionMs(0)
     , mSpeed(0)
 {}
 
-PlayerRecord::~RccPlaybackState()
+PlayerRecord::RccPlaybackState::~RccPlaybackState()
 {}
+
+CAR_INTERFACE_IMPL(PlayerRecord::RccPlaybackState, Object, IPlayerRecordRccPlaybackState)
 
 ECode PlayerRecord::RccPlaybackState::constructor(
     /* [in] */ Int32 state,
-    /* [in] */ Long positionMs,
+    /* [in] */ Int64 positionMs,
     /* [in] */ Float speed)
 {
     mState = state;
@@ -74,7 +82,7 @@ String PlayerRecord::RccPlaybackState::StateToString()
             return String("PLAYSTATE_SKIPPING_BACKWARDS");
         case IRemoteControlClient::PLAYSTATE_BUFFERING:
             return String("PLAYSTATE_BUFFERING");
-        case RemoteControlClient.PLAYSTATE_ERROR:
+        case IRemoteControlClient::PLAYSTATE_ERROR:
             return String("PLAYSTATE_ERROR");
         default:
             return String("[invalid playstate]");
@@ -85,7 +93,7 @@ String PlayerRecord::RccPlaybackState::StateToString()
 //                      PlayerRecord::RemotePlaybackState
 //================================================================================
 PlayerRecord::RemotePlaybackState::RemotePlaybackState()
-    ：mRccId(0)
+    : mRccId(0)
     , mVolume(0)
     , mVolumeMax(0)
     , mVolumeHandling(0)
@@ -115,10 +123,14 @@ PlayerRecord::RcClientDeathHandler::RcClientDeathHandler()
 PlayerRecord::RcClientDeathHandler::~RcClientDeathHandler()
 {}
 
+CAR_INTERFACE_IMPL(PlayerRecord::RcClientDeathHandler, Object, IProxyDeathRecipient)
+
 ECode PlayerRecord::RcClientDeathHandler::constructor(
+    /* [in] */ PlayerRecord* host,
     /* [in] */ IBinder* cb,
     /* [in] */ IPendingIntent* pi)
 {
+    mHost = host;
     mCb = cb;
     mMediaIntent = pi;
     return NOERROR;
@@ -129,9 +141,10 @@ ECode PlayerRecord::RcClientDeathHandler::BinderDied()
     Slogger::W(TAG, "  RemoteControlClient died");
     // remote control client died, make sure the displays don't use it anymore
     //  by setting its remote control client to null
-    sController->RegisterRemoteControlClient(mMediaIntent, NULL/*rcClient*/, NULL/*ignored*/);
+    Int32 ret = ((MediaFocusControl*)((mHost->sController).Get()))->RegisterRemoteControlClient(mMediaIntent.Get(), NULL/*rcClient*/, String(NULL)/*ignored*/);
     // the dead client was maybe handling remote playback, the controller should reevaluate
-    return sController->PostReevaluateRemote();
+    ((MediaFocusControl*)((mHost->sController).Get()))->PostReevaluateRemote();
+    return NOERROR;
 }
 
 ECode PlayerRecord::RcClientDeathHandler::GetBinder(
@@ -143,10 +156,27 @@ ECode PlayerRecord::RcClientDeathHandler::GetBinder(
     return NOERROR;
 }
 
+ECode PlayerRecord::RcClientDeathHandler::ProxyDied()
+{
+    return NOERROR;
+}
+
 //================================================================================
 //                      PlayerRecord
 //================================================================================
+const String PlayerRecord::TAG (String("MediaFocusControl"));
+const Boolean PlayerRecord::DEBUG = FALSE;
+Int32 PlayerRecord::sLastRccId = 0;
+AutoPtr<IPendingIntentOnFinished> PlayerRecord::sController;
+
 PlayerRecord::PlayerRecord()
+    : mRccId(-1)
+    , mCallingUid(0)
+    , mPlaybackType(0)
+    , mPlaybackVolume(0)
+    , mPlaybackVolumeMax(0)
+    , mPlaybackVolumeHandling(0)
+    , mPlaybackStream(0)
 {}
 
 PlayerRecord::~PlayerRecord()
@@ -158,27 +188,32 @@ ECode PlayerRecord::Dump(
     /* [in] */ IPrintWriter* pw,
     /* [in] */ Boolean registrationInfo)
 {
-    VALIDATE_NOT_NULL(pw);
     if (registrationInfo) {
-        pw->Println(String("  pi: ") + mMediaIntent +
-                String(" -- pack: ") + mCallingPackageName +
-                String("  -- ercvr: ") + mReceiverComponent +
-                String("  -- client: ") + mRcClient +
-                String("  -- uid: ") + mCallingUid +
-                String("  -- type: ") + mPlaybackType +
-                String("  state: ") + mPlaybackState);
+        pw->Println(String("  pi: "));
+        pw->Println(mMediaIntent.Get());
+        pw->Println(String(" -- pack: ") + mCallingPackageName +
+                    String("  -- ercvr: "));
+        pw->Println(mReceiverComponent.Get());
+        pw->Println(String("  -- client: "));
+        pw->Println(mRcClient.Get());
+        pw->Println(String("  -- uid: ") + mCallingUid +
+                    String("  -- type: ") + mPlaybackType +
+                    String("  state: " ));
+        pw->Println(mPlaybackState.Get());
     } else {
         // emphasis on state
         pw->Println(String("  uid: ") + mCallingUid +
-                String("  -- id: ") + mRccId +
-                String("  -- type: ") + mPlaybackType +
-                String("  -- state: ") + mPlaybackState +
-                String("  -- vol handling: ") + mPlaybackVolumeHandling +
-                String("  -- vol: ") + mPlaybackVolume +
-                String("  -- volMax: ") + mPlaybackVolumeMax +
-                "  -- volObs: " + mRemoteVolumeObs);
+                    String("  -- id: ") + mRccId +
+                    String("  -- type: ") + mPlaybackType +
+                    String("  -- state: "));
+        pw->Println(mPlaybackState.Get());
+        pw->Println(String("  -- vol handling: ") + mPlaybackVolumeHandling +
+                    String("  -- vol: ") + mPlaybackVolume +
+                    String("  -- volMax: ") + mPlaybackVolumeMax +
+                    String("  -- volObs: "));
+        pw->Println(mRemoteVolumeObs.Get());
     }
-
+    return NOERROR;
 }
 
 ECode PlayerRecord::ResetPlaybackInfo()
@@ -195,10 +230,14 @@ ECode PlayerRecord::ResetPlaybackInfo()
 
 ECode PlayerRecord::UnlinkToRcClientDeath()
 {
-    if ((mRcClientDeathHandler != NULL) && (mRcClientDeathHandler.mCb != NULL)) {
+    if ((mRcClientDeathHandler != NULL) && (mRcClientDeathHandler->mCb != NULL)) {
         // try {
-            mRcClientDeathHandler.mCb->UnlinkToDeath(mRcClientDeathHandler, 0);
-            mRcClientDeathHandler = NULL;
+        AutoPtr<IBinder> cb = mRcClientDeathHandler->mCb;
+        AutoPtr<IProxy> proxy = (IProxy*)cb->Probe(EIID_IProxy);
+        assert(proxy != NULL);
+        Boolean flag = FALSE;
+        proxy->UnlinkToDeath((IProxyDeathRecipient*)mRcClientDeathHandler.Get(), 0, &flag);
+        mRcClientDeathHandler = NULL;
         // } catch (java.util.NoSuchElementException e) {
             // not much we can do here
             // Log.e(TAG, "Error in unlinkToRcClientDeath()", e);
@@ -211,7 +250,10 @@ ECode PlayerRecord::Destroy()
 {
     UnlinkToRcClientDeath();
     if (mToken != NULL) {
-        mToken->UnlinkToDeath(this, 0);
+        AutoPtr<IProxy> proxy = (IProxy*)mToken->Probe(EIID_IProxy);
+        assert(proxy != NULL);
+        Boolean flag = FALSE;
+        proxy->UnlinkToDeath((IProxyDeathRecipient*)this, 0, &flag);
         mToken = NULL;
     }
     return NOERROR;
@@ -219,11 +261,12 @@ ECode PlayerRecord::Destroy()
 
 ECode PlayerRecord::BinderDied()
 {
-    return sController->UnregisterMediaButtonIntentAsync(mMediaIntent);
+    ((MediaFocusControl*)(sController.Get()))->UnregisterMediaButtonIntentAsync(mMediaIntent);
+    return NOERROR;
 }
 
 ECode PlayerRecord::SetMediaFocusControl(
-    /* [in] */ IMediaFocusControl* mfc)
+    /* [in] */ IPendingIntentOnFinished* mfc)
 {
     sController = mfc;
     return NOERROR;
@@ -249,10 +292,14 @@ ECode PlayerRecord::constructor(
     ResetPlaybackInfo();
     if (mToken != NULL) {
         // try {
-            ec = mToken->LinkToDeath(this, 0);
-            if (ec == (ECode)E_REMOTE_EXCEPTION) {
-               return sController->UnregisterMediaButtonIntentAsync(mMediaIntent);
-            }
+         AutoPtr<IProxy> proxy = (IProxy*)mToken->Probe(EIID_IProxy);
+        assert(proxy != NULL);
+        Boolean flag = FALSE;
+        proxy->LinkToDeath((IProxyDeathRecipient*)this, 0);
+        if (ec == (ECode)E_REMOTE_EXCEPTION) {
+            ((MediaFocusControl*)sController.Get())->UnregisterMediaButtonIntentAsync(mMediaIntent);
+            return NOERROR;
+        }
         // } catch (RemoteException e) {
             // sController.unregisterMediaButtonIntentAsync(mMediaIntent);
         // }
@@ -269,14 +316,13 @@ ECode PlayerRecord::GetRccId(
 }
 
 ECode PlayerRecord::GetRcc(
-    /* [out] */ IRemoteControlClient** result)
+    /* [out] */ IIRemoteControlClient** result)
 {
     VALIDATE_NOT_NULL(result);
     *result = mRcClient;
     REFCOUNT_ADD(*result);
     return NOERROR;
 }
-
 
 ECode PlayerRecord::GetMediaButtonReceiver(
     /* [out] */ IComponentName** result)
@@ -301,9 +347,16 @@ ECode PlayerRecord::HasMatchingMediaButtonIntent(
 {
     VALIDATE_NOT_NULL(result);
     if (mToken != NULL) {
-        // return mMediaIntent.equals(pi);
+        *result = mMediaIntent.Get() == pi;
+        return NOERROR;
         if (mReceiverComponent != NULL) {
-            // return mReceiverComponent.equals(pi.getIntent().getComponent());
+            AutoPtr<IIntent> intent;
+            pi->GetIntent((IIntent**)&intent);
+            AutoPtr<IComponentName> componentName;
+            intent->GetComponent((IComponentName**)&componentName);
+            *result = mReceiverComponent == componentName;
+            // *result = IObject::Equals(TO_IINTERFACE(mReceiverComponent), TO_IINTERFACE(componentName));
+            return NOERROR;
         } else {
             *result = FALSE;
             return NOERROR;
@@ -316,11 +369,12 @@ ECode PlayerRecord::IsPlaybackActive(
     /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result);
-    return MediaFocusControl::IsPlaystateActive(/*mPlaybackState.mState*/, result);
+    *result = MediaFocusControl::IsPlaystateActive(((RccPlaybackState*)(mPlaybackState.Get()))->mState);
+    return NOERROR;
 }
 
 ECode PlayerRecord::ResetControllerInfoForRcc(
-    /* [in] */ IRemoteControlClient* rcClient,
+    /* [in] */ IIRemoteControlClient* rcClient,
     /* [in] */ const String& callingPackageName,
     /* [in] */ Int32 uid)
 {
@@ -338,15 +392,18 @@ ECode PlayerRecord::ResetControllerInfoForRcc(
         return ResetPlaybackInfo();
     } else {
         AutoPtr<IBinder> b;
-        mRcClient->AsBinder((IBinder**)&b);
+        assert(0 && "TODO");
+        // mRcClient->AsBinder((IBinder**)&b);
         AutoPtr<RcClientDeathHandler> rcdh = new RcClientDeathHandler();
-        rcdh->constructor(b, mMediaIntent);
+        rcdh->constructor(this, b.Get(), mMediaIntent.Get());
         // try {
-        ECode ec = b->LinkToDeath(rcdh, 0);
+        AutoPtr<IProxy> proxy = (IProxy*)b->Probe(EIID_IProxy);
+        assert(proxy != NULL);
+        ECode ec = proxy->LinkToDeath((IProxyDeathRecipient*)rcdh.Get(), 0);
         // } catch (RemoteException e) {
             // remote control client is DOA, disqualify it
         if (ec == (ECode)E_REMOTE_EXCEPTION) {
-            Slogger::W(TAG, "registerRemoteControlClient() has a dead client %p", b);
+            // Slogger::W(TAG, "registerRemoteControlClient() has a dead client %p", b);
             mRcClient = NULL;
         }
         // }

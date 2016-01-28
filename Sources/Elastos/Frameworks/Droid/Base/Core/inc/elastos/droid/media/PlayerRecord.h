@@ -1,14 +1,30 @@
 #ifndef _ELASTOS_DROID_MEDIA_PLAYERRECORD_H__
 #define _ELASTOS_DROID_MEDIA_PLAYERRECORD_H__
 
+#include "Elastos.Droid.App.h"
 #include "Elastos.Droid.Media.h"
+#include "Elastos.Droid.Content.h"
+#include "Elastos.Droid.Os.h"
+#include <Elastos.CoreLibrary.IO.h>
 #include "elastos/droid/ext/frameworkext.h"
 #include <elastos/core/Object.h>
+
+using Elastos::Droid::App::IPendingIntent;
+using Elastos::Droid::App::IPendingIntentOnFinished;
+using Elastos::Droid::Content::IComponentName;
+using Elastos::Droid::Os::IBinder;
+using Elastos::IO::IPrintWriter;
 
 namespace Elastos{
 namespace Droid {
 namespace Media {
-
+/**
+ * @hide
+ * Class to handle all the information about a media player, encapsulating information
+ * about its use RemoteControlClient, playback type and volume... The lifecycle of each
+ * instance is managed by android.media.MediaFocusControl, from its addition to the player stack
+ * stack to its release.
+ */
 class PlayerRecord
 	: public Object
 	, public IPlayerRecord
@@ -17,16 +33,18 @@ class PlayerRecord
 protected:
 	class RccPlaybackState
         : public Object
-        , public IRccPlaybackState
+        , public IPlayerRecordRccPlaybackState
 	{
 	public:
 		RccPlaybackState();
 
         virtual ~RccPlaybackState();
 
+        CAR_INTERFACE_DECL()
+
         CARAPI constructor(
             /* [in] */ Int32 state,
-            /* [in] */ Long positionMs,
+            /* [in] */ Int64 positionMs,
             /* [in] */ Float speed);
 
         CARAPI Reset();
@@ -41,13 +59,13 @@ protected:
 
     public:
         Int32 mState;
-        Long mPositionMs;
+        Int64 mPositionMs;
         Float mSpeed;
 	};
 
 	class RemotePlaybackState
         : public Object
-        , public IRemotePlaybackState
+        , public IPlayerRecordRemotePlaybackState
 	{
 	public:
 		RemotePlaybackState();
@@ -71,12 +89,16 @@ private:
         : public Object
         , public IProxyDeathRecipient
     {
+        friend class PlayerRecord;
     public:
         RcClientDeathHandler();
 
         ~RcClientDeathHandler();
 
+        CAR_INTERFACE_DECL()
+
         CARAPI constructor(
+            /* [in] */ PlayerRecord* host,
             /* [in] */ IBinder* cb,
             /* [in] */ IPendingIntent* pi);
 
@@ -85,15 +107,20 @@ private:
         CARAPI GetBinder(
             /* [out] */ IBinder** result);
 
+        CARAPI ProxyDied();
+
     private:
         AutoPtr<IBinder> mCb;
         AutoPtr<IPendingIntent> mMediaIntent;
+        PlayerRecord* mHost;
     };
 
 public:
 	PlayerRecord();
 
 	virtual ~PlayerRecord();
+
+    CAR_INTERFACE_DECL()
 
 	CARAPI Dump(
 		/* [in] */ IPrintWriter* pw,
@@ -108,8 +135,9 @@ public:
 	CARAPI BinderDied();
 
 protected:
+
 	static CARAPI SetMediaFocusControl(
-		/* [in] */ IMediaFocusControl* mfc);
+		/* [in] */ IPendingIntentOnFinished* mfc);
 
 	CARAPI constructor(
 		/* [in] */ IPendingIntent* mediaIntent,
@@ -120,7 +148,7 @@ protected:
 		/* [out] */ Int32* result);
 
 	CARAPI GetRcc(
-		/* [out] */ IRemoteControlClient** result);
+		/* [out] */ IIRemoteControlClient** result);
 
 	CARAPI GetMediaButtonReceiver(
 		/* [out] */ IComponentName** result);
@@ -129,14 +157,14 @@ protected:
 		/* [out] */ IPendingIntent** result);
 
 	CARAPI HasMatchingMediaButtonIntent(
-		/* [in] */ PendingIntent pi,
+		/* [in] */ IPendingIntent* pi,
 		/* [out] */ Boolean* result);
 
 	CARAPI IsPlaybackActive(
 		/* [out] */ Boolean* result);
 
 	CARAPI ResetControllerInfoForRcc(
-		/* [in] */ IRemoteControlClient* rcClient,
+		/* [in] */ IIRemoteControlClient* rcClient,
         /* [in] */ const String& callingPackageName,
         /* [in] */ Int32 uid);
 
@@ -145,7 +173,7 @@ protected:
 	CARAPI Finalize();
 
 public:
-	static MediaFocusControl sController;
+	static AutoPtr<IPendingIntentOnFinished> sController; //MediaFocusControl
     /**
      * Information only used for non-local playback
      */
@@ -155,18 +183,18 @@ public:
     Int32 mPlaybackVolumeMax;
     Int32 mPlaybackVolumeHandling;
     Int32 mPlaybackStream;
-    AutoPtr<IRccPlaybackState> mPlaybackState;
+    AutoPtr<IPlayerRecordRccPlaybackState> mPlaybackState;
     AutoPtr<IIRemoteVolumeObserver> mRemoteVolumeObs;
 
 private:
 	// on purpose not using this classe's name, as it will only be used from MediaFocusControl
-    static const String TAG = "MediaFocusControl";
-    static const Boolean DEBUG = FALSE;
+    static const String TAG;
+    static const Boolean DEBUG;
 
     /**
      * A global counter for RemoteControlClient identifiers
      */
-    static Int32 sLastRccId = 0;
+    static Int32 sLastRccId;
 
     /**
      * The target for the ACTION_MEDIA_BUTTON events.
@@ -178,7 +206,7 @@ private:
      */
     AutoPtr<IComponentName> mReceiverComponent;
 
-    Int32 mRccId = -1;
+    Int32 mRccId;
 
     /**
      * A non-null token implies this record tracks a "live" player whose death is being monitored.
@@ -190,8 +218,8 @@ private:
      * Provides access to the information to display on the remote control.
      * May be null (when a media button event receiver is registered,
      *     but no remote control client has been registered) */
-    AutoPtr<IRemoteControlClient> mRcClient;
-    AutoPtr<IRcClientDeathHandler> mRcClientDeathHandler;
+    AutoPtr<IIRemoteControlClient> mRcClient;
+    AutoPtr<RcClientDeathHandler> mRcClientDeathHandler;
 };
 
 } // namespace Elastos
