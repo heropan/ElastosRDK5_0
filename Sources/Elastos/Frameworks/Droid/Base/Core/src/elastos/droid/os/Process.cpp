@@ -1050,14 +1050,14 @@ static Int64 GetFreeMemoryImpl(
 Int64 Process::GetFreeMemory()
 {
     static const char* const sums[] = { "MemFree:", "Cached:", NULL };
-    static const int sumsLen[] = { strlen("MemFree:"), strlen("Cached:"), 0 };
+    static const int sumsLen[] = { (int)strlen("MemFree:"), (int)strlen("Cached:"), 0 };
     return GetFreeMemoryImpl(sums, sumsLen, 2);
 }
 
 Int64 Process::GetTotalMemory()
 {
     static const char* const sums[] = { "MemTotal:", NULL };
-    static const int sumsLen[] = { strlen("MemTotal:"), 0 };
+    static const int sumsLen[] = { (int)strlen("MemTotal:"), 0 };
     return GetFreeMemoryImpl(sums, sumsLen, 1);
 }
 

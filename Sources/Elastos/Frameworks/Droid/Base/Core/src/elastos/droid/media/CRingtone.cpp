@@ -188,8 +188,6 @@ String CRingtone::GetTitle(
 
             // try {
             Boolean result;
-            ECode ec = NOERROR;
-
             Int32 count = 0;
             if (cursor) {
                 cursor->GetCount(&count);

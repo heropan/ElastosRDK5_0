@@ -2526,10 +2526,10 @@ ECode GLES30::GlGetActiveUniformsiv(
     ECode _exceptionType = NOERROR;
     const char * _exceptionMessage = NULL;
     GLuint *uniformIndices_base = (GLuint *) 0;
-    Int32 _uniformIndicesRemaining;
+    Int32 UNUSED(_uniformIndicesRemaining);
     GLuint *uniformIndices = (GLuint *) 0;
     GLint *params_base = (GLint *) 0;
-    Int32 _paramsRemaining;
+    Int32 UNUSED(_paramsRemaining);
     GLint *params = (GLint *) 0;
 
     if (!uniformIndices_ref) {
@@ -2708,10 +2708,10 @@ ECode GLES30::GlGetActiveUniformBlockName(
     ECode _exceptionType = NOERROR;
     const char* _exceptionMessage;
     GLsizei* _length_base = (GLsizei*)0;
-    Int32 _lengthRemaining;
+    Int32 UNUSED(_lengthRemaining);
     GLsizei* _length = (GLsizei*)0;
     GLchar* _name_base = (GLchar*)0;
-    Int32 _nameRemaining;
+    Int32 UNUSED(_nameRemaining);
     GLchar* _name = (GLchar*)0;
 
     if (!length_ref) {
@@ -2769,9 +2769,6 @@ ECode GLES30::GlGetActiveUniformBlockName(
     /* [in] */ IBuffer* length_buf,
     /* [in] */ IBuffer* uniformBlockName_buf)
 {
-    Int32 _exception = 0;
-    ECode _exceptionType;
-    const char* _exceptionMessage;
     Handle64 _lengthArray = 0;
     Int32 _lengthBufferOffset = 0;
     GLsizei* _length = (GLsizei*)0;
@@ -3010,10 +3007,10 @@ ECode GLES30::GlGetSynciv(
     ECode _exceptionType = NOERROR;
     const char * _exceptionMessage = NULL;
     GLsizei *length_base = (GLsizei *) 0;
-    Int32 _lengthRemaining;
+    Int32 UNUSED(_lengthRemaining);
     GLsizei *length = (GLsizei *) 0;
     GLint *values_base = (GLint *) 0;
-    Int32 _valuesRemaining;
+    Int32 UNUSED(_valuesRemaining);
     GLint *values = (GLint *) 0;
 
     if (!length_ref) {
@@ -3548,10 +3545,10 @@ ECode GLES30::GlGetProgramBinary(
     Handle64 _array = 0;
     Int32 _bufferOffset = (Int32) 0;
     GLsizei *length_base = (GLsizei *) 0;
-    Int32 _lengthRemaining;
+    Int32 UNUSED(_lengthRemaining);
     GLsizei *length = (GLsizei *) 0;
     GLenum *binaryFormat_base = (GLenum *) 0;
-    Int32 _binaryFormatRemaining;
+    Int32 UNUSED(_binaryFormatRemaining);
     GLenum *binaryFormat = (GLenum *) 0;
     Int32 _binaryRemaining;
     GLvoid *binary = (GLvoid *) 0;

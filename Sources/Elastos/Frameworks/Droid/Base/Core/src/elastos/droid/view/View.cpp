@@ -1206,6 +1206,7 @@ View::View()
     , mLabelForId(IView::NO_ID)
     , mBackgroundResource(0)
     , mBackgroundSizeChanged(FALSE)
+    , mOutlineProvider(ViewOutlineProvider::BACKGROUND)
     , mNextFocusLeftId(IView::NO_ID)
     , mNextFocusRightId(IView::NO_ID)
     , mNextFocusUpId(IView::NO_ID)
@@ -1222,7 +1223,6 @@ View::View()
     , mSendingHoverAccessibilityEvents(FALSE)
     , mLeftPaddingDefined(FALSE)
     , mRightPaddingDefined(FALSE)
-    , mOutlineProvider(ViewOutlineProvider::BACKGROUND)
 {
     if (InputEventConsistencyVerifier::IsInstrumentationEnabled()) {
         mInputEventConsistencyVerifier =
@@ -10979,7 +10979,7 @@ ECode View::GetWindowId(
         *id = NULL;
         return NOERROR;
     }
-    ECode ec;
+    ECode ec = NOERROR;
     if (mAttachInfo->mWindowId == NULL) {
         //try {
         ec = mAttachInfo->mSession->GetWindowId(mAttachInfo->mWindowToken, (IIWindowId**)&mAttachInfo->mIWindowId);
@@ -12575,7 +12575,7 @@ void View::SetDisplayListProperties(
             renderNode->SetClipToBounds(
                 (VIEWGROUP_PROBE(mParent)->mGroupFlags & ViewGroup::FLAG_CLIP_CHILDREN) != 0, &res);
         }
-        Float alpha;
+        Float alpha = 1;
         if (IViewGroup::Probe(mParent) && (VIEWGROUP_PROBE(mParent)->mGroupFlags &
                 ViewGroup::FLAG_SUPPORT_STATIC_TRANSFORMATIONS) != 0) {
             ViewGroup* parentVG = VIEWGROUP_PROBE(mParent);

@@ -264,15 +264,15 @@ ECode HttpsConnection::OpenConnection(
         AutoPtr<IHttpRequest> httpReq = IHttpRequest::Probe(proxyReq);
         ec = proxyConnection->SendRequestHeader(httpReq);
         if (ec == (ECode)E_PARSE_EXCEPTION
-                || ec == E_HTTP_EXCEPTION
-                || ec == E_IO_EXCEPTION ) {
+                || ec == (ECode)E_HTTP_EXCEPTION
+                || ec == (ECode)E_IO_EXCEPTION ) {
             Logger::E("HttpsConnection", String("failed to send a CONNECT request"));
             return ec;
         }
         ec = proxyConnection->Flush();
         if (ec == (ECode)E_PARSE_EXCEPTION
-                || ec == E_HTTP_EXCEPTION
-                || ec == E_IO_EXCEPTION ) {
+                || ec == (ECode)E_HTTP_EXCEPTION
+                || ec == (ECode)E_IO_EXCEPTION ) {
             Logger::E("HttpsConnection", String("failed to send a CONNECT request"));
             return ec;
         }
@@ -285,8 +285,8 @@ ECode HttpsConnection::OpenConnection(
             statusLine = NULL;
             ec = proxyConnection->ParseResponseHeader(headers, (IStatusLine**)&statusLine);
             if (ec == (ECode)E_PARSE_EXCEPTION
-                    || ec == E_HTTP_EXCEPTION
-                    || ec == E_IO_EXCEPTION ) {
+                    || ec == (ECode)E_HTTP_EXCEPTION
+                    || ec == (ECode)E_IO_EXCEPTION ) {
                 Logger::E("HttpsConnection", String("failed to send a CONNECT request"));
                 return ec;
             }
@@ -443,7 +443,7 @@ ECode HttpsConnection::CloseConnection()
         RestartConnection(FALSE);
     }
 
-    ECode ec;
+    ECode ec = NOERROR;
     Boolean isOpen;
     if (mHttpClientConnection != NULL && (mHttpClientConnection->IsOpen(&isOpen), isOpen)) {
         ec = mHttpClientConnection->Close();
@@ -455,7 +455,6 @@ ECode HttpsConnection::CloseConnection()
             HttpLog::V(String("HttpsConnection.closeConnection(): failed closing connection ") + smHost);
         }
     }
-
     return ec;
 }
 
@@ -467,7 +466,6 @@ ECode HttpsConnection::RestartConnection(
     }
 
     synchronized(mSuspendLock) {
-
         if (mSuspended) {
             mSuspended = FALSE;
             mAborted = !proceed;

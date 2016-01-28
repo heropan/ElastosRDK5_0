@@ -304,7 +304,7 @@ ECode FileSynthesisCallback::Done(
         channelCount = mChannelCount;
     }
 
-    ECode ec;
+    ECode ec = NOERROR;
     Int64 size;
     Int32 number;
 

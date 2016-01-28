@@ -495,18 +495,6 @@ ECode SubtitleTrack::Run::RemoveAtEndTimeMs()
 //===============================================================
 CAR_INTERFACE_IMPL(SubtitleTrack::SubTrackRunnable, Object, IRunnable)
 
-SubtitleTrack::SubTrackRunnable::SubTrackRunnable()
-{}
-
-ECode SubtitleTrack::SubTrackRunnable::constructor(
-    /* [in] */ SubtitleTrack* host,
-    /* [in] */ Int64 thenMs)
-{
-    mHost = host;
-    mThenMs = thenMs;
-    return NOERROR;
-}
-
 ECode SubtitleTrack::SubTrackRunnable::Run()
 {
     // even with synchronized, it is possible that we are going
@@ -853,7 +841,7 @@ ECode SubtitleTrack::AddCue(
             mHandler->RemoveCallbacks(mRunnable.Get());
         }
         Int64 thenMs = nowMs;
-        mRunnable = new SubTrackRunnable();
+        mRunnable = new SubTrackRunnable(this, thenMs);
         // delay update so we don't update view on every cue.  TODO why 10?
         Boolean flag = FALSE;
         mHandler->PostDelayed(mRunnable, 10 /* delay */, &flag);
@@ -865,9 +853,9 @@ ECode SubtitleTrack::AddCue(
         return true;
     }
 
-    if (mVisible &&
+    if ((mVisible &&
             endTimeMs >= mLastTimeMs &&
-            (startTimeMs < mNextScheduledTimeMs) ||
+            startTimeMs < mNextScheduledTimeMs) ||
              mNextScheduledTimeMs < 0) {
         ScheduleTimedEvents();
     }

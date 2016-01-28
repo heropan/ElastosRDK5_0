@@ -51,17 +51,6 @@ namespace Elastos {
 namespace Droid {
 namespace Media {
 
-static AutoPtr< ArrayOf<Int32> > InitMETADATA_KEYS_TYPE_LONG()
-{
-    AutoPtr< ArrayOf<Int32> > array = ArrayOf<Int32>::Alloc(3);
-
-    array->Set(0, IMediaMetadataRetriever::METADATA_KEY_CD_TRACK_NUMBER);
-    array->Set(1, IMediaMetadataRetriever::METADATA_KEY_DISC_NUMBER);
-    array->Set(2, IMediaMetadataRetriever::METADATA_KEY_DURATION);
-    return array;
-
-}
-
 const String CRemoteControlClient::TAG("RemoteControlClient");
 const Boolean CRemoteControlClient::DEBUG = FALSE;
 
@@ -220,16 +209,19 @@ ECode CRemoteControlClient::MetadataEditor::Apply()
             mOwner->mSession->SetMetadata(mOwner->mMediaMetadata);
         }
         mApplied = TRUE;
-        return NOERROR;
     }
+    return NOERROR;
 }
 
 CRemoteControlClient::CRemoteControlClient()
     : mPlaybackState(PLAYSTATE_NONE)
     , mPlaybackStateChangeTimeMs(0)
+    , mPlaybackPositionMs(PLAYBACK_POSITION_INVALID)
+    , mPlaybackSpeed(PLAYBACK_SPEED_1X)
     , mTransportControlFlags(FLAGS_KEY_MEDIA_NONE)
     , mCurrentClientGenId(-1)
     , mInternalClientGenId(-2)
+    , mNeedsPositionSync(FALSE)
 {
 }
 
@@ -485,6 +477,7 @@ ECode CRemoteControlClient::SetMetadataUpdateListener(
     synchronized(mCacheLock) {
         mMetadataUpdateListener = l;
     }
+    return NOERROR;
 }
 
 ECode CRemoteControlClient::SetPlaybackPositionUpdateListener(
@@ -493,6 +486,7 @@ ECode CRemoteControlClient::SetPlaybackPositionUpdateListener(
     synchronized(mCacheLock) {
         mPositionUpdateListener = l;
     }
+    return NOERROR;
 }
 
 ECode CRemoteControlClient::SetOnGetPlaybackPositionListener(
@@ -623,11 +617,15 @@ CAR_INTERFACE_IMPL(CRemoteControlClient::MediaSessionCallback, Object, IMediaSes
 
 ECode CRemoteControlClient::MediaSessionCallback::OnSeekTo(
     /* [in] */ Int64 pos)
-{}
+{
+    return NOERROR;
+}
 
 ECode CRemoteControlClient::MediaSessionCallback::OnSetRating(
     /* [in] */ IRating* rating)
-{}
+{
+    return NOERROR;
+}
 
 //override for compile
 ECode CRemoteControlClient::MediaSessionCallback::OnCommand(

@@ -225,6 +225,7 @@ private:
     // A matrix to scale the matrix set by application. This is set to null for
     // non compatibility mode.
     AutoPtr<IMatrix> mCompatibleMatrix;
+
 public:
     Int64 mNativeObject; // package scope only for SurfaceControl access
     Int64 mLockedObject;

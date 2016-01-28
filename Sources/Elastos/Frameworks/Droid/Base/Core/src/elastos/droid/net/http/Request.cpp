@@ -128,6 +128,7 @@ ECode Request::constructor(
        high priority reqs (saving the trouble for images, etc) */
     AddHeader(ACCEPT_ENCODING_HEADER, String("gzip"));
     AddHeaders(headers);
+    return NOERROR;
 }
 
 ECode Request::SetLoadingPaused(
@@ -258,6 +259,7 @@ ECode Request::SendRequest(
         this->GetHostPort(&hostPort);
         HttpLog::V("Request.requestSent() %s://%s%s", name.string(), hostPort.string(), mPath.string());
     }
+    return NOERROR;
 }
 
 ECode Request::ReadResponse(
@@ -445,10 +447,11 @@ ECode Request::GetHostPort(
 
     String port;
     // Only send port when we must... many servers can't deal with it
-    if (myPort != 80 && myScheme.Equals("http") ||
-        myPort != 443 && myScheme.Equals("https")) {
+    if ((myPort != 80 && myScheme.Equals("http")) ||
+        (myPort != 443 && myScheme.Equals("https"))) {
         mHost->ToHostString(&port);
-    } else {
+    }
+    else {
         mHost->GetHostName(&port);
     }
 

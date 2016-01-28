@@ -99,6 +99,7 @@ ECode WebVttRenderingWidget::RegionLayout::MeasureForParent(
     widthMeasureSpec = View::MeasureSpec::MakeMeasureSpec(size, View::MeasureSpec::AT_MOST);
     heightMeasureSpec = View::MeasureSpec::MakeMeasureSpec(specHeight, View::MeasureSpec::AT_MOST);
     View::Measure(widthMeasureSpec, heightMeasureSpec);
+    return NOERROR;
 }
 
 ECode WebVttRenderingWidget::RegionLayout::PrepForPrune()

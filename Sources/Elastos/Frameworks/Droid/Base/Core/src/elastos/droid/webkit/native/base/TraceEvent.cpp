@@ -420,6 +420,7 @@ String TraceEvent::GetCallerName()
     // '4' Was derived using the above commented out code snippet.
     return stack[4].getClassName() + "." + stack[4].getMethodName();
 #endif
+    return String(NULL);
 }
 
 void TraceEvent::NativeRegisterEnabledObserver()

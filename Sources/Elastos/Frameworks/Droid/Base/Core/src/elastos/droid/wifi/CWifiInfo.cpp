@@ -685,7 +685,7 @@ ECode CWifiInfo::ToString(
     sb.Append(", MAC: ");
     sb.Append(mMacAddress.IsNull() ? none : mMacAddress);
     sb.Append(", Supplicant state: ");
-    if (mSupplicantState == NULL) sb.Append(none);
+    if (mSupplicantState == SupplicantState_NONE) sb.Append(none);
     sb.Append(mSupplicantState);
     sb.Append(", RSSI: ");
     sb.Append(mRssi);

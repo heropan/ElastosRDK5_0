@@ -33,9 +33,9 @@ ECode Rating::ToString(
     /* [out] */ String* result)
 {
     VALIDATE_NOT_NULL(result);
-    String str =
-        (mRatingValue < 0.0f ? String("unrated") : StringUtils::ToString(mRatingValue));
-    *result = String("Rating:style=") + mRatingStyle + String(" rating=") + str;
+    String str = mRatingValue < 0.0f ?
+            String("unrated") : StringUtils::ToString(mRatingValue);
+    *result = String("Rating:style=") + StringUtils::ToString(mRatingStyle) + String(" rating=") + str;
     return NOERROR;
 }
 

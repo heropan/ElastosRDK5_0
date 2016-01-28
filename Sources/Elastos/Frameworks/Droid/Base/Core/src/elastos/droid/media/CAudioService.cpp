@@ -2021,7 +2021,7 @@ void CAudioService::AudioHandler::PersistRingerMode(
 
 Boolean CAudioService::AudioHandler::OnLoadSoundEffects()
 {
-    Int32 status;
+    Int32 status = 0;
 
     Object& lock = mHost->mSoundEffectsLock;
     synchronized(lock) {

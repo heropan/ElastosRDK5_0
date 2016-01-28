@@ -115,7 +115,7 @@ ECode CSystemVibrator::Cancel()
     if (mService == NULL) {
         return E_NULL_POINTER_EXCEPTION;
     }
-    if(FAILED(mService->CancelVibrate(mToken))) {
+    if (FAILED(mService->CancelVibrate(mToken))) {
         // Log.w(TAG, "Failed to cancel vibration.", e);
     }
     return NOERROR;

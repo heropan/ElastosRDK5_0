@@ -297,7 +297,6 @@ static ssize_t socket_read_all(
     /* [in] */ size_t len)
 {
     ssize_t ret;
-    ssize_t bytesread = 0;
     struct msghdr msg;
     struct iovec iv;
     unsigned char *buf = (unsigned char *)buffer;

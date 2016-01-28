@@ -1708,7 +1708,8 @@ Boolean Settings::Secure::SetLocationModeForUser(
                 break;
             default:
                 Slogger::E("Settings::Secure", "Invalid location mode: %d" + mode);
-                return E_ILLEGAL_ARGUMENT_EXCEPTION;
+                // return E_ILLEGAL_ARGUMENT_EXCEPTION;
+                return FALSE;
         }
         Boolean gpsSuccess = FALSE;
         Settings::Secure::SetLocationProviderEnabledForUser(
@@ -1790,6 +1791,7 @@ static AutoPtr<IHashSet> initGlobalMOVED_TO_SECURE()
     AutoPtr<IHashSet> hs;
     CHashSet::New(1, (IHashSet**)&hs);
     hs->Add(CoreUtils::Convert(ISettingsGlobal::INSTALL_NON_MARKET_APPS).Get());
+    return hs;
 }
 
 const AutoPtr<IHashSet> Settings::Global::MOVED_TO_SECURE = initGlobalMOVED_TO_SECURE();
@@ -2036,11 +2038,10 @@ ECode Settings::Global::GetFloat(
     Float _value;
     if (v.IsNull()) {
         _value = def;
-    } else {
-        _value = StringUtils::ParseFloat(v);
-        if (_value = 0) {
-            _value = def;
-        }
+    }
+    else {
+        ECode ec = StringUtils::Parse(v, &_value);
+        if (FAILED(ec)) _value = def;
     }
     *value = _value;
     return NOERROR;

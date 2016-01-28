@@ -228,11 +228,12 @@ private:
     public:
         CAR_INTERFACE_DECL()
 
-        SubTrackRunnable();
-
-        CARAPI constructor(
+        SubTrackRunnable(
             /* [in] */ SubtitleTrack* host,
-            /* [in] */ Int64 thenMs);
+            /* [in] */ Int64 thenMs)
+            : mHost(host)
+            , mThenMs(thenMs)
+        {}
 
         CARAPI Run();
 

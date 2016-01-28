@@ -220,16 +220,16 @@ ECode Connection::ProcessRequests(
                    connection?  There should not be a penalty for
                    attempting to reuse an old connection */
                 // TODO:
-                ECode eResult = ((Request*)req.Get())->SendRequest(mHttpClientConnection);
-                if (eResult == E_HTTP_EXCEPTION) {
+                ECode ec = ((Request*)req.Get())->SendRequest(mHttpClientConnection);
+                if (ec == (ECode)E_HTTP_EXCEPTION) {
                     error = IEventHandler::ERROR;
                     exception = TRUE;
                 }
-                else if (eResult == E_IO_EXCEPTION){
+                else if (ec == (ECode)E_IO_EXCEPTION){
                     error = IEventHandler::ERROR_IO;
                     exception = TRUE;
                 }
-                else if (eResult == E_ILLEGAL_ARGUMENT_EXCEPTION) {
+                else if (ec == (ECode)E_ILLEGAL_ARGUMENT_EXCEPTION) {
                     error = IEventHandler::ERROR_IO;
                     exception = TRUE;
                 }
@@ -272,16 +272,16 @@ ECode Connection::ProcessRequests(
                 pipe.PopFront();
                 if (HttpLog::LOGV) HttpLog::V("processRequests() reading %s", TO_CSTR(req));
 
-                ECode eResult = ((Request*)req.Get())->ReadResponse(mHttpClientConnection);
-                if (eResult == E_PARSE_EXCEPTION) {
+                ECode ec = ((Request*)req.Get())->ReadResponse(mHttpClientConnection);
+                if (ec == (ECode)E_PARSE_EXCEPTION) {
                     error = IEventHandler::ERROR_IO;
                     exception = TRUE;
                 }
-                else if (eResult == E_IO_EXCEPTION){
+                else if (ec == (ECode)E_IO_EXCEPTION){
                     error = IEventHandler::ERROR_IO;
                     exception = TRUE;
                 }
-                else if (eResult == E_ILLEGAL_ARGUMENT_EXCEPTION) {
+                else if (ec == (ECode)E_ILLEGAL_ARGUMENT_EXCEPTION) {
                     error = IEventHandler::ERROR_IO;
                     exception = TRUE;
                 }
@@ -294,7 +294,7 @@ ECode Connection::ProcessRequests(
                         ((Request*)req.Get())->Reset();
                         pipe.PushBack((Request*)req.Get());
                     }
-                    exception = NULL;
+                    exception = FALSE;
                     mCanPersist = FALSE;
                 }
                 if (!mCanPersist) {
@@ -351,7 +351,7 @@ Boolean Connection::OpenHttpConnection(
 
     // reset the certificate to null before opening a connection
     mCertificate = NULL;
-    ECode eResult = OpenConnection(req, (IElastosHttpClientConnection**)&mHttpClientConnection);
+    ECode ec = OpenConnection(req, (IElastosHttpClientConnection**)&mHttpClientConnection);
     if (mHttpClientConnection != NULL) {
         mHttpClientConnection->SetSocketTimeout(SOCKET_TIMEOUT);
         mHttpContext->SetAttribute(HTTP_CONNECTION, mHttpClientConnection);
@@ -363,25 +363,25 @@ Boolean Connection::OpenHttpConnection(
         return FALSE;
     }
 
-    if (eResult == E_UNKNOWN_HOST_EXCEPTION) {
+    if (ec == (ECode)E_UNKNOWN_HOST_EXCEPTION) {
         if (HttpLog::LOGV) HttpLog::V("Failed to open connection");
         error = IEventHandler::ERROR_LOOKUP;
         exception = TRUE;
     }
-    else if (eResult == E_ILLEGAL_ARGUMENT_EXCEPTION) {
+    else if (ec == (ECode)E_ILLEGAL_ARGUMENT_EXCEPTION) {
         if (HttpLog::LOGV) HttpLog::V("Illegal argument exception");
         error = IEventHandler::ERROR_CONNECT;
         ((Request*)req)->mFailCount = RETRY_REQUEST_LIMIT;
         exception = TRUE;
     }
-    else if (eResult == E_SSL_CONNECTION_CLOSED_BY_USER_EXCEPTION) {
+    else if (ec == (ECode)E_SSL_CONNECTION_CLOSED_BY_USER_EXCEPTION) {
         // hack: if we have an SSL connection failure,
         // we don't want to reconnect
         ((Request*)req)->mFailCount = RETRY_REQUEST_LIMIT;
         // no error message
         return FALSE;
     }
-    else if (eResult == E_SSL_HANDSHAKE_EXCEPTION) {
+    else if (ec == (ECode)E_SSL_HANDSHAKE_EXCEPTION) {
         // hack: if we have an SSL connection failure,
         // we don't want to reconnect
         ((Request*)req)->mFailCount = RETRY_REQUEST_LIMIT;
@@ -390,7 +390,7 @@ Boolean Connection::OpenHttpConnection(
         error = IEventHandler::ERROR_FAILED_SSL_HANDSHAKE;
         exception = TRUE;
     }
-    else if (eResult == E_IO_EXCEPTION) {
+    else if (ec == (ECode)E_IO_EXCEPTION) {
         error = IEventHandler::ERROR_CONNECT;
         exception = TRUE;
     }

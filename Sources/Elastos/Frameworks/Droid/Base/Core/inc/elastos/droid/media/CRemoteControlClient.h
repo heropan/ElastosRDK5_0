@@ -428,8 +428,6 @@ private:
 
     AutoPtr<IMediaSession> mSession;
 
-    static AutoPtr< ArrayOf<Int32> > METADATA_KEYS_TYPE_LONG;
-
     /**
      * Lock for all cached data
      */
@@ -450,12 +448,12 @@ private:
     /**
      * Last playback position in ms reported by the user
      */
-    Int64 mPlaybackPositionMs = PLAYBACK_POSITION_INVALID;
+    Int64 mPlaybackPositionMs;
 
     /**
      * Last playback speed reported by the user
      */
-    Float mPlaybackSpeed = PLAYBACK_SPEED_1X;
+    Float mPlaybackSpeed;
 
     /**
      * Cache for the artwork bitmap.
