@@ -42,6 +42,7 @@ class MediaFocusControl
     : public Object
     , public IPendingIntentOnFinished
 {
+    friend class PlayerRecord;
 private:
     class NotificationListenerObserver
         : public ContentObserver

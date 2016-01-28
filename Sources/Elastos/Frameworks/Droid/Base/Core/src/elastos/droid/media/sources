@@ -141,6 +141,8 @@ SOURCES += CRingtoneManager.cpp
 SOURCES += CRingtoneManagerHelper.cpp
 SOURCES += CTimedText.cpp
 SOURCES += CRemoteControlClient.cpp
+SOURCES += Utils.cpp
+SOURCES += PlayerRecord.cpp
 
 SOURCES += media.cpp
 

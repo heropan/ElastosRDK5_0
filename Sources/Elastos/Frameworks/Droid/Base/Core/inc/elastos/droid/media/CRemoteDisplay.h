@@ -3,8 +3,10 @@
 #define __ELASTOS_DROID_MEDIA_CREMOTEDISPLAY_H__
 
 #include "_Elastos_Droid_Media_CRemoteDisplay.h"
+#include "Elastos.Droid.Media.h"
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/os/Runnable.h"
+#include <elastos/core/Object.h>
 
 using Elastos::Droid::Os::IHandler;
 using Elastos::Droid::Os::Runnable;
@@ -16,6 +18,8 @@ namespace Droid {
 namespace Media {
 
 CarClass(CRemoteDisplay)
+    , public Object
+    , public IRemoteDisplay
 {
 public:
     class NotifyDisplayConnectedRun
@@ -36,7 +40,7 @@ public:
 
         AutoPtr<ISurface> mSurface;
 
-        Int32 mWidth, mHeight, mFlags;
+        Int32 mWidth, mHeight, mFlags, mSession;
     };
 
     class NotifyDisplayDisconnectedRun
@@ -68,9 +72,14 @@ public:
         Int32 mError;
     };
 
+public:
     CRemoteDisplay();
 
-    ~CRemoteDisplay();
+    virtual ~CRemoteDisplay();
+
+    CAR_OBJECT_DECL()
+
+    CAR_INTERFACE_DECL()
 
     CARAPI constructor(
         /* [in] */ IRemoteDisplayListener* listener,

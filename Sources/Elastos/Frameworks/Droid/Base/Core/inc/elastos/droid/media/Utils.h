@@ -3,10 +3,16 @@
 
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/utility/Range.h"
+#include "elastos/droid/utility/CRational.h"
 #include <Elastos.CoreLibrary.Utility.h>
 #include <elastos/core/Object.h>
 
+using Elastos::Droid::Utility::CRational;
 using Elastos::Droid::Utility::ISize;
+using Elastos::Droid::Utility::IRational;
+using Elastos::Droid::Utility::IRange;
+using Elastos::Droid::Utility::IPair;
+using Elastos::Droid::Utility::Range;
 using Elastos::Core::IComparator;
 using Elastos::Core::IInteger32;
 using Elastos::Core::IInteger64;
@@ -89,8 +95,8 @@ public:
         /* [in] */ Range<IInteger64>* range,
         /* [in] */ Int64 factor);
 
-    static CARAPI_(AutoPtr<Range<CRational> >) ScaleRange(
-        /* [in] */ Range<CRational> >* range,
+    static CARAPI_(AutoPtr< Range<CRational> >) ScaleRange(
+        /* [in] */ Range<CRational>* range,
         /* [in] */ Int32 num,
         /* [in] */ Int32 den);
 
@@ -124,9 +130,9 @@ public:
         /* [in] */ IInterface* o,
         /* [in] */ Range<IInteger64>* fallback);
 
-    static AutoPtr<Range<CRational> > ParseRationalRange(
+    static AutoPtr<Range<IRational> > ParseRationalRange(
         /* [in] */ IInterface* o,
-        /* [in] */ Range<CRational>* fallback);
+        /* [in] */ Range<IRational>* fallback);
 
     static AutoPtr<IPair> ParseSizeRange(
         /* [in] */ IInterface* o);

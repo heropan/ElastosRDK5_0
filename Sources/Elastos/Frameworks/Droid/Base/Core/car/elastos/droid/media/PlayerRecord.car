@@ -30,6 +30,10 @@ module
         {
         }
 
+        interface IPlayerRecordRccPlaybackState {
+            Reset();
+        }
+
     } // namespace media
     } // namepsace Droid
     } // namespace Elastos
