@@ -93,7 +93,7 @@ ECode HashMap::constructor(
     /* [in] */ Int32 capacity,
     /* [in] */ Float loadFactor)
 {
-    FAIL_RETURN(this->constructor(capacity));
+    FAIL_RETURN(constructor(capacity));
 
     AutoPtr<IFloat> flo;
     CFloat::New(loadFactor, (IFloat**)&flo);
@@ -116,7 +116,7 @@ ECode HashMap::constructor(
 {
     Int32 sizelen = 0;
     map->GetSize(&sizelen);
-    FAIL_RETURN(this->constructor(CapacityForInitSize(sizelen)));
+    FAIL_RETURN(constructor(CapacityForInitSize(sizelen)));
     return ConstructorPutAll(map);
 }
 
