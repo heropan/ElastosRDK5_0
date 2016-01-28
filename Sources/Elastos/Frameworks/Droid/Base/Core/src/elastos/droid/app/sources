@@ -108,6 +108,7 @@ SOURCES += MediaRouteActionProvider.cpp
 SOURCES += MediaRouteButton.cpp
 SOURCES += NativeActivity.cpp
 SOURCES += CNotification.cpp
+SOURCES += CNotificationHelper.cpp
 SOURCES += CNotificationAction.cpp
 SOURCES += CNotificationBuilder.cpp
 SOURCES += NotificationStyle.cpp

@@ -234,10 +234,10 @@ public:
     CARAPI SetSleepEndMinute(
         /* [in] */ Int32 sleepEndMinute);
 
-    CARAPI GetExitConditionComponent(
+    CARAPI GetConditionComponents(
         /* [out, callee] */ ArrayOf<IComponentName*>** conditionComponents);
 
-    CARAPI SetExitConditionComponent(
+    CARAPI SetConditionComponents(
         /* [in] */ ArrayOf<IComponentName*>* conditionComponents);
 
     CARAPI GetConditionIds(

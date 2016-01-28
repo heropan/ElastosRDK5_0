@@ -1,36 +1,133 @@
 
+#include <Elastos.Droid.App.h>
+#include <Elastos.Droid.Provider.h>
+#include <Elastos.Droid.Service.h>
 #include "elastos/droid/server/notification/ManagedServices.h"
-#include "elastos/droid/app/ActivityManagerNative.h"
 #include "elastos/droid/os/Binder.h"
+#include "elastos/droid/os/Build.h"
 #include "elastos/droid/text/TextUtils.h"
 #include "elastos/droid/R.h"
-#include <elastos/utility/logging/Slogger.h>
+#include <elastos/core/AutoLock.h>
+#include <elastos/core/CoreUtils.h>
 #include <elastos/core/StringBuilder.h>
 #include <elastos/core/StringUtils.h>
+#include <elastos/utility/Arrays.h>
+#include <elastos/utility/logging/Logger.h>
+#include <elastos/utility/logging/Slogger.h>
 
-// using Elastos::Droid::App::IActivityManagerHelper;
-// using Elastos::Droid::App::CActivityManagerHelper;
-// using Elastos::Droid::Content::IContentResolver;
-// using Elastos::Droid::Content::IIntent;
-// using Elastos::Droid::Content::CIntent;
-// using Elastos::Droid::Content::Pm::IPackageManager;
-// using Elastos::Droid::Content::Pm::IIPackageManager;
-// using Elastos::Droid::Content::Pm::IApplicationInfo;
-// using Elastos::Droid::Provider::ISettingsSystem;
-// using Elastos::Droid::Provider::CSettingsSystem;
-// using Elastos::Droid::Os::Binder;
-// using Elastos::Droid::Os::IUserHandle;
-// using Elastos::Droid::Text::TextUtils;
-// using Elastos::Core::StringBuilder;
-// using Elastos::Core::StringUtils;
-// using Elastos::Utility::CArrayList;
-// using Elastos::Utility::ICollection;
-// using Elastos::Utility::Logging::Slogger;
+using Elastos::Droid::App::IActivityManagerHelper;
+using Elastos::Droid::App::CActivityManagerHelper;
+using Elastos::Droid::App::IPendingIntent;
+using Elastos::Droid::App::IPendingIntentHelper;
+using Elastos::Droid::App::CPendingIntentHelper;
+using Elastos::Droid::Content::IContentResolver;
+using Elastos::Droid::Content::IIntent;
+using Elastos::Droid::Content::CIntent;
+using Elastos::Droid::Content::IComponentNameHelper;
+using Elastos::Droid::Content::CComponentNameHelper;
+using Elastos::Droid::Content::CComponentName;
+using Elastos::Droid::Content::Pm::IPackageManager;
+using Elastos::Droid::Content::Pm::IPackageItemInfo;;
+using Elastos::Droid::Content::Pm::IUserInfo;
+using Elastos::Droid::Content::Pm::IServiceInfo;
+using Elastos::Droid::Content::Pm::IResolveInfo;
+using Elastos::Droid::Content::Pm::IApplicationInfo;
+using Elastos::Droid::Content::EIID_IServiceConnection;
+using Elastos::Droid::Provider::ISettingsSecure;
+using Elastos::Droid::Provider::CSettingsSecure;
+using Elastos::Droid::Os::Build;
+using Elastos::Droid::Os::CUserHandle;
+using Elastos::Droid::Os::IUserHandle;
+using Elastos::Droid::Os::IUserManager;
+using Elastos::Droid::Text::TextUtils;
+using Elastos::Droid::Utility::CArraySet;
+using Elastos::Droid::Utility::CSparseArray;
+using Elastos::Droid::Utility::ILogHelper;
+using Elastos::Core::CoreUtils;
+using Elastos::Core::StringBuilder;
+using Elastos::Core::StringUtils;
+using Elastos::Utility::Arrays;
+using Elastos::Utility::CArrayList;
+using Elastos::Utility::IList;
+using Elastos::Utility::ISet;
+using Elastos::Utility::IIterator;
+using Elastos::Utility::Logging::Logger;
+using Elastos::Utility::Logging::Slogger;
 
 namespace Elastos {
 namespace Droid {
 namespace Server {
 namespace Notification {
+
+const String ManagedServices::ENABLED_SERVICES_SEPARATOR(":");
+
+//===============================================================================
+//                  DumpFilter
+//===============================================================================
+
+DumpFilter::DumpFilter()
+{}
+
+DumpFilter::~DumpFilter()
+{}
+
+AutoPtr<DumpFilter> DumpFilter::ParseFromArguments(
+    /* [in] */ ArrayOf<String>* args)
+{
+    if (args != NULL && args->GetLength() == 2 && String("p").Equals((*args)[0])
+            && !(*args)[1].IsNull() && !(*args)[1].Trim().IsEmpty()) {
+        AutoPtr<DumpFilter> filter = new DumpFilter();
+        filter->mPkgFilter = (*args)[1].Trim().ToLowerCase();
+        return filter;
+    }
+    if (args != NULL && args->GetLength() == 1 && String("zen").Equals((*args)[0])) {
+        AutoPtr<DumpFilter> filter = new DumpFilter();
+        filter->mZen = TRUE;
+        return filter;
+    }
+    return NULL;
+}
+
+Boolean DumpFilter::Matches(
+    /* [in] */ IStatusBarNotification* sbn)
+{
+    String name, pkg;
+    sbn->GetPackageName(&name);
+    sbn->GetOpPkg(&pkg);
+    return mZen ? TRUE : sbn != NULL && (Matches(name) || Matches(pkg));
+}
+
+Boolean DumpFilter::Matches(
+    /* [in] */ IComponentName* component)
+{
+    String name;
+    component->GetPackageName(&name);
+    return mZen ? TRUE : component != NULL && Matches(name);
+}
+
+Boolean DumpFilter::Matches(
+    /* [in] */ const String& pkg)
+{
+    return mZen ? TRUE : !pkg.IsNull() && pkg.ToLowerCase().Contains(mPkgFilter);
+}
+
+ECode DumpFilter::ToString(
+    /* [out] */ String* str)
+{
+    VALIDATE_NOT_NULL(str);
+
+    if (mZen) {
+        *str = "zen";
+    }
+    else {
+        StringBuilder builder;
+        builder += '\'';
+        builder += mPkgFilter;
+        builder += '\'';
+        *str = builder.ToString();
+    }
+    return NOERROR;
+}
 
 //===============================================================================
 //                  ManagedServices::ManagedServiceInfo
@@ -46,13 +143,13 @@ ManagedServices::ManagedServiceInfo::ManagedServiceInfo(
     /* [in] */ Boolean isSystem,
     /* [in] */ IServiceConnection* connection,
     /* [in] */ Int32 targetSdkVersion)
-    : mHost(host)
-    , mService(service)
+    : mService(service)
     , mComponent(component)
     , mUserid(userid)
     , mIsSystem(isSystem)
     , mConnection(connection)
     , mTargetSdkVersion(targetSdkVersion)
+    , mHost(host)
 {}
 
 ManagedServices::ManagedServiceInfo::~ManagedServiceInfo()
@@ -64,17 +161,17 @@ ECode ManagedServices::ManagedServiceInfo::ToString(
     VALIDATE_NOT_NULL(str);
     StringBuilder builder("ManagedServiceInfo[");
     builder.Append("component=");
-    builder.Append(component);
+    builder.Append(mComponent);
     builder.Append(",userid=");
-    builder.Append(userid);
+    builder.Append(mUserid);
     builder.Append(",isSystem=");
-    builder.Append(isSystem);
+    builder.Append(mIsSystem);
     builder.Append(",targetSdkVersion=");
-    builder.Append(targetSdkVersion);
+    builder.Append(mTargetSdkVersion);
     builder.Append(",connection=");
-    builder.Append(connection == NULL ? NULL : "<connection>");
+    builder.Append(mConnection == NULL ? NULL : "<connection>");
     builder.Append(",service=");
-    builder.Append(service);
+    builder.Append(mService);
     builder.AppendChar(']');
 
     *str = builder.ToString();
@@ -93,7 +190,7 @@ Boolean ManagedServices::ManagedServiceInfo::EnabledAndUserMatches(
     if (nid == IUserHandle::USER_ALL || nid == mUserid) {
         return TRUE;
     }
-    return SupportsProfiles() && mUserProfiles->IsCurrentProfile(nid);
+    return SupportsProfiles() && mHost->mUserProfiles->IsCurrentProfile(nid);
 }
 
 Boolean ManagedServices::ManagedServiceInfo::SupportsProfiles()
@@ -103,13 +200,14 @@ Boolean ManagedServices::ManagedServiceInfo::SupportsProfiles()
 
 ECode ManagedServices::ManagedServiceInfo::ProxyDied()
 {
-    if (DEBUG) Slogger::D(TAG, "ProxyDied");
+    if (mHost->DEBUG) Slogger::D(mHost->TAG, "ProxyDied");
     // Remove the service, but don't unbind from the service. The system will bring the
     // service back up, and the onServiceConnected handler will readd the service with the
     // new binding. If this isn't a bound service, and is just a registered
     // service, just removing it from the list is all we need to do anyway.
 
     AutoPtr<ManagedServiceInfo> info = mHost->RemoveServiceImpl(mService, mUserid);
+    return NOERROR;
 }
 
 Boolean ManagedServices::ManagedServiceInfo::IsEnabledForCurrentProfiles()
@@ -198,12 +296,12 @@ Boolean ManagedServices::UserProfiles::IsCurrentProfile(
 ManagedServices::SettingsObserver::SettingsObserver(
     /* [in] */ ManagedServices* host,
     /* [in] */ IHandler* handler)
-    : ContentObserver(handler)
-    , mHost(host)
+    : mHost(host)
 {
+    ContentObserver::constructor(handler);
     AutoPtr<ISettingsSecure> secure;
     CSettingsSecure::AcquireSingleton((ISettingsSecure**)&secure);
-    secure->GetUriFor(mConfig->mSecureSettingName,
+    secure->GetUriFor(mHost->mConfig->mSecureSettingName,
             (IUri**)&mSecureSettingsUri);
 }
 
@@ -212,10 +310,8 @@ ManagedServices::SettingsObserver::~SettingsObserver()
 
 void ManagedServices::SettingsObserver::Observe()
 {
-    AutoPtr<IContext> context;
-    GetContext((IContext**)&context);
     AutoPtr<IContentResolver> resolver;
-    context->GetContentResolver((IContentResolver**)&resolver);
+    mHost->mContext->GetContentResolver((IContentResolver**)&resolver);
     resolver->RegisterContentObserver(mSecureSettingsUri, FALSE,
             this, IUserHandle::USER_ALL);
 
@@ -235,8 +331,8 @@ void ManagedServices::SettingsObserver::Update(
 {
     Boolean res;
     if (uri == NULL || (IObject::Probe(mSecureSettingsUri)->Equals(uri, &res), res)) {
-        if (DEBUG) {
-            Slogger::D(TAG, "Setting changed: mSecureSettingsUri=%p / uri=%p",
+        if (mHost->DEBUG) {
+            Slogger::D(mHost->TAG, "Setting changed: mSecureSettingsUri=%p / uri=%p",
                     mSecureSettingsUri.Get(), uri);
         }
         mHost->RebindServices();
@@ -269,11 +365,11 @@ ECode ManagedServices::MyServiceConnection::OnServiceConnected(
 {
     Boolean added = FALSE;
     AutoPtr<ManagedServiceInfo> info;
-    synchronized(mMutex) {
+    synchronized(mHost->mMutex) {
         mHost->mServicesBinding->Remove(CoreUtils::Convert(mServicesBindingTag));
         // try {
         mService = TO_IINTERFACE(binder);
-        info = NewServiceInfo(mService, name,
+        info = mHost->NewServiceInfo(mService, name,
                 mUserid, FALSE /*isSystem*/, (IServiceConnection*)this, mTargetSdkVersion);
 
         AutoPtr<IProxy> proxy = (IProxy*)binder->Probe(EIID_IProxy);
@@ -281,13 +377,13 @@ ECode ManagedServices::MyServiceConnection::OnServiceConnected(
             // already dead
         }
 
-        mHost->mServices->Add(TO_IINTERFACE(info), &added);
+        mHost->mServices->Add((IProxyDeathRecipient*)info, &added);
         // } catch (RemoteException e) {
         //     // already dead
         // }
     }
     if (added) {
-        OnServiceAdded(info);
+        mHost->OnServiceAdded(info);
     }
     return NOERROR;
 }
@@ -295,7 +391,7 @@ ECode ManagedServices::MyServiceConnection::OnServiceConnected(
 ECode ManagedServices::MyServiceConnection::OnServiceDisconnected(
     /* [in] */ IComponentName* name)
 {
-    Slogger::V(TAG, "%s connection lost: %p", GetCaption().string(), name);
+    Slogger::V(mHost->TAG, "%s connection lost: %p", mHost->GetCaption().string(), name);
     return NOERROR;
 }
 
@@ -303,25 +399,37 @@ ECode ManagedServices::MyServiceConnection::OnServiceDisconnected(
 //                  ManagedServices
 //===============================================================================
 
-ManagedServices::ManagedServices(
+ManagedServices::ManagedServices()
+{
+}
+
+ManagedServices::~ManagedServices()
+{}
+
+ECode ManagedServices::constructor(
     /* [in] */ IContext* context,
     /* [in] */ IHandler* handler,
     /* [in] */ IInterface* mutex,
     /* [in] */ UserProfiles* userProfiles)
-    : mContext(context)
-    , mMutex(mutex)
-    , mUserProfiles(userProfiles)
 {
+    AutoPtr<IClassInfo> classInfo;
+    CObject::ReflectClassInfo(TO_IINTERFACE(this), (IClassInfo**)&classInfo);
+    String TAG;
+    classInfo->GetName(&TAG);
+
+    DEBUG = Logger::IsLoggable(TAG, ILogHelper::DEBUG);
+
+    mContext = context;
+    mMutex = (Object*)IObject::Probe(mutex);
+    mUserProfiles = userProfiles;
     mConfig = GetConfig();
     mSettingsObserver = new SettingsObserver(this, handler);
     CArrayList::New((IArrayList**)&mServices);
     CArrayList::New((IArrayList**)&mServicesBinding);
     CArraySet::New((IArraySet**)&mEnabledServicesForCurrentProfiles);
     CArraySet::New((IArraySet**)&mEnabledServicesPackageNames);
+    return NOERROR;
 }
-
-ManagedServices::~ManagedServices()
-{}
 
 String ManagedServices::GetCaption()
 {
@@ -334,7 +442,7 @@ ECode ManagedServices::OnServiceRemovedLocked(
     return NOERROR;
 }
 
-AutoPtr<ManagedServiceInfo> ManagedServices::NewServiceInfo(
+AutoPtr<ManagedServices::ManagedServiceInfo> ManagedServices::NewServiceInfo(
     /* [in] */ IInterface* service,
     /* [in] */ IComponentName* component,
     /* [in] */ Int32 userid,
@@ -342,7 +450,7 @@ AutoPtr<ManagedServiceInfo> ManagedServices::NewServiceInfo(
     /* [in] */ IServiceConnection* connection,
     /* [in] */ Int32 targetSdkVersion)
 {
-    AutoPtr<ManagedServiceInfo> info = new ManagedServiceInfo(service,
+    AutoPtr<ManagedServiceInfo> info = new ManagedServiceInfo(this, service,
             component, userid, isSystem, connection, targetSdkVersion);
     return info;
 }
@@ -364,7 +472,7 @@ void ManagedServices::Dump(
     builder += GetCaption();
     builder += "s (";
     builder += size;
-    builder += ") enabled for current profiles:"
+    builder += ") enabled for current profiles:";
     pw->Println(builder.ToString());
     AutoPtr<IIterator> iterator;
     ISet::Probe(mEnabledServicesForCurrentProfiles)->GetIterator((IIterator**)&iterator);
@@ -392,7 +500,7 @@ void ManagedServices::Dump(
     for (Int32 i = 0; i < size; i++) {
         AutoPtr<IInterface> obj;
         mServices->Get(i, (IInterface**)&obj);
-        AutoPtr<ManagedServiceInfo> info = (ManagedServiceInfo*)IObject::Probe(obj);
+        AutoPtr<ManagedServiceInfo> info = (ManagedServiceInfo*)IProxyDeathRecipient::Probe(obj);
         if (filter != NULL && !filter->Matches(info->mComponent)) continue;
         builder.Reset();
         builder += "      ";
@@ -430,7 +538,7 @@ void ManagedServices::OnPackagesChanged(
         for (Int32 i = 0; i < pkgList->GetLength(); i++) {
             String pkgName = (*pkgList)[i];
             Boolean res;
-            if (mEnabledServicesPackageNames->Contains(pkgName, &res), res) {
+            if (ISet::Probe(mEnabledServicesPackageNames)->Contains(CoreUtils::Convert(pkgName), &res), res) {
                 anyServicesInvolved = TRUE;
             }
         }
@@ -470,8 +578,8 @@ ECode ManagedServices::CheckServiceTokenLocked(
     for (Int32 i = 0; i < N; i++) {
         AutoPtr<IInterface> obj;
         mServices->Get(i, (IInterface**)&obj);
-        AutoPtr<ManagedServiceInfo> info = (ManagedServiceInfo*)IObject::Probe(obj);
-        if (IBinder::Probe(info->mService == token) {
+        AutoPtr<ManagedServiceInfo> info = (ManagedServiceInfo*)IProxyDeathRecipient::Probe(obj);
+        if (IBinder::Probe(info->mService) == token) {
             *_info = info;
             REFCOUNT_ADD(*_info);
             return NOERROR;
@@ -571,7 +679,7 @@ void ManagedServices::DisableNonexistentServices(
             installed->Add(componentName);
         }
 
-        String flatOut = "";
+        String flatOut("");
         Boolean res;
         if (installed->IsEmpty(&res), !res) {
             AutoPtr< ArrayOf<String> > enabled;
@@ -588,15 +696,17 @@ void ManagedServices::DisableNonexistentServices(
                     remaining->Add(CoreUtils::Convert((*enabled)[i]));
                 }
             }
-            flatOut = TextUtils::Join(ENABLED_SERVICES_SEPARATOR, remaining);
+
+            AutoPtr< ArrayOf<IInterface*> > array;
+            remaining->ToArray((ArrayOf<IInterface*>**)&array);
+            flatOut = TextUtils::Join(CoreUtils::Convert(ENABLED_SERVICES_SEPARATOR), array);
         }
         if (DEBUG) {
             Slogger::V(TAG, "flat after: %s", flatOut.string());
         }
         if (!flatIn.Equals(flatOut)) {
-            secure->PutStringForUser(resolver,
-                    mConfig->mSecureSettingName,
-                    flatOut, userId);
+            secure->PutStringForUser(resolver, mConfig->mSecureSettingName,
+                    flatOut, userId, &res);
         }
     }
 }
@@ -635,9 +745,9 @@ ECode ManagedServices::RebindServices()
         for (Int32 i = 0; i < size; i++) {
             AutoPtr<IInterface> obj;
             mServices->Get(i, (IInterface**)&obj);
-            AutoPtr<ManagedServiceInfo> service = (ManagedServiceInfo*)IObject::Probe(obj);
+            AutoPtr<ManagedServiceInfo> service = (ManagedServiceInfo*)IProxyDeathRecipient::Probe(obj);
             if (!service->mIsSystem) {
-                toRemove->Add(TO_IINTERFACE(service));
+                toRemove->Add((IProxyDeathRecipient*)service);
             }
         }
 
@@ -665,11 +775,11 @@ ECode ManagedServices::RebindServices()
                     AutoPtr<IComponentName> component;
                     helper->UnflattenFromString((*components)[j], (IComponentName**)&component);
                     if (component != NULL) {
-                        newEnabled->Add(component);
+                        ISet::Probe(newEnabled)->Add(component);
                         add->Add(component);
                         String packageName;
                         IPackageItemInfo::Probe(component)->GetPackageName(&packageName);
-                        newPackages->Add(CoreUtils::Convert(packageName));
+                        ISet::Probe(newPackages)->Add(CoreUtils::Convert(packageName));
                     }
                 }
 
@@ -684,7 +794,7 @@ ECode ManagedServices::RebindServices()
     for (Int32 i = 0; i < size; ++i) {
         AutoPtr<IInterface> obj;
         toRemove->Get(i, (IInterface**)&obj);
-        AutoPtr<ManagedServiceInfo> info = (ManagedServiceInfo*)IObject::Probe(obj);
+        AutoPtr<ManagedServiceInfo> info = (ManagedServiceInfo*)IProxyDeathRecipient::Probe(obj);
         AutoPtr<IComponentName> component = info->mComponent;
         Int32 oldUser = info->mUserid;
         Slogger::V(TAG, "disabling %s for user %d: %p",
@@ -729,7 +839,7 @@ ECode ManagedServices::RegisterService(
         builder += userid;
         String servicesBindingTag = builder.ToString();
         Boolean res;
-        if (mServicesBinding->Contains(servicesBindingTag, &res), res) {
+        if (mServicesBinding->Contains(CoreUtils::Convert(servicesBindingTag), &res), res) {
             // stop registering this thing already! we're working on it
             return NOERROR;
         }
@@ -740,12 +850,12 @@ ECode ManagedServices::RegisterService(
         for (Int32 i = N-1; i >= 0; i--) {
             AutoPtr<IInterface> obj;
             mServices->Get(i, (IInterface**)&obj);
-            AutoPtr<ManagedServiceInfo> info = (ManagedServiceInfo*)IObject::Probe(obj);
-            if ((name->Equals(info->mComponent, &res), res)
+            AutoPtr<ManagedServiceInfo> info = (ManagedServiceInfo*)IProxyDeathRecipient::Probe(obj);
+            if ((IObject::Probe(name)->Equals(info->mComponent, &res), res)
                     && info->mUserid == userid) {
                 // cut old connections
                 if (DEBUG) {
-                    Slogger::V(TAG, "    disconnecting old %s: %p", GetCaption().string(), info->mService);
+                    Slogger::V(TAG, "    disconnecting old %s: %p", GetCaption().string(), info->mService.Get());
                 }
                 RemoveServiceLocked(i);
                 if (info->mConnection != NULL) {
@@ -767,7 +877,7 @@ ECode ManagedServices::RegisterService(
         AutoPtr<IPendingIntent> pendingIntent;
         helper->GetActivity(
             mContext, 0, otherIntent, 0, (IPendingIntent**)&pendingIntent);
-        intent->PutExtra(IIntent::EXTRA_CLIENT_INTENT, pendingIntent);
+        intent->PutExtra(IIntent::EXTRA_CLIENT_INTENT, IParcelable::Probe(pendingIntent));
 
         AutoPtr<IApplicationInfo> appInfo;
         // try {
@@ -819,9 +929,9 @@ ECode ManagedServices::UnregisterService(
         for (Int32 i = N-1; i >= 0; i--) {
             AutoPtr<IInterface> obj;
             mServices->Get(i, (IInterface**)&obj);
-            AutoPtr<ManagedServiceInfo> info = (ManagedServiceInfo*)IObject::Probe(obj);
+            AutoPtr<ManagedServiceInfo> info = (ManagedServiceInfo*)IProxyDeathRecipient::Probe(obj);
             Boolean res;
-            if ((name->Equals(info->mComponent, &res), res)
+            if ((IObject::Probe(name)->Equals(info->mComponent, &res), res)
                     && info->mUserid == userid) {
                 RemoveServiceLocked(i);
                 if (info->mConnection != NULL) {
@@ -842,7 +952,7 @@ ECode ManagedServices::UnregisterService(
     return NOERROR;
 }
 
-AutoPtr<ManagedServiceInfo> ManagedServices::RemoveServiceImpl(
+AutoPtr<ManagedServices::ManagedServiceInfo> ManagedServices::RemoveServiceImpl(
     /* [in] */ IInterface* service,
     /* [in] */ Int32 userid)
 {
@@ -856,7 +966,7 @@ AutoPtr<ManagedServiceInfo> ManagedServices::RemoveServiceImpl(
         for (Int32 i = N-1; i >= 0; i--) {
             AutoPtr<IInterface> obj;
             mServices->Get(i, (IInterface**)&obj);
-            AutoPtr<ManagedServiceInfo> info = (ManagedServiceInfo*)IObject::Probe(obj);
+            AutoPtr<ManagedServiceInfo> info = (ManagedServiceInfo*)IProxyDeathRecipient::Probe(obj);
             if (IBinder::Probe(info->mService) == IBinder::Probe(service)
                     && info->mUserid == userid) {
                 if (DEBUG) {
@@ -869,12 +979,12 @@ AutoPtr<ManagedServiceInfo> ManagedServices::RemoveServiceImpl(
     return serviceInfo;
 }
 
-AutoPtr<ManagedServiceInfo> ManagedServices::RemoveServiceLocked(
+AutoPtr<ManagedServices::ManagedServiceInfo> ManagedServices::RemoveServiceLocked(
     /* [in] */ Int32 i)
 {
     AutoPtr<IInterface> obj;
     mServices->Remove(i, (IInterface**)&obj);
-    AutoPtr<ManagedServiceInfo> info = (ManagedServiceInfo*)IObject::Probe(obj);
+    AutoPtr<ManagedServiceInfo> info = (ManagedServiceInfo*)IProxyDeathRecipient::Probe(obj);
     OnServiceRemovedLocked(info);
     return info;
 }
@@ -907,7 +1017,7 @@ ECode ManagedServices::RegisterServiceImpl(
         if (proxy != NULL && FAILED(proxy->LinkToDeath(info, 0))) {
             // already dead
         }
-        mServices->Add(TO_IINTERFACE(info));
+        mServices->Add((IProxyDeathRecipient*)info);
         *_info = info;
         REFCOUNT_ADD(*_info);
         return NOERROR;

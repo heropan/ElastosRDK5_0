@@ -1,72 +1,133 @@
 
+#include <Elastos.Droid.Provider.h>
+#include <Elastos.Droid.Telephony.h>
+#include <Elastos.Droid.View.h>
+#include <Elastos.Droid.Widget.h>
+#include <Elastos.CoreLibrary.Libcore.h>
 #include "elastos/droid/server/notification/NotificationManagerService.h"
-#include "elastos/droid/os/ServiceManager.h"
+#include "elastos/droid/server/notification/CNotificationManagerBinderService.h"
+#include "elastos/droid/server/notification/CStatusBarNotificationHolder.h"
+#include "elastos/droid/server/notification/RankingReconsideration.h"
+#include "elastos/droid/server/notification/ValidateNotificationPeople.h"
+#include "elastos/droid/server/notification/ZenLog.h"
+#include "elastos/droid/server/lights/LightsManager.h"
 #include "elastos/droid/app/ActivityManagerNative.h"
 #include "elastos/droid/app/AppGlobals.h"
+// #include "elastos/droid/internal/utility/CFastXmlSerializer.h"
 #include "elastos/droid/os/Binder.h"
+#include "elastos/droid/os/Environment.h"
 #include "elastos/droid/os/Process.h"
-#include "CStatusBarManagerService.h"
+#include "elastos/droid/os/UserHandle.h"
 #include "elastos/droid/text/TextUtils.h"
+#include "elastos/droid/utility/Xml.h"
+#include "elastos/droid/Manifest.h"
 #include "elastos/droid/R.h"
-#include <elastos/utility/logging/Logger.h>
-#include <elastos/utility/logging/Slogger.h>
+#include <elastos/core/AutoLock.h>
+#include <elastos/core/Math.h>
+#include <elastos/core/CoreUtils.h>
 #include <elastos/core/StringBuilder.h>
 #include <elastos/core/StringUtils.h>
-#include "util/Xml.h"
+#include <elastos/utility/Objects.h>
+#include <elastos/utility/logging/Logger.h>
+#include <elastos/utility/logging/Slogger.h>
 
+using Elastos::Droid::App::ActivityManagerNative;
 using Elastos::Droid::App::AppGlobals;
 using Elastos::Droid::App::IActivityManagerHelper;
 using Elastos::Droid::App::CActivityManagerHelper;
+using Elastos::Droid::App::CNotificationHelper;
+using Elastos::Droid::App::INotificationHelper;
+using Elastos::Droid::App::INotificationManager;
+using Elastos::Droid::App::IStatusBarManager;
+using Elastos::Droid::App::EIID_IINotificationManager;
+using Elastos::Droid::Content::CIntent;
 using Elastos::Droid::Content::IContentResolver;
 using Elastos::Droid::Content::IIntentFilter;
 using Elastos::Droid::Content::CIntentFilter;
+using Elastos::Droid::Content::Pm::CParceledListSlice;
 using Elastos::Droid::Content::Pm::IPackageManager;
 using Elastos::Droid::Content::Pm::IIPackageManager;
 using Elastos::Droid::Content::Pm::IApplicationInfo;
-using Elastos::Droid::Media::IAudioManager;
+using Elastos::Droid::Content::Pm::IPackageInfo;
+// using Elastos::Droid::Internal::Utility::CFastXmlSerializer;
+using Elastos::Droid::Media::CAudioSystem;
+using Elastos::Droid::Media::IAudioSystem;
+using Elastos::Droid::Media::CAudioAttributesBuilder;
+using Elastos::Droid::Media::IAudioAttributesBuilder;
 using Elastos::Droid::Media::IIRingtonePlayer;
+using Elastos::Droid::Media::CAudioAttributesHelper;
+using Elastos::Droid::Media::IAudioAttributesHelper;
+using Elastos::Droid::Os::EIID_IBinder;
+using Elastos::Droid::Os::Environment;
+using Elastos::Droid::Os::Binder;
+using Elastos::Droid::Os::CBinder;
+using Elastos::Droid::Os::CBundle;
+using Elastos::Droid::Os::CMessageHelper;
+using Elastos::Droid::Os::IMessageHelper;
+using Elastos::Droid::Os::CUserHandle;
+using Elastos::Droid::Os::CHandlerThread;
+using Elastos::Droid::Os::UserHandle;
+using Elastos::Droid::Os::Process;
+using Elastos::Droid::Os::IProcess;
+using Elastos::Droid::Provider::ISettings;
+using Elastos::Droid::Provider::ISettingsSecure;
 using Elastos::Droid::Provider::ISettingsSystem;
 using Elastos::Droid::Provider::CSettingsSystem;
 using Elastos::Droid::Provider::ISettingsGlobal;
 using Elastos::Droid::Provider::CSettingsGlobal;
-using Elastos::Droid::Os::Binder;
-using Elastos::Droid::Os::IUserHandle;
-using Elastos::Droid::Os::ServiceManager;
-using Elastos::Droid::Os::Process;
-using Elastos::Droid::Os::IProcess;
-using Elastos::Droid::StatusBar::IStatusBarNotification;
-using Elastos::Droid::StatusBar::CStatusBarNotification;
+using Elastos::Droid::Server::Lights::EIID_ILightsManager;
+using Elastos::Droid::Server::Lights::LightsManager;
+using Elastos::Droid::Server::StatusBar::EIID_IStatusBarManagerInternal;
+using Elastos::Droid::Service::Notification::CNotificationRankingUpdate;
+using Elastos::Droid::Service::Notification::CStatusBarNotification;
+using Elastos::Droid::Service::Notification::EIID_IIStatusBarNotificationHolder;
+using Elastos::Droid::Service::Notification::INotificationListenerService;
+using Elastos::Droid::Service::Notification::INotificationListenerServiceRanking;
+using Elastos::Droid::Telephony::ITelephonyManager;
 using Elastos::Droid::Text::TextUtils;
 using Elastos::Droid::Utility::Xml;
+using Elastos::Droid::Utility::CArrayMap;
+using Elastos::Droid::Utility::CArraySet;
 using Elastos::Droid::Utility::IAtomicFile;
 using Elastos::Droid::Utility::CAtomicFile;
-using Elastos::Droid::Utility::IFastXmlSerializer;
-using Elastos::Droid::Utility::CFastXmlSerializer;
+using Elastos::Droid::Utility::ILogHelper;
 using Elastos::Droid::View::Accessibility::IAccessibilityEvent;
+using Elastos::Droid::View::Accessibility::IAccessibilityRecord;
 using Elastos::Droid::View::Accessibility::IAccessibilityManager;
-using Elastos::Droid::View::Accessibility::CAccessibilityManager;
 using Elastos::Droid::View::Accessibility::IAccessibilityManagerHelper;
 using Elastos::Droid::View::Accessibility::CAccessibilityManagerHelper;
 using Elastos::Droid::View::Accessibility::IAccessibilityEventHelper;
 using Elastos::Droid::View::Accessibility::CAccessibilityEventHelper;
-using Elastos::Droid::Widget::IRemoteViews;
 using Elastos::Droid::Widget::IToast;
-using Elastos::Core::StringBuilder;
+using Elastos::Droid::R;
+using Elastos::Core::CSystem;
+using Elastos::Core::ISystem;
 using Elastos::Core::CString;
-using Elastos::Core::IBoolean;
-using Elastos::Core::CBoolean;
+using Elastos::Core::CoreUtils;
+using Elastos::Core::IThread;
+using Elastos::Core::ICloneable;
+using Elastos::Core::StringBuilder;
 using Elastos::Core::StringUtils;
+using Elastos::IO::ICloseable;
 using Elastos::IO::IFile;
 using Elastos::IO::CFile;
-using Elastos::IO::IIoUtils;
-using Elastos::IO::CIoUtils;
 using Elastos::IO::IFileOutputStream;
 using Elastos::IO::IFileInputStream;
+using Elastos::IO::IOutputStream;
 using Elastos::Utility::CArrayList;
-using Elastos::Utility::ICollection;
+using Elastos::Utility::IList;
+using Elastos::Utility::ISet;
+using Elastos::Utility::CHashSet;
+using Elastos::Utility::CArrayDeque;
+using Elastos::Utility::IDeque;
+using Elastos::Utility::EIID_IIterator;
+using Elastos::Utility::Objects;
 using Elastos::Utility::Logging::Logger;
 using Elastos::Utility::Logging::Slogger;
+using Libcore::IO::CIoUtils;
+using Libcore::IO::IIoUtils;
 using Org::Xmlpull::V1::IXmlPullParser;
+using Org::Xmlpull::V1::IXmlSerializer;
 
 namespace Elastos {
 namespace Droid {
@@ -139,23 +200,25 @@ const Int32 NotificationManagerService::REASON_LISTENER_CANCEL_ALL = 11;
 const Int32 NotificationManagerService::REASON_GROUP_SUMMARY_CANCELED = 12;
 
 //===============================================================================
-//                  NotificationManagerService::NotificationManagerStub
+//                  NotificationManagerService::BinderService
 //===============================================================================
 
-CAR_INTERFACE_IMPL_2(NotificationManagerService::NotificationManagerStub, Object, IINotificationManager, IBinder);
+CAR_INTERFACE_IMPL_2(NotificationManagerService::BinderService, Object, IINotificationManager, IBinder);
 
-NotificationManagerService::NotificationManagerStub::NotificationManagerStub();
+NotificationManagerService::BinderService::BinderService()
+{}
 
-NotificationManagerService::NotificationManagerStub::~NotificationManagerStub();
+NotificationManagerService::BinderService::~BinderService()
+{}
 
-ECode NotificationManagerService::NotificationManagerStub::constructor(
+ECode NotificationManagerService::BinderService::constructor(
     /* [in] */ ISystemService* host)
 {
-    mHost = (NotificationManagerService*)service;
+    mHost = (NotificationManagerService*)host;
     return NOERROR;
 }
 
-ECode NotificationManagerService::NotificationManagerStub::EnqueueToast(
+ECode NotificationManagerService::BinderService::EnqueueToast(
     /* [in] */ const String& pkg,
     /* [in] */ IITransientNotification* callback,
     /* [in] */ Int32 duration)
@@ -182,7 +245,7 @@ ECode NotificationManagerService::NotificationManagerStub::EnqueueToast(
         }
     }
 
-    synchronized(mToastQueue) {
+    synchronized(mHost->mToastQueue) {
         Int32 callingPid = Binder::GetCallingPid();
         Int64 callingId = Binder::ClearCallingIdentity();
 
@@ -204,10 +267,10 @@ ECode NotificationManagerService::NotificationManagerStub::EnqueueToast(
             if (!isSystemToast) {
                 Int32 count = 0;
                 Int32 N;
-                mHost->mToastQueue->GetSize(&size);
-                for (Int32 i = 0; i < size; i++) {
+                mHost->mToastQueue->GetSize(&N);
+                for (Int32 i = 0; i < N; i++) {
                     AutoPtr<IInterface> obj;
-                    mToastQueue->Get(i, (IInterface**)&obj);
+                    mHost->mToastQueue->Get(i, (IInterface**)&obj);
                     AutoPtr<NotificationManagerService::ToastRecord> r = (NotificationManagerService::ToastRecord*)IObject::Probe(obj);
                     if (r->mPkg.Equals(pkg)) {
                         count++;
@@ -228,7 +291,9 @@ ECode NotificationManagerService::NotificationManagerStub::EnqueueToast(
 
             record = new NotificationManagerService::ToastRecord(callingPid, pkg, callback, duration);
             mHost->mToastQueue->Add(TO_IINTERFACE(record));
-            mHost->mToastQueue->GetSize(&(index + 1));
+            Int32 size;
+            mHost->mToastQueue->GetSize(&size);
+            index = size -1;
             mHost->KeepProcessAliveLocked(callingPid);
         }
 
@@ -246,7 +311,7 @@ ECode NotificationManagerService::NotificationManagerStub::EnqueueToast(
     return NOERROR;
 }
 
-ECode NotificationManagerService::NotificationManagerStub::CancelToast(
+ECode NotificationManagerService::BinderService::CancelToast(
     /* [in] */ const String& pkg,
     /* [in] */ IITransientNotification* callback)
 {
@@ -257,7 +322,7 @@ ECode NotificationManagerService::NotificationManagerStub::CancelToast(
         return NOERROR;
     }
 
-    synchronized(mToastQueue) {
+    synchronized(mHost->mToastQueue) {
         Int64 callingId = Binder::ClearCallingIdentity();
         // try {
         Int32 index = mHost->IndexOfToastLocked(pkg, callback);
@@ -274,7 +339,7 @@ ECode NotificationManagerService::NotificationManagerStub::CancelToast(
     return NOERROR;
 }
 
-ECode NotificationManagerService::NotificationManagerStub::EnqueueNotificationWithTag(
+ECode NotificationManagerService::BinderService::EnqueueNotificationWithTag(
     /* [in] */ const String& pkg,
     /* [in] */ const String& opPkg,
     /* [in] */ const String& tag,
@@ -290,10 +355,10 @@ ECode NotificationManagerService::NotificationManagerStub::EnqueueNotificationWi
     return mHost->EnqueueNotificationInternal(pkg, opPkg,
             Binder::GetCallingUid(),
             Binder::GetCallingPid(),
-            tag, id, notification, idOut, userId, outIdReceived);
+            tag, id, notification, inIdReceived, userId, outIdReceived);
 }
 
-ECode NotificationManagerService::NotificationManagerStub::CancelNotificationWithTag(
+ECode NotificationManagerService::BinderService::CancelNotificationWithTag(
     /* [in] */ const String& pkg,
     /* [in] */ const String& tag,
     /* [in] */ Int32 id,
@@ -312,13 +377,13 @@ ECode NotificationManagerService::NotificationManagerStub::CancelNotificationWit
     // Don't allow client applications to cancel foreground service notis.
     mHost->CancelNotification(Binder::GetCallingUid(),
             Binder::GetCallingPid(),
-            ,pkg, tag, id, 0, Binder::GetCallingUid() == IProcess::SYSTEM_UID ?
+            pkg, tag, id, 0, Binder::GetCallingUid() == IProcess::SYSTEM_UID ?
             0 : INotification::FLAG_FOREGROUND_SERVICE,
             FALSE, tmpUserId, REASON_NOMAN_CANCEL, NULL);
     return NOERROR;
 }
 
-ECode NotificationManagerService::NotificationManagerStub::CancelAllNotifications(
+ECode NotificationManagerService::BinderService::CancelAllNotifications(
     /* [in] */ const String& pkg,
     /* [in] */ Int32 userId)
 {
@@ -341,7 +406,7 @@ ECode NotificationManagerService::NotificationManagerStub::CancelAllNotification
     return NOERROR;
 }
 
-ECode NotificationManagerService::NotificationManagerStub::SetNotificationsEnabledForPackage(
+ECode NotificationManagerService::BinderService::SetNotificationsEnabledForPackage(
     /* [in] */ const String& pkg,
     /* [in] */ Int32 uid,
     /* [in] */ Boolean enabled)
@@ -352,21 +417,21 @@ ECode NotificationManagerService::NotificationManagerStub::SetNotificationsEnabl
     return NOERROR;
 }
 
-ECode NotificationManagerService::NotificationManagerStub::AreNotificationsEnabledForPackage(
+ECode NotificationManagerService::BinderService::AreNotificationsEnabledForPackage(
     /* [in] */ const String& pkg,
     /* [in] */ Int32 uid,
     /* [out] */ Boolean* res)
 {
-    VALIDATE_NOT_NULL(result);
+    VALIDATE_NOT_NULL(res);
 
     mHost->CheckCallerIsSystem();
     Int32 data;
     mHost->mAppOps->CheckOpNoThrow(IAppOpsManager::OP_POST_NOTIFICATION, uid, pkg, &data);
-    *result = data == IAppOpsManager::MODE_ALLOWED;
+    *res = data == IAppOpsManager::MODE_ALLOWED;
     return NOERROR;
 }
 
-ECode NotificationManagerService::NotificationManagerStub::SetPackagePriority(
+ECode NotificationManagerService::BinderService::SetPackagePriority(
     /* [in] */ const String& pkg,
     /* [in] */ Int32 uid,
     /* [in] */ Int32 priority)
@@ -377,7 +442,7 @@ ECode NotificationManagerService::NotificationManagerStub::SetPackagePriority(
     return NOERROR;
 }
 
-ECode NotificationManagerService::NotificationManagerStub::GetPackagePriority(
+ECode NotificationManagerService::BinderService::GetPackagePriority(
     /* [in] */ const String& pkg,
     /* [in] */ Int32 uid,
     /* [out] */ Int32* result)
@@ -387,7 +452,7 @@ ECode NotificationManagerService::NotificationManagerStub::GetPackagePriority(
     return mHost->mRankingHelper->GetPackagePriority(pkg, uid, result);
 }
 
-ECode NotificationManagerService::NotificationManagerStub::SetPackageVisibilityOverride(
+ECode NotificationManagerService::BinderService::SetPackageVisibilityOverride(
     /* [in] */ const String& pkg,
     /* [in] */ Int32 uid,
     /* [in] */ Int32 visibility)
@@ -398,7 +463,7 @@ ECode NotificationManagerService::NotificationManagerStub::SetPackageVisibilityO
     return NOERROR;
 }
 
-ECode NotificationManagerService::NotificationManagerStub::GetPackageVisibilityOverride(
+ECode NotificationManagerService::BinderService::GetPackageVisibilityOverride(
     /* [in] */ const String& pkg,
     /* [in] */ Int32 uid,
     /* [out] */ Int32* result)
@@ -408,7 +473,7 @@ ECode NotificationManagerService::NotificationManagerStub::GetPackageVisibilityO
     return mHost->mRankingHelper->GetPackageVisibilityOverride(pkg, uid, result);
 }
 
-ECode NotificationManagerService::NotificationManagerStub::GetActiveNotifications(
+ECode NotificationManagerService::BinderService::GetActiveNotifications(
     /* [in] */ const String& callingPkg,
     /* [out, callee] */ ArrayOf<IStatusBarNotification*>** ns)
 {
@@ -416,7 +481,7 @@ ECode NotificationManagerService::NotificationManagerStub::GetActiveNotification
 
     // enforce() will ensure the calling uid has the correct permission
     AutoPtr<IContext> context;
-    GetContext((IContext**)&context);
+    mHost->GetContext((IContext**)&context);
     context->EnforceCallingOrSelfPermission(
             Elastos::Droid::Manifest::permission::ACCESS_NOTIFICATIONS,
             String("NotificationManagerService.getActiveNotifications"));
@@ -428,14 +493,14 @@ ECode NotificationManagerService::NotificationManagerStub::GetActiveNotification
     Int32 result;
     mHost->mAppOps->NoteOpNoThrow(IAppOpsManager::OP_ACCESS_NOTIFICATIONS, uid, callingPkg, &result);
     if (result == IAppOpsManager::MODE_ALLOWED) {
-        synchronized(mNotificationList) {
+        synchronized(mHost->mNotificationList) {
             Int32 N;
             mHost->mNotificationList->GetSize(&N);
             tmp = ArrayOf<IStatusBarNotification*>::Alloc(N);
             for (Int32 i = 0; i < N; i++) {
                 AutoPtr<IInterface> obj;
                 mHost->mNotificationList->Get(i, (IInterface**)&obj);
-                AutoPtr<NotificationRecord> record = (NotificationRecord*)IObject::Probe(obj);
+                AutoPtr<NotificationRecord> record = (NotificationRecord*)INotificationRecord::Probe(obj);
                 (*tmp)[i] = record->mSbn;
             }
         }
@@ -446,16 +511,16 @@ ECode NotificationManagerService::NotificationManagerStub::GetActiveNotification
     return NOERROR;
 }
 
-ECode NotificationManagerService::NotificationManagerStub::GetHistoricalNotifications(
+ECode NotificationManagerService::BinderService::GetHistoricalNotifications(
     /* [in] */ const String& callingPkg,
     /* [in] */ Int32 count,
-    /* [out, callee] */ ArrayOf<IStatusBarNotification*>* ns)
+    /* [out, callee] */ ArrayOf<IStatusBarNotification*>** ns)
 {
     VALIDATE_NOT_NULL(ns);
 
     // enforce() will ensure the calling uid has the correct permission
     AutoPtr<IContext> context;
-    GetContext((IContext**)&context);
+    mHost->GetContext((IContext**)&context);
     context->EnforceCallingOrSelfPermission(
             Elastos::Droid::Manifest::permission::ACCESS_NOTIFICATIONS,
             String("NotificationManagerService.getHistoricalNotifications"));
@@ -467,7 +532,7 @@ ECode NotificationManagerService::NotificationManagerStub::GetHistoricalNotifica
     Int32 result;
     mHost->mAppOps->NoteOpNoThrow(IAppOpsManager::OP_ACCESS_NOTIFICATIONS, uid, callingPkg, &result);
     if (result == IAppOpsManager::MODE_ALLOWED) {
-        synchronized(mArchive) {
+        synchronized(mHost->mArchive) {
             mHost->mArchive->GetArray(count, (ArrayOf<IStatusBarNotification*>**)&tmp);
         }
     }
@@ -476,7 +541,7 @@ ECode NotificationManagerService::NotificationManagerStub::GetHistoricalNotifica
     return NOERROR;
 }
 
-ECode NotificationManagerService::NotificationManagerStub::RegisterListener(
+ECode NotificationManagerService::BinderService::RegisterListener(
     /* [in] */ IINotificationListener* listener,
     /* [in] */ IComponentName* component,
     /* [in] */ Int32 userid)
@@ -486,7 +551,7 @@ ECode NotificationManagerService::NotificationManagerStub::RegisterListener(
     return NOERROR;
 }
 
-ECode NotificationManagerService::NotificationManagerStub::UnregisterListener(
+ECode NotificationManagerService::BinderService::UnregisterListener(
     /* [in] */ IINotificationListener* listener,
     /* [in] */ Int32 userid)
 {
@@ -494,7 +559,7 @@ ECode NotificationManagerService::NotificationManagerStub::UnregisterListener(
     return NOERROR;
 }
 
-ECode NotificationManagerService::NotificationManagerStub::CancelNotificationsFromListener(
+ECode NotificationManagerService::BinderService::CancelNotificationsFromListener(
     /* [in] */ IINotificationListener* token,
     /* [in] */ ArrayOf<String>* keys)
 {
@@ -502,15 +567,15 @@ ECode NotificationManagerService::NotificationManagerStub::CancelNotificationsFr
     const Int32 callingPid = Binder::GetCallingPid();
     Int64 identity = Binder::ClearCallingIdentity();
     // try {
-    synchronized(mNotificationList) {
-        AutoPtr<ManagedService::ManagedServiceInfo> info;
-        mHost->mListeners->CheckServiceTokenLocked(token, (ManagedService::ManagedServiceInfo**)&info);
+    synchronized(mHost->mNotificationList) {
+        AutoPtr<ManagedServices::ManagedServiceInfo> info;
+        mHost->mListeners->CheckServiceTokenLocked(token, (ManagedServices::ManagedServiceInfo**)&info);
         if (keys != NULL) {
             const Int32 N = keys->GetLength();
             for (Int32 i = 0; i < N; i++) {
                 AutoPtr<IInterface> obj;
                 mHost->mNotificationsByKey->Get(CoreUtils::Convert((*keys)[i]), (IInterface**)&obj);
-                AutoPtr<NotificationRecord> r = (NotificationRecord*)IObject::Probe(obj);
+                AutoPtr<NotificationRecord> r = (NotificationRecord*)INotificationRecord::Probe(obj);
                 if (r == NULL) continue;
                 Int32 userId;
                 r->mSbn->GetUserId(&userId);
@@ -542,8 +607,8 @@ ECode NotificationManagerService::NotificationManagerStub::CancelNotificationsFr
     return NOERROR;
 }
 
-void NotificationManagerService::NotificationManagerStub::CancelNotificationFromListenerLocked(
-    /* [in] */ ManagedServiceInfo* info,
+void NotificationManagerService::BinderService::CancelNotificationFromListenerLocked(
+    /* [in] */ ManagedServices::ManagedServiceInfo* info,
     /* [in] */ Int32 callingUid,
     /* [in] */ Int32 callingPid,
     /* [in] */ const String& pkg,
@@ -556,7 +621,7 @@ void NotificationManagerService::NotificationManagerStub::CancelNotificationFrom
             TRUE, userId, REASON_LISTENER_CANCEL, info);
 }
 
-ECode NotificationManagerService::NotificationManagerStub::CancelNotificationFromListener(
+ECode NotificationManagerService::BinderService::CancelNotificationFromListener(
     /* [in] */ IINotificationListener* token,
     /* [in] */ const String& pkg,
     /* [in] */ const String& tag,
@@ -566,9 +631,9 @@ ECode NotificationManagerService::NotificationManagerStub::CancelNotificationFro
     const Int32 callingPid = Binder::GetCallingPid();
     Int64 identity = Binder::ClearCallingIdentity();
     // try {
-    synchronized(mNotificationList) {
-        AutoPtr<ManagedService::ManagedServiceInfo> info;
-        mHost->mListeners->CheckServiceTokenLocked(token, (ManagedService::ManagedServiceInfo**)&info);
+    synchronized(mHost->mNotificationList) {
+        AutoPtr<ManagedServices::ManagedServiceInfo> info;
+        mHost->mListeners->CheckServiceTokenLocked(token, (ManagedServices::ManagedServiceInfo**)&info);
         if (info->SupportsProfiles()) {
             Logger::E(TAG, "Ignoring deprecated cancelNotification(pkg, tag, id) from %p use cancelNotification(key) instead."
                     , info->mComponent.Get());
@@ -584,7 +649,7 @@ ECode NotificationManagerService::NotificationManagerStub::CancelNotificationFro
     return NOERROR;
 }
 
-ECode NotificationManagerService::NotificationManagerStub::GetActiveNotificationsFromListener(
+ECode NotificationManagerService::BinderService::GetActiveNotificationsFromListener(
     /* [in] */ IINotificationListener* token,
     /* [in] */ ArrayOf<String>* keys,
     /* [in] */ Int32 trim,
@@ -592,31 +657,32 @@ ECode NotificationManagerService::NotificationManagerStub::GetActiveNotification
 {
     VALIDATE_NOT_NULL(slice);
 
-    synchronized(mNotificationList) {
-        AutoPtr<ManagedService::ManagedServiceInfo> info;
-        mHost->mListeners->CheckServiceTokenLocked(token, (ManagedService::ManagedServiceInfo**)&info);
+    synchronized(mHost->mNotificationList) {
+        AutoPtr<ManagedServices::ManagedServiceInfo> info;
+        mHost->mListeners->CheckServiceTokenLocked(token, (ManagedServices::ManagedServiceInfo**)&info);
         const Boolean getKeys = keys != NULL;
         Int32 size;
-        mNotificationList->GetSize(&size);
+        mHost->mNotificationList->GetSize(&size);
         const Int32 N = getKeys ? keys->GetLength() : size;
         AutoPtr<IArrayList> list;
         CArrayList::New(N, (IArrayList**)&list);
         for (Int32 i = 0; i < N; i++) {
+            AutoPtr<NotificationRecord> r;
             if (getKeys) {
                 AutoPtr<IInterface> obj;
                 mHost->mNotificationsByKey->Get(CoreUtils::Convert((*keys)[i]), (IInterface**)&obj);
-                AutoPtr<NotificationRecord> r = (NotificationRecord*)IObject::Probe(obj);
+                r = (NotificationRecord*)INotificationRecord::Probe(obj);
             }
             else {
                 AutoPtr<IInterface> obj;
                 mHost->mNotificationList->Get(i, (IInterface**)&obj);
-                AutoPtr<NotificationRecord> r = (NotificationRecord*)IObject::Probe(obj);
+                r = (NotificationRecord*)INotificationRecord::Probe(obj);
             }
             if (r == NULL) continue;
             AutoPtr<IStatusBarNotification> sbn = r->mSbn;
-            if (!IsVisibleToListener(sbn, info)) continue;
+            if (!mHost->IsVisibleToListener(sbn, info)) continue;
             AutoPtr<IStatusBarNotification> sbnToSend;
-            if (trim != TRIM_FULL) {
+            if (trim != INotificationListenerService::TRIM_FULL) {
                 AutoPtr<IStatusBarNotification> action;
                 sbn->CloneLight((IStatusBarNotification**)&action);
                 sbnToSend = action;
@@ -631,21 +697,21 @@ ECode NotificationManagerService::NotificationManagerStub::GetActiveNotification
     return NOERROR;
 }
 
-ECode NotificationManagerService::NotificationManagerStub::RequestHintsFromListener(
+ECode NotificationManagerService::BinderService::RequestHintsFromListener(
     /* [in] */ IINotificationListener* token,
     /* [in] */ Int32 hints)
 {
     const Int64 identity = Binder::ClearCallingIdentity();
     // try {
-    synchronized(mNotificationList) {
-        AutoPtr<ManagedService::ManagedServiceInfo> info;
-        mHost->mListeners->CheckServiceTokenLocked(token, (ManagedService::ManagedServiceInfo**)&info);
-        const Boolean disableEffects = (hints & HINT_HOST_DISABLE_EFFECTS) != 0;
+    synchronized(mHost->mNotificationList) {
+        AutoPtr<ManagedServices::ManagedServiceInfo> info;
+        mHost->mListeners->CheckServiceTokenLocked(token, (ManagedServices::ManagedServiceInfo**)&info);
+        const Boolean disableEffects = (hints & INotificationListenerService::HINT_HOST_DISABLE_EFFECTS) != 0;
         if (disableEffects) {
-            mHost->mListenersDisablingEffects->Add(TO_IINTERFACE(info));
+            ISet::Probe(mHost->mListenersDisablingEffects)->Add((IProxyDeathRecipient*)info);
         }
         else {
-            mHost->mListenersDisablingEffects->Remove(TO_IINTERFACE(info));
+            ISet::Probe(mHost->mListenersDisablingEffects)->Remove((IProxyDeathRecipient*)info);
         }
         mHost->UpdateListenerHintsLocked();
         mHost->UpdateEffectsSuppressorLocked();
@@ -656,27 +722,27 @@ ECode NotificationManagerService::NotificationManagerStub::RequestHintsFromListe
     return NOERROR;
 }
 
-ECode NotificationManagerService::NotificationManagerStub::GetHintsFromListener(
+ECode NotificationManagerService::BinderService::GetHintsFromListener(
     /* [in] */ IINotificationListener* token,
     /* [out] */ Int32* result)
 {
     VALIDATE_NOT_NULL(result);
-    synchronized(mNotificationList) {
+    synchronized(mHost->mNotificationList) {
         *result = mHost->mListenerHints;
         return NOERROR;
     }
     return NOERROR;
 }
 
-ECode NotificationManagerService::NotificationManagerStub::RequestInterruptionFilterFromListener(
+ECode NotificationManagerService::BinderService::RequestInterruptionFilterFromListener(
     /* [in] */ IINotificationListener* token,
     /* [in] */ Int32 interruptionFilter)
 {
     const Int64 identity = Binder::ClearCallingIdentity();
     // try {
-    synchronized(mNotificationList) {
-        AutoPtr<ManagedService::ManagedServiceInfo> info;
-        mHost->mListeners->CheckServiceTokenLocked(token, (ManagedService::ManagedServiceInfo**)&info);
+    synchronized(mHost->mNotificationList) {
+        AutoPtr<ManagedServices::ManagedServiceInfo> info;
+        mHost->mListeners->CheckServiceTokenLocked(token, (ManagedServices::ManagedServiceInfo**)&info);
         mHost->mZenModeHelper->RequestFromListener(interruptionFilter);
         mHost->UpdateInterruptionFilterLocked();
     }
@@ -686,55 +752,59 @@ ECode NotificationManagerService::NotificationManagerStub::RequestInterruptionFi
     return NOERROR;
 }
 
-ECode NotificationManagerService::NotificationManagerStub::GetInterruptionFilterFromListener(
+ECode NotificationManagerService::BinderService::GetInterruptionFilterFromListener(
     /* [in] */ IINotificationListener* token,
     /* [out] */ Int32* result)
 {
     VALIDATE_NOT_NULL(result);
-    synchronized (mNotificationLight) {
-        *result = mInterruptionFilter;
+    synchronized(mHost->mNotificationLight) {
+        *result = mHost->mInterruptionFilter;
         return NOERROR;
     }
     return NOERROR;
 }
 
-ECode NotificationManagerService::NotificationManagerStub::SetOnNotificationPostedTrimFromListener(
+ECode NotificationManagerService::BinderService::SetOnNotificationPostedTrimFromListener(
     /* [in] */ IINotificationListener* token,
     /* [in] */ Int32 trim)
 {
-    synchronized (mNotificationList) {
-        AutoPtr<ManagedService::ManagedServiceInfo> info;
-        mHost->mListeners->CheckServiceTokenLocked(token, (ManagedService::ManagedServiceInfo**)&info);
+    synchronized(mHost->mNotificationList) {
+        AutoPtr<ManagedServices::ManagedServiceInfo> info;
+        mHost->mListeners->CheckServiceTokenLocked(token, (ManagedServices::ManagedServiceInfo**)&info);
         if (info == NULL) return NOERROR;
         mHost->mListeners->SetOnNotificationPostedTrimLocked(info, trim);
+        return NOERROR;
     }
     return NOERROR;
 }
 
-ECode NotificationManagerService::NotificationManagerStub::GetZenModeConfig(
+ECode NotificationManagerService::BinderService::GetZenModeConfig(
     /* [out] */ IZenModeConfig** config)
 {
     VALIDATE_NOT_NULL(config);
     EnforceSystemOrSystemUI(String("INotificationManager.getZenModeConfig"));
-    return mHost->mZenModeHelper->GetConfig(config);
+    AutoPtr<IZenModeConfig> _config = mHost->mZenModeHelper->GetConfig();
+    *config = _config;
+    REFCOUNT_ADD(*config);
+    return NOERROR;
 }
 
-ECode NotificationManagerService::NotificationManagerStub::SetZenModeConfig(
+ECode NotificationManagerService::BinderService::SetZenModeConfig(
     /* [in] */ IZenModeConfig* config,
     /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result);
     mHost->CheckCallerIsSystem();
-    return mHost->mZenModeHelper->SetConfig(config, result);
+    *result = mHost->mZenModeHelper->SetConfig(config);
+    return NOERROR;
 }
 
-ECode NotificationManagerService::NotificationManagerStub::NotifyConditions(
+ECode NotificationManagerService::BinderService::NotifyConditions(
     /* [in] */ const String& pkg,
     /* [in] */ IIConditionProvider* provider,
     /* [in] */ ArrayOf<ICondition*>* conditions)
 {
-    AutoPtr<ManagedService::ManagedServiceInfo> info;
-    mHost->mConditionProviders->CheckServiceToken(provider, (ManagedService::ManagedServiceInfo**)&info);
+    AutoPtr<ManagedServices::ManagedServiceInfo> info = mHost->mConditionProviders->CheckServiceToken(provider);
     mHost->CheckCallerIsSystemOrSameApp(pkg);
     const Int64 identity = Binder::ClearCallingIdentity();
     // try {
@@ -745,7 +815,7 @@ ECode NotificationManagerService::NotificationManagerStub::NotifyConditions(
     return NOERROR;
 }
 
-ECode NotificationManagerService::NotificationManagerStub::RequestZenModeConditions(
+ECode NotificationManagerService::BinderService::RequestZenModeConditions(
     /* [in] */ IIConditionListener* callback,
     /* [in] */ Int32 relevance)
 {
@@ -754,7 +824,7 @@ ECode NotificationManagerService::NotificationManagerStub::RequestZenModeConditi
     return NOERROR;
 }
 
-ECode NotificationManagerService::NotificationManagerStub::SetZenModeCondition(
+ECode NotificationManagerService::BinderService::SetZenModeCondition(
     /* [in] */ ICondition* condition)
 {
     EnforceSystemOrSystemUI(String("INotificationManager.setZenModeCondition"));
@@ -764,9 +834,10 @@ ECode NotificationManagerService::NotificationManagerStub::SetZenModeCondition(
     // } finally {
     Binder::RestoreCallingIdentity(identity);
     // }
+    return NOERROR;
 }
 
-ECode NotificationManagerService::NotificationManagerStub::SetAutomaticZenModeConditions(
+ECode NotificationManagerService::BinderService::SetAutomaticZenModeConditions(
     /* [in] */ ArrayOf<IUri*>* conditionIds)
 {
     EnforceSystemOrSystemUI(String("INotificationManager.setAutomaticZenModeConditions"));
@@ -774,34 +845,37 @@ ECode NotificationManagerService::NotificationManagerStub::SetAutomaticZenModeCo
     return NOERROR;
 }
 
-ECode NotificationManagerService::NotificationManagerStub::GetAutomaticZenModeConditions(
+ECode NotificationManagerService::BinderService::GetAutomaticZenModeConditions(
     /* [out, callee] */ ArrayOf<ICondition*>** condition)
 {
     VALIDATE_NOT_NULL(condition);
     EnforceSystemOrSystemUI(String("INotificationManager.getAutomaticZenModeConditions"));
-    return mHost->mConditionProviders->GetAutomaticZenModeConditions(condition);
+    AutoPtr< ArrayOf<ICondition*> > con = mHost->mConditionProviders->GetAutomaticZenModeConditions();
+    *condition = con;
+    REFCOUNT_ADD(*condition);
+    return NOERROR;;
 }
 
-void NotificationManagerService::NotificationManagerStub::EnforceSystemOrSystemUI(
+void NotificationManagerService::BinderService::EnforceSystemOrSystemUI(
     /* [in] */ const String& message)
 {
     if (IsCallerSystem()) return;
     AutoPtr<IContext> context;
-    GetContext((IContext**)&context);
+    mHost->GetContext((IContext**)&context);
     context->EnforceCallingPermission(
-            Elastos::android::Manifest::permission::STATUS_BAR_SERVICE, message);
+            Elastos::Droid::Manifest::permission::STATUS_BAR_SERVICE, message);
 }
 
-void NotificationManagerService::NotificationManagerStub::Dump(
+void NotificationManagerService::BinderService::Dump(
     /* [in] */ IFileDescriptor* fd,
     /* [in] */ IPrintWriter* pw,
     /* [in] */ ArrayOf<String>* args)
 {
     AutoPtr<IContext> context;
-    GetContext((IContext**)&context);
+    mHost->GetContext((IContext**)&context);
     Int32 result;
     context->CheckCallingOrSelfPermission(
-            Elastos::android::Manifest::permission::DUMP, &result);
+            Elastos::Droid::Manifest::permission::DUMP, &result);
     if (result != IPackageManager::PERMISSION_GRANTED) {
         StringBuilder builder;
         builder += "Permission Denial: can't dump NotificationManager from pid=";
@@ -813,40 +887,46 @@ void NotificationManagerService::NotificationManagerStub::Dump(
         return;
     }
 
-    DumpImpl(pw, DumpFilter::ParseFromArguments(args));
+    mHost->DumpImpl(pw, DumpFilter::ParseFromArguments(args));
 }
 
-ECode NotificationManagerService::NotificationManagerStub::GetEffectsSuppressor(
+ECode NotificationManagerService::BinderService::GetEffectsSuppressor(
     /* [out] */ IComponentName** name)
 {
     VALIDATE_NOT_NULL(name);
 
     EnforceSystemOrSystemUI(String("INotificationManager.getEffectsSuppressor"));
     *name = mHost->mEffectsSuppressor;
+    REFCOUNT_ADD(*name);
     return NOERROR;
 }
 
-ECode NotificationManagerService::NotificationManagerStub::MatchesCallFilter(
+ECode NotificationManagerService::BinderService::MatchesCallFilter(
     /* [in] */ IBundle* extras,
     /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result);
 
     EnforceSystemOrSystemUI(String("INotificationManager.matchesCallFilter"));
-    return mHost->mZenModeHelper->MatchesCallFilter(
+
+    AutoPtr<INotificationSignalExtractor> actor =
+            mHost->mRankingHelper->FindExtractor(EIID_IValidateNotificationPeople);
+
+    *result = mHost->mZenModeHelper->MatchesCallFilter(
             UserHandle::GetCallingUserHandle(),
             extras,
-            mHost->mRankingHelper->FindExtractor(ValidateNotificationPeople.class),
+            (ValidateNotificationPeople*)IValidateNotificationPeople::Probe(actor),
             MATCHES_CALL_FILTER_CONTACTS_TIMEOUT_MS,
-            MATCHES_CALL_FILTER_TIMEOUT_AFFINITY, result);
+            MATCHES_CALL_FILTER_TIMEOUT_AFFINITY);
+    return NOERROR;
 }
 
-ECode NotificationManagerService::NotificationManagerStub::ToString(
+ECode NotificationManagerService::BinderService::ToString(
     /* [out] */ String* str)
 {
     VALIDATE_NOT_NULL(str);
-    *str = "NotificationManagerService::NotificationManagerStub: ";
-    str.AppendFormat("%p", this);
+    *str = "NotificationManagerService::BinderService: ";
+    str->AppendFormat("%p", this);
     return NOERROR;
 }
 
@@ -857,22 +937,29 @@ NotificationManagerService::NotificationListeners::NotificationListeners(
     /* [in] */ NotificationManagerService* host)
     : mHost(host)
 {
-    AutoPtr<IContext> context;
-    GetContext((IContext**)&context);
-    ManagedServices::ManagedServices(context, mHost->mHandler, mHost->mNotificationList, mHost->mUserProfiles);
-    CArraySet::New((IArraySet**)&mLightTrimListeners);
 }
 
 NotificationManagerService::NotificationListeners::~NotificationListeners()
 {}
 
-AutoPtr<Config> NotificationManagerService::NotificationListeners::GetConfig()
+ECode NotificationManagerService::NotificationListeners::constructor()
+{
+    AutoPtr<IContext> context;
+    mHost->GetContext((IContext**)&context);
+    ManagedServices::constructor(context, mHost->mHandler,
+            mHost->mNotificationList, mHost->mUserProfiles);
+
+    CArraySet::New((IArraySet**)&mLightTrimListeners);
+    return NOERROR;
+}
+
+AutoPtr<ManagedServices::Config> NotificationManagerService::NotificationListeners::GetConfig()
 {
     AutoPtr<Config> c = new Config();
     c->mCaption = "notification listener";
     c->mServiceInterface = INotificationListenerService::SERVICE_INTERFACE;
     c->mSecureSettingName = ISettingsSecure::ENABLED_NOTIFICATION_LISTENERS;
-    c->mBindPermission = Elastos::android::Manifest::permission::BIND_NOTIFICATION_LISTENER_SERVICE;
+    c->mBindPermission = Elastos::Droid::Manifest::permission::BIND_NOTIFICATION_LISTENER_SERVICE;
     c->mSettingsAction = ISettings::ACTION_NOTIFICATION_LISTENER_SETTINGS;
     c->mClientLabel = R::string::notification_listener_binding_label;
     return c;
@@ -883,7 +970,7 @@ ECode NotificationManagerService::NotificationListeners::OnServiceAdded(
 {
     AutoPtr<IINotificationListener> listener = IINotificationListener::Probe(info->mService);
     AutoPtr<INotificationRankingUpdate> update;
-    synchronized(mNotificationList) {
+    synchronized(mHost->mNotificationList) {
         update = mHost->MakeRankingUpdateLocked(info);
     }
     // try {
@@ -898,14 +985,14 @@ ECode NotificationManagerService::NotificationListeners::OnServiceAdded(
 }
 
 ECode NotificationManagerService::NotificationListeners::OnServiceRemovedLocked(
-/* [in] */ ManagedServiceInfo* info)
+/* [in] */ ManagedServiceInfo* removed)
 {
     Boolean res;
-    ISet::Probe(mHost->mListenersDisablingEffects)->Remove(removed, &res);
+    ISet::Probe(mHost->mListenersDisablingEffects)->Remove((IProxyDeathRecipient*)removed, &res);
     if (res) {
         mHost->UpdateListenerHintsLocked();
     }
-    ISet::Probe(mLightTrimListeners)->Remove(removed);
+    ISet::Probe(mLightTrimListeners)->Remove((IProxyDeathRecipient*)removed);
     return NOERROR;
 }
 
@@ -913,11 +1000,11 @@ void NotificationManagerService::NotificationListeners::SetOnNotificationPostedT
     /* [in] */ ManagedServiceInfo* info,
     /* [in] */ Int32 trim)
 {
-    if (trim == TRIM_LIGHT) {
-        mLightTrimListeners->Add(TO_IINTERFACE(info));
+    if (trim == INotificationListenerService::TRIM_LIGHT) {
+        ISet::Probe(mLightTrimListeners)->Add((IProxyDeathRecipient*)info);
     }
     else {
-        mLightTrimListeners->Remove(TO_IINTERFACE(info));
+        ISet::Probe(mLightTrimListeners)->Remove((IProxyDeathRecipient*)info);
     }
 }
 
@@ -925,7 +1012,11 @@ Int32 NotificationManagerService::NotificationListeners::GetOnNotificationPosted
     /* [in] */ ManagedServiceInfo* info)
 {
     Boolean res;
-    return (mLightTrimListeners->Contains(info, &res), res) ? TRIM_LIGHT : TRIM_FULL;
+    ISet::Probe(mLightTrimListeners)->Contains((IProxyDeathRecipient*)info, &res);
+    if (res) {
+        return INotificationListenerService::TRIM_LIGHT;
+    }
+    return INotificationListenerService::TRIM_FULL;
 }
 
 ECode NotificationManagerService::NotificationListeners::NotifyPostedLocked(
@@ -941,7 +1032,7 @@ ECode NotificationManagerService::NotificationListeners::NotifyPostedLocked(
     for (Int32 i = 0; i < size; i++) {
         AutoPtr<IInterface> obj;
         mServices->Get(i, (IInterface**)&obj);
-        AutoPtr<ManagedServiceInfo> info = (ManagedServiceInfo*)IObject::Probe(obj);
+        AutoPtr<ManagedServiceInfo> info = (ManagedServiceInfo*)IProxyDeathRecipient::Probe(obj);
 
         Boolean sbnVisible = mHost->IsVisibleToListener(sbn, info);
         Boolean oldSbnVisible = oldSbn != NULL ? mHost->IsVisibleToListener(oldSbn, info) : FALSE;
@@ -965,16 +1056,16 @@ ECode NotificationManagerService::NotificationListeners::NotifyPostedLocked(
 
         Int32 trim = mHost->mListeners->GetOnNotificationPostedTrim(info);
 
-        if (trim == TRIM_LIGHT && sbnCloneLight == NULL) {
+        if (trim == INotificationListenerService::TRIM_LIGHT && sbnCloneLight == NULL) {
             sbn->CloneLight((IStatusBarNotification**)&sbnCloneLight);
         }
-        else if (trim == TRIM_FULL && sbnClone == NULL) {
+        else if (trim == INotificationListenerService::TRIM_FULL && sbnClone == NULL) {
             AutoPtr<IInterface> obj;
-            sbn->Clone((IInterface**)&obj);
+            ICloneable::Probe(sbn)->Clone((IInterface**)&obj);
             sbnClone = IStatusBarNotification::Probe(obj);
         }
         AutoPtr<IStatusBarNotification> sbnToPost =
-                (trim == TRIM_FULL) ? sbnClone : sbnCloneLight;
+                (trim == INotificationListenerService::TRIM_FULL) ? sbnClone : sbnCloneLight;
 
         runnable = NULL;
         runnable = new NotificationListenersRunnable(1, this, mHost, info, sbnToPost, update, 0);
@@ -997,7 +1088,7 @@ ECode NotificationManagerService::NotificationListeners::NotifyRemovedLocked(
     for (Int32 i = 0; i < size; i++) {
         AutoPtr<IInterface> obj;
         mServices->Get(i, (IInterface**)&obj);
-        AutoPtr<ManagedServiceInfo> info = (ManagedServiceInfo*)IObject::Probe(obj);
+        AutoPtr<ManagedServiceInfo> info = (ManagedServiceInfo*)IProxyDeathRecipient::Probe(obj);
 
         if (!mHost->IsVisibleToListener(sbn, info)) {
             continue;
@@ -1018,7 +1109,7 @@ ECode NotificationManagerService::NotificationListeners::NotifyRankingUpdateLock
     for (Int32 i = 0; i < size; i++) {
         AutoPtr<IInterface> obj;
         mServices->Get(i, (IInterface**)&obj);
-        AutoPtr<ManagedServiceInfo> serviceInfo = (ManagedServiceInfo*)IObject::Probe(obj);
+        AutoPtr<ManagedServiceInfo> serviceInfo = (ManagedServiceInfo*)IProxyDeathRecipient::Probe(obj);
 
         if (!serviceInfo->IsEnabledForCurrentProfiles()) {
             continue;
@@ -1041,7 +1132,7 @@ ECode NotificationManagerService::NotificationListeners::NotifyListenerHintsChan
     for (Int32 i = 0; i < size; i++) {
         AutoPtr<IInterface> obj;
         mServices->Get(i, (IInterface**)&obj);
-        AutoPtr<ManagedServiceInfo> serviceInfo = (ManagedServiceInfo*)IObject::Probe(obj);
+        AutoPtr<ManagedServiceInfo> serviceInfo = (ManagedServiceInfo*)IProxyDeathRecipient::Probe(obj);
 
         if (!serviceInfo->IsEnabledForCurrentProfiles()) {
             continue;
@@ -1063,7 +1154,7 @@ ECode NotificationManagerService::NotificationListeners::NotifyInterruptionFilte
     for (Int32 i = 0; i < size; i++) {
         AutoPtr<IInterface> obj;
         mServices->Get(i, (IInterface**)&obj);
-        AutoPtr<ManagedServiceInfo> serviceInfo = (ManagedServiceInfo*)IObject::Probe(obj);
+        AutoPtr<ManagedServiceInfo> serviceInfo = (ManagedServiceInfo*)IProxyDeathRecipient::Probe(obj);
 
         if (!serviceInfo->IsEnabledForCurrentProfiles()) {
             continue;
@@ -1176,13 +1267,13 @@ Boolean NotificationManagerService::NotificationListeners::IsListenerPackage(
         return FALSE;
     }
     // TODO: clean up locking object later
-    synchronized(mNotificationList) {
+    synchronized(mHost->mNotificationList) {
         Int32 size;
         mServices->GetSize(&size);
         for (Int32 i = 0; i < size; i++) {
             AutoPtr<IInterface> obj;
             mServices->Get(i, (IInterface**)&obj);
-            AutoPtr<ManagedServiceInfo> serviceInfo = (ManagedServiceInfo*)IObject::Probe(obj);
+            AutoPtr<ManagedServiceInfo> serviceInfo = (ManagedServiceInfo*)IProxyDeathRecipient::Probe(obj);
             String name;
             serviceInfo->mComponent->GetPackageName(&name);
             if (packageName.Equals(name)) {
@@ -1191,72 +1282,6 @@ Boolean NotificationManagerService::NotificationListeners::IsListenerPackage(
         }
     }
     return FALSE;
-}
-
-//===============================================================================
-//                  NotificationManagerService::DumpFilter
-//===============================================================================
-
-NotificationManagerService::DumpFilter::DumpFilter()
-{}
-
-NotificationManagerService::DumpFilter::~DumpFilter();
-
-AutoPtr<DumpFilter> NotificationManagerService::DumpFilter::ParseFromArguments(
-    /* [in] */ ArrayOf<String>* args)
-{
-    if (args != NULL && args->GetLength() == 2 && String("p").Equals((*args)[0])
-            && !(*args)[1].IsNull() && !(*args)[1].Trim().IsEmpty()) {
-        AutoPtr<DumpFilter> filter = new DumpFilter();
-        filter->mPkgFilter = (*args)[1].Trim().ToLowerCase();
-        return filter;
-    }
-    if (args != NULL && args->GetLength() == 1 && String("zen").Equals((*args)[0])) {
-        AutoPtr<DumpFilter> filter = new DumpFilter();
-        filter->mZen = TRUE;
-        return filter;
-    }
-    return NULL;
-}
-
-Boolean NotificationManagerService::DumpFilter::Matches(
-    /* [in] */ IStatusBarNotification* sbn)
-{
-    String name, pkg;
-    sbn->GetPackageName(&name);
-    sbn->GetOpPkg(&pkg);
-    return mZen ? TRUE : sbn != NULL && (Matches(name) || Matches(pkg));
-}
-
-Boolean NotificationManagerService::DumpFilter::Matches(
-    /* [in] */ IComponentName* component)
-{
-    String name;
-    component->GetPackageName(&name);
-    return mZen ? TRUE : component != NULL && Matches(name);
-}
-
-Boolean NotificationManagerService::DumpFilter::Matches(
-    /* [in] */ const String& pkg)
-{
-    return mZen ? TRUE : !pkg.IsNull() && pkg.ToLowerCase().Contains(mPkgFilter);
-}
-
-ECode NotificationManagerService::DumpFilter::ToString(
-    /* [out] */ String* str)
-{
-    VALIDATE_NOT_NULL(str);
-    if (mZen) {
-        *str = "zen";
-    }
-    else {
-        StringBuilder builder;
-        builder += '\'';
-        builder += mPkgFilter;
-        builder += '\'';
-        *str = builder.ToString();
-    }
-    return NOERROR;
 }
 
 //===============================================================================
@@ -1295,7 +1320,7 @@ ECode NotificationManagerService::StatusBarNotificationHolder::ToString(
 {
     VALIDATE_NOT_NULL(str);
     *str = "NotificationManagerService::StatusBarNotificationHolder: ";
-    str.AppendFormat("%p", this);
+    str->AppendFormat("%p", this);
     return NOERROR;
 }
 
@@ -1306,9 +1331,9 @@ ECode NotificationManagerService::StatusBarNotificationHolder::ToString(
 NotificationManagerService::SettingsObserver::SettingsObserver(
     /* [in] */ NotificationManagerService* host,
     /* [in] */ IHandler* handler)
-    : ContentObserver(handler)
-    , mHost(host)
+    : mHost(host)
 {
+    ContentObserver::constructor(handler);
     AutoPtr<ISettingsSystem> systemSettings;
     CSettingsSystem::AcquireSingleton((ISettingsSystem**)&systemSettings);
     systemSettings->GetUriFor(ISettingsSystem::NOTIFICATION_LIGHT_PULSE,
@@ -1321,7 +1346,7 @@ NotificationManagerService::SettingsObserver::~SettingsObserver()
 void NotificationManagerService::SettingsObserver::Observe()
 {
     AutoPtr<IContext> context;
-    GetContext((IContext**)&context);
+    mHost->GetContext((IContext**)&context);
     AutoPtr<IContentResolver> resolver;
     context->GetContentResolver((IContentResolver**)&resolver);
     resolver->RegisterContentObserver(NOTIFICATION_LIGHT_PULSE_URI, FALSE,
@@ -1342,7 +1367,7 @@ void NotificationManagerService::SettingsObserver::Update(
     /* [in] */ IUri* uri)
 {
     AutoPtr<IContext> context;
-    GetContext((IContext**)&context);
+    mHost->GetContext((IContext**)&context);
 
     AutoPtr<IContentResolver> resolver;
     context->GetContentResolver((IContentResolver**)&resolver);
@@ -1392,7 +1417,7 @@ AutoPtr<IStatusBarNotification> NotificationManagerService::IteratorInner::FindN
         AutoPtr<IStatusBarNotification> nr = IStatusBarNotification::Probe(obj);
         String name;
         Int32 id;
-        if ((mPkg.IsNull() || (nr->GetPackageName(&name), name) == pkg)
+        if ((mPkg.IsNull() || (nr->GetPackageName(&name), name) == mPkg)
                 && (mUserId == IUserHandle::USER_ALL || (nr->GetUserId(&id), id) == mUserId)) {
             return nr;
         }
@@ -1425,7 +1450,7 @@ ECode NotificationManagerService::IteratorInner::GetNext(
     return NOERROR;
 }
 
-ECode NotificationManagerService::IteratorInner::Remove();
+ECode NotificationManagerService::IteratorInner::Remove()
 {
     return mIter->Remove();
 }
@@ -1508,7 +1533,7 @@ ECode NotificationManagerService::Archive::Filter(
     AutoPtr<IteratorInner> objIter = new IteratorInner(iter, pkg, userId);
     AutoPtr<IIterator> obj = (IIterator*)objIter.Get();
     *iterator = obj;
-    REFCOUNT_ADD(&iterator);
+    REFCOUNT_ADD(*iterator);
     return NOERROR;
 }
 
@@ -1536,8 +1561,8 @@ ECode NotificationManagerService::Archive::GetArray(
         AutoPtr<IStatusBarNotification> notification = IStatusBarNotification::Probe(obj);
         (*a)[i++] = notification;
     }
-    *action = a;
-    REFCOUNT_ADD(*action);
+    *ation = a;
+    REFCOUNT_ADD(*ation);
     return NOERROR;
 }
 
@@ -1569,8 +1594,8 @@ ECode NotificationManagerService::Archive::GetArray(
         AutoPtr<IStatusBarNotification> notification = IStatusBarNotification::Probe(obj);
         (*a)[i++] = notification;
     }
-    *action = a;
-    REFCOUNT_ADD(*action);
+    *ation = a;
+    REFCOUNT_ADD(*ation);
     return NOERROR;
 }
 
@@ -1603,8 +1628,11 @@ void NotificationManagerService::ToastRecord::Dump(
     /* [in] */ const String& prefix,
     /* [in] */ DumpFilter* filter)
 {
-    if (filter != NULL && !filter->Matches(pkg)) return;
-    pw->Println(prefix + this);
+    if (filter != NULL && !filter->Matches(mPkg)) return;
+    StringBuilder builder;
+    builder += prefix;
+    builder += (IObject*)this;
+    pw->Println(builder.ToString());
 }
 
 ECode NotificationManagerService::ToastRecord::ToString(
@@ -1617,15 +1645,15 @@ ECode NotificationManagerService::ToastRecord::ToString(
     AutoPtr<ISystem> sys;
     CSystem::AcquireSingleton((ISystem**)&sys);
     Int32 code;
-    sys->IdentityHashCode((IInterface*)this, &code);
+    sys->IdentityHashCode((IObject*)this, &code);
 
     builder += StringUtils::ToHexString(code);
     builder += " pkg=";
-    builder += pkg;
+    builder += mPkg;
     builder += " callback=";
-    builder += callback;
+    builder += mCallback;
     builder += " duration=";
-    builder += duration;
+    builder += mDuration;
     *str = builder.ToString();
     return NOERROR;
 }
@@ -1647,29 +1675,30 @@ NotificationManagerService::MyNotificationDelegate::~MyNotificationDelegate()
 ECode NotificationManagerService::MyNotificationDelegate::OnSetDisabled(
     /* [in] */ Int32 status)
 {
-    synchronized(mNotificationList) {
+    synchronized(mHost->mNotificationList) {
         mHost->mDisableNotificationEffects =
                 (status & IStatusBarManager::DISABLE_NOTIFICATION_ALERTS) != 0;
-        if (!DisableNotificationEffects(NULL).IsNull()) {
+        if (!mHost->DisableNotificationEffects(NULL).IsNull()) {
             // cancel whatever's going on
-            Int64 identity;
-            Binder::ClearCallingIdentity(&identity);
+            Int64 identity = Binder::ClearCallingIdentity();
+            // try {
+            AutoPtr<IIRingtonePlayer> player;
+            mHost->mAudioManager->GetRingtonePlayer((IIRingtonePlayer**)&player);
 
-            if (mHost->mAudioService != NULL) {
-                AutoPtr<IIRingtonePlayer> player;
-                mHost->mAudioManager->GetRingtonePlayer((IIRingtonePlayer**)&player);
-
-                if (player != NULL) {
-                    player->StopAsync();
-                }
-                Binder::RestoreCallingIdentity(identity);
+            if (player != NULL) {
+                player->StopAsync();
             }
+            // } catch (RemoteException e) {
+            // } finally {
+            Binder::RestoreCallingIdentity(identity);
+            // }
 
-            Binder::ClearCallingIdentity(&identity);
-            if (mHost->mVibrator != NULL) {
-                mHost->mVibrator->Cancel();
-                Binder::RestoreCallingIdentity(identity);
-            }
+            identity = Binder::ClearCallingIdentity();
+            // try {
+            mHost->mVibrator->Cancel();
+            // } finally {
+            Binder::RestoreCallingIdentity(identity);
+            // }
         }
     }
     return NOERROR;
@@ -1680,7 +1709,7 @@ ECode NotificationManagerService::MyNotificationDelegate::OnClearAll(
     /* [in] */ Int32 callingPid,
     /* [in] */ Int32 userId)
 {
-    synchronized(mNotificationList) {
+    synchronized(mHost->mNotificationList) {
         mHost->CancelAllLocked(callingUid, callingPid, userId, REASON_DELEGATE_CANCEL_ALL, NULL,
                 /*includeCurrentProfiles*/ TRUE);
     }
@@ -1692,19 +1721,19 @@ ECode NotificationManagerService::MyNotificationDelegate::OnNotificationClick(
     /* [in] */ Int32 callingPid,
     /* [in] */ const String& key)
 {
-    synchronized(mNotificationList) {
-        assert(0 && "TODO");
+    synchronized(mHost->mNotificationList) {
+        // TODO
         // EventLogTags.writeNotificationClicked(key);
         AutoPtr<IInterface> obj;
         mHost->mNotificationsByKey->Get(CoreUtils::Convert(key), (IInterface**)&obj);
-        AutoPtr<NotificationRecord> r = (NotificationRecord*)IObject::Probe(obj);
+        AutoPtr<NotificationRecord> r = (NotificationRecord*)INotificationRecord::Probe(obj);
         if (r == NULL) {
             Logger::W(TAG, "No notification with key: %s", key.string());
             return NOERROR;
         }
         AutoPtr<IStatusBarNotification> sbn = r->mSbn;
         String pkg, tag;
-        Int32 id, userId;
+        Int32 id;
         mHost->CancelNotification(callingUid, callingPid,
                 (sbn->GetPackageName(&pkg), pkg),
                 (sbn->GetTag(&tag), tag),
@@ -1725,41 +1754,44 @@ ECode NotificationManagerService::MyNotificationDelegate::OnNotificationClear(
     /* [in] */ Int32 id,
     /* [in] */ Int32 userId)
 {
-    return mHost->CancelNotification(callingUid, callingPid, pkg, tag, id, 0,
+    mHost->CancelNotification(callingUid, callingPid, pkg, tag, id, 0,
             INotification::FLAG_ONGOING_EVENT | INotification::FLAG_FOREGROUND_SERVICE,
             TRUE, userId, REASON_DELEGATE_CANCEL, NULL);
+    return NOERROR;
 }
 
 ECode NotificationManagerService::MyNotificationDelegate::OnPanelRevealed()
 {
-    assert(0 && "TODO");
+    // TODO
     // EventLogTags.writeNotificationPanelRevealed();
-    synchronized (mNotificationList) {
+    synchronized(mHost->mNotificationList) {
         // sound
         mHost->mSoundNotification = NULL;
 
-        Int64 identity;
-        Binder::ClearCallingIdentity(&identity);
-        if (mHost->mAudioService != NULL) {
-            AutoPtr<IIRingtonePlayer> player;
-            mHost->mAudioManager->GetRingtonePlayer((IIRingtonePlayer**)&player);
+        Int64 identity = Binder::ClearCallingIdentity();
+        // try {
+        AutoPtr<IIRingtonePlayer> player;
+        mHost->mAudioManager->GetRingtonePlayer((IIRingtonePlayer**)&player);
 
-            if (player != NULL) {
-                player->StopAsync();
-            }
-            Binder::RestoreCallingIdentity(identity);
+        if (player != NULL) {
+            player->StopAsync();
         }
+        // } catch (RemoteException e) {
+        // } finally {
+        Binder::RestoreCallingIdentity(identity);
+        // }
 
         // vibrate
         mHost->mVibrateNotification = NULL;
-        Binder::ClearCallingIdentity(&identity);
-        if (mHost->mVibrator != NULL) {
-            mHost->mVibrator->Cancel();
-            Binder::RestoreCallingIdentity(identity);
-        }
+        identity = Binder::ClearCallingIdentity();
+        // try {
+        mHost->mVibrator->Cancel();
+        // } finally {
+        Binder::RestoreCallingIdentity(identity);
+        // }
 
         // light
-        mHost->mLights.Clear();
+        mHost->mLights->Clear();
         mHost->mLedNotification = NULL;
         mHost->UpdateLightsLocked();
     }
@@ -1768,7 +1800,7 @@ ECode NotificationManagerService::MyNotificationDelegate::OnPanelRevealed()
 
 ECode NotificationManagerService::MyNotificationDelegate::OnPanelHidden()
 {
-    assert(0 && "TODO");
+    // TODO
     // EventLogTags.writeNotificationPanelHidden();
     return NOERROR;
 }
@@ -1784,33 +1816,27 @@ ECode NotificationManagerService::MyNotificationDelegate::OnNotificationError(
     /* [in] */ const String& message,
     /* [in] */ Int32 userId)
 {
-    StringBuilder buf;
-    buf += "onNotification error pkg=";
-    buf += pkg;
-    buf += " tag=";
-    buf += tag;
-    buf += " id=";
-    buf += id;
-    buf += "; will crashApplication(uid=";
-    buf += uid;
-    buf += ", pid=";
-    buf += initialPid;
-    buf += ")";
-    Logger::D(TAG, buf.ToString().string());
+    StringBuilder builder;
+    builder += "onNotification error pkg=";
+    builder += pkg;
+    builder += " tag=";
+    builder += tag;
+    builder += " id=";
+    builder += id;
+    builder += "; will crashApplication(uid=";
+    builder += uid;
+    builder += ", pid=";
+    builder += initialPid;
+    builder += ")";
+    Slogger::D(TAG, builder.ToString().string());
 
-    // XXX to be totally correct, the caller should tell us which user
-    // this is for.
-    Int32 userId;
-    UserHandle::GetUserId(uid, &userId);
     mHost->CancelNotification(callingUid, callingPid, pkg, tag, id, 0, 0, FALSE,
             userId, REASON_DELEGATE_ERROR, NULL);
 
-    Int64 ident;
-    Binder::ClearCallingIdentity(&ident);
+    Int64 ident = Binder::ClearCallingIdentity();
 
-    AutoPtr<IIActivityManager> activityMgr;
-    mHost->mContext->GetSystemService(IContext::ACTIVITY_SERVICE, (IInterface**)&activityMgr);
-    assert(activityMgr != NULL);
+    // try {
+    AutoPtr<IIActivityManager> activityMgr = ActivityManagerNative::GetDefault();
 
     StringBuilder msg;
     msg += "Bad notification posted from package ";
@@ -1819,6 +1845,9 @@ ECode NotificationManagerService::MyNotificationDelegate::OnNotificationError(
     msg += message;
 
     activityMgr->CrashApplication(uid, initialPid, pkg, msg.ToString());
+    // } catch (RemoteException e) {
+    // }
+
     Binder::RestoreCallingIdentity(ident);
     return NOERROR;
 }
@@ -1829,16 +1858,17 @@ ECode NotificationManagerService::MyNotificationDelegate::OnNotificationVisibili
 {
     // Using ';' as separator since eventlogs uses ',' to separate
     // args.
-    assert(0 && "TODO");
+
+    // TODO
     // EventLogTags.writeNotificationVisibilityChanged(
     //         TextUtils.join(";", newlyVisibleKeys),
     //         TextUtils.join(";", noLongerVisibleKeys));
-    synchronized(mNotificationList) {
+    synchronized(mHost->mNotificationList) {
         for (Int32 i = 0; i < newlyVisibleKeys->GetLength(); i++) {
             String key = (*newlyVisibleKeys)[i];
             AutoPtr<IInterface> obj;
             mHost->mNotificationsByKey->Get(CoreUtils::Convert(key), (IInterface**)&obj);
-            AutoPtr<NotificationRecord> r = (NotificationRecord*)IObject::Probe(obj);
+            AutoPtr<NotificationRecord> r = (NotificationRecord*)INotificationRecord::Probe(obj);
             if (r == NULL) continue;
             r->mStats->OnVisibilityChanged(TRUE);
         }
@@ -1850,7 +1880,7 @@ ECode NotificationManagerService::MyNotificationDelegate::OnNotificationVisibili
             String key = (*noLongerVisibleKeys)[i];
             AutoPtr<IInterface> obj;
             mHost->mNotificationsByKey->Get(CoreUtils::Convert(key), (IInterface**)&obj);
-            AutoPtr<NotificationRecord> r = (NotificationRecord*)IObject::Probe(obj);
+            AutoPtr<NotificationRecord> r = (NotificationRecord*)INotificationRecord::Probe(obj);
             if (r == NULL) continue;
             r->mStats->OnVisibilityChanged(FALSE);
         }
@@ -1861,14 +1891,14 @@ ECode NotificationManagerService::MyNotificationDelegate::OnNotificationVisibili
 ECode NotificationManagerService::MyNotificationDelegate::OnNotificationExpansionChanged(
     /* [in] */ const String& key,
     /* [in] */ Boolean userAction,
-    /* [in] */ Boolean expanded);
+    /* [in] */ Boolean expanded)
 {
-    assert(0 && "TODO");
+    // TODO
     // EventLogTags.writeNotificationExpansion(key, userAction ? 1 : 0, expanded ? 1 : 0);
-    synchronized(mNotificationList) {
+    synchronized(mHost->mNotificationList) {
         AutoPtr<IInterface> obj;
         mHost->mNotificationsByKey->Get(CoreUtils::Convert(key), (IInterface**)&obj);
-        AutoPtr<NotificationRecord> r = (NotificationRecord*)IObject::Probe(obj);
+        AutoPtr<NotificationRecord> r = (NotificationRecord*)INotificationRecord::Probe(obj);
         if (r != NULL) {
             r->mStats->OnExpansionChanged(userAction, expanded);
         }
@@ -1885,7 +1915,7 @@ NotificationManagerService::MyBroadcastReceiver::MyBroadcastReceiver(
 {
 }
 
-NotificationManagerService::MyBroadcastReceiver::MyBroadcastReceiver()
+NotificationManagerService::MyBroadcastReceiver::~MyBroadcastReceiver()
 {}
 
 ECode NotificationManagerService::MyBroadcastReceiver::OnReceive(
@@ -1939,7 +1969,7 @@ ECode NotificationManagerService::MyBroadcastReceiver::OnReceive(
                 // We cancel notifications for packages which have just been disabled
                 // try {
                 AutoPtr<IContext> context;
-                GetContext((IContext**)&context);
+                mHost->GetContext((IContext**)&context);
                 AutoPtr<IPackageManager> pkgMgr;
                 context->GetPackageManager((IPackageManager**)&pkgMgr);
                 Int32 enabled;
@@ -2006,7 +2036,7 @@ ECode NotificationManagerService::MyBroadcastReceiver::OnReceive(
         mHost->mSettingsObserver->Update(NULL);
         mHost->mUserProfiles->UpdateCache(context);
         // Refresh managed services
-        mHost->mConditionProviders.onUserSwitched();
+        mHost->mConditionProviders->OnUserSwitched();
         mHost->mListeners->OnUserSwitched();
     }
     else if (action.Equals(IIntent::ACTION_USER_ADDED)) {
@@ -2021,7 +2051,7 @@ ECode NotificationManagerService::MyBroadcastReceiver::OnReceive(
 //===============================================================================
 
 NotificationManagerService::MyRunnable::MyRunnable(
-    /* [in] */ PowerManagerService* host)
+    /* [in] */ NotificationManagerService* host)
     : mHost(host)
 {}
 
@@ -2058,8 +2088,9 @@ ECode NotificationManagerService::MyNotificationManagerInternal::EnqueueNotifica
     /* [in] */ ArrayOf<Int32>* idReceived,
     /* [in] */ Int32 userId)
 {
-    return mHost->EnqueueNotificationInternal(pkg, opPkg, callingUid, callingPid, tag, id, notification,
-                    idReceived, userId);
+    AutoPtr< ArrayOf<Int32> > out;
+    return mHost->EnqueueNotificationInternal(pkg, opPkg, callingUid, callingPid,
+            tag, id, notification, idReceived, userId, (ArrayOf<Int32>**)&out);
 }
 
 ECode NotificationManagerService::MyNotificationManagerInternal::RemoveForegroundServiceFlagFromNotification(
@@ -2068,7 +2099,7 @@ ECode NotificationManagerService::MyNotificationManagerInternal::RemoveForegroun
     /* [in] */ Int32 userId)
 {
     mHost->CheckCallerIsSystem();
-    synchronized(mNotificationList) {
+    synchronized(mHost->mNotificationList) {
         Int32 i = mHost->IndexOfNotificationLocked(pkg, String(NULL), notificationId, userId);
         if (i < 0) {
             Logger::D(TAG, "stripForegroundServiceFlag: Could not find notification with pkg=%s / id=%d / userId=%d",
@@ -2077,7 +2108,7 @@ ECode NotificationManagerService::MyNotificationManagerInternal::RemoveForegroun
         }
         AutoPtr<IInterface> obj;
         mHost->mNotificationList->Get(i, (IInterface**)&obj);
-        AutoPtr<NotificationRecord> r = (NotificationRecord*)IObject::Probe(obj);
+        AutoPtr<NotificationRecord> r = (NotificationRecord*)INotificationRecord::Probe(obj);
         AutoPtr<IStatusBarNotification> sbn = r->mSbn;
         // NoMan adds flags FLAG_NO_CLEAR and FLAG_ONGOING_EVENT when it sees
         // FLAG_FOREGROUND_SERVICE. Hence it's not enough to remove FLAG_FOREGROUND_SERVICE,
@@ -2086,7 +2117,7 @@ ECode NotificationManagerService::MyNotificationManagerInternal::RemoveForegroun
         AutoPtr<INotification> notification;
         sbn->GetNotification((INotification**)&notification);
         notification->SetFlags(r->mOriginalFlags & ~INotification::FLAG_FOREGROUND_SERVICE);
-        mHost->mRankingHelper->Sort(mNotificationList);
+        mHost->mRankingHelper->Sort(mHost->mNotificationList);
         mHost->mListeners->NotifyPostedLocked(sbn, sbn /* oldSbn */);
     }
     return NOERROR;
@@ -2113,7 +2144,7 @@ ECode NotificationManagerService::WorkerHandler::HandleMessage(
         case NotificationManagerService::MESSAGE_TIMEOUT: {
             AutoPtr<IInterface> obj;
             msg->GetObj((IInterface**)&obj);
-            NotificationManagerService::ToastRecord* record = (NotificationManagerService::ToastRecord*)obj.Get();
+            NotificationManagerService::ToastRecord* record = (NotificationManagerService::ToastRecord*)IObject::Probe(obj);
             mHost->HandleTimeout(record);
             break;
         }
@@ -2176,8 +2207,8 @@ ECode NotificationManagerService::RankingWorkerHandler::HandleMessage(
 NotificationManagerService::NotificationListenersRunnable::NotificationListenersRunnable(
     /* [in] */ Int32 id,
     /* [in] */ NotificationListeners* host,
-    /* [in] */ PowerManagerService* mainHost,
-    /* [in] */ ManagedServiceInfo* info,
+    /* [in] */ NotificationManagerService* mainHost,
+    /* [in] */ ManagedServices::ManagedServiceInfo* info,
     /* [in] */ IStatusBarNotification* sbn,
     /* [in] */ INotificationRankingUpdate* update,
     /* [in] */ Int32 data)
@@ -2223,7 +2254,7 @@ ECode NotificationManagerService::NotificationListenersRunnable::Run()
 //===============================================================================
 
 NotificationManagerService::EnqueueNotificationInternalRunnable::EnqueueNotificationInternalRunnable(
-    /* [in] */ PowerManagerService* host,
+    /* [in] */ NotificationManagerService* host,
     /* [in] */ const String& pkg,
     /* [in] */ const String& opPkg,
     /* [in] */ Int32 callingUid,
@@ -2250,7 +2281,7 @@ NotificationManagerService::EnqueueNotificationInternalRunnable::~EnqueueNotific
 
 ECode NotificationManagerService::EnqueueNotificationInternalRunnable::Run()
 {
-    synchronized(mNotificationList) {
+    synchronized(mHost->mNotificationList) {
 
         // === Scoring ===
 
@@ -2296,7 +2327,7 @@ ECode NotificationManagerService::EnqueueNotificationInternalRunnable::Run()
         n->GetKey(&key);
         AutoPtr<IInterface> obj;
         mHost->mNotificationsByKey->Get(CoreUtils::Convert(key), (IInterface**)&obj);
-        AutoPtr<NotificationRecord> old = (NotificationRecord*)IObject::Probe(obj);
+        AutoPtr<NotificationRecord> old = (NotificationRecord*)INotificationRecord::Probe(obj);
         if (old != NULL) {
             // Retain ranking information from previous record
             r->CopyRankingInformation(old);
@@ -2309,7 +2340,7 @@ ECode NotificationManagerService::EnqueueNotificationInternalRunnable::Run()
         if (ENABLE_BLOCKED_NOTIFICATIONS && !mHost->NoteNotificationOp(mPkg, mCallingUid)) {
             if (!mIsSystemNotification) {
                 r->mScore = JUNK_SCORE;
-                Logger::E(TAG, "Suppressing notification from package %s by user request.", pkg.string());
+                Logger::E(TAG, "Suppressing notification from package %s by user request.", mPkg.string());
             }
         }
 
@@ -2331,22 +2362,22 @@ ECode NotificationManagerService::EnqueueNotificationInternalRunnable::Run()
 
         key = String(NULL);
         n->GetKey(&key);
-        Int32 index = IndexOfNotificationLocked(key);
+        Int32 index = mHost->IndexOfNotificationLocked(key);
         if (index < 0) {
-            mHost->mNotificationList->Add(TO_IINTERFACE(r));
+            mHost->mNotificationList->Add((INotificationRecord*)r);
             mHost->mUsageStats->RegisterPostedByApp(r);
         }
         else {
             AutoPtr<IInterface> obj;
             mHost->mNotificationList->Get(index, (IInterface**)&obj);
-            old = (NotificationRecord*)IObject::Probe(obj);
-            mHost->mNotificationList->Set(index, TO_IINTERFACE(r));
+            old = (NotificationRecord*)INotificationRecord::Probe(obj);
+            mHost->mNotificationList->Set(index, (INotificationRecord*)r);
             mHost->mUsageStats->RegisterUpdatedByApp(r, old);
             // Make sure we don't lose the foreground service state.
 
             mNotification->GetFlags(&flags);
             Int32 oldFlags;
-            old->mNotification->GetFlags(&oldFlags);
+            old->GetNotification()->GetFlags(&oldFlags);
             mNotification->SetFlags(flags |= oldFlags & INotification::FLAG_FOREGROUND_SERVICE);
 
             r->mIsUpdate = TRUE;
@@ -2354,7 +2385,7 @@ ECode NotificationManagerService::EnqueueNotificationInternalRunnable::Run()
 
         key = String(NULL);
         n->GetKey(&key);
-        mHost->mNotificationsByKey->Put(CoreUtils::Convert(key), TO_IINTERFACE(r));
+        mHost->mNotificationsByKey->Put(CoreUtils::Convert(key), (INotificationRecord*)r);
 
         // Ensure if this is a foreground service that the proper additional
         // flags are set.
@@ -2396,7 +2427,7 @@ ECode NotificationManagerService::EnqueueNotificationInternalRunnable::Run()
 //===============================================================================
 
 NotificationManagerService::CancelNotificationRunnable::CancelNotificationRunnable(
-    /* [in] */ PowerManagerService* host,
+    /* [in] */ NotificationManagerService* host,
     /* [in] */ Int32 callingUid,
     /* [in] */ Int32 callingPid,
     /* [in] */ const String& pkg,
@@ -2407,7 +2438,7 @@ NotificationManagerService::CancelNotificationRunnable::CancelNotificationRunnab
     /* [in] */ Boolean sendDelete,
     /* [in] */ Int32 userId,
     /* [in] */ Int32 reason,
-    /* [in] */ ManagedServiceInfo* listener)
+    /* [in] */ ManagedServices::ManagedServiceInfo* listener)
     : mHost(host)
     , mCallingUid(callingUid)
     , mCallingPid(callingPid)
@@ -2435,28 +2466,29 @@ ECode NotificationManagerService::CancelNotificationRunnable::Run()
         mListener->mComponent->ToShortString(&listenerName);
     }
 
-    EventLogTags::WriteNotificationCancel(mCallingUid, mCallingPid, mPkg, mId, mTag, mUserId,
-            mMustHaveFlags, mMustNotHaveFlags, mReason, listenerName);
+    // TODO
+    // EventLogTags::WriteNotificationCancel(mCallingUid, mCallingPid, mPkg, mId, mTag, mUserId,
+    //         mMustHaveFlags, mMustNotHaveFlags, mReason, listenerName);
 
-    synchronized (mNotificationList) {
+    synchronized(mHost->mNotificationList) {
         Int32 index = mHost->IndexOfNotificationLocked(mPkg, mTag, mId, mUserId);
         if (index >= 0) {
             AutoPtr<IInterface> obj;
             mHost->mNotificationList->Get(index, (IInterface**)&obj);
-            AutoPtr<NotificationRecord> r = (NotificationRecord*)IObject::Probe(obj);
+            AutoPtr<NotificationRecord> r = (NotificationRecord*)INotificationRecord::Probe(obj);
 
             // Ideally we'd do this in the caller of this method. However, that would
             // require the caller to also find the notification.
-            if (reason == REASON_DELEGATE_CLICK) {
+            if (mReason == REASON_DELEGATE_CLICK) {
                 mHost->mUsageStats->RegisterClickedByUser(r);
             }
 
             Int32 flags;
             r->GetNotification()->GetFlags(&flags);
-            if ((flags & mustHaveFlags) != mustHaveFlags) {
+            if ((flags & mMustHaveFlags) != mMustHaveFlags) {
                 return NOERROR;
             }
-            if ((flags & mustNotHaveFlags) != 0) {
+            if ((flags & mMustNotHaveFlags) != 0) {
                 return NOERROR;
             }
 
@@ -2468,6 +2500,30 @@ ECode NotificationManagerService::CancelNotificationRunnable::Run()
         }
     }
     return NOERROR;
+}
+
+//===============================================================================
+//                  NotificationManagerService::ZenModeHelperCallback
+//===============================================================================
+
+NotificationManagerService::ZenModeHelperCallback::ZenModeHelperCallback(
+    /* [in] */ NotificationManagerService* host)
+    : mHost(host)
+{}
+
+NotificationManagerService::ZenModeHelperCallback::~ZenModeHelperCallback()
+{}
+
+void NotificationManagerService::ZenModeHelperCallback::OnConfigChanged()
+{
+    mHost->SavePolicyFile();
+}
+
+void NotificationManagerService::ZenModeHelperCallback::OnZenModeChanged()
+{
+    synchronized(mHost->mNotificationList) {
+        mHost->UpdateInterruptionFilterLocked();
+    }
 }
 
 //===============================================================================
@@ -2488,6 +2544,13 @@ NotificationManagerService::NotificationManagerService()
     , mInCall(FALSE)
     , mNotificationPulseEnabled(FALSE)
 {
+}
+
+ECode NotificationManagerService::constructor(
+    /* [in] */ IContext* context)
+{
+    SystemService::constructor(context);
+
     CBinder::New((IBinder**)&mForegroundToken);
     CArrayList::New((IArrayList**)&mNotificationList);
     CArrayMap::New((IArrayMap**)&mNotificationsByKey);
@@ -2505,14 +2568,8 @@ NotificationManagerService::NotificationManagerService()
     mIntentReceiver = new MyBroadcastReceiver(this);
     mBuzzBeepBlinked = new MyRunnable(this);
 
-    CNotificationManagerStub::New((ISystemService*)this, (IBinder**)&mService);
+    CNotificationManagerBinderService::New((ISystemService*)this, (IBinder**)&mService);
     mInternalService = new MyNotificationManagerInternal(this);
-}
-
-ECode NotificationManagerService::constructor(
-    /* [in] */ IContext* context)
-{
-    FAILED_RETURN(SystemService::constructor(context));
     return NOERROR;
 }
 
@@ -2525,9 +2582,9 @@ void NotificationManagerService::LoadPolicyFile()
         AutoPtr<IFileInputStream> infile;
         mPolicyFile->OpenRead((IFileInputStream**)&infile);
 
-        String nullStr;
-        AutoPtr<IXmlPullParser> parser = Xml::NewPullParser();
-        parser->SetInput(infile, nullStr);
+        AutoPtr<IXmlPullParser> parser;
+        Xml::NewPullParser((IXmlPullParser**)&parser);
+        parser->SetInput(IInputStream::Probe(infile), String(NULL));
 
         Int32 type;
         String tag;
@@ -2542,7 +2599,7 @@ void NotificationManagerService::LoadPolicyFile()
 
             if (TAG_BODY.Equals(tag)) {
                 String value;
-                parser->GetAttributeValue(nullStr, ATTR_VERSION, &value);
+                parser->GetAttributeValue(String(NULL), ATTR_VERSION, &value);
                 version = StringUtils::ParseInt32(value);
             }
             else if (TAG_BLOCKED_PKGS.Equals(tag)) {
@@ -2553,7 +2610,7 @@ void NotificationManagerService::LoadPolicyFile()
 
                     if (TAG_PACKAGE.Equals(tag)) {
                         String value;
-                        parser->GetAttributeValue(nullStr, ATTR_NAME, &value);
+                        parser->GetAttributeValue(String(NULL), ATTR_NAME, &value);
                         mBlockedPackages->Add(CoreUtils::Convert(value));
                     }
                     else if (TAG_BLOCKED_PKGS.Equals(tag) && type == IXmlPullParser::END_TAG) {
@@ -2561,9 +2618,8 @@ void NotificationManagerService::LoadPolicyFile()
                     }
                 }
             }
-            assert(0 && "TODO");
-            // mZenModeHelper.readXml(parser);
-            // mRankingHelper.readXml(parser);
+            mZenModeHelper->ReadXml(parser);
+            mRankingHelper->ReadXml(parser);
         }
 
         // } catch (FileNotFoundException e) {
@@ -2577,7 +2633,7 @@ void NotificationManagerService::LoadPolicyFile()
         // } finally {
         AutoPtr<IIoUtils> ioUtils;
         CIoUtils::AcquireSingleton((IIoUtils**)&ioUtils);
-        ioUtils->CloseQuietly(infile);
+        ioUtils->CloseQuietly(ICloseable::Probe(infile));
         // }
     }
 }
@@ -2585,7 +2641,8 @@ void NotificationManagerService::LoadPolicyFile()
 ECode NotificationManagerService::SavePolicyFile()
 {
     mHandler->RemoveMessages(MESSAGE_SAVE_POLICY_FILE);
-    mHandler->SendEmptyMessage(MESSAGE_SAVE_POLICY_FILE);
+    Boolean res;
+    mHandler->SendEmptyMessage(MESSAGE_SAVE_POLICY_FILE, &res);
     return NOERROR;
 }
 
@@ -2606,33 +2663,27 @@ void NotificationManagerService::HandleSavePolicyFile()
         // }
 
         // try {
-        ECode ec = NOERROR;
-        HashSet<String>::Iterator it;
-        AutoPtr<IBoolean> standalone;
-        String nullStr;
-        String emptyStr("");
         AutoPtr<IXmlSerializer> out;
-        ec = CFastXmlSerializer::New((IFastXmlSerializer**)&out);
+        assert (0 && "TODO");
+        // ec = CFastXmlSerializer::New((IXmlSerializer**)&out);
         FAIL_GOTO(ec, _EXIT_)
 
-        ec = out->SetOutput(stream, String("utf-8"));
+        ec = out->SetOutput(IOutputStream::Probe(stream), String("utf-8"));
         FAIL_GOTO(ec, _EXIT_)
 
-        CBoolean::New(TRUE, (IBoolean**)&standalone);
-        ec = out->StartDocument(nullStr, standalone);
+        ec = out->StartDocument(String(NULL), TRUE);
         FAIL_GOTO(ec, _EXIT_)
 
-        ec = out->WriteStartTag(nullStr, TAG_BODY);
+        ec = out->WriteStartTag(String(NULL), TAG_BODY);
         FAIL_GOTO(ec, _EXIT_)
 
-        ec = out->WriteAttribute(emptyStr, ATTR_VERSION, StringUtils::Int32ToString(DB_VERSION));
+        ec = out->WriteAttribute(String(NULL), ATTR_VERSION, StringUtils::ToString(DB_VERSION));
         FAIL_GOTO(ec, _EXIT_)
 
-        assert(0 && "TODO");
-        // mZenModeHelper.writeXml(out);
-        // mRankingHelper.writeXml(out);
+        mZenModeHelper->WriteXml(out);
+        mRankingHelper->WriteXml(out);
 
-        ec = out->WriteEndTag(nullStr, TAG_BODY);
+        ec = out->WriteEndTag(String(NULL), TAG_BODY);
         FAIL_GOTO(ec, _EXIT_)
 
         ec = out->EndDocument();
@@ -2646,14 +2697,14 @@ void NotificationManagerService::HandleSavePolicyFile()
         // }
 
         if (stream) {
-            stream->Close();
+            IOutputStream::Probe(stream)->Close();
         }
         return;
 
     _EXIT_:
         Slogger::W(TAG, "Failed to save policy file, restoring backup");
         mPolicyFile->FailWrite(stream);
-        stream->Close();
+        IOutputStream::Probe(stream)->Close();
     }
 }
 
@@ -2706,11 +2757,12 @@ ECode NotificationManagerService::OnStart()
     AutoPtr<IInterface> obj;
     context->GetSystemService(IContext::APP_OPS_SERVICE, (IInterface**)&obj);
     mAppOps = IAppOpsManager::Probe(obj);
+    obj = NULL;
     context->GetSystemService(IContext::VIBRATOR_SERVICE, (IInterface**)&obj);
-    mVibrator = IVibrator::Probe(obj)
+    mVibrator = IVibrator::Probe(obj);
 
     mHandler = new WorkerHandler(this);
-    mRankingThread->Start();
+    IThread::Probe(mRankingThread)->Start();
     AutoPtr< ArrayOf<String> > extractorNames;
     // try {
     ECode ec = resources->GetStringArray(
@@ -2723,45 +2775,35 @@ ECode NotificationManagerService::OnStart()
     //     extractorNames = new String[0];
     // }
 
-    assert(0 && "TODO");
-    // mRankingHelper = new RankingHelper(getContext(),
-    //         new RankingWorkerHandler(mRankingThread.getLooper()),
-    //         extractorNames);
-    // mZenModeHelper = new ZenModeHelper(getContext(), mHandler);
-    // mZenModeHelper.addCallback(new ZenModeHelper.Callback() {
-    //     @Override
-    //     public void onConfigChanged() {
-    //         savePolicyFile();
-    //     }
+    AutoPtr<ILooper> looper;
+    mRankingThread->GetLooper((ILooper**)&looper);
+    AutoPtr<RankingWorkerHandler> workerHandler = new RankingWorkerHandler(looper, this);
 
-    //     @Override
-    //     void onZenModeChanged() {
-    //         synchronized(mNotificationList) {
-    //             updateInterruptionFilterLocked();
-    //         }
-    //     }
-    // });
-
+    mRankingHelper = new RankingHelper(context, workerHandler, extractorNames);
+    mZenModeHelper = new ZenModeHelper(context, mHandler);
+    AutoPtr<ZenModeHelperCallback> callback = new ZenModeHelperCallback(this);
+    mZenModeHelper->AddCallback(callback);
 
     AutoPtr<IFile> systemDir;
     CFile::New(Environment::GetDataDirectory(), String("system"), (IFile**)&systemDir);
     AutoPtr<IFile> other;
     CFile::New(systemDir, String("notification_policy.xml"), (IFile**)&other);
     CAtomicFile::New(other, (IAtomicFile**)&mPolicyFile);
-    assert(0 && "TODO");
-    // mUsageStats = new NotificationUsageStats(getContext());
+    mUsageStats = new NotificationUsageStats(context);
 
     ImportOldBlockDb();
 
     mListeners = new NotificationListeners(this);
-    assert(0 && "TODO");
-    // mConditionProviders = new ConditionProviders(getContext(),
-    //         mHandler, mUserProfiles, mZenModeHelper);
-    mStatusBar = GetLocalService(EIID_IStatusBarManagerInternal);
+    mListeners->constructor();
+    mConditionProviders = new ConditionProviders();
+    mConditionProviders->constructor(context,
+            mHandler, mUserProfiles, mZenModeHelper);
+    obj = GetLocalService(EIID_IStatusBarManagerInternal);
+    mStatusBar = IStatusBarManagerInternal::Probe(obj);
     mStatusBar->SetNotificationDelegate(mNotificationDelegate);
 
     obj = GetLocalService(EIID_ILightsManager);
-    AutoPtr<LightsManager> lights = (LightsManager*)ILightsManager::Probe(obj).Get();
+    AutoPtr<LightsManager> lights = (LightsManager*)ILightsManager::Probe(obj);
     mNotificationLight = lights->GetLight(LightsManager::LIGHT_ID_NOTIFICATIONS);
     mAttentionLight = lights->GetLight(LightsManager::LIGHT_ID_ATTENTION);
 
@@ -2774,7 +2816,7 @@ ECode NotificationManagerService::OnStart()
     mFallbackVibrationPattern = GetLongArray(resources,
         R::array::config_notificationFallbackVibePattern, VIBRATE_PATTERN_MAXLEN, DEFAULT_VIBRATE_PATTERN);
 
-    resources->GetBoolean(R::bool::config_useAttentionLight, &mUseAttentionLight);
+    resources->GetBoolean(R::bool_::config_useAttentionLight, &mUseAttentionLight);
 
     // Don't start allowing notifications until the setup wizard has run once.
     // After that, including subsequent boots, init with notifications turned on.
@@ -2793,8 +2835,7 @@ ECode NotificationManagerService::OnStart()
         mDisableNotificationEffects = TRUE;
     }
 
-    assert(0 && "TODO");
-    // mZenModeHelper.updateZenMode();
+    mZenModeHelper->UpdateZenMode();
 
     mUserProfiles->UpdateCache(context);
     ListenForCallState();
@@ -2804,7 +2845,7 @@ ECode NotificationManagerService::OnStart()
     CIntentFilter::New((IIntentFilter**)&filter);
     filter->AddAction(IIntent::ACTION_SCREEN_ON);
     filter->AddAction(IIntent::ACTION_SCREEN_OFF);
-    // filter->AddAction(ITelephonyManager::ACTION_PHONE_STATE_CHANGED);
+    filter->AddAction(ITelephonyManager::ACTION_PHONE_STATE_CHANGED);
     filter->AddAction(IIntent::ACTION_USER_PRESENT);
     filter->AddAction(IIntent::ACTION_USER_STOPPED);
     filter->AddAction(IIntent::ACTION_USER_SWITCHED);
@@ -2823,10 +2864,12 @@ ECode NotificationManagerService::OnStart()
     pkgFilter->AddDataScheme(String("package"));
 
     stickyIntent = NULL;
-    context->RegisterReceiver(mIntentReceiver, pkgFilter, (IIntent**)&stickyIntent);
+    context->RegisterReceiver(mIntentReceiver,
+            pkgFilter, (IIntent**)&stickyIntent);
 
     AutoPtr<IIntentFilter> sdFilter;
-    CIntentFilter::New(IIntent::ACTION_EXTERNAL_APPLICATIONS_UNAVAILABLE, (IIntentFilter**)&sdFilter);
+    CIntentFilter::New(IIntent::ACTION_EXTERNAL_APPLICATIONS_UNAVAILABLE,
+            (IIntentFilter**)&sdFilter);
 
     stickyIntent = NULL;
     context->RegisterReceiver(mIntentReceiver, sdFilter, (IIntent**)&stickyIntent);
@@ -2837,7 +2880,8 @@ ECode NotificationManagerService::OnStart()
     mArchive = new Archive(value);
 
     PublishBinderService(IContext::NOTIFICATION_SERVICE, mService);
-    PublishLocalService(EIID_INotificationManagerInternal, mInternalService);
+    PublishLocalService(EIID_INotificationManagerInternal,
+            (INotificationManagerInternal*)mInternalService.Get());
 
     return NOERROR;
 }
@@ -2924,7 +2968,7 @@ void NotificationManagerService::UpdateListenerHintsLocked()
 {
     Boolean res;
     ISet::Probe(mListenersDisablingEffects)->IsEmpty(&res);
-    const Int32 hints = res ? 0 : HINT_HOST_DISABLE_EFFECTS;
+    const Int32 hints = res ? 0 : INotificationListenerService::HINT_HOST_DISABLE_EFFECTS;
     if (hints == mListenerHints) return;
     mListenerHints = hints;
     ScheduleListenerHintsChanged(hints);
@@ -2938,7 +2982,7 @@ void NotificationManagerService::UpdateEffectsSuppressorLocked()
     if (!res) {
         AutoPtr<IInterface> obj;
         mListenersDisablingEffects->GetValueAt(0, (IInterface**)&obj);
-        AutoPtr<ManagedServiceInfo> info = (ManagedServiceInfo*)IObject::Probe(obj);
+        AutoPtr<ManagedServices::ManagedServiceInfo> info = (ManagedServices::ManagedServiceInfo*)IProxyDeathRecipient::Probe(obj);
         suppressor = info->mComponent;
     }
     if (Objects::Equals(suppressor, mEffectsSuppressor)) return;
@@ -2954,8 +2998,7 @@ void NotificationManagerService::UpdateEffectsSuppressorLocked()
 void NotificationManagerService::UpdateInterruptionFilterLocked()
 {
     Int32 interruptionFilter;
-    assert(0 && "TODO");
-    // interruptionFilter = mZenModeHelper->GetZenModeListenerInterruptionFilter();
+    interruptionFilter = mZenModeHelper->GetZenModeListenerInterruptionFilter();
     if (interruptionFilter == mInterruptionFilter) return;
     mInterruptionFilter = interruptionFilter;
     ScheduleInterruptionFilterChanged(interruptionFilter);
@@ -2964,8 +3007,8 @@ void NotificationManagerService::UpdateInterruptionFilterLocked()
 AutoPtr< ArrayOf<String> > NotificationManagerService::GetActiveNotificationKeys(
     /* [in] */ IINotificationListener* token)
 {
-    AutoPtr<ManagedServiceInfo> info;
-    mListeners->CheckServiceTokenLocked(token, (ManagedServiceInfo**)&info);
+    AutoPtr<ManagedServices::ManagedServiceInfo> info;
+    mListeners->CheckServiceTokenLocked(token, (ManagedServices::ManagedServiceInfo**)&info);
     AutoPtr<IArrayList> keys;
     CArrayList::New((IArrayList**)&keys);
     if (info->IsEnabledForCurrentProfiles()) {
@@ -2975,7 +3018,7 @@ AutoPtr< ArrayOf<String> > NotificationManagerService::GetActiveNotificationKeys
             for (Int32 i = 0; i < N; i++) {
                 AutoPtr<IInterface> obj;
                 mNotificationList->Get(i, (IInterface**)&obj);
-                AutoPtr<NotificationRecord> record = (NotificationRecord*)IObject::Probe(obj);
+                AutoPtr<NotificationRecord> record = (NotificationRecord*)INotificationRecord::Probe(obj);
                 AutoPtr<IStatusBarNotification> sbn = record->mSbn;
                 Int32 id;
                 sbn->GetUserId(&id);
@@ -2989,10 +3032,18 @@ AutoPtr< ArrayOf<String> > NotificationManagerService::GetActiveNotificationKeys
     }
     Int32 size;
     keys->GetSize(&size);
-    AutoPtr< ArrayOf<String> > args = ArrayOf<String>::Alloc(size);
-    AutoPtr< ArrayOf<String> > result;
-    keys->ToArray(args, (ArrayOf<String>**)&result);
-    return keys.toArray(new String[keys.size()]);
+    AutoPtr< ArrayOf<IInterface*> > args = ArrayOf<IInterface*>::Alloc(size);
+    AutoPtr< ArrayOf<IInterface*> > result;
+    keys->ToArray(args, (ArrayOf<IInterface*>**)&result);
+
+    AutoPtr< ArrayOf<String> > resultArray = ArrayOf<String>::Alloc(result->GetLength());
+    for (Int32 i = 0; i < result->GetLength(); i++) {
+        String str;
+        ICharSequence::Probe((*result)[i])->ToString(&str);
+        (*resultArray)[i] = str;
+    }
+
+    return resultArray;
 }
 
 String NotificationManagerService::DisableNotificationEffects(
@@ -3001,7 +3052,7 @@ String NotificationManagerService::DisableNotificationEffects(
     if (mDisableNotificationEffects) {
         return String("booleanState");
     }
-    if ((mListenerHints & HINT_HOST_DISABLE_EFFECTS) != 0) {
+    if ((mListenerHints & INotificationListenerService::HINT_HOST_DISABLE_EFFECTS) != 0) {
         return String("listenerHints");
     }
     if (mCallState != ITelephonyManager::CALL_STATE_IDLE && !mZenModeHelper->IsCall(record)) {
@@ -3017,12 +3068,12 @@ void NotificationManagerService::DumpImpl(
     pw->Print(String("Current Notification Manager state"));
     if (filter != NULL) {
         pw->Print(String(" (filtered to "));
-        pw->Print(filter);
+        pw->Print((IObject*)filter);
         pw->Print(String(")"));
     }
     pw->PrintCharln(':');
     Int32 N;
-    final Boolean zenOnly = filter != NULL && filter->mZen;
+    const Boolean zenOnly = filter != NULL && filter->mZen;
 
     if (!zenOnly) {
         synchronized(mToastQueue) {
@@ -3048,7 +3099,7 @@ void NotificationManagerService::DumpImpl(
                 for (Int32 i = 0; i < N; i++) {
                     AutoPtr<IInterface> obj;
                     mNotificationList->Get(i, (IInterface**)&obj);
-                    AutoPtr<NotificationRecord> nr = (NotificationRecord*)IObject::Probe(obj);
+                    AutoPtr<NotificationRecord> nr = (NotificationRecord*)INotificationRecord::Probe(obj);
                     if (filter != NULL && !filter->Matches(nr->mSbn)) continue;
                     AutoPtr<IContext> context;
                     GetContext((IContext**)&context);
@@ -3074,12 +3125,12 @@ void NotificationManagerService::DumpImpl(
                 pw->Println(String("  mNotificationPulseEnabled=") + StringUtils::BooleanToString(mNotificationPulseEnabled));
                 StringBuilder builder;
                 builder += "  mSoundNotification=";
-                builder += mSoundNotification;
+                builder += (INotificationRecord*)mSoundNotification.Get();
                 pw->Println(builder.ToString());
 
                 builder.Reset();
                 builder += "  mVibrateNotification=";
-                builder += mVibrateNotification;
+                builder += (INotificationRecord*)mVibrateNotification.Get();
                 pw->Println(builder.ToString());
                 pw->Println(String("  mDisableNotificationEffects=") + StringUtils::BooleanToString(mDisableNotificationEffects));
                 pw->Println(String("  mCallState=") + CallStateToString(mCallState));
@@ -3121,7 +3172,7 @@ void NotificationManagerService::DumpImpl(
             mZenModeHelper->Dump(pw, String("    "));
 
             pw->Println(String("\n  Zen Log:"));
-            ZenLog->Dump(pw, String("    "));
+            ZenLog::Dump(pw, String("    "));
         }
 
         if (!zenOnly) {
@@ -3133,11 +3184,11 @@ void NotificationManagerService::DumpImpl(
             pw->Print(String("    mListenerHints: "));
             pw->Println(mListenerHints);
             pw->Print(String("    mListenersDisablingEffects: ("));
-            mListenersDisablingEffects->GetSize(&N);
+            ISet::Probe(mListenersDisablingEffects)->GetSize(&N);
             for (Int32 i = 0; i < N; i++) {
                 AutoPtr<IInterface> obj;
                 mListenersDisablingEffects->GetValueAt(i, (IInterface**)&obj);
-                AutoPtr<ManagedServiceInfo> listener = (ManagedServiceInfo*)IObject::Probe(obj);
+                AutoPtr<ManagedServices::ManagedServiceInfo> listener = (ManagedServices::ManagedServiceInfo*)IProxyDeathRecipient::Probe(obj);
                 if (i > 0) pw->PrintCharln(',');
                 pw->Print(listener->mComponent);
             }
@@ -3179,8 +3230,8 @@ ECode NotificationManagerService::EnqueueNotificationInternal(
             text->ToString(&str);
         }
 
-        Logger::V(TAG, "enqueueNotificationInternal: pkg=[%s] id=%d userId=%d notification=[%s]",
-            pkg.string(), id, userId, str.string());
+        Logger::V(TAG, "enqueueNotificationInternal: pkg=[%s] id=%d notification=[%s]",
+                pkg.string(), id, str.string());
     }
 
     CheckCallerIsSystemOrSameApp(pkg);
@@ -3206,7 +3257,7 @@ ECode NotificationManagerService::EnqueueNotificationInternal(
             for (Int32 i = 0; i < N; ++i) {
                 AutoPtr<IInterface> obj;
                 mNotificationList->Get(i, (IInterface**)&obj);
-                AutoPtr<NotificationRecord> r = (NotificationRecord*)IObject::Probe(obj);
+                AutoPtr<NotificationRecord> r = (NotificationRecord*)INotificationRecord::Probe(obj);
                 String packageName;
                 r->mSbn->GetPackageName(&packageName);
                 Int32 _userid;
@@ -3225,11 +3276,12 @@ ECode NotificationManagerService::EnqueueNotificationInternal(
 
     // This conditional is a dirty hack to limit the logging done on
     //     behalf of the download manager without affecting other apps.
-    // if (!pkg.equals("com.android.providers.downloads")
-    //         || Log.isLoggable("DownloadManager", Log.VERBOSE)) {
-    //     EventLogTags.writeNotificationEnqueue(callingUid, callingPid,
-    //             pkg, id, tag, userId, notification.toString());
-    // }
+    if (!pkg.Equals("com.android.providers.downloads")
+            || Logger::IsLoggable("DownloadManager", ILogHelper::VERBOSE)) {
+        // TODO
+        // EventLogTags.writeNotificationEnqueue(callingUid, callingPid,
+        //         pkg, id, tag, userId, notification.toString());
+    }
 
     if (pkg.IsNull() || notification == NULL) {
         Logger::E(TAG, "null not allowed: pkg=%s, id=%d, notification=%p", pkg.string(), id, notification);
@@ -3271,7 +3323,7 @@ ECode NotificationManagerService::BuzzBeepBlinkLocked(
     if (DBG || record->IsIntercepted()) {
         String packageName;
         record->mSbn->GetPackageName(&packageName);
-        Slogger::V(TAG, "pkg=%s canInterrupt=%d intercept=%d", packageName.string(), canInterrupt, record.isIntercepted());
+        Slogger::V(TAG, "pkg=%s canInterrupt=%d intercept=%d", packageName.string(), canInterrupt, record->IsIntercepted());
     }
 
     Int32 currentUser;
@@ -3306,7 +3358,7 @@ ECode NotificationManagerService::BuzzBeepBlinkLocked(
 
         String packageName;
         record->mSbn->GetPackageName(&packageName);
-        SendAccessibilityEvent(notification, packageName);
+        SendAccessibilityEvent(notification, CoreUtils::Convert(packageName));
 
         // sound
 
@@ -3320,11 +3372,11 @@ ECode NotificationManagerService::BuzzBeepBlinkLocked(
         AutoPtr<ISettingsSystem> settingsSystem;
         CSettingsSystem::AcquireSingleton((ISettingsSystem**)&settingsSystem);
         AutoPtr<IUri> notificationUri;
-        settingsSystem->GetDefaultNotificationUri((IUri**)&notificationUri);
+        settingsSystem->GetDEFAULT_NOTIFICATION_URI((IUri**)&notificationUri);
         AutoPtr<IUri> sound;
         notification->GetSound((IUri**)&sound);
         Boolean res;
-        notificationUri->Equals(sound, &res);
+        IObject::Probe(notificationUri)->Equals(sound, &res);
 
         Boolean useDefaultSound = (defaults & INotification::DEFAULT_SOUND) != 0 || res;
 
@@ -3358,7 +3410,9 @@ ECode NotificationManagerService::BuzzBeepBlinkLocked(
                 audioAttributes = attr;
             }
             else {
-                audioAttributes = Notification::AUDIO_ATTRIBUTES_DEFAULT;
+                AutoPtr<INotificationHelper> helper;
+                CNotificationHelper::AcquireSingleton((INotificationHelper**)&helper);
+                helper->GetAUDIO_ATTRIBUTES_DEFAULT((IAudioAttributes**)&audioAttributes);
             }
             mSoundNotification = record;
             // do not play notifications if stream volume is 0 (typically because
@@ -3420,15 +3474,14 @@ ECode NotificationManagerService::BuzzBeepBlinkLocked(
             if (useDefaultVibrate || convertSoundToVibration) {
                 // Escalate privileges so we can use the vibrator even if the
                 // notifying app does not have the VIBRATE permission.
-                Int64 identity;
-                Binder::ClearCallingIdentity(&identity);
+                Int64 identity = Binder::ClearCallingIdentity();
                 // try {
                 Int32 uid;
                 record->mSbn->GetUid(&uid);
                 String opPkg;
                 record->mSbn->GetOpPkg(&opPkg);
                 mVibrator->Vibrate(uid, opPkg,
-                        useDefaultVibrate ? *mDefaultVibrationPattern : *mFallbackVibrationPattern,
+                        useDefaultVibrate ? mDefaultVibrationPattern : mFallbackVibrationPattern,
                         ((flags & INotification::FLAG_INSISTENT) != 0) ? 0: -1,
                         AudioAttributesForNotification(notification));
                 buzzBeepBlinked = TRUE;
@@ -3442,8 +3495,7 @@ ECode NotificationManagerService::BuzzBeepBlinkLocked(
                 record->mSbn->GetUid(&uid);
                 String opPkg;
                 record->mSbn->GetOpPkg(&opPkg);
-                mVibrator->Vibrate(uid, opPkg,
-                        *vibrate,
+                mVibrator->Vibrate(uid, opPkg, vibrate,
                         ((flags & INotification::FLAG_INSISTENT) != 0) ? 0: -1,
                         AudioAttributesForNotification(notification));
                 buzzBeepBlinked = TRUE;
@@ -3486,29 +3538,39 @@ AutoPtr<IAudioAttributes> NotificationManagerService::AudioAttributesForNotifica
     n->GetAudioAttributes((IAudioAttributes**)&attr);
     Int32 type;
     n->GetAudioStreamType(&type);
+
+    AutoPtr<IAudioSystem> audioSystem;
+    CAudioSystem::AcquireSingleton((IAudioSystem**)&audioSystem);
+    Int32 streamType;
+    assert(0 && "TODO");
+    // audioSystem->GetNumStreamTypes(&streamType);
+
+    AutoPtr<INotificationHelper> helper;
+    CNotificationHelper::AcquireSingleton((INotificationHelper**)&helper);
+    AutoPtr<IAudioAttributes> result;
+    helper->GetAUDIO_ATTRIBUTES_DEFAULT((IAudioAttributes**)&result);
+
     if (attr != NULL) {
         return attr;
     }
-
-    assert(0 && "TODO";)
-
-    // else if (type >= 0 && type < AudioSystem.getNumStreamTypes()) {
-    //     // the stream type is valid, use it
-    //     AutoPtr<IAudioAttributesBuilder> builder;
-    //     CAudioAttributesBuilder::New((IAudioAttributesBuilder**)&builder);
-    //     builder->SetInternalLegacyStreamType(type);
-    //     AutoPtr<IAudioAttributes> result;
-    //     builder->Build((IAudioAttributes**)&result);
-    //     return result;
-    // }
-    // else if (type == IAudioSystem::STREAM_DEFAULT) {
-    //     return Notification.AUDIO_ATTRIBUTES_DEFAULT;
-    // }
-    // else {
-    //     String str("");
-    //     Logger::W(TAG, str.AppendFormat("Invalid stream type: %d", type));
-    //     return Notification.AUDIO_ATTRIBUTES_DEFAULT;
-    // }
+    else if (type >= 0 && type < streamType) {
+        // the stream type is valid, use it
+        AutoPtr<IAudioAttributesBuilder> builder;
+        CAudioAttributesBuilder::New((IAudioAttributesBuilder**)&builder);
+        builder->SetInternalLegacyStreamType(type);
+        AutoPtr<IAudioAttributes> result;
+        builder->Build((IAudioAttributes**)&result);
+        return result;
+    }
+    else if (type == IAudioSystem::STREAM_DEFAULT) {
+        return result;
+    }
+    else {
+        String str("");
+        str.AppendFormat("Invalid stream type: %d", type);
+        Logger::W(TAG, str.string());
+        return result;
+    }
 }
 
 ECode NotificationManagerService::ShowNextToastLocked()
@@ -3582,12 +3644,12 @@ void NotificationManagerService::ScheduleTimeoutLocked(
     /* [in] */ ToastRecord* r)
 {
     assert(r);
-    mHandler->RemoveCallbacksAndMessages((IInterface*)r);
+    mHandler->RemoveCallbacksAndMessages((IObject*)r);
 
     AutoPtr<IMessageHelper> helper;
     CMessageHelper::AcquireSingleton((IMessageHelper**)&helper);
     AutoPtr<IMessage> m;
-    helper->Obtain(mHandler, MESSAGE_TIMEOUT, (IInterface*)r, (IMessage**)&m);
+    helper->Obtain(mHandler, MESSAGE_TIMEOUT, (IObject*)r, (IMessage**)&m);
     Int64 delay = r->mDuration == IToast::LENGTH_LONG ? LONG_DELAY : SHORT_DELAY;
     Boolean result;
     mHandler->SendMessageDelayed(m, delay, &result);
@@ -3622,7 +3684,7 @@ Int32 NotificationManagerService::IndexOfToastLocked(
         AutoPtr<ToastRecord> r = (ToastRecord*)IObject::Probe(obj);
         AutoPtr<IBinder> tmpCbak = IBinder::Probe(r->mCallback);
         if (r->mPkg.Equals(pkg) && tmpCbak == cbak) {
-            return index;
+            return i;
         }
     }
 
@@ -3663,7 +3725,7 @@ void NotificationManagerService::HandleRankingReconsideration(
     synchronized(mNotificationList) {
         AutoPtr<IInterface> obj;
         mNotificationsByKey->Get(CoreUtils::Convert(recon->GetKey()), (IInterface**)&obj);
-        AutoPtr<NotificationRecord> record = (NotificationRecord*)IObject::Probe(obj);
+        AutoPtr<NotificationRecord> record = (NotificationRecord*)INotificationRecord::Probe(obj);
         if (record == NULL) {
             return;
         }
@@ -3698,7 +3760,7 @@ void NotificationManagerService::HandleRankingConfigChange()
         for (Int32 i = 0; i < N; i++) {
             AutoPtr<IInterface> obj;
             mNotificationList->Get(i, (IInterface**)&obj);
-            AutoPtr<NotificationRecord> r = (NotificationRecord*)IObject::Probe(obj);
+            AutoPtr<NotificationRecord> r = (NotificationRecord*)INotificationRecord::Probe(obj);
             orderBefore->Add(CoreUtils::Convert(r->GetKey()));
             (*visibilities)[i] = r->GetPackageVisibilityOverride();
             mRankingHelper->ExtractSignals(r);
@@ -3708,11 +3770,11 @@ void NotificationManagerService::HandleRankingConfigChange()
             mRankingHelper->Sort(mNotificationList);
             AutoPtr<IInterface> obj;
             mNotificationList->Get(i, (IInterface**)&obj);
-            AutoPtr<NotificationRecord> r = (NotificationRecord*)IObject::Probe(obj);
+            AutoPtr<NotificationRecord> r = (NotificationRecord*)INotificationRecord::Probe(obj);
             obj = NULL;
             orderBefore->Get(i, (IInterface**)&obj);
             String str;
-            ICharSequence::Probe(IInterface)->ToString(&str);
+            ICharSequence::Probe(obj)->ToString(&str);
             if (!str.Equals(r->GetKey())
                     || (*visibilities)[i] != r->GetPackageVisibilityOverride()) {
                 ScheduleSendRankingUpdate();
@@ -3742,7 +3804,8 @@ void NotificationManagerService::ScheduleSendRankingUpdate()
     CMessageHelper::AcquireSingleton((IMessageHelper**)&helper);
     AutoPtr<IMessage> m;
     helper->Obtain(mHandler, MESSAGE_SEND_RANKING_UPDATE, (IMessage**)&m);
-    mHandler->SendMessage(m);
+    Boolean res;
+    mHandler->SendMessage(m, &res);
 }
 
 void NotificationManagerService::HandleSendRankingUpdate()
@@ -3826,15 +3889,15 @@ void NotificationManagerService::SendAccessibilityEvent(
     AutoPtr<ICharSequence> clsSeq;
     CString::New(String("CNotification"), (ICharSequence**)&clsSeq);
     event->SetPackageName(packageName);
-    event->SetClassName(clsSeq);
-    event->SetParcelableData(IParcelable::Probe(notification));
+    IAccessibilityRecord::Probe(event)->SetClassName(clsSeq);
+    IAccessibilityRecord::Probe(event)->SetParcelableData(IParcelable::Probe(notification));
 
     AutoPtr<ICharSequence> tickerText;
     notification->GetTickerText((ICharSequence**)&tickerText);
 
     if (!TextUtils::IsEmpty(tickerText)) {
         AutoPtr<IList> list;
-        IAccessibilityRecord::Probe(event)->GetText((List**)&list);
+        IAccessibilityRecord::Probe(event)->GetText((IList**)&list);
         list->Add(tickerText);
     }
 
@@ -3847,8 +3910,7 @@ void NotificationManagerService::CancelNotificationLocked(
     /* [in] */ Int32 reason)
 {
     // tell the app
-    AutoPtr<INotification> notification;
-    record->GetNotification((INotification**)&notification);
+    AutoPtr<INotification> notification = record->GetNotification();
     if (sendDelete) {
         AutoPtr<IPendingIntent> intent;
         notification->GetDeleteIntent((IPendingIntent**)&intent);
@@ -3861,7 +3923,7 @@ void NotificationManagerService::CancelNotificationLocked(
                 //     no reason to let this propagate
                 String str;
                 record->mSbn->GetPackageName(&str);
-                Logger::W(TAG, "canceled PendingIntent for %s", str);
+                Logger::W(TAG, "canceled PendingIntent for %s", str.string());
             }
         }
     }
@@ -3871,7 +3933,7 @@ void NotificationManagerService::CancelNotificationLocked(
     notification->GetIcon(&icon);
 
     if (icon != 0) {
-        r->IsCanceled = TRUE;
+        record->mIsCanceled = TRUE;
         mListeners->NotifyRemovedLocked(record->mSbn);
     }
 
@@ -3879,8 +3941,7 @@ void NotificationManagerService::CancelNotificationLocked(
     if (mSoundNotification.Get() == record) {
         mSoundNotification = NULL;
 
-        Int64 identity;
-        Binder::ClearCallingIdentity(&identity);
+        Int64 identity = Binder::ClearCallingIdentity();
         AutoPtr<IIRingtonePlayer> player;
         mAudioManager->GetRingtonePlayer((IIRingtonePlayer**)&player);
         if (player != NULL) {
@@ -3893,14 +3954,13 @@ void NotificationManagerService::CancelNotificationLocked(
     if (mVibrateNotification.Get() == record) {
         mVibrateNotification = NULL;
 
-        Int64 identity;
-        Binder::ClearCallingIdentity(&identity);
+        Int64 identity = Binder::ClearCallingIdentity();
         mVibrator->Cancel();
         Binder::RestoreCallingIdentity(identity);
     }
 
     // light
-    mLights.Remove(CoreUtils::Convert(record->GetKey()));
+    mLights->Remove(CoreUtils::Convert(record->GetKey()));
     if (mLedNotification.Get() == record) {
         mLedNotification = NULL;
     }
@@ -3925,7 +3985,9 @@ void NotificationManagerService::CancelNotificationLocked(
             break;
     }
 
-    mNotificationsByKey->Remove(CoreUtils::Convert(record->mSbn->GetKey()));
+    String key;
+    record->mSbn->GetKey(&key);
+    mNotificationsByKey->Remove(CoreUtils::Convert(key));
 
     // Save it for users of getHistoricalNotifications()
     mArchive->Record(record->mSbn);
@@ -3942,7 +4004,7 @@ void NotificationManagerService::CancelNotification(
     /* [in] */ Boolean sendDelete,
     /* [in] */ Int32 userId,
     /* [in] */ Int32 reason,
-    /* [in] */ ManagedServiceInfo* listener)
+    /* [in] */ ManagedServices::ManagedServiceInfo* listener)
 {
     // In enqueueNotificationInternal notifications are added by scheduling the
     // work on the worker handler. Hence, we also schedule the cancel on this
@@ -3952,7 +4014,7 @@ void NotificationManagerService::CancelNotification(
             this, callingUid, callingPid, pkg, tag, id, mustHaveFlags,
             mustNotHaveFlags, sendDelete, userId, reason, listener);
     Boolean res;
-    mHost->mHandler->Post(runnable, &res);
+    mHandler->Post(runnable, &res);
 }
 
 Boolean NotificationManagerService::NotificationMatchesUserId(
@@ -3985,7 +4047,7 @@ Boolean NotificationManagerService::CancelAllNotificationsInt(
     /* [in] */ Boolean doit,
     /* [in] */ Int32 userId,
     /* [in] */ Int32 reason,
-    /* [in] */ ManagedServiceInfo* listener)
+    /* [in] */ ManagedServices::ManagedServiceInfo* listener)
 {
     String listenerName;
     if (listener == NULL) {
@@ -3995,9 +4057,10 @@ Boolean NotificationManagerService::CancelAllNotificationsInt(
         listener->mComponent->ToShortString(&listenerName);
     }
 
-    EventLogTags::WriteNotificationCancelAll(callingUid, callingPid,
-            pkg, userId, mustHaveFlags, mustNotHaveFlags, reason,
-            listenerName);
+    // TODO
+    // EventLogTags::WriteNotificationCancelAll(callingUid, callingPid,
+    //         pkg, userId, mustHaveFlags, mustNotHaveFlags, reason,
+    //         listenerName);
 
     synchronized(mNotificationList) {
         Int32 N;
@@ -4006,7 +4069,7 @@ Boolean NotificationManagerService::CancelAllNotificationsInt(
         for (Int32 i = 0; i < N; i++) {
             AutoPtr<IInterface> obj;
             mNotificationList->Get(i, (IInterface**)&obj);
-            AutoPtr<NotificationRecord> r = (NotificationRecord*)IObject::Probe(obj);
+            AutoPtr<NotificationRecord> r = (NotificationRecord*)INotificationRecord::Probe(obj);
 
             if (!NotificationMatchesUserId(r, userId)) {
                 continue;
@@ -4041,7 +4104,7 @@ Boolean NotificationManagerService::CancelAllNotificationsInt(
             }
 
             mNotificationList->Remove(i);
-            CancelNotificationLocked(r, FAILED, reason);
+            CancelNotificationLocked(r, FALSE, reason);
         }
 
         if (doit && canceledNotifications != NULL) {
@@ -4050,7 +4113,7 @@ Boolean NotificationManagerService::CancelAllNotificationsInt(
             for (Int32 i = 0; i < M; i++) {
                 AutoPtr<IInterface> obj;
                 canceledNotifications->Get(i, (IInterface**)&obj);
-                AutoPtr<NotificationRecord> record = (NotificationRecord*)IObject::Probe(obj);
+                AutoPtr<NotificationRecord> record = (NotificationRecord*)INotificationRecord::Probe(obj);
                 CancelGroupChildrenLocked(record, callingUid, callingPid, listenerName);
             }
         }
@@ -4068,7 +4131,7 @@ void NotificationManagerService::CancelAllLocked(
     /* [in] */ Int32 callingPid,
     /* [in] */ Int32 userId,
     /* [in] */ Int32 reason,
-    /* [in] */ ManagedServiceInfo* listener,
+    /* [in] */ ManagedServices::ManagedServiceInfo* listener,
     /* [in] */ Boolean includeCurrentProfiles)
 {
     String listenerName;
@@ -4079,8 +4142,9 @@ void NotificationManagerService::CancelAllLocked(
         listener->mComponent->ToShortString(&listenerName);
     }
 
-    EventLogTags::WriteNotificationCancelAll(callingUid, callingPid,
-            null, userId, 0, 0, reason, listenerName);
+    // TODO
+    // EventLogTags::WriteNotificationCancelAll(callingUid, callingPid,
+    //         null, userId, 0, 0, reason, listenerName);
 
     AutoPtr<IArrayList> canceledNotifications;
     Int32 N;
@@ -4088,7 +4152,7 @@ void NotificationManagerService::CancelAllLocked(
     for (Int32 i = N-1; i >= 0; i--) {
         AutoPtr<IInterface> obj;
         mNotificationList->Get(i, (IInterface**)&obj);
-        AutoPtr<NotificationRecord> r = (NotificationRecord*)IObject::Probe(obj);
+        AutoPtr<NotificationRecord> r = (NotificationRecord*)INotificationRecord::Probe(obj);
         if (includeCurrentProfiles) {
             if (!NotificationMatchesCurrentProfiles(r, userId)) {
                 continue;
@@ -4108,7 +4172,7 @@ void NotificationManagerService::CancelAllLocked(
             if (canceledNotifications == NULL) {
                 CArrayList::New((IArrayList**)&canceledNotifications);
             }
-            canceledNotifications->Add(r);
+            canceledNotifications->Add((INotificationRecord*)r);
         }
     }
     Int32 M = 0;
@@ -4118,7 +4182,7 @@ void NotificationManagerService::CancelAllLocked(
     for (Int32 i = 0; i < M; i++) {
         AutoPtr<IInterface> obj;
         canceledNotifications->Get(i, (IInterface**)&obj);
-        AutoPtr<NotificationRecord> r = (NotificationRecord*)IObject::Probe(obj);
+        AutoPtr<NotificationRecord> r = (NotificationRecord*)INotificationRecord::Probe(obj);
         CancelGroupChildrenLocked(r, callingUid, callingPid,
                 listenerName);
     }
@@ -4126,7 +4190,7 @@ void NotificationManagerService::CancelAllLocked(
 }
 
 void NotificationManagerService::CancelGroupChildrenLocked(
-    /* [in] */ NotificationRecord* r;
+    /* [in] */ NotificationRecord* r,
     /* [in] */ Int32 callingUid,
     /* [in] */ Int32 callingPid,
     /* [in] */ const String& listenerName)
@@ -4139,7 +4203,7 @@ void NotificationManagerService::CancelGroupChildrenLocked(
 
     String pkg;
     r->mSbn->GetPackageName(&pkg);
-    Int32 userId = r->GetUserId();
+    // Int32 userId = r->GetUserId();
 
     if (pkg.IsNull()) {
         if (DBG) {
@@ -4153,7 +4217,7 @@ void NotificationManagerService::CancelGroupChildrenLocked(
     for (Int32 i = N - 1; i >= 0; i--) {
         AutoPtr<IInterface> obj;
         mNotificationList->Get(i, (IInterface**)&obj);
-        AutoPtr<NotificationRecord> childR = (NotificationRecord*)IObject::Probe(obj);
+        AutoPtr<NotificationRecord> childR = (NotificationRecord*)INotificationRecord::Probe(obj);
         AutoPtr<IStatusBarNotification> childSbn = childR->mSbn;
         if ((childR->GetNotification()->IsGroupChild(&res), res) &&
                 childR->GetGroupKey().Equals(r->GetGroupKey())) {
@@ -4179,7 +4243,7 @@ void NotificationManagerService::UpdateLightsLocked()
             mLights->Get(n - 1, (IInterface**)&obj);
             AutoPtr<IInterface> object;
             mNotificationsByKey->Get(obj, (IInterface**)&object);
-            mLedNotification = (NotificationRecord*)IObject::Probe(object);
+            mLedNotification = (NotificationRecord*)INotificationRecord::Probe(object);
         }
     }
 
@@ -4219,14 +4283,14 @@ Int32 NotificationManagerService::IndexOfNotificationLocked(
     /* [in] */ Int32 id,
     /* [in] */ Int32 userId)
 {
-    AutoPtr<IArrayList> list = mNotificationLight;
+    AutoPtr<IArrayList> list = mNotificationList;
     Int32 len;
     list->GetSize(&len);
 
     for (Int32 i = 0; i < len; i++) {
         AutoPtr<IInterface> obj;
         list->Get(i, (IInterface**)&obj);
-        AutoPtr<NotificationRecord> r = (NotificationRecord*)IObject::Probe(obj);
+        AutoPtr<NotificationRecord> r = (NotificationRecord*)INotificationRecord::Probe(obj);
 
         Int32 _id;
         r->mSbn->GetId(&id);
@@ -4264,7 +4328,7 @@ Int32 NotificationManagerService::IndexOfNotificationLocked(
     for (Int32 i = 0; i < N; i++) {
         AutoPtr<IInterface> obj;
         mNotificationList->Get(i, (IInterface**)&obj);
-        AutoPtr<NotificationRecord> record = (NotificationRecord*)IObject::Probe(obj);
+        AutoPtr<NotificationRecord> record = (NotificationRecord*)INotificationRecord::Probe(obj);
         if (key.Equals(record->GetKey())) {
             return i;
         }
@@ -4350,7 +4414,7 @@ String NotificationManagerService::CallStateToString(
         case ITelephonyManager::CALL_STATE_OFFHOOK:
             return String("CALL_STATE_OFFHOOK");
         default:
-            return String("CALL_STATE_UNKNOWN_") + StringUtils::Int32ToString(state);
+            return String("CALL_STATE_UNKNOWN_") + StringUtils::ToString(state);
     }
 }
 
@@ -4368,7 +4432,7 @@ void NotificationManagerService::ListenForCallState()
 }
 
 AutoPtr<INotificationRankingUpdate> NotificationManagerService::MakeRankingUpdateLocked(
-    /* [in] */ ManagedServiceInfo* info)
+    /* [in] */ ManagedServices::ManagedServiceInfo* info)
 {
     Int32 speedBumpIndex = -1;
     Int32 N;
@@ -4383,17 +4447,19 @@ AutoPtr<INotificationRankingUpdate> NotificationManagerService::MakeRankingUpdat
     for (Int32 i = 0; i < N; i++) {
         AutoPtr<IInterface> obj;
         mNotificationList->Get(i, (IInterface**)&obj);
-        AutoPtr<NotificationRecord> record = (NotificationRecord*)IObject::Probe(obj);
+        AutoPtr<NotificationRecord> record = (NotificationRecord*)INotificationRecord::Probe(obj);
         if (!IsVisibleToListener(record->mSbn, info)) {
             continue;
         }
-        keys->Add(CoreUtils::Convert(record->mSbn->GetKey()));
+        String key;
+        record->mSbn->GetKey(&key);
+        keys->Add(CoreUtils::Convert(key));
         if (record->IsIntercepted()) {
-            interceptedKeys->Add(CoreUtils::Convert(record->mSbn->GetKey()));
+            interceptedKeys->Add(CoreUtils::Convert(key));
         }
         if (record->GetPackageVisibilityOverride()
                 != INotificationListenerServiceRanking::VISIBILITY_NO_OVERRIDE) {
-            visibilityOverrides->PutInt32(record->mSbn->GetKey(),
+            visibilityOverrides->PutInt32(key,
                     record->GetPackageVisibilityOverride());
         }
         // Find first min-prio notification for speedbump placement.
@@ -4419,20 +4485,18 @@ AutoPtr<INotificationRankingUpdate> NotificationManagerService::MakeRankingUpdat
     AutoPtr< ArrayOf<IInterface*> > inArgs = ArrayOf<IInterface*>::Alloc(size);
     AutoPtr< ArrayOf<IInterface*> > outArgs;
     keys->ToArray(inArgs, (ArrayOf<IInterface*>**)&outArgs);
-    outArgs->GetSize(&size);
-    AutoPtr< ArrayOf<String> > keysAr = ArrayOf<String>::Alloc(size);
-    for (Int32 i = 0; i < size; i++) {
-        ICharSequence::Probe(*outArgs)[i]->ToString(&(*keysAr)[i]);
+    AutoPtr< ArrayOf<String> > keysAr = ArrayOf<String>::Alloc(outArgs->GetLength());
+    for (Int32 i = 0; i < outArgs->GetLength(); i++) {
+        ICharSequence::Probe((*outArgs)[i])->ToString(&(*keysAr)[i]);
     }
 
     interceptedKeys->GetSize(&size);
     AutoPtr< ArrayOf<IInterface*> > inArray = ArrayOf<IInterface*>::Alloc(size);
     AutoPtr< ArrayOf<IInterface*> > outArray;
     interceptedKeys->ToArray(inArray, (ArrayOf<IInterface*>**)&outArray);
-    outArray->GetSize(&size);
-    AutoPtr< ArrayOf<String> > interceptedKeysAr = ArrayOf<String>::Alloc(size);
-    for (Int32 i = 0; i < size; i++) {
-        ICharSequence::Probe(*outArray)[i]->ToString(&(*interceptedKeysAr)[i]);
+    AutoPtr< ArrayOf<String> > interceptedKeysAr = ArrayOf<String>::Alloc(outArray->GetLength());
+    for (Int32 i = 0; i < outArray->GetLength(); i++) {
+        ICharSequence::Probe((*outArray)[i])->ToString(&(*interceptedKeysAr)[i]);
     }
 
     AutoPtr<INotificationRankingUpdate> update;
@@ -4443,7 +4507,7 @@ AutoPtr<INotificationRankingUpdate> NotificationManagerService::MakeRankingUpdat
 
 Boolean NotificationManagerService::IsVisibleToListener(
     /* [in] */ IStatusBarNotification* sbn,
-    /* [in] */ ManagedServiceInfo* listener)
+    /* [in] */ ManagedServices::ManagedServiceInfo* listener)
 {
     Int32 uid;
     sbn->GetUserId(&uid);

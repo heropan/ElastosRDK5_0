@@ -1174,6 +1174,10 @@ module
         interface IParcelable;
     }
 
+    singleton class CNotificationHelper {
+        interface INotificationHelper;
+    }
+
     class CNotificationManager {
         constructor(
             [in] IContext* context,

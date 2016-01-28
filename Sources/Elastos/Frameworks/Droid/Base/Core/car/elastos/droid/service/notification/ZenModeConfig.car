@@ -123,10 +123,10 @@ module
         SetSleepEndMinute(
             [in] Int32 sleepEndMinute);
 
-        GetExitConditionComponent(
+        GetConditionComponents(
             [out, callee] ArrayOf<IComponentName*>* conditionComponents);
 
-        SetExitConditionComponent(
+        SetConditionComponents(
             [in] ArrayOf<IComponentName*>* conditionComponents);
 
         GetConditionIds(

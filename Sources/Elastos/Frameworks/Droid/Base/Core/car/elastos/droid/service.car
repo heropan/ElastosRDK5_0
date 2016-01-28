@@ -89,7 +89,8 @@ module
     interface Elastos.Droid.Internal.TextService.IISpellCheckerService;
     interface Elastos.Droid.Internal.TextService.IISpellCheckerSession;
     interface Elastos.Droid.Internal.TextService.IISpellCheckerSessionListener;
-    interface Elastos.Utility.ILocale;
+    using interface Elastos.Utility.ILocale;
+    using interface Elastos.Core.ICloneable;
 
     namespace Elastos {
     namespace Droid {
@@ -445,6 +446,7 @@ module
 
             interface IStatusBarNotification;
             interface IParcelable;
+            interface ICloneable;
         }
 
         class CZenModeConfigDowntimeInfo {

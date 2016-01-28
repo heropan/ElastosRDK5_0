@@ -1269,14 +1269,13 @@ ECode CNotificationBuilder::PopulateExtras(
         extras->PutParcelable(INotification::EXTRA_LARGE_ICON, IParcelable::Probe(mLargeIcon));
     }
     if (!mPeople.IsEmpty()) {
-        AutoPtr<IArrayList> list;
-        CArrayList::New((IArrayList**)&list);
+        AutoPtr<ArrayOf<String> > array = ArrayOf<String>::Alloc(mPeople.GetSize());
         List<String>::Iterator it;
+        Int32 i = 0;
         for (it = mPeople.Begin(); it != mPeople.End(); ++it) {
-            AutoPtr<ICharSequence> csq = CoreUtils::Convert(*it);
-            list->Add(csq);
+            array->Set(i++, *it);
         }
-        extras->PutStringArrayList(INotification::EXTRA_PEOPLE, list);
+        extras->PutStringArray(INotification::EXTRA_PEOPLE, array);
     }
     // NOTE: If you're adding new extras also update RestoreFromNotification().
     return NOERROR;

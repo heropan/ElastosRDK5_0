@@ -2,24 +2,58 @@
 #ifndef __ELASTOS_DROID_SERVER_NOTIFICATION_MANAGEDSERVICES_H__
 #define __ELASTOS_DROID_SERVER_NOTIFICATION_MANAGEDSERVICES_H__
 
+#include <Elastos.Droid.Content.h>
+#include <Elastos.Droid.Utility.h>
+#include <Elastos.CoreLibrary.IO.h>
+#include <Elastos.CoreLibrary.Utility.h>
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/database/ContentObserver.h"
-// #include "elastos/droid/os/Handler.h"
 
-using Elastos::Droid::Content::IIntent;
 using Elastos::Droid::Content::IContext;
-using Elastos::Droid::Content::Res::IResources;
+using Elastos::Droid::Content::IComponentName;
+using Elastos::Droid::Content::IServiceConnection;
 using Elastos::Droid::Database::ContentObserver;
-// using Elastos::Droid::Os::Handler;
-using Elastos::Droid::Utility::IArrayMap;
+using Elastos::Droid::Os::IBinder;
+using Elastos::Droid::Service::Notification::IStatusBarNotification;
 using Elastos::Droid::Utility::IArraySet;
-using Elastos::Core::ICharSequence;
+using Elastos::Droid::Utility::ISparseArray;
+using Elastos::IO::IPrintWriter;
 using Elastos::Utility::IArrayList;
 
 namespace Elastos {
 namespace Droid {
 namespace Server {
 namespace Notification {
+
+// from class NotificationManagerService;
+class DumpFilter
+    : public Object
+{
+public:
+    DumpFilter();
+
+    ~DumpFilter();
+
+    static AutoPtr<DumpFilter> ParseFromArguments(
+        /* [in] */ ArrayOf<String>* args);
+
+    CARAPI_(Boolean) Matches(
+        /* [in] */ IStatusBarNotification* sbn);
+
+    CARAPI_(Boolean) Matches(
+        /* [in] */ IComponentName* component);
+
+    CARAPI_(Boolean) Matches(
+        /* [in] */ const String& pkg);
+
+    // @Override
+    CARAPI ToString(
+        /* [out] */ String* str);
+
+public:
+    String mPkgFilter;
+    Boolean mZen;
+};
 
 /**
  * Manages the lifecycle of application-provided services bound by system server.
@@ -34,6 +68,7 @@ namespace Notification {
 class ManagedServices
     : public Object
 {
+    friend class ManagedServiceInfo;
 public:
     class ManagedServiceInfo
         : public Object
@@ -104,7 +139,8 @@ protected:
     class Config
         : public Object
     {
-    protected:
+        friend class ManagedServices;
+    public:
         String mCaption;
         String mServiceInterface;
         String mSecureSettingName;
@@ -174,13 +210,15 @@ private:
     };
 
 public:
-    ManagedServices(
+    ManagedServices();
+
+    ~ManagedServices();
+
+    CARAPI constructor(
         /* [in] */ IContext* context,
         /* [in] */ IHandler* handler,
         /* [in] */ IInterface* mutex,
         /* [in] */ UserProfiles* userProfiles);
-
-    ~ManagedServices();
 
     CARAPI_(void) OnBootPhaseAppsCanStart();
 
@@ -219,7 +257,7 @@ protected:
 private:
     CARAPI_(String) GetCaption();
 
-    CARAPI_(AutoPtr<ManagedServiceInfo>) NewServiceInfo(
+    CARAPI_(AutoPtr<ManagedServices::ManagedServiceInfo>) NewServiceInfo(
         /* [in] */ IInterface* service,
         /* [in] */ IComponentName* component,
         /* [in] */ Int32 userid,
@@ -260,11 +298,11 @@ private:
      *
      * @return the removed service.
      */
-    CARAPI(AutoPtr<ManagedServiceInfo>) RemoveServiceImpl(
+    CARAPI_(AutoPtr<ManagedServices::ManagedServiceInfo>) RemoveServiceImpl(
         /* [in] */ IInterface* service,
         /* [in] */ Int32 userid);
 
-    CARAPI_(AutoPtr<ManagedServiceInfo>) RemoveServiceLocked(
+    CARAPI_(AutoPtr<ManagedServices::ManagedServiceInfo>) RemoveServiceLocked(
         /* [in] */ Int32 i);
 
     CARAPI CheckNotNull(
@@ -287,7 +325,7 @@ protected:
     String TAG;// = getClass().getSimpleName();
     Boolean DEBUG; //= Log.isLoggable(TAG, Log.DEBUG);
     AutoPtr<IContext> mContext;
-    Object mMutex;
+    Object* mMutex;
 
     // contains connections to all connected services, including app services
     // and system services
@@ -295,7 +333,7 @@ protected:
     AutoPtr<IArrayList> mServices;
 
 private:
-    static const String ENABLED_SERVICES_SEPARATOR = ":";
+    static const String ENABLED_SERVICES_SEPARATOR;
 
     AutoPtr<UserProfiles> mUserProfiles;
     AutoPtr<SettingsObserver> mSettingsObserver;

@@ -1063,6 +1063,13 @@ Int32 Math::Compare(
 }
 
 Int32 Math::Compare(
+    /* [in] */ Int64 lhs,
+    /* [in] */ Int64 rhs)
+{
+    return lhs < rhs ? -1 : (lhs == rhs ? 0 : 1);
+}
+
+Int32 Math::Compare(
     /* [in] */ Float float1,
     /* [in] */ Float float2)
 {

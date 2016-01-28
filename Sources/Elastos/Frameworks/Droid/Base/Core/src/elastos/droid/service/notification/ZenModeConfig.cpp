@@ -1093,7 +1093,7 @@ ECode ZenModeConfig::SetSleepEndMinute(
     return NOERROR;
 }
 
-ECode ZenModeConfig::GetExitConditionComponent(
+ECode ZenModeConfig::GetConditionComponents(
     /* [out, callee] */ ArrayOf<IComponentName*>** conditionComponents)
 {
     VALIDATE_NOT_NULL(conditionComponents)
@@ -1102,7 +1102,7 @@ ECode ZenModeConfig::GetExitConditionComponent(
     return NOERROR;
 }
 
-ECode ZenModeConfig::SetExitConditionComponent(
+ECode ZenModeConfig::SetConditionComponents(
     /* [in] */ ArrayOf<IComponentName*>* conditionComponents)
 {
     mConditionComponents = conditionComponents;

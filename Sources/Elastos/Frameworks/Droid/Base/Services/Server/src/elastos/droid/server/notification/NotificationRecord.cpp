@@ -1,31 +1,32 @@
 
+#include <Elastos.Droid.Graphics.h>
+#include <Elastos.Droid.Media.h>
+#include <Elastos.Droid.Widget.h>
 #include "elastos/droid/server/notification/NotificationRecord.h"
-#include "elastos/droid/app/ActivityManagerNative.h"
-#include "elastos/droid/os/Binder.h"
-#include "elastos/droid/text/TextUtils.h"
-#include "elastos/droid/R.h"
-#include <elastos/utility/logging/Slogger.h>
+#include <elastos/utility/Arrays.h>
+#include <elastos/utility/Objects.h>
+#include <elastos/core/CoreUtils.h>
 #include <elastos/core/StringBuilder.h>
 #include <elastos/core/StringUtils.h>
 
-// using Elastos::Droid::App::IActivityManagerHelper;
-// using Elastos::Droid::App::CActivityManagerHelper;
-// using Elastos::Droid::Content::IContentResolver;
-// using Elastos::Droid::Content::IIntent;
-// using Elastos::Droid::Content::CIntent;
-// using Elastos::Droid::Content::Pm::IPackageManager;
-// using Elastos::Droid::Content::Pm::IIPackageManager;
-// using Elastos::Droid::Content::Pm::IApplicationInfo;
-// using Elastos::Droid::Provider::ISettingsSystem;
-// using Elastos::Droid::Provider::CSettingsSystem;
-// using Elastos::Droid::Os::Binder;
-// using Elastos::Droid::Os::IUserHandle;
-// using Elastos::Droid::Text::TextUtils;
-// using Elastos::Core::StringBuilder;
-// using Elastos::Core::StringUtils;
-// using Elastos::Utility::CArrayList;
-// using Elastos::Utility::ICollection;
-// using Elastos::Utility::Logging::Slogger;
+using Elastos::Droid::App::INotificationAction;
+using Elastos::Droid::App::IPendingIntent;
+using Elastos::Droid::Content::Res::IResources;
+using Elastos::Droid::Graphics::IBitmap;
+using Elastos::Droid::Media::IAudioAttributes;
+using Elastos::Droid::Os::IBundle;
+using Elastos::Droid::Widget::IRemoteViews;
+using Elastos::Core::ICharSequence;
+using Elastos::Core::CoreUtils;
+using Elastos::Core::StringBuilder;
+using Elastos::Core::StringUtils;
+using Elastos::Core::CSystem;
+using Elastos::Core::ISystem;
+using Elastos::Core::IString;
+using Elastos::Utility::Arrays;
+using Elastos::Utility::Objects;
+using Elastos::Utility::IIterator;
+using Elastos::Utility::ISet;
 
 namespace Elastos {
 namespace Droid {
@@ -37,6 +38,17 @@ CAR_INTERFACE_IMPL(NotificationRecord, Object, INotificationRecord);
 NotificationRecord::NotificationRecord(
     /* [in] */ IStatusBarNotification* sbn,
     /* [in] */ Int32 score)
+    : mIsUpdate(FALSE)
+    , mOriginalFlags(0)
+    , mIsCanceled(FALSE)
+    , mScore(0)
+    , mContactAffinity(0.0f)
+    , mRecentlyIntrusive(FALSE)
+    , mIntercept(FALSE)
+    , mRankingTimeMs(0)
+    , mPackagePriority(0)
+    , mAuthoritativeRank(0)
+    , mPackageVisibility(0)
 {
     mSbn = sbn;
     mScore = score;
@@ -108,7 +120,7 @@ void NotificationRecord::Dump(
 
     StringBuilder buider;
     buider += prefix;
-    buider += this;
+    buider += TO_IINTERFACE(this);
     pw->Println(buider.ToString());
 
     Int32 uid;
@@ -132,7 +144,7 @@ void NotificationRecord::Dump(
     buider.Reset();
     buider += prefix;
     buider += "  icon=0x";
-    buider += StringUtils::Int32ToString(icon);
+    buider += StringUtils::ToString(icon);
     buider += " / ";
     buider += str;
     pw->Println(buider.ToString());
@@ -212,72 +224,191 @@ void NotificationRecord::Dump(
     pw->Println(buider.ToString());
 
     Int32 audioStreamType;
-    notification->GetAudioStreamType
+    notification->GetAudioStreamType(&audioStreamType);
+    buider.Reset();
+    buider += prefix;
+    buider += "  audioStreamType=";
+    buider += audioStreamType;
+    pw->Println(buider.ToString());
+
+    AutoPtr<IAudioAttributes> audioAttributes;
+    notification->GetAudioAttributes((IAudioAttributes**)&audioAttributes);
+    buider.Reset();
+    buider += prefix;
+    buider += "  audioAttributes=";
+    buider += audioAttributes;
+    pw->Println(buider.ToString());
+
+    Int32 color;
+    notification->GetColor(&color);
+    str = "";
+    str.AppendFormat("  color=0x%08x", color);
+    pw->Println(prefix + str);
+
+    AutoPtr< ArrayOf<Int64> > vibrate;
+    notification->GetVibrate((ArrayOf<Int64>**)&vibrate);
+    buider.Reset();
+    buider += prefix;
+    buider += "  vibrate=";
+    buider += Arrays::ToString(vibrate);
+    pw->Println(buider.ToString());
 
 
+    Int32 ledARGB, ledOnMS, ledOffMS;
+    notification->GetLedARGB(&ledARGB);
+    notification->GetLedOnMS(&ledOnMS);
+    notification->GetLedOffMS(&ledOffMS);
+    str = "";
+    str.AppendFormat("  led=0x%08x onMs=%d offMs=%d", ledARGB, ledOnMS, ledOffMS);
+    pw->Println(prefix + str);
 
+    AutoPtr< ArrayOf<INotificationAction*> > actions;
+    notification->GetActions((ArrayOf<INotificationAction*>**)&actions);
 
+    if (actions != NULL && actions->GetLength() > 0) {
+        pw->Println(prefix + String("  actions={"));
+        const Int32 N = actions->GetLength();
+        for (Int32 i = 0; i < N; i++) {
+            AutoPtr<INotificationAction> action = (*actions)[i];
+            AutoPtr<ICharSequence> title;
+            action->GetTitle((ICharSequence**)&title);
+            String titleStr;
+            title->ToString(&titleStr);
+            AutoPtr<IPendingIntent> actionIntent;
+            action->GetActionIntent((IPendingIntent**)&actionIntent);
+            String intentStr;
+            IObject::Probe(actionIntent)->ToString(&intentStr);
 
-    pw->Println(prefix + "  audioStreamType=" + notification.audioStreamType);
-    pw->Println(prefix + "  audioAttributes=" + notification.audioAttributes);
-    pw->Println(prefix + String.format("  color=0x%08x", notification.color));
-    pw->Println(prefix + "  vibrate=" + Arrays.toString(notification.vibrate));
-    pw->Println(prefix + String.format("  led=0x%08x onMs=%d offMs=%d",
-            notification.ledARGB, notification.ledOnMS, notification.ledOffMS));
-    if (notification.actions != null && notification.actions.length > 0) {
-        pw->Println(prefix + "  actions={");
-        final int N = notification.actions.length;
-        for (int i=0; i<N; i++) {
-            final Notification.Action action = notification.actions[i];
-            pw->Println(String.format("%s    [%d] \"%s\" -> %s",
-                    prefix,
-                    i,
-                    action.title,
-                    action.actionIntent.toString()
-                    ));
+            str = "";
+            str.AppendFormat("%s    [%d] \"%s\" -> %s",
+                    prefix.string(), i, titleStr.string(), intentStr.string());
+            pw->Println(str);
         }
-        pw->Println(prefix + "  }");
+        pw->Println(prefix + String("  }"));
     }
-    if (notification.extras != null && notification.extras.size() > 0) {
-        pw->Println(prefix + "  extras={");
-        for (String key : notification.extras.keySet()) {
-            pw->Print(prefix + "    " + key + "=");
-            Object val = notification.extras.get(key);
-            if (val == null) {
-                pw->Println("null");
-            } else {
-                pw->Print(val.getClass().getSimpleName());
-                if (val instanceof CharSequence || val instanceof String) {
+
+    AutoPtr<IBundle> extras;
+    notification->GetExtras((IBundle**)&extras);
+    Int32 size;
+    if (extras != NULL && (extras->GetSize(&size), size) > 0) {
+        pw->Println(prefix + String("  extras={"));
+        AutoPtr<ISet> set;
+        extras->GetKeySet((ISet**)&set);
+        AutoPtr<IIterator> iterator;
+        set->GetIterator((IIterator**)&iterator);
+
+        Boolean hasNext;
+        while (iterator->HasNext(&hasNext), hasNext) {
+            AutoPtr<IInterface> obj;
+            iterator->GetNext((IInterface**)&obj);
+            String key;
+            ICharSequence::Probe(obj)->ToString(&key);
+
+            buider.Reset();
+            buider += prefix;
+            buider += "    ";
+            buider += key;
+            buider += "=";
+            pw->Print(buider.ToString());
+            AutoPtr<IInterface> val;
+            extras->Get(key, (IInterface**)&val);
+            if (val == NULL) {
+                pw->Println(String("null"));
+            }
+            else {
+                AutoPtr<IClassInfo> clsInfo;
+                CObject::ReflectClassInfo(val, (IClassInfo**)&clsInfo);
+                String name;
+                clsInfo->GetName(&name);
+                pw->Print(name);
+                if (ICharSequence::Probe(val) != NULL || IString::Probe(val) != NULL) {
                     // redact contents from bugreports
-                } else if (val instanceof Bitmap) {
-                    pw->Print(String.format(" (%dx%d)",
-                            ((Bitmap) val).getWidth(),
-                            ((Bitmap) val).getHeight()));
-                } else if (val.getClass().isArray()) {
-                    final int N = Array.getLength(val);
-                    pw->Println(" (" + N + ")");
-                } else {
-                    pw->Print(" (" + String.valueOf(val) + ")");
+                }
+                else if (IBitmap::Probe(val) != NULL) {
+                    Int32 width, height;
+                    IBitmap::Probe(val)->GetWidth(&width);
+                    IBitmap::Probe(val)->GetHeight(&height);
+                    str = "";
+                    str.AppendFormat(" (%dx%d)", width, height);
+                    pw->Print(str);
+                }
+                else if (IArrayOf::Probe(val) != NULL) {
+                    Int32 N;
+                    IArrayOf::Probe(val)->GetLength(&N);
+                    buider.Reset();
+                    buider += " (";
+                    buider += N;
+                    buider += ")";
+                    pw->Println(buider.ToString());
+                }
+                else {
+                    buider.Reset();
+                    buider += " (";
+                    buider += val;//String.valueOf(val)
+                    buider += ")";
+                    pw->Print(buider.ToString());
                 }
                 pw->Println();
             }
         }
-        pw->Println(prefix + "  }");
+        pw->Println(prefix + String("  }"));
     }
-    pw->Println(prefix + "  stats=" + stats.toString());
-    pw->Println(prefix + "  mContactAffinity=" + mContactAffinity);
-    pw->Println(prefix + "  mRecentlyIntrusive=" + mRecentlyIntrusive);
-    pw->Println(prefix + "  mPackagePriority=" + mPackagePriority);
-    pw->Println(prefix + "  mPackageVisibility=" + mPackageVisibility);
-    pw->Println(prefix + "  mIntercept=" + mIntercept);
-    pw->Println(prefix + "  mGlobalSortKey=" + mGlobalSortKey);
-    pw->Println(prefix + "  mRankingTimeMs=" + mRankingTimeMs);
+
+    buider.Reset();
+    buider += prefix;
+    buider += "  stats=";
+    str = "";
+    mStats->ToString(&str);
+    buider += str;
+    pw->Println(buider.ToString());
+
+    buider.Reset();
+    buider += prefix;
+    buider += "  mContactAffinity=";
+    buider += mContactAffinity;
+    pw->Println(buider.ToString());
+
+    buider.Reset();
+    buider += prefix;
+    buider += "  mRecentlyIntrusive=";
+    buider += mRecentlyIntrusive;
+    pw->Println(buider.ToString());
+
+    buider.Reset();
+    buider += prefix;
+    buider += "  mPackagePriority=";
+    buider += mPackagePriority;
+    pw->Println(buider.ToString());
+
+    buider.Reset();
+    buider += prefix;
+    buider += "  mPackageVisibility=";
+    buider += mPackageVisibility;
+    pw->Println(buider.ToString());
+
+    buider.Reset();
+    buider += prefix;
+    buider += "  mIntercept=";
+    buider += mIntercept;
+    pw->Println(buider.ToString());
+
+    buider.Reset();
+    buider += prefix;
+    buider += "  mGlobalSortKey=";
+    buider += mGlobalSortKey;
+    pw->Println(buider.ToString());
+
+    buider.Reset();
+    buider += prefix;
+    buider += "  mRankingTimeMs=";
+    buider += mRankingTimeMs;
+    pw->Println(buider.ToString());
 }
 
 ECode NotificationRecord::IdDebugString(
     /* [in] */ IContext* baseContext,
     /* [in] */ const String& packageName,
-    /* [in] */ Int32 id
+    /* [in] */ Int32 id,
     /* [out] */ String* str)
 {
     VALIDATE_NOT_NULL(str);
@@ -342,11 +473,11 @@ ECode NotificationRecord::ToString(
     AutoPtr<INotification> notification;
     mSbn->GetNotification((INotification**)&notification);
     String result2;
-    notification->ToString(&result2);
+    IObject::Probe(notification)->ToString(&result2);
 
-    str.AppendFormat("NotificationRecord(0x%08x: pkg=%s user=%s id=%d tag=%s score=%d key=%s: %s)",
-            HashCode, packageName, result1.string(), id, tag, score, key,
-            result2.string());
+    str->AppendFormat("NotificationRecord(0x%08x: pkg=%s user=%s id=%d tag=%s score=%d key=%s: %s)",
+            HashCode, packageName.string(), result1.string(), id, tag.string(),
+            score, key.string(), result2.string());
     return NOERROR;
 }
 

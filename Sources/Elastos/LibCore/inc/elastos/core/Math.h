@@ -1183,6 +1183,15 @@ public:
         /* [in] */ Int32 rhs);
 
     /**
+     * Compares two {@code long} values.
+     * @return 0 if lhs = rhs, less than 0 if lhs &lt; rhs, and greater than 0 if lhs &gt; rhs.
+     * @since 1.7
+     */
+    static CARAPI_(Int32) Compare(
+        /* [in] */ Int64 lhs,
+        /* [in] */ Int64 rhs);
+
+    /**
      * Compares the two specified float values. There are two special cases:
      * <ul>
      * <li>{@code Float.NaN} is equal to {@code Float.NaN} and it is greater

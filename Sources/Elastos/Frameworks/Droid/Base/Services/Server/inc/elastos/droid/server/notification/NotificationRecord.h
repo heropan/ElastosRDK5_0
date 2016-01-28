@@ -2,19 +2,16 @@
 #ifndef __ELASTOS_DROID_SERVER_NOTIFICATION_NOTIFICATIONRECORD_H__
 #define __ELASTOS_DROID_SERVER_NOTIFICATION_NOTIFICATIONRECORD_H__
 
-#include "elastos/droid/ext/frameworkext.h"
-#include "elastos/droid/database/ContentObserver.h"
-// #include "elastos/droid/os/Handler.h"
+#include <Elastos.Droid.App.h>
+#include <Elastos.Droid.Service.h>
+#include "elastos/droid/server/notification/NotificationUsageStats.h"
 
-using Elastos::Droid::Content::IIntent;
+using Elastos::Droid::App::INotification;
 using Elastos::Droid::Content::IContext;
-using Elastos::Droid::Content::Res::IResources;
-using Elastos::Droid::Database::ContentObserver;
-// using Elastos::Droid::Os::Handler;
-using Elastos::Droid::Utility::IArrayMap;
-using Elastos::Droid::Utility::IArraySet;
-using Elastos::Core::ICharSequence;
-using Elastos::Utility::IArrayList;
+using Elastos::Droid::Os::IUserHandle;
+using Elastos::Droid::Service::Notification::IStatusBarNotification;
+using Elastos::Droid::Server::Notification::INotificationRecord;
+using Elastos::IO::IPrintWriter;
 
 namespace Elastos {
 namespace Droid {
@@ -37,6 +34,12 @@ class NotificationRecord
     : public Object
     , public INotificationRecord
 {
+    friend class NotificationComparator;
+    friend class NotificationManagerService;
+    friend class NotificationUsageStats;
+    friend class PackagePriorityExtractor;
+    friend class PackageVisibilityExtractor;
+    friend class ZenModeHelper;
 public:
     CAR_INTERFACE_DECL();
 
@@ -48,7 +51,7 @@ public:
     ~NotificationRecord();
 
     // copy any notes that the ranking system may have made before the update
-    CARAPI(void) CopyRankingInformation(
+    CARAPI_(void) CopyRankingInformation(
         /* [in] */ NotificationRecord* previous);
 
     CARAPI_(AutoPtr<INotification>) GetNotification();
@@ -126,7 +129,7 @@ protected:
     static CARAPI IdDebugString(
         /* [in] */ IContext* baseContext,
         /* [in] */ const String& packageName,
-        /* [in] */ Int32 id
+        /* [in] */ Int32 id,
         /* [out] */ String* str);
 
 private:
@@ -145,8 +148,8 @@ protected:
     AutoPtr<IStatusBarNotification> mSbn;
     Int32 mOriginalFlags;
 
-    AutoPtr<NotificationUsageStats::SingleNotificationStats> mStats;
-    Boolean IsCanceled;
+    AutoPtr<SingleNotificationStats> mStats;
+    Boolean mIsCanceled;
     Int32 mScore;
 
 private:

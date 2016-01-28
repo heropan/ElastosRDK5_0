@@ -2,36 +2,48 @@
 #ifndef __ELASTOS_DROID_SERVER_NOTIFICATION_NOTIFICATIONMANAGERSERVICE_H__
 #define __ELASTOS_DROID_SERVER_NOTIFICATION_NOTIFICATIONMANAGERSERVICE_H__
 
-#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/server/SystemService.h"
+#include "elastos/droid/server/lights/Light.h"
+#include "elastos/droid/server/notification/ConditionProviders.h"
+#include "elastos/droid/server/notification/NotificationRecord.h"
+#include "elastos/droid/server/notification/RankingHelper.h"
 #include "elastos/droid/content/BroadcastReceiver.h"
 #include "elastos/droid/database/ContentObserver.h"
-#include "elastos/droid/os/HandlerBase.h"
-#include "CStatusBarManagerService.h"
-#include "LightsService.h"
-// #include <elastos/utility/etl/List.h>
-// #include <elastos/utility/etl/HashSet.h>
+#include "elastos/droid/os/Handler.h"
 
 using Elastos::Droid::App::INotification;
 using Elastos::Droid::App::IITransientNotification;
 using Elastos::Droid::App::IIActivityManager;
+using Elastos::Droid::App::IAppOpsManager;
+using Elastos::Droid::Content::IComponentName;
 using Elastos::Droid::Content::IIntent;
 using Elastos::Droid::Content::BroadcastReceiver;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Content::Res::IResources;
+using Elastos::Droid::Content::Pm::IParceledListSlice;
 using Elastos::Droid::Database::ContentObserver;
-using Elastos::Droid::Media::IIAudioService;
-using Elastos::Droid::Os::HandlerBase;
+using Elastos::Droid::Media::IAudioAttributes;
+using Elastos::Droid::Media::IAudioManager;
+using Elastos::Droid::Os::Handler;
+using Elastos::Droid::Os::IHandlerThread;
+using Elastos::Droid::Os::IUserHandle;
 using Elastos::Droid::Os::IVibrator;
-using Elastos::Droid::StatusBar::IIStatusBarService;
-using Elastos::Droid::Server::CStatusBarManagerService;
-using Elastos::Droid::Utility::IAtomicFile;
+using Elastos::Droid::Server::Lights::Light;
+using Elastos::Droid::Server::Notification::ManagedServices;
+using Elastos::Droid::Server::StatusBar::IStatusBarManagerInternal;
+using Elastos::Droid::Service::Notification::ICondition;
+using Elastos::Droid::Service::Notification::IINotificationListener;
+using Elastos::Droid::Service::Notification::IIStatusBarNotificationHolder;
+using Elastos::Droid::Service::Notification::INotificationRankingUpdate;
+using Elastos::Droid::Service::Notification::IStatusBarNotification;
 using Elastos::Droid::Utility::IArrayMap;
 using Elastos::Droid::Utility::IArraySet;
+using Elastos::Droid::Utility::IAtomicFile;
 using Elastos::Core::ICharSequence;
 using Elastos::Utility::IArrayList;
 using Elastos::Utility::IArrayDeque;
-// using Elastos::Utility::Etl::List;
-// using Elastos::Utility::Etl::HashSet;
+using Elastos::Utility::IHashSet;
+using Elastos::Utility::IIterator;
 
 namespace Elastos {
 namespace Droid {
@@ -41,8 +53,10 @@ namespace Notification {
 class NotificationManagerService
     : public SystemService
 {
+    friend class ConditionProviders;
+    friend class RankingHelper;
 public:
-    class NotificationManagerStub
+    class BinderService
         : public Object
         , public IINotificationManager
         , public IBinder
@@ -50,9 +64,9 @@ public:
     public:
         CAR_INTERFACE_DECL();
 
-        NotificationManagerStub();
+        BinderService();
 
-        ~NotificationManagerStub();
+        ~BinderService();
 
         CARAPI constructor(
             /* [in] */ ISystemService* host);
@@ -153,7 +167,7 @@ public:
         CARAPI GetHistoricalNotifications(
             /* [in] */ const String& callingPkg,
             /* [in] */ Int32 count,
-            /* [out, callee] */ ArrayOf<IStatusBarNotification*>* ns);
+            /* [out, callee] */ ArrayOf<IStatusBarNotification*>** ns);
 
         /**
          * Register a listener binder directly with the notification manager.
@@ -296,7 +310,7 @@ public:
 
     private:
         CARAPI_(void) CancelNotificationFromListenerLocked(
-            /* [in] */ ManagedServiceInfo* info,
+            /* [in] */ ManagedServices::ManagedServiceInfo* info,
             /* [in] */ Int32 callingUid,
             /* [in] */ Int32 callingPid,
             /* [in] */ const String& pkg,
@@ -314,14 +328,17 @@ public:
     class NotificationListeners
         : public ManagedServices
     {
+        friend class NotificationManagerService;
     public:
         NotificationListeners(
             /* [in] */ NotificationManagerService* host);
 
         ~NotificationListeners();
 
+        CARAPI constructor();
+
         // @Override
-        CARAPI_(AutoPtr<Config>) GetConfig();
+        CARAPI_(AutoPtr<ManagedServices::Config>) GetConfig();
 
         // @Override
         CARAPI OnServiceAdded(
@@ -329,7 +346,7 @@ public:
 
         // @Override
         CARAPI OnServiceRemovedLocked(
-        /* [in] */ ManagedServiceInfo* info);
+        /* [in] */ ManagedServiceInfo* removed);
 
         CARAPI_(void) SetOnNotificationPostedTrimLocked(
             /* [in] */ ManagedServiceInfo* info,
@@ -398,34 +415,7 @@ public:
         NotificationManagerService* mHost;
     };
 
-    class DumpFilter
-        : public Object
-    {
-    public:
-        DumpFilter();
-
-        ~DumpFilter();
-
-        static AutoPtr<DumpFilter> ParseFromArguments(
-            /* [in] */ ArrayOf<String>* args);
-
-        CARAPI_(Boolean) Matches(
-            /* [in] */ IStatusBarNotification* sbn);
-
-        CARAPI_(Boolean) Matches(
-            /* [in] */ IComponentName* component);
-
-        CARAPI_(Boolean) Matches(
-            /* [in] */ const String& pkg);
-
-        // @Override
-        CARAPI ToString(
-            /* [out] */ String* str);
-
-    public:
-        String mPkgFilter;
-        Boolean mZen;
-    };
+    // class DumpFilter( remove to file "ManagedServices.h" )
 
     /**
      * Wrapper for a StatusBarNotification object that allows transfer across a oneway
@@ -692,7 +682,7 @@ private:
         {
             VALIDATE_NOT_NULL(info);
             *info = "NotificationManagerService::MyBroadcastReceiver: ";
-            info.AppendFormat("%p", this);
+            info->AppendFormat("%p", this);
             return NOERROR;
         }
 
@@ -706,7 +696,7 @@ private:
     {
     public:
         MyRunnable(
-            /* [in] */ PowerManagerService* host);
+            /* [in] */ NotificationManagerService* host);
 
         ~MyRunnable();
 
@@ -714,7 +704,7 @@ private:
         CARAPI Run();
 
     private:
-        PowerManagerService* mHost;
+        NotificationManagerService* mHost;
     };
 
     // used to define mInternalService;
@@ -795,8 +785,8 @@ private:
         NotificationListenersRunnable(
             /* [in] */ Int32 id,
             /* [in] */ NotificationListeners* host,
-            /* [in] */ PowerManagerService* mainHost,
-            /* [in] */ ManagedServiceInfo* info,
+            /* [in] */ NotificationManagerService* mainHost,
+            /* [in] */ ManagedServices::ManagedServiceInfo* info,
             /* [in] */ IStatusBarNotification* sbn,
             /* [in] */ INotificationRankingUpdate* update,
             /* [in] */ Int32 data);
@@ -809,8 +799,8 @@ private:
     private:
         Int32 mId;
         NotificationListeners* mHost;
-        PowerManagerService* mMainHost;
-        AutoPtr<ManagedServiceInfo> mInfo;
+        NotificationManagerService* mMainHost;
+        AutoPtr<ManagedServices::ManagedServiceInfo> mInfo;
         AutoPtr<IStatusBarNotification> mSbn;
         AutoPtr<INotificationRankingUpdate> mUpdate;
         Int32 mData;
@@ -822,7 +812,7 @@ private:
     {
     public:
         EnqueueNotificationInternalRunnable(
-            /* [in] */ PowerManagerService* host,
+            /* [in] */ NotificationManagerService* host,
             /* [in] */ const String& pkg,
             /* [in] */ const String& opPkg,
             /* [in] */ Int32 callingUid,
@@ -839,7 +829,7 @@ private:
         CARAPI Run();
 
     private:
-        PowerManagerService* mHost;
+        NotificationManagerService* mHost;
         String mPkg;
         String mOpPkg;
         Int32 mCallingUid;
@@ -857,7 +847,7 @@ private:
     {
     public:
         CancelNotificationRunnable(
-            /* [in] */ PowerManagerService* host,
+            /* [in] */ NotificationManagerService* host,
             /* [in] */ Int32 callingUid,
             /* [in] */ Int32 callingPid,
             /* [in] */ const String& pkg,
@@ -868,7 +858,7 @@ private:
             /* [in] */ Boolean sendDelete,
             /* [in] */ Int32 userId,
             /* [in] */ Int32 reason,
-            /* [in] */ ManagedServiceInfo* listener);
+            /* [in] */ ManagedServices::ManagedServiceInfo* listener);
 
         ~CancelNotificationRunnable();
 
@@ -876,7 +866,7 @@ private:
         CARAPI Run();
 
     private:
-        PowerManagerService* mHost;
+        NotificationManagerService* mHost;
         Int32 mCallingUid;
         Int32 mCallingPid;
         String mPkg;
@@ -887,7 +877,26 @@ private:
         Boolean mSendDelete;
         Int32 mUserId;
         Int32 mReason;
-        AutoPtr<ManagedServiceInfo> mListener;
+        AutoPtr<ManagedServices::ManagedServiceInfo> mListener;
+    };
+
+    class ZenModeHelperCallback
+        : public ZenModeHelper::Callback
+    {
+    public:
+        ZenModeHelperCallback(
+            /* [in] */ NotificationManagerService* host);
+
+        ~ZenModeHelperCallback();
+
+        // @Override
+        CARAPI_(void) OnConfigChanged();
+
+        // @Override
+        CARAPI_(void) OnZenModeChanged();
+
+    private:
+        NotificationManagerService* mHost;
     };
 
 public:
@@ -975,7 +984,7 @@ protected:
         /* [in] */ Boolean sendDelete,
         /* [in] */ Int32 userId,
         /* [in] */ Int32 reason,
-        /* [in] */ ManagedServiceInfo* listener);
+        /* [in] */ ManagedServices::ManagedServiceInfo* listener);
 
     /**
      * Cancels all notifications from a given package that have all of the
@@ -990,14 +999,14 @@ protected:
         /* [in] */ Boolean doit,
         /* [in] */ Int32 userId,
         /* [in] */ Int32 reason,
-        /* [in] */ ManagedServiceInfo* listener);
+        /* [in] */ ManagedServices::ManagedServiceInfo* listener);
 
     CARAPI_(void) CancelAllLocked(
         /* [in] */ Int32 callingUid,
         /* [in] */ Int32 callingPid,
         /* [in] */ Int32 userId,
         /* [in] */ Int32 reason,
-        /* [in] */ ManagedServiceInfo* listener,
+        /* [in] */ ManagedServices::ManagedServiceInfo* listener,
         /* [in] */ Boolean includeCurrentProfiles);
 
     // lock on mNotificationList
@@ -1103,13 +1112,13 @@ private:
      * they match exactly, or one of them is USER_ALL (which is treated as a wildcard) or
      * because it matches one of the users profiles.
      */
-    CARAPI(Boolean) NotificationMatchesCurrentProfiles(
+    CARAPI_(Boolean) NotificationMatchesCurrentProfiles(
         /* [in] */ NotificationRecord* record,
         /* [in] */ Int32 userId);
 
     // Warning: The caller is responsible for invoking updateLightsLocked().
     CARAPI_(void) CancelGroupChildrenLocked(
-        /* [in] */ NotificationRecord* r;
+        /* [in] */ NotificationRecord* r,
         /* [in] */ Int32 callingUid,
         /* [in] */ Int32 callingPid,
         /* [in] */ const String& listenerName);
@@ -1138,11 +1147,11 @@ private:
      * <p>Caller must hold a lock on mNotificationList.</p>
      */
     CARAPI_(AutoPtr<INotificationRankingUpdate>) MakeRankingUpdateLocked(
-        /* [in] */ ManagedServiceInfo* info);
+        /* [in] */ ManagedServices::ManagedServiceInfo* info);
 
     CARAPI_(Boolean) IsVisibleToListener(
         /* [in] */ IStatusBarNotification* sbn,
-        /* [in] */ ManagedServiceInfo* listener);
+        /* [in] */ ManagedServices::ManagedServiceInfo* listener);
 
 protected:
     static const String TAG;
@@ -1270,15 +1279,6 @@ private:
 
     AutoPtr<Archive> mArchive;
 
-    // typedef List< AutoPtr<NotificationRecord> > NotificationRecordList;
-    // typedef typename List< AutoPtr<NotificationRecord> >::Iterator NotificationRecordIterator;
-
-    // NotificationRecordList mNotificationList;
-
-    // List< AutoPtr<ToastRecord> > mToastQueue;
-
-    // NotificationRecordList mLights;
-
     // Notification control database. For now just contains disabled packages.
     AutoPtr<IAtomicFile> mPolicyFile;
     /* private HashSet<String> mBlockedPackages = new HashSet<String>(); */
@@ -1290,10 +1290,6 @@ private:
     AutoPtr<NotificationListeners> mListeners;
     AutoPtr<ConditionProviders> mConditionProviders;
     AutoPtr<NotificationUsageStats> mUsageStats;
-
-    // Object mToastQueueLock;
-    // Object mBlockedPackagesLock;
-    // Object mNotificationListLock;
 
     AutoPtr<MyNotificationDelegate> mNotificationDelegate;
     AutoPtr<MyBroadcastReceiver> mIntentReceiver;
