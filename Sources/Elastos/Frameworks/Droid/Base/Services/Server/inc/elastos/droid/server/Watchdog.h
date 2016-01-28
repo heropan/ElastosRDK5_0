@@ -201,7 +201,7 @@ public:
     static const Int32 OVERDUE;
 
     // Which native processes to dump into dropbox's stack traces
-     static const AutoPtr<ArrayOf<String> > NATIVE_STACKS_OF_INTEREST;
+    static const AutoPtr<ArrayOf<String> > NATIVE_STACKS_OF_INTEREST;
 
     static AutoPtr<Watchdog> sWatchdog;
 

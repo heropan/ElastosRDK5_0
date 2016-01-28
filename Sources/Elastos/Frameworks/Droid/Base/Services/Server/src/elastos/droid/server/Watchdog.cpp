@@ -84,7 +84,7 @@ const Int32 Watchdog::OVERDUE = 3;
 // Which native processes to dump into dropbox's stack traces
 const AutoPtr<ArrayOf<String> > Watchdog::NATIVE_STACKS_OF_INTEREST = InitNATIVE_STACKS_OF_INTEREST();
 
-static AutoPtr<Watchdog> sWatchdog;
+AutoPtr<Watchdog> Watchdog::sWatchdog;
 
 
 //============================================================================
