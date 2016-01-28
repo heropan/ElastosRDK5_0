@@ -18,7 +18,7 @@ namespace Server {
 
 const String CConsumerIrService::TAG("ConsumerIrService");
 
-const Int32 MAX_XMIT_TIME = 2000000; /* in microseconds */
+const Int32 CConsumerIrService::MAX_XMIT_TIME = 2000000; /* in microseconds */
 
 CAR_INTERFACE_IMPL_2(CConsumerIrService, Object, IIConsumerIrService, IBinder)
 

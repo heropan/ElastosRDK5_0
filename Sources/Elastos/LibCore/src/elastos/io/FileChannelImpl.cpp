@@ -441,7 +441,7 @@ ECode FileChannelImpl::Map(
     return NOERROR;
 }
 
-ECode FileChannelImpl::GetPosition(
+ECode FileChannelImpl::Position(
     /* [out] */ Int64* position)
 {
     FAIL_RETURN(CheckOpen());
@@ -450,7 +450,7 @@ ECode FileChannelImpl::GetPosition(
     return CLibcore::sOs->Lseek(mFd, 0L, seek_cur, position);
 }
 
-ECode FileChannelImpl::SetPosition(
+ECode FileChannelImpl::Position(
     /* [in] */ Int64 newPosition)
 {
     FAIL_RETURN(CheckOpen());
@@ -639,11 +639,11 @@ ECode FileChannelImpl::TransferFrom(
         Int64 size;
         fileSrc->GetSize(&size);
         Int64 filePosition;
-        fileSrc->GetPosition(&filePosition);
+        fileSrc->Position(&filePosition);
         count = Elastos::Core::Math::Min(count, size-filePosition);
         AutoPtr<IMappedByteBuffer> buffer;
         fileSrc->Map(Elastos::IO::Channels::FileChannelMapMode_READ_ONLY, filePosition, count, (IMappedByteBuffer**)&buffer);
-        ecRet = fileSrc->SetPosition(filePosition + count);
+        ecRet = fileSrc->Position(filePosition + count);
         if(NOERROR != ecRet)
             return ecRet;
 

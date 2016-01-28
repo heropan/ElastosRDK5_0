@@ -1,353 +1,627 @@
 #include "elastos/droid/server/PersistentDataBlockService.h"
-
+#include "elastos/droid/server/CPersistentDataBlockBinderService.h"
+#include <elastos/droid/os/Binder.h>
+#include <elastos/droid/os/UserHandle.h>
 #include <elastos/droid/R.h>
 #include <elastos/droid/Manifest.h>
+#include <elastos/core/AutoLock.h>
+#include <elastos/utility/logging/Slogger.h>
+#include <Elastos.Droid.App.h>
+#include <Elastos.Droid.Content.h>
+#include <Elastos.CoreLibrary.IO.h>
+#include <Elastos.CoreLibrary.Libcore.h>
 
 using Elastos::Droid::R;
 using Elastos::Droid::Manifest;
+using Elastos::Droid::Os::EIID_IBinder;
+using Elastos::Droid::Os::Binder;
+using Elastos::Droid::Os::UserHandle;
+using Elastos::Droid::Os::ISystemProperties;
+using Elastos::Droid::Os::CSystemProperties;
+using Elastos::Droid::Content::Res::IResources;
+using Elastos::Droid::App::IActivityManagerHelper;
+using Elastos::Droid::App::CActivityManagerHelper;
+using Elastos::Droid::Service::Persistentdata::EIID_IIPersistentDataBlockService;
 
+using Elastos::IO::ICloseable;
+using Elastos::IO::IByteBufferHelper;
+using Elastos::IO::CByteBufferHelper;
+using Elastos::IO::IOutputStream;
+using Elastos::IO::IInputStream;
+using Elastos::IO::IBuffer;
+using Elastos::IO::IByteBuffer;
+using Elastos::IO::IByteBufferHelper;
+using Elastos::IO::CByteBufferHelper;
+using Elastos::IO::CFile;
+using Elastos::IO::CFileInputStream;
+using Elastos::IO::CFileOutputStream;
+using Elastos::IO::CDataInputStream;
+using Elastos::IO::CDataOutputStream;
+using Elastos::IO::Channels::IFileChannel;
+using Elastos::IO::IDataInput;
+using Elastos::Utility::Logging::Slogger;
+using Libcore::IO::IIoUtils;
+using Libcore::IO::CIoUtils;
 
 namespace Elastos {
 namespace Droid {
 namespace Server {
 
+const String PersistentDataBlockService::TAG("PersistentDataBlockService");
+
+const String PersistentDataBlockService::PERSISTENT_DATA_BLOCK_PROP("ro.frp.pst");
+const Int32 PersistentDataBlockService::HEADER_SIZE = 8;
+// Magic number to mark block device as adhering to the format consumed by this service
+const Int32 PersistentDataBlockService::PARTITION_TYPE_MARKER = 0x1990;
+// Limit to 100k as blocks larger than this might cause strain on Binder.
+// TODO(anmorales): Consider splitting up too-large blocks in PersistentDataBlockManager
+const Int32 PersistentDataBlockService::MAX_DATA_BLOCK_SIZE = 1024 * 100;
+
 //===================================================================================
 // PersistentDataBlockService::BinderService
 //===================================================================================
-class PersistentDataBlockService
-    : public SystemService
+
+CAR_INTERFACE_IMPL_2(PersistentDataBlockService::BinderService, Object, IIPersistentDataBlockService, IBinder)
+
+
+ECode PersistentDataBlockService::BinderService::constructor(
+    /* [in] */ ISystemService* service)
 {
-public:
+    mHost = (PersistentDataBlockService*)service;
+    return NOERROR;
+}
 
-    class BinderService
-        : public Object
-        , public IIPersistentDataBlockService
-        , public IBinder
-    {
-    public:
-        CAR_INTERFACE_DECL()
+ECode PersistentDataBlockService::BinderService::Write(
+    /* [in] */ ArrayOf<Byte>* data,
+    /* [out] */ Int32* result)
+{
+    VALIDATE_NOT_NULL(result)
+    *result = -1;
 
-        //@Override
-        CARAPI Write(
-            /* [in] */ ArrayOf<Byte>* data,
-            /* [out] */ Int32* result)
-        {
-            FAIL_RETURN(EnforceUid(Binder::GetCallingUid()))
+    FAIL_RETURN(mHost->EnforceUid(Binder::GetCallingUid()))
 
-            // Need to ensure we don't write over the last Byte
-            Int64 maxBlockSize = GetBlockDeviceSize() - HEADER_SIZE - 1;
-            if (data.length > maxBlockSize) {
-                // partition is ~500k so shouldn't be a problem to downcast
-                return (Int32) -maxBlockSize;
-            }
+    // Need to ensure we don't write over the last Byte
+    Int64 maxBlockSize = mHost->GetBlockDeviceSize() - HEADER_SIZE - 1;
+    if (data->GetLength() > maxBlockSize) {
+        // partition is ~500k so shouldn't be a problem to downcast
+        *result = (Int32) -maxBlockSize;
+        return NOERROR;
+    }
 
-            DataOutputStream outputStream;
-            try {
-                outputStream = new DataOutputStream(new FileOutputStream(new File(mDataBlockFile)));
-            } catch (FileNotFoundException e) {
-                Slogger::E(TAG, "partition not available?", e);
-                return -1;
-            }
+    AutoPtr<IByteBufferHelper> helper;
+    CByteBufferHelper::AcquireSingleton((IByteBufferHelper**)&helper);
+    AutoPtr<IByteBuffer> headerAndData;
+    AutoPtr< ArrayOf<Byte> > array;
+    AutoPtr<IFile> file;
+    AutoPtr<IFileOutputStream> fos;
+    AutoPtr<IDataOutputStream> outputStream;
 
-            ByteBuffer headerAndData = ByteBuffer->Allocate(data.length + HEADER_SIZE);
-            headerAndData->PutInt(PARTITION_TYPE_MARKER);
-            headerAndData->PutInt(data.length);
-            headerAndData->Put(data);
+    ECode ec = CFile::New(mHost->mDataBlockFile, (IFile**)&file);
+    FAIL_GOTO(ec, _EXIT_)
 
-            try {
-                Synchronized(mLock) {
-                    outputStream->Write(headerAndData->Array());
-                    return data.length;
-                }
-            } catch (IOException e) {
-                Slogger::E(TAG, "failed writing to the persistent data block", e);
-                return -1;
-            } finally {
-                try {
-                    outputStream->Close();
-                } catch (IOException e) {
-                    Slogger::E(TAG, "failed closing output stream", e);
-                }
-            }
+    ec = CFileOutputStream::New(file, (IFileOutputStream**)&fos);
+    FAIL_GOTO(ec, _EXIT_)
+
+    ec = CDataOutputStream::New(IOutputStream::Probe(fos), (IDataOutputStream**)&outputStream);
+    FAIL_GOTO(ec, _EXIT_)
+
+    goto _CONTINUE_;
+
+_EXIT_:
+    if (ec == (ECode)E_FILE_NOT_FOUND_EXCEPTION) {
+        Slogger::E(PersistentDataBlockService::TAG, "partition not available? %s",
+            mHost->mDataBlockFile.string());
+        *result = -1;
+        return NOERROR;
+    }
+    else {
+        Slogger::E(PersistentDataBlockService::TAG, "partition not available? ec=%08x", ec);
+        return ec;
+    }
+
+_CONTINUE_:
+
+    helper->Allocate(data->GetLength() + HEADER_SIZE, (IByteBuffer**)&headerAndData);
+    headerAndData->PutInt32(PARTITION_TYPE_MARKER);
+    headerAndData->PutInt32(data->GetLength());
+    headerAndData->Put(data);
+
+    synchronized(mHost->mLock) {
+        headerAndData->GetArray((ArrayOf<Byte>**)&array);
+        ec = IOutputStream::Probe(outputStream)->Write(array);
+    }
+
+    if (SUCCEEDED(ec)) {
+        *result = data->GetLength();
+    }
+    else if (ec == (ECode)E_IO_EXCEPTION) {
+        Slogger::E(PersistentDataBlockService::TAG, "failed writing to the persistent data block");
+        *result = -1;
+    }
+
+    ICloseable::Probe(outputStream)->Close();
+    return NOERROR;
+}
+
+//@Override
+ECode PersistentDataBlockService::BinderService::Read(
+    /* [out, callee] */ ArrayOf<Byte>** data)
+{
+    VALIDATE_NOT_NULL(data)
+    *data = NULL;
+
+    FAIL_RETURN(mHost->EnforceUid(Binder::GetCallingUid()))
+
+    AutoPtr<IFile> file;
+    AutoPtr<IFileInputStream> fos;
+    AutoPtr<IDataInputStream> inputStream;
+    Int32 totalDataSize = 0, read;
+    AutoPtr<ArrayOf<Byte> > bytes;
+
+    ECode ec = CFile::New(mHost->mDataBlockFile, (IFile**)&file);
+    FAIL_GOTO(ec, _EXIT_)
+
+    ec = CFileInputStream::New(file, (IFileInputStream**)&fos);
+    FAIL_GOTO(ec, _EXIT_)
+
+    ec = CDataInputStream::New(IInputStream::Probe(fos), (IDataInputStream**)&inputStream);
+    FAIL_GOTO(ec, _EXIT_)
+
+    goto _CONTINUE_;
+
+_EXIT_:
+    if (ec == (ECode)E_FILE_NOT_FOUND_EXCEPTION) {
+        Slogger::E(PersistentDataBlockService::TAG, "partition not available? %s",
+            mHost->mDataBlockFile.string());
+        return NOERROR;
+    }
+    else {
+        Slogger::E(PersistentDataBlockService::TAG, "partition not available? ec=%08x", ec);
+        return ec;
+    }
+
+_CONTINUE_:
+
+    synchronized(mHost->mLock) {
+        ec = mHost->GetTotalDataSizeLocked(inputStream, &totalDataSize);
+        FAIL_GOTO(ec, _EXIT2_)
+
+        if (totalDataSize == 0) {
+            bytes = ArrayOf<Byte>::Alloc(0);
+            *data = bytes;
+            REFCOUNT_ADD(*data)
+            return NOERROR;
         }
 
-        //@Override
-        CARAPI Read(
-            /* [out, callee] */ ArrayOf<Byte>** data)
-        {
-            VALIDATE_NOT_NULL(data)
+        bytes = ArrayOf<Byte>::Alloc(totalDataSize);
+        ec = IInputStream::Probe(inputStream)->Read(bytes, 0, totalDataSize, &read);
+        FAIL_GOTO(ec, _EXIT2_)
+
+        if (read < totalDataSize) {
+            // something went wrong, not returning potentially corrupt data
+            Slogger::E(PersistentDataBlockService::TAG,
+                "failed to read entire data block. bytes read: %d/%d",
+                read, totalDataSize);
             *data = NULL;
-
-            FAIL_RETURN(EnforceUid(Binder::GetCallingUid()))
-
-            DataInputStream inputStream;
-            try {
-                inputStream = new DataInputStream(new FileInputStream(new File(mDataBlockFile)));
-            } catch (FileNotFoundException e) {
-                Slogger::E(TAG, "partition not available?", e);
-                return NULL;
-            }
-
-            try {
-                Synchronized(mLock) {
-                    Int32 totalDataSize = GetTotalDataSizeLocked(inputStream);
-
-                    if (totalDataSize == 0) {
-                        return new Byte[0];
-                    }
-
-                    Byte[] data = new Byte[totalDataSize];
-                    Int32 read = inputStream->Read(data, 0, totalDataSize);
-                    if (read < totalDataSize) {
-                        // something went wrong, not returning potentially corrupt data
-                        Slogger::E(TAG, "failed to read entire data block. bytes read: " +
-                                read + "/" + totalDataSize);
-                        return NULL;
-                    }
-                    return data;
-                }
-            } catch (IOException e) {
-                Slogger::E(TAG, "failed to read data", e);
-                return NULL;
-            } finally {
-                try {
-                    inputStream->Close();
-                } catch (IOException e) {
-                    Slogger::E(TAG, "failed to close OutputStream");
-                }
-            }
+            ICloseable::Probe(inputStream)->Close();
+            return NOERROR;
         }
+    }
 
-        //@Override
-        CARAPI Wipe()
-        {
-            FAIL_RETURN(EnforceOemUnlockPermission())
+_EXIT2_:
+    if (SUCCEEDED(ec)) {
+        *data = bytes;
+        REFCOUNT_ADD(*data)
+    }
+    else if (ec == (ECode)E_IO_EXCEPTION) {
+        Slogger::E(TAG, "failed to read data");
+        *data = NULL;
+    }
 
-            Synchronized(mLock) {
-                Int32 ret = NativeWipe(mDataBlockFile);
+    ICloseable::Probe(inputStream)->Close();
+    return NOERROR;
+}
 
-                if (ret < 0) {
-                    Slogger::E(TAG, "failed to wipe persistent partition");
-                }
-            }
+ECode PersistentDataBlockService::BinderService::Wipe()
+{
+    FAIL_RETURN(mHost->EnforceOemUnlockPermission())
+
+    synchronized(mHost->mLock) {
+        Int32 ret = mHost->NativeWipe(mHost->mDataBlockFile);
+
+        if (ret < 0) {
+            Slogger::E(TAG, "failed to wipe persistent partition");
         }
+    }
+    return NOERROR;
+}
 
-        //@Override
-        CARAPI SetOemUnlockEnabled(
-            /* [in] */ Boolean enabled)
-        {
-            // do not allow monkey to flip the flag
-            if (ActivityManager->IsUserAMonkey()) {
-                return;
-            }
-            FAIL_RETURN(EnforceOemUnlockPermission())
-            FileOutputStream outputStream;
-            try {
-                outputStream = new FileOutputStream(new File(mDataBlockFile));
-            } catch (FileNotFoundException e) {
-                Slogger::E(TAG, "parition not available", e);
-                return;
-            }
+//@Override
+ECode PersistentDataBlockService::BinderService::SetOemUnlockEnabled(
+    /* [in] */ Boolean enabled)
+{
+    AutoPtr<IActivityManagerHelper> amHelper;
+    CActivityManagerHelper::AcquireSingleton((IActivityManagerHelper**)&amHelper);
 
-            try {
-                FileChannel channel = outputStream->GetChannel();
+    // do not allow monkey to flip the flag
+    Boolean bval;
+    amHelper->IsUserAMonkey(&bval);
+    if (bval) {
+        return NOERROR;
+    }
 
-                channel->Position(GetBlockDeviceSize() - 1);
+    FAIL_RETURN(mHost->EnforceOemUnlockPermission())
 
-                ByteBuffer data = ByteBuffer->Allocate(1);
-                data->Put(enabled ? (Byte) 1 : (Byte) 0);
-                data->Flip();
+    AutoPtr<IIoUtils> ioUtils;
+    CIoUtils::AcquireSingleton((IIoUtils**)&ioUtils);
+    AutoPtr<IByteBufferHelper> helper;
+    CByteBufferHelper::AcquireSingleton((IByteBufferHelper**)&helper);
+    AutoPtr<IByteBuffer> data;
+    AutoPtr<ArrayOf<Byte> > array;
+    AutoPtr<IFile> file;
+    AutoPtr<IFileOutputStream> outputStream;
+    AutoPtr<IFileChannel> channel;
+    Int32 number;
 
-                Synchronized(mOemLock) {
-                    channel->Write(data);
-                }
-            } catch (IOException e) {
-                Slogger::E(TAG, "unable to access persistent partition", e);
-            } finally {
-                IoUtils->CloseQuietly(outputStream);
-            }
-        }
+    ECode ec = CFile::New(mHost->mDataBlockFile, (IFile**)&file);
+    FAIL_GOTO(ec, _EXIT_)
 
-        //@Override
-        CARAPI GetOemUnlockEnabled(
-            /* [out] */ Boolean* result)
-        {
-            VALIDATE_NOT_NULL(result)
-            *result = FALSE;
+    ec = CFileOutputStream::New(file, (IFileOutputStream**)&outputStream);
+    FAIL_GOTO(ec, _EXIT_)
 
-            FAIL_RETURN(EnforceOemUnlockPermission())
-            DataInputStream inputStream;
-            try {
-                inputStream = new DataInputStream(new FileInputStream(new File(mDataBlockFile)));
-            } catch (FileNotFoundException e) {
-                Slogger::E(TAG, "partition not available");
-                return FALSE;
-            }
+    goto _CONTINUE_;
 
-            try {
-                inputStream->Skip(GetBlockDeviceSize() - 1);
-                Synchronized(mOemLock) {
-                    return inputStream->ReadByte() != 0;
-                }
-            } catch (IOException e) {
-                Slogger::E(TAG, "unable to access persistent partition", e);
-                return FALSE;
-            } finally {
-                IoUtils->CloseQuietly(inputStream);
-            }
-        }
+_EXIT_:
+    if (ec == (ECode)E_FILE_NOT_FOUND_EXCEPTION) {
+        Slogger::E(PersistentDataBlockService::TAG, "partition not available? %s",
+            mHost->mDataBlockFile.string());
+        return NOERROR;
+    }
+    else {
+        Slogger::E(PersistentDataBlockService::TAG, "partition not available? ec=%08x", ec);
+        return ec;
+    }
 
-        //@Override
-        CARAPI GetDataBlockSize(
-            /* [out] */ Int32* result)
-        {
-            FAIL_RETURN(EnforceUid(Binder::GetCallingUid()))
+_CONTINUE_:
 
-            DataInputStream inputStream;
-            try {
-                inputStream = new DataInputStream(new FileInputStream(new File(mDataBlockFile)));
-            } catch (FileNotFoundException e) {
-                Slogger::E(TAG, "partition not available");
-                return 0;
-            }
+    ec = outputStream->GetChannel((IFileChannel**)&channel);
+    FAIL_GOTO(ec, _EXIT2_)
 
-            try {
-                Synchronized(mLock) {
-                    return GetTotalDataSizeLocked(inputStream);
-                }
-            } catch (IOException e) {
-                Slogger::E(TAG, "error reading data block size");
-                return 0;
-            } finally {
-                IoUtils->CloseQuietly(inputStream);
-            }
-        }
+    ec = channel->Position(mHost->GetBlockDeviceSize() - 1);
+    FAIL_GOTO(ec, _EXIT2_)
 
-        //@Override
-        CARAPI GetMaximumDataBlockSize(
-            /* [out] */ Int64* result)
-        {
-            Int64 actualSize = GetBlockDeviceSize() - HEADER_SIZE - 1;
-            return actualSize <= MAX_DATA_BLOCK_SIZE ? actualSize : MAX_DATA_BLOCK_SIZE;
-        }
+    helper->Allocate(1, (IByteBuffer**)&data);
+    ec = data->Put(enabled ? (Byte) 1 : (Byte) 0);
+    FAIL_GOTO(ec, _EXIT2_)
 
+    ec = IBuffer::Probe(data)->Flip();
+    FAIL_GOTO(ec, _EXIT2_)
 
-        CARAPI ToString(
-            /* [out] */ String* str);
+    synchronized(mHost->mOemLock) {
+        ec = channel->Write(data, &number);
+        FAIL_GOTO(ec, _EXIT2_)
+    }
+
+_EXIT2_:
+    if (ec == (ECode)E_IO_EXCEPTION) {
+        Slogger::E(TAG, "unable to access persistent partition");
+    }
+
+    ioUtils->CloseQuietly(ICloseable::Probe(outputStream));
+    return ec;
+}
+
+ECode PersistentDataBlockService::BinderService::GetOemUnlockEnabled(
+    /* [out] */ Boolean* result)
+{
+    VALIDATE_NOT_NULL(result)
+    *result = FALSE;
+
+    FAIL_RETURN(mHost->EnforceOemUnlockPermission())
+
+    AutoPtr<IIoUtils> ioUtils;
+    CIoUtils::AcquireSingleton((IIoUtils**)&ioUtils);
+    AutoPtr<IFile> file;
+    AutoPtr<IFileInputStream> fos;
+    AutoPtr<IDataInputStream> inputStream;
+    Byte read = 0;
+    Int64 number;
+
+    ECode ec = CFile::New(mHost->mDataBlockFile, (IFile**)&file);
+    FAIL_GOTO(ec, _EXIT_)
+
+    ec = CFileInputStream::New(file, (IFileInputStream**)&fos);
+    FAIL_GOTO(ec, _EXIT_)
+
+    ec = CDataInputStream::New(IInputStream::Probe(fos), (IDataInputStream**)&inputStream);
+    FAIL_GOTO(ec, _EXIT_)
+
+    goto _CONTINUE_;
+
+_EXIT_:
+    if (ec == (ECode)E_FILE_NOT_FOUND_EXCEPTION) {
+        Slogger::E(PersistentDataBlockService::TAG, "partition not available? %s",
+            mHost->mDataBlockFile.string());
+        return NOERROR;
+    }
+    else {
+        Slogger::E(PersistentDataBlockService::TAG, "partition not available? ec=%08x", ec);
+        return ec;
+    }
+
+_CONTINUE_:
+
+    ec = IInputStream::Probe(inputStream)->Skip(mHost->GetBlockDeviceSize() - 1, &number);
+    FAIL_GOTO(ec, _EXIT2_)
+
+    synchronized(mHost->mOemLock) {
+        ec = IDataInput::Probe(inputStream)->ReadByte(&read);
+        FAIL_GOTO(ec, _EXIT2_)
+
+        *result = read != 0;
+    }
+
+_EXIT2_:
+    if (ec == (ECode)E_IO_EXCEPTION) {
+        Slogger::E(TAG, "unable to access persistent partition");
+        ec = NOERROR;
+    }
+
+    ioUtils->CloseQuietly(ICloseable::Probe(inputStream));
+    return ec;
+}
+
+//@Override
+ECode PersistentDataBlockService::BinderService::GetDataBlockSize(
+    /* [out] */ Int32* result)
+{
+    VALIDATE_NOT_NULL(result)
+    *result = 0;
+
+    FAIL_RETURN(mHost->EnforceUid(Binder::GetCallingUid()))
+
+    AutoPtr<IIoUtils> ioUtils;
+    CIoUtils::AcquireSingleton((IIoUtils**)&ioUtils);
+    AutoPtr<IFile> file;
+    AutoPtr<IFileInputStream> fos;
+    AutoPtr<IDataInputStream> inputStream;
+
+    ECode ec = CFile::New(mHost->mDataBlockFile, (IFile**)&file);
+    FAIL_GOTO(ec, _EXIT_)
+
+    ec = CFileInputStream::New(file, (IFileInputStream**)&fos);
+    FAIL_GOTO(ec, _EXIT_)
+
+    ec = CDataInputStream::New(IInputStream::Probe(fos), (IDataInputStream**)&inputStream);
+    FAIL_GOTO(ec, _EXIT_)
+
+    goto _CONTINUE_;
+
+_EXIT_:
+    if (ec == (ECode)E_FILE_NOT_FOUND_EXCEPTION) {
+        Slogger::E(PersistentDataBlockService::TAG, "partition not available? %s",
+            mHost->mDataBlockFile.string());
+        return NOERROR;
+    }
+    else {
+        Slogger::E(PersistentDataBlockService::TAG, "partition not available? ec=%08x", ec);
+        return ec;
+    }
+
+_CONTINUE_:
+
+    synchronized(mHost->mLock) {
+        ec = mHost->GetTotalDataSizeLocked(inputStream, result);
+    }
+
+    if (ec == (ECode)E_IO_EXCEPTION) {
+        Slogger::E(TAG, "error reading data block size");
+        *result = 0;
+    }
+
+    ioUtils->CloseQuietly(ICloseable::Probe(inputStream));
+    return NOERROR;
+}
+
+//@Override
+ECode PersistentDataBlockService::BinderService::GetMaximumDataBlockSize(
+    /* [out] */ Int64* result)
+{
+    VALIDATE_NOT_NULL(result)
+
+    Int64 actualSize = mHost->GetBlockDeviceSize() - HEADER_SIZE - 1;
+    *result = actualSize <= MAX_DATA_BLOCK_SIZE ? actualSize : MAX_DATA_BLOCK_SIZE;
+    return NOERROR;
+}
+
+ECode PersistentDataBlockService::BinderService::ToString(
+    /* [out] */ String* str)
+{
+    return Object::ToString(str);
+}
 
 //===================================================================================
 // PersistentDataBlockService
 //===================================================================================
-    PersistentDataBlockService();
 
-    ~PersistentDataBlockService();
+PersistentDataBlockService::PersistentDataBlockService()
+    : mAllowedAppId(-1)
+    , mBlockDeviceSize(0)
+{
+}
 
-    CARAPI constructor(
-        /* [in] */ IContext* context)
-    {
-        SystemService::constructor(context);
+PersistentDataBlockService::~PersistentDataBlockService()
+{}
 
-        mContext = context;
-        mDataBlockFile = SystemProperties->Get(PERSISTENT_DATA_BLOCK_PROP);
-        mBlockDeviceSize = -1; // Load lazily
-        mAllowedAppId = GetAllowedAppId(UserHandle.USER_OWNER);
+ECode PersistentDataBlockService::constructor(
+    /* [in] */ IContext* context)
+{
+    SystemService::constructor(context);
+
+    CPersistentDataBlockBinderService::New(this, (IBinder**)&mService);
+
+    AutoPtr<ISystemProperties> sysProp;
+    CSystemProperties::AcquireSingleton((ISystemProperties**)&sysProp);
+
+    mContext = context;
+    sysProp->Get(PERSISTENT_DATA_BLOCK_PROP, &mDataBlockFile);
+    mBlockDeviceSize = -1; // Load lazily
+    mAllowedAppId = GetAllowedAppId(UserHandle::USER_OWNER);
+    return NOERROR;
+}
+
+ECode PersistentDataBlockService::OnStart()
+{
+    PublishBinderService(IContext::PERSISTENT_DATA_BLOCK_SERVICE, mService);
+    return NOERROR;
+}
+
+Int32 PersistentDataBlockService::GetAllowedAppId(
+    /* [in] */ Int32 userHandle)
+{
+    String allowedPackage;
+    AutoPtr<IResources> res;
+    mContext->GetResources((IResources**)&res);
+    res->GetString(R::string::config_persistentDataPackageName, &allowedPackage);
+    AutoPtr<IPackageManager> pm;
+    mContext->GetPackageManager((IPackageManager**)&pm);
+    Int32 allowedUid = -1;
+    ECode ec = pm->GetPackageUid(allowedPackage, userHandle, &allowedUid);
+    if (ec == (ECode)E_PACKAGEMANAGER_NAME_NOT_FOUND_EXCEPTION) {
+        // not expected
+        Slogger::E(TAG, "not able to find package %s", allowedPackage.string());
     }
+    return UserHandle::GetAppId(allowedUid);
+}
 
-    //@Override
-    CARAPI OnStart()
-    {
-        PublishBinderService(Context.PERSISTENT_DATA_BLOCK_SERVICE, mService);
+ECode PersistentDataBlockService::EnforceOemUnlockPermission()
+{
+    return mContext->EnforceCallingOrSelfPermission(
+        Manifest::permission::OEM_UNLOCK_STATE,
+        String("Can't access OEM unlock state"));
+}
+
+ECode PersistentDataBlockService::EnforceUid(
+    /* [in] */ Int32 callingUid)
+{
+    if (UserHandle::GetAppId(callingUid) != mAllowedAppId) {
+        Slogger::E(TAG, "uid %d not allowed to access PST", callingUid);
+        return E_SECURITY_EXCEPTION;
     }
+    return NOERROR;
+}
 
-private:
-    Int32 GetAllowedAppId(
-        /* [in] */ Int32 userHandle)
-    {
-        String allowedPackage = mContext->GetResources()
-                .GetString(R.string.config_persistentDataPackageName);
-        PackageManager pm = mContext->GetPackageManager();
-        Int32 allowedUid = -1;
-        try {
-            allowedUid = pm->GetPackageUid(allowedPackage, userHandle);
-        } catch (PackageManager.NameNotFoundException e) {
-            // not expected
-            Slogger::E(TAG, "not able to find package " + allowedPackage, e);
+ECode PersistentDataBlockService::GetTotalDataSizeLocked(
+    /* [in] */ IDataInputStream* inputStream,
+    /* [out] */ Int32* result)
+{
+    VALIDATE_NOT_NULL(result)
+    *result = 0;
+
+    Int32 totalDataSize;
+    Int32 blockId;
+    FAIL_RETURN(IDataInput::Probe(inputStream)->ReadInt32(&blockId))
+    if (blockId == PARTITION_TYPE_MARKER) {
+        IDataInput::Probe(inputStream)->ReadInt32(&totalDataSize);
+    }
+    else {
+        totalDataSize = 0;
+    }
+    *result = totalDataSize;
+    return NOERROR;
+}
+
+Int64 PersistentDataBlockService::GetBlockDeviceSize()
+{
+    synchronized(mLock) {
+        if (mBlockDeviceSize == -1) {
+            mBlockDeviceSize = NativeGetBlockDeviceSize(mDataBlockFile);
         }
-        return UserHandle->GetAppId(allowedUid);
     }
 
+    return mBlockDeviceSize;
+}
 
-    void EnforceOemUnlockPermission()
-    {
-        mContext->EnforceCallingOrSelfPermission(
-                Manifest.permission.OEM_UNLOCK_STATE,
-                "Can't access OEM unlock state");
-    }
+//============================================================================
+// native codes
+//============================================================================
+#include <utils/misc.h>
+#include <sys/ioctl.h>
+#include <sys/mount.h>
+#include <utils/Log.h>
 
-    void EnforceUid(
-        /* [in] */ Int32 callingUid)
-    {
-        if (UserHandle->GetAppId(callingUid) != mAllowedAppId) {
-            throw new SecurityException("uid " + callingUid + " not allowed to access PST");
-        }
-    }
+#include <inttypes.h>
+#include <fcntl.h>
+#include <errno.h>
+#include <string.h>
 
-    Int32 GetTotalDataSizeLocked(
-        /* [in] */ IDataInputStream* inputStream)
-    {
-        Int32 totalDataSize;
-        Int32 blockId = inputStream->ReadInt();
-        if (blockId == PARTITION_TYPE_MARKER) {
-            totalDataSize = inputStream->ReadInt();
+
+uint64_t get_block_device_size(int fd)
+{
+    uint64_t size = 0;
+    int ret;
+
+    ret = ioctl(fd, BLKGETSIZE64, &size);
+
+    if (ret)
+        return 0;
+
+    return size;
+}
+
+int wipe_block_device(int fd)
+{
+    uint64_t range[2];
+    int ret;
+    uint64_t len = get_block_device_size(fd);
+
+    range[0] = 0;
+    range[1] = len;
+
+    if (range[1] == 0)
+        return 0;
+
+    ret = ioctl(fd, BLKSECDISCARD, &range);
+    if (ret < 0) {
+        ALOGE("Something went wrong secure discarding block: %s\n", strerror(errno));
+        range[0] = 0;
+        range[1] = len;
+        ret = ioctl(fd, BLKDISCARD, &range);
+        if (ret < 0) {
+            ALOGE("Discard failed: %s\n", strerror(errno));
+            return -1;
         } else {
-            totalDataSize = 0;
-        }
-        return totalDataSize;
-    }
-
-    Int64 GetBlockDeviceSize()
-    {
-        Synchronized(mLock) {
-            if (mBlockDeviceSize == -1) {
-                mBlockDeviceSize = NativeGetBlockDeviceSize(mDataBlockFile);
-            }
+            ALOGE("Wipe via secure discard failed, used non-secure discard instead\n");
+            return 0;
         }
 
-        return mBlockDeviceSize;
     }
 
-    Int64 NativeGetBlockDeviceSize(
-        /* [in] */ const String& path);
+    return ret;
+}
 
-    Int32 NativeWipe(
-        /* [in] */ const String& path);
+Int64 PersistentDataBlockService::NativeGetBlockDeviceSize(
+    /* [in] */ const String& path)
+{
+    int fd = open(path.string(), O_RDONLY);
 
-private:
-    static const String TAG = "PersistentDataBlockService";
+    if (fd < 0)
+        return 0;
 
-    static const String PERSISTENT_DATA_BLOCK_PROP = "ro.frp.pst";
-    static const Int32 HEADER_SIZE = 8;
-    // Magic number to mark block device as adhering to the format consumed by this service
-    static const Int32 PARTITION_TYPE_MARKER = 0x1990;
-    // Limit to 100k as blocks larger than this might cause strain on Binder.
-    // TODO(anmorales): Consider splitting up too-large blocks in PersistentDataBlockManager
-    static const Int32 MAX_DATA_BLOCK_SIZE = 1024 * 100;
+    return get_block_device_size(fd);
+}
 
-    AutoPtr<IContext> mContext;
-    String mDataBlockFile;
-    Object mLock;
+Int32 PersistentDataBlockService::NativeWipe(
+    /* [in] */ const String& path)
+{
+    int fd = open(path.string(), O_WRONLY);
 
-    Int32 mAllowedAppId = -1;
-    /*
-     * Separate lock for OEM unlock related operations as they can happen in parallel with regular
-     * block operations.
-     */
-    Object mOemLock;
+    if (fd < 0)
+        return 0;
 
-    Int64 mBlockDeviceSize;
+    return wipe_block_device(fd);
+}
 
-    AutoPtr<IBinder> mService;
-};
 
 }// Server
 }// Droid

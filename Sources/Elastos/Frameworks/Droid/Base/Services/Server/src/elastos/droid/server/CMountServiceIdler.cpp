@@ -1,4 +1,7 @@
 #include <elastos/droid/server/CMountServiceIdler.h>
+// #include <elastos/droid/server/CMountService.h>
+#include <elastos/core/AutoLock.h>
+#include <elastos/utility/logging/Slogger.h>
 
 #include "Elastos.Droid.Os.h"
 #include "Elastos.Droid.App.h"
@@ -13,12 +16,14 @@ using Elastos::Droid::App::Job::IJobScheduler;
 using Elastos::Droid::App::Job::JobService;
 using Elastos::Droid::App::Job::IJobService;
 using Elastos::Droid::Content::IComponentName;
+using Elastos::Droid::Content::CComponentName;
 using Elastos::Droid::Content::IContext;
 using Elastos::Core::ISystem;
 using Elastos::Core::CSystem;
 using Elastos::Utility::ICalendar;
 using Elastos::Utility::ICalendarHelper;
 using Elastos::Utility::CCalendarHelper;
+using Elastos::Utility::Logging::Slogger;
 
 namespace Elastos {
 namespace Droid {
@@ -37,6 +42,9 @@ const String CMountServiceIdler::TAG("CMountServiceIdler");
 AutoPtr<IComponentName> CMountServiceIdler::sIdleService = InitIdleService();
 Int32 CMountServiceIdler::MOUNT_JOB_ID = 808;
 
+//===================================================================
+// CMountServiceIdler::FinishCallbackRunnable
+//===================================================================
 CMountServiceIdler::FinishCallbackRunnable::FinishCallbackRunnable(
     /* [in] */ CMountServiceIdler* host)
     : mHost(host)
@@ -46,15 +54,15 @@ CMountServiceIdler::FinishCallbackRunnable::FinishCallbackRunnable(
 ECode CMountServiceIdler::FinishCallbackRunnable::Run()
 {
     Slogger::I(CMountServiceIdler::TAG, "Got mount service completion callback");
-    Object* obj = mHost->mFinishCallback.Get();
-    synchronized(obj) {
-        if (mStarted) {
-            JobFinished(mJobParams, FALSE);
-            mStarted = FALSE;
+    synchronized(mHost->mFinishCallback.Get()) {
+        if (mHost->mStarted) {
+            mHost->JobFinished(mHost->mJobParams, FALSE);
+            mHost->mStarted = FALSE;
         }
     }
     // ... and try again tomorrow
-    ScheduleIdlePass(CMountServiceIdler.this);
+    mHost->ScheduleIdlePass(mHost);
+    return NOERROR;
 }
 
 //===================================================================
@@ -91,15 +99,17 @@ ECode CMountServiceIdler::OnStartJob(
     // that lets us cleanly end our idle timeslice.  It's safe to call
     // FinishIdle() from any thread.
     mJobParams = params;
-    CMountService* ms = CMountService.sSelf;
-    if (ms != NULL) {
-        Object* obj = mFinishCallback.Get();
-        synchronized(obj) {
-            mStarted = TRUE;
-        }
-        ms->RunIdleMaintenance(mFinishCallback);
-    }
-    return ms != NULL;
+    assert(0 && "TODO");
+    // CMountService* ms = CMountService::sSelf;
+    // if (ms != NULL) {
+    //     Object* obj = mFinishCallback.Get();
+    //     synchronized(obj) {
+    //         mStarted = TRUE;
+    //     }
+    //     ms->RunIdleMaintenance(mFinishCallback);
+    // }
+    // *result = ms != NULL;
+    return NOERROR;
 }
 
 ECode CMountServiceIdler::OnStopJob(
@@ -132,7 +142,7 @@ void CMountServiceIdler::ScheduleIdlePass(
     AutoPtr<ICalendar> calendar = TomorrowMidnight();
     Int64 ms, currentMs;
     calendar->GetTimeInMillis(&ms);
-    system->CurrentTimeMillis(&currentMs);
+    system->GetCurrentTimeMillis(&currentMs);
     Int64 timeToMidnight = ms - currentMs;
 
     AutoPtr<IJobInfoBuilder> builder;
@@ -143,7 +153,8 @@ void CMountServiceIdler::ScheduleIdlePass(
 
     AutoPtr<IJobInfo> jobInfo;
     builder->Build((IJobInfo**)&jobInfo);
-    tm->Schedule(jobInfo);
+    Int32 ival;
+    tm->Schedule(jobInfo, &ival);
 }
 
 AutoPtr<ICalendar> CMountServiceIdler::TomorrowMidnight()
@@ -155,7 +166,7 @@ AutoPtr<ICalendar> CMountServiceIdler::TomorrowMidnight()
     AutoPtr<ICalendar> calendar;
     helper->GetInstance((ICalendar**)&calendar);
     Int64 ms;
-    system->CurrentTimeMillis(&ms);
+    system->GetCurrentTimeMillis(&ms);
     calendar->SetTimeInMillis(ms);
     calendar->Set(ICalendar::HOUR, 0);
     calendar->Set(ICalendar::MINUTE, 0);

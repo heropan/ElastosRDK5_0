@@ -7,7 +7,7 @@ module
     merge("SystemServiceManager.car");
     merge("Watchdog.car");
     merge("NativeDaemonConnector.car");
-    merge("MountServiceIdler.car")
+    merge("MountServiceIdler.car");
 
     merge("am/ActivityRecord.car");
     merge("am/BroadcastFilter.car");
@@ -128,6 +128,7 @@ module
     using interface Elastos.Droid.Internal.TextService.IITextServicesManager;
     using interface Elastos.Droid.Internal.Telephony.IITelephonyRegistry;
     using interface Elastos.Droid.Internal.View.IInputMethodClient;
+    using interface Elastos.Droid.Internal.View.IInputContext;
     using interface Elastos.Droid.Location.IICountryDetector;
     using interface Elastos.Droid.Bluetooth.IIBluetoothManager;
     using interface Elastos.Droid.Bluetooth.IIBluetoothCallback;
@@ -148,6 +149,8 @@ module
     using interface Elastos.Droid.Os.IIUserManager;
     using interface Elastos.Droid.Os.ILooper;
     using interface Elastos.Droid.Os.Storage.IIMountShutdownObserver;
+    using interface Elastos.Droid.Service.Dreams.IIDreamManager;
+    using interface Elastos.Droid.Service.Persistentdata.IIPersistentDataBlockService;
     using interface Elastos.Droid.Service.Wallpaper.IIWallpaperConnection;
     using interface Elastos.Droid.Utility.ITrustedTime;
     using interface Elastos.Droid.View.IApplicationToken;
@@ -158,9 +161,6 @@ module
     using interface Elastos.Droid.View.IWindowState;
     using interface Elastos.Droid.View.IIWindowId;
     using interface Elastos.Droid.View.IWindowSession;
-    using interface Elastos.Droid.Internal.View.IInputContext;
-    using interface Elastos.Droid.Service.Dreams.IIDreamManager;
-    using interface Elastos.Droid.Service.Wallpaper.IIWallpaperConnection;
 
     using interface Elastos.Core.IRunnable;
     using interface Elastos.Core.IThread;
@@ -370,6 +370,14 @@ module
         interface IComponentCallbacks;
         interface IComponentCallbacks2;
         interface IJobService;
+    }
+
+    class CPersistentDataBlockBinderService{
+        constructor(
+            [in] ISystemService* persistentDataBlockService);
+
+        interface IIPersistentDataBlockService;
+        interface IBinder;
     }
 
 //     class CBootReceiver {

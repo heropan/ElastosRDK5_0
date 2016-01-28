@@ -309,7 +309,7 @@ ECode FileSynthesisCallback::Done(
     Int32 number;
 
     // Write WAV header at start of file
-    fileChannel->SetPosition(0);
+    fileChannel->Position((Int64)0);
     fileChannel->GetSize(&size);
 
     Int32 dataLength = (Int32) (size - WAV_HEADER_LENGTH);

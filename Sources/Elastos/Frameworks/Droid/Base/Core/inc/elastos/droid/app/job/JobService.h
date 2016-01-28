@@ -28,7 +28,7 @@ private:
      * (app-specified) mechanism.
      * @hide
      */
-    ECO_LOCAL class JobHandler
+    class JobHandler
         : public Handler
     {
     public:

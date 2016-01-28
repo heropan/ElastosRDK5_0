@@ -3,28 +3,21 @@
 #define __ELASTOS_DROID_SERVER_PERSISTENT_DATA_BLOCK_SERVICE_H__
 
 #include "elastos/droid/server/SystemService.h"
+#include <Elastos.Droid.Os.h>
+#include <Elastos.Droid.Service.h>
 
 using Elastos::Droid::App::IActivityManager;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Content::Pm::IPackageManager;
 using Elastos::Droid::Os::IBinder;
-using Elastos::Droid::Os::IIBinder;
-using Elastos::Droid::Os::IRemoteException;
 using Elastos::Droid::Os::ISystemProperties;
 using Elastos::Droid::Os::IUserHandle;
-using Elastos::Droid::Service::Ipersistentdata.IPersistentDataBlockService;
-
-using Libcore::IO::IIoUtils;
-
+using Elastos::Droid::Service::Persistentdata::IIPersistentDataBlockService;
 using Elastos::IO::IDataInputStream;
 using Elastos::IO::IDataOutputStream;
 using Elastos::IO::IFile;
 using Elastos::IO::IFileInputStream;
-using Elastos::IO::IFileNotFoundException;
 using Elastos::IO::IFileOutputStream;
-using Elastos::IO::IIOException;
-using Elastos::IO::IByteBuffer;
-using Elastos::IO::Channels::IFileChannel;
 
 namespace Elastos {
 namespace Droid {
@@ -58,6 +51,9 @@ public:
     public:
         CAR_INTERFACE_DECL()
 
+        CARAPI constructor(
+            /* [in] */ ISystemService* service);
+
         //@Override
         CARAPI Write(
             /* [in] */ ArrayOf<Byte>* data,
@@ -88,6 +84,8 @@ public:
 
         CARAPI ToString(
             /* [out] */ String* str);
+    private:
+        PersistentDataBlockService* mHost;
     };
 
 public:
@@ -105,13 +103,14 @@ private:
     Int32 GetAllowedAppId(
         /* [in] */ Int32 userHandle);
 
-    void EnforceOemUnlockPermission();
+    CARAPI EnforceOemUnlockPermission();
 
-    void EnforceUid(
+    CARAPI EnforceUid(
         /* [in] */ Int32 callingUid);
 
-    Int32 GetTotalDataSizeLocked(
-        /* [in] */ IDataInputStream* inputStream);
+    CARAPI GetTotalDataSizeLocked(
+        /* [in] */ IDataInputStream* inputStream,
+        /* [out] */ Int32* result);
 
     Int64 GetBlockDeviceSize();
 

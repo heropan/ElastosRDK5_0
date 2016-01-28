@@ -33,12 +33,11 @@ private:
     {
     public:
         FinishCallbackRunnable(
-            /* [in] */ CMountServiceIdler* host)
-            : mHost(host)
-        {}
+            /* [in] */ CMountServiceIdler* host);
 
         //@Override
         CARAPI Run();
+
     private:
         CMountServiceIdler* mHost;
     };
@@ -74,12 +73,11 @@ private:
      static AutoPtr<ICalendar> TomorrowMidnight();
 
 private:
-    static const String TAG = "CMountServiceIdler";
+    static const String TAG;
 
-    static AutoPtr<IComponentName> sIdleService =
-            new ComponentName("android", CMountServiceIdler.class->GetName());
+    static AutoPtr<IComponentName> sIdleService;
 
-    static Int32 MOUNT_JOB_ID = 808;
+    static Int32 MOUNT_JOB_ID;
 
     Boolean mStarted;
     AutoPtr<IJobParameters> mJobParams;
