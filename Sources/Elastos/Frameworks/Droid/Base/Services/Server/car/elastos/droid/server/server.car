@@ -7,6 +7,7 @@ module
     merge("SystemServiceManager.car");
     merge("Watchdog.car");
     merge("NativeDaemonConnector.car");
+    merge("MountServiceIdler.car")
 
     merge("am/ActivityRecord.car");
     merge("am/BroadcastFilter.car");
@@ -81,6 +82,7 @@ module
     using interface Elastos.Droid.App.IIUiModeManager;
     using interface Elastos.Droid.App.IStopUserCallback;
     using interface Elastos.Droid.App.IWallpaperInfo;
+    using interface Elastos.Droid.App.Job.IJobService;
     using interface Elastos.Droid.Internal.App.IIBatteryStats;
     using interface Elastos.Droid.Os.IBinder;
     using interface Elastos.Droid.Os.IBundle;
@@ -97,6 +99,9 @@ module
     using interface Elastos.Droid.Os.IPermissionController;
     using interface Elastos.Droid.Os.Storage.IIMountShutdownObserver;
     using interface Elastos.Droid.Content.IContext;
+    using interface Elastos.Droid.Content.IContextWrapper;
+    using interface Elastos.Droid.Content.IComponentCallbacks;
+    using interface Elastos.Droid.Content.IComponentCallbacks2;
     using interface Elastos.Droid.Content.IIClipboard;
     using interface Elastos.Droid.Content.IIContentService;
     using interface Elastos.Droid.Content.IIIntentSender;
@@ -113,6 +118,7 @@ module
     using interface Elastos.Droid.Content.Pm.IIPackageMoveObserver;
     using interface Elastos.Droid.Content.Pm.IPackageInstallerSessionParams;
     using interface Elastos.Droid.Hardware.IISerialManager;
+    using interface Elastos.Droid.Hardware.IIConsumerIrService;
     using interface Elastos.Droid.Hardware.Display.IIDisplayManager;
     using interface Elastos.Droid.Hardware.Input.IIInputManager;
     using interface Elastos.Droid.Internal.App.IIProcessStats;
@@ -345,6 +351,25 @@ module
 
         interface IIAlarmManager;
         interface IBinder;
+    }
+
+    class CConsumerIrService {
+        constructor(
+            [in] IContext* ctx);
+
+        interface IIConsumerIrService;
+        interface IBinder;
+    }
+
+    class CMountServiceIdler {
+        constructor();
+
+        interface IMountServiceIdler;
+        interface IContext;
+        interface IContextWrapper;
+        interface IComponentCallbacks;
+        interface IComponentCallbacks2;
+        interface IJobService;
     }
 
 //     class CBootReceiver {

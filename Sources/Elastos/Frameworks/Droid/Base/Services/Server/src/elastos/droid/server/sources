@@ -46,6 +46,7 @@ SOURCES += CBluetoothManagerService.cpp
 SOURCES += CCertBlacklister.cpp
 SOURCES += CCommonTimeManagementService.cpp
 SOURCES += CConnectivityService.cpp
+SOURCES += CConsumerIrService.cpp
 SOURCES += CCountryDetectorService.cpp
 SOURCES += CDataActivityObserver.cpp
 SOURCES += CDiskStatsService.cpp
