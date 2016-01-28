@@ -96,7 +96,6 @@ ELAPI _CObject_ReflectClassInfo(
         return E_NO_INTERFACE;
     }
 
-    AutoPtr<CModuleInfo> moduleInfo;
     AutoPtr<IModuleInfo> iModuleInfo;
     ec = g_objInfoList.AcquireModuleInfo(String(clsid.mUunm),
             (IModuleInfo **)&iModuleInfo);
@@ -104,7 +103,7 @@ ELAPI _CObject_ReflectClassInfo(
         return ec;
     }
 
-    moduleInfo = (CModuleInfo*)iModuleInfo.Get();
+    CModuleInfo* moduleInfo = (CModuleInfo*)iModuleInfo.Get();
 
     ClassDirEntry* classDir = NULL;
     ClassDescriptor* clsDesc = NULL;
