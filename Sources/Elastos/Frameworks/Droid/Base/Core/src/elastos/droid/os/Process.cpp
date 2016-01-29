@@ -23,6 +23,7 @@
 #include <binder/ProcessState.h>
 #include <cutils/process_name.h>
 #include <cutils/sched_policy.h>
+#include <processgroup/processgroup.h>
 
 #include <dirent.h>
 #include <fcntl.h>
@@ -1498,6 +1499,13 @@ Int64 Process::GetPss(
 
     // Return the Pss value in bytes, not kilobytes
     return pss * 1024;
+}
+
+Int32 Process::KillProcessGroup(
+    /* [in] */ Int32 uid,
+    /* [in] */ Int32 pid)
+{
+    return killProcessGroup(uid, pid, SIGKILL);
 }
 
 ECode Process::OpenZygoteSocketIfNeeded(

@@ -82,6 +82,7 @@ module
     using interface Elastos.Droid.App.IActivityContainer;
     using interface Elastos.Droid.App.IIActivityManager;
     using interface Elastos.Droid.App.IIAlarmManager;
+    using interface Elastos.Droid.App.IIAppTask;
     using interface Elastos.Droid.App.IINotificationManager;
     using interface Elastos.Droid.App.IIWallpaperManager;
     using interface Elastos.Droid.App.IIUiModeManager;
@@ -115,6 +116,7 @@ module
     using interface Elastos.Droid.Hardware.Input.IIInputManager;
     using interface Elastos.Droid.Internal.App.IIBatteryStats;
     using interface Elastos.Droid.Internal.App.IIProcessStats;
+    using interface Elastos.Droid.Internal.Os.IBatteryCallback;
     using interface Elastos.Droid.Internal.Os.IIParcelFileDescriptorFactory;
     using interface Elastos.Droid.Internal.Os.IIDropBoxManagerService;
     using interface Elastos.Droid.Internal.StatusBar.IIStatusBarService;
@@ -1333,31 +1335,43 @@ module
     namespace Server {
     namespace Am {
 
-    //     class CActivityManagerService {
-    //         constructor();
+    [local]
+    class CActivityManagerService {
+        constructor(
+            [in] IContext* ctx);
 
-    //         interface IIActivityManager;
-    //         interface IBatteryCallback;
-    //     }
+        interface IIActivityManager;
+        interface IWatchdogMonitor;
+        interface IBatteryCallback;
+        interface IBinder;
+    }
 
-     class CBatteryStatsService {
-         constructor(
-             [in] IFile* systemDir,
-             [in] IHandler* handler);
+    class CAppTaskImpl {
+        constructor(
+            [in] Int32 taskId,
+            [in] Int32 callingUid,
+            [in] Handle32 host);
 
-         interface IBinder;
-         interface IIBatteryStats;
-         interface ILowPowerModeListener;
-     }
+        interface IIAppTask;
+        interface IBinder;
+    }
 
-     class CActivityContainer {
-         constructor(
-             [in] Int32 stackId,
-             [in] IInterface* owner);
+    class CBatteryStatsService {
+        constructor(
+            [in] IFile* systemDir,
+            [in] IHandler* handler);
+        interface IBinder;
+        interface IIBatteryStats;
+        interface ILowPowerModeListener;
+    }
 
-         interface IBinder;
-         interface IActivityContainer;
-     }
+    class CActivityContainer {
+        constructor(
+            [in] Int32 stackId,
+            [in] IInterface* owner);
+        interface IBinder;
+        interface IActivityContainer;
+    }
 
     [local]
     class CActivityRecordToken {

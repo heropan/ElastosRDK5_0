@@ -37,62 +37,125 @@ public:
         CARAPI GetUid(
             /* [out] */ Int32* uid);
 
+        CARAPI GetBatteryStats(
+            /* [out] */ IBatteryStatsImplUidProc** batteryStats);
+
+        CARAPI SetBatteryStats(
+            /* [in] */ IBatteryStatsImplUidProc* batteryStats);
+
         CARAPI GetInteresting(
             /* [out] */ Boolean* interesting);
+
+        CARAPI SetInteresting(
+            /* [in] */ Boolean interesting);
 
         CARAPI GetBaseName(
             /* [out] */ String* name);
 
+        CARAPI SetBaseName(
+            /* [in] */ const String& baseName);
+
         CARAPI GetName(
             /* [out] */ String* name);
+
+        CARAPI SetName(
+            /* [in] */ const String& name);
 
         CARAPI GetNameWidth(
             /* [out] */ Int32* width);
 
+        CARAPI SetNameWidth(
+            /* [in] */ Int32 nameWidth);
+
         CARAPI GetVsize(
             /* [out] */ Int64* vsize);
+
+        CARAPI SetVsize(
+            /* [in] */ Int64 vsize);
 
         CARAPI GetBaseUptime(
             /* [out] */ Int64* time);
 
+        CARAPI SetBaseUptime(
+            /* [in] */ Int64 baseUptime);
+
         CARAPI GetRelUptime(
             /* [out] */ Int64* time);
+
+        CARAPI SetRelUptime(
+            /* [in] */ Int64 relUptime);
 
         CARAPI GetBaseUtime(
             /* [out] */ Int64* time);
 
+        CARAPI SetBaseUtime(
+            /* [in] */ Int64 baseUtime);
+
         CARAPI GetBaseStime(
             /* [out] */ Int64* time);
+
+        CARAPI SetBaseStime(
+            /* [in] */ Int64 baseStime);
 
         CARAPI GetRelUtime(
             /* [out] */ Int32* time);
 
+        CARAPI SetRelUtime(
+            /* [in] */ Int32 relUtime);
+
         CARAPI GetRelStime(
             /* [out] */ Int32* time);
+
+        CARAPI SetRelStime(
+            /* [in] */ Int32 relStime);
 
         CARAPI GetBaseMinfaults(
             /* [out] */ Int64* faults);
 
+        CARAPI SetBaseMinfaults(
+            /* [in] */ Int64 baseMinfaults);
+
         CARAPI GetBaseMajfaults(
             /* [out] */ Int64* faults);
+
+        CARAPI SetBaseMajfaults(
+            /* [in] */ Int64 baseMajfaults);
 
         CARAPI GetRelMinfaults(
             /* [out] */ Int32* faults);
 
+        CARAPI SetRelMinfaults(
+            /* [in] */ Int32 relMinfaults);
+
         CARAPI GetRelMajfaults(
             /* [out] */ Int32* faults);
+
+        CARAPI SetRelMajfaults(
+            /* [in] */ Int32 relMajfaults);
 
         CARAPI GetActive(
             /* [out] */ Boolean* active);
 
+        CARAPI SetActive(
+            /* [in] */ Boolean active);
+
         CARAPI GetWorking(
             /* [out] */ Boolean* working);
+
+        CARAPI SetWorking(
+            /* [in] */ Boolean working);
 
         CARAPI GetAdded(
             /* [out] */ Boolean* added);
 
+        CARAPI SetAdded(
+            /* [in] */ Boolean added);
+
         CARAPI GetRemoved(
             /* [out] */ Boolean* removed);
+
+        CARAPI SetRemoved(
+            /* [in] */ Boolean removed);
 
     public:
         Int32 mPid;
@@ -103,7 +166,7 @@ public:
         AutoPtr< List< AutoPtr<Stats> > > mThreadStats;
         AutoPtr< List< AutoPtr<Stats> > > mWorkingThreads;
 
-        AutoPtr<IBatteryStatsImplUidProc> batteryStats;
+        AutoPtr<IBatteryStatsImplUidProc> mBatteryStats;
 
         Boolean mInteresting;
 

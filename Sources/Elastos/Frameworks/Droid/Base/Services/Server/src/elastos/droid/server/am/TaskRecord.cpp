@@ -926,7 +926,6 @@ void TaskRecord::UpdateTaskDescription()
 Int32 TaskRecord::FindEffectiveRootIndex()
 {
     Int32 effectiveNdx = 0;
-    Int32 topActivityNdx = mActivities->GetSize() - 1;
     List<AutoPtr<ActivityRecord> >::ReverseIterator riter;
     for (riter = mActivities->RBegin(); riter != mActivities->REnd(); ++riter, ++effectiveNdx) {
         AutoPtr<ActivityRecord> r = *riter;

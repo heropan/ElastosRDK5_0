@@ -296,7 +296,7 @@ CServiceRecord::~CServiceRecord()
 
 ECode CServiceRecord::constructor(
     /* [in] */ CActivityManagerService* ams,
-    /* [in] */ IBatteryStatsUidPkgServ* servStats,
+    /* [in] */ IBatteryStatsImplUidPkgServ* servStats,
     /* [in] */ IComponentName* name,
     /* [in] */ IIntentFilterComparison* intent,
     /* [in] */ IServiceInfo* sInfo,

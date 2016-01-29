@@ -6,7 +6,6 @@
 #include "Elastos.Droid.View.h"
 #include "Elastos.Droid.Widget.h"
 #include "elastos/droid/ext/frameworkext.h"
-#include "elastos/droid/server/am/CActivityManagerService.h"
 #include "elastos/droid/server/am/TaskRecord.h"
 
 using Elastos::Droid::App::IAlertDialog;
@@ -21,6 +20,8 @@ namespace Elastos {
 namespace Droid {
 namespace Server {
 namespace Am {
+
+class CActivityManagerService;
 
 class LockToAppRequestDialog
     : public Object
@@ -52,7 +53,7 @@ private:
 private:
     static const String TAG;
     AutoPtr<IContext> mContext;
-    AutoPtr<CActivityManagerService> mService;
+    CActivityManagerService* mService;
     AutoPtr<IAlertDialog> mDialog;
     AutoPtr<TaskRecord> mRequestedTask;
     AutoPtr<ICheckBox> mCheckbox;

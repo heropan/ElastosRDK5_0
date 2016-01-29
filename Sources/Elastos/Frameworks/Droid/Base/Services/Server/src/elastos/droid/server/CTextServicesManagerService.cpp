@@ -69,7 +69,7 @@ CAR_INTERFACE_IMPL(CTextServicesManagerService::CTSMSUserSwitchObserver, Object,
 
 ECode CTextServicesManagerService::CTSMSUserSwitchObserver::OnUserSwitching(
     /* [in] */ Int32 newUserId,
-    /* [in] */ IRemoteCallback* reply)
+    /* [in] */ IIRemoteCallback* reply)
 {
     {
         AutoLock lock(mHost->mSpellCheckerMapLock);

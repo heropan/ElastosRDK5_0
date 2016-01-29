@@ -161,7 +161,8 @@ module
 
         StartActivityFromRecents(
             [in] Int32 taskId,
-            [in] IBundle* options);
+            [in] IBundle* options,
+            [out] Int32* result);
 
         FinishActivity(
             [in] IBinder* token,
@@ -662,6 +663,7 @@ module
         HandleApplicationWtf(
             [in] IBinder* app,
             [in] String tag,
+            [in] Boolean system,
             [in] IApplicationErrorReportCrashInfo* crashInfo,
             [out] Boolean* result);
 
@@ -703,7 +705,7 @@ module
             [in] String process,
             [in] Int32 userId,
             [in] Boolean start,
-            [in] IParcelFileDescriptor* fd,
+            [in] IProfilerInfo* profilerInfo,
             [in] Int32 profileType,
             [out] Boolean* result);
 

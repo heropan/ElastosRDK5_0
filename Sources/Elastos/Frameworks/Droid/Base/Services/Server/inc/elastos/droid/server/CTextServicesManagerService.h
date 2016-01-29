@@ -20,7 +20,7 @@ using Elastos::Droid::Content::IComponentName;
 using Elastos::Droid::Content::IContentResolver;
 using Elastos::Droid::Os::IBundle;
 using Elastos::Droid::Os::IBinder;
-using Elastos::Droid::Os::IRemoteCallback;
+using Elastos::Droid::Os::IIRemoteCallback;
 using Elastos::Droid::View::TextService::ISpellCheckerInfo;
 using Elastos::Droid::View::TextService::ISpellCheckerSubtype;
 using Elastos::Droid::View::TextService::ISpellCheckerInfo;
@@ -66,7 +66,7 @@ private:
 
         CARAPI OnUserSwitching(
             /* [in] */ Int32 newUserId,
-            /* [in] */ IRemoteCallback* reply);
+            /* [in] */ IIRemoteCallback* reply);
 
         CARAPI OnUserSwitchComplete(
             /* [in] */ Int32 newUserId);

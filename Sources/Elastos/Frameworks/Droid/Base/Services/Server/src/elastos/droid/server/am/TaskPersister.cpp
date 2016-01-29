@@ -372,7 +372,6 @@ void TaskPersister::SaveImage(
     /* [in] */ const String& filename)
 {
     synchronized (this) {
-        Int32 queueNdx;
         List<AutoPtr<WriteQueueItem> >::ReverseIterator riter;
         for (riter = mWriteQueue.RBegin(); riter != mWriteQueue.REnd(); ++riter) {
             AutoPtr<WriteQueueItem> item = *riter;
@@ -427,8 +426,8 @@ AutoPtr<IBitmap> TaskPersister::GetImageFromWriteQueue(
                 }
             }
         }
-        return NULL;
     }
+    return NULL;
 }
 
 ECode TaskPersister::SaveToXml(
