@@ -1,5 +1,3 @@
-
-
 /**
  * Copyright (C) 2014 The Android Open Source Project
  *
@@ -15,26 +13,32 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+package com.android.server.fingerprint;
+
 using Elastos::Droid::App::IService;
 using Elastos::Droid::Content::IContentResolver;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Content::IIntent;
 using Elastos::Droid::Os::IHandler;
-using Elastos::Droid::Os::IBinder;
+using Elastos::Droid::Os::IIBinder;
 using Elastos::Droid::Os::IPowerManager;
+using Elastos::Droid::Os::IRemoteException;
 using Elastos::Droid::Provider::ISettings;
+using Elastos::Droid::Service::Ifingerprint.FingerprintManager;
 using Elastos::Droid::Utility::IArrayMap;
+using Elastos::Droid::Utility::ISlog;
 
-using Elastos::Droid::Server::SystemService;
+using Elastos::Droid::Server::ISystemService;
 
-using Elastos::Droid::Service::Fingerprint::IFingerprintManager;
-using Elastos::Droid::Service::Fingerprint::IFingerprintUtils;
-using Elastos::Droid::Service::Fingerprint::IIFingerprintService;
-using Elastos::Droid::Service::Fingerprint::IIFingerprintServiceReceiver;
+using Elastos::Droid::Service::Ifingerprint.FingerprintUtils;
+using Elastos::Droid::Service::Ifingerprint.IFingerprintService;
+using Elastos::Droid::Service::Ifingerprint.IFingerprintServiceReceiver;
 
 using Elastos::IO::IPrintWriter;
+using Elastos::lang.ref.WeakReference;
 using Elastos::Utility::IHashMap;
-using Elastos::Utility::IMapEntry;
+using Elastos::Utility::IMap.Entry;
 using Elastos::Utility::ISet;
 
 /**
@@ -322,4 +326,3 @@ public class FingerprintService extends SystemService {
     }
 
 }
-
