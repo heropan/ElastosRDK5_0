@@ -9,6 +9,8 @@ CAR_INTERFACE_IMPL(EGLObjectHandle, Object, IEGLObjectHandle)
 ECode EGLObjectHandle::GetHandle(
     /* [out] */ Int32* handle)
 {
+    VALIDATE_NOT_NULL(handle)
+
     *handle = mHandle;
     return NOERROR;
 }
@@ -23,6 +25,8 @@ ECode EGLObjectHandle::GetNativeHandle(
 ECode EGLObjectHandle::GetHashCode(
     /* [out] */ Int32* hashCode)
 {
+    VALIDATE_NOT_NULL(hashCode)
+
     if ((mHandle & 0xffffffffL) != mHandle) {
         return E_UNSUPPORTED_OPERATION_EXCEPTION;
     }

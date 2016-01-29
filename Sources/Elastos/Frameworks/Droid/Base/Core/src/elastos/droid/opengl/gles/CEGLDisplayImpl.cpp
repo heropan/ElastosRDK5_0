@@ -31,7 +31,7 @@ ECode CEGLDisplayImpl::GetInterfaceID(
     /* [in] */ IInterface* object,
     /* [out] */ InterfaceID* iid)
 {
-    VALIDATE_NOT_NULL(iid);
+    VALIDATE_NOT_NULL(iid)
 
     if (object == (IInterface*)(Elastosx::Microedition::Khronos::Egl::IEGLDisplay*)this) {
         *iid = Elastosx::Microedition::Khronos::Egl::EIID_IEGLDisplay;
@@ -53,6 +53,8 @@ ECode CEGLDisplayImpl::Equals(
         /* [in] */ IInterface *o,
         /* [out] */ Boolean *equals)
 {
+    VALIDATE_NOT_NULL(equals)
+
     if (Probe(EIID_IInterface) == o) return TRUE;
     if (o == NULL || IEGLDisplay::Probe(o) == NULL) return FALSE;
 
@@ -65,6 +67,8 @@ ECode CEGLDisplayImpl::Equals(
 ECode CEGLDisplayImpl::GetHashCode(
         /* [out] */ Int32 *hashCode)
 {
+    VALIDATE_NOT_NULL(hashCode)
+
         /*
          * Based on the algorithm suggested in
          * http://developer.android.com/reference/java/lang/Object.html

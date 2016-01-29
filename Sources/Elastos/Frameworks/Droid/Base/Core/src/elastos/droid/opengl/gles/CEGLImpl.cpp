@@ -113,6 +113,8 @@ ECode CEGLImpl::EglChooseConfig(
     /* [in] */ ArrayOf<Int32>* num_config,
     /* [out] */ Boolean* result)
 {
+    VALIDATE_NOT_NULL(result)
+
     if (display == NULL
         || !validAttribList(attrib_list)
         || (configs != NULL && configs->GetLength() < config_size)
@@ -153,6 +155,8 @@ ECode CEGLImpl::EglCopyBuffers(
     /* [in] */ IInterface* native_pixmap,
     /* [out] */ Boolean* result)
 {
+    VALIDATE_NOT_NULL(result)
+
     if (display == NULL || surface == NULL || native_pixmap == NULL) {
         *result = FALSE;
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
@@ -169,6 +173,8 @@ ECode CEGLImpl::EglCreateContext(
     /* [in] */ ArrayOf<Int32>* attrib_list,
     /* [out] */ XIEGLContext** context)
 {
+    VALIDATE_NOT_NULL(context)
+
     if (display == NULL || config == NULL || share_context == NULL
         || !validAttribList(attrib_list)) {
         *context = NULL;
@@ -199,6 +205,8 @@ ECode CEGLImpl::EglCreatePbufferSurface(
     /* [in] */ ArrayOf<Int32>* attrib_list,
     /* [out] */ XIEGLSurface** surface)
 {
+    VALIDATE_NOT_NULL(surface)
+
     if (display == NULL || config == NULL
         || !validAttribList(attrib_list)) {
         *surface = NULL;
@@ -229,6 +237,8 @@ ECode CEGLImpl::EglCreatePixmapSurface(
     /* [in] */ ArrayOf<Int32>* attrib_list,
     /* [out] */ XIEGLSurface** surface)
 {
+    VALIDATE_NOT_NULL(surface)
+
     AutoPtr<CEGLSurfaceImpl> out_sur;
     CEGLSurfaceImpl::NewByFriend((CEGLSurfaceImpl**)&out_sur);
     if (display == NULL || config == NULL || native_pixmap == NULL
@@ -296,6 +306,8 @@ ECode CEGLImpl::EglCreateWindowSurface(
     /* [in] */ ArrayOf<Int32>* attrib_list,
     /* [out] */ XIEGLSurface** surface)
 {
+    VALIDATE_NOT_NULL(surface)
+
     AutoPtr<ISurface> sur;
     if (ISurfaceView::Probe(native_window) != NULL) {
         AutoPtr<ISurfaceView> surfaceView = ISurfaceView::Probe(native_window);
@@ -338,6 +350,8 @@ ECode CEGLImpl::EglDestroyContext(
     /* [in] */ XIEGLContext* context,
     /* [out] */ Boolean* result)
 {
+    VALIDATE_NOT_NULL(result)
+
     if (display == NULL || context == NULL) {
         *result = FALSE;
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
@@ -353,6 +367,8 @@ ECode CEGLImpl::EglDestroySurface(
     /* [in] */ XIEGLSurface* surface,
     /* [out] */ Boolean* result)
 {
+    VALIDATE_NOT_NULL(result)
+
     if (display == NULL || surface == NULL) {
         *result = FALSE;
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
@@ -378,6 +394,8 @@ ECode CEGLImpl::EglGetConfigAttrib(
     /* [in] */ ArrayOf<Int32>* value,
     /* [out] */ Boolean* result)
 {
+    VALIDATE_NOT_NULL(result)
+
     if (display == NULL || config == NULL
         || (value == NULL || value->GetLength() < 1)) {
         *result = FALSE;
@@ -402,6 +420,8 @@ ECode CEGLImpl::EglGetConfigs(
     /* [in] */ ArrayOf<Int32>* num_config,
     /* [out] */ Boolean* result)
 {
+    VALIDATE_NOT_NULL(result)
+
     if (display == NULL || (configs != NULL && configs->GetLength() < config_size)
         || (num_config != NULL && num_config->GetLength() < 1)) {
         *result = FALSE;
@@ -432,6 +452,8 @@ ECode CEGLImpl::EglGetConfigs(
 ECode CEGLImpl::EglGetCurrentContext(
     /* [out] */ XIEGLContext** context)
 {
+    VALIDATE_NOT_NULL(context)
+
     Int64 value = reinterpret_cast<Int64>(eglGetCurrentContext());
     if (value == 0) {
         AutoPtr<IEGL10Helper> helper;
@@ -454,6 +476,8 @@ ECode CEGLImpl::EglGetCurrentContext(
 ECode CEGLImpl::EglGetCurrentDisplay(
     /* [out] */ XIEGLDisplay** display)
 {
+    VALIDATE_NOT_NULL(display)
+
     Int64 value = reinterpret_cast<Int64>(eglGetCurrentDisplay());
     if (value == 0) {
         AutoPtr<IEGL10Helper> helper;
@@ -477,6 +501,8 @@ ECode CEGLImpl::EglGetCurrentSurface(
     /* [in] */ Int32 readdraw,
     /* [out] */ XIEGLSurface** surface)
 {
+    VALIDATE_NOT_NULL(surface)
+
     AutoPtr<IEGL10Helper> helper;
     CEGL10Helper::AcquireSingleton((IEGL10Helper**)&helper);
     AutoPtr<XIEGLSurface> noSurface;
@@ -506,6 +532,8 @@ ECode CEGLImpl::EglGetDisplay(
     /* [in] */ IInterface* native_display,
     /* [out] */ XIEGLDisplay** display)
 {
+    VALIDATE_NOT_NULL(display)
+
     Int64 value = (Int64)eglGetDisplay(EGL_DEFAULT_DISPLAY);
     if (value == 0) {
         AutoPtr<IEGL10Helper> helper;
@@ -528,6 +556,8 @@ ECode CEGLImpl::EglGetDisplay(
 ECode CEGLImpl::EglGetError(
     /* [out] */ Int32* eRst)
 {
+    VALIDATE_NOT_NULL(eRst)
+
     EGLint error = eglGetError();
     *eRst = error;
     return NOERROR;
@@ -538,6 +568,8 @@ ECode CEGLImpl::EglInitialize(
     /* [in] */ ArrayOf<Int32>* major_minor,
     /* [out] */ Boolean* result)
 {
+    VALIDATE_NOT_NULL(result)
+
     if (display == NULL || (major_minor != NULL &&
             major_minor->GetLength() < 2)) {
         *result = FALSE;
@@ -566,6 +598,8 @@ ECode CEGLImpl::EglMakeCurrent(
     /* [in] */ XIEGLContext* context,
     /* [out] */ Boolean* result)
 {
+    VALIDATE_NOT_NULL(result)
+
     if (display == NULL || draw == NULL || read == NULL || context == NULL) {
         *result = FALSE;
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
@@ -585,6 +619,8 @@ ECode CEGLImpl::EglQueryContext(
     /* [in] */ ArrayOf<Int32>* value,
     /* [out] */ Boolean* result)
 {
+    VALIDATE_NOT_NULL(result)
+
     if (display == NULL || context == NULL || value == NULL
         || value->GetLength() < 1) {
         *result = FALSE;
@@ -607,6 +643,8 @@ ECode CEGLImpl::EglQueryString(
     /* [in] */ Int32 name,
     /* [out] */ String* str)
 {
+    VALIDATE_NOT_NULL(str)
+
     if (display == NULL) {
         *str = String(NULL);
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
@@ -624,6 +662,8 @@ ECode CEGLImpl::EglQuerySurface(
     /* [in] */ ArrayOf<Int32>* value,
     /* [out] */ Boolean* result)
 {
+    VALIDATE_NOT_NULL(result)
+
     if (display == NULL || surface == NULL || value == NULL
         || value->GetLength() < 1) {
         *result = FALSE;
@@ -646,6 +686,8 @@ ECode CEGLImpl::EglQuerySurface(
 ECode CEGLImpl::EglReleaseThread(
     /* [out] */ Boolean* result)
 {
+    VALIDATE_NOT_NULL(result)
+
     *result = EglBoolToJBool(eglReleaseThread());
     return NOERROR;
 }
@@ -655,6 +697,8 @@ ECode CEGLImpl::EglSwapBuffers(
     /* [in] */ XIEGLSurface* surface,
     /* [out] */ Boolean* result)
 {
+    VALIDATE_NOT_NULL(result)
+
     if (display == NULL || surface == NULL) {
         *result = FALSE;
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
@@ -669,6 +713,8 @@ ECode CEGLImpl::EglTerminate(
     /* [in] */ XIEGLDisplay* display,
     /* [out] */ Boolean* result)
 {
+    VALIDATE_NOT_NULL(result)
+
     if (display == NULL) {
         *result = FALSE;
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
@@ -681,6 +727,8 @@ ECode CEGLImpl::EglTerminate(
 ECode CEGLImpl::EglWaitGL(
     /* [out] */ Boolean* result)
 {
+    VALIDATE_NOT_NULL(result)
+
     *result = EglBoolToJBool(eglWaitGL());
     return NOERROR;
 }
@@ -690,6 +738,8 @@ ECode CEGLImpl::EglWaitNative(
     /* [in] */ IInterface* bindTarget,
     /* [out] */ Boolean* result)
 {
+    VALIDATE_NOT_NULL(result)
+
     *result = EglBoolToJBool(eglWaitNative(engine));
     return NOERROR;
 }
@@ -726,6 +776,8 @@ ECode CEGLImpl::_eglCreateWindowSurface(
     /* [in] */ ArrayOf<Int32>* attrib_list,
     /* [out] */ Int64* rst)
 {
+    VALIDATE_NOT_NULL(rst)
+
     if (display == NULL || config == NULL
         || !validAttribList(attrib_list)) {
         *rst = 0;
@@ -762,6 +814,8 @@ ECode CEGLImpl::_eglCreateWindowSurfaceTexture(
     /* [in] */ ArrayOf<Int32>* attrib_list,
     /* [out] */ Int64* rst)
 {
+    VALIDATE_NOT_NULL(rst)
+
     if (display == NULL || config == NULL
         || !validAttribList(attrib_list)) {
         *rst = 0;

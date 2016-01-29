@@ -9,6 +9,9 @@
 
 using Elastos::IO::CNIOAccess;
 using Elastos::IO::INIOAccess;
+using Elastos::IO::CDirectByteBufferHelper;
+using Elastos::IO::IDirectByteBufferHelper;
+using Elastos::IO::IDirectByteBuffer;
 
 /* special calls implemented in Android's GLES wrapper used to more
  * efficiently bound-check passed arrays */
@@ -50,6 +53,8 @@ static ECode GetPointer(
     /* [in, out] */ Int32* offset,
     /* [out] */ Handle64* rst)
 {
+    VALIDATE_NOT_NULL(rst)
+
     Int32 position;
     Int32 limit;
     Int32 elementSizeShift;
@@ -85,6 +90,8 @@ static ECode GetDirectBufferPointer(
     /* [in] */ IBuffer* buffer,
     /* [out] */ Handle64* result)
 {
+    VALIDATE_NOT_NULL(result)
+
     Handle64 effectiveDirectAddress;
     buffer->GetEffectiveDirectAddress(&effectiveDirectAddress);
     if (effectiveDirectAddress != 0) {
@@ -322,7 +329,6 @@ exit:                                                             \
         return _exceptionType;                                                             \
     }                                                             \
     return _exceptionType;
-
 
 namespace Elastos {
 namespace Droid {
@@ -714,6 +720,8 @@ ECode GLES30::GlIsQuery(
     /* [in] */ Int32 id,
     /* [out] */ Boolean* result)
 {
+    VALIDATE_NOT_NULL(result)
+
     GLboolean _returnValue;
     _returnValue = glIsQuery(
         (GLuint)id
@@ -818,6 +826,8 @@ ECode GLES30::GlUnmapBuffer(
     /* [in] */ Int32 target,
     /* [out] */ Boolean* result)
 {
+    VALIDATE_NOT_NULL(result)
+
     GLboolean _returnValue;
     _returnValue = glUnmapBuffer(
         (GLenum)target
@@ -831,6 +841,8 @@ static ECode NewDirectByteBuffer(
     /* [in] */ Int64 capacity,
     /* [out] */ IBuffer** buffer)
 {
+    VALIDATE_NOT_NULL(buffer)
+
     if (capacity < 0) {
       SLOGGERD("NewDirectByteBuffer", "negative buffer capacity: %lld", capacity);
       *buffer = NULL;
@@ -848,7 +860,12 @@ static ECode NewDirectByteBuffer(
       *buffer = NULL;
       return NOERROR;
     }
-    // return CDirectByteBuffer::New(address, capacity, buffer)
+    AutoPtr<IDirectByteBufferHelper> helper;
+    CDirectByteBufferHelper::AcquireSingleton((IDirectByteBufferHelper**)&helper);
+    AutoPtr<IDirectByteBuffer> directBuffer;
+    FAIL_RETURN(helper->GetNewInstance(address, capacity, (IDirectByteBuffer**)&directBuffer))
+    *buffer = IBuffer::Probe(directBuffer);
+    REFCOUNT_ADD(*buffer)
     return NOERROR;
 }
 // C function void glGetBufferPointerv ( GLenum target, GLenum pname, GLvoid** params )
@@ -858,6 +875,8 @@ ECode GLES30::GlGetBufferPointerv(
     /* [in] */ Int32 pname,
     /* [out] */ IBuffer** buffer)
 {
+    VALIDATE_NOT_NULL(buffer)
+
     GLint64 _mapLength;
     GLvoid* _p;
     glGetBufferParameteri64v((GLenum)target, GL_BUFFER_MAP_LENGTH, &_mapLength);
@@ -1192,6 +1211,8 @@ ECode GLES30::GlMapBufferRange(
     /* [in] */ Int32 access,
     /* [out] */ IBuffer** buffer)
 {
+    VALIDATE_NOT_NULL(buffer)
+
     GLvoid* _p = glMapBufferRange((GLenum)target,
             (GLintptr)offset, (GLsizeiptr)length, (GLbitfield)access);
     *buffer = NULL;
@@ -1291,6 +1312,8 @@ ECode GLES30::GlIsVertexArray(
     /* [in] */ Int32 array,
     /* [out] */ Boolean* result)
 {
+    VALIDATE_NOT_NULL(result)
+
     GLboolean _returnValue = glIsVertexArray(
         (GLuint)array
     );
@@ -1598,7 +1621,7 @@ ECode GLES30::GlGetTransformFeedbackVarying(
         (GLsizei *)length,
         (GLint *)size,
         (GLenum *)type,
-        (char *)name
+        reinterpret_cast<char *>(name)
     );
 
     return NOERROR;
@@ -1615,6 +1638,8 @@ ECode GLES30::GlGetTransformFeedbackVarying(
     /* [in] */ Int32 typeOffset,
     /* [out] */ String* result)
 {
+    VALIDATE_NOT_NULL(result)
+
     Int32 _exception = 0;
     ECode _exceptionType = NOERROR;
     const char * _exceptionMessage;
@@ -1700,6 +1725,8 @@ ECode GLES30::GlGetTransformFeedbackVarying(
     /* [in] */ IInt32Buffer* type_buf,
     /* [out] */ String* result)
 {
+    VALIDATE_NOT_NULL(result)
+
     Handle64 _sizeArray = 0;
     Handle64 _sizeTmp = 0;
     Int32 _sizeBufferOffset = 0;
@@ -2007,6 +2034,8 @@ ECode GLES30::GlGetFragDataLocation(
     /* [in] */ const String& name,
     /* [out] */ Int32* result)
 {
+    VALIDATE_NOT_NULL(result)
+
     Int32 _exception = 0;
     ECode _exceptionType = NOERROR;
     const char * _exceptionMessage = NULL;
@@ -2351,6 +2380,8 @@ ECode GLES30::GlGetStringi(
     /* [in] */ Int32 index,
     /* [out] */ String* result)
 {
+    VALIDATE_NOT_NULL(result)
+
     const GLubyte* _chars = glGetStringi((GLenum)name, (GLuint)index);
     *result = String((const char*)_chars);
     return NOERROR;
@@ -2628,6 +2659,8 @@ ECode GLES30::GlGetUniformBlockIndex(
     /* [in] */ const String& uniformBlockName,
     /* [out] */ Int32* result)
 {
+    VALIDATE_NOT_NULL(result)
+
     Int32 _exception = 0;
     ECode _exceptionType = NOERROR;
     const char * _exceptionMessage = NULL;
@@ -2809,6 +2842,8 @@ ECode GLES30::GlGetActiveUniformBlockName(
     /* [in] */ Int32 uniformBlockIndex,
     /* [out] */ String* result)
 {
+    VALIDATE_NOT_NULL(result)
+
     GLint len = 0;
     glGetActiveUniformBlockiv((GLuint)program, (GLuint)uniformBlockIndex,
             GL_UNIFORM_BLOCK_NAME_LENGTH, &len);
@@ -2898,6 +2933,8 @@ ECode GLES30::GlFenceSync(
     /* [in] */ Int32 flags,
     /* [out] */ Int64* result)
 {
+    VALIDATE_NOT_NULL(result)
+
     GLsync _returnValue;
     _returnValue = glFenceSync(
         (GLenum)condition,
@@ -2913,6 +2950,8 @@ ECode GLES30::GlIsSync(
     /* [in] */ Int64 sync,
     /* [out] */ Boolean* result)
 {
+    VALIDATE_NOT_NULL(result)
+
     glDeleteSync(
         (GLsync)sync
     );
@@ -2938,6 +2977,8 @@ ECode GLES30::GlClientWaitSync(
     /* [in] */ Int64 timeout,
     /* [out] */ Int32* result)
 {
+    VALIDATE_NOT_NULL(result)
+
     GLenum _returnValue;
     _returnValue = glClientWaitSync(
         (GLsync)sync,
@@ -3231,6 +3272,8 @@ ECode GLES30::GlIsSampler(
     /* [in] */ Int32 sampler,
     /* [out] */ Boolean* result)
 {
+    VALIDATE_NOT_NULL(result)
+
     GLboolean _returnValue;
     _returnValue = glIsSampler(
         (GLuint)sampler
@@ -3504,6 +3547,8 @@ ECode GLES30::GlIsTransformFeedback(
     /* [in] */ Int32 id,
     /* [out] */ Boolean* result)
 {
+    VALIDATE_NOT_NULL(result)
+
     GLboolean _returnValue;
     _returnValue = glIsTransformFeedback(
         (GLuint)id

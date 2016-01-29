@@ -189,6 +189,7 @@ ECode CVisibility::VisibilityTest(
     /* [in] */ Int32 indexCount,
     /* [out] */ Int32* rst)
 {
+    VALIDATE_NOT_NULL(rst)
 
     FloatArrayHelper ws( ws_ref, wsOffset, 16);
     FloatArrayHelper positions(positions_ref, positionsOffset, 0);
@@ -233,6 +234,8 @@ ECode CVisibility::FrustumCullSpheres(
     /* [in] */ Int32 resultsCapacity,
     /* [out] */ Int32* rst)
 {
+    VALIDATE_NOT_NULL(rst)
+
     AutoPtr<ArrayOf<Float> > frustum = ArrayOf<Float>::Alloc(6*4);
     Int32 outputCount;
     Int32* pResults;

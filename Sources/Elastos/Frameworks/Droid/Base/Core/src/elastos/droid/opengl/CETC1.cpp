@@ -31,6 +31,8 @@ ECode CETC1::GetPointer(
     /* [in, out] */ Int32 *remaining,
     /* [out] */ Handle32* rst)
 {
+    VALIDATE_NOT_NULL(rst)
+
     Int32 position;
     Int32 limit;
     Int32 elementSizeShift;
@@ -110,6 +112,8 @@ ECode CETC1::GetEncodedDataSize(
     /* [in] */ Int32 height,
     /* [out] */ Int32* size)
 {
+    VALIDATE_NOT_NULL(size)
+
     *size = etc1_get_encoded_data_size(width, height);
     return NOERROR;
 }
@@ -208,6 +212,8 @@ ECode CETC1::IsValid(
     /* [in] */ Elastos::IO::IBuffer* header,
     /* [out] */ Boolean* isvalid)
 {
+    VALIDATE_NOT_NULL(isvalid)
+
     Boolean result = FALSE;
     BufferHelper headerB(header);
     Boolean headerCheck;
@@ -228,6 +234,8 @@ ECode CETC1::GetWidth(
     /* [in] */ Elastos::IO::IBuffer* header,
     /* [out] */ Int32* width)
 {
+    VALIDATE_NOT_NULL(width)
+
     Int32 result = 0;
     BufferHelper headerB(header);
     Boolean headerCheck;
@@ -248,6 +256,8 @@ ECode CETC1::GetHeight(
     /* [in] */ Elastos::IO::IBuffer* header,
     /* [out] */ Int32* height)
 {
+    VALIDATE_NOT_NULL(height)
+
     Int32 result = 0;
     BufferHelper headerB(header);
     Boolean headerCheck;

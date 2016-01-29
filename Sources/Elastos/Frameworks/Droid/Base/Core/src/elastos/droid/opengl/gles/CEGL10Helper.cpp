@@ -44,6 +44,8 @@ CAR_SINGLETON_IMPL(CEGL10Helper)
 ECode CEGL10Helper::GetDefaultDisplay(
     /* [out] */ IInterface** disp)
 {
+    VALIDATE_NOT_NULL(disp)
+
     *disp = sDefaultDisplay;
     REFCOUNT_ADD(*disp);
     return NOERROR;
@@ -52,6 +54,8 @@ ECode CEGL10Helper::GetDefaultDisplay(
 ECode CEGL10Helper::GetNoDisplay(
     /* [out] */ XIEGLDisplay** disp)
 {
+    VALIDATE_NOT_NULL(disp)
+
     *disp = sNoDisplay;
     REFCOUNT_ADD(*disp);
     return NOERROR;
@@ -60,6 +64,8 @@ ECode CEGL10Helper::GetNoDisplay(
 ECode CEGL10Helper::GetNoContext(
     /* [out] */ XIEGLContext** ctx)
 {
+    VALIDATE_NOT_NULL(ctx)
+
     *ctx = sNoContext;
     REFCOUNT_ADD(*ctx);
     return NOERROR;
@@ -68,6 +74,8 @@ ECode CEGL10Helper::GetNoContext(
 ECode CEGL10Helper::GetNoSurface(
     /* [out] */ XIEGLSurface** sfc)
 {
+    VALIDATE_NOT_NULL(sfc)
+
     *sfc = sNoSurface;
     REFCOUNT_ADD(*sfc);
     return NOERROR;

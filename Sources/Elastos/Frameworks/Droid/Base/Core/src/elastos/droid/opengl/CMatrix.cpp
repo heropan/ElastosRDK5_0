@@ -141,6 +141,8 @@ ECode CMatrix::InvertM(
     /* [in] */ Int32 mOffset,
     /* [out] */ Boolean* rst)
 {
+    VALIDATE_NOT_NULL(rst)
+
     // Invert a 4 x 4 matrix using Cramer's Rule
 
     // transpose matrix
@@ -411,6 +413,8 @@ ECode CMatrix::Length(
     /* [in] */ Float z,
     /* [out] */ Float* len)
 {
+    VALIDATE_NOT_NULL(len)
+
     *len = (Float) Elastos::Core::Math::Sqrt(x * x + y * y + z * z);
     return NOERROR;
 }

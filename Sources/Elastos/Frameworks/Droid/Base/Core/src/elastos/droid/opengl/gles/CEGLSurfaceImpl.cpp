@@ -31,7 +31,7 @@ ECode CEGLSurfaceImpl::GetInterfaceID(
     /* [in] */ IInterface* object,
     /* [out] */ InterfaceID* iid)
 {
-    VALIDATE_NOT_NULL(iid);
+    VALIDATE_NOT_NULL(iid)
 
     if (object == (IInterface*)(Elastosx::Microedition::Khronos::Egl::IEGLSurface*)this) {
         *iid = Elastosx::Microedition::Khronos::Egl::EIID_IEGLSurface;

@@ -22,6 +22,8 @@ ECode CGLDebugHelper::Wrap(
     /* [in] */ Elastos::IO::IWriter* log,
     /* [out] */ IGL** glInstance)
 {
+    VALIDATE_NOT_NULL(glInstance)
+
     AutoPtr<IGL> rst;
     if ( configFlags != 0 ) {
         rst = (IGL*)(new GLErrorWrapper(gl, configFlags))->Probe(EIID_IGL);
@@ -42,6 +44,8 @@ ECode CGLDebugHelper::Wrap(
     /* [in] */ Elastos::IO::IWriter* log,
     /* [out] */ IEGL** eglInterface)
 {
+    VALIDATE_NOT_NULL(eglInterface)
+
     if (log != NULL) {
         IEGL11* tmp = new EGLLogWrapper(egl, configFlags, log);
         *eglInterface = IEGL::Probe(tmp);

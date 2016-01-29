@@ -22,6 +22,8 @@ ECode CGLU::GluErrorString(
     /* [in] */ Int32 error,
     /* [out] */ String* str)
 {
+    VALIDATE_NOT_NULL(str)
+
     switch (error) {
     case IGL10::_GL_NO_ERROR:
         *str = String("no error");
@@ -106,6 +108,8 @@ ECode CGLU::GluProject(
     /* [in] */ Int32 winOffset,
     /* [out] */ Int32* rst)
 {
+    VALIDATE_NOT_NULL(rst)
+
     {
         AutoLock lock(sLock);
         Int32 M_OFFSET = 0; // 0..15
@@ -161,6 +165,8 @@ ECode CGLU::GluUnProject(
     /* [in] */ Int32 objOffset,
     /* [out] */ Int32* rst)
 {
+    VALIDATE_NOT_NULL(rst)
+
     {
         Int32 PM_OFFSET = 0; // 0..15
         Int32 INVPM_OFFSET = 16; // 16..31

@@ -57,6 +57,8 @@ static ECode GetPointer(
     /* [in, out] */ Int32* offset,
     /* [out] */ Handle64* rst)
 {
+    VALIDATE_NOT_NULL(rst)
+
     Int32 position;
     Int32 limit;
     Int32 elementSizeShift;
@@ -92,6 +94,8 @@ static ECode GetDirectBufferPointer(
     /* [in] */ IBuffer* buffer,
     /* [out] */ Handle64* result)
 {
+    VALIDATE_NOT_NULL(result)
+
     Handle64 effectiveDirectAddress;
     buffer->GetEffectiveDirectAddress(&effectiveDirectAddress);
     if (effectiveDirectAddress != 0) {
@@ -536,6 +540,8 @@ ECode GLES20::GlCheckFramebufferStatus(
     /* [in] */ Int32 target,
     /* [out] */ Int32* rst)
 {
+    VALIDATE_NOT_NULL(rst)
+
     GLenum _returnValue;
     _returnValue = glCheckFramebufferStatus(
         (GLenum)target
@@ -758,6 +764,8 @@ ECode GLES20::GlCopyTexSubImage2D(
 ECode GLES20::GlCreateProgram(
     /* [out] */ Int32* rst)
 {
+    VALIDATE_NOT_NULL(rst)
+
     GLuint _returnValue;
     _returnValue = glCreateProgram();
     *rst = _returnValue;
@@ -770,6 +778,8 @@ ECode GLES20::GlCreateShader(
     /* [in] */ Int32 type,
     /* [out] */ Int32* rst)
 {
+    VALIDATE_NOT_NULL(rst)
+
     GLuint _returnValue;
     _returnValue = glCreateShader(
         (GLenum)type
@@ -1691,6 +1701,8 @@ ECode GLES20::GlGetActiveAttrib(
     /* [in] */ Int32 typeOffset,
     /* [out] */ String* str)
 {
+    VALIDATE_NOT_NULL(str)
+
     GLint *size_base = (GLint *) 0;
     GLint *size = (GLint *) 0;
     GLenum *type_base = (GLenum *) 0;
@@ -1763,6 +1775,8 @@ ECode GLES20::GlGetActiveAttrib(
     /* [in] */ IInt32Buffer* type_buf,
     /* [out] */ String* str)
 {
+    VALIDATE_NOT_NULL(str)
+
     Handle64 _sizeArray = (Handle64) 0;
     Int32 _sizeBufferOffset = (Int32) 0;
     Handle64 _typeArray = (Handle64) 0;
@@ -1963,6 +1977,8 @@ ECode GLES20::GlGetActiveUniform(
     /* [in] */ Int32 typeOffset,
     /* [out] */ String* rst)
 {
+    VALIDATE_NOT_NULL(rst)
+
     GLint *size_base = (GLint *) 0;
     GLint *size = (GLint *) 0;
 
@@ -2033,6 +2049,8 @@ ECode GLES20::GlGetActiveUniform(
     /* [in] */ IInt32Buffer* type_buf,
     /* [out] */ String* str)
 {
+    VALIDATE_NOT_NULL(str)
+
     Handle64 _sizeArray = (Handle64) 0;
     Int32 _sizeBufferOffset = (Int32) 0;
     Handle64 _typeArray = (Handle64) 0;
@@ -2201,6 +2219,8 @@ ECode GLES20::GlGetAttribLocation(
     /* [in] */ const String& name,
     /* [out] */ Int32* rst)
 {
+    VALIDATE_NOT_NULL(rst)
+
     GLint _returnValue = 0;
     const char* _nativename = 0;
 
@@ -2312,6 +2332,8 @@ ECode GLES20::GlGetBufferParameteriv(
 ECode GLES20::GlGetError(
     /* [out] */ Int32* rst)
 {
+    VALIDATE_NOT_NULL(rst)
+
     GLenum _returnValue;
     _returnValue = glGetError();
     *rst = _returnValue;
@@ -2495,6 +2517,8 @@ ECode GLES20::GlGetProgramInfoLog(
     /* [in] */ Int32 shader,
     /* [out] */ String* str)
 {
+    VALIDATE_NOT_NULL(str)
+
     GLint infoLen = 0;
     glGetProgramiv(shader, GL_INFO_LOG_LENGTH, &infoLen);
     if (!infoLen) {
@@ -2652,6 +2676,8 @@ ECode GLES20::GlGetShaderInfoLog(
     /* [in] */ Int32 shader,
     /* [out] */ String* str)
 {
+    VALIDATE_NOT_NULL(str)
+
     GLint infoLen = 0;
     glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &infoLen);
     if (!infoLen) {
@@ -2855,6 +2881,8 @@ ECode GLES20::GlGetShaderSource(
     /* [in] */ Int32 shader,
     /* [out] */ String* str)
 {
+    VALIDATE_NOT_NULL(str)
+
     GLint shaderLen = 0;
     glGetShaderiv((GLuint)shader, GL_SHADER_SOURCE_LENGTH, &shaderLen);
     if (!shaderLen) {
@@ -2880,6 +2908,8 @@ ECode GLES20::GlGetString(
     /* [in] */ Int32 name,
     /* [out] */ String* str)
 {
+    VALIDATE_NOT_NULL(str)
+
     const char* chars = (const char*) glGetString((GLenum) name);
     *str = String(chars);
     return NOERROR;
@@ -3159,6 +3189,8 @@ ECode GLES20::GlGetUniformLocation(
     /* [in] */ const String& name,
     /* [out] */ Int32* rst)
 {
+    VALIDATE_NOT_NULL(rst)
+
     *rst = 0;
     const char* _nativename = 0;
 
@@ -3370,6 +3402,8 @@ ECode GLES20::GlIsBuffer(
     /* [in] */ Int32 buffer,
     /* [out] */ Boolean* rst)
 {
+    VALIDATE_NOT_NULL(rst)
+
     GLboolean _returnValue;
     _returnValue = glIsBuffer(
         (GLuint)buffer
@@ -3384,6 +3418,8 @@ ECode GLES20::GlIsEnabled(
     /* [in] */ Int32 cap,
     /* [out] */ Boolean* rst)
 {
+    VALIDATE_NOT_NULL(rst)
+
     GLboolean _returnValue;
     _returnValue = glIsEnabled(
         (GLenum)cap
@@ -3398,6 +3434,8 @@ ECode GLES20::GlIsFramebuffer(
     /* [in] */ Int32 framebuffer,
     /* [out] */ Boolean* rst)
 {
+    VALIDATE_NOT_NULL(rst)
+
     GLboolean _returnValue;
     _returnValue = glIsFramebuffer(
         (GLuint)framebuffer
@@ -3412,6 +3450,8 @@ ECode GLES20::GlIsProgram(
     /* [in] */ Int32 program,
     /* [out] */ Boolean* rst)
 {
+    VALIDATE_NOT_NULL(rst)
+
     GLboolean _returnValue;
     _returnValue = glIsProgram(
         (GLuint)program
@@ -3426,6 +3466,8 @@ ECode GLES20::GlIsRenderbuffer(
     /* [in] */ Int32 renderbuffer,
     /* [out] */ Boolean* rst)
 {
+    VALIDATE_NOT_NULL(rst)
+
     GLboolean _returnValue;
     _returnValue = glIsRenderbuffer(
         (GLuint)renderbuffer
@@ -3440,6 +3482,8 @@ ECode GLES20::GlIsShader(
     /* [in] */ Int32 shader,
     /* [out] */ Boolean* rst)
 {
+    VALIDATE_NOT_NULL(rst)
+
     GLboolean _returnValue;
     _returnValue = glIsShader(
         (GLuint)shader
@@ -3454,6 +3498,8 @@ ECode GLES20::GlIsTexture(
     /* [in] */ Int32 texture,
     /* [out] */ Boolean* rst)
 {
+    VALIDATE_NOT_NULL(rst)
+
     GLboolean _returnValue;
     _returnValue = glIsTexture(
         (GLuint)texture

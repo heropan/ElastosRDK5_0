@@ -2178,6 +2178,8 @@ ECode GLLogWrapper::GlGenTextures(
 ECode GLLogWrapper::GlGetError(
     /* [out] */ Int32* error)
 {
+    VALIDATE_NOT_NULL(error)
+
     Begin(String("glGetError"));
 
     ECode ec = mgl->GlGetError(error);
@@ -2191,6 +2193,8 @@ ECode GLLogWrapper::GlGetString(
     /* [in] */ Int32 name,
     /* [out] */ String* str)
 {
+    VALIDATE_NOT_NULL(str)
+
     Begin(String("glGetString"));
     Arg(String("name"), name);
 
@@ -3528,6 +3532,8 @@ ECode GLLogWrapper::GlQueryMatrixxOES(
     /* [in] */ Int32 exponentOffset,
     /* [out] */ Int32* matrixxOES)
 {
+    VALIDATE_NOT_NULL(matrixxOES)
+
     Begin(String("glQueryMatrixxOES"));
     Arg(String("mantissa"), ParamsToString(mantissa));
     Arg(String("exponent"), ParamsToString(exponent));
@@ -3545,6 +3551,8 @@ ECode GLLogWrapper::GlQueryMatrixxOES(
     /* [in] */ IInt32Buffer* exponent,
     /* [out] */ Int32* matrixxOES)
 {
+    VALIDATE_NOT_NULL(matrixxOES)
+
     Begin(String("GlQueryMatrixxOESEx"));
     Arg(String("mantissa"), ParamsToString(mantissa));
     Arg(String("exponent"), ParamsToString(exponent));
@@ -4237,6 +4245,8 @@ ECode GLLogWrapper::GlIsBuffer(
     /* [in] */ Int32 buffer,
     /* [out] */ Boolean* result)
 {
+    VALIDATE_NOT_NULL(result)
+
     Begin(String("glIsBuffer"));
     Arg(String("buffer"), buffer);
     End();
@@ -4249,6 +4259,8 @@ ECode GLLogWrapper::GlIsEnabled(
     /* [in] */ Int32 cap,
     /* [out] */ Boolean* result)
 {
+    VALIDATE_NOT_NULL(result)
+
     Begin(String("glIsEnabled"));
     Arg(String("cap"), cap);
     End();
@@ -4261,6 +4273,8 @@ ECode GLLogWrapper::GlIsTexture(
     /* [in] */ Int32 texture,
     /* [out] */ Boolean* result)
 {
+    VALIDATE_NOT_NULL(result)
+
     Begin(String("glIsTexture"));
     Arg(String("texture"), texture);
     End();
@@ -4861,6 +4875,8 @@ ECode GLLogWrapper::GlCheckFramebufferStatusOES(
     /* [in] */ Int32 target,
     /* [out] */ Int32* status)
 {
+    VALIDATE_NOT_NULL(status)
+
     Begin(String("glCheckFramebufferStatusOES"));
     Arg(String("target"), target);
     End();
@@ -5196,6 +5212,8 @@ ECode GLLogWrapper::GlIsFramebufferOES(
     /* [in] */ Int32 framebuffer,
     /* [out] */ Boolean* result)
 {
+    VALIDATE_NOT_NULL(result)
+
     Begin(String("glIsFramebufferOES"));
     Arg(String("framebuffer"), framebuffer);
     End();
@@ -5208,6 +5226,8 @@ ECode GLLogWrapper::GlIsRenderbufferOES(
     /* [in] */ Int32 renderbuffer,
     /* [out] */ Boolean* result)
 {
+    VALIDATE_NOT_NULL(result)
+
     Begin(String("glIsRenderbufferOES"));
     Arg(String("renderbuffer"), renderbuffer);
     End();

@@ -15,6 +15,8 @@ ECode EGLConfigWrapper::Equals(
     /* [in] */ IInterface* o,
     /* [out] */ Boolean* result)
 {
+    VALIDATE_NOT_NULL(result)
+
     if(o == NULL || o->Probe(EIID_IEGLConfig) == NULL) {
         *result = FALSE;
     } else if (Probe(EIID_IInterface) == o) {

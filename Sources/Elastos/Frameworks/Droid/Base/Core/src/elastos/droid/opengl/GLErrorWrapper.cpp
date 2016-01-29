@@ -380,6 +380,8 @@ ECode GLErrorWrapper::GlGenTextures(
 ECode GLErrorWrapper::GlGetError(
     /* [out] */ Int32* error)
 {
+    VALIDATE_NOT_NULL(error)
+
     GLCHECK(mgl, GlGetError, error);
     return NOERROR;
 }
@@ -388,6 +390,8 @@ ECode GLErrorWrapper::GlGetString(
     /* [in] */ Int32 name,
     /* [out] */ String* str)
 {
+    VALIDATE_NOT_NULL(str)
+
     GLCHECK(mgl, GlGetString, name, str);
     return NOERROR;
 }
@@ -1134,6 +1138,8 @@ ECode GLErrorWrapper::GlQueryMatrixxOES(
     /* [in] */ Int32 exponentOffset,
     /* [out] */ Int32* matrixxOES)
 {
+    VALIDATE_NOT_NULL(matrixxOES)
+
     GLCHECK(mgl10Ext, GlQueryMatrixxOES, mantissa, mantissaOffset, exponent, exponentOffset, matrixxOES);
     return NOERROR;
 }
@@ -1143,6 +1149,8 @@ ECode GLErrorWrapper::GlQueryMatrixxOES(
     /* [in] */ IInt32Buffer* exponent,
     /* [out] */ Int32* matrixxOES)
 {
+    VALIDATE_NOT_NULL(matrixxOES)
+
     GLCHECK(mgl10Ext, GlQueryMatrixxOES, mantissa, exponent, matrixxOES);
     return NOERROR;
 }
@@ -1560,6 +1568,8 @@ ECode GLErrorWrapper::GlIsBuffer(
     /* [in] */ Int32 buffer,
     /* [out] */ Boolean* result)
 {
+    VALIDATE_NOT_NULL(result)
+
     GLCHECK(mgl11, GlIsBuffer, buffer, result);
     return NOERROR;
 }
@@ -1568,6 +1578,8 @@ ECode GLErrorWrapper::GlIsEnabled(
     /* [in] */ Int32 cap,
     /* [out] */ Boolean* result)
 {
+    VALIDATE_NOT_NULL(result)
+
     GLCHECK(mgl11, GlIsEnabled, cap, result);
     return NOERROR;
 }
@@ -1576,6 +1588,8 @@ ECode GLErrorWrapper::GlIsTexture(
     /* [in] */ Int32 texture,
     /* [out] */ Boolean* result)
 {
+    VALIDATE_NOT_NULL(result)
+
     GLCHECK(mgl11, GlIsTexture, texture, result);
     return NOERROR;
 }
@@ -1945,6 +1959,8 @@ ECode GLErrorWrapper::GlCheckFramebufferStatusOES(
     /* [in] */ Int32 target,
     /* [out] */ Int32* status)
 {
+    VALIDATE_NOT_NULL(status)
+
     GLCHECK(mgl11ExtensionPack, GlCheckFramebufferStatusOES, target, status);
     return NOERROR;
 }
@@ -2146,6 +2162,8 @@ ECode GLErrorWrapper::GlIsFramebufferOES(
     /* [in] */ Int32 framebuffer,
     /* [out] */ Boolean* result)
 {
+    VALIDATE_NOT_NULL(result)
+
     GLCHECK(mgl11ExtensionPack, GlIsFramebufferOES, framebuffer, result);
     return NOERROR;
 }
@@ -2154,6 +2172,8 @@ ECode GLErrorWrapper::GlIsRenderbufferOES(
     /* [in] */ Int32 renderbuffer,
     /* [out] */ Boolean* result)
 {
+    VALIDATE_NOT_NULL(result)
+
     GLCHECK(mgl11ExtensionPack, GlIsRenderbufferOES, renderbuffer, result);
     return NOERROR;
 }
