@@ -1,5 +1,45 @@
 
 #include "elastos/droid/packages/systemui/statusbar/ActivatableNotificationView.h"
+#include "elastos/droid/packages/systemui/statusbar/CNotificationBackgroundView.h"
+#include "../R.h"
+#include <elastos/droid/R.h>
+#include <elastos/core/Math.h>
+
+using Elastos::Droid::Animation::CObjectAnimatorHelper;
+using Elastos::Droid::Animation::CValueAnimatorHelper;
+using Elastos::Droid::Animation::EIID_IAnimatorUpdateListener;
+using Elastos::Droid::Animation::IObjectAnimatorHelper;
+using Elastos::Droid::Animation::ITimeInterpolator;
+using Elastos::Droid::Animation::IValueAnimatorHelper;
+using Elastos::Droid::Graphics::BitmapConfig_ARGB_8888;
+using Elastos::Droid::Graphics::CBitmapHelper;
+using Elastos::Droid::Graphics::CBitmapShader;
+using Elastos::Droid::Graphics::CCanvas;
+using Elastos::Droid::Graphics::CColor;
+using Elastos::Droid::Graphics::CColorMatrix;
+using Elastos::Droid::Graphics::CColorMatrixColorFilter;
+using Elastos::Droid::Graphics::CPorterDuffColorFilter;
+using Elastos::Droid::Graphics::CPaint;
+using Elastos::Droid::Graphics::CRectF;
+using Elastos::Droid::Graphics::IBitmapHelper;
+using Elastos::Droid::Graphics::IBitmapShader;
+using Elastos::Droid::Graphics::IColor;
+using Elastos::Droid::Graphics::IColorFilter;
+using Elastos::Droid::Graphics::IColorMatrix;
+using Elastos::Droid::Graphics::IColorMatrixColorFilter;
+using Elastos::Droid::Graphics::PorterDuffMode_SRC_ATOP;
+using Elastos::Droid::Graphics::ShaderTileMode_CLAMP;
+using Elastos::Droid::View::Animation::CAnimationUtils;
+using Elastos::Droid::View::Animation::CLinearInterpolator;
+using Elastos::Droid::View::Animation::CPathInterpolator;
+using Elastos::Droid::View::Animation::IAnimationUtils;
+using Elastos::Droid::View::CViewConfigurationHelper;
+using Elastos::Droid::View::CViewAnimationUtilsHelper;
+using Elastos::Droid::View::IViewAnimationUtilsHelper;
+using Elastos::Droid::View::IViewPropertyAnimator;
+using Elastos::Droid::View::IViewConfiguration;
+using Elastos::Droid::View::IViewConfigurationHelper;
+using Elastos::Core::IFloat;
 
 namespace Elastos {
 namespace Droid {
@@ -7,60 +47,207 @@ namespace Packages {
 namespace SystemUI {
 namespace StatusBar {
 
-CAR_INTERFACE_IMPL(ActivatableNotificationView, ExpandableOutlineView, IActivatableNotificationView);
-ActivatableNotificationView();
+ActivatableNotificationView::HostRunnable::HostRunnable(
+    /* [in] */ ActivatableNotificationView* host)
+    : mHost(host)
+{}
 
-CARAPI constructor(
+ECode ActivatableNotificationView::HostRunnable::Run()
+{
+    mHost->MakeInactive(TRUE /* animate */);
+    return NOERROR;
+}
+
+ActivatableNotificationView::AnimatorListenerAdapter1::AnimatorListenerAdapter1(
+    /* [in] */ ActivatableNotificationView* host)
+    : mHost(host)
+{}
+
+ECode ActivatableNotificationView::AnimatorListenerAdapter1::OnAnimationEnd(
+    /* [in] */ IAnimator* animation)
+{
+    if (mHost->mDimmed) {
+        IView::Probe(mHost->mBackgroundNormal)->SetVisibility(IView::INVISIBLE);
+    }
+    return NOERROR;
+}
+
+ActivatableNotificationView::AnimatorListenerAdapter2::AnimatorListenerAdapter2(
+    /* [in] */ ActivatableNotificationView* host)
+    : mHost(host)
+{}
+
+ECode ActivatableNotificationView::AnimatorListenerAdapter2::OnAnimationEnd(
+    /* [in] */ IAnimator* animation)
+{
+    if (mHost->mDimmed) {
+        IView::Probe(mHost->mBackgroundNormal)->SetVisibility(IView::INVISIBLE);
+    } else {
+        IView::Probe(mHost->mBackgroundDimmed)->SetVisibility(IView::INVISIBLE);
+    }
+    mHost->mBackgroundAnimator = NULL;
+    return NOERROR;
+}
+
+CAR_INTERFACE_IMPL(ActivatableNotificationView::AnimatorUpdateListener, Object, IAnimatorUpdateListener);
+ActivatableNotificationView::AnimatorUpdateListener::AnimatorUpdateListener(
+    /* [in] */ ActivatableNotificationView* host)
+    : mHost(host)
+{}
+
+ECode ActivatableNotificationView::AnimatorUpdateListener::OnAnimationUpdate(
+    /* [in] */ IValueAnimator* animation)
+{
+    AutoPtr<IInterface> obj;
+    animation->GetAnimatedValue((IInterface**)&obj);
+    IFloat::Probe(obj)->GetValue(&mHost->mAppearAnimationFraction);
+    mHost->UpdateAppearAnimationAlpha();
+    mHost->UpdateAppearRect();
+    mHost->Invalidate();
+    return NOERROR;
+}
+
+ActivatableNotificationView::AnimatorListenerAdapter3::AnimatorListenerAdapter3(
+    /* [in] */ ActivatableNotificationView* host,
+    /* [in] */ IRunnable* runnable)
+    : mHost(host)
+    , mRunnable(runnable)
+    , mWasCancelled(FALSE)
+{}
+
+ECode ActivatableNotificationView::AnimatorListenerAdapter3::OnAnimationEnd(
+    /* [in] */ IAnimator* animation)
+{
+    if (mRunnable != NULL) {
+        mRunnable->Run();
+    }
+    if (!mWasCancelled) {
+        mHost->mAppearAnimationFraction = -1;
+        mHost->SetOutlineRect(NULL);
+        mHost->EnableAppearDrawing(FALSE);
+    }
+    return NOERROR;
+}
+
+ECode ActivatableNotificationView::AnimatorListenerAdapter3::OnAnimationStart(
+    /* [in] */ IAnimator* animation)
+{
+    mWasCancelled = FALSE;
+    return NOERROR;
+}
+
+ECode ActivatableNotificationView::AnimatorListenerAdapter3::OnAnimationCancel(
+    /* [in] */ IAnimator* animation)
+{
+    mWasCancelled = TRUE;
+    return NOERROR;
+}
+
+const Int64 ActivatableNotificationView::DOUBLETAP_TIMEOUT_MS = 1200;
+const Int32 ActivatableNotificationView::BACKGROUND_ANIMATION_LENGTH_MS = 220;
+const Int32 ActivatableNotificationView::ACTIVATE_ANIMATION_LENGTH = 220;
+const Float ActivatableNotificationView::HORIZONTAL_COLLAPSED_REST_PARTIAL = 0.05f;
+const Float ActivatableNotificationView::HORIZONTAL_ANIMATION_END = 0.2f;
+const Float ActivatableNotificationView::ALPHA_ANIMATION_END = 0.0f;
+const Float ActivatableNotificationView::HORIZONTAL_ANIMATION_START = 1.0f;
+const Float ActivatableNotificationView::VERTICAL_ANIMATION_START = 1.0f;
+AutoPtr<IInterpolator> ActivatableNotificationView::ACTIVATE_INVERSE_INTERPOLATOR;
+AutoPtr<IInterpolator> ActivatableNotificationView::ACTIVATE_INVERSE_ALPHA_INTERPOLATOR;
+Boolean ActivatableNotificationView::sInit = InitStatic();
+
+CAR_INTERFACE_IMPL(ActivatableNotificationView, ExpandableOutlineView, IActivatableNotificationView);
+ActivatableNotificationView::ActivatableNotificationView()
+    : mTintedRippleColor(0)
+    , mLowPriorityRippleColor(0)
+    , mNormalRippleColor(0)
+    , mDimmed(FALSE)
+    , mDark(FALSE)
+    , mBgTint(0)
+    , mRoundedRectCornerRadius(0)
+    , mActivated(FALSE)
+    , mDownX(0)
+    , mDownY(0)
+    , mTouchSlop(0)
+    , mAnimationTranslationY(0)
+    , mDrawingAppearAnimation(FALSE)
+    , mAppearAnimationFraction(-1.0f)
+    , mAppearAnimationTranslation(0)
+    , mShowingLegacyBackground(FALSE)
+    , mLegacyColor(0)
+    , mNormalColor(0)
+    , mLowPriorityColor(0)
+    , mIsBelowSpeedBump(FALSE)
+{
+    mTapTimeoutRunnable = new HostRunnable(this);
+    mDarkPaint = CreateDarkPaint();
+    CRectF::New((IRectF**)&mAppearAnimationRect);
+    CPaint::New((IPaint**)&mAppearPaint);
+}
+
+Boolean ActivatableNotificationView::InitStatic()
+{
+    CPathInterpolator::New(0.6f, 0, 0.5f, 1, (IInterpolator**)&ACTIVATE_INVERSE_INTERPOLATOR);
+    CPathInterpolator::New(0, 0, 0.5f, 1, (IInterpolator**)&ACTIVATE_INVERSE_ALPHA_INTERPOLATOR);
+    return TRUE;
+}
+
+ECode ActivatableNotificationView::constructor(
     /* [in] */ IContext* context,
     /* [in] */ IAttributeSet* attrs)
 {
     ExpandableOutlineView::constructor(context, attrs);
-    mTouchSlop = ViewConfiguration.get(context).getScaledTouchSlop();
-    mFastOutSlowInInterpolator =
-            AnimationUtils.loadInterpolator(context, android.R.interpolator.fast_out_slow_in);
-    mSlowOutFastInInterpolator = new PathInterpolator(0.8f, 0.0f, 0.6f, 1.0f);
-    mLinearOutSlowInInterpolator =
-            AnimationUtils.loadInterpolator(context, android.R.interpolator.linear_out_slow_in);
-    mSlowOutLinearInInterpolator = new PathInterpolator(0.8f, 0.0f, 1.0f, 1.0f);
-    mLinearInterpolator = new LinearInterpolator();
-    setClipChildren(FALSE);
-    setClipToPadding(FALSE);
-    mAppearAnimationFilter = new PorterDuffColorFilter(0, PorterDuff.Mode.SRC_ATOP);
-    mRoundedRectCornerRadius = getResources().getDimensionPixelSize(
-            R.dimen.notification_material_rounded_rect_radius);
-    mLegacyColor = getResources().getColor(R.color.notification_legacy_background_color);
-    mNormalColor = getResources().getColor(R.color.notification_material_background_color);
-    mLowPriorityColor = getResources().getColor(
-            R.color.notification_material_background_low_priority_color);
-    mTintedRippleColor = context.getResources().getColor(
-            R.color.notification_ripple_tinted_color);
-    mLowPriorityRippleColor = context.getResources().getColor(
-            R.color.notification_ripple_color_low_priority);
-    mNormalRippleColor = context.getResources().getColor(
-            R.color.notification_ripple_untinted_color);
+    AutoPtr<IViewConfigurationHelper> helper;
+    CViewConfigurationHelper::AcquireSingleton((IViewConfigurationHelper**)&helper);
+    AutoPtr<IViewConfiguration> vc;
+    helper->Get(context, (IViewConfiguration**)&vc);
+    Int32 tmp = 0;
+    vc->GetScaledTouchSlop(&tmp);
+    mTouchSlop = tmp;
+
+    AutoPtr<IAnimationUtils> au;
+    CAnimationUtils::AcquireSingleton((IAnimationUtils**)&au);
+    au->LoadInterpolator(context, Elastos::Droid::R::interpolator::fast_out_slow_in, (IInterpolator**)&mFastOutSlowInInterpolator);
+
+    CPathInterpolator::New(0.8f, 0.0f, 0.6f, 1.0f, (IInterpolator**)&mSlowOutFastInInterpolator);
+    au->LoadInterpolator(context, Elastos::Droid::R::interpolator::linear_out_slow_in, (IInterpolator**)&mLinearOutSlowInInterpolator);
+    CPathInterpolator::New(0.8f, 0.0f, 1.0f, 1.0f, (IInterpolator**)&mSlowOutLinearInInterpolator);
+    CLinearInterpolator::New((IInterpolator**)&mLinearInterpolator);
+    SetClipChildren(FALSE);
+    SetClipToPadding(FALSE);
+    CPorterDuffColorFilter::New(0, PorterDuffMode_SRC_ATOP, (IPorterDuffColorFilter**)&mAppearAnimationFilter);
+
+    AutoPtr<IResources> res;
+    GetResources((IResources**)&res);
+    res->GetDimensionPixelSize(R::dimen::notification_material_rounded_rect_radius, &mRoundedRectCornerRadius);
+    res->GetColor(R::color::notification_legacy_background_color, &mLegacyColor);
+    res->GetColor(R::color::notification_material_background_color, &mNormalColor);
+    res->GetColor(R::color::notification_material_background_low_priority_color, &mLowPriorityColor);
+
+    res = NULL;
+    context->GetResources((IResources**)&res);
+    res->GetColor(R::color::notification_ripple_tinted_color, &mTintedRippleColor);
+    res->GetColor(R::color::notification_ripple_color_low_priority, &mLowPriorityRippleColor);
+    res->GetColor(R::color::notification_ripple_untinted_color, &mNormalRippleColor);
+    return NOERROR;
 }
 
-// @Override
-protected CARAPI OnFinishInflate()
+ECode ActivatableNotificationView::OnFinishInflate()
 {
-    super.onFinishInflate();
-    mBackgroundNormal = (NotificationBackgroundView) findViewById(R.id.backgroundNormal);
-    mBackgroundDimmed = (NotificationBackgroundView) findViewById(R.id.backgroundDimmed);
-    mBackgroundNormal.setCustomBackground(R.drawable.notification_material_bg);
-    mBackgroundDimmed.setCustomBackground(R.drawable.notification_material_bg_dim);
-    updateBackground();
-    updateBackgroundTint();
+    ExpandableOutlineView::OnFinishInflate();
+    AutoPtr<IView> view;
+    FindViewById(R::id::backgroundNormal, (IView**)&view);
+    mBackgroundNormal = INotificationBackgroundView::Probe(view);
+    view = NULL;
+    FindViewById(R::id::backgroundDimmed, (IView**)&view);
+    mBackgroundDimmed = INotificationBackgroundView::Probe(view);
+    mBackgroundNormal->SetCustomBackground(R::drawable::notification_material_bg);
+    mBackgroundDimmed->SetCustomBackground(R::drawable::notification_material_bg_dim);
+    UpdateBackground();
+    UpdateBackgroundTint();
+    return NOERROR;
 }
 
-private final Runnable mTapTimeoutRunnable = new Runnable() {
-    @Override
-    public void run() {
-        makeInactive(TRUE /* animate */);
-    }
-};
-
-// @Override
-CARAPI OnTouchEvent(
+ECode ActivatableNotificationView::OnTouchEvent(
     /* [in] */ IMotionEvent* event,
     /* [out] */ Boolean* result)
 {
@@ -70,68 +257,77 @@ CARAPI OnTouchEvent(
         return NOERROR;
     }
 
-    return super::OnTouchEvent(event, result);
+    return ExpandableOutlineView::OnTouchEvent(event, result);
 }
 
-// @Override
-CARAPI DrawableHotspotChanged(
+ECode ActivatableNotificationView::DrawableHotspotChanged(
     /* [in] */ Float x,
     /* [in] */ Float y)
 {
     if (!mDimmed){
-        mBackgroundNormal.drawableHotspotChanged(x, y);
+        ((CNotificationBackgroundView*)mBackgroundNormal.Get())->DrawableHotspotChanged(x, y);
     }
     return NOERROR;
 }
 
-// @Override
-protected CARAPI DrawableStateChanged()
+ECode ActivatableNotificationView::DrawableStateChanged()
 {
-    super.drawableStateChanged();
+    ExpandableOutlineView::DrawableStateChanged();
+    AutoPtr<ArrayOf<Int32> > array;
+    GetDrawableState((ArrayOf<Int32>**)&array);
     if (mDimmed) {
-        mBackgroundDimmed->SetState(getDrawableState());
+        mBackgroundDimmed->SetState(array);
     }
     else {
-        mBackgroundNormal->SetState(getDrawableState());
+        mBackgroundNormal->SetState(array);
     }
     return NOERROR;
 }
 
-private CARAPI_(Boolean) HandleTouchEventDimmed(
+Boolean ActivatableNotificationView::HandleTouchEventDimmed(
     /* [in] */ IMotionEvent* event)
 {
-    Int32 action = event.getActionMasked();
+    Int32 action = 0;
+    event->GetActionMasked(&action);
     switch (action) {
-        case MotionEvent.ACTION_DOWN:
-            mDownX = event.getX();
-            mDownY = event.getY();
-            if (mDownY > GetActualHeight()) {
+        case IMotionEvent::ACTION_DOWN: {
+            event->GetX(&mDownX);
+            event->GetY(&mDownY);
+            Int32 value = 0;
+            if (mDownY > (GetActualHeight(&value), value)) {
                 return FALSE;
             }
             break;
-        case MotionEvent.ACTION_MOVE:
-            if (!isWithinTouchSlop(event)) {
-                makeInactive(TRUE /* animate */);
+        }
+        case IMotionEvent::ACTION_MOVE:
+            if (!IsWithinTouchSlop(event)) {
+                MakeInactive(TRUE /* animate */);
                 return FALSE;
             }
             break;
-        case MotionEvent.ACTION_UP:
-            if (isWithinTouchSlop(event)) {
+        case IMotionEvent::ACTION_UP: {
+            if (IsWithinTouchSlop(event)) {
                 if (!mActivated) {
-                    makeActive();
-                    postDelayed(mTapTimeoutRunnable, DOUBLETAP_TIMEOUT_MS);
-                } else {
-                    Boolean performed = performClick();
+                    MakeActive();
+                    Boolean tmp = FALSE;
+                    PostDelayed(mTapTimeoutRunnable, DOUBLETAP_TIMEOUT_MS, &tmp);
+                }
+                else {
+                    Boolean performed = FALSE;
+                    PerformClick(&performed);
                     if (performed) {
-                        removeCallbacks(mTapTimeoutRunnable);
+                        Boolean tmp = FALSE;
+                        RemoveCallbacks(mTapTimeoutRunnable, &tmp);
                     }
                 }
-            } else {
-                makeInactive(TRUE /* animate */);
+            }
+            else {
+                MakeInactive(TRUE /* animate */);
             }
             break;
-        case MotionEvent.ACTION_CANCEL:
-            makeInactive(TRUE /* animate */);
+        }
+        case IMotionEvent::ACTION_CANCEL:
+            MakeInactive(TRUE /* animate */);
             break;
         default:
             break;
@@ -139,111 +335,116 @@ private CARAPI_(Boolean) HandleTouchEventDimmed(
     return TRUE;
 }
 
-private CARAPI_(void) MakeActive()
+void ActivatableNotificationView::MakeActive()
 {
-    startActivateAnimation(FALSE /* reverse */);
+    StartActivateAnimation(FALSE /* reverse */);
     mActivated = TRUE;
     if (mOnActivatedListener != NULL) {
-        mOnActivatedListener.onActivated(this);
+        mOnActivatedListener->OnActivated(this);
     }
 }
 
-private CARAPI_(void) StartActivateAnimation(
+void ActivatableNotificationView::StartActivateAnimation(
     /* [in] */ Boolean reverse)
 {
-    if (!isAttachedToWindow()) {
+    Boolean is = FALSE;
+    if (IsAttachedToWindow(&is), !is) {
         return;
     }
-    Int32 widthHalf = mBackgroundNormal.GetWidth()/2;
-    Int32 heightHalf = mBackgroundNormal.GetActualHeight()/2;
-    Float radius = (Float) Math.sqrt(widthHalf*widthHalf + heightHalf*heightHalf);
-    Animator animator;
+    Int32 tmp = 0;
+    Int32 widthHalf = (IView::Probe(mBackgroundNormal)->GetWidth(&tmp), tmp) / 2;
+    Int32 heightHalf = (mBackgroundNormal->GetActualHeight(&tmp), tmp) / 2;
+    Float radius = (Float) Elastos::Core::Math::Sqrt(widthHalf * widthHalf + heightHalf * heightHalf);
+    AutoPtr<IAnimator> animator;
+    AutoPtr<IViewAnimationUtilsHelper> helper;
+    CViewAnimationUtilsHelper::AcquireSingleton((IViewAnimationUtilsHelper**)&helper);
     if (reverse) {
-        animator = ViewAnimationUtils.createCircularReveal(mBackgroundNormal,
-                widthHalf, heightHalf, radius, 0);
-    } else {
-        animator = ViewAnimationUtils.createCircularReveal(mBackgroundNormal,
-                widthHalf, heightHalf, 0, radius);
+        helper->CreateCircularReveal(IView::Probe(mBackgroundNormal),
+                widthHalf, heightHalf, radius, 0, (IAnimator**)&animator);
     }
-    mBackgroundNormal.setVisibility(View.VISIBLE);
-    Interpolator interpolator;
-    Interpolator alphaInterpolator;
+    else {
+        helper->CreateCircularReveal(IView::Probe(mBackgroundNormal),
+                widthHalf, heightHalf, 0, radius, (IAnimator**)&animator);
+    }
+    IView::Probe(mBackgroundNormal)->SetVisibility(IView::VISIBLE);
+    AutoPtr<IInterpolator> interpolator;
+    AutoPtr<IInterpolator> alphaInterpolator;
     if (!reverse) {
         interpolator = mLinearOutSlowInInterpolator;
         alphaInterpolator = mLinearOutSlowInInterpolator;
-    } else {
+    }
+    else {
         interpolator = ACTIVATE_INVERSE_INTERPOLATOR;
         alphaInterpolator = ACTIVATE_INVERSE_ALPHA_INTERPOLATOR;
     }
-    animator.setInterpolator(interpolator);
-    animator.setDuration(ACTIVATE_ANIMATION_LENGTH);
+    animator->SetInterpolator(ITimeInterpolator::Probe(interpolator));
+    animator->SetDuration(ACTIVATE_ANIMATION_LENGTH);
     if (reverse) {
-        mBackgroundNormal.setAlpha(1f);
-        animator.addListener(new AnimatorListenerAdapter() {
-            @Override
-            public void onAnimationEnd(Animator animation) {
-                if (mDimmed) {
-                    mBackgroundNormal.setVisibility(View.INVISIBLE);
-                }
-            }
-        });
-        animator.start();
-    } else {
-        mBackgroundNormal.setAlpha(0.4f);
-        animator.start();
+        IView::Probe(mBackgroundNormal)->SetAlpha(1.f);
+        AutoPtr<AnimatorListenerAdapter1> adapter = new AnimatorListenerAdapter1(this);
+        animator->AddListener(adapter);
+        animator->Start();
     }
-    mBackgroundNormal.animate()
-            .alpha(reverse ? 0f : 1f)
-            .setInterpolator(alphaInterpolator)
-            .setDuration(ACTIVATE_ANIMATION_LENGTH);
+    else {
+        IView::Probe(mBackgroundNormal)->SetAlpha(0.4f);
+        animator->Start();
+    }
+
+    AutoPtr<IViewPropertyAnimator> anim;
+    IView::Probe(mBackgroundNormal)->Animate((IViewPropertyAnimator**)&anim);
+
+    anim->Alpha(reverse ? 0.f : 1.f);
+    anim->SetInterpolator(ITimeInterpolator::Probe(alphaInterpolator));
+    anim->SetDuration(ACTIVATE_ANIMATION_LENGTH);
 }
 
-/**
- * Cancels the hotspot and makes the notification inactive.
- */
-CARAPI MakeInactive(
+ECode ActivatableNotificationView::MakeInactive(
     /* [in] */ Boolean animate)
 {
     if (mActivated) {
         if (mDimmed) {
             if (animate) {
-                startActivateAnimation(TRUE /* reverse */);
+                StartActivateAnimation(TRUE /* reverse */);
             }
             else {
-                mBackgroundNormal.setVisibility(View.INVISIBLE);
+                IView::Probe(mBackgroundNormal)->SetVisibility(IView::INVISIBLE);
             }
         }
         mActivated = FALSE;
     }
     if (mOnActivatedListener != NULL) {
-        mOnActivatedListener.onActivationReset(this);
+        mOnActivatedListener->OnActivationReset(this);
     }
-    removeCallbacks(mTapTimeoutRunnable);
+    Boolean tmp = FALSE;
+    RemoveCallbacks(mTapTimeoutRunnable, &tmp);
+    return NOERROR;
 }
 
-private CARAPI_(Boolean) IsWithinTouchSlop(
+Boolean ActivatableNotificationView::IsWithinTouchSlop(
     /* [in] */ IMotionEvent* event)
 {
-    return Math.abs(event.getX() - mDownX) < mTouchSlop
-            && Math.abs(event.getY() - mDownY) < mTouchSlop;
+    Float x = 0, y = 0;
+    return Elastos::Core::Math::Abs((event->GetX(&x), x) - mDownX) < mTouchSlop
+            && Elastos::Core::Math::Abs((event->GetY(&y), y) - mDownY) < mTouchSlop;
 }
 
-CARAPI SetDimmed(
+ECode ActivatableNotificationView::SetDimmed(
     /* [in] */ Boolean dimmed,
     /* [in] */ Boolean fade)
 {
     if (mDimmed != dimmed) {
         mDimmed = dimmed;
         if (fade) {
-            fadeBackground();
+            FadeBackground();
         }
         else {
-            updateBackground();
+            UpdateBackground();
         }
     }
+    return NOERROR;
 }
 
-CARAPI SetDark(
+ECode ActivatableNotificationView::SetDark(
     /* [in] */ Boolean dark,
     /* [in] */ Boolean fade)
 {
@@ -251,32 +452,43 @@ CARAPI SetDark(
     if (mDark != dark) {
         mDark = dark;
         if (mDark) {
-            setLayerType(View.LAYER_TYPE_HARDWARE, mDarkPaint);
+            SetLayerType(IView::LAYER_TYPE_HARDWARE, mDarkPaint);
         }
         else {
-            setLayerType(View.LAYER_TYPE_NONE, NULL);
+            SetLayerType(IView::LAYER_TYPE_NONE, NULL);
         }
     }
+    return NOERROR;
 }
 
-private static CARAPI_(AutoPtr<IPaint>) CreateDarkPaint()
+AutoPtr<IPaint> ActivatableNotificationView::CreateDarkPaint()
 {
-    final Paint p = new Paint();
-    final Float[] invert = {
-        -1f,  0f,  0f, 1f, 1f,
-         0f, -1f,  0f, 1f, 1f,
-         0f,  0f, -1f, 1f, 1f,
-         0f,  0f,  0f, 1f, 0f
+    AutoPtr<IPaint> p;
+    CPaint::New((IPaint**)&p);
+    Float invert[] = {
+        -1.f,  0.f,  0.f, 1.f, 1.f,
+         0.f, -1.f,  0.f, 1.f, 1.f,
+         0.f,  0.f, -1.f, 1.f, 1.f,
+         0.f,  0.f,  0.f, 1.f, 0.f
     };
-    final ColorMatrix m = new ColorMatrix(invert);
-    final ColorMatrix grayscale = new ColorMatrix();
-    grayscale.setSaturation(0);
-    m.preConcat(grayscale);
-    p.setColorFilter(new ColorMatrixColorFilter(m));
+
+    const Int32 N = sizeof(invert) / sizeof(invert[0]);
+    AutoPtr<ArrayOf<Float> > a = ArrayOf<Float>::Alloc(N);
+    a->Copy(invert, N);
+
+    AutoPtr<IColorMatrix> m;
+    CColorMatrix::New(*a, (IColorMatrix**)&m);
+    AutoPtr<IColorMatrix> grayscale;
+    CColorMatrix::New((IColorMatrix**)&grayscale);
+    grayscale->SetSaturation(0);
+    m->PreConcat(grayscale);
+    AutoPtr<IColorMatrixColorFilter> filter;
+    CColorMatrixColorFilter::New(m, (IColorMatrixColorFilter**)&filter);
+    p->SetColorFilter(IColorFilter::Probe(filter));
     return p;
 }
 
-CARAPI SetShowingLegacyBackground(
+ECode ActivatableNotificationView::SetShowingLegacyBackground(
     /* [in] */ Boolean showing)
 {
     mShowingLegacyBackground = showing;
@@ -284,11 +496,10 @@ CARAPI SetShowingLegacyBackground(
     return NOERROR;
 }
 
-// @Override
-CARAPI SetBelowSpeedBump(
+ECode ActivatableNotificationView::SetBelowSpeedBump(
     /* [in] */ Boolean below)
 {
-    super.setBelowSpeedBump(below);
+    ExpandableOutlineView::SetBelowSpeedBump(below);
     if (below != mIsBelowSpeedBump) {
         mIsBelowSpeedBump = below;
         UpdateBackgroundTint();
@@ -296,10 +507,7 @@ CARAPI SetBelowSpeedBump(
     return NOERROR;
 }
 
-/**
- * Sets the tint color of the background
- */
-CARAPI SetTintColor(
+ECode ActivatableNotificationView::SetTintColor(
     /* [in] */ Int32 color)
 {
     mBgTint = color;
@@ -307,120 +515,122 @@ CARAPI SetTintColor(
     return NOERROR;
 }
 
-private CARAPI_(void) UpdateBackgroundTint()
+void ActivatableNotificationView::UpdateBackgroundTint()
 {
-    Int32 color = getBackgroundColor();
-    Int32 rippleColor = getRippleColor();
+    Int32 color = GetBackgroundColor();
+    Int32 rippleColor = GetRippleColor();
     if (color == mNormalColor) {
         // We don't need to tint a normal notification
         color = 0;
     }
-    mBackgroundDimmed.setTint(color);
-    mBackgroundNormal.setTint(color);
-    mBackgroundDimmed.setRippleColor(rippleColor);
-    mBackgroundNormal.setRippleColor(rippleColor);
+    mBackgroundDimmed->SetTint(color);
+    mBackgroundNormal->SetTint(color);
+    mBackgroundDimmed->SetRippleColor(rippleColor);
+    mBackgroundNormal->SetRippleColor(rippleColor);
 }
 
-private CARAPI_(void) FadeBackground()
+void ActivatableNotificationView::FadeBackground()
 {
-    mBackgroundNormal.animate().cancel();
+    AutoPtr<IViewPropertyAnimator> anim;
+    IView::Probe(mBackgroundNormal)->Animate((IViewPropertyAnimator**)&anim);
+    anim->Cancel();
     if (mDimmed) {
-        mBackgroundDimmed.setVisibility(View.VISIBLE);
-    } else {
-        mBackgroundNormal.setVisibility(View.VISIBLE);
+        IView::Probe(mBackgroundDimmed)->SetVisibility(IView::VISIBLE);
     }
-    Float startAlpha = mDimmed ? 1f : 0;
-    Float endAlpha = mDimmed ? 0 : 1f;
+    else {
+        IView::Probe(mBackgroundNormal)->SetVisibility(IView::VISIBLE);
+    }
+    Float startAlpha = mDimmed ? 1.f : 0;
+    Float endAlpha = mDimmed ? 0 : 1.f;
     Int32 duration = BACKGROUND_ANIMATION_LENGTH_MS;
     // Check whether there is already a background animation running.
     if (mBackgroundAnimator != NULL) {
-        startAlpha = (Float) mBackgroundAnimator.getAnimatedValue();
-        duration = (Int32) mBackgroundAnimator.getCurrentPlayTime();
-        mBackgroundAnimator.removeAllListeners();
-        mBackgroundAnimator.cancel();
+        AutoPtr<IInterface> obj;
+        IValueAnimator::Probe(mBackgroundAnimator)->GetAnimatedValue((IInterface**)&obj);
+        IFloat::Probe(obj)->GetValue(&startAlpha);
+        Int64 lv = 0;
+        duration = (Int32) (IValueAnimator::Probe(mBackgroundAnimator)->GetCurrentPlayTime(&lv), lv);
+        IAnimator::Probe(mBackgroundAnimator)->RemoveAllListeners();
+        IAnimator::Probe(mBackgroundAnimator)->Cancel();
         if (duration <= 0) {
-            updateBackground();
+            UpdateBackground();
             return;
         }
     }
-    mBackgroundNormal.setAlpha(startAlpha);
-    mBackgroundAnimator =
-            ObjectAnimator.ofFloat(mBackgroundNormal, View.ALPHA, startAlpha, endAlpha);
-    mBackgroundAnimator.setInterpolator(mFastOutSlowInInterpolator);
-    mBackgroundAnimator.setDuration(duration);
-    mBackgroundAnimator.addListener(new AnimatorListenerAdapter() {
-        @Override
-        public void onAnimationEnd(Animator animation) {
-            if (mDimmed) {
-                mBackgroundNormal.setVisibility(View.INVISIBLE);
-            } else {
-                mBackgroundDimmed.setVisibility(View.INVISIBLE);
-            }
-            mBackgroundAnimator = NULL;
-        }
-    });
-    mBackgroundAnimator.start();
+    IView::Probe(mBackgroundNormal)->SetAlpha(startAlpha);
+    AutoPtr<IObjectAnimatorHelper> helper;
+    CObjectAnimatorHelper::AcquireSingleton((IObjectAnimatorHelper**)&helper);
+    AutoPtr< ArrayOf<Float> > floats = ArrayOf<Float>::Alloc(1);
+    floats->Set(0, startAlpha);
+    floats->Set(1, endAlpha);
+    helper->OfFloat(mBackgroundNormal, View::ALPHA, floats, (IObjectAnimator**)&mBackgroundAnimator);
+    IAnimator::Probe(mBackgroundAnimator)->SetInterpolator(ITimeInterpolator::Probe(mFastOutSlowInInterpolator));
+    IAnimator::Probe(mBackgroundAnimator)->SetDuration(duration);
+    AutoPtr<AnimatorListenerAdapter2> adapter = new AnimatorListenerAdapter2(this);
+    IAnimator::Probe(mBackgroundAnimator)->AddListener(adapter);
+    IAnimator::Probe(mBackgroundAnimator)->Start();
 }
 
-private CARAPI_(void) UpdateBackground()
+void ActivatableNotificationView::UpdateBackground()
 {
     if (mDimmed) {
-        mBackgroundDimmed.setVisibility(View.VISIBLE);
-        mBackgroundNormal.setVisibility(View.INVISIBLE);
-    } else {
-        cancelFadeAnimations();
-        mBackgroundDimmed.setVisibility(View.INVISIBLE);
-        mBackgroundNormal.setVisibility(View.VISIBLE);
-        mBackgroundNormal.setAlpha(1f);
-        removeCallbacks(mTapTimeoutRunnable);
+        IView::Probe(mBackgroundDimmed)->SetVisibility(IView::VISIBLE);
+        IView::Probe(mBackgroundNormal)->SetVisibility(IView::INVISIBLE);
+    }
+    else {
+        CancelFadeAnimations();
+        IView::Probe(mBackgroundDimmed)->SetVisibility(IView::INVISIBLE);
+        IView::Probe(mBackgroundNormal)->SetVisibility(IView::VISIBLE);
+        IView::Probe(mBackgroundNormal)->SetAlpha(1.f);
+        Boolean tmp = FALSE;
+        RemoveCallbacks(mTapTimeoutRunnable, &tmp);
     }
 }
 
-private CARAPI_(void) CancelFadeAnimations()
+void ActivatableNotificationView::CancelFadeAnimations()
 {
     if (mBackgroundAnimator != NULL) {
-        mBackgroundAnimator.cancel();
+        IAnimator::Probe(mBackgroundAnimator)->Cancel();
     }
-    mBackgroundNormal.animate().cancel();
+    AutoPtr<IViewPropertyAnimator> anim;
+    IView::Probe(mBackgroundNormal)->Animate((IViewPropertyAnimator**)&anim);
+    anim->Cancel();
 }
 
-// @Override
-protected CARAPI OnLayout(
+ECode ActivatableNotificationView::OnLayout(
     /* [in] */ Boolean changed,
     /* [in] */ Int32 left,
     /* [in] */ Int32 top,
     /* [in] */ Int32 right,
     /* [in] */ Int32 bottom)
 {
-    super.onLayout(changed, left, top, right, bottom);
-    SetPivotX(GetWidth() / 2);
+    ExpandableOutlineView::OnLayout(changed, left, top, right, bottom);
+    Int32 width = 0;
+    SetPivotX((GetWidth(&width), width) / 2);
     return NOERROR;
 }
 
-// @Override
-CARAPI SetActualHeight(
+ECode ActivatableNotificationView::SetActualHeight(
     /* [in] */ Int32 actualHeight,
     /* [in] */ Boolean notifyListeners)
 {
-    super.setActualHeight(actualHeight, notifyListeners);
-    setPivotY(actualHeight / 2);
+    ExpandableOutlineView::SetActualHeight(actualHeight, notifyListeners);
+    SetPivotY(actualHeight / 2);
     mBackgroundNormal->SetActualHeight(actualHeight);
     mBackgroundDimmed->SetActualHeight(actualHeight);
     return NOERROR;
 }
 
-// @Override
-CARAPI SetClipTopAmount(
+ECode ActivatableNotificationView::SetClipTopAmount(
     /* [in] */ Int32 clipTopAmount)
 {
-    super.setClipTopAmount(clipTopAmount);
-    mBackgroundNormal.setClipTopAmount(clipTopAmount);
-    mBackgroundDimmed.setClipTopAmount(clipTopAmount);
+    ExpandableOutlineView::SetClipTopAmount(clipTopAmount);
+    mBackgroundNormal->SetClipTopAmount(clipTopAmount);
+    mBackgroundDimmed->SetClipTopAmount(clipTopAmount);
     return NOERROR;
 }
 
-// @Override
-CARAPI PerformRemoveAnimation(
+ECode ActivatableNotificationView::PerformRemoveAnimation(
     /* [in] */ Int64 duration,
     /* [in] */ Float translationDirection,
     /* [in] */ IRunnable* onFinishedRunnable)
@@ -431,13 +641,12 @@ CARAPI PerformRemoveAnimation(
                 0, duration, onFinishedRunnable);
     }
     else if (onFinishedRunnable != NULL) {
-        onFinishedRunnable.run();
+        onFinishedRunnable->Run();
     }
     return NOERROR;
 }
 
-// @Override
-CARAPI PerformAddAnimation(
+ECode ActivatableNotificationView::PerformAddAnimation(
     /* [in] */ Int64 delay,
     /* [in] */ Int64 duration)
 {
@@ -448,7 +657,7 @@ CARAPI PerformAddAnimation(
     return NOERROR;
 }
 
-private CARAPI_(void) StartAppearAnimation(
+void ActivatableNotificationView::StartAppearAnimation(
     /* [in] */ Boolean isAppearing,
     /* [in] */ Float translationDirection,
     /* [in] */ Int64 delay,
@@ -456,7 +665,7 @@ private CARAPI_(void) StartAppearAnimation(
     /* [in] */ IRunnable* onFinishedRunnable)
 {
     if (mAppearAnimator != NULL) {
-        mAppearAnimator.cancel();
+        IAnimator::Probe(mAppearAnimator)->Cancel();
     }
     mAnimationTranslationY = translationDirection * mActualHeight;
     if (mAppearAnimationFraction == -1.0f) {
@@ -464,7 +673,8 @@ private CARAPI_(void) StartAppearAnimation(
         if (isAppearing) {
             mAppearAnimationFraction = 0.0f;
             mAppearAnimationTranslation = mAnimationTranslationY;
-        } else {
+        }
+        else {
             mAppearAnimationFraction = 1.0f;
             mAppearAnimationTranslation = 0;
         }
@@ -475,114 +685,102 @@ private CARAPI_(void) StartAppearAnimation(
         mCurrentAppearInterpolator = mSlowOutFastInInterpolator;
         mCurrentAlphaInterpolator = mLinearOutSlowInInterpolator;
         targetValue = 1.0f;
-    } else {
+    }
+    else {
         mCurrentAppearInterpolator = mFastOutSlowInInterpolator;
         mCurrentAlphaInterpolator = mSlowOutLinearInInterpolator;
         targetValue = 0.0f;
     }
-    mAppearAnimator = ValueAnimator.ofFloat(mAppearAnimationFraction,
-            targetValue);
-    mAppearAnimator.setInterpolator(mLinearInterpolator);
-    mAppearAnimator.setDuration(
-            (Int64) (duration * Math.abs(mAppearAnimationFraction - targetValue)));
-    mAppearAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-        @Override
-        public void onAnimationUpdate(ValueAnimator animation) {
-            mAppearAnimationFraction = (Float) animation.getAnimatedValue();
-            updateAppearAnimationAlpha();
-            updateAppearRect();
-            invalidate();
-        }
-    });
+
+    AutoPtr<IValueAnimatorHelper> helper;
+    CValueAnimatorHelper::AcquireSingleton((IValueAnimatorHelper**)&helper);
+    AutoPtr<ArrayOf<Float> > floats = ArrayOf<Float>::Alloc(2);
+    (*floats)[0] = mAppearAnimationFraction;
+    (*floats)[1] = targetValue;
+    helper->OfFloat(floats, (IValueAnimator**)&mAppearAnimator);
+    IAnimator::Probe(mAppearAnimator)->SetInterpolator(ITimeInterpolator::Probe(mLinearInterpolator));
+    IAnimator::Probe(mAppearAnimator)->SetDuration(
+            (Int64) (duration * Elastos::Core::Math::Abs(mAppearAnimationFraction - targetValue)));
+
+    AutoPtr<AnimatorUpdateListener> listener = new AnimatorUpdateListener(this);
+    mAppearAnimator->AddUpdateListener(listener);
     if (delay > 0) {
         // we need to apply the initial state already to avoid drawn frames in the wrong state
-        updateAppearAnimationAlpha();
-        updateAppearRect();
-        mAppearAnimator.setStartDelay(delay);
+        UpdateAppearAnimationAlpha();
+        UpdateAppearRect();
+        IAnimator::Probe(mAppearAnimator)->SetStartDelay(delay);
     }
-    mAppearAnimator.addListener(new AnimatorListenerAdapter() {
-        private Boolean mWasCancelled;
 
-        @Override
-        public void onAnimationEnd(Animator animation) {
-            if (onFinishedRunnable != NULL) {
-                onFinishedRunnable.run();
-            }
-            if (!mWasCancelled) {
-                mAppearAnimationFraction = -1;
-                setOutlineRect(NULL);
-                EnableAppearDrawing(FALSE);
-            }
-        }
-
-        @Override
-        public void onAnimationStart(Animator animation) {
-            mWasCancelled = FALSE;
-        }
-
-        @Override
-        public void onAnimationCancel(Animator animation) {
-            mWasCancelled = TRUE;
-        }
-    });
-    mAppearAnimator.start();
+    AutoPtr<AnimatorListenerAdapter3> adapter = new AnimatorListenerAdapter3(this, onFinishedRunnable);
+    IAnimator::Probe(mAppearAnimator)->AddListener(adapter);
+    IAnimator::Probe(mAppearAnimator)->Start();
 }
 
-private CARAPI_(void) UpdateAppearRect()
+void ActivatableNotificationView::UpdateAppearRect()
 {
     Float inverseFraction = (1.0f - mAppearAnimationFraction);
-    Float translationFraction = mCurrentAppearInterpolator.getInterpolation(inverseFraction);
+    Float translationFraction = 0;
+    ITimeInterpolator::Probe(mCurrentAppearInterpolator)->GetInterpolation(inverseFraction, &translationFraction);
     Float translateYTotalAmount = translationFraction * mAnimationTranslationY;
     mAppearAnimationTranslation = translateYTotalAmount;
 
     // handle width animation
     Float widthFraction = (inverseFraction - (1.0f - HORIZONTAL_ANIMATION_START))
             / (HORIZONTAL_ANIMATION_START - HORIZONTAL_ANIMATION_END);
-    widthFraction = Math.min(1.0f, Math.max(0.0f, widthFraction));
-    widthFraction = mCurrentAppearInterpolator.getInterpolation(widthFraction);
-    Float left = (GetWidth() * (0.5f - HORIZONTAL_COLLAPSED_REST_PARTIAL / 2.0f) *
+    widthFraction = Elastos::Core::Math::Min(1.0f, Elastos::Core::Math::Max(0.0f, widthFraction));
+    ITimeInterpolator::Probe(mCurrentAppearInterpolator)->GetInterpolation(widthFraction, &widthFraction);
+    Int32 width = 0;
+    GetWidth(&width);
+    Float left = (width * (0.5f - HORIZONTAL_COLLAPSED_REST_PARTIAL / 2.0f) *
             widthFraction);
-    Float right = GetWidth() - left;
+    Float right = width - left;
 
     // handle top animation
     Float heightFraction = (inverseFraction - (1.0f - VERTICAL_ANIMATION_START)) /
             VERTICAL_ANIMATION_START;
-    heightFraction = Math.max(0.0f, heightFraction);
-    heightFraction = mCurrentAppearInterpolator.getInterpolation(heightFraction);
+    heightFraction = Elastos::Core::Math::Max(0.0f, heightFraction);
+    ITimeInterpolator::Probe(mCurrentAppearInterpolator)->GetInterpolation(heightFraction, &heightFraction);
 
-    Float top;
-    Float bottom;
+    Float top = 0;
+    Float bottom = 0;
     if (mAnimationTranslationY > 0.0f) {
         bottom = mActualHeight - heightFraction * mAnimationTranslationY * 0.1f
                 - translateYTotalAmount;
         top = bottom * heightFraction;
-    } else {
+    }
+    else {
         top = heightFraction * (mActualHeight + mAnimationTranslationY) * 0.1f -
                 translateYTotalAmount;
         bottom = mActualHeight * (1 - heightFraction) + top * heightFraction;
     }
-    mAppearAnimationRect.set(left, top, right, bottom);
-    setOutlineRect(left, top + mAppearAnimationTranslation, right,
+    mAppearAnimationRect->Set(left, top, right, bottom);
+    SetOutlineRect(left, top + mAppearAnimationTranslation, right,
             bottom + mAppearAnimationTranslation);
 }
 
-private CARAPI_(void) UpdateAppearAnimationAlpha()
+void ActivatableNotificationView::UpdateAppearAnimationAlpha()
 {
-    Int32 backgroundColor = getBackgroundColor();
+    Int32 backgroundColor = GetBackgroundColor();
     if (backgroundColor != -1) {
         Float contentAlphaProgress = mAppearAnimationFraction;
         contentAlphaProgress = contentAlphaProgress / (1.0f - ALPHA_ANIMATION_END);
-        contentAlphaProgress = Math.min(1.0f, contentAlphaProgress);
-        contentAlphaProgress = mCurrentAlphaInterpolator.getInterpolation(contentAlphaProgress);
-        Int32 sourceColor = Color.argb((Int32) (255 * (1.0f - contentAlphaProgress)),
-                Color.red(backgroundColor), Color.green(backgroundColor),
-                Color.blue(backgroundColor));
-        mAppearAnimationFilter.setColor(sourceColor);
-        mAppearPaint.setColorFilter(mAppearAnimationFilter);
+        contentAlphaProgress = Elastos::Core::Math::Min(1.0f, contentAlphaProgress);
+        ITimeInterpolator::Probe(mCurrentAlphaInterpolator)->GetInterpolation(contentAlphaProgress, &contentAlphaProgress);
+
+        AutoPtr<IColor> color;
+        CColor::AcquireSingleton((IColor**)&color);
+        Int32 red = 0, green = 0, blue = 0;
+        color->Red(backgroundColor, &red);
+        color->Blue(backgroundColor, &blue);
+        color->Green(backgroundColor, &green);
+        Int32 sourceColor = 0;
+        color->Argb((Int32) (255 * (1.0f - contentAlphaProgress)), red, green, blue, &sourceColor);
+        mAppearAnimationFilter->SetColor(sourceColor);
+        mAppearPaint->SetColorFilter(IColorFilter::Probe(mAppearAnimationFilter));
     }
 }
 
-private CARAPI_(Int32) GetBackgroundColor()
+Int32 ActivatableNotificationView::GetBackgroundColor()
 {
     if (mBgTint != 0) {
         return mBgTint;
@@ -597,7 +795,7 @@ private CARAPI_(Int32) GetBackgroundColor()
     return mNormalColor;
 }
 
-private CARAPI_(Int32) GetRippleColor()
+Int32 ActivatableNotificationView::GetRippleColor()
 {
     if (mBgTint != 0) {
         return mTintedRippleColor;
@@ -611,66 +809,68 @@ private CARAPI_(Int32) GetRippleColor()
     return mNormalRippleColor;
 }
 
-/**
- * When we draw the appear animation, we render the view in a bitmap and render this bitmap
- * as a shader of a rect. This call creates the Bitmap and switches the drawing mode,
- * such that the normal drawing of the views does not happen anymore.
- *
- * @param enable Should it be enabled.
- */
-private CARAPI_(void) EnableAppearDrawing(
+void ActivatableNotificationView::EnableAppearDrawing(
     /* [in] */ Boolean enable)
 {
     if (enable != mDrawingAppearAnimation) {
         if (enable) {
-            if (GetWidth() == 0 || GetActualHeight() == 0) {
+            Int32 width = 0, height = 0;
+            if ((GetWidth(&width), width) == 0 || (GetActualHeight(&height), height) == 0) {
                 // TODO: This should not happen, but it can during expansion. Needs
                 // investigation
                 return;
             }
-            Bitmap bitmap = Bitmap.createBitmap(GetWidth(), GetActualHeight(),
-                    Bitmap.Config.ARGB_8888);
-            Canvas canvas = new Canvas(bitmap);
-            draw(canvas);
-            mAppearPaint.setShader(new BitmapShader(bitmap, Shader.TileMode.CLAMP,
-                    Shader.TileMode.CLAMP));
-        } else {
-            mAppearPaint.setShader(NULL);
+            GetActualHeight(&height);
+            AutoPtr<IBitmapHelper> helper;
+            CBitmapHelper::AcquireSingleton((IBitmapHelper**)&helper);
+            AutoPtr<IBitmap> bitmap;
+            helper->CreateBitmap(width, height, BitmapConfig_ARGB_8888, (IBitmap**)&bitmap);
+            AutoPtr<ICanvas> canvas;
+            CCanvas::New(bitmap, (ICanvas**)&canvas);
+            Draw(canvas);
+            AutoPtr<IShader> shader;
+            CBitmapShader::New(bitmap, ShaderTileMode_CLAMP,
+                    ShaderTileMode_CLAMP, (IShader**)&shader);
+            mAppearPaint->SetShader(shader);
+        }
+        else {
+            mAppearPaint->SetShader(NULL);
         }
         mDrawingAppearAnimation = enable;
-        invalidate();
+        Invalidate();
     }
 }
 
-// @Override
-protected CARAPI_(void) DispatchDraw(
+void ActivatableNotificationView::DispatchDraw(
     /* [in] */ ICanvas* canvas)
 {
     if (!mDrawingAppearAnimation) {
-        super.dispatchDraw(canvas);
+        ExpandableOutlineView::DispatchDraw(canvas);
     }
     else {
-        drawAppearRect(canvas);
+        DrawAppearRect(canvas);
     }
 }
 
-private CARAPI_(void) DrawAppearRect(
+void ActivatableNotificationView::DrawAppearRect(
     /* [in] */ ICanvas* canvas)
 {
-    canvas.save();
-    canvas.translate(0, mAppearAnimationTranslation);
-    canvas.drawRoundRect(mAppearAnimationRect, mRoundedRectCornerRadius,
+    Int32 count = 0;
+    canvas->Save(&count);
+    canvas->Translate(0, mAppearAnimationTranslation);
+    canvas->DrawRoundRect(mAppearAnimationRect, mRoundedRectCornerRadius,
             mRoundedRectCornerRadius, mAppearPaint);
-    canvas.restore();
+    canvas->Restore();
 }
 
-CARAPI SetOnActivatedListener(
+ECode ActivatableNotificationView::SetOnActivatedListener(
     /* [in] */ IActivatableNotificationViewOnActivatedListener* onActivatedListener)
 {
     mOnActivatedListener = onActivatedListener;
+    return NOERROR;
 }
 
-CARAPI Reset()
+ECode ActivatableNotificationView::Reset()
 {
     SetTintColor(0);
     SetShowingLegacyBackground(FALSE);

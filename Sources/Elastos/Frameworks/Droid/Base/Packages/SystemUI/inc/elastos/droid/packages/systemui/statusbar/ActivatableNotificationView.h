@@ -3,6 +3,17 @@
 #define  __ELASTOS_DROID_PACKAGES_SYSTEMUI_STATUSBAR_ACTIVATABLENOTIFICATIONVIEW_H__
 
 #include "elastos/droid/packages/systemui/statusbar/ExpandableOutlineView.h"
+#include <elastos/droid/animation/AnimatorListenerAdapter.h>
+#include "Elastos.Droid.Animation.h"
+#include "Elastos.Droid.View.h"
+
+using Elastos::Droid::Animation::AnimatorListenerAdapter;
+using Elastos::Droid::Animation::IAnimator;
+using Elastos::Droid::Animation::IAnimatorUpdateListener;
+using Elastos::Droid::Animation::IObjectAnimator;
+using Elastos::Droid::Animation::IValueAnimator;
+using Elastos::Droid::Graphics::IPorterDuffColorFilter;
+using Elastos::Droid::View::Animation::IInterpolator;
 
 namespace Elastos {
 namespace Droid {
@@ -18,6 +29,94 @@ class ActivatableNotificationView
     : public ExpandableOutlineView
     , public IActivatableNotificationView
 {
+private:
+    class HostRunnable: public Runnable
+    {
+    public:
+        HostRunnable(
+            /* [in] */ ActivatableNotificationView* host);
+
+        // @Override
+        CARAPI Run();
+
+    private:
+        ActivatableNotificationView* mHost;
+    };
+
+    class AnimatorListenerAdapter1
+        : public AnimatorListenerAdapter
+    {
+    public:
+        AnimatorListenerAdapter1(
+            /* [in] */ ActivatableNotificationView* host);
+
+        // @Override
+        CARAPI OnAnimationEnd(
+            /* [in] */ IAnimator* animation);
+
+    private:
+        ActivatableNotificationView* mHost;
+    };
+
+    class AnimatorListenerAdapter2
+        : public AnimatorListenerAdapter
+    {
+    public:
+        AnimatorListenerAdapter2(
+            /* [in] */ ActivatableNotificationView* host);
+
+        // @Override
+        CARAPI OnAnimationEnd(
+            /* [in] */ IAnimator* animation);
+
+    private:
+        ActivatableNotificationView* mHost;
+    };
+
+    class AnimatorUpdateListener
+        : public Object
+        , public IAnimatorUpdateListener
+    {
+    public:
+        CAR_INTERFACE_DECL();
+
+        AnimatorUpdateListener(
+            /* [in] */ ActivatableNotificationView* host);
+
+        // @Override
+        CARAPI OnAnimationUpdate(
+            /* [in] */ IValueAnimator* animation);
+
+    private:
+        ActivatableNotificationView* mHost;
+    };
+
+    class AnimatorListenerAdapter3
+        : public AnimatorListenerAdapter
+    {
+    public:
+        AnimatorListenerAdapter3(
+            /* [in] */ ActivatableNotificationView* host,
+            /* [in] */ IRunnable* runnable);
+
+        // @Override
+        CARAPI OnAnimationEnd(
+            /* [in] */ IAnimator* animation);
+
+        // @Override
+        CARAPI OnAnimationStart(
+            /* [in] */ IAnimator* animation);
+
+        // @Override
+        CARAPI OnAnimationCancel(
+            /* [in] */ IAnimator* animation);
+
+    private:
+        ActivatableNotificationView* mHost;
+        AutoPtr<IRunnable> mRunnable;
+        Boolean mWasCancelled;
+    };
+
 public:
     CAR_INTERFACE_DECL();
 
@@ -26,16 +125,6 @@ public:
     CARAPI constructor(
         /* [in] */ IContext* context,
         /* [in] */ IAttributeSet* attrs);
-
-    // @Override
-    protected CARAPI OnFinishInflate();
-
-    private final Runnable mTapTimeoutRunnable = new Runnable() {
-        @Override
-        public void run() {
-            makeInactive(TRUE /* animate */);
-        }
-    };
 
     // @Override
     CARAPI OnTouchEvent(
@@ -47,25 +136,11 @@ public:
         /* [in] */ Float x,
         /* [in] */ Float y);
 
-    // @Override
-    protected CARAPI DrawableStateChanged();
-
-    private CARAPI_(Boolean) HandleTouchEventDimmed(
-        /* [in] */ IMotionEvent* event);
-
-    private CARAPI_(void) MakeActive();
-
-    private CARAPI_(void) StartActivateAnimation(
-        /* [in] */ Boolean reverse);
-
     /**
      * Cancels the hotspot and makes the notification inactive.
      */
     CARAPI MakeInactive(
         /* [in] */ Boolean animate);
-
-    private CARAPI_(Boolean) IsWithinTouchSlop(
-        /* [in] */ IMotionEvent* event);
 
     CARAPI SetDimmed(
         /* [in] */ Boolean dimmed,
@@ -74,8 +149,6 @@ public:
     CARAPI SetDark(
         /* [in] */ Boolean dark,
         /* [in] */ Boolean fade);
-
-    private static CARAPI_(AutoPtr<IPaint>) CreateDarkPaint();
 
     CARAPI SetShowingLegacyBackground(
         /* [in] */ Boolean showing);
@@ -89,22 +162,6 @@ public:
      */
     CARAPI SetTintColor(
         /* [in] */ Int32 color);
-
-    private CARAPI_(void) UpdateBackgroundTint();
-
-    private CARAPI_(void) FadeBackground();
-
-    private CARAPI_(void) UpdateBackground();
-
-    private CARAPI_(void) CancelFadeAnimations();
-
-    // @Override
-    protected CARAPI OnLayout(
-        /* [in] */ Boolean changed,
-        /* [in] */ Int32 left,
-        /* [in] */ Int32 top,
-        /* [in] */ Int32 right,
-        /* [in] */ Int32 bottom);
 
     // @Override
     CARAPI SetActualHeight(
@@ -126,20 +183,66 @@ public:
         /* [in] */ Int64 delay,
         /* [in] */ Int64 duration);
 
-    private CARAPI_(void) StartAppearAnimation(
+    CARAPI SetOnActivatedListener(
+        /* [in] */ IActivatableNotificationViewOnActivatedListener* onActivatedListener);
+
+    CARAPI Reset();
+
+protected:
+    // @Override
+    CARAPI OnFinishInflate();
+
+    // @Override
+    CARAPI DrawableStateChanged();
+
+    // @Override
+    CARAPI OnLayout(
+        /* [in] */ Boolean changed,
+        /* [in] */ Int32 left,
+        /* [in] */ Int32 top,
+        /* [in] */ Int32 right,
+        /* [in] */ Int32 bottom);
+
+    // @Override
+    CARAPI_(void) DispatchDraw(
+        /* [in] */ ICanvas* canvas);
+
+private:
+    CARAPI_(Boolean) HandleTouchEventDimmed(
+        /* [in] */ IMotionEvent* event);
+
+    CARAPI_(void) MakeActive();
+
+    CARAPI_(void) StartActivateAnimation(
+        /* [in] */ Boolean reverse);
+
+    CARAPI_(Boolean) IsWithinTouchSlop(
+        /* [in] */ IMotionEvent* event);
+
+    static CARAPI_(AutoPtr<IPaint>) CreateDarkPaint();
+
+    CARAPI_(void) UpdateBackgroundTint();
+
+    CARAPI_(void) FadeBackground();
+
+    CARAPI_(void) UpdateBackground();
+
+    CARAPI_(void) CancelFadeAnimations();
+
+    CARAPI_(void) StartAppearAnimation(
         /* [in] */ Boolean isAppearing,
         /* [in] */ Float translationDirection,
         /* [in] */ Int64 delay,
         /* [in] */ Int64 duration,
         /* [in] */ IRunnable* onFinishedRunnable);
 
-    private CARAPI_(void) UpdateAppearRect();
+    CARAPI_(void) UpdateAppearRect();
 
-    private CARAPI_(void) UpdateAppearAnimationAlpha();
+    CARAPI_(void) UpdateAppearAnimationAlpha();
 
-    private CARAPI_(Int32) GetBackgroundColor();
+    CARAPI_(Int32) GetBackgroundColor();
 
-    private CARAPI_(Int32) GetRippleColor();
+    CARAPI_(Int32) GetRippleColor();
 
     /**
      * When we draw the appear animation, we render the view in a bitmap and render this bitmap
@@ -148,107 +251,102 @@ public:
      *
      * @param enable Should it be enabled.
      */
-    private CARAPI_(void) EnableAppearDrawing(
+    CARAPI_(void) EnableAppearDrawing(
         /* [in] */ Boolean enable);
 
-    // @Override
-    protected CARAPI_(void) DispatchDraw(
+    CARAPI_(void) DrawAppearRect(
         /* [in] */ ICanvas* canvas);
 
-    private CARAPI_(void) DrawAppearRect(
-        /* [in] */ ICanvas* canvas);
-
-    CARAPI SetOnActivatedListener(
-        /* [in] */ IActivatableNotificationViewOnActivatedListener* onActivatedListener);
-
-    CARAPI Reset();
+    static CARAPI_(Boolean) InitStatic();
 
 private:
-    private static final Int64 DOUBLETAP_TIMEOUT_MS = 1200;
-    private static final Int32 BACKGROUND_ANIMATION_LENGTH_MS = 220;
-    private static final Int32 ACTIVATE_ANIMATION_LENGTH = 220;
+    static const Int64 DOUBLETAP_TIMEOUT_MS;
+    static const Int32 BACKGROUND_ANIMATION_LENGTH_MS;
+    static const Int32 ACTIVATE_ANIMATION_LENGTH;
 
     /**
      * The amount of width, which is kept in the end when performing a disappear animation (also
      * the amount from which the horizontal appearing begins)
      */
-    private static final Float HORIZONTAL_COLLAPSED_REST_PARTIAL = 0.05f;
+    static const Float HORIZONTAL_COLLAPSED_REST_PARTIAL;
 
     /**
      * At which point from [0,1] does the horizontal collapse animation end (or start when
      * expanding)? 1.0 meaning that it ends immediately and 0.0 that it is continuously animated.
      */
-    private static final Float HORIZONTAL_ANIMATION_END = 0.2f;
+    static const Float HORIZONTAL_ANIMATION_END;
 
     /**
      * At which point from [0,1] does the alpha animation end (or start when
      * expanding)? 1.0 meaning that it ends immediately and 0.0 that it is continuously animated.
      */
-    private static final Float ALPHA_ANIMATION_END = 0.0f;
+    static const Float ALPHA_ANIMATION_END;
 
     /**
      * At which point from [0,1] does the horizontal collapse animation start (or start when
      * expanding)? 1.0 meaning that it starts immediately and 0.0 that it is animated at all.
      */
-    private static final Float HORIZONTAL_ANIMATION_START = 1.0f;
+    static const Float HORIZONTAL_ANIMATION_START;
 
     /**
      * At which point from [0,1] does the vertical collapse animation start (or end when
      * expanding) 1.0 meaning that it starts immediately and 0.0 that it is animated at all.
      */
-    private static final Float VERTICAL_ANIMATION_START = 1.0f;
+    static const Float VERTICAL_ANIMATION_START;
 
-    private static final Interpolator ACTIVATE_INVERSE_INTERPOLATOR
-            = new PathInterpolator(0.6f, 0, 0.5f, 1);
-    private static final Interpolator ACTIVATE_INVERSE_ALPHA_INTERPOLATOR
-            = new PathInterpolator(0, 0, 0.5f, 1);
-    private final Int32 mTintedRippleColor;
-    private final Int32 mLowPriorityRippleColor;
-    private final Int32 mNormalRippleColor;
+    static AutoPtr<IInterpolator> ACTIVATE_INVERSE_INTERPOLATOR;
+    static AutoPtr<IInterpolator> ACTIVATE_INVERSE_ALPHA_INTERPOLATOR;
 
-    private Boolean mDimmed;
-    private Boolean mDark;
-    private final Paint mDarkPaint = createDarkPaint();
+    static Boolean sInit;
 
-    private Int32 mBgTint = 0;
-    private final Int32 mRoundedRectCornerRadius;
+    AutoPtr<IRunnable> mTapTimeoutRunnable;
+    Int32 mTintedRippleColor;
+    Int32 mLowPriorityRippleColor;
+    Int32 mNormalRippleColor;
+
+    Boolean mDimmed;
+    Boolean mDark;
+    AutoPtr<IPaint> mDarkPaint;
+
+    Int32 mBgTint;
+    Int32 mRoundedRectCornerRadius;
 
     /**
      * Flag to indicate that the notification has been touched once and the second touch will
      * click it.
      */
-    private Boolean mActivated;
+    Boolean mActivated;
 
-    private Float mDownX;
-    private Float mDownY;
-    private final Float mTouchSlop;
+    Float mDownX;
+    Float mDownY;
+    Float mTouchSlop;
 
-    private OnActivatedListener mOnActivatedListener;
+    AutoPtr<IActivatableNotificationViewOnActivatedListener> mOnActivatedListener;
 
-    private final Interpolator mLinearOutSlowInInterpolator;
-    private final Interpolator mFastOutSlowInInterpolator;
-    private final Interpolator mSlowOutFastInInterpolator;
-    private final Interpolator mSlowOutLinearInInterpolator;
-    private final Interpolator mLinearInterpolator;
-    private Interpolator mCurrentAppearInterpolator;
-    private Interpolator mCurrentAlphaInterpolator;
+    AutoPtr<IInterpolator> mLinearOutSlowInInterpolator;
+    AutoPtr<IInterpolator> mFastOutSlowInInterpolator;
+    AutoPtr<IInterpolator> mSlowOutFastInInterpolator;
+    AutoPtr<IInterpolator> mSlowOutLinearInInterpolator;
+    AutoPtr<IInterpolator> mLinearInterpolator;
+    AutoPtr<IInterpolator> mCurrentAppearInterpolator;
+    AutoPtr<IInterpolator> mCurrentAlphaInterpolator;
 
-    private NotificationBackgroundView mBackgroundNormal;
-    private NotificationBackgroundView mBackgroundDimmed;
-    private ObjectAnimator mBackgroundAnimator;
-    private RectF mAppearAnimationRect = new RectF();
-    private PorterDuffColorFilter mAppearAnimationFilter;
-    private Float mAnimationTranslationY;
-    private Boolean mDrawingAppearAnimation;
-    private Paint mAppearPaint = new Paint();
-    private ValueAnimator mAppearAnimator;
-    private Float mAppearAnimationFraction = -1.0f;
-    private Float mAppearAnimationTranslation;
-    private Boolean mShowingLegacyBackground;
-    private final Int32 mLegacyColor;
-    private final Int32 mNormalColor;
-    private final Int32 mLowPriorityColor;
-    private Boolean mIsBelowSpeedBump;
+    AutoPtr<INotificationBackgroundView> mBackgroundNormal;
+    AutoPtr<INotificationBackgroundView> mBackgroundDimmed;
+    AutoPtr<IObjectAnimator> mBackgroundAnimator;
+    AutoPtr<IRectF> mAppearAnimationRect;
+    AutoPtr<IPorterDuffColorFilter> mAppearAnimationFilter;
+    Float mAnimationTranslationY;
+    Boolean mDrawingAppearAnimation;
+    AutoPtr<IPaint> mAppearPaint;
+    AutoPtr<IValueAnimator> mAppearAnimator;
+    Float mAppearAnimationFraction;
+    Float mAppearAnimationTranslation;
+    Boolean mShowingLegacyBackground;
+    Int32 mLegacyColor;
+    Int32 mNormalColor;
+    Int32 mLowPriorityColor;
+    Boolean mIsBelowSpeedBump;
 };
 
 } // namespace StatusBar

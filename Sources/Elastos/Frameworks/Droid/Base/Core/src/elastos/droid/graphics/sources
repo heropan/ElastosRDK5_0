@@ -49,6 +49,7 @@ SOURCES += Color.cpp
 SOURCES += CColor.cpp
 SOURCES += CColorMatrix.cpp
 SOURCES += ColorFilter.cpp
+SOURCES += CColorFilter.cpp
 SOURCES += CColorMatrixColorFilter.cpp
 SOURCES += PathEffect.cpp
 SOURCES += CComposePathEffect.cpp

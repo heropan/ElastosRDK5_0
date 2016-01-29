@@ -101,6 +101,7 @@ module
     merge("../../../../../car/elastos/droid/statusbar/SignalClusterView.car");
     merge("../../../../../car/elastos/droid/statusbar/StatusBarIconView.car");
     merge("../../../../../car/elastos/droid/statusbar/SystemBars.car");
+    merge("../../../../../car/elastos/droid/statusbar/NotificationContentView.car");
 
     //statusbar/phone
     merge("../../../../../car/elastos/droid/statusbar/phone/ActivityStarter.car");
@@ -312,6 +313,7 @@ module
     using interface Elastos.Droid.Service.Dreams.IDreamService;
     using interface Elastos.Droid.Service.Wallpaper.IWallpaperService;
     using interface Elastos.Droid.Widget.IFrameLayout;
+    using interface Elastos.Droid.Widget.IImageButton;
     using interface Elastos.Droid.Widget.IImageView;
     using interface Elastos.Droid.Widget.ILinearLayout;
     using interface Elastos.Core.ICharSequence;
@@ -704,6 +706,19 @@ module
         }
 
         [local]
+        class CNotificationBackgroundView {
+            constructor(
+                [in] IContext* ctx,
+                [in] IAttributeSet* attrs);
+
+            interface INotificationBackgroundView;
+            interface IView;
+            interface IDrawableCallback;
+            interface IKeyEventCallback;
+            interface IAccessibilityEventSource;
+        }
+
+        [local]
         class CAnimatedImageView {
             constructor(
                 [in] IContext* ctx);
@@ -777,6 +792,58 @@ module
             interface IAccessibilityEventSource;
         }
 
+        class CNotificationContentView {
+            constructor(
+                [in] IContext* ctx,
+                [in] IAttributeSet* attrs);
+
+            interface INotificationContentView;
+            interface IFrameLayout;
+            interface IViewGroup;
+            interface IView;
+            interface IViewParent;
+            interface IViewManager;
+            interface IDrawableCallback;
+            interface IKeyEventCallback;
+            interface IAccessibilityEventSource;
+        }
+
+        class CDismissView {
+            constructor(
+                [in] IContext* ctx,
+                [in] IAttributeSet* attrs);
+
+            interface IDismissView;
+            interface IStackScrollerDecorView;
+            interface IExpandableView;
+            interface IFrameLayout;
+            interface IViewGroup;
+            interface IView;
+            interface IViewParent;
+            interface IViewManager;
+            interface IDrawableCallback;
+            interface IKeyEventCallback;
+            interface IAccessibilityEventSource;
+        }
+
+        class CEmptyShadeView {
+            constructor(
+                [in] IContext* ctx,
+                [in] IAttributeSet* attrs);
+
+            interface IEmptyShadeView;
+            interface IStackScrollerDecorView;
+            interface IExpandableView;
+            interface IFrameLayout;
+            interface IViewGroup;
+            interface IView;
+            interface IViewParent;
+            interface IViewManager;
+            interface IDrawableCallback;
+            interface IKeyEventCallback;
+            interface IAccessibilityEventSource;
+        }
+
         class CCommandQueue {
             constructor(
                 [in] ICommandQueueCallbacks* cbs,
@@ -817,66 +884,129 @@ module
             interface IAccessibilityEventSource;
         }
 
-//     [local]
-//     class CLatestItemView {
-//         constructor(
-//             [in] IContext* ctx,
-//             [in] IAttributeSet* attrs);
+        [local]
+        class CDismissViewImageButton {
+            constructor(
+                [in] IContext* ctx);
 
-//         interface ILatestItemView ;
-//         interface IViewParent;
-//         interface IViewManager;
-//         interface IDrawableCallback;
-//         interface IKeyEventCallback;
-//         interface IAccessibilityEventSource;
-//     }
+            constructor(
+                [in] IContext* ctx,
+                [in] IAttributeSet* attrs);
 
-    [local, deprecated]
-    class CStatusBarIconView {
-        constructor(
-            [in] IContext* ctx,
-            [in] IAttributeSet* attrs);
+            constructor(
+                [in] IContext* ctx,
+                [in] IAttributeSet* attrs,
+                [in] Int32 defStyleAttr);
 
-        constructor(
-            [in] IContext* ctx,
-            [in] String attrs,
-            [in] INotification* notification);
+            constructor(
+                [in] IContext* ctx,
+                [in] IAttributeSet* attrs,
+                [in] Int32 defStyleAttr,
+                [in] Int32 defStyleRes);
 
-        interface IStatusBarIconView;
-        interface IAnimatedImageView;
-        interface IImageView;
-        interface IView;
-        interface IDrawableCallback;
-        interface IKeyEventCallback;
-        interface IAccessibilityEventSource;
-    }
+            interface IDismissViewImageButton;
+            interface IImageButton;
+            interface IImageView;
+            interface IView;
+            interface IDrawableCallback;
+            interface IKeyEventCallback;
+            interface IAccessibilityEventSource;
+        }
 
-    [local]
-    class CSignalClusterView {
-        constructor(
-            [in] IContext* ctx);
+        [local]
+        class CExpandableNotificationRow {
+            constructor(
+                [in] IContext* ctx,
+                [in] IAttributeSet* attrs);
 
-        constructor(
-            [in] IContext* ctx,
-            [in] IAttributeSet* attrs);
+            interface IExpandableNotificationRow;
+            interface IActivatableNotificationView;
+            interface IExpandableOutlineView;
+            interface IExpandableView;
+            interface IFrameLayout;
+            interface IViewGroup;
+            interface IView;
+            interface IViewParent;
+            interface IViewManager;
+            interface IDrawableCallback;
+            interface IKeyEventCallback;
+            interface IAccessibilityEventSource;
+        }
 
-        constructor(
-            [in] IContext* ctx,
-            [in] IAttributeSet* attrs,
-            [in] Int32 defStyle);
+        [local, deprecated]
+        class CStatusBarIconView {
+            constructor(
+                [in] IContext* ctx,
+                [in] IAttributeSet* attrs);
 
-        interface ISignalClusterView;
-        interface ILinearLayout;
-        interface IViewGroup;
-        interface IView;
-        interface IViewParent;
-        interface IViewManager;
-        interface IDrawableCallback;
-        interface IKeyEventCallback;
-        interface IAccessibilityEventSource;
-        interface INetworkControllerImplSignalCluster;
-        interface ISecurityControllerCallback;
-    }
+            constructor(
+                [in] IContext* ctx,
+                [in] String attrs,
+                [in] INotification* notification);
+
+            interface IStatusBarIconView;
+            interface IAnimatedImageView;
+            interface IImageView;
+            interface IView;
+            interface IDrawableCallback;
+            interface IKeyEventCallback;
+            interface IAccessibilityEventSource;
+        }
+
+        [local]
+        class CKeyguardAffordanceView {
+            constructor(
+                [in] IContext* ctx);
+
+            constructor(
+                [in] IContext* ctx,
+                [in] IAttributeSet* attrs);
+
+            constructor(
+                [in] IContext* ctx,
+                [in] IAttributeSet* attrs,
+                [in] Int32 defStyleAttr);
+
+            constructor(
+                [in] IContext* ctx,
+                [in] IAttributeSet* attrs,
+                [in] Int32 defStyleAttr,
+                [in] Int32 defStyleRes);
+
+            interface IKeyguardAffordanceView;
+            interface IImageView;
+            interface IView;
+            interface IDrawableCallback;
+            interface IKeyEventCallback;
+            interface IAccessibilityEventSource;
+        }
+
+        [local]
+        class CSignalClusterView {
+            constructor(
+                [in] IContext* ctx);
+
+            constructor(
+                [in] IContext* ctx,
+                [in] IAttributeSet* attrs);
+
+            constructor(
+                [in] IContext* ctx,
+                [in] IAttributeSet* attrs,
+                [in] Int32 defStyle);
+
+            interface ISignalClusterView;
+            interface ILinearLayout;
+            interface IViewGroup;
+            interface IView;
+            interface IViewParent;
+            interface IViewManager;
+            interface IDrawableCallback;
+            interface IKeyEventCallback;
+            interface IAccessibilityEventSource;
+            interface INetworkControllerImplSignalCluster;
+            interface ISecurityControllerCallback;
+        }
 
 
 //     //===========================================================================

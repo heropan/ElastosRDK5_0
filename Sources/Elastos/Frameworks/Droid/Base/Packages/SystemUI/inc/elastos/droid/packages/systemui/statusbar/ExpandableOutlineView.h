@@ -57,10 +57,10 @@ public:
         /* [in] */ Int32 clipTopAmount);
 
 protected:
-    CARAPI_(void) SetOutlineRect(
+    virtual CARAPI_(void) SetOutlineRect(
         /* [in] */ IRectF* rect);
 
-    CARAPI_(void) SetOutlineRect(
+    virtual CARAPI_(void) SetOutlineRect(
         /* [in] */ Float left,
         /* [in] */ Float top,
         /* [in] */ Float right,
