@@ -11,6 +11,10 @@ namespace LE {
 //=====================================================================
 CAR_INTERFACE_IMPL(AdvertiseCallback, Object, IAdvertiseCallback);
 
+AdvertiseCallback::AdvertiseCallback()
+{
+}
+
 ECode AdvertiseCallback::OnStartSuccess(
     /* [in] */ IAdvertiseSettings* settingsInEffect)
 {

@@ -1,6 +1,8 @@
 
 #include "elastos/droid/bluetooth/BluetoothGattCallbackWrapper.h"
 
+using Elastos::Droid::Os::EIID_IBinder;
+
 namespace Elastos {
 namespace Droid {
 namespace Bluetooth {
@@ -8,6 +10,12 @@ namespace Bluetooth {
 //=====================================================================
 //                     BluetoothGattCallbackWrapper
 //=====================================================================
+CAR_INTERFACE_IMPL_2(BluetoothGattCallbackWrapper, Object, IIBluetoothGattCallback, IBinder)
+
+BluetoothGattCallbackWrapper::BluetoothGattCallbackWrapper()
+{
+}
+
 ECode BluetoothGattCallbackWrapper::OnClientRegistered(
     /* [in] */ Int32 status,
     /* [in] */ Int32 clientIf)

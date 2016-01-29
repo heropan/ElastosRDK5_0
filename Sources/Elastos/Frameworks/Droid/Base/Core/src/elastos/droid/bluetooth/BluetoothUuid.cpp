@@ -1,5 +1,5 @@
 
-#include "BluetoothUuid.h"
+#include "elastos/droid/bluetooth/BluetoothUuid.h"
 
 namespace Elastos {
 namespace Droid {

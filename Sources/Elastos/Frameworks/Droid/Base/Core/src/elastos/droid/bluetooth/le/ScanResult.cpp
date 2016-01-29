@@ -11,6 +11,10 @@ namespace LE {
 //=====================================================================
 CAR_INTERFACE_IMPL_2(ScanResult, Object, IScanResult, IParcelable);
 
+ScanResult::ScanResult()
+{
+}
+
 ScanResult::ScanResult(
     /* [in] */ IBluetoothDevice* device,
     /* [in] */ IScanRecord* scanRecord,

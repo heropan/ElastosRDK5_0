@@ -188,6 +188,12 @@ const Int32 BluetoothLeAdvertiser::FLAGS_FIELD_BYTES;
 const Int32 BluetoothLeAdvertiser::MANUFACTURER_SPECIFIC_DATA_LENGTH;
 const Int32 BluetoothLeAdvertiser::SERVICE_DATA_UUID_LENGTH;
 
+CAR_INTERFACE_IMPL(BluetoothLeAdvertiser, Object, IBluetoothLeAdvertiser);
+
+BluetoothLeAdvertiser::BluetoothLeAdvertiser()
+{
+}
+
 BluetoothLeAdvertiser::BluetoothLeAdvertiser(
     /* [in] */ IIBluetoothManager* bluetoothManager)
 {

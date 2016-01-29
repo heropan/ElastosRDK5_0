@@ -11,6 +11,10 @@ namespace LE {
 //=====================================================================
 CAR_INTERFACE_IMPL_2(ResultStorageDescriptor, Object, IResultStorageDescriptor, IParcelable);
 
+ResultStorageDescriptor::ResultStorageDescriptor()
+{
+}
+
 ResultStorageDescriptor::ResultStorageDescriptor(
     /* [in] */ Int32 type,
     /* [in] */ Int32 offset,

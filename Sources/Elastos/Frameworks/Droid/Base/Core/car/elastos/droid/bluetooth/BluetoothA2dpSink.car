@@ -178,7 +178,9 @@ module
             GetAudioConfig(
                 [in] IBluetoothDevice* device,
                 [out] IBluetoothAudioConfig** audioConfig);
+        }
 
+        interface IBluetoothA2dpSinkHelper {
             /**
              * Helper for converting a state to a string.
              *

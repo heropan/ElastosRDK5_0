@@ -10,6 +10,10 @@ namespace LE {
 //=====================================================================
 CAR_INTERFACE_IMPL(ScanCallback, Object, IScanCallback);
 
+ScanCallback::ScanCallback()
+{
+}
+
 ECode ScanCallback::OnScanResult(
     /* [in] */ Int32 callbackType,
     /* [in] */ IScanResult* result)

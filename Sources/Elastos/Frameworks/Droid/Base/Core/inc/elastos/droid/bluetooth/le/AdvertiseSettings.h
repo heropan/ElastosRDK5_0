@@ -32,6 +32,7 @@ public:
         CAR_INTERFACE_DECL();
 
         Builder();
+
         /**
           * Set advertise mode to control the advertising power and latency.
           *

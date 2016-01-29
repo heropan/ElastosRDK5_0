@@ -2,7 +2,8 @@
 #ifndef __ELASTOS_DROID_BLUETOOTH_BLUETOOTHUUID_H__
 #define __ELASTOS_DROID_BLUETOOTH_BLUETOOTHUUID_H__
 
-#include "Elastos.Droid.Core_server.h"
+//#include "Elastos.Droid.Core_server.h"
+#include "elastos/droid/ext/frameworkdef.h"
 
 using Elastos::Droid::Os::IParcelUuid;
 
