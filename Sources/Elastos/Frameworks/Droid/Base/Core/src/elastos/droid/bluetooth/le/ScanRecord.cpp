@@ -25,6 +25,10 @@ const Int32 ScanRecord::DATA_TYPE_TX_POWER_LEVEL;
 const Int32 ScanRecord::DATA_TYPE_SERVICE_DATA;
 const Int32 ScanRecord::DATA_TYPE_MANUFACTURER_SPECIFIC_DATA;
 
+ScanRecord::ScanRecord()
+{
+}
+
 ECode ScanRecord::GetAdvertiseFlags(
     /* [out] */ Int32* result)
 {

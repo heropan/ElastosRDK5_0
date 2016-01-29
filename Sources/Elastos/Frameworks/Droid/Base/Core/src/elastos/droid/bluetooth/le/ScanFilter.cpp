@@ -12,6 +12,10 @@ namespace LE {
 //=====================================================================
 CAR_INTERFACE_IMPL(ScanFilter::Builder, Object, IScanFilterBuilder);
 
+ScanFilter::Builder::Builder()
+{
+}
+
 ECode ScanFilter::Builder::SetDeviceName(
     /* [in] */ const String& deviceName)
 {
@@ -176,6 +180,10 @@ ECode ScanFilter::Builder::Build(
 }
 
 CAR_INTERFACE_IMPL_2(ScanFilter, Object, IScanFilter, IParcelable);
+
+ScanFilter::ScanFilter()
+{
+}
 
 ECode ScanFilter::WriteToParcel(
     /* [in] */ IParcel* dest,

@@ -10,6 +10,10 @@ namespace LE {
 //=====================================================================
 CAR_INTERFACE_IMPL(AdvertiseData::Builder, Object, IAdvertiseDataBuilder);
 
+AdvertiseData::Builder::Builder()
+{
+}
+
 ECode AdvertiseData::Builder::AddServiceUuid(
     /* [in] */ IParcelUuid* serviceUuid)
 {
@@ -99,6 +103,10 @@ AutoPtr<ISparseArray> AdvertiseData::Builder::MiddleInitMmanufacturerspecificdat
 //                            AdvertiseData
 //=====================================================================
 CAR_INTERFACE_IMPL_2(AdvertiseData, Object, IAdvertiseData, IParcelable);
+
+AdvertiseData::AdvertiseData()
+{
+}
 
 ECode AdvertiseData::GetServiceUuids(
     /* [out] */ IList** result)

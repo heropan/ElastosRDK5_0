@@ -23,10 +23,14 @@ namespace Bluetooth {
   */
 class BluetoothGattCallbackWrapper
     : public Object
-    , public IBluetoothGattCallback
+    , public IIBluetoothGattCallback
     , public IBinder
 {
 public:
+    CAR_INTERFACE_DECL();
+
+    BluetoothGattCallbackWrapper();
+
     // @Override
     CARAPI OnClientRegistered(
         /* [in] */ Int32 status,
@@ -173,6 +177,13 @@ public:
     CARAPI OnFoundOrLost(
         /* [in] */ Boolean onFound,
         /* [in] */ IScanResult* scanResult);
+
+    CARAPI ToString(
+        /* [out] */ String* info)
+    {
+        VALIDATE_NOT_NULL(info)
+        return Object::ToString(info);
+    }
 };
 
 } // namespace Bluetooth

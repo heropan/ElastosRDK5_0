@@ -80,18 +80,6 @@ module
                 [in] IBluetoothDevice* device,
                 [out] Boolean* result);
 
-
-            /**
-             * Check class bits for possible Map support.
-             * This is a simple heuristic that tries to guess if a device with the
-             * given class bits might support Map. It is not accurate for all
-             * devices. It tries to err on the side of false positives.
-             * @return True if this device might support Map.
-             */
-            DoesClassMatchSink(
-                [in] IBluetoothClass* btClass,
-                [out] Boolean* result);
-
             /**
              * Set priority of the profile
              *
@@ -121,6 +109,19 @@ module
             GetPriority(
                 [in] IBluetoothDevice* device,
                 [out] Int32* priority);
+        }
+
+        interface IBluetoothMapHelper {
+            /**
+             * Check class bits for possible Map support.
+             * This is a simple heuristic that tries to guess if a device with the
+             * given class bits might support Map. It is not accurate for all
+             * devices. It tries to err on the side of false positives.
+             * @return True if this device might support Map.
+             */
+            DoesClassMatchSink(
+                [in] IBluetoothClass* btClass,
+                [out] Boolean* result);
         }
 
     } // Bluetooth

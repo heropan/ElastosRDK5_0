@@ -9,6 +9,12 @@ namespace LE {
 //=====================================================================
 //                      AdvertiseSettings::Builder
 //=====================================================================
+CAR_INTERFACE_IMPL(AdvertiseSettings::Builder, Object, IAdvertiseSettingsBuilder)
+
+AdvertiseSettings::Builder::Builder()
+{
+}
+
 ECode AdvertiseSettings::Builder::SetAdvertiseMode(
     /* [in] */ Int32 advertiseMode)
 {
@@ -75,6 +81,12 @@ ECode AdvertiseSettings::Builder::Build(
 //                          AdvertiseSettings
 //=====================================================================
 const Int32 AdvertiseSettings::LIMITED_ADVERTISING_MAX_MILLIS;
+
+CAR_INTERFACE_IMPL_2(AdvertiseSettings, Object, IAdvertiseSettings, IParcelable);
+
+AdvertiseSettings::AdvertiseSettings()
+{
+}
 
 ECode AdvertiseSettings::GetMode(
     /* [out] */ Int32* result)

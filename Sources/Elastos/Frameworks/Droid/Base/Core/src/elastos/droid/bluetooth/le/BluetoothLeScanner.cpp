@@ -282,6 +282,12 @@ ECode BluetoothLeScanner::CallbackErrorRunnable::Run()
 const String BluetoothLeScanner::TAG("BluetoothLeScanner");
 const Boolean BluetoothLeScanner::DBG = TRUE;
 
+CAR_INTERFACE_IMPL(BluetoothLeScanner, Object, IBluetoothLeScanner);
+
+BluetoothLeScanner::BluetoothLeScanner()
+{
+}
+
 BluetoothLeScanner::BluetoothLeScanner(
     /* [in] */ IIBluetoothManager* bluetoothManager)
 {

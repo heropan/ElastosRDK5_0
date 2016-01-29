@@ -73,6 +73,7 @@ module
         GetReport(
             [in] IBluetoothDevice* device,
             [in] Byte reportType,
+            [in] Byte reportId,
             [in] Int32 bufferSize,
             [out] Boolean* result);
 
