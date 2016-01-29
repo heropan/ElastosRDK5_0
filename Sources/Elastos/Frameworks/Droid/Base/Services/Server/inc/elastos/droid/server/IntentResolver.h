@@ -5,6 +5,7 @@
 #include <Elastos.Droid.Net.h>
 #include "elastos/droid/ext/frameworkext.h"
 #include "Elastos.Droid.Os.h"
+#include "Elastos.CoreLibrary.Utility.h"
 #include <elastos/utility/etl/HashSet.h>
 #include <elastos/utility/etl/HashMap.h>
 #include <elastos/utility/etl/List.h>
@@ -61,6 +62,7 @@ public:
     virtual CARAPI_(AutoPtr<IIterator>) FilterIterator()
     {
         assert(0);
+        return NULL;
     }
 
     /**

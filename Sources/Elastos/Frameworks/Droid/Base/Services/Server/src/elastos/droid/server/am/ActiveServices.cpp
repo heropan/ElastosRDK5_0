@@ -153,8 +153,7 @@ void ActiveServices::ServiceMap::RescheduleDelayedStarts()
         SendMessageAtTime(msg, when, &res);
     }
     if ((Int32)mStartingBackground.GetSize() < mHost->mMaxStartingBackground) {
-        assert(0);
-        // mHost->mAm->BackgroundServicesFinishedLocked(mUserId);
+        mHost->mAm->BackgroundServicesFinishedLocked(mUserId);
     }
 }
 

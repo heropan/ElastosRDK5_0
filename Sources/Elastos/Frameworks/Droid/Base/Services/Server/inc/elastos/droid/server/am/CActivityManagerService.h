@@ -184,6 +184,7 @@ CarClass(CActivityManagerService)
     friend class CStoppingReceiver;
     friend class CompatModePackages;
     friend class CoreSettingsObserver;
+    friend class ActiveServices;
 
 public:
     /**

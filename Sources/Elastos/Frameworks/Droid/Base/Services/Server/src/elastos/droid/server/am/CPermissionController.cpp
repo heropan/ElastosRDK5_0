@@ -29,8 +29,7 @@ ECode CPermissionController::CheckPermission(
 {
     VALIDATE_NOT_NULL(result);
     Int32 res;
-    assert(0);
-    // mActivityManagerService->CheckPermission(permission, pid, uid, &res);
+    mActivityManagerService->CheckPermission(permission, pid, uid, &res);
     *result = res == IPackageManager::PERMISSION_GRANTED;
     return NOERROR;
 }

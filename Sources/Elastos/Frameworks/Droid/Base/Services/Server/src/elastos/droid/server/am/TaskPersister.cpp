@@ -84,7 +84,7 @@ ECode TaskPersister::LazyTaskWriterThread::Run()
         // We can't lock mService while holding mHost, but we don't want to
         // call RemoveObsoleteFiles every time through the loop, only the last time before
         // going to sleep. The risk is that we call RemoveObsoleteFiles() successively.
-        Boolean probablyDone;
+        Boolean probablyDone = FALSE;
         synchronized (mHost) {
             probablyDone = mHost->mWriteQueue.IsEmpty();
         }
@@ -93,8 +93,7 @@ ECode TaskPersister::LazyTaskWriterThread::Run()
             if (DEBUG) Slogger::D(TAG, "Looking for obsolete files.");
             persistentTaskIds->Clear();
             synchronized (service) {
-                assert(0);
-                AutoPtr<List<AutoPtr<TaskRecord> > > tasks;// = service->mRecentTasks;
+                AutoPtr<List<AutoPtr<TaskRecord> > > tasks = service->mRecentTasks;
                 // if (DEBUG) Slogger::D(TAG, "mRecents=" + tasks);
                 List<AutoPtr<TaskRecord> >::ReverseIterator riter;
                 for (riter = tasks->RBegin(); riter != tasks->REnd(); ++riter) {
@@ -235,6 +234,7 @@ ECode TaskPersister::LazyTaskWriterThread::Run()
             }
         }
     }
+    return NOERROR;
 }
 
 TaskPersister::TaskPersister(
@@ -569,8 +569,7 @@ AutoPtr<List<AutoPtr<TaskRecord> > > TaskPersister::RestoreTasksLocked()
                             tasks->PushBack(task);
                             Int32 taskId = task->mTaskId;
                             recoveredTaskIds->Insert(taskId);
-                            assert(0);
-                            // mStackSupervisor->SetNextTaskId(taskId);
+                            mStackSupervisor->SetNextTaskId(taskId);
                         }
                         else {
                             String str;

@@ -1199,7 +1199,7 @@ ECode CActivityManagerService::ReportMemUsageThread::Run()
             if (vsize > 0) {
                 Int32 pid;
                 st->GetPid(&pid);
-                Int64 pss;
+                Int64 pss = 0;
                 // debug->GetPss(pid, NULL, &pss);
                 if (pss > 0) {
                     if (infoMap.Find(pid) == infoMap.End()) {
@@ -1393,6 +1393,7 @@ ECode CActivityManagerService::ReportMemUsageThread::Run()
             mHost->mLastMemUsageReportTime = now;
         }
     }
+    return NOERROR;
 }
 
 //==============================================================================
@@ -3606,7 +3607,7 @@ void CActivityManagerService::UpdateLruProcessLocked(
         }
     }
     // for (Int32 j=app->mConProviders.size()-1; j>=0; j--) {
-    List<AutoPtr<CContentProviderConnection> >::Iterator cpcIt;
+    List<AutoPtr<CContentProviderConnection> >::Iterator cpcIt = app->mConProviders.Begin();
     for (; cpcIt != app->mConProviders.End(); ++cpcIt) {
         AutoPtr<ContentProviderRecord> cpr = (*cpcIt)->mProvider;
         if (cpr->mProc != NULL && cpr->mProc->mLruSeq != mLruSeq && !cpr->mProc->mPersistent) {
@@ -3685,7 +3686,7 @@ ECode CActivityManagerService::EnsurePackageDexOpt(
 
 Boolean CActivityManagerService::IsNextTransitionForward()
 {
-    Int32 transit;
+    Int32 UNUSED(transit);
     assert(0);
     return FALSE;
     // mWindowManager->GetPendingAppTransition(&transit);
@@ -4644,7 +4645,7 @@ ECode CActivityManagerService::StartActivityAsCaller(
     // we will only allow this to be done from activities that are part of the core framework,
     // and then only when they are running as the system.
     AutoPtr<ActivityRecord> sourceRecord;
-    Int32 targetUid;
+    Int32 targetUid = 0;
     String targetPackage;
     synchronized (this) {
         if (resultTo == NULL) {
@@ -5035,10 +5036,10 @@ ECode CActivityManagerService::StartActivityFromRecentsInner(
     VALIDATE_NOT_NULL(result);
     *result = 0;
     AutoPtr<TaskRecord> task;
-    Int32 callingUid;
+    Int32 callingUid = 0;
     String callingPackage;
     AutoPtr<IIntent> intent;
-    Int32 userId;
+    Int32 userId = 0;
     synchronized (this) {
         task = RecentTaskForIdLocked(taskId);
         if (task == NULL) {
@@ -7177,7 +7178,7 @@ ECode CActivityManagerService::GetProcessMemoryInfo(
     // CDebug::AcquireSingleton((IDebug**)&dbg);
     for (Int32 i = length - 1; i >= 0; i--) {
         AutoPtr<ProcessRecord> proc;
-        Int32 oomAdj;
+        Int32 oomAdj = 0;
         synchronized (this) {
             synchronized (mPidsSelfLockedLock) {
                 HashMap<Int32, AutoPtr<ProcessRecord> >::Iterator it =
@@ -7224,7 +7225,7 @@ ECode CActivityManagerService::GetProcessPss(
     // CDebug::AcquireSingleton((IDebug**)&dbg);
     for (Int32 i = length - 1; i >= 0; i--) {
         AutoPtr<ProcessRecord> proc;
-        Int32 oomAdj;
+        Int32 oomAdj = 0;
         synchronized (this) {
             synchronized (mPidsSelfLockedLock) {
                 HashMap<Int32, AutoPtr<ProcessRecord> >::Iterator it =
@@ -8181,7 +8182,7 @@ ECode CActivityManagerService::FinishBooting()
 
 ECode CActivityManagerService::BootAnimationComplete()
 {
-    Boolean callFinishBooting;
+    Boolean callFinishBooting = FALSE;
     synchronized (this) {
         callFinishBooting = mCallFinishBooting;
         mBootAnimationComplete = TRUE;
@@ -14955,8 +14956,8 @@ ECode CActivityManagerService::LogStrictModeViolationToDropBox(
     Boolean enabled;
     if (dbox == NULL || (dbox->IsTagEnabled(dropboxTag, &enabled), !enabled)) return NOERROR;
 
-    Boolean bufferWasEmpty;
-    Boolean needsFlush;
+    Boolean bufferWasEmpty = FALSE;
+    Boolean needsFlush = FALSE;
     AutoPtr<StringBuilder> sb;
     if (isSystemApp)
         sb = mStrictModeBuffer;
@@ -15568,7 +15569,7 @@ Int32 CActivityManagerService::ProcStateToImportance(
     /* [in] */ Int32 memAdj,
     /* [in] */ IActivityManagerRunningAppProcessInfo* currApp)
 {
-    Int32 imp;
+    Int32 imp = 0;
     assert(0);
     // AutoPtr<IActivityManagerRunningAppProcessInfoHelper> amrapHelper;
     // CActivityManagerRunningAppProcessInfoHelper::AcquireSingleton((
@@ -15654,7 +15655,7 @@ ECode CActivityManagerService::GetRunningAppProcesses(
                     if (IProcessRecord::Probe(app->mAdjSource) != NULL) {
                         ProcessRecord* pr = (ProcessRecord*)IProcessRecord::Probe(app->mAdjSource);
                         currApp->SetImportanceReasonPid(pr->mPid);
-                        Int32 imp;
+                        Int32 imp = 0;
                         assert(0);
                         // AutoPtr<IActivityManagerRunningAppProcessInfoHelper> amrapHelper;
                         // CActivityManagerRunningAppProcessInfoHelper::AcquireSingleton((
@@ -17667,7 +17668,7 @@ ECode CActivityManagerService::DumpApplicationMemoryUsage(
                         dbg->GetMemoryInfo(pid, (IDebugMemoryInfo**)&mi);
                     }
                     else {
-                        Int64 pss;
+                        Int64 pss = 0;
                         assert(0);
                         // dbg->GetPss(pid, tmpLong, &pss);
                         mi->SetDalvikPss((Int32)pss);
@@ -17720,9 +17721,9 @@ ECode CActivityManagerService::DumpApplicationMemoryUsage(
     for (rit = procs->RBegin(); rit != procs->REnd(); ++rit) {
         AutoPtr<ProcessRecord> r = *rit;
         AutoPtr<IApplicationThread> thread;
-        Int32 pid;
-        Int32 oomAdj;
-        Boolean hasActivities;
+        Int32 pid = 0;
+        Int32 oomAdj = 0;
+        Boolean hasActivities = FALSE;
         synchronized (this) {
             thread = r->mThread;
             pid = r->mPid;
@@ -17743,7 +17744,7 @@ ECode CActivityManagerService::DumpApplicationMemoryUsage(
                 dbg->GetMemoryInfo(pid, (IDebugMemoryInfo**)&mi);
             }
             else {
-                Int64 pss;
+                Int64 pss = 0;
                 assert(0);
                 // dbg->GetPss(pid, tmpLong, &pss);
                 mi->SetDalvikPss((Int32)pss);
@@ -17855,7 +17856,7 @@ ECode CActivityManagerService::DumpApplicationMemoryUsage(
                         dbg->GetMemoryInfo(pid, (IDebugMemoryInfo**)&mi);
                     }
                     else {
-                        Int64 pss;
+                        Int64 pss = 0;
                         assert(0);
                         // dbg->GetPss(pid, tmpLong, &pss);
                         mi->SetNativePss((Int32)pss);
@@ -18704,7 +18705,7 @@ ECode CActivityManagerService::HandleIncomingUser(
     Int32 targetUserId = UnsafeConvertIncomingUser(userId);
 
     if (callingUid != 0 && callingUid != IProcess::SYSTEM_UID) {
-        Boolean allow;
+        Boolean allow = FALSE;
         if (CheckComponentPermission(Manifest::permission::INTERACT_ACROSS_USERS_FULL, callingPid,
                 callingUid, -1, TRUE) == IPackageManager::PERMISSION_GRANTED) {
             // If the caller has this permission, they always pass go.  And collect $200.
@@ -20061,7 +20062,7 @@ ECode CActivityManagerService::BroadcastIntentLocked(
     }
 
     // Merge into one list.
-    List< AutoPtr<BroadcastFilter> >::Iterator ir;
+    List< AutoPtr<BroadcastFilter> >::Iterator ir(NULL);
     if (registeredReceivers != NULL) {
         ir = registeredReceivers->Begin();
     }
@@ -24651,7 +24652,7 @@ void CActivityManagerService::HandleCollectPssBgMsg()
                         continue;
                     }
                 }
-                Int64 pss;
+                Int64 pss = 0;
                 assert(0);
                 // dbg->GetPss(pid, NULL, &pss);
                 nativeTotalPss += pss;
@@ -24678,8 +24679,8 @@ void CActivityManagerService::HandleCollectPssBgMsg()
     List<AutoPtr<ProcessRecord> >::Iterator it = mPendingPssProcesses.Begin();
     do {
         AutoPtr<ProcessRecord> proc;
-        Int32 procState;
-        Int32 pid;
+        Int32 procState = 0;
+        Int32 pid = 0;
         synchronized (this) {
             if (it == mPendingPssProcesses.End()) {
                 if (DEBUG_PSS) Slogger::D(TAG, "Collected PSS of %d of %d processes in %lldms",
@@ -24700,7 +24701,7 @@ void CActivityManagerService::HandleCollectPssBgMsg()
             ++it;
         }
         if (proc != NULL) {
-            Int64 pss;
+            Int64 pss = 0;
             assert(0);
             // dbg->GetPss(pid, tmp, &pss);
             synchronized (this) {
