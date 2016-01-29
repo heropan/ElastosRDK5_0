@@ -25,10 +25,14 @@ fi
 #
 sed -i "s@import java.@using Elastos::@" $target_file
 sed -i "s@import android.@using Elastos::Droid::@" $target_file
+sed -i "s@import com.android.@using Elastos::Droid::@" $target_file
 sed -i "s@import com.android.internal.@using Elastos::Droid::Internal::@" $target_file
 sed -i "s@import org.xmlpull.v1.@using Org::Xmlpull::V1::I@" $target_file
+sed -i "s@import libcore.io.@using Libcore::IO::I@" $target_file
 
+sed -i "s@::io.channels.@::IO::Channels::I@" $target_file
 sed -i "s@::io.@::IO::I@" $target_file
+sed -i "s@::nio.@::IO::I@" $target_file
 sed -i "s@::math.@::Math::I@" $target_file
 sed -i "s@::security.@::Security::I@" $target_file
 sed -i "s@::sql.sqlite.jdbc.@::Sql::Sqlite::Jdbc::I@" $target_file
@@ -144,10 +148,6 @@ sed -i "s@Slog.e(@Slogger::E(@g" $target_file
 sed -i "s@Slog.w(@Slogger::W(@g" $target_file
 sed -i "s@Slog.v(@Slogger::V(@g" $target_file
 
-# synchronized ( => synchronized(
-#
-sed -i "s:synchronized (:synchronized(:g" $target_file
-
 # public void => CARAPI
 #
 sed -i "s:public void:CARAPI:g" $target_file
@@ -173,3 +173,24 @@ sed -i 's:\([a-zA-Z]\w*()\)\(\.\)\([a-zA-Z]\)\(\w*\)\((\):\1->\u\3\4\5:g' $targe
 # fun(  => Fun(
 #
 sed -i 's:\([a-zA-Z]\w*\)\((\):\u\1\2:g' $target_file
+
+# synchronized ( => synchronized(
+#
+sed -i "s:synchronized (:synchronized(:g" $target_file
+
+# android.Manifest.permission. => Manifest::permission::
+#
+sed -i "s@android.Manifest.permission.@Manifest::permission::@g" $target_file
+sed -i "s@Manifest.permission.@Manifest::permission::@g" $target_file
+
+sed -i "s@R.string.@R::string::@g" $target_file
+sed -i "s@R.color.@R::Color::@g" $target_file
+sed -i "s@com.android.R@R@g" $target_file
+sed -i "s@com.android.internal.R@R@g" $target_file
+
+sed -i "s@Intent.ACTION_@IIntent::ACTION_@g" $target_file
+sed -i "s@Intent.FLAG_@IIntent::FLAG_@g" $target_file
+
+sed -i "s@Settings.Global.@Settings::Global::@g" $target_file
+
+
