@@ -5,10 +5,10 @@
 #include <elastos/core/Math.h>
 #include <elastos/utility/logging/Slogger.h>
 
-using Elastos::Utility::Logging::Slogger;
 using Elastos::Utility::Concurrent::ITimeUnitHelper;
 using Elastos::Utility::Concurrent::CTimeUnitHelper;
 using Elastos::Utility::Concurrent::ITimeUnit;
+using Elastos::Utility::Logging::Slogger;
 
 namespace Elastos {
 namespace Droid {

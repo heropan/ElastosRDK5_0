@@ -4,7 +4,6 @@
 
 #include <_Elastos.Droid.Server.h>
 #include "elastos/droid/server/notification/ManagedServices.h"
-#include "elastos/droid/database/ContentObserver.h"
 #include "elastos/droid/database/sqlite/SQLiteOpenHelper.h"
 #include "elastos/droid/os/Handler.h"
 #include "elastos/droid/os/Runnable.h"

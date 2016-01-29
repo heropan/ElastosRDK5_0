@@ -11,8 +11,8 @@
 #include <elastos/utility/Objects.h>
 
 using Elastos::Droid::Provider::ISettings;
-using Elastos::Droid::Provider::ISettingsSecure;
 using Elastos::Droid::Provider::ISettingsGlobal;
+using Elastos::Droid::Provider::ISettingsSecure;
 using Elastos::Droid::Service::Notification::CConditionHelper;
 using Elastos::Droid::Service::Notification::IConditionHelper;
 using Elastos::Droid::Service::Notification::IConditionProviderService;
@@ -20,8 +20,8 @@ using Elastos::Droid::Service::Notification::IZenModeConfig;
 using Elastos::Droid::Service::Notification::IZenModeConfigDowntimeInfo;
 using Elastos::Droid::Service::Notification::IZenModeConfigHelper;
 using Elastos::Droid::Service::Notification::CZenModeConfigHelper;
-using Elastos::Droid::Utility::CArraySet;
 using Elastos::Droid::Utility::CArrayMap;
+using Elastos::Droid::Utility::CArraySet;
 using Elastos::Droid::R;
 using Elastos::Core::StringBuilder;
 using Elastos::Utility::Arrays;

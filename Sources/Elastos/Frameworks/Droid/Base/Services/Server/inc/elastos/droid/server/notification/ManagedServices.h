@@ -6,7 +6,6 @@
 #include <Elastos.Droid.Utility.h>
 #include <Elastos.CoreLibrary.IO.h>
 #include <Elastos.CoreLibrary.Utility.h>
-#include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/database/ContentObserver.h"
 
 using Elastos::Droid::Content::IContext;

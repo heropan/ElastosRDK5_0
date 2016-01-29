@@ -37,9 +37,9 @@ using Elastos::Core::StringBuilder;
 using Elastos::Core::StringUtils;
 using Elastos::IO::ICloseable;
 using Elastos::Utility::CArrayList;
+using Elastos::Utility::Objects;
 using Elastos::Utility::Logging::Logger;
 using Elastos::Utility::Logging::Slogger;
-using Elastos::Utility::Objects;
 using Libcore::IO::CIoUtils;
 using Libcore::IO::IIoUtils;
 
@@ -558,8 +558,8 @@ Boolean ZenModeHelper::IsAlarm(
     /* [in] */ NotificationRecord* record)
 {
     return record->IsCategory(INotification::CATEGORY_ALARM)
-                || record->IsAudioStream(IAudioManager::STREAM_ALARM)
-                || record->IsAudioAttributesUsage(IAudioAttributes::USAGE_ALARM);
+            || record->IsAudioStream(IAudioManager::STREAM_ALARM)
+            || record->IsAudioAttributesUsage(IAudioAttributes::USAGE_ALARM);
 }
 
 Boolean ZenModeHelper::IsEvent(

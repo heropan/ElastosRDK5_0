@@ -33,12 +33,12 @@ using Elastos::Droid::Content::Pm::IServiceInfo;
 using Elastos::Droid::Content::Pm::IResolveInfo;
 using Elastos::Droid::Content::Pm::IApplicationInfo;
 using Elastos::Droid::Content::EIID_IServiceConnection;
-using Elastos::Droid::Provider::ISettingsSecure;
-using Elastos::Droid::Provider::CSettingsSecure;
 using Elastos::Droid::Os::Build;
 using Elastos::Droid::Os::CUserHandle;
 using Elastos::Droid::Os::IUserHandle;
 using Elastos::Droid::Os::IUserManager;
+using Elastos::Droid::Provider::ISettingsSecure;
+using Elastos::Droid::Provider::CSettingsSecure;
 using Elastos::Droid::Text::TextUtils;
 using Elastos::Droid::Utility::CArraySet;
 using Elastos::Droid::Utility::CSparseArray;
@@ -876,7 +876,7 @@ ECode ManagedServices::RegisterService(
         CPendingIntentHelper::AcquireSingleton((IPendingIntentHelper**)&helper);
         AutoPtr<IPendingIntent> pendingIntent;
         helper->GetActivity(
-            mContext, 0, otherIntent, 0, (IPendingIntent**)&pendingIntent);
+                mContext, 0, otherIntent, 0, (IPendingIntent**)&pendingIntent);
         intent->PutExtra(IIntent::EXTRA_CLIENT_INTENT, IParcelable::Probe(pendingIntent));
 
         AutoPtr<IApplicationInfo> appInfo;

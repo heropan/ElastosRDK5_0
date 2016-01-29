@@ -24,9 +24,9 @@ using Elastos::Core::CSystem;
 using Elastos::Core::ISystem;
 using Elastos::Core::IString;
 using Elastos::Utility::Arrays;
-using Elastos::Utility::Objects;
 using Elastos::Utility::IIterator;
 using Elastos::Utility::ISet;
+using Elastos::Utility::Objects;
 
 namespace Elastos {
 namespace Droid {

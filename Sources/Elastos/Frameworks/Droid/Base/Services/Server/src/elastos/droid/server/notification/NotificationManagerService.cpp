@@ -3266,7 +3266,7 @@ ECode NotificationManagerService::EnqueueNotificationInternal(
                     count++;
                     if (count >= MAX_PACKAGE_NOTIFICATIONS) {
                         Logger::E(TAG, "Package has already posted %d notifications.  Not showing more.  package=%s",
-                            count, pkg.string());
+                                count, pkg.string());
                         return NOERROR;
                     }
                 }
@@ -3458,9 +3458,9 @@ ECode NotificationManagerService::BuzzBeepBlinkLocked(
         mAudioManager->GetRingerMode(&mode);
 
         Boolean convertSoundToVibration =
-            !hasCustomVibrate
-            && hasValidSound
-            && (mode == IAudioManager::RINGER_MODE_VIBRATE);
+                !hasCustomVibrate
+                && hasValidSound
+                && (mode == IAudioManager::RINGER_MODE_VIBRATE);
 
         // The DEFAULT_VIBRATE flag trumps any custom vibration AND the fallback.
         notification->GetDefaults(&defaults);
@@ -4022,12 +4022,12 @@ Boolean NotificationManagerService::NotificationMatchesUserId(
     /* [in] */ Int32 userId)
 {
     return
-      // looking for USER_ALL notifications? match everything
-      userId == IUserHandle::USER_ALL
-      // a notification sent to USER_ALL matches any query
-      || record->GetUserId() == IUserHandle::USER_ALL
-      // an exact user match
-      || record->GetUserId() == userId;
+            // looking for USER_ALL notifications? match everything
+            userId == IUserHandle::USER_ALL
+            // a notification sent to USER_ALL matches any query
+            || record->GetUserId() == IUserHandle::USER_ALL
+            // an exact user match
+            || record->GetUserId() == userId;
 }
 
 Boolean NotificationManagerService::NotificationMatchesCurrentProfiles(
@@ -4165,7 +4165,7 @@ void NotificationManagerService::CancelAllLocked(
         }
 
         if ((r->GetFlags() & (INotification::FLAG_ONGOING_EVENT
-                        | INotification::FLAG_NO_CLEAR)) == 0) {
+                | INotification::FLAG_NO_CLEAR)) == 0) {
             mNotificationList->Remove(i);
             CancelNotificationLocked(r, TRUE, reason);
             // Make a note so we can cancel children later.
@@ -4304,7 +4304,8 @@ Int32 NotificationManagerService::IndexOfNotificationLocked(
             if (!_tag.IsNull()) {
                 continue;
             }
-        } else {
+        }
+        else {
             if (!tag.Equals(_tag)) {
                 continue;
             }

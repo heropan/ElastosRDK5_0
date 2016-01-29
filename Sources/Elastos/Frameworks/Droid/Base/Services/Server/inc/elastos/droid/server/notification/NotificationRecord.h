@@ -9,8 +9,8 @@
 using Elastos::Droid::App::INotification;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Os::IUserHandle;
-using Elastos::Droid::Service::Notification::IStatusBarNotification;
 using Elastos::Droid::Server::Notification::INotificationRecord;
+using Elastos::Droid::Service::Notification::IStatusBarNotification;
 using Elastos::IO::IPrintWriter;
 
 namespace Elastos {

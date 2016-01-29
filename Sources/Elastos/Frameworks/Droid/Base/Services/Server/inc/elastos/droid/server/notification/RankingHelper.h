@@ -2,8 +2,6 @@
 #ifndef __ELASTOS_DROID_SERVER_NOTIFICATION_RANKINGHELPER_H__
 #define __ELASTOS_DROID_SERVER_NOTIFICATION_RANKINGHELPER_H__
 
-#include "elastos/droid/ext/frameworkext.h"
-#include <Elastos.Droid.Content.h>
 #include <Elastos.CoreLibrary.External.h>
 #include <_Elastos.Droid.Server.h>
 #include "elastos/droid/server/notification/ManagedServices.h"

@@ -2,9 +2,7 @@
 #ifndef __ELASTOS_DROID_SERVER_NOTIFICATION_RANKINGRECONSIDERATION_H__
 #define __ELASTOS_DROID_SERVER_NOTIFICATION_RANKINGRECONSIDERATION_H__
 
-#include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/server/notification/NotificationRecord.h"
-#include "elastos/droid/os/Runnable.h"
 
 using Elastos::Droid::Os::Runnable;
 using Elastos::Core::IComparator;
@@ -14,6 +12,8 @@ namespace Elastos {
 namespace Droid {
 namespace Server {
 namespace Notification {
+
+class NotificationRecord;
 
 /**
  * Sorts notifications individually into attention-relelvant order.

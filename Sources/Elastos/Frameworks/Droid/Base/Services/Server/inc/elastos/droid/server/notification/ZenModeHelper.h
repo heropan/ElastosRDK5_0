@@ -2,7 +2,6 @@
 #ifndef __ELASTOS_DROID_SERVER_NOTIFICATION_ZENMODEHELPER_H__
 #define __ELASTOS_DROID_SERVER_NOTIFICATION_ZENMODEHELPER_H__
 
-#include "elastos/droid/ext/frameworkext.h"
 #include <Elastos.Droid.App.h>
 #include <Elastos.Droid.Media.h>
 #include <Elastos.Droid.Os.h>

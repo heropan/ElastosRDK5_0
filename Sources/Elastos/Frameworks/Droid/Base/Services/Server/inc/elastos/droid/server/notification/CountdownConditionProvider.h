@@ -2,13 +2,12 @@
 #ifndef __ELASTOS_DROID_SERVER_NOTIFICATION_COUNTDOWNCONDITIONPROVIDER_H__
 #define __ELASTOS_DROID_SERVER_NOTIFICATION_COUNTDOWNCONDITIONPROVIDER_H__
 
-#include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/server/notification/ManagedServices.h"
 #include "elastos/droid/service/notification/ConditionProviderService.h"
 #include "elastos/droid/content/BroadcastReceiver.h"
 
-using Elastos::Droid::Content::IIntent;
 using Elastos::Droid::Content::IContext;
+using Elastos::Droid::Content::IIntent;
 using Elastos::Droid::Content::BroadcastReceiver;
 using Elastos::Droid::Server::Notification::ManagedServices;
 using Elastos::Droid::Service::Notification::ConditionProviderService;

@@ -3,8 +3,8 @@
 #include "elastos/droid/server/notification/ValidateNotificationPeople.h"
 #include "elastos/droid/os/AsyncTask.h"
 #include "elastos/droid/text/TextUtils.h"
-#include <elastos/core/Math.h>
 #include <elastos/core/CoreUtils.h>
+#include <elastos/core/Math.h>
 #include <elastos/core/StringBuilder.h>
 #include <elastos/core/StringUtils.h>
 #include <elastos/utility/logging/Logger.h>
@@ -28,23 +28,23 @@ using Elastos::Droid::Provider::IContactsContractCommonDataKindsEmail;
 using Elastos::Droid::Text::TextUtils;
 using Elastos::Droid::Utility::ILogHelper;
 using Elastos::Droid::Utility::CArrayMap;
-using Elastos::Utility::Concurrent::CTimeUnitHelper;
-using Elastos::Utility::Concurrent::ITimeUnitHelper;
-using Elastos::Utility::Concurrent::CSemaphore;
-using Elastos::Core::IString;
+using Elastos::Core::CoreUtils;
 using Elastos::Core::EIID_IString;
 using Elastos::Core::EIID_IChar32;
 using Elastos::Core::EIID_ICharSequence;
 using Elastos::Core::IArrayOf;
+using Elastos::Core::IString;
 using Elastos::Core::CSystem;
 using Elastos::Core::ISystem;
-using Elastos::Core::CoreUtils;
 using Elastos::Core::StringBuilder;
 using Elastos::Core::StringUtils;
 using Elastos::IO::ICloseable;
-using Elastos::Utility::CLinkedList;
+using Elastos::Utility::Concurrent::CTimeUnitHelper;
+using Elastos::Utility::Concurrent::ITimeUnitHelper;
+using Elastos::Utility::Concurrent::CSemaphore;
 using Elastos::Utility::Logging::Logger;
 using Elastos::Utility::Logging::Slogger;
+using Elastos::Utility::CLinkedList;
 
 namespace Elastos {
 namespace Droid {

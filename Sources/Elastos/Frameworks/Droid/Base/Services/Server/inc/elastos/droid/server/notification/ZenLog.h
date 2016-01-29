@@ -5,9 +5,9 @@
 #include <Elastos.CoreLibrary.Text.h>
 #include "elastos/droid/server/notification/NotificationRecord.h"
 
+using Elastos::Droid::Service::Notification::ICondition;
 using Elastos::Droid::Service::Notification::IIConditionProvider;
 using Elastos::Droid::Service::Notification::IZenModeConfig;
-using Elastos::Droid::Service::Notification::ICondition;
 using Elastos::Droid::Utility::IArraySet;
 using Elastos::Text::ISimpleDateFormat;
 

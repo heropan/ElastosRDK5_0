@@ -2,7 +2,6 @@
 #ifndef __ELASTOS_DROID_SERVER_NOTIFICATION_DOWNTIMECONDITIONPROVIDER_H__
 #define __ELASTOS_DROID_SERVER_NOTIFICATION_DOWNTIMECONDITIONPROVIDER_H__
 
-#include "elastos/droid/ext/frameworkext.h"
 #include <_Elastos.Droid.Server.h>
 #include "elastos/droid/server/notification/ManagedServices.h"
 #include "elastos/droid/service/notification/ConditionProviderService.h"

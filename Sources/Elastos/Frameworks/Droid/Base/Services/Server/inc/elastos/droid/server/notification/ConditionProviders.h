@@ -2,8 +2,6 @@
 #ifndef __ELASTOS_DROID_SERVER_NOTIFICATION_CONDITIONPROVIDERS_H__
 #define __ELASTOS_DROID_SERVER_NOTIFICATION_CONDITIONPROVIDERS_H__
 
-#include "elastos/droid/ext/frameworkext.h"
-#include <_Elastos.Droid.Server.h>
 #include "elastos/droid/server/notification/CountdownConditionProvider.h"
 #include "elastos/droid/server/notification/DowntimeConditionProvider.h"
 #include "elastos/droid/server/notification/ManagedServices.h"
@@ -11,12 +9,12 @@
 
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Content::IComponentName;
-using Elastos::Droid::Service::Notification::ICondition;
-using Elastos::Droid::Service::Notification::IIConditionProvider;
-using Elastos::Droid::Service::Notification::IIConditionListener;
 using Elastos::Droid::Server::Notification::ManagedServices;
-using Elastos::Droid::Utility::IArraySet;
+using Elastos::Droid::Service::Notification::ICondition;
+using Elastos::Droid::Service::Notification::IIConditionListener;
+using Elastos::Droid::Service::Notification::IIConditionProvider;
 using Elastos::Droid::Utility::IArrayMap;
+using Elastos::Droid::Utility::IArraySet;
 using Elastos::Core::ICharSequence;
 using Elastos::Utility::IArrayList;
 

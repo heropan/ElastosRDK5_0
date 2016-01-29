@@ -26,10 +26,10 @@ using Elastos::Core::CSystem;
 using Elastos::Core::ISystem;
 using Elastos::Core::StringBuilder;
 using Elastos::Core::StringUtils;
-using Elastos::Utility::Logging::Logger;
-using Elastos::Utility::Logging::Slogger;
 using Elastos::Utility::CDate;
 using Elastos::Utility::IDate;
+using Elastos::Utility::Logging::Logger;
+using Elastos::Utility::Logging::Slogger;
 
 namespace Elastos {
 namespace Droid {

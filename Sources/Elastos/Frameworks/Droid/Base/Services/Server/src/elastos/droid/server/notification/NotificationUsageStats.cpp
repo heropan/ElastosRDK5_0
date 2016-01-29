@@ -339,7 +339,7 @@ void AggregatedStats::Collect(
     /* [in] */ SingleNotificationStats* singleNotificationStats)
 {
     mPosttimeMs->AddSample(
-        SystemClock::GetElapsedRealtime() - singleNotificationStats->mPosttimeElapsedMs);
+            SystemClock::GetElapsedRealtime() - singleNotificationStats->mPosttimeElapsedMs);
     if (singleNotificationStats->mPosttimeToDismissMs >= 0) {
         mPosttimeToDismissMs->AddSample(singleNotificationStats->mPosttimeToDismissMs);
     }
