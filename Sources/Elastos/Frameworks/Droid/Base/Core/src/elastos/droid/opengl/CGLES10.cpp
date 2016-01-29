@@ -53,6 +53,8 @@ static ECode GetPointer(
     /* [in, out] */ Int32* offset,
     /* [out] */ Handle64* rst)
 {
+    VALIDATE_NOT_NULL(rst)
+
     Int32 position;
     Int32 limit;
     Int32 elementSizeShift;
@@ -1080,6 +1082,8 @@ ECode CGLES10::GlGetError(
     /* [out] */ Int32* error)
 {
     // TODO: Add your code here
+    VALIDATE_NOT_NULL(error)
+
     *error = glGetError();
     return *error;
 }
@@ -1103,6 +1107,8 @@ ECode CGLES10::GlGetString(
     /* [in] */ Int32 name,
     /* [out] */ String* str)
 {
+    VALIDATE_NOT_NULL(str)
+
     const char* chars = (const char*) glGetString((GLenum) name);
     *str = String(chars);
     return NOERROR;
@@ -2886,6 +2892,8 @@ ECode CGLES10::GetDirectBufferPointer(
     /* [in] */ IBuffer* buffer,
     /* [out] */ Handle64* result)
 {
+    VALIDATE_NOT_NULL(result)
+
     Handle64 effectiveDirectAddress;
     buffer->GetEffectiveDirectAddress(&effectiveDirectAddress);
     if (effectiveDirectAddress != 0) {

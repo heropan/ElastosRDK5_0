@@ -64,6 +64,8 @@ ECode GLSurfaceView::DefaultContextFactory::CreateContext(
     /* [in] */ XIEGLConfig* eglConfig,
     /* [out] */ XIEGLContext** ctx)
 {
+    VALIDATE_NOT_NULL(ctx)
+
     AutoPtr<ArrayOf<Int32> > attrib_list = ArrayOf<Int32>::Alloc(3);
     (*attrib_list)[0] = EGL_CONTEXT_CLIENT_VERSION_EX;
     (*attrib_list)[1] = mHost->mEGLContextClientVersion;
@@ -103,6 +105,8 @@ ECode GLSurfaceView::DefaultWindowSurfaceFactory::CreateWindowSurface(
     /* [in] */ IInterface* nativeWindow,
     /* [out] */ XIEGLSurface** surface)
 {
+    VALIDATE_NOT_NULL(surface)
+
     ECode ec = egl->EglCreateWindowSurface(display, config, nativeWindow, NULL, surface);
     if (ec != NOERROR) {
         SLOGGERE("GLSurfaceView", "eglCreateWindowSurface error");
@@ -132,6 +136,8 @@ ECode GLSurfaceView::BaseConfigChooser::ChooseConfig(
     /* [in] */ XIEGLDisplay* display,
     /* [out] */ XIEGLConfig** config)
 {
+    VALIDATE_NOT_NULL(config)
+
     AutoPtr<ArrayOf<Int32> > num_config = ArrayOf<Int32>::Alloc(1);
     Boolean eglChooseConfig;
     egl->EglChooseConfig(display, mConfigSpec, NULL, 0, num_config, &eglChooseConfig);
@@ -208,6 +214,8 @@ ECode GLSurfaceView::ComponentSizeChooser::ChooseConfig(
     /* [in] */ ArrayOf<XIEGLConfig*>* configs,
     /* [out] */ XIEGLConfig** rst)
 {
+    VALIDATE_NOT_NULL(rst)
+
     Int32 len = configs->GetLength();
     for (Int32 i = 0; i < len; i++) {
         AutoPtr<XIEGLConfig> config = (*configs)[i];
@@ -360,6 +368,8 @@ ECode GLSurfaceView::EglHelper::Start()
 ECode GLSurfaceView::EglHelper::CreateSurface(
     /* [out] */ Boolean* rst)
 {
+    VALIDATE_NOT_NULL(rst)
+
     *rst = FALSE;
     if (LOG_EGL) {
         Int64 tid;
@@ -1428,6 +1438,8 @@ ECode GLSurfaceView::SetDebugFlags(
 ECode GLSurfaceView::GetDebugFlags(
     /* [out] */ Int32* flags)
 {
+    VALIDATE_NOT_NULL(flags)
+
     *flags = mDebugFlags;
     return NOERROR;
 }
@@ -1442,6 +1454,8 @@ ECode GLSurfaceView::SetPreserveEGLContextOnPause(
 ECode GLSurfaceView::GetPreserveEGLContextOnPause(
     /* [out] */ Boolean* preserveEGLContextOnPause)
 {
+    VALIDATE_NOT_NULL(preserveEGLContextOnPause)
+
     *preserveEGLContextOnPause = mPreserveEGLContextOnPause;
     return NOERROR;
 }
@@ -1532,6 +1546,8 @@ ECode GLSurfaceView::SetRenderMode(
 ECode GLSurfaceView::GetRenderMode(
     /* [out] */ Int32* renderMode)
 {
+    VALIDATE_NOT_NULL(renderMode)
+
     *renderMode = mGLThread->GetRenderMode();
     return NOERROR;
 }

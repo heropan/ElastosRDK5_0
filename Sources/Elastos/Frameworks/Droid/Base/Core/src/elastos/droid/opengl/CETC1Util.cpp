@@ -95,6 +95,8 @@ ECode CETC1Util::LoadTexture(
 ECode CETC1Util::IsETC1Supported(
     /* [out] */ Boolean* isSupported)
 {
+    VALIDATE_NOT_NULL(isSupported)
+
     AutoPtr<ArrayOf<Int32> > results = ArrayOf<Int32>::Alloc(20);
     AutoPtr<IGLES10> gles10;
     CGLES10::AcquireSingleton((IGLES10**)&gles10);
@@ -118,6 +120,8 @@ ECode CETC1Util::CreateTexture(
     /* [in] */ Elastos::IO::IInputStream* input,
     /* [out] */ IETC1Texture** texture)
 {
+    VALIDATE_NOT_NULL(texture)
+
     Int32 width = 0;
     Int32 height = 0;
     AutoPtr<IByteBufferHelper> helper;
@@ -183,6 +187,8 @@ ECode CETC1Util::CompressTexture(
     /* [in] */ Int32 stride,
     /* [out] */ IETC1Texture** texture)
 {
+    VALIDATE_NOT_NULL(texture)
+
     AutoPtr<IETC1> etc1;
     CETC1::AcquireSingleton((IETC1**)&etc1);
     AutoPtr<IByteBufferHelper> helper;

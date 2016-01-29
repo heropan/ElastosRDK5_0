@@ -24,6 +24,8 @@ ECode CGLES10Ext::GlQueryMatrixxOES(
     /* [in] */ Int32 exponentOffset,
     /* [out] */ Int32* matrixx)
 {
+    VALIDATE_NOT_NULL(matrixx)
+
     *matrixx = -1;
     GLfixed *mantissa_base = (GLfixed *) 0;
     Int32 _mantissaRemaining;
@@ -77,6 +79,8 @@ ECode CGLES10Ext::GlQueryMatrixxOES(
     /* [in] */ Elastos::IO::IInt32Buffer* exponent_buf,
     /* [out] */ Int32* matrixx)
 {
+    VALIDATE_NOT_NULL(matrixx)
+
     Handle64 _mantissaArray = (Handle64) 0;
     Int32 _mantissaBufferOffset = (Int32) 0;
     Handle64 _exponentArray = (Handle64) 0;
@@ -126,6 +130,8 @@ ECode CGLES10Ext::GetPointer(
     /* [in, out] */ Int32* offset,
     /* [out] */ Handle64* rst)
 {
+    VALIDATE_NOT_NULL(rst)
+
     Int32 position;
     Int32 limit;
     Int32 elementSizeShift;

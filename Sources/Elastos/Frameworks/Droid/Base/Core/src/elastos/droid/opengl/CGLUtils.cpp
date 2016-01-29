@@ -26,6 +26,8 @@ ECode CGLUtils::GetInternalFormat(
     /* [in] */ IBitmap* bitmap,
     /* [out] */ Int32* rst)
 {
+    VALIDATE_NOT_NULL(rst)
+
     if (bitmap == NULL) {
         SLOGGERD("CGLUtils", "getInternalFormat can't be used with a null Bitmap")
         return E_NULL_POINTER_EXCEPTION;
@@ -49,6 +51,8 @@ ECode CGLUtils::GetType(
     /* [in] */ IBitmap* bitmap,
     /* [out] */ Int32* type)
 {
+    VALIDATE_NOT_NULL(type)
+
     if (bitmap == NULL) {
         SLOGGERD("CGLUtils", "texImage2D can't be used with a null Bitmap")
         return E_NULL_POINTER_EXCEPTION;
@@ -162,6 +166,8 @@ ECode CGLUtils::GetEGLErrorString(
     /* [in] */ Int32 error,
     /* [out] */ String* str)
 {
+    VALIDATE_NOT_NULL(str)
+
     return NOERROR;
 }
 

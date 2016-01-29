@@ -1543,6 +1543,8 @@ ECode CGLES11Ext::GlIsRenderbufferOES(
     /* [in] */ Int32 renderbuffer,
     /* [out] */ Boolean* result)
 {
+    VALIDATE_NOT_NULL(result)
+
     GLboolean _returnValue;
     _returnValue = glIsRenderbufferOES(
         (GLuint)renderbuffer
@@ -1762,6 +1764,8 @@ ECode CGLES11Ext::GlIsFramebufferOES(
     /* [in] */ Int32 framebuffer,
     /* [out] */ Boolean* result)
 {
+    VALIDATE_NOT_NULL(result)
+
     GLboolean _returnValue;
     _returnValue = glIsFramebufferOES(
         (GLuint)framebuffer
@@ -1904,6 +1908,8 @@ ECode CGLES11Ext::GlCheckFramebufferStatusOES(
     /* [in] */ Int32 target,
     /* [out] */ Int32* status)
 {
+    VALIDATE_NOT_NULL(status)
+
     GLenum _returnValue;
     _returnValue = glCheckFramebufferStatusOES(
         (GLenum)target
@@ -2665,6 +2671,8 @@ ECode CGLES11Ext::GetPointer(
     /* [in, out] */ Int32* offset,
     /* [out] */ Handle64* rst)
 {
+    VALIDATE_NOT_NULL(rst)
+
     Int32 position;
     Int32 limit;
     Int32 elementSizeShift;
@@ -2700,6 +2708,8 @@ ECode CGLES11Ext::GetDirectBufferPointer(
     /* [in] */ IBuffer* buffer,
     /* [out] */ Handle64* result)
 {
+    VALIDATE_NOT_NULL(result)
+
     Handle64 effectiveDirectAddress;
     buffer->GetEffectiveDirectAddress(&effectiveDirectAddress);
     if (effectiveDirectAddress != 0) {

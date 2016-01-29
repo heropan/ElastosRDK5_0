@@ -50,6 +50,8 @@ static ECode GetPointer(
     /* [in, out] */ Int32* offset,
     /* [out] */ Handle64* rst)
 {
+    VALIDATE_NOT_NULL(rst)
+
     Int32 position;
     Int32 limit;
     Int32 elementSizeShift;
@@ -637,6 +639,8 @@ ECode CGLES11::GlGenTextures(
 ECode CGLES11::GlGetError(
     /* [out] */ Int32* error)
 {
+    VALIDATE_NOT_NULL(error)
+
     return sGl10->GlGetError(error);
 }
 
@@ -659,6 +663,8 @@ ECode CGLES11::GlGetString(
     /* [in] */ Int32 name,
     /* [out] */ String* str)
 {
+    VALIDATE_NOT_NULL(str)
+
     return sGl10->GlGetString(name, str);
 }
 
@@ -2728,6 +2734,8 @@ ECode CGLES11::GlIsBuffer(
     /* [in] */ Int32 buffer,
     /* [out] */ Boolean* isBuffer)
 {
+    VALIDATE_NOT_NULL(isBuffer)
+
     GLboolean _returnValue;
     _returnValue = glIsBuffer(
         (GLuint)buffer
@@ -2740,6 +2748,8 @@ ECode CGLES11::GlIsEnabled(
     /* [in] */ Int32 cap,
     /* [out] */ Boolean* isEnabled)
 {
+    VALIDATE_NOT_NULL(isEnabled)
+
     GLboolean _returnValue;
     _returnValue = glIsEnabled(
         (GLenum)cap
@@ -2752,6 +2762,8 @@ ECode CGLES11::GlIsTexture(
     /* [in] */ Int32 texture,
     /* [out] */ Boolean* isTexture)
 {
+    VALIDATE_NOT_NULL(isTexture)
+
     GLboolean _returnValue;
     _returnValue = glIsTexture(
         (GLuint)texture
@@ -3293,6 +3305,8 @@ ECode CGLES11::GetDirectBufferPointer(
     /* [in] */ IBuffer* buffer,
     /* [out] */ Handle64* result)
 {
+    VALIDATE_NOT_NULL(result)
+
     Handle64 effectiveDirectAddress;
     buffer->GetEffectiveDirectAddress(&effectiveDirectAddress);
     if (effectiveDirectAddress != 0) {

@@ -39,7 +39,8 @@ ECode EGLLogWrapper::EglChooseConfig(
     /* [in] */ ArrayOf<Int32>* num_config,
     /* [out] */ Boolean* result)
 {
-    VALIDATE_NOT_NULL(result);
+    VALIDATE_NOT_NULL(result)
+
     Begin(String("eglChooseConfig"));
     Arg(String("display"), display);
     Arg(String("attrib_list"), attrib_list);
@@ -65,7 +66,8 @@ ECode EGLLogWrapper::EglCopyBuffers(
     /* [in] */ IInterface* native_pixmap,
     /* [out] */ Boolean* result)
 {
-    VALIDATE_NOT_NULL(result);
+    VALIDATE_NOT_NULL(result)
+
     Begin(String("eglCopyBuffers"));
     Arg(String("display"), display);
     Arg(String("surface"), surface);
@@ -85,7 +87,8 @@ ECode EGLLogWrapper::EglCreateContext(
     /* [in] */ ArrayOf<Int32>* attrib_list,
     /* [out] */ XIEGLContext** context)
 {
-    VALIDATE_NOT_NULL(context);
+    VALIDATE_NOT_NULL(context)
+
     Begin(String("eglCreateContext"));
     Arg(String("display"), display);
     Arg(String("config"), config);
@@ -105,7 +108,8 @@ ECode EGLLogWrapper::EglCreatePbufferSurface(
     /* [in] */ ArrayOf<Int32>* attrib_list,
     /* [out] */ XIEGLSurface** surface)
 {
-    VALIDATE_NOT_NULL(surface);
+    VALIDATE_NOT_NULL(surface)
+
     Begin(String("eglCreatePbufferSurface"));
     Arg(String("display"), display);
     Arg(String("config"), config);
@@ -125,7 +129,8 @@ ECode EGLLogWrapper::EglCreatePixmapSurface(
     /* [in] */ ArrayOf<Int32>* attrib_list,
     /* [out] */ XIEGLSurface** surface)
 {
-    VALIDATE_NOT_NULL(surface);
+    VALIDATE_NOT_NULL(surface)
+
     Begin(String("eglCreatePixmapSurface"));
     Arg(String("display"), display);
     Arg(String("config"), config);
@@ -146,7 +151,8 @@ ECode EGLLogWrapper::EglCreateWindowSurface(
     /* [in] */ ArrayOf<Int32>* attrib_list,
     /* [out] */ XIEGLSurface** surface)
 {
-    VALIDATE_NOT_NULL(surface);
+    VALIDATE_NOT_NULL(surface)
+
     Begin(String("eglCreateWindowSurface"));
     Arg(String("display"), display);
     Arg(String("config"), config);
@@ -165,7 +171,8 @@ ECode EGLLogWrapper::EglDestroyContext(
     /* [in] */ XIEGLContext* context,
     /* [out] */ Boolean* result)
 {
-    VALIDATE_NOT_NULL(result);
+    VALIDATE_NOT_NULL(result)
+
     Begin(String("eglDestroyContext"));
     Arg(String("display"), display);
     Arg(String("context"), context);
@@ -182,7 +189,8 @@ ECode EGLLogWrapper::EglDestroySurface(
     /* [in] */ XIEGLSurface* surface,
     /* [out] */ Boolean* result)
 {
-    VALIDATE_NOT_NULL(result);
+    VALIDATE_NOT_NULL(result)
+
     Begin(String("eglDestroySurface"));
     Arg(String("display"), display);
     Arg(String("surface"), surface);
@@ -201,7 +209,8 @@ ECode EGLLogWrapper::EglGetConfigAttrib(
     /* [in] */ ArrayOf<Int32>* value,
     /* [out] */ Boolean* result)
 {
-    VALIDATE_NOT_NULL(result);
+    VALIDATE_NOT_NULL(result)
+
     Begin(String("eglGetConfigAttrib"));
     Arg(String("display"), display);
     Arg(String("config"), config);
@@ -222,7 +231,8 @@ ECode EGLLogWrapper::EglGetConfigs(
     /* [in] */ ArrayOf<Int32>* num_config,
     /* [out] */ Boolean* result)
 {
-    VALIDATE_NOT_NULL(result);
+    VALIDATE_NOT_NULL(result)
+
     Begin(String("eglGetConfigs"));
     Arg(String("display"), display);
     Arg(String("config_size"), config_size);
@@ -244,7 +254,8 @@ ECode EGLLogWrapper::EglGetConfigs(
 ECode EGLLogWrapper::EglGetCurrentContext(
     /* [out] */ XIEGLContext** context)
 {
-    VALIDATE_NOT_NULL(context);
+    VALIDATE_NOT_NULL(context)
+
     Begin(String("eglGetCurrentContext"));
     End();
 
@@ -257,7 +268,8 @@ ECode EGLLogWrapper::EglGetCurrentContext(
 ECode EGLLogWrapper::EglGetCurrentDisplay(
     /* [out] */ XIEGLDisplay** display)
 {
-    VALIDATE_NOT_NULL(display);
+    VALIDATE_NOT_NULL(display)
+
     Begin(String("eglGetCurrentDisplay"));
     End();
 
@@ -271,7 +283,8 @@ ECode EGLLogWrapper::EglGetCurrentSurface(
     /* [in] */ Int32 readdraw,
     /* [out] */ XIEGLSurface** surface)
 {
-    VALIDATE_NOT_NULL(surface);
+    VALIDATE_NOT_NULL(surface)
+
     Begin(String("eglGetCurrentSurface"));
     Arg(String("readdraw"), readdraw);
     End();
@@ -287,7 +300,8 @@ ECode EGLLogWrapper::EglGetDisplay(
     /* [in] */ IInterface* native_display,
     /* [out] */ XIEGLDisplay** display)
 {
-    VALIDATE_NOT_NULL(display);
+    VALIDATE_NOT_NULL(display)
+
     Begin(String("eglGetDisplay"));
     Arg(String("native_display"), native_display);
     End();
@@ -301,7 +315,8 @@ ECode EGLLogWrapper::EglGetDisplay(
 ECode EGLLogWrapper::EglGetError(
     /* [out] */ Int32* error)
 {
-    VALIDATE_NOT_NULL(error);
+    VALIDATE_NOT_NULL(error)
+
     Begin(String("eglGetError"));
     End();
 
@@ -315,7 +330,8 @@ ECode EGLLogWrapper::EglInitialize(
     /* [in] */ ArrayOf<Int32>* major_minor,
     /* [out] */ Boolean* result)
 {
-    VALIDATE_NOT_NULL(result);
+    VALIDATE_NOT_NULL(result)
+
     Begin(String("eglInitialize"));
     Arg(String("display"), display);
     End();
@@ -333,7 +349,8 @@ ECode EGLLogWrapper::EglMakeCurrent(
     /* [in] */ XIEGLContext* context,
     /* [out] */ Boolean* result)
 {
-    VALIDATE_NOT_NULL(result);
+    VALIDATE_NOT_NULL(result)
+
     Begin(String("eglMakeCurrent"));
     Arg(String("display"), display);
     Arg(String("draw"), draw);
@@ -353,7 +370,8 @@ ECode EGLLogWrapper::EglQueryContext(
     /* [in] */ ArrayOf<Int32>* value,
     /* [out] */ Boolean* result)
 {
-    VALIDATE_NOT_NULL(result);
+    VALIDATE_NOT_NULL(result)
+
     Begin(String("eglQueryContext"));
     Arg(String("display"), display);
     Arg(String("context"), context);
@@ -371,7 +389,8 @@ ECode EGLLogWrapper::EglQueryString(
     /* [in] */ Int32 name,
     /* [out] */ String* str)
 {
-    VALIDATE_NOT_NULL(str);
+    VALIDATE_NOT_NULL(str)
+
     Begin(String("eglQueryString"));
     Arg(String("display"), display);
     Arg(String("name"), name);
@@ -389,7 +408,8 @@ ECode EGLLogWrapper::EglQuerySurface(
     /* [in] */ ArrayOf<Int32>* value,
     /* [out] */ Boolean* result)
 {
-    VALIDATE_NOT_NULL(result);
+    VALIDATE_NOT_NULL(result)
+
     Begin(String("eglQuerySurface"));
     Arg(String("display"), display);
     Arg(String("surface"), surface);
@@ -406,7 +426,8 @@ ECode EGLLogWrapper::EglQuerySurface(
 ECode EGLLogWrapper::EglReleaseThread(
     /* [out] */ Boolean* result)
 {
-    VALIDATE_NOT_NULL(result);
+    VALIDATE_NOT_NULL(result)
+
     Begin(String("eglReleaseThread"));
     End();
     mEgl10->EglReleaseThread(result);
@@ -420,7 +441,8 @@ ECode EGLLogWrapper::EglSwapBuffers(
     /* [in] */ XIEGLSurface* surface,
     /* [out] */ Boolean* result)
 {
-    VALIDATE_NOT_NULL(result);
+    VALIDATE_NOT_NULL(result)
+
     Begin(String("eglInitialize"));
     Arg(String("display"), display);
     Arg(String("surface"), surface);
@@ -435,7 +457,8 @@ ECode EGLLogWrapper::EglTerminate(
     /* [in] */ XIEGLDisplay* display,
     /* [out] */ Boolean* result)
 {
-    VALIDATE_NOT_NULL(result);
+    VALIDATE_NOT_NULL(result)
+
     Begin(String("eglTerminate"));
     Arg(String("display"), display);
     End();
@@ -448,7 +471,8 @@ ECode EGLLogWrapper::EglTerminate(
 ECode EGLLogWrapper::EglWaitGL(
     /* [out] */ Boolean* result)
 {
-    VALIDATE_NOT_NULL(result);
+    VALIDATE_NOT_NULL(result)
+
     Begin(String("eglWaitGL"));
     End();
     mEgl10->EglWaitGL(result);
@@ -462,7 +486,8 @@ ECode EGLLogWrapper::EglWaitNative(
     /* [in] */ IInterface* bindTarget,
     /* [out] */ Boolean* result)
 {
-    VALIDATE_NOT_NULL(result);
+    VALIDATE_NOT_NULL(result)
+
     Begin(String("eglWaitNative"));
     Arg(String("engine"), engine);
     Arg(String("bindTarget"), bindTarget);

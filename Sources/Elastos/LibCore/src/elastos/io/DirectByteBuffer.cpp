@@ -18,6 +18,7 @@ using Libcore::IO::Memory;
 
 namespace Elastos {
 namespace IO {
+CAR_INTERFACE_IMPL(DirectByteBuffer, MappedByteBuffer, IDirectByteBuffer)
 
 DirectByteBuffer::DirectByteBuffer()
     : mOffset(0)

@@ -952,6 +952,8 @@ ECode CGLImpl::GlGenTextures(
 ECode CGLImpl::GlGetError(
     /* [out] */ Int32* error)
 {
+    VALIDATE_NOT_NULL(error)
+
     GLenum _returnValue;
     _returnValue = glGetError();
     *error = _returnValue;
@@ -962,6 +964,8 @@ ECode CGLImpl::GlGetString(
     /* [in] */ Int32 name,
     /* [out] */ String* str)
 {
+    VALIDATE_NOT_NULL(str)
+
     const char* chars = (const char*) glGetString((GLenum) name);
     *str = String(chars);
     return NOERROR;
@@ -2590,6 +2594,8 @@ ECode CGLImpl::GlQueryMatrixxOES(
     /* [in] */ Int32 exponentOffset,
     /* [out] */ Int32* matrixxOES)
 {
+    VALIDATE_NOT_NULL(matrixxOES)
+
     GLbitfield _returnValue = -1;
     GLfixed *mantissa_base = (GLfixed *) 0;
     Int32 _mantissaRemaining;
@@ -2638,6 +2644,8 @@ ECode CGLImpl::GlQueryMatrixxOES(
     /* [in] */ IInt32Buffer* exponent_buf,
     /* [out] */ Int32* matrixxOES)
 {
+    VALIDATE_NOT_NULL(matrixxOES)
+
     Handle64 _mantissaArray = (Handle64) 0;
     Int32 _mantissaBufferOffset = (Int32) 0;
     Handle64 _exponentArray = (Handle64) 0;
@@ -3250,6 +3258,8 @@ ECode CGLImpl::GlCheckFramebufferStatusOES(
     /* [in] */ Int32 target,
     /* [out] */ Int32* status)
 {
+    VALIDATE_NOT_NULL(status)
+
     if (! SupportsExtension(this, HAVE_OES_BLEND_EQUATION_SEPARATEID)) {
         *status = 0;
         return E_UNSUPPORTED_OPERATION_EXCEPTION;
@@ -4638,6 +4648,8 @@ ECode CGLImpl::GlIsFramebufferOES(
     /* [in] */ Int32 framebuffer,
     /* [out] */ Boolean* result)
 {
+    VALIDATE_NOT_NULL(result)
+
     if (! SupportsExtension(this, HAVE_OES_FRAMEBUFFER_OBJECTID)) {
         *result = FALSE;
         return E_UNSUPPORTED_OPERATION_EXCEPTION;
@@ -4654,6 +4666,8 @@ ECode CGLImpl::GlIsRenderbufferOES(
     /* [in] */ Int32 renderbuffer,
     /* [out] */ Boolean* result)
 {
+    VALIDATE_NOT_NULL(result)
+
     if (! SupportsExtension(this, HAVE_OES_FRAMEBUFFER_OBJECTID)) {
         *result = FALSE;
         return E_UNSUPPORTED_OPERATION_EXCEPTION;
@@ -6659,6 +6673,8 @@ ECode CGLImpl::GlIsBuffer(
     /* [in] */ Int32 buffer,
     /* [out] */ Boolean* result)
 {
+    VALIDATE_NOT_NULL(result)
+
     GLboolean _returnValue;
     _returnValue = glIsBuffer(
         (GLuint)buffer
@@ -6671,6 +6687,8 @@ ECode CGLImpl::GlIsEnabled(
     /* [in] */ Int32 cap,
     /* [out] */ Boolean* result)
 {
+    VALIDATE_NOT_NULL(result)
+
     GLboolean _returnValue;
     _returnValue = glIsEnabled(
         (GLenum)cap
@@ -6683,6 +6701,8 @@ ECode CGLImpl::GlIsTexture(
     /* [in] */ Int32 texture,
     /* [out] */ Boolean* result)
 {
+    VALIDATE_NOT_NULL(result)
+
     GLboolean _returnValue;
     _returnValue = glIsTexture(
         (GLuint)texture
@@ -7201,6 +7221,8 @@ ECode CGLImpl::GetPointer(
     /* [in, out] */ Int32* offset,
     /* [out] */ Handle64* rst)
 {
+    VALIDATE_NOT_NULL(rst)
+
     Int32 position;
     Int32 limit;
     Int32 elementSizeShift;
@@ -7236,6 +7258,8 @@ ECode CGLImpl::GetDirectBufferPointer(
     /* [in] */ IBuffer* buffer,
     /* [out] */ Handle64* result)
 {
+    VALIDATE_NOT_NULL(result)
+
     Handle64 buf;
     buffer->GetEffectiveDirectAddress(&buf);
     if (buf != 0) {
