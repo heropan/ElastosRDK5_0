@@ -1272,6 +1272,14 @@ module
         interface IRemoteControlClient;
     }
 
+    class CTtmlRenderer {
+        constructor(
+            [in] IContext* context);
+
+        interface ISubtitleControllerRenderer;
+        interface ITtmlRenderer;
+    }
+
     } // namespace media
     } // namepsace Droid
     } // namespace Elastos

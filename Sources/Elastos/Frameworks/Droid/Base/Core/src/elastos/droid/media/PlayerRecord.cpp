@@ -117,15 +117,7 @@ ECode PlayerRecord::RemotePlaybackState::constructor(
 //================================================================================
 //                      PlayerRecord::RcClientDeathHandler
 //================================================================================
-PlayerRecord::RcClientDeathHandler::RcClientDeathHandler()
-{}
-
-PlayerRecord::RcClientDeathHandler::~RcClientDeathHandler()
-{}
-
-CAR_INTERFACE_IMPL(PlayerRecord::RcClientDeathHandler, Object, IProxyDeathRecipient)
-
-ECode PlayerRecord::RcClientDeathHandler::constructor(
+PlayerRecord::RcClientDeathHandler::RcClientDeathHandler(
     /* [in] */ PlayerRecord* host,
     /* [in] */ IBinder* cb,
     /* [in] */ IPendingIntent* pi)
@@ -133,8 +125,12 @@ ECode PlayerRecord::RcClientDeathHandler::constructor(
     mHost = host;
     mCb = cb;
     mMediaIntent = pi;
-    return NOERROR;
 }
+
+PlayerRecord::RcClientDeathHandler::~RcClientDeathHandler()
+{}
+
+CAR_INTERFACE_IMPL(PlayerRecord::RcClientDeathHandler, Object, IProxyDeathRecipient)
 
 ECode PlayerRecord::RcClientDeathHandler::BinderDied()
 {
@@ -394,8 +390,7 @@ ECode PlayerRecord::ResetControllerInfoForRcc(
         AutoPtr<IBinder> b;
         assert(0 && "TODO");
         // mRcClient->AsBinder((IBinder**)&b);
-        AutoPtr<RcClientDeathHandler> rcdh = new RcClientDeathHandler();
-        rcdh->constructor(this, b.Get(), mMediaIntent.Get());
+        AutoPtr<RcClientDeathHandler> rcdh = new RcClientDeathHandler(this, b.Get(), mMediaIntent.Get());
         // try {
         AutoPtr<IProxy> proxy = (IProxy*)b->Probe(EIID_IProxy);
         assert(proxy != NULL);

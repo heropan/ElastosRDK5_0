@@ -202,8 +202,6 @@ private:
 
         ~Run();
 
-        CARAPI constructor();
-
         //TODO
         //StoreByEndTimeMs(
         //    [in] ILongSparseArray* runsByEndTime);

@@ -21,6 +21,7 @@
 #include "elastos/droid/media/CWebVttRendererTokenizerTagTokenizer.h"
 #include "elastos/droid/media/CWebVttRenderingWidget.h"
 #include "elastos/droid/media/CWebVttTrack.h"
+#include "elastos/droid/media/CTtmlRenderer.h"
 
 namespace Elastos {
 namespace Droid {
@@ -49,6 +50,7 @@ CAR_OBJECT_IMPL(CMediaRouterClientState)
 CAR_OBJECT_IMPL(CMediaRouterClientStateRouteInfo)
 CAR_OBJECT_IMPL(CRemoteDisplayState)
 CAR_OBJECT_IMPL(CRemoteDisplayInfo)
+CAR_OBJECT_IMPL(CTtmlRenderer)
 
 } // namespace Media
 } // namepsace Droid

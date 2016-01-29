@@ -68,7 +68,7 @@ protected:
         , public IPlayerRecordRemotePlaybackState
 	{
 	public:
-		RemotePlaybackState();
+        RemotePlaybackState();
 
         virtual ~RemotePlaybackState();
 
@@ -91,16 +91,16 @@ private:
     {
         friend class PlayerRecord;
     public:
-        RcClientDeathHandler();
+        RcClientDeathHandler(
+            /* [in] */ PlayerRecord* host,
+            /* [in] */ IBinder* cb,
+            /* [in] */ IPendingIntent* pi);
 
         ~RcClientDeathHandler();
 
         CAR_INTERFACE_DECL()
 
-        CARAPI constructor(
-            /* [in] */ PlayerRecord* host,
-            /* [in] */ IBinder* cb,
-            /* [in] */ IPendingIntent* pi);
+
 
         CARAPI BinderDied();
 

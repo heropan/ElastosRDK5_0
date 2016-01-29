@@ -2,12 +2,34 @@
 #define _ELASTOS_DROID_MEDIA_TTMLRENDERER_H__
 
 #include "elastos/droid/media/SubtitleController.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/media/SubtitleTrack.h"
+#include "elastos/droid/widget/LinearLayout.h"
+#include "elastos/droid/widget/TextView.h"
+#include "Elastos.Droid.Media.h"
+#include <elastos/utility/etl/List.h>
+#include <elastos/utility/etl/Set.h>
 #include <elastos/core/Object.h>
+#include <elastos/core/StringBuilder.h>
+
+using Elastos::Droid::Media::ISubtitleTrackRenderingWidget;
+using Elastos::Droid::Graphics::ICanvas;
+using Elastos::Droid::Utility::IAttributeSet;
+using Elastos::Droid::Widget::LinearLayout;
+using Elastos::Droid::Widget::TextView;
+using Org::Xmlpull::V1::IXmlPullParser;
+using Elastos::Utility::Etl::List;
+using Elastos::Utility::Etl::Set;
+using Elastos::Utility::IList;
+using Elastos::Utility::Regex::IMatchResult;
+using Elastos::Utility::Regex::IPattern;
+using Elastos::Core::StringBuilder;
 
 namespace Elastos{
 namespace Droid {
 namespace Media {
 
+class TtmlRenderingWidget;
 class TtmlRenderer
     : public ISubtitleControllerRenderer
     , public ITtmlRenderer
@@ -37,6 +59,8 @@ private:
     AutoPtr<TtmlRenderingWidget> mRenderingWidget;
 };
 
+class TtmlNode;
+
 class TtmlUtils
 {
 public:
@@ -45,11 +69,11 @@ public:
         /* [in] */ Int32 frameRate,
         /* [in] */ Int32 subframeRate,
         /* [in] */ Int32 tickRate,
-        /* [out] */ Int64** result);
+        /* [out] */ Int64* result);
 
     static CARAPI ApplyDefaultSpacePolicy(
         /* [in] */ const String& in,
-        /* [out] */ String** result);
+        /* [out] */ String* result);
 
     static CARAPI ApplySpacePolicy(
         /* [in] */ const String& in,
@@ -69,12 +93,18 @@ public:
         /* [out] */ String* result);
 
 private:
-    static CARAPPI_(void) ExtractText(
+    static CARAPI_(void) ExtractText(
         /* [in] */ TtmlNode* node,
         /* [in] */ Int64 startUs,
         /* [in] */ Int64 endUs,
-        /* [in] */ StringBuilder& out,
+        /* [in] */ StringBuilder* out,
         /* [in] */ Boolean inPTag);
+
+    static CARAPI_(void) ExtractTtmlFragment(
+        /* [in] */ TtmlNode* node,
+        /* [in] */ Int64 startUs,
+        /* [in] */ Int64 endUs,
+        /* [in] */ StringBuilder* out);
 
 private:
     static const AutoPtr<IPattern> CLOCK_TIME;
@@ -85,17 +115,15 @@ class TtmlCue
     : public SubtitleTrack::Cue
 {
 public:
-    TtmlCue();
-
-    virtual ~TtmlCue();
-
-    CAR_INTERFACE_DECL()
-
-    CARAPI constructor(
+    TtmlCue(
         /* [in] */ Int64 startTimeMs,
         /* [in] */ Int64 endTimeMs,
         /* [in] */ const String& text,
         /* [in] */ const String& ttmlFragment);
+
+    virtual ~TtmlCue();
+
+    CAR_INTERFACE_DECL()
 
 public:
     String mText;
@@ -107,13 +135,7 @@ class TtmlNode
     , public ITtmlNode
 {
 public:
-    TtmlNode();
-
-    virtual ~TtmlNode();
-
-    CAR_INTERFACE_DECL()
-
-    CARAPI constructor(
+    TtmlNode(
         /* [in] */ const String& name,
         /* [in] */ const String& attributes,
         /* [in] */ const String& text,
@@ -121,6 +143,10 @@ public:
         /* [in] */ Int64 endTimeMs,
         /* [in] */ ITtmlNode* parent,
         /* [in] */ Int64 runId);
+
+    virtual ~TtmlNode();
+
+    CAR_INTERFACE_DECL()
 
     CARAPI IsActive(
         /* [in] */ Int64 startTimeMs,
@@ -132,7 +158,7 @@ public:
     String mAttributes;
     ITtmlNode* mParent;
     String mText;
-    List<AutoPtr<ITtmlNode> > mChildren;
+    AutoPtr<IList> mChildren;
     Int64 mRunId;
     Int64 mStartTimeMs;
     Int64 mEndTimeMs;
@@ -143,26 +169,27 @@ class TtmlParser
     , public ITtmlParser
 {
 public:
-    TtmlParser();
+    TtmlParser(
+        /* [in] */ ITtmlNodeListener* listener);
 
-    virtual ~TtmlParser();
+    ~TtmlParser();
 
     CAR_INTERFACE_DECL()
-
-    CARAPI constructor(
-        /* [in] */ ITtmlNodeListener* listener);
 
     CARAPI Parse(
         /* [in] */ const String& ttmlText,
         /* [in] */ Int64 runId);
+
 private:
     CARAPI_(void) LoadParser(
         /* [in] */ const String& ttmlFragment);
 
     CARAPI_(void) ExtractAttribute(
-        /* [in] */ XmlPullParser* parser,
+        /* [in] */ IXmlPullParser* parser,
         /* [in] */ Int32 i,
-        /* [in] */ StringBuilder& out);
+        /* [in] */ StringBuilder* outSdr);
+
+    CARAPI_(void) ParseTtml();
 
     CARAPI ParseNode(
         /* [in] */ TtmlNode* parent,
@@ -179,9 +206,9 @@ public:
 
 private:
     // TODO: read and apply the following attributes if specified.
-    static const Int32 DEFAULT_FRAMERATE = 30;
-    static const Int32 DEFAULT_SUBFRAMERATE = 1;
-    static const Int32 DEFAULT_TICKRATE = 1;
+    static const Int32 DEFAULT_FRAMERATE;
+    static const Int32 DEFAULT_SUBFRAMERATE;
+    static const Int32 DEFAULT_TICKRATE;
 
     AutoPtr<IXmlPullParser> mParser;
     AutoPtr<ITtmlNodeListener> mListener;
@@ -193,18 +220,16 @@ class TtmlTrack
     , public ITtmlNodeListener
 {
 public:
-    TtmlTrack();
+    TtmlTrack(
+        /* [in] */ ITtmlRenderingWidget* renderingWidget,
+        /* [in] */ IMediaFormat* format);
 
     virtual ~TtmlTrack();
 
     CAR_INTERFACE_DECL()
 
-    CARAPI constructor(
-        /* [in] */ ITtmlRenderingWidget* renderingWidget,
-        /* [in] */ IMediaFormat* format);
-
     CARAPI GetRenderingWidget(
-        /* [out] */ ITtmlRenderingWidget** result);
+        /* [out] */ ISubtitleTrackRenderingWidget** result);
 
     CARAPI OnData(
         /* [in] */ ArrayOf<Byte>* data,
@@ -221,19 +246,18 @@ public:
         /* [in] */ IVector* activeCues);
 
     CARAPI GetNextResult(
-        /* [out] */ ITtmlCue** result);
+        /* [out] */ ISubtitleTrackCue** result);
 
 private:
-    CARAPI_(void) AddTimeEvents(TtmlNode* node);
+    CARAPI_(void) AddTimeEvents(ITtmlNode* node);
 
     AutoPtr<List<AutoPtr<TtmlNode> > > GetActiveNodes(
         /* [in] */ Int64 startTimeUs,
-        /* [in] */ Int64 endTimeUs,
-        /* [out] */ IList** result);
+        /* [in] */ Int64 endTimeUs);
 private:
-    static const String TAG = "TtmlTrack";
+    static const String TAG;
 
-    AutoPtr<TtmlParser> mParser = new TtmlParser(this);
+    AutoPtr<TtmlParser> mParser;/* = new TtmlParser(this);*/
     AutoPtr<TtmlRenderingWidget> mRenderingWidget;
     String mParsingData;
     Int64 mCurrentRunID;
@@ -249,32 +273,30 @@ class TtmlRenderingWidget
     , public ITtmlRenderingWidget
 {
 public:
-    TtmlRenderingWidget();
-
-    virtual ~TtmlRenderingWidget();
-
-    CAR_INTERFACE_DECL()
-
-    CARAPI constructor(
+    TtmlRenderingWidget(
         /* [in] */ IContext* context);
 
-    CARAPI constructor(
+    TtmlRenderingWidget(
         /* [in] */ IContext* context,
         /* [in] */ IAttributeSet* attrs);
 
-    CARAPI constructor(
+    TtmlRenderingWidget(
         /* [in] */ IContext* context,
         /* [in] */ IAttributeSet* attrs,
         /* [in] */ Int32 defStyleAttr);
 
-    CARAPI constructor(
+    TtmlRenderingWidget(
         /* [in] */ IContext* context,
         /* [in] */ IAttributeSet* attrs,
         /* [in] */ Int32 defStyleAttr,
         /* [in] */ Int32 defStyleRes);
 
+    ~TtmlRenderingWidget();
+
+    CAR_INTERFACE_DECL()
+
     CARAPI SetOnChangedListener(
-        /* [in] */ IOnChangedListener* listener);
+        /* [in] */ ISubtitleTrackRenderingWidgetOnChangedListener* listener);
 
     CARAPI SetSize(
         /* [in] */ Int32 width,
@@ -290,9 +312,12 @@ public:
     CARAPI SetActiveCues(
         /* [in] */ IVector* activeCues);
 
+    CARAPI Draw(
+        /* [in] */ ICanvas* c);
+
 private:
     /** Callback for rendering changes. */
-    AutoPtr<IOnChangedListener> mListener;
+    AutoPtr<ISubtitleTrackRenderingWidgetOnChangedListener> mListener;
     AutoPtr<TextView> mTextView;
 };
 

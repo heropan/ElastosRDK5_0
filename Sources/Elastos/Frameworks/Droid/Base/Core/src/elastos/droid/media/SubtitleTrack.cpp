@@ -463,11 +463,6 @@ SubtitleTrack::Run::~Run()
 
 CAR_INTERFACE_IMPL(SubtitleTrack::Run, Object, ISubtitleTrackRun)
 
-ECode SubtitleTrack::Run::constructor()
-{
-    return NOERROR;
-}
-
 //TODO
 // ECode SubtitleTrack::Run::StoreByEndTimeMs(
 //     /* [in] */ ILongSparseArray* runsByEndTime)

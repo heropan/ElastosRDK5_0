@@ -1,11 +1,43 @@
 #include "elastos/droid/media/TtmlRenderer.h"
+#include "elastos/droid/view/accessibility/CaptioningManager.h"
+#include "Elastos.Droid.Widget.h"
+#include "Elastos.CoreLibrary.IO.h"
+#include "Elastos.CoreLibrary.Utility.h"
+#include "Elastos.Droid.Text.h"
+#include "elastos/droid/text/TextUtils.h"
+#include <Elastos.CoreLibrary.External.h>
+#include <elastos/utility/logging/Slogger.h>
 #include <elastos/utility/regex/Pattern.h>
 #include <elastos/core/StringUtils.h>
 
+using Elastos::Utility::ILinkedList;
+using Elastos::Utility::CLinkedList;
+using Elastos::Utility::Logging::Slogger;
 using Elastos::Utility::Regex::IMatcher;
 using Elastos::Utility::Regex::Pattern;
+using Elastos::Droid::Text::TextUtils;
+using Elastos::Droid::View::EIID_IView;
+using Elastos::Droid::View::EIID_IViewManager;
+using Elastos::Droid::View::EIID_IViewGroup;
+using Elastos::Droid::View::EIID_IViewParent;
+using Elastos::Droid::View::IGravity;
+using Elastos::Droid::View::IView;
+using Elastos::Droid::View::IViewGroup;
+using Elastos::Droid::View::IViewManager;
+using Elastos::Droid::View::IViewParent;
+using Elastos::Droid::View::Accessibility::CaptioningManager;
+using Elastos::Droid::View::Accessibility::ICaptioningManagerCaptionStyle;
+using Elastos::Droid::Widget::EIID_ILinearLayout;
+using Elastos::Droid::Widget::ILinearLayout;
 using Org::Xmlpull::V1::CXmlPullParserFactory;
+using Org::Xmlpull::V1::CXmlPullParserFactoryHelper;
+using Org::Xmlpull::V1::IXmlPullParser;
 using Org::Xmlpull::V1::IXmlPullParserFactory;
+using Org::Xmlpull::V1::IXmlPullParserFactoryHelper;
+using Elastos::IO::CStringReader;
+using Elastos::IO::IStringReader;
+using Elastos::IO::IReader;
+using Elastos::Core::StringUtils;
 
 namespace Elastos{
 namespace Droid {
@@ -39,7 +71,9 @@ ECode TtmlRenderer::Supports(
     Boolean flag = FALSE;
     format->ContainsKey(IMediaFormat::KEY_MIME, &flag);
     if (flag) {
-        *result = format->GetString(IMediaFormat::KEY_MIME).Equals(MEDIA_MIMETYPE_TEXT_TTML);
+        String str;
+        format->GetString(IMediaFormat::KEY_MIME, &str);
+        *result = str.Equals(MEDIA_MIMETYPE_TEXT_TTML);
         return NOERROR;
     }
     *result = FALSE;
@@ -53,11 +87,9 @@ ECode TtmlRenderer::CreateTrack(
     VALIDATE_NOT_NULL(result);
 
     if (mRenderingWidget == NULL) {
-        mRenderingWidget = new TtmlRenderingWidget();
-        mRenderingWidget->constructor(mContext);
+        mRenderingWidget = new TtmlRenderingWidget(mContext);
     }
-    AutoPtr<TtmlTrack> tt = new TtmlTrack();
-    tt->constructor(mRenderingWidget, format);
+    AutoPtr<TtmlTrack> tt = new TtmlTrack(mRenderingWidget, format);
     *result = ISubtitleTrack::Probe(tt);
     REFCOUNT_ADD(*result);
     return NOERROR;
@@ -75,14 +107,14 @@ static AutoPtr<IPattern> initCLOCK_TIME()
     return p;
 }
 
-const AutoPtr<IPattern> TtmlUtils::CLOCK_TIME = initOFFSET_TIME();
-
 static AutoPtr<IPattern> initOFFSET_TIME()
 {
     AutoPtr<IPattern> p;
     Pattern::Compile(String("^([0-9]+(?:\\.[0-9]+)?)(h|m|s|ms|f|t)$"), (IPattern**)&p);
     return p;
 }
+
+const AutoPtr<IPattern> TtmlUtils::CLOCK_TIME = initCLOCK_TIME();
 
 const AutoPtr<IPattern> TtmlUtils::OFFSET_TIME = initOFFSET_TIME();
 
@@ -91,7 +123,7 @@ ECode TtmlUtils::ParseTimeExpression(
     /* [in] */ Int32 frameRate,
     /* [in] */ Int32 subframeRate,
     /* [in] */ Int32 tickRate,
-    /* [out] */ Int64** result)
+    /* [out] */ Int64* result)
 {
     VALIDATE_NOT_NULL(result);
 
@@ -101,22 +133,22 @@ ECode TtmlUtils::ParseTimeExpression(
     matcher->Matches(&flag);
     if (flag) {
         String hours;
-        matcher->Group(1, &hours);
+        IMatchResult::Probe(matcher)->Group(1, &hours);
         Double durationSeconds = StringUtils::ParseInt64(hours) * 3600;
         String minutes;
-        matcher->Group(2, &minutes);
+        IMatchResult::Probe(matcher)->Group(2, &minutes);
         durationSeconds += StringUtils::ParseInt64(minutes) * 60;
         String seconds;
-        matcher->Group(3, &seconds);
+        IMatchResult::Probe(matcher)->Group(3, &seconds);
         durationSeconds += StringUtils::ParseInt64(seconds);
         String fraction;
-        matcher->Group(4, &fraction);
+        IMatchResult::Probe(matcher)->Group(4, &fraction);
         durationSeconds += (fraction != NULL) ? StringUtils::ParseDouble(fraction) : 0;
         String frames;
-        matcher->Group(5, &frames);
+        IMatchResult::Probe(matcher)->Group(5, &frames);
         durationSeconds += (frames != NULL) ? ((Double)StringUtils::ParseInt64(frames)) / frameRate : 0;
         String subframes;
-        matcher->Group(6, &subframes);
+        IMatchResult::Probe(matcher)->Group(6, &subframes);
         durationSeconds += (subframes != NULL) ? ((Double)StringUtils::ParseInt64(subframes))
                 / subframeRate / frameRate
                     : 0;
@@ -127,10 +159,10 @@ ECode TtmlUtils::ParseTimeExpression(
     matcher->Matches(&flag);
     if (flag) {
         String timeValue;
-        matcher->Group(1, &timeValue);
+        IMatchResult::Probe(matcher)->Group(1, &timeValue);
         Double value = StringUtils::ParseDouble(timeValue);
         String unit;
-        matcher->Group(2, &unit);
+        IMatchResult::Probe(matcher)->Group(2, &unit);
         if (unit.Equals(String("h"))) {
             value *= 3600L * 1000000L;
         } else if (unit.Equals(String("m"))) {
@@ -147,13 +179,13 @@ ECode TtmlUtils::ParseTimeExpression(
             return (Int64)value;
         }
 
-    Slogger::E("TtmlUtils", "Malformed time expression : %s" + time.string());
+    Slogger::E("TtmlUtils", "Malformed time expression : %s" , time.string());
     return E_NUMBER_FORMAT_EXCEPTION;
 }
 
 ECode TtmlUtils::ApplyDefaultSpacePolicy(
     /* [in] */ const String& in,
-    /* [out] */ String** result)
+    /* [out] */ String* result)
 {
     VALIDATE_NOT_NULL(result);
     return ApplySpacePolicy(in, TRUE, result);
@@ -168,7 +200,7 @@ ECode TtmlUtils::ApplySpacePolicy(
 
     // Removes CR followed by LF. ref:
     // http://www.w3.org/TR/xml/#sec-line-ends
-    String crRemoved; = in.replaceAll("\r\n", "\n");
+    String crRemoved;
     StringUtils::ReplaceAll(in, String("\r\n"), String("\n"), &crRemoved);
 
     // Apply suppress-at-line-break="auto" and
@@ -190,70 +222,106 @@ ECode TtmlUtils::ApplySpacePolicy(
 }
 
 ECode TtmlUtils::ExtractText(
-    /* [in] */ ITtmlNode* root,
+    /* [in] */ TtmlNode* root,
     /* [in] */ Int64 startUs,
     /* [in] */ Int64 endUs,
     /* [out] */ String* result)
 {
     VALIDATE_NOT_NULL(result);
     StringBuilder text ;
-    ExtractText(root, startUs, endUs, text, FALSE);
+    ExtractText(root, startUs, endUs, &text, FALSE);
     return StringUtils::ReplaceAll(text.ToString(), String("\n$"), String(""), result);
 }
 
 ECode TtmlUtils::ExtractTtmlFragment(
-    /* [in] */ ITtmlNode* root,
+    /* [in] */ TtmlNode* root,
     /* [in] */ Int64 startUs,
     /* [in] */ Int64 endUs,
     /* [out] */ String* result)
 {
     VALIDATE_NOT_NULL(result);
     StringBuilder fragment;
-    ExtractTtmlFragment(root, startUs, endUs, fragment);
-    *result = fragment->ToString();
+    ExtractTtmlFragment(root, startUs, endUs, &fragment);
+    *result = fragment.ToString();
     return NOERROR;
 }
 
 void TtmlUtils::ExtractText(
-    /* [in] */ ITtmlNode* node_,
+    /* [in] */ TtmlNode* node,
     /* [in] */ Int64 startUs,
     /* [in] */ Int64 endUs,
-    /* [in] */ StringBuilder& out,
+    /* [in] */ StringBuilder* out,
     /* [in] */ Boolean inPTag)
 {
-    AutoPtr<TtmlNode> node = (TtmlNode*)node_;
+    Boolean flag = FALSE;
+    node->IsActive(startUs, endUs, &flag);
     if (node->mName.Equals(ITtmlUtils::PCDATA) && inPTag) {
         out->Append(node->mText);
     } else if (node->mName.Equals(ITtmlUtils::TAG_BR) && inPTag) {
         out->Append(String("\n"));
     } else if (node->mName.Equals(ITtmlUtils::TAG_METADATA)) {
         // do nothing.
-    } else if (node->isActive(startUs, endUs)) {
+    } else if (flag) {
         Boolean pTag = node->mName.Equals(ITtmlUtils::TAG_P);
         Int32 length;
         out->GetLength(&length);
-        // for (Int32 i = 0; i < node->mChildren.size(); ++i) {
-        //     ExtractText(node->mChildren.get(i), startUs, endUs, out-> pTag || inPTag);
-        // }
-        // if (pTag && length != out->length()) {
-        //     out->Append("\n");
-        // }
+        Int32 size;
+        node->mChildren->GetSize(&size);
+        AutoPtr<IInterface> obj;
+        AutoPtr<TtmlNode> tn;
+        for (Int32 i = 0; i < size; ++i) {
+            obj = NULL;
+            node->mChildren->Get(i, (IInterface**)&obj);
+            tn = NULL;
+            tn = (TtmlNode*)ITtmlNode::Probe(obj);
+            ExtractText(tn.Get(), startUs, endUs, out, pTag || inPTag);
+        }
+        Int32 len;
+        out->GetLength(&len);
+        if (pTag && length != len) {
+            out->Append(String("\n"));
+        }
     }
+}
 
+void TtmlUtils::ExtractTtmlFragment(
+    /* [in] */ TtmlNode* node,
+    /* [in] */ Int64 startUs,
+    /* [in] */ Int64 endUs,
+    /* [in] */ StringBuilder* out)
+{
+    Boolean flag = FALSE;
+    node->IsActive(startUs, endUs, &flag);
+    if (node->mName.Equals(ITtmlUtils::PCDATA)) {
+        out->Append(node->mText);
+    } else if (node->mName.Equals(ITtmlUtils::TAG_BR)) {
+        out->Append(String("<br/>"));
+    } else if (flag) {
+        out->Append(String("<"));
+        out->Append(node->mName);
+        out->Append(node->mAttributes);
+        out->Append(">");
+        Int32 size;
+        node->mChildren->GetSize(&size);
+        AutoPtr<IInterface> obj;
+        AutoPtr<TtmlNode> tn;
+        for (Int32 i = 0; i < size; ++i) {
+            obj = NULL;
+            node->mChildren->Get(i, (IInterface**)&obj);
+            tn = NULL;
+            tn = (TtmlNode*)ITtmlNode::Probe(obj);
+            ExtractTtmlFragment(tn.Get(), startUs, endUs, out);
+        }
+        out->Append(String("</"));
+        out->Append(node->mName);
+        out->Append(String(">"));
+    }
 }
 
 //================================================================================
 //                      TtmlCue
 //================================================================================
-TtmlCue::TtmlCue()
-{}
-
-TtmlCue::~TtmlCue()
-{}
-
-CAR_INTERFACE_IMPL(TtmlCue, Object, ISubtitleTrackCue)
-
-ECode TtmlCue::constructor(
+TtmlCue::TtmlCue(
     /* [in] */ Int64 startTimeMs,
     /* [in] */ Int64 endTimeMs,
     /* [in] */ const String& text,
@@ -263,21 +331,17 @@ ECode TtmlCue::constructor(
     mEndTimeMs = endTimeMs;
     mText = text;
     mTtmlFragment = ttmlFragment;
-    return NOERROR;
 }
+
+TtmlCue::~TtmlCue()
+{}
+
+CAR_INTERFACE_IMPL(TtmlCue, Object, ISubtitleTrackCue)
 
 //================================================================================
 //                      TtmlNode
 //================================================================================
-TtmlNode::TtmlNode()
-{}
-
-TtmlNode::~TtmlNode()
-{}
-
-CAR_INTERFACE_IMPL(TtmlNode, Object, ITtmlNode)
-
-ECode TtmlNode::constructor(
+TtmlNode::TtmlNode(
     /* [in] */ const String& name,
     /* [in] */ const String& attributes,
     /* [in] */ const String& text,
@@ -293,8 +357,12 @@ ECode TtmlNode::constructor(
     mEndTimeMs = endTimeMs;
     mParent = parent;
     mRunId = runId;
-    return NOERROR;
 }
+
+TtmlNode::~TtmlNode()
+{}
+
+CAR_INTERFACE_IMPL(TtmlNode, Object, ITtmlNode)
 
 ECode TtmlNode::IsActive(
     /* [in] */ Int64 startTimeMs,
@@ -305,22 +373,24 @@ ECode TtmlNode::IsActive(
     *result = mEndTimeMs > startTimeMs && mStartTimeMs < endTimeMs;
     return NOERROR;
 }
-
 //================================================================================
 //                      TtmlParser
 //================================================================================
-TtmlParser::TtmlParser();
+const String TtmlParser::TAG(String("TtmlParser"));
+const Int32 TtmlParser::DEFAULT_FRAMERATE = 30;
+const Int32 TtmlParser::DEFAULT_SUBFRAMERATE = 1;
+const Int32 TtmlParser::DEFAULT_TICKRATE = 1;
 
-TtmlParser::~TtmlParser();
+TtmlParser::TtmlParser(
+    /* [in] */ ITtmlNodeListener* listener)
+    : mListener(listener)
+{
+}
+
+TtmlParser::~TtmlParser()
+{}
 
 CAR_INTERFACE_IMPL(TtmlParser, Object, ITtmlParser)
-
-ECode TtmlParser::constructor(
-    /* [in] */ ITtmlNodeListener* listener)
-{
-    mListener = listener;
-    return NOERROR;
-}
 
 ECode TtmlParser::Parse(
     /* [in] */ const String& ttmlText,
@@ -329,15 +399,17 @@ ECode TtmlParser::Parse(
     mParser = NULL;
     mCurrentRunId = runId;
     LoadParser(ttmlText);
-    return ParseTtml();
+    ParseTtml();
+    return NOERROR;
 }
 
 void TtmlParser::LoadParser(
     /* [in] */ const String& ttmlFragment)
 {
     AutoPtr<IXmlPullParserFactory> factory;
-
-    CXmlPullParserFactory::NewInstance((IXmlPullParserFactory**)&factory);
+    AutoPtr<IXmlPullParserFactoryHelper> xmlHelper;
+    CXmlPullParserFactoryHelper::AcquireSingleton((IXmlPullParserFactoryHelper**)&xmlHelper);
+    xmlHelper->NewInstance((IXmlPullParserFactory**)&factory);
     factory->SetNamespaceAware(FALSE);
     factory->NewPullParser((IXmlPullParser**)&mParser);
 
@@ -347,21 +419,165 @@ void TtmlParser::LoadParser(
 }
 
 void TtmlParser::ExtractAttribute(
-    /* [in] */ XmlPullParser* parser,
+    /* [in] */ IXmlPullParser* parser,
     /* [in] */ Int32 i,
-    /* [in] */ StringBuilder& out)
+    /* [in] */ StringBuilder* outSdr)
 {
-    out.Append(String(" "));
-    out.Append(parser.getAttributeName(i));
-    out.Append(String("=\""));
-    out.Append(parser.getAttributeValue(i));
-    out.Append(String("\""));
+    outSdr->Append(String(" "));
+    String name;
+    parser->GetAttributeName(i, &name);
+    outSdr->Append(name);
+    outSdr->Append(String("=\""));
+    String value;
+    parser->GetAttributeValue(i, &value);
+    outSdr->Append(value);
+    outSdr->Append(String("\""));
+}
+
+void TtmlParser::ParseTtml()
+{
+    AutoPtr<ILinkedList> nodeStack;
+    CLinkedList::New((ILinkedList**)&nodeStack);
+    Int32 depthInUnsupportedTag = 0;
+    Boolean active = TRUE;
+    AutoPtr<IInterface> obj;
+    AutoPtr<TtmlNode> parent;
+    Boolean flag = FALSE;
+    while (!(IsEndOfDoc(&flag), flag)) {
+        Int32 eventType;
+        mParser->GetEventType(&eventType);
+        obj = NULL;
+        nodeStack->PeekLast((IInterface**)&obj);
+        parent = NULL;
+        parent = (TtmlNode*)ITtmlNode::Probe(obj);
+        String name;
+        mParser->GetName(&name);
+        if (active) {
+            if (eventType == IXmlPullParser::START_TAG) {
+                Boolean tag = FALSE;
+                if (!(IsSupportedTag(name, &tag), tag)) {
+                    Slogger::W(TAG, "Unsupported tag %s is ignored.", name.string());
+                    depthInUnsupportedTag++;
+                    active = FALSE;
+                } else {
+                    AutoPtr<TtmlNode> node;
+                    ParseNode(parent, (TtmlNode**)&node);
+                    nodeStack->AddLast(ITtmlNode::Probe(node));
+                    if (parent != NULL) {
+                        parent->mChildren->Add(ITtmlNode::Probe(node));
+                    }
+                }
+            } else if (eventType == IXmlPullParser::TEXT) {
+                String ptext;
+                mParser->GetText(&ptext);
+                String text;
+                TtmlUtils::ApplyDefaultSpacePolicy(ptext, &text);
+                if (!TextUtils::IsEmpty(text)) {
+                    AutoPtr<TtmlNode> tn = new TtmlNode(ITtmlUtils::PCDATA, String(""), text, 0, ITtmlUtils::INVALID_TIMESTAMP,
+                            parent, mCurrentRunId);
+                    parent->mChildren->Add(ITtmlNode::Probe(tn));
+                }
+            } else if (eventType == IXmlPullParser::END_TAG) {
+                if (name.Equals(ITtmlUtils::TAG_P)) {
+                    obj = NULL;
+                    nodeStack->GetLast((IInterface**)&obj);
+                    AutoPtr<TtmlNode> n = NULL;
+                    n = (TtmlNode*)ITtmlNode::Probe(obj);
+                    mListener->OnTtmlNodeParsed(n);
+                } else if (name.Equals(ITtmlUtils::TAG_TT)) {
+                    obj = NULL;
+                    nodeStack->GetLast((IInterface**)&obj);
+                    AutoPtr<TtmlNode> d = NULL;
+                    d = (TtmlNode*)ITtmlNode::Probe(obj);
+                    mListener->OnRootNodeParsed(d);
+                }
+                obj = NULL;
+                nodeStack->RemoveLast((IInterface**)&obj);
+            }
+        } else {
+            if (eventType == IXmlPullParser::START_TAG) {
+                depthInUnsupportedTag++;
+            } else if (eventType == IXmlPullParser::END_TAG) {
+                depthInUnsupportedTag--;
+                if (depthInUnsupportedTag == 0) {
+                    active = TRUE;
+                }
+            }
+        }
+        Int32 i;
+        mParser->Next(&i);
+    }
 }
 
 ECode TtmlParser::ParseNode(
     /* [in] */ TtmlNode* parent,
     /* [out] */ TtmlNode** result)
-{}
+{
+    VALIDATE_NOT_NULL(result);
+
+    Int32 eventType;
+    mParser->GetEventType(&eventType);
+    if (!(eventType == IXmlPullParser::START_TAG)) {
+        *result = NULL;
+        return NOERROR;
+    }
+    StringBuilder attrStr;
+    Int64 start = 0;
+    Int64 end = ITtmlUtils::INVALID_TIMESTAMP;
+    Int64 dur = 0;
+    Int32 count;
+    mParser->GetAttributeCount(&count);
+    for (Int32 i = 0; i < count; ++i) {
+        String attr;
+        mParser->GetAttributeName(i, &attr);
+        String value;
+        mParser->GetAttributeValue(i, &value);
+        // TODO: check if it's safe to ignore the namespace of attributes as follows.
+        String str;
+        StringUtils::ReplaceFirst(attr, String("^.*:"), String(""), &str);
+        attr = str;
+        if (attr.Equals(ITtmlUtils::ATTR_BEGIN)) {
+            TtmlUtils::ParseTimeExpression(value, DEFAULT_FRAMERATE,
+                DEFAULT_SUBFRAMERATE, DEFAULT_TICKRATE, &start);
+        } else if (attr.Equals(ITtmlUtils::ATTR_END)) {
+            TtmlUtils::ParseTimeExpression(value, DEFAULT_FRAMERATE, DEFAULT_SUBFRAMERATE,
+                DEFAULT_TICKRATE, &end);
+        } else if (attr.Equals(ITtmlUtils::ATTR_DURATION)) {
+            TtmlUtils::ParseTimeExpression(value, DEFAULT_FRAMERATE, DEFAULT_SUBFRAMERATE,
+                    DEFAULT_TICKRATE, &dur);
+        } else {
+            ExtractAttribute(mParser.Get(), i, &attrStr);
+        }
+    }
+    if (parent != NULL) {
+        start += parent->mStartTimeMs;
+        if (end != ITtmlUtils::INVALID_TIMESTAMP) {
+            end += parent->mStartTimeMs;
+        }
+    }
+    if (dur > 0) {
+        if (end != ITtmlUtils::INVALID_TIMESTAMP) {
+            Slogger::E(TAG, "'dur' and 'end' attributes are defined at the same time.'end' value is ignored.");
+        }
+        end = start + dur;
+    }
+    if (parent != NULL) {
+        // If the end time remains unspecified, then the end point is
+        // interpreted as the end point of the external time interval.
+        if (end == ITtmlUtils::INVALID_TIMESTAMP &&
+                parent->mEndTimeMs != ITtmlUtils::INVALID_TIMESTAMP &&
+                end > parent->mEndTimeMs) {
+            end = parent->mEndTimeMs;
+        }
+    }
+    String pName;
+    mParser->GetName(&pName);
+    AutoPtr<TtmlNode> node = new TtmlNode(pName, attrStr.ToString(), String(NULL), start, end,
+            parent, mCurrentRunId);
+    *result = node;
+    REFCOUNT_ADD(*result);
+    return NOERROR;
+}
 
 ECode TtmlParser::IsEndOfDoc(
     /* [out] */ Boolean* result)
@@ -369,10 +585,9 @@ ECode TtmlParser::IsEndOfDoc(
     VALIDATE_NOT_NULL(result);
     Int32 eventType;
     mParser->GetEventType(&eventType);
-    *result = (eventType == IXmlPullParser.END_DOCUMENT);
+    *result = (eventType == IXmlPullParser::END_DOCUMENT);
     return NOERROR;
 }
-
 
 ECode TtmlParser::IsSupportedTag(
     /* [in] */ const String& tag,
@@ -397,30 +612,29 @@ ECode TtmlParser::IsSupportedTag(
 //================================================================================
 //                      TtmlTrack
 //================================================================================
-TtmlTrack::TtmlTrack()
-{}
+const String TtmlTrack::TAG(String("TtmlTrack"));
+
+TtmlTrack::TtmlTrack(
+    /* [in] */ ITtmlRenderingWidget* renderingWidget,
+    /* [in] */ IMediaFormat* format)
+{
+    SubtitleTrack::constructor(format);
+
+    mParser = new TtmlParser(this);
+    mRenderingWidget = (TtmlRenderingWidget*)renderingWidget;
+    mParsingData = String("");
+}
 
 TtmlTrack::~TtmlTrack()
 {}
 
 CAR_INTERFACE_IMPL_3(TtmlTrack, Object, ITtmlNodeListener, ISubtitleTrack, IMediaTimeProviderOnMediaTimeListener)
 
-ECode TtmlTrack::constructor(
-    /* [in] */ ITtmlRenderingWidget* renderingWidget,
-    /* [in] */ IMediaFormat* format)
-{
-    SubtitleTrack::constructor(format);
-
-    mRenderingWidget = renderingWidget;
-    mParsingData = String("");
-    return NOERROR;
-}
-
 ECode TtmlTrack::GetRenderingWidget(
-    /* [out] */ ITtmlRenderingWidget** result)
+    /* [out] */ ISubtitleTrackRenderingWidget** result)
 {
     VALIDATE_NOT_NULL(result);
-    *result = ITtmlRenderingWidget::Probe(mRenderingWidget);
+    *result = ISubtitleTrackRenderingWidget::Probe(mRenderingWidget);
     REFCOUNT_ADD(*result);
     return NOERROR;
 }
@@ -432,7 +646,7 @@ ECode TtmlTrack::OnData(
 {
     // try {
     // TODO: handle UTF-8 conversion properly
-    String str(String(*data));
+    String str(*data);
 
     // implement intermixing restriction for TTML.
     synchronized(mParser) {
@@ -472,11 +686,12 @@ ECode TtmlTrack::OnTtmlNodeParsed(
 ECode TtmlTrack::OnRootNodeParsed(
     /* [in] */ ITtmlNode* node)
 {
-    mRootNode = node;
-    AutoPtr<TtmlCue> cue;
-    GetNextResult(&cue);
+    mRootNode = (TtmlNode*)node;
+    AutoPtr<ISubtitleTrackCue> cue;
+    GetNextResult((ISubtitleTrackCue**)&cue);
     while (cue != NULL) {
-        AddCue(cue);
+        Boolean flag = FALSE;
+        AddCue(cue, &flag);
     }
     mRootNode = NULL;
     mTtmlNodes.Clear();
@@ -495,7 +710,7 @@ ECode TtmlTrack::UpdateView(
     if (DEBUG && mTimeProvider != NULL) {
         Int64 vol;
         ECode ec = mTimeProvider->GetCurrentTimeUs(FALSE, TRUE, &vol);
-        if (SUCEEDED(ec)) {
+        if (SUCCEEDED(ec)) {
             Slogger::D(TAG, "at %ld ms the active cues are:", vol/1000);
         }
 
@@ -512,26 +727,27 @@ ECode TtmlTrack::UpdateView(
 }
 
 ECode TtmlTrack::GetNextResult(
-    /* [out] */ ITtmlCue** result)
+    /* [out] */ ISubtitleTrackCue** result)
 {
     VALIDATE_NOT_NULL(result);
 
-    while (mTimeEvents.size() >= 2) {
-        Int64 start = mTimeEvents.PopFront();
-        Int64 end = mTimeEvents.First();
-        AutoPtr<IList> activeCues;
-        GetActiveNodes(start, end, (IList**)&activeCues);
-        Boolean flag = FALSE;
-        activeCues->IsEmpty(&flag);
-        if (!flag) {
-            AutoPtr<TtmlCue> cue = new TtmlCue();
+    AutoPtr<TtmlCue> cue;
+    while (mTimeEvents.GetSize() >= 2) {
+        Int64 start;
+        // mTimeEvents.PopFront();
+        Int64 end;
+        // mTimeEvents.First();
+        AutoPtr<List<AutoPtr<TtmlNode> > > activeCues
+            = GetActiveNodes(start, end);
+        if (!activeCues->IsEmpty()) {
             String ret;
             TtmlUtils::ExtractText(mRootNode, start, end, &ret);
             String str;
             TtmlUtils::ApplySpacePolicy(ret, FALSE, &str);
             String str_;
             TtmlUtils::ExtractTtmlFragment(mRootNode, start, end, &str_);
-            cue->constructor(start, end, str, str_);
+            cue = NULL;
+            cue = new TtmlCue(start, end, str, str_);
             *result = cue;
             REFCOUNT_ADD(*result);
             return NOERROR;
@@ -543,12 +759,18 @@ ECode TtmlTrack::GetNextResult(
 
 void TtmlTrack::AddTimeEvents(ITtmlNode* node)
 {
-    mTimeEvents.Insert((TtmlNode*)node->mStartTimeMs);
-    mTimeEvents.Insert((TtmlNode*)node->mEndTimeMs);
-    List<AutoPtr<ITtmlNode> >::Iterator it = ((TtmlNode*)node->mChildren).Begin();
-    for (; it != ((TtmlNode*)node->mChildren).End(); ++it) {
-        AutoPtr<ITtmlNode> n = *it;
-        AddTimeEvents(n);
+    mTimeEvents.Insert(((TtmlNode*)node)->mStartTimeMs);
+    mTimeEvents.Insert(((TtmlNode*)node)->mEndTimeMs);
+    Int32 size;
+    ((TtmlNode*)node)->mChildren->GetSize(&size);
+    AutoPtr<IInterface> obj;
+    AutoPtr<ITtmlNode> tn;
+    for (Int32 i = 0; i < size; ++i) {
+        obj = NULL;
+        ((TtmlNode*)node)->mChildren->Get(i, (IInterface**)&obj);
+        tn = NULL;
+        tn = ITtmlNode::Probe(obj);
+        AddTimeEvents(tn.Get());
     }
 }
 
@@ -556,7 +778,6 @@ AutoPtr<List<AutoPtr<TtmlNode> > > TtmlTrack::GetActiveNodes(
     /* [in] */ Int64 startTimeUs,
     /* [in] */ Int64 endTimeUs)
 {
-    VALIDATE_NOT_NULL(result);
     Int32 size = mTtmlNodes.GetSize();
     AutoPtr<List<AutoPtr<TtmlNode> > > activeNodes = new List<AutoPtr<TtmlNode> >(size);
     List<AutoPtr<TtmlNode> >::Iterator it = mTtmlNodes.Begin();
@@ -575,39 +796,28 @@ AutoPtr<List<AutoPtr<TtmlNode> > > TtmlTrack::GetActiveNodes(
 //================================================================================
 //                      TtmlRenderingWidget
 //================================================================================
-
-TtmlRenderingWidget::TtmlRenderingWidget()
-{}
-
-TtmlRenderingWidget::~TtmlRenderingWidget()
-{}
-
-CAR_INTERFACE_IMPL_10(TtmlRenderingWidget, Object, ISubtitleTrackRenderingWidget, ITtmlRenderingWidget,
-    ILinearLayout, IViewGroup, IViewParent, IViewManager, IView,
-    IDrawableCallback, IKeyEventCallback, IAccessibilityEventSource)
-
-ECode TtmlRenderingWidget::constructor(
+TtmlRenderingWidget::TtmlRenderingWidget(
     /* [in] */ IContext* context)
 {
-    return constructor(context, NULL);
+    TtmlRenderingWidget(context, NULL);
 }
 
-ECode TtmlRenderingWidget::constructor(
+TtmlRenderingWidget::TtmlRenderingWidget(
     /* [in] */ IContext* context,
     /* [in] */ IAttributeSet* attrs)
 {
-    return constructor(context, attrs, 0);
+    TtmlRenderingWidget(context, attrs, 0);
 }
 
-ECode TtmlRenderingWidget::constructor(
+TtmlRenderingWidget::TtmlRenderingWidget(
     /* [in] */ IContext* context,
     /* [in] */ IAttributeSet* attrs,
     /* [in] */ Int32 defStyleAttr)
 {
-    return constructor(context, attrs, defStyleAttr, 0);
+    TtmlRenderingWidget(context, attrs, defStyleAttr, 0);
 }
 
-ECode TtmlRenderingWidget::constructor(
+TtmlRenderingWidget::TtmlRenderingWidget(
     /* [in] */ IContext* context,
     /* [in] */ IAttributeSet* attrs,
     /* [in] */ Int32 defStyleAttr,
@@ -615,7 +825,7 @@ ECode TtmlRenderingWidget::constructor(
 {
     LinearLayout::constructor(context, attrs, defStyleAttr, defStyleRes);
     // Cannot render text over video when layer type is hardware.
-    SetLayerType(View.LAYER_TYPE_SOFTWARE, null);
+    SetLayerType(IView::LAYER_TYPE_SOFTWARE, NULL);
 
     AutoPtr<IInterface> obj;
     context->GetSystemService(IContext::CAPTIONING_SERVICE, (IInterface**)&obj);
@@ -625,14 +835,21 @@ ECode TtmlRenderingWidget::constructor(
     mTextView = tv;
     AutoPtr<ICaptioningManagerCaptionStyle> style;
     captionManager->GetUserStyle((ICaptioningManagerCaptionStyle**)&style);
-    Int32 color = (CaptioningManager::CaptionStyle*)style->mForegroundColor;
+    Int32 color = ((CaptioningManager::CaptionStyle*)style.Get())->mForegroundColor;
     mTextView->SetTextColor(color);
-    AddView(mTextView, LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
-    return mTextView->SetGravity(IGravity::BOTTOM | IGravity::CENTER_HORIZONTAL);
+    AddView(mTextView, LayoutParams::MATCH_PARENT, LayoutParams::MATCH_PARENT);
+    mTextView->SetGravity(IGravity::BOTTOM | IGravity::CENTER_HORIZONTAL);
 }
 
+TtmlRenderingWidget::~TtmlRenderingWidget()
+{}
+
+CAR_INTERFACE_IMPL_7(TtmlRenderingWidget, Object, ISubtitleTrackRenderingWidget, ITtmlRenderingWidget,
+    ILinearLayout, IViewGroup, IViewParent, IViewManager, IView/*,*/
+/*    IDrawableCallback, IKeyEventCallback, IAccessibilityEventSource*/)
+
 ECode TtmlRenderingWidget::SetOnChangedListener(
-    /* [in] */ IOnChangedListener* listener)
+    /* [in] */ ISubtitleTrackRenderingWidgetOnChangedListener* listener)
 {
     mListener = listener;
     return NOERROR;
@@ -642,8 +859,8 @@ ECode TtmlRenderingWidget::SetSize(
     /* [in] */ Int32 width,
     /* [in] */ Int32 height)
 {
-    Int32 widthSpec = MeasureSpec::MakeMeasureSpec(width, IMeasureSpec::EXACTLY);
-    Int32 heightSpec = MeasureSpec::MakeMeasureSpec(height, IMeasureSpec::EXACTLY);
+    Int32 widthSpec = MeasureSpec::MakeMeasureSpec(width, MeasureSpec::EXACTLY);
+    Int32 heightSpec = MeasureSpec::MakeMeasureSpec(height, MeasureSpec::EXACTLY);
 
     Measure(widthSpec, heightSpec);
     return Layout(0, 0, width, height);
@@ -662,12 +879,12 @@ ECode TtmlRenderingWidget::SetVisible(
 
 ECode TtmlRenderingWidget::OnAttachedToWindow()
 {
-    return LinearLayout::onAttachedToWindow();
+    return ISubtitleTrackRenderingWidget::Probe(this)->OnAttachedToWindow();
 }
 
 ECode TtmlRenderingWidget::OnDetachedFromWindow()
 {
-    return LinearLayout::OnDetachedFromWindow();
+    return ISubtitleTrackRenderingWidget::Probe(this)->OnDetachedFromWindow();
 }
 
 ECode TtmlRenderingWidget::SetActiveCues(
@@ -687,6 +904,12 @@ ECode TtmlRenderingWidget::SetActiveCues(
     if (mListener != NULL) {
         mListener->OnChanged(this);
     }
+    return NOERROR;
+}
+
+ECode TtmlRenderingWidget::Draw(
+    /* [in] */ ICanvas* c)
+{
     return NOERROR;
 }
 
