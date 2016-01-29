@@ -6,7 +6,9 @@
 # ./pretranslate.sh srcFilename targetFilename
 # or ./pretranslate.sh targetFilename
 
-pre_translate() {
+pre_translate () {
+    target_file=$1
+
     # process import
     #
     sed -i "s@import java.@using Elastos::@" $target_file
@@ -180,23 +182,51 @@ pre_translate() {
     sed -i "s@Settings.Global.@Settings::Global::@g" $target_file
 }
 
+process_dir () {
+    path=$1
+    echo " > process dir $path"
+
+    for file in ${path}/*.java; do
+        filename=$(basename "$file")
+        echo " > process $filename"
+        pre_translate $file
+
+        tgt=$(echo $file | sed -e "s@.java@.h@")
+        echo " > result $tgt"
+        mv $file $tgt
+    done
+}
 
 echo "pre-translate start..."
 
 count=$#
-src_file=$1
-target_file=$2
 
 if [ $count -eq 1 ]; then
-    target_file=$1
-    echo " > process $target_file"
+    path=$1
+    if [ -f "$path" ]; then
+        echo " > prcess file $path"
+        pre_translate $path
+    elif [ -d "$path" ]; then
+        echo " > process root dir $path"
+        process_dir $path
 
+        for file in ${path}/*; do
+            if [ -d $file ]; then
+                echo " >> process sub dir $file"
+                process_dir $file
+            fi
+        done
+
+    else
+        echo "file does not exist. $path"
+    fi
 elif [ $count -eq 2 ]; then
     src_file=$1
     target_file=$2
     cp $src_file $target_file
     echo " > copy $src_file"
     echo " > process $target_file"
+    pre_translate $target_file
 fi
 
 echo "pre-translate done."
