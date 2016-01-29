@@ -43,7 +43,6 @@ using Elastos::Droid::View::IPointerIcon;
 using Elastos::Droid::View::IInputChannel;
 using Elastos::Droid::View::IKeyEvent;
 using Elastos::Droid::Widget::IToast;
-using Elastos::Core::Object;
 using Elastos::IO::IFileDescriptor;
 using Elastos::IO::IPrintWriter;
 

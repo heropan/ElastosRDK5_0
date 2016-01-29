@@ -7,7 +7,6 @@
 #include <elastos/core/Object.h>
 #include <elastos/droid/ext/frameworkext.h>
 
-using Elastos::Core::Object;
 using Elastos::Droid::Content::IComponentName;
 using Elastos::IO::IPrintWriter;
 using Elastos::Utility::IArrayDeque;

@@ -8,7 +8,6 @@
 
 using Elastos::Droid::Hardware::Input::ITouchCalibration;
 using Elastos::Droid::Utility::IAtomicFile;
-using Elastos::Core::Object;
 using Elastos::Utility::Etl::HashMap;
 using Elastos::Utility::IArrayList;
 using Elastos::Utility::ISet;

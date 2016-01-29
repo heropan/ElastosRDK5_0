@@ -38,6 +38,8 @@ EXPORT_HEADERS += elastos/droid/ext/frameworkdef.h
 EXPORT_HEADERS += elastos/droid/ext/frameworkext.h
 EXPORT_HEADERS += elastos/droid/ext/frameworkhash.h
 
+EXPORT_HEADERS += elastos/droid/hardware/location/GeofenceHardwareImpl.h
+
 //EXPORT_HEADERS += elastos/droid/inputmethodservice/AbstractInputMethodService.h
 //EXPORT_HEADERS += elastos/droid/inputmethodservice/InputMethodService.h
 //EXPORT_HEADERS += elastos/droid/inputmethodservice/AbstractInputMethodImpl.h
@@ -64,8 +66,9 @@ EXPORT_HEADERS += elastos/droid/os/TokenWatcher.h
 //EXPORT_HEADERS += elastos/droid/os/NativeMessageQueue.h
 EXPORT_HEADERS += elastos/droid/os/Handler.h
 EXPORT_HEADERS += elastos/droid/os/HandlerThread.h
-EXPORT_HEADERS += elastos/droid/os/Runnable.h
 //EXPORT_HEADERS += elastos/droid/os/HandlerRunnable.h
+EXPORT_HEADERS += elastos/droid/os/Looper.h
+EXPORT_HEADERS += elastos/droid/os/Runnable.h
 //EXPORT_HEADERS += elastos/droid/os/SomeArgs.h
 EXPORT_HEADERS += elastos/droid/os/Process.h
 EXPORT_HEADERS += elastos/droid/os/Binder.h

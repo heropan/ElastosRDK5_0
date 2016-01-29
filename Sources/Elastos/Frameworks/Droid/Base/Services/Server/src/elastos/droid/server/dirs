@@ -8,6 +8,7 @@ DIRS += display
 DIRS += dreams
 DIRS += input
 DIRS += lights
+DIRS += location
 DIRS += net
 DIRS += notification
 DIRS += os
@@ -20,7 +21,6 @@ DIRS += wallpaper
 
 
 #DIRS = accessibility
-#DIRS += location
 #DIRS += usb
 #DIRS += wm
 #DIRS += accounts

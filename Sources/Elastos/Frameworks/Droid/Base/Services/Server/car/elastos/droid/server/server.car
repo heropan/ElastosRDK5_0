@@ -37,6 +37,10 @@ module
 
     merge("lights/LightsManager.car");
 
+    merge("location/LocationProviderInterface.car");
+    merge("location/FlpHardwareProvider.car");
+    merge("location/RemoteListenerHelper.car");
+
     merge("notification/DowntimeConditionProvider.car");
     merge("notification/NotificationDelegate.car");
     merge("notification/NotificationManagerInternal.car");
@@ -75,6 +79,7 @@ module
 
     interface Elastos.Droid.Server.ISystemService;
     interface Elastos.Droid.Server.IWatchdogMonitor;
+    interface Elastos.Droid.Server.Location.IFlpHardwareProvider;
     interface Elastos.Droid.Server.Wallpaper.IWallpaperConnection;
     interface Elastos.Droid.Server.Wallpaper.IWallpaperData;
     interface Elastos.Droid.Server.Wallpaper.IWallpaperManagerService;
@@ -114,7 +119,11 @@ module
     using interface Elastos.Droid.Hardware.IIConsumerIrService;
     using interface Elastos.Droid.Hardware.Display.IIDisplayManager;
     using interface Elastos.Droid.Hardware.Input.IIInputManager;
+<<<<<<< HEAD
     using interface Elastos.Droid.Internal.App.IIBatteryStats;
+=======
+    using interface Elastos.Droid.Hardware.Location.IIFusedLocationHardware;
+>>>>>>> âupdate location.
     using interface Elastos.Droid.Internal.App.IIProcessStats;
     using interface Elastos.Droid.Internal.Os.IBatteryCallback;
     using interface Elastos.Droid.Internal.Os.IIParcelFileDescriptorFactory;
@@ -125,6 +134,15 @@ module
     using interface Elastos.Droid.Internal.View.IInputMethodClient;
     using interface Elastos.Droid.Internal.View.IInputContext;
     using interface Elastos.Droid.Location.IICountryDetector;
+<<<<<<< HEAD
+=======
+    using interface Elastos.Droid.Location.IIFusedGeofenceHardware;
+    using interface Elastos.Droid.Location.IIGpsGeofenceHardware;
+    using interface Elastos.Droid.Location.IIGpsStatusProvider;
+    using interface Elastos.Droid.Location.IINetInitiatedListener;
+    using interface Elastos.Droid.Bluetooth.IIBluetoothManager;
+    using interface Elastos.Droid.Bluetooth.IIBluetoothCallback;
+>>>>>>> âupdate location.
     using interface Elastos.Droid.Media.Projection.IIMediaProjectionCallback;
     using interface Elastos.Droid.Net.IIConnectivityManager;
     using interface Elastos.Droid.Net.IINetworkManagementEventObserver;
@@ -144,8 +162,14 @@ module
     using interface Elastos.Droid.Os.IIHardwareService;
     using interface Elastos.Droid.Os.IIUpdateLock;
     using interface Elastos.Droid.Os.IISchedulingPolicyService;
+<<<<<<< HEAD
     using interface Elastos.Droid.Os.IINetworkManagementService;
     using interface Elastos.Droid.Os.IPermissionController;
+=======
+    using interface Elastos.Droid.Os.IIUserManager;
+    using interface Elastos.Droid.Os.ILooper;
+    using interface Elastos.Droid.Os.IIBatteryPropertiesListener;
+>>>>>>> âupdate location.
     using interface Elastos.Droid.Os.Storage.IIMountShutdownObserver;
     using interface Elastos.Droid.Service.Dreams.IIDreamManager;
     using interface Elastos.Droid.Service.Notification.IIStatusBarNotificationHolder;
@@ -380,6 +404,29 @@ module
         interface IBinder;
     }
 
+    class CBatteryService {
+        constructor(
+            [in] IContext* ctx);
+
+        interface ISystemService;
+    }
+
+    class CBatteryBinderService {
+        constructor(
+            [in] ISystemService* batteryService);
+
+        interface IBinder;
+    }
+
+    class CBatteryServiceBatteryListener {
+        constructor(
+            [in] ISystemService* batteryService);
+
+        interface IIBatteryPropertiesListener;
+        interface IBinder;
+    }
+
+
 //     class CBootReceiver {
 //         interface IBroadcastReceiver;
 //     }
@@ -416,15 +463,6 @@ module
 //             [in] IContext* ctx);
 //
 //         interface IDeviceStorageMonitorService;
-//         interface IBinder;
-//     }
-
-//     [local]
-//     class CBatteryService {
-//         constructor(
-//             [in] IContext* ctx,
-//             [in] Handle32 lights);
-
 //         interface IBinder;
 //     }
 
@@ -1534,6 +1572,66 @@ module
     }
 
     } // namespace Lights
+    } // namespace Server
+    } // namepsace Droid
+    } // namespace Elastos
+
+    namespace Elastos {
+    namespace Droid {
+    namespace Server {
+    namespace Location {
+
+    class CFusedLocationHardwareService {
+        constructor(
+            [in] IFlpHardwareProvider* php);
+
+        interface IIFusedLocationHardware;
+        interface IBinder;
+    }
+
+    class CFusedGeofenceHardwareService {
+        constructor(
+            [in] IFlpHardwareProvider* php);
+
+        interface IIFusedGeofenceHardware;
+        interface IBinder;
+    }
+
+    class CFusedLocationHardwareSecure {
+        constructor(
+            [in] IIFusedLocationHardware* locationHardware,
+            [in] IContext* context,
+            [in] String permissionId);
+
+        interface IIFusedLocationHardware;
+        interface IBinder;
+    }
+
+    class CGpsStatusProviderService {
+        constructor(
+            [in] ILocationProviderInterface* host);
+
+        interface IIGpsStatusProvider;
+        interface IBinder;
+    }
+
+    class CGpsGeofenceHardwareService {
+        constructor(
+            [in] ILocationProviderInterface* host);
+
+        interface IIGpsGeofenceHardware;
+        interface IBinder;
+    }
+
+    class CNetInitiatedListener {
+        constructor(
+            [in] ILocationProviderInterface* host);
+
+        interface IINetInitiatedListener;
+        interface IBinder;
+    }
+
+    } // namespace Location
     } // namespace Server
     } // namepsace Droid
     } // namespace Elastos

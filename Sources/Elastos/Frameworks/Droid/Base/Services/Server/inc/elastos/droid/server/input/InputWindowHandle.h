@@ -9,7 +9,6 @@
 
 using Elastos::Droid::Graphics::IRegion;
 using Elastos::Droid::View::IInputChannel;
-using Elastos::Core::Object;
 
 namespace Elastos {
 namespace Droid {
