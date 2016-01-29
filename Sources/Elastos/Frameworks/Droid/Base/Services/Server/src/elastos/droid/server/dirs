@@ -1,6 +1,7 @@
 
 
 DIRS += am
+DIRS += appwidget
 DIRS += clipboard
 DIRS += connectivity
 DIRS += content

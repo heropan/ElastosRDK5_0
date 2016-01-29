@@ -181,6 +181,8 @@ module
     using interface Elastos.Droid.View.IWindowSession;
     using interface Elastos.Droid.View.IIAssetAtlas;
     using interface Elastos.Droid.Webkit.IIWebViewUpdateService;
+    using interface Elastos.Droid.Internal.AppWidget.IIAppWidgetService;
+    using interface Elastos.Droid.Server.IWidgetBackupProvider;
 
     using interface Elastos.Core.IRunnable;
     using interface Elastos.Core.IThread;
@@ -748,15 +750,6 @@ module
 //             [in] IContext* ctx);
 
 //             interface IIPrivacySettingsManager;
-//     }
-
-//     [local]
-//     class CAppWidgetService {
-//         constructor(
-//             [in] IContext* ctx);
-
-//         interface IIAppWidgetService;
-//         interface IBinder;
 //     }
 
 //     namespace Accessibility {
@@ -1731,4 +1724,23 @@ module
     } // namepsace Droid
     } // namespace Elastos
 
+    namespace Elastos {
+    namespace Droid {
+    namespace Server {
+    namespace AppWidget {
+
+    [local]
+     class CAppWidgetServiceImpl {
+         constructor(
+             [in] IContext* context);
+
+         interface IIAppWidgetService;
+         interface IWidgetBackupProvider;
+         interface IBinder;
+    }
+
+    } // namespace AppWidget
+    } // namespace Server
+    } // namepsace Droid
+    } // namespace Elastos
 }
