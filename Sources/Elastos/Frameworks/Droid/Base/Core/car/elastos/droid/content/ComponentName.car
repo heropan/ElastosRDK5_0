@@ -74,6 +74,9 @@ module
         FlattenToShortString(
             [out] String* name);
 
+        AppendShortString(
+            [in] IStringBuilder* sb);
+
         /**
          * Return string representation of this class without the class's name
          * as a prefix.

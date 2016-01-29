@@ -1,6 +1,7 @@
-#include "Elastos.Droid.Provider.h"
 #include "elastos/droid/server/am/LockToAppRequestDialog.h"
+#include "elastos/droid/server/am/CActivityManagerService.h"
 #include "elastos/droid/provider/Settings.h"
+#include "Elastos.Droid.Provider.h"
 #include "elastos/droid/R.h"
 
 #include <elastos/utility/logging/Slogger.h>

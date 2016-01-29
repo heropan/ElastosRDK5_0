@@ -3347,6 +3347,9 @@ module
         GetClipData(
             [out] IClipData** clipData);
 
+        GetContentUserHint(
+            [out] Int32* hint);
+
         /**
          * Sets the ClassLoader that will be used when unmarshalling
          * any Parcelable values from the extras of this Intent.
@@ -5209,6 +5212,9 @@ module
          * @hide
          */
         MigrateExtraStreamToClipData(
+            [out] Boolean* result);
+
+        IsDocument(
             [out] Boolean* result);
     }
 

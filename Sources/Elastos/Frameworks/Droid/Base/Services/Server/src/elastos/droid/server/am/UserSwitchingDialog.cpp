@@ -36,8 +36,11 @@ ECode UserSwitchingDialog::InnerHandler::HandleMessage(
     msg->GetWhat(&what);
     switch (what) {
         case MSG_START_USER:
-            mOwner->mService->StartUserInForeground(mOwner->mUserId, mOwner);
+        {
+            Boolean res;
+            mOwner->mService->StartUserInForeground(mOwner->mUserId, mOwner, &res);
             break;
+        }
     }
     return NOERROR;
 }

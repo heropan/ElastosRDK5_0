@@ -2120,14 +2120,15 @@ void ActivityStack::ValidateAppTokensLocked()
         if (activities->IsEmpty()) {
             continue;
         }
-        AutoPtr<TaskGroup> group = new TaskGroup();
-        group->mTaskId = task->mTaskId;
-        mValidateAppTokens->Add(TO_IINTERFACE(group));
-        Int32 numActivities = activities->GetSize();
-        for (Int32 activityNdx = 0; activityNdx < numActivities; ++activityNdx) {
-            AutoPtr<ActivityRecord> r = (*activities)[activityNdx];//->get(activityNdx);
-            group->mTokens.PushBack(r->mAppToken);
-        }
+        assert(0);
+        // AutoPtr<TaskGroup> group = new TaskGroup();
+        // group->mTaskId = task->mTaskId;
+        // mValidateAppTokens->Add(TO_IINTERFACE(group));
+        // Int32 numActivities = activities->GetSize();
+        // for (Int32 activityNdx = 0; activityNdx < numActivities; ++activityNdx) {
+        //     AutoPtr<ActivityRecord> r = (*activities)[activityNdx];//->get(activityNdx);
+        //     group->mTokens.PushBack(r->mAppToken);
+        // }
     }
     //TODO mWindowManager->ValidateAppTokens(mStackId, mValidateAppTokens);
 }
