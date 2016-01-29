@@ -2249,7 +2249,7 @@ ECode SyncManager::MyRegisteredServicesCacheListener::OnServiceChanged(
 //==========================================================================================
 // SyncManager::SyncStatusObserver
 //==========================================================================================
-CAR_INTERFACE_IMPL(SyncManager::SyncStatusObserver, Object, IISyncStatusObserver)
+CAR_INTERFACE_IMPL_2(SyncManager::SyncStatusObserver, Object, IISyncStatusObserver, IBinder)
 
 ECode SyncManager::SyncStatusObserver::constructor(
     /* [in] */ ISyncManager* host)

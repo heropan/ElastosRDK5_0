@@ -119,12 +119,9 @@ module
     using interface Elastos.Droid.Hardware.IIConsumerIrService;
     using interface Elastos.Droid.Hardware.Display.IIDisplayManager;
     using interface Elastos.Droid.Hardware.Input.IIInputManager;
-<<<<<<< HEAD
-    using interface Elastos.Droid.Internal.App.IIBatteryStats;
-=======
     using interface Elastos.Droid.Hardware.Location.IIFusedLocationHardware;
->>>>>>> âupdate location.
     using interface Elastos.Droid.Internal.App.IIProcessStats;
+    using interface Elastos.Droid.Internal.App.IIBatteryStats;
     using interface Elastos.Droid.Internal.Os.IBatteryCallback;
     using interface Elastos.Droid.Internal.Os.IIParcelFileDescriptorFactory;
     using interface Elastos.Droid.Internal.Os.IIDropBoxManagerService;
@@ -134,15 +131,12 @@ module
     using interface Elastos.Droid.Internal.View.IInputMethodClient;
     using interface Elastos.Droid.Internal.View.IInputContext;
     using interface Elastos.Droid.Location.IICountryDetector;
-<<<<<<< HEAD
-=======
     using interface Elastos.Droid.Location.IIFusedGeofenceHardware;
     using interface Elastos.Droid.Location.IIGpsGeofenceHardware;
     using interface Elastos.Droid.Location.IIGpsStatusProvider;
     using interface Elastos.Droid.Location.IINetInitiatedListener;
     using interface Elastos.Droid.Bluetooth.IIBluetoothManager;
     using interface Elastos.Droid.Bluetooth.IIBluetoothCallback;
->>>>>>> âupdate location.
     using interface Elastos.Droid.Media.Projection.IIMediaProjectionCallback;
     using interface Elastos.Droid.Net.IIConnectivityManager;
     using interface Elastos.Droid.Net.IINetworkManagementEventObserver;
@@ -162,14 +156,11 @@ module
     using interface Elastos.Droid.Os.IIHardwareService;
     using interface Elastos.Droid.Os.IIUpdateLock;
     using interface Elastos.Droid.Os.IISchedulingPolicyService;
-<<<<<<< HEAD
     using interface Elastos.Droid.Os.IINetworkManagementService;
     using interface Elastos.Droid.Os.IPermissionController;
-=======
     using interface Elastos.Droid.Os.IIUserManager;
     using interface Elastos.Droid.Os.ILooper;
     using interface Elastos.Droid.Os.IIBatteryPropertiesListener;
->>>>>>> âupdate location.
     using interface Elastos.Droid.Os.Storage.IIMountShutdownObserver;
     using interface Elastos.Droid.Service.Dreams.IIDreamManager;
     using interface Elastos.Droid.Service.Notification.IIStatusBarNotificationHolder;
@@ -200,24 +191,24 @@ module
             [in] IContext* context,
             [in] String socket);
 
-        interface IBinder;
         interface IINetworkManagementService;
+        interface IBinder;
     }
 
     class CNetworkScoreService {
         constructor(
             [in] IContext* context);
 
-        interface IBinder;
         interface IINetworkScoreService;
+        interface IBinder;
     }
 
     class CNsdService {
         constructor(
             [in] IContext* context);
 
-        interface IBinder;
         interface IINsdManager;
+        interface IBinder;
     }
 
     class CSerialService {
@@ -1287,6 +1278,7 @@ module
             [in] Boolean factoryTest);
 
         interface IIContentService;
+        interface IBinder;
     }
 
     class CSyncStatusObserver {
