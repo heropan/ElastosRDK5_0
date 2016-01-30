@@ -6,8 +6,7 @@
 #include "elastos/droid/content/res/CResources.h"
 #include "elastos/droid/content/res/CColorStateList.h"
 #include "elastos/droid/content/res/XmlBlock.h"
-//#include "elastos/droid/content/pm/CActivityInfo.h"
-//#include "elastos/droid/content/pm/CActivityInfoHelper.h"
+#include "elastos/droid/content/pm/CActivityInfo.h"
 //#include "elastos/droid/graphics/Movie.h"
 #include "elastos/droid/internal/utility/XmlUtils.h"
 //#include "elastos/droid/graphics/drawable/CColorDrawable.h"
@@ -28,9 +27,8 @@ using Elastos::Droid::Graphics::Drawable::IColorDrawable;
 //using Elastos::Droid::Graphics::Drawable::Drawable;
 using Elastos::Droid::Graphics::Drawable::EIID_IDrawableConstantState;
 using Elastos::Droid::Content::Pm::IActivityInfoHelper;
-//using Elastos::Droid::Content::Pm::CActivityInfoHelper;
 using Elastos::Droid::Content::Pm::IActivityInfo;
-//using Elastos::Droid::Content::Pm::CActivityInfo;
+using Elastos::Droid::Content::Pm::CActivityInfo;
 
 using Libcore::ICU::INativePluralRulesHelper;
 using Libcore::ICU::CNativePluralRulesHelper;
@@ -354,12 +352,12 @@ ECode CResources::Theme::GetTheme(
     return NOERROR;
 }
 
-static Int32 InitLAYOUT_DIR_CONFIG()
+
+CResources::StaticInitializer::StaticInitializer()
 {
-    assert(0 && "TODO");
-    //return CActivityInfo::ActivityInfoConfigToNative(IActivityInfo::CONFIG_LAYOUT_DIRECTION);
-    return 0;
+    CResources::LAYOUT_DIR_CONFIG = CActivityInfo::ActivityInfoConfigToNative(IActivityInfo::CONFIG_LAYOUT_DIRECTION);
 }
+
 
 const String CResources::TAG("CResources");
 const Boolean CResources::DEBUG_LOAD = FALSE;
@@ -367,16 +365,17 @@ const Boolean CResources::DEBUG_CONFIG = FALSE;
 const Boolean CResources::TRACE_FOR_PRELOAD = FALSE;
 const Boolean CResources::TRACE_FOR_MISS_PRELOAD = FALSE;
 const Int32 CResources::ID_OTHER = 0x01000004;
-const Int32 CResources::LAYOUT_DIR_CONFIG = InitLAYOUT_DIR_CONFIG();
+Int32 CResources::LAYOUT_DIR_CONFIG = 0;
 const String CResources::WIDGET_SUFFIX("widget_preview");
 
-AutoPtr<IResources> CResources::mSystem;
-List< AutoPtr<CResources::ConstantStateMap> > CResources::sPreloadedDrawables;
+INIT_PROI_4 AutoPtr<IResources> CResources::sSystem;
+INIT_PROI_4 List< AutoPtr<CResources::ConstantStateMap> > CResources::sPreloadedDrawables;
 CResources::ConstantStateMap CResources::sPreloadedColorDrawables;
 CResources::ColorStateMap CResources::sPreloadedColorStateLists;
 Boolean CResources::sPreloaded = FALSE;
 Int32 CResources::sPreloadedDensity = 0;
-Object CResources::sSync;
+INIT_PROI_4 Object CResources::sSync;
+INIT_PROI_4 const CResources::StaticInitializer CResources::sInitializer;
 
 CAR_INTERFACE_IMPL(CResources, Object, IResources)
 
@@ -485,12 +484,10 @@ AutoPtr<IResources> CResources::GetSystem()
 {
     AutoLock lock(sSync);
 
-    AutoPtr<IResources> ret = mSystem;
+    AutoPtr<IResources> ret = sSystem;
     if (ret == NULL) {
-        AutoPtr<CResources> cres;
-        CResources::NewByFriend((CResources**)&cres);
-        ret = cres;
-        mSystem = ret;
+        CResources::New((IResources**)&ret);
+        sSystem = ret;
     }
 
     return ret;
@@ -1422,9 +1419,7 @@ ECode CResources::UpdateConfiguration(
                 mTmpConfig->SetLayoutDirection(mTmpConfig->mLocale);
             }
             mConfiguration->UpdateFrom(mTmpConfig, &configChanges);
-            AutoPtr<IActivityInfoHelper> activityInfoHelper;
-            // CActivityInfoHelper::AcquireSingleton((IActivityInfoHelper**)&activityInfoHelper);
-            activityInfoHelper->ActivityInfoConfigToNative(configChanges, &configChanges);
+            configChanges = CActivityInfo::ActivityInfoConfigToNative(configChanges);
         }
         if (mConfiguration->mLocale == NULL) {
             AutoPtr<ILocaleHelper> helper;
@@ -1566,10 +1561,10 @@ void CResources::UpdateSystemConfiguration(
     /* [in] */ IDisplayMetrics* metrics,
     /* [in] */ ICompatibilityInfo* compat)
 {
-    if (mSystem != NULL) {
-        mSystem->UpdateConfiguration(config, metrics, compat);
-        //Log.i(TAG, "Updated system resources " + mSystem
-        //        + ": " + mSystem.getConfiguration());
+    if (sSystem != NULL) {
+        sSystem->UpdateConfiguration(config, metrics, compat);
+        //Log.i(TAG, "Updated system resources " + sSystem
+        //        + ": " + sSystem.getConfiguration());
     }
 }
 

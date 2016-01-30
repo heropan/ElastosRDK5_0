@@ -166,9 +166,9 @@ void ValueAnimator::AnimationHandler::ScheduleAnimation() {
 
 AutoPtr<ITimeInterpolator> CreateInterPolator()
 {
-    AutoPtr<CAccelerateDecelerateInterpolator> obj;
-    CAccelerateDecelerateInterpolator::NewByFriend((CAccelerateDecelerateInterpolator**)&obj);
-    return (ITimeInterpolator*)obj.Get();
+    AutoPtr<ITimeInterpolator> obj;
+    CAccelerateDecelerateInterpolator::New((ITimeInterpolator**)&obj);
+    return obj;
 }
 
 static void ThreadDestructor(void* st)

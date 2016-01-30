@@ -37,6 +37,8 @@
 #include <elastos/utility/etl/List.h>
 #include <elastos/utility/Arrays.h>
 
+#include <dlfcn.h>
+
 using namespace Elastos;
 
 using Elastos::Core::StringUtils;
@@ -154,6 +156,15 @@ void otherTests()
     //lockTest();
 }
 
+void loadFrameworkModule()
+{
+    void* module = dlopen("Elastos.Droid.Core.eco", RTLD_NOW);
+    if (NULL == module) {
+        printf("<%s, %d> dlopen '%s' failed.\n", __FILE__, __LINE__, "Elastos.Droid.Core.eco");
+        printf("error: %s\n", dlerror());
+    }
+}
+
 int main(int argc, char *argv[])
 {
     printf("==================================\n");
@@ -186,6 +197,8 @@ int main(int argc, char *argv[])
         cat->GetName(&name);
         printf("CAnimalHelper::CanFly : %s %s!\n\n", name.string(), canFly ? "can fly" : "can not fly");
     }
+
+    loadFrameworkModule();
 
     // other tests
     otherTests();

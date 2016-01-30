@@ -1509,7 +1509,7 @@ ECode ICUUtil::GetDisplayLanguage(
     return NOERROR;
 }
 
-ILocale* ICUUtil::AddLikelySubtags(
+AutoPtr<ILocale> ICUUtil::AddLikelySubtags(
         /* [in] */ ILocale* locale)
 {
     String languageTag;
@@ -1517,8 +1517,6 @@ ILocale* ICUUtil::AddLikelySubtags(
 
     AutoPtr<ILocale> rev;
     CLocale::ForLanguageTag(AddLikelySubtags(languageTag), (ILocale**)&rev);
-
-    REFCOUNT_ADD(rev);
     return rev;
 }
 

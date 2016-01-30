@@ -672,8 +672,7 @@ ECode Paint::SetTypeface(
 {
     Int64 typefaceNative = 0;
     if (typeface != NULL) {
-        Typeface* t = (Typeface*)(ITypeface*)typeface->Probe(EIID_Typeface);
-        typefaceNative = t->mNativeInstance;
+        typefaceNative = ((Typeface*)typeface)->mNativeInstance;
     }
     NativeSetTypeface(mNativePaint, typefaceNative);
     mTypeface = typeface;

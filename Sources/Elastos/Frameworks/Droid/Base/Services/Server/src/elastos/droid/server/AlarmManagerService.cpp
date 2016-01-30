@@ -97,6 +97,7 @@ using Elastos::Utility::IDate;
 using Elastos::Utility::CDate;
 using Elastos::Utility::IIterator;
 using Elastos::Utility::IList;
+using Elastos::Utility::ICollection;
 using Elastos::Utility::ICollections;
 using Elastos::Utility::CCollections;
 using Elastos::Utility::ILocaleHelper;

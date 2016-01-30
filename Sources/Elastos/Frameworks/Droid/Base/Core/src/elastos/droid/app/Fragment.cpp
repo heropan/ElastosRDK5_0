@@ -303,9 +303,9 @@ ECode FragmentState::GetInstance(
 
 AutoPtr<ITransition> InitUSE_DEFAULT_TRANSITION()
 {
-    AutoPtr<CTransitionSet> transit;
-    CTransitionSet::NewByFriend((CTransitionSet**)&transit);
-    return ITransition::Probe(transit);
+    AutoPtr<ITransition> transit;
+    CTransitionSet::New((ITransition**)&transit);
+    return transit;
 }
 
 const AutoPtr<ITransition> Fragment::USE_DEFAULT_TRANSITION = InitUSE_DEFAULT_TRANSITION();

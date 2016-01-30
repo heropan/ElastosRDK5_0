@@ -3,8 +3,8 @@
 #include <Elastos.CoreLibrary.Utility.h>
 #include "Elastos.Droid.View.h"
 #include "elastos/droid/content/res/CConfiguration.h"
-//#include "elastos/droid/text/TextUtils.h"
 #include "elastos/droid/os/Build.h"
+#include "elastos/droid/text/TextUtils.h"
 #include <elastos/core/StringBuilder.h>
 #include <elastos/core/StringUtils.h>
 #include <elastos/utility/etl/List.h>
@@ -12,7 +12,7 @@
 using Elastos::Droid::Os::Build;
 using Elastos::Droid::View::IView;
 using Elastos::Droid::Content::Pm::IActivityInfo;
-//using Elastos::Droid::Text::TextUtils;
+using Elastos::Droid::Text::TextUtils;
 using Elastos::Core::StringBuilder;
 using Elastos::Core::StringUtils;
 using Elastos::Utility::CLocale;
@@ -1025,10 +1025,9 @@ ECode CConfiguration::SetLayoutDirection(
 {
     // There is a "1" difference between the configuration values for
     // layout direction and View constants for layout direction, just add "1".
-    assert(0 && "TODO");
-    // Int32 layoutDirection = 1 + TextUtils::GetLayoutDirectionFromLocale(locale);
-    // mScreenLayout = (mScreenLayout & ~SCREENLAYOUT_LAYOUTDIR_MASK)|
-    //         (layoutDirection << SCREENLAYOUT_LAYOUTDIR_SHIFT);
+    Int32 layoutDirection = 1 + TextUtils::GetLayoutDirectionFromLocale(locale);
+    mScreenLayout = (mScreenLayout & ~SCREENLAYOUT_LAYOUTDIR_MASK)|
+            (layoutDirection << SCREENLAYOUT_LAYOUTDIR_SHIFT);
     return NOERROR;
 }
 

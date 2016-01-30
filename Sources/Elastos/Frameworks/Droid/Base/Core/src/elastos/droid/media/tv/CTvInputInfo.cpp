@@ -9,7 +9,7 @@
 #include "elastos/droid/content/CIntent.h"
 #include "elastos/droid/graphics/drawable/CDrawableHelper.h"
 #include "elastos/droid/os/CUserHandle.h"
-#include "elastos/droid/utility/SparseInt32Array.h"
+#include "elastos/droid/utility/CSparseInt32Array.h"
 #include "elastos/droid/utility/Xml.h"
 #include "elastos/droid/R.h"
 #include <elastos/core/StringUtils.h>
@@ -26,7 +26,7 @@ using Elastos::Droid::Graphics::Drawable::IDrawableHelper;
 using Elastos::Droid::Graphics::Drawable::CDrawableHelper;
 using Elastos::Droid::Os::CUserHandle;
 using Elastos::Droid::R;
-using Elastos::Droid::Utility::SparseInt32Array;
+using Elastos::Droid::Utility::CSparseInt32Array;
 using Elastos::Droid::Utility::Xml;
 using Elastos::Core::CString;
 using Elastos::Core::StringUtils;
@@ -44,7 +44,7 @@ String CTvInputInfo::TAG("TvInputInfo");
 static AutoPtr<ISparseInt32Array> Init()
 {
     AutoPtr<ISparseInt32Array> array;
-    array = new SparseInt32Array();
+    CSparseInt32Array::New((ISparseInt32Array**)&array);
     array->Put(ITvInputHardwareInfo::TV_INPUT_TYPE_OTHER_HARDWARE, ITvInputInfo::TYPE_OTHER);
     array->Put(ITvInputHardwareInfo::TV_INPUT_TYPE_TUNER, ITvInputInfo::TYPE_TUNER);
     array->Put(ITvInputHardwareInfo::TV_INPUT_TYPE_COMPOSITE, ITvInputInfo::TYPE_COMPOSITE);

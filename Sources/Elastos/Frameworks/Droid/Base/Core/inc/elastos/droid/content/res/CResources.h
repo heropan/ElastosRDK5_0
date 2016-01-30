@@ -200,6 +200,13 @@ public:
         String mKey;
     };
 
+private:
+    class StaticInitializer
+    {
+    public:
+        StaticInitializer();
+    };
+
 public:
     CAR_INTERFACE_DECL()
 
@@ -1340,7 +1347,7 @@ private:
     static const Boolean TRACE_FOR_PRELOAD;
     static const Boolean TRACE_FOR_MISS_PRELOAD;
 
-    static const Int32 LAYOUT_DIR_CONFIG;//= ActivityInfo.activityInfoConfigToNative(ActivityInfo.CONFIG_LAYOUT_DIRECTION);
+    static Int32 LAYOUT_DIR_CONFIG;
     static const Int32 ID_OTHER;
 
     static Object sSync;
@@ -1352,7 +1359,7 @@ private:
     // Pool of TypedArrays targeted to this Resources object.
     AutoPtr<Pools::SynchronizedPool<ITypedArray> > mTypedArrayPool;
 
-    static AutoPtr<IResources> mSystem;
+    static AutoPtr<IResources> sSystem;
 
     static Boolean sPreloaded;
     static Int32 sPreloadedDensity;
@@ -1384,7 +1391,9 @@ private:
 
     AutoPtr<IWeakReference> mToken;//WeakReference<IBinder> mToken;
 
-    static const String WIDGET_SUFFIX;// = "widget_preview";
+    static const String WIDGET_SUFFIX;
+
+    static const StaticInitializer sInitializer;
 };
 
 } // namespace Res

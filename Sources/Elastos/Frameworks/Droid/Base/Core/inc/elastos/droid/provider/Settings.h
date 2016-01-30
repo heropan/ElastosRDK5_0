@@ -2,7 +2,8 @@
 #define __ELASTOS_DROID_PROVIDER_SETTINGS_H__
 
 #include <elastos/droid/ext/frameworkext.h>
-#include <elastos/utility/HashMap.h>
+#include "Elastos.CoreLibrary.Utility.h"
+#include <elastos/core/Object.h>
 
 using Elastos::Droid::Content::IContentResolver;
 using Elastos::Droid::Content::IContext;
@@ -16,9 +17,10 @@ using Elastos::Droid::Database::ICursor;
 using Elastos::Droid::Internal::Widget::IILockSettings;
 using Elastos::Droid::Net::IUri;
 using Elastos::Droid::Privacy::IPrivacySettingsManager;
+using Elastos::Core::ICharSequence;
+using Elastos::Core::Object;
 using Elastos::Utility::IHashMap;
 using Elastos::Utility::IHashSet;
-using Elastos::Core::ICharSequence;
 
 namespace Elastos {
 namespace Droid {
@@ -71,7 +73,7 @@ private:
         // for the fast path of retrieving settings.
         const String mCallGetCommand;
         const String mCallSetCommand;
-        static Object mLock;
+        static Object sLock;
     };
 
 public:
@@ -1300,7 +1302,7 @@ private:
     ECO_LOCAL static const String JID_RESOURCE_PREFIX;
     ECO_LOCAL static const String TAG;
     ECO_LOCAL static const Boolean LOCAL_LOGV;
-    ECO_LOCAL static Object mLocationSettingsLock;
+    ECO_LOCAL static Object sLocationSettingsLock;
 };
 
 } //namespace Provider

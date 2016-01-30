@@ -80,7 +80,6 @@ AutoPtr<IRequestContent> Request::mRequestContentProcessor = InitRequestContentP
 AutoPtr<IRequestContent> Request::InitRequestContentProcessor()
 {
     AutoPtr<IRequestContent> rev;
-    // TODO: Waiting for CRequestContent
     assert(0);
     // CRequestContent::New((IRequestContent**)&rev);
     return rev;

@@ -96,18 +96,27 @@ ECode HttpsConnection::InnerSub_X509TrustManager::CheckServerTrusted(
     return NOERROR;
 }
 
+
+//===========================================================
+// HttpsConnection::StaticInitializer
+//===========================================================
+HttpsConnection::StaticInitializer::StaticInitializer()
+{
+    // TODO:
+    // This initialization happens in the zygote. It triggers some
+    // lazy initialization that can will benefit later invocations of
+    // initializeEngine().
+    // InitializeEngine(NULL);
+}
+
 //===========================================================
 // HttpsConnection
 //===========================================================
-AutoPtr<IObject> HttpsConnection::sLock = InitLock();
 AutoPtr<ISSLSocketFactory> HttpsConnection::sSslSocketFactory;
+Object HttpsConnection::sLock;
+const HttpsConnection::StaticInitializer HttpsConnection::sInitializer;
 
 CAR_INTERFACE_IMPL(HttpsConnection, Connection, IHttpsConnection)
-
-// This initialization happens in the zygote. It triggers some
-// lazy initialization that can will benefit later invocations of
-// initializeEngine().
-ECode HttpsConnection::mEnableStaticBlock = InitializeEngine(NULL);
 
 HttpsConnection::HttpsConnection()
     : mSuspended(FALSE)
@@ -482,13 +491,6 @@ ECode HttpsConnection::GetScheme(
 
     *result = String("https");
     return NOERROR;
-}
-
-AutoPtr<IObject> HttpsConnection::InitLock()
-{
-    AutoPtr<IObject> rev;
-    Elastos::Core::CObject::New((IObject**)&rev);
-    return rev;
 }
 
 } // namespace Http
