@@ -468,6 +468,22 @@ ECode CWindowManagerLayoutParams::SetVerticalMargin(
     return NOERROR;
 }
 
+ECode CWindowManagerLayoutParams::GetSurfaceInsets(
+    /* [out] */ IRect** surfaceInsets)
+{
+    VALIDATE_NOT_NULL(surfaceInsets)
+    *surfaceInsets = mSurfaceInsets;
+    REFCOUNT_ADD(*surfaceInsets)
+    return NOERROR;
+}
+
+ECode CWindowManagerLayoutParams::SetSurfaceInsets(
+    /* [in] */ IRect* surfaceInsets)
+{
+    mSurfaceInsets = surfaceInsets;
+    return NOERROR;
+}
+
 ECode CWindowManagerLayoutParams::GetFormat(
     /* [out] */ Int32* format)
 {

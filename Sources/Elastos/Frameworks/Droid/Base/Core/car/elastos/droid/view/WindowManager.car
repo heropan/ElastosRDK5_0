@@ -3,6 +3,7 @@ module
 {
     using interface Elastos.Core.ICharSequence;
 
+    interface Elastos.Droid.Graphics.IRect;
     interface Elastos.Droid.Os.IBinder;
     interface Elastos.Droid.View.IDisplay;
     interface Elastos.Droid.View.IView;
@@ -1093,6 +1094,12 @@ module
 
         SetVerticalMargin(
             [in] Float verticalMargin);
+
+        GetSurfaceInsets(
+            [out] IRect** surfaceInsets);
+
+        SetSurfaceInsets(
+            [in] IRect* surfaceInsets);
 
         GetFormat(
             [out] Int32* format);

@@ -2,6 +2,8 @@
 #include "elastos/droid/server/wm/AccessibilityController.h"
 #include "elastos/droid/server/wm/CWindowManagerService.h"
 #include "elastos/droid/server/wm/AppTransition.h"
+#include "elastos/droid/server/wm/DisplayContent.h"
+#include <Elastos.Droid.Internal.h>
 #include "elastos/droid/R.h"
 #include <elastos/core/Math.h>
 #include <elastos/utility/logging/Slogger.h>
@@ -9,7 +11,7 @@
 using Elastos::Droid::Animation::IObjectAnimator;
 using Elastos::Droid::Animation::IObjectAnimatorHelper;
 using Elastos::Droid::Animation::CObjectAnimatorHelper;
-using Elastos::Droid::View::Animation::IInterpolator;
+using Elastos::Droid::Animation::ITimeInterpolator;
 using Elastos::Droid::Content::Res::IResources;
 using Elastos::Droid::Content::Res::IResourcesTheme;
 using Elastos::Droid::Graphics::CRect;
@@ -19,6 +21,9 @@ using Elastos::Droid::Graphics::CRegionHelper;
 using Elastos::Droid::Graphics::IRegionHelper;
 using Elastos::Droid::Graphics::CPoint;
 using Elastos::Droid::Graphics::CMatrix;
+using Elastos::Droid::Graphics::CPaint;
+using Elastos::Droid::Graphics::ICanvas;
+using Elastos::Droid::Graphics::IColor;
 using Elastos::Droid::Graphics::RegionOp_UNION;
 using Elastos::Droid::Graphics::RegionOp_INTERSECT;
 using Elastos::Droid::Graphics::RegionOp_DIFFERENCE;
@@ -78,18 +83,20 @@ AccessibilityController::DisplayMagnifier::MagnifiedViewport::ViewportWindow::An
     AutoPtr<IObjectAnimatorHelper> helper;
     CObjectAnimatorHelper::AcquireSingleton((IObjectAnimatorHelper**)&helper);
     AutoPtr<IObjectAnimator> objAnimator;
-    helper->OfInt32(host, PROPERTY_NAME_ALPHA, MIN_ALPHA, MAX_ALPHA, (IObjectAnimator**)&objAnimator);
+    AutoPtr<ArrayOf<Int32> > attrs = ArrayOf<Int32>::Alloc(2);
+    (*attrs)[0] = MIN_ALPHA;
+    (*attrs)[1] = MAX_ALPHA;
+    helper->OfInt32((IObject*)host, PROPERTY_NAME_ALPHA, attrs, (IObjectAnimator**)&objAnimator);
     mShowHideFrameAnimator = IValueAnimator::Probe(objAnimator);
 
-    AutoPtr<IInterpolator> interpolator;
-    CDecelerateInterpolator::New(2.5, (IInterpolator**)&interpolator);
+    AutoPtr<ITimeInterpolator> interpolator;
+    CDecelerateInterpolator::New(2.5, (ITimeInterpolator**)&interpolator);
     AutoPtr<IResources> res;
     context->GetResources((IResources**)&res);
-    int64 longAnimationDuration;
+    Int32 longAnimationDuration;
     res->GetInteger(Elastos::Droid::R::integer::config_longAnimTime, &longAnimationDuration);
-
-    mShowHideFrameAnimator->SetInterpolator(interpolator);
-    mShowHideFrameAnimator->SetDuration(longAnimationDuration);
+    IAnimator::Probe(mShowHideFrameAnimator)->SetInterpolator(interpolator);
+    mShowHideFrameAnimator->SetDuration((Int64)longAnimationDuration);
 }
 
 
@@ -102,7 +109,7 @@ void AccessibilityController::DisplayMagnifier::MagnifiedViewport::ViewportWindo
     msg->SendToTarget();
 }
 
-ECode AccessibilityController::DisplayMagnifier::MagnifiedViewport::ViewportWindow::AnimationControllerHandleMessage(
+ECode AccessibilityController::DisplayMagnifier::MagnifiedViewport::ViewportWindow::AnimationController::HandleMessage(
     /* [in] */ IMessage* message)
 {
     Int32 what;
@@ -115,14 +122,15 @@ ECode AccessibilityController::DisplayMagnifier::MagnifiedViewport::ViewportWind
             Boolean shown = arg1 == 1;
             Boolean animate = arg2 == 1;
 
+            AutoPtr<IAnimator> anim = IAnimator::Probe(mShowHideFrameAnimator);
             if (animate) {
                 Boolean isRunning;
-                if (mShowHideFrameAnimator->IsRunning(&isRunning), isRunning) {
+                if (anim->IsRunning(&isRunning), isRunning) {
                     mShowHideFrameAnimator->Reverse();
                 }
                 else {
                     if (shown) {
-                        mShowHideFrameAnimator->Start();
+                        anim->Start();
                     }
                     else {
                         mShowHideFrameAnimator->Reverse();
@@ -130,7 +138,7 @@ ECode AccessibilityController::DisplayMagnifier::MagnifiedViewport::ViewportWind
                 }
             }
             else {
-                mShowHideFrameAnimator->Cancel();
+                anim->Cancel();
                 if (shown) {
                     mHost->SetAlpha(MAX_ALPHA);
                 }
@@ -156,7 +164,7 @@ AccessibilityController::DisplayMagnifier::MagnifiedViewport::ViewportWindow::Vi
     : mShown(FALSE)
     , mAlpha(0)
     , mInvalidated(FALSE)
-    , mHost(hsot)
+    , mHost(host)
 {
     CRegion::New((IRegion**)&mBounds);
     CRect::New((IRect**)&mDirtyRect);
@@ -165,11 +173,11 @@ AccessibilityController::DisplayMagnifier::MagnifiedViewport::ViewportWindow::Vi
 
     // try {
     AutoPtr<IDisplay> display;
-    mWindowManager->GetDefaultDisplay((IDisplay**)&display);
+    mHost->mWindowManager->GetDefaultDisplay((IDisplay**)&display);
     display->GetRealSize(mHost->mTempPoint);
     Int32 x, y;
-    mTempPoint->GetX(&x);
-    mTempPoint->GetY(&y);
+    mHost->mTempPoint->GetX(&x);
+    mHost->mTempPoint->GetY(&y);
     CSurfaceControl::New(mHost->mHost->mWindowManagerService->mFxSession,
             SURFACE_TITLE, x, y, IPixelFormat::TRANSLUCENT,
             ISurfaceControl::HIDDEN, (ISurfaceControl**)&mSurfaceControl);
@@ -180,23 +188,24 @@ AccessibilityController::DisplayMagnifier::MagnifiedViewport::ViewportWindow::Vi
     display->GetLayerStack(&stack);
     mSurfaceControl->SetLayerStack(stack);
 
-    Int32 result;
-    mSurfaceControl->SetLayer(mHost->mHost->mWindowManagerService->mPolicy->WindowTypeToLayerLw(
-            IWindowManagerLayoutParams::TYPE_MAGNIFICATION_OVERLAY)
-            * CWindowManagerService::TYPE_LAYER_MULTIPLIER, &result);
+    Int32 layer;
+    mHost->mHost->mWindowManagerService->mPolicy->WindowTypeToLayerLw(
+            IWindowManagerLayoutParams::TYPE_MAGNIFICATION_OVERLAY, &layer);
+    mSurfaceControl->SetLayer(layer * CWindowManagerService::TYPE_LAYER_MULTIPLIER);
     mSurfaceControl->SetPosition(0, 0);
     mSurface->CopyFrom(mSurfaceControl);
 
     AutoPtr<ILooper> looper;
-    mHost->mHost->mWindowManagerService->mH->GetLooper(&looper);
+    mHost->mHost->mWindowManagerService->mH->GetLooper((ILooper**)&looper);
     mAnimationController = new AnimationController(context, looper, this);
 
     AutoPtr<ITypedValue> typedValue;
     CTypedValue::New((ITypedValue**)&typedValue);
     AutoPtr<IResourcesTheme> theme;
     context->GetTheme((IResourcesTheme**)&theme);
+    Boolean resolveResult;
     theme->ResolveAttribute(Elastos::Droid::R::attr::colorActivatedHighlight,
-            typedValue, TRUE);
+            typedValue, TRUE, &resolveResult);
     AutoPtr<IResources> res;
     context->GetResources((IResources**)&res);
     Int32 resourceId;
@@ -205,7 +214,7 @@ AccessibilityController::DisplayMagnifier::MagnifiedViewport::ViewportWindow::Vi
     res->GetColor(resourceId, &borderColor);
 
     mPaint->SetStyle(PaintStyle_STROKE);
-    mPaint->SetStrokeWidth(mBorderWidth);
+    mPaint->SetStrokeWidth(mHost->mBorderWidth);
     mPaint->SetColor(borderColor);
 
     mInvalidated = TRUE;
@@ -259,7 +268,8 @@ void AccessibilityController::DisplayMagnifier::MagnifiedViewport::ViewportWindo
         if (IObject::Probe(mBounds)->Equals(bounds, &equals), equals) {
             return;
         }
-        mBounds->Set(bounds);
+        Boolean result;
+        mBounds->Set(bounds, &result);
         Invalidate(mDirtyRect);
         if (DEBUG_VIEWPORT_WINDOW) {
             Slogger::I(TAG, "ViewportWindow set bounds: %p", bounds);
@@ -272,11 +282,11 @@ void AccessibilityController::DisplayMagnifier::MagnifiedViewport::ViewportWindo
     Object& lock = mHost->mHost->mWindowManagerService->mWindowMapLock;
     synchronized (lock) {
         AutoPtr<IDisplay> display;
-        mWindowManager->GetDefaultDisplay((IDisplay**)&display);
+        mHost->mWindowManager->GetDefaultDisplay((IDisplay**)&display);
         display->GetRealSize(mHost->mTempPoint);
         Int32 x, y;
-        mTempPoint->GetX(&x);
-        mTempPoint->GetY(&y);
+        mHost->mTempPoint->GetX(&x);
+        mHost->mTempPoint->GetY(&y);
         mSurfaceControl->SetSize(x, y);
         Invalidate(mDirtyRect);
     }
@@ -308,9 +318,10 @@ void AccessibilityController::DisplayMagnifier::MagnifiedViewport::ViewportWindo
         // Empty dirty rectangle means unspecified.
         Boolean isEmpty;
         if (mDirtyRect->IsEmpty(&isEmpty), isEmpty) {
-            mBounds->GetBounds(mDirtyRect);
+            Boolean result;
+            mBounds->GetBounds(mDirtyRect, &result);
         }
-        mDirtyRect->Inset(-mHalfBorderWidth, -mHalfBorderWidth);
+        mDirtyRect->Inset(-mHost->mHalfBorderWidth, -mHost->mHalfBorderWidth);
         mSurface->LockCanvas(mDirtyRect, (ICanvas**)&canvas);
         if (DEBUG_VIEWPORT_WINDOW) {
             Slogger::I(TAG, "Dirty rect: %p", mDirtyRect.Get());
@@ -372,16 +383,16 @@ AccessibilityController::DisplayMagnifier::MagnifiedViewport::MagnifiedViewport(
     CRegion::New((IRegion**)&mMagnifiedBounds);
     CRegion::New((IRegion**)&mOldMagnifiedBounds);
     AutoPtr<IMagnificationSpecHelper> helper;
-    CMagnificationSpecHelper:AcquireSingleton((IMagnificationSpecHelper**)&helper);
+    CMagnificationSpecHelper::AcquireSingleton((IMagnificationSpecHelper**)&helper);
     helper->Obtain((IMagnificationSpec**)&mMagnificationSpec);
 
     AutoPtr<IInterface> service;
     host->mContext->GetSystemService(IContext::WINDOW_SERVICE, (IInterface**)&service);
-    mWindowManager = IWindowmanager::Probe(service);
+    mWindowManager = IWindowManager::Probe(service);
     AutoPtr<IResources> res;
-    mContext->GetResources((IResources**)&res);
+    host->mContext->GetResources((IResources**)&res);
     AutoPtr<IDisplayMetrics> metrics;
-    res->GetdisplayMetrics((IDisplayMetrics**)&metrics);
+    res->GetDisplayMetrics((IDisplayMetrics**)&metrics);
     AutoPtr<ITypedValueHelper> tvHelper;
     CTypedValueHelper::AcquireSingleton((ITypedValueHelper**)&tvHelper);
     tvHelper->ApplyDimension(ITypedValue::COMPLEX_UNIT_DIP,
@@ -423,14 +434,15 @@ void AccessibilityController::DisplayMagnifier::MagnifiedViewport::RecomputeBoun
     mTempPoint->GetX(&screenWidth);
     mTempPoint->GetY(&screenHeight);
 
+    Boolean result;
     AutoPtr<IRegion> magnifiedBounds = mMagnifiedBounds;
-    magnifiedBounds->Set(0, 0, 0, 0);
+    magnifiedBounds->Set(0, 0, 0, 0, &result);
 
-    AutoPtr<IRegion> availableBounds = mTempRegion1;
-    availableBounds->Set(0, 0, screenWidth, screenHeight);
+    AutoPtr<IRegion> availableBounds = mHost->mTempRegion1;
+    availableBounds->Set(0, 0, screenWidth, screenHeight, &result);
 
-    AutoPtr<IRegion> nonMagnifiedBounds = mTempRegion4;
-    nonMagnifiedBounds->Set(0, 0, 0, 0);
+    AutoPtr<IRegion> nonMagnifiedBounds = mHost->mTempRegion4;
+    nonMagnifiedBounds->Set(0, 0, 0, 0, &result);
 
     AutoPtr<ISparseArray> visibleWindows = mTempWindowStates;
     visibleWindows.Clear();
@@ -443,64 +455,61 @@ void AccessibilityController::DisplayMagnifier::MagnifiedViewport::RecomputeBoun
         visibleWindows->ValueAt(i, (IInterface**)&value);
         AutoPtr<WindowState> windowState = (WindowState*)IWindowState::Probe(value);
         Int32 winType;
-        if (windowState->mAttrs->GetType(type), type == IWindowManagerLayoutParams::TYPE_MAGNIFICATION_OVERLAY) {
+        if (windowState->mAttrs->GetType(&winType), winType == IWindowManagerLayoutParams::TYPE_MAGNIFICATION_OVERLAY) {
             continue;
         }
 
-        AutoPtr<IRegion> windowBounds = mTempRegion2;
+        AutoPtr<IRegion> windowBounds = mHost->mTempRegion2;
         AutoPtr<IMatrix> matrix = mTempMatrix;
         PopulateTransformationMatrixLocked(windowState, matrix);
         AutoPtr<IRectF> windowFrame = mTempRectF;
 
         Boolean canMagnifyWindow;
-        if (mWindowManagerService->mPolicy->CanMagnifyWindow(winType, &canMagnifyWindow), canMagnifyWindow) {
+        if (mHost->mWindowManagerService->mPolicy->CanMagnifyWindow(winType, &canMagnifyWindow), canMagnifyWindow) {
             windowFrame->Set(windowState->mFrame);
             Float left, top;
             windowFrame->GetLeft(&left);
             windowFrame->GetTop(&top);
-            windowFrame->SetOffset(-left, -top);
-            matrix->MapRect(windowFrame);
+            windowFrame->Offset(-left, -top);
+            matrix->MapRect(windowFrame, &result);
             Float right, bottom;
             windowFrame->GetRight(&right);
             windowFrame->GetBottom(&bottom);
-            windowBounds->Set((Int32)left, (Int32)top, (Int32)right, (Int32)bottom);
-            Boolean result;
+            windowBounds->Set((Int32)left, (Int32)top, (Int32)right, (Int32)bottom, &result);
             magnifiedBounds->Op(windowBounds, RegionOp_UNION, &result);
             magnifiedBounds->Op(availableBounds, RegionOp_INTERSECT, &result);
         }
         else {
-            AutoPtr<IRegion> touchableRegion = mTempRegion3;
+            AutoPtr<IRegion> touchableRegion = mHost->mTempRegion3;
             windowState->GetTouchableRegion(touchableRegion);
-            AutoPtr<IRect> touchableFrame = mTempRect1;
-            touchableRegion->GetBounds(touchableFrame);
+            AutoPtr<IRect> touchableFrame = mHost->mTempRect1;
+            touchableRegion->GetBounds(touchableFrame, &result);
             windowFrame->Set(touchableFrame);
-            Float left, top;
+            Int32 left, top;
             windowState->mFrame->GetLeft(&left);
             windowState->mFrame->GetTop(&top);
             windowFrame->Offset(-left, -top);
-            matrix->MapRect(windowFrame);
+            matrix->MapRect(windowFrame, &result);
             Float winLeft, winTop, winRight, winBottom;
             windowFrame->GetLeft(&winLeft);
             windowFrame->GetTop(&winTop);
             windowFrame->GetRight(&winRight);
             windowFrame->GetBottom(&winBottom);
-            windowBounds->Set((Int32)winLeft, (Int32)winTop, (Int32)winRight, (Int32)winBottom);
-            Boolean result;
+            windowBounds->Set((Int32)winLeft, (Int32)winTop, (Int32)winRight, (Int32)winBottom, &result);
             nonMagnifiedBounds->Op(windowBounds, RegionOp_UNION, &result);
             windowBounds->Op(magnifiedBounds, RegionOp_DIFFERENCE, &result);
             availableBounds->Op(windowBounds, RegionOp_DIFFERENCE, &result);
         }
 
-        AutoPtr<IRegion> accountedBounds = mTempRegion2;
-        accountedBounds->Set(magnifiedBounds);
-        Boolean result;
+        AutoPtr<IRegion> accountedBounds = mHost->mTempRegion2;
+        accountedBounds->Set(magnifiedBounds, &result);
         accountedBounds->Op(nonMagnifiedBounds, RegionOp_UNION, &result);
         accountedBounds->Op(0, 0, screenWidth, screenHeight, RegionOp_INTERSECT, &result);
 
         Boolean isRect;
         if (accountedBounds->IsRect(&isRect), isRect) {
-            AutoPtr<IRect> accountedFrame = mTempRect1;
-            accountedBounds->GetBounds(accountedFrame);
+            AutoPtr<IRect> accountedFrame = mHost->mTempRect1;
+            accountedBounds->GetBounds(accountedFrame, &result);
             Int32 w, h;
             if ((accountedFrame->GetWidth(&w), w == screenWidth)
                     && (accountedFrame->GetHeight(&h), h == screenHeight)) {
@@ -511,7 +520,6 @@ void AccessibilityController::DisplayMagnifier::MagnifiedViewport::RecomputeBoun
 
     visibleWindows->Clear();
 
-    Boolean result;
     magnifiedBounds->Op(mDrawBorderInset, mDrawBorderInset,
             screenWidth - mDrawBorderInset, screenHeight - mDrawBorderInset,
             RegionOp_INTERSECT, &result);
@@ -522,14 +530,14 @@ void AccessibilityController::DisplayMagnifier::MagnifiedViewport::RecomputeBoun
         CRegionHelper::AcquireSingleton((IRegionHelper**)&regionH);
         AutoPtr<IRegion> bounds;
         regionH->Obtain((IRegion**)&bounds);
-        bounds->Set(magnifiedBounds);
+        bounds->Set(magnifiedBounds, &result);
         AutoPtr<IMessage> msg;
-        mHandler->ObtainMessage(MyHandler::MESSAGE_NOTIFY_MAGNIFIED_BOUNDS_CHANGED,
+        mHost->mHandler->ObtainMessage(MyHandler::MESSAGE_NOTIFY_MAGNIFIED_BOUNDS_CHANGED,
                 bounds, (IMessage**)&msg);
         msg->SendToTarget();
 
         mWindow->SetBounds(magnifiedBounds);
-        AutoPtr<IRect> dirtyRect = mTempRect1;
+        AutoPtr<IRect> dirtyRect = mHost->mTempRect1;
         if (mFullRedrawNeeded) {
             mFullRedrawNeeded = FALSE;
             dirtyRect->Set(mDrawBorderInset, mDrawBorderInset,
@@ -537,15 +545,15 @@ void AccessibilityController::DisplayMagnifier::MagnifiedViewport::RecomputeBoun
             mWindow->Invalidate(dirtyRect);
         }
         else {
-            AutoPtr<IRegion> dirtyRegion = mTempRegion3;
-            dirtyRegion->Set(magnifiedBounds);
+            AutoPtr<IRegion> dirtyRegion = mHost->mTempRegion3;
+            dirtyRegion->Set(magnifiedBounds, &result);
             dirtyRegion->Op(mOldMagnifiedBounds, RegionOp_UNION, &result);
             dirtyRegion->Op(nonMagnifiedBounds, RegionOp_INTERSECT, &result);
-            dirtyRegion->GetBounds(dirtyRect);
+            dirtyRegion->GetBounds(dirtyRect, &result);
             mWindow->Invalidate(dirtyRect);
         }
 
-        mOldMagnifiedBounds->Set(magnifiedBounds);
+        mOldMagnifiedBounds->Set(magnifiedBounds, &result);
     }
 }
 
@@ -557,13 +565,13 @@ void AccessibilityController::DisplayMagnifier::MagnifiedViewport::OnRotationCha
     // we will show the border.
     if (IsMagnifyingLocked()) {
         SetMagnifiedRegionBorderShownLocked(FALSE, FALSE);
-        Int64 delay = (Int64)(mLongAnimationDuration
-                * mHost->mWindowManagerService.GetWindowAnimationScaleLocked());
+        Int64 delay = mHost->mInt64AnimationDuration
+                * mHost->mWindowManagerService->GetWindowAnimationScaleLocked();
         AutoPtr<IMessage> message;
-        mHandler->ObtainMessage(
+        mHost->mHandler->ObtainMessage(
                 MyHandler::MESSAGE_SHOW_MAGNIFIED_REGION_BOUNDS_IF_NEEDED, (IMessage**)&message);
         Boolean result;
-        mHandler->SendMessageDelayed(message, delay, &result);
+        mHost->mHandler->SendMessageDelayed(message, delay, &result);
     }
     RecomputeBoundsLocked();
     mWindow->UpdateSize();
@@ -575,7 +583,8 @@ void AccessibilityController::DisplayMagnifier::MagnifiedViewport::SetMagnifiedR
 {
     if (shown) {
         mFullRedrawNeeded = TRUE;
-        mOldMagnifiedBounds->Set(0, 0, 0, 0);
+        Boolean result;
+        mOldMagnifiedBounds->Set(0, 0, 0, 0, &result);
     }
     mWindow->SetShown(shown, animate);
 }
@@ -584,7 +593,8 @@ void AccessibilityController::DisplayMagnifier::MagnifiedViewport::GetMagnifiedF
     /* [in] */ IRect* rect)
 {
     AutoPtr<IMagnificationSpec> spec = mMagnificationSpec;
-    mMagnifiedBounds->GetBounds(rect);
+    Boolean result;
+    mMagnifiedBounds->GetBounds(rect, &result);
     Float offsetX, offsetY;
     spec->GetOffsetX(&offsetX);
     spec->GetOffsetY(&offsetY);
@@ -621,15 +631,15 @@ void AccessibilityController::DisplayMagnifier::MagnifiedViewport::PopulateWindo
     /* [in] */ ISparseArray* outWindows)
 {
     AutoPtr<DisplayContent> displayContent = mHost->mWindowManagerService->GetDefaultDisplayContentLocked();
-    AutoPtr<WindowList> windowList = displayContent->GetWindowList();
-    WindowList::Iterator it = windowList->Begin();
+    AutoPtr<List<AutoPtr<WindowState> > > windowList = displayContent->GetWindowList();
+    List<AutoPtr<WindowState> >::Iterator it = windowList->Begin();
     for (; it != windowList->End(); ++it) {
         AutoPtr<WindowState> windowState = *it;
         Int32 type;
         if ((windowState->IsOnScreen() ||
                 (windowState->mAttrs->GetType(&type), type == IWindowManagerLayoutParams::TYPE_UNIVERSE_BACKGROUND))
                 && !windowState->mWinAnimator->mEnterAnimationPending) {
-            outWindows->Put(windowState->mLayer, windowState);
+            outWindows->Put(windowState->mLayer, (IWindowState*)windowState.Get());
         }
     }
 }
@@ -663,7 +673,7 @@ ECode AccessibilityController::DisplayMagnifier::MyHandler::HandleMessage(
             message->GetObj((IInterface**)&obj);
             AutoPtr<IRegion> bounds = IRegion::Probe(obj);
             mHost->mCallbacks->OnMagnifedBoundsChanged(bounds);
-            bounds.recycle();
+            bounds->Recycle();
         } break;
 
         case MESSAGE_NOTIFY_RECTANGLE_ON_SCREEN_REQUESTED: {
@@ -694,11 +704,12 @@ ECode AccessibilityController::DisplayMagnifier::MyHandler::HandleMessage(
             synchronized (lock) {
                 if (mHost->mMagnifedViewport->IsMagnifyingLocked()) {
                     mHost->mMagnifedViewport->SetMagnifiedRegionBorderShownLocked(TRUE, TRUE);
-                    mWindowManagerService->ScheduleAnimationLocked();
+                    mHost->mWindowManagerService->ScheduleAnimationLocked();
                 }
             }
         } break;
     }
+    return NOERROR;
 }
 
 
@@ -734,7 +745,9 @@ AccessibilityController::DisplayMagnifier::DisplayMagnifier(
     mMagnifedViewport = new MagnifiedViewport(this);
     AutoPtr<IResources> res;
     mContext->GetResources((IResources**)&res);
-    res->GetInteger(Elastos::Droid::R::integer::config_longAnimTime, &mInt64AnimationDuration);
+    Int32 value;
+    res->GetInteger(Elastos::Droid::R::integer::config_longAnimTime, &value);
+    mInt64AnimationDuration = (Int64)value;
 }
 
 void AccessibilityController::DisplayMagnifier::SetMagnificationSpecLocked(
@@ -797,7 +810,8 @@ void AccessibilityController::DisplayMagnifier::OnRotationChangedLocked(
     //             + " displayId: " + displayContent.getDisplayId());
     // }
     mMagnifedViewport->OnRotationChangedLocked();
-    mHandler->SendEmptyMessage(MyHandler::MESSAGE_NOTIFY_ROTATION_CHANGED);
+    Boolean result;
+    mHandler->SendEmptyMessage(MyHandler::MESSAGE_NOTIFY_ROTATION_CHANGED, &result);
 }
 
 void AccessibilityController::DisplayMagnifier::OnAppWindowTransitionLocked(
@@ -817,7 +831,7 @@ void AccessibilityController::DisplayMagnifier::OnAppWindowTransitionLocked(
             case AppTransition::TRANSIT_WALLPAPER_OPEN:
             case AppTransition::TRANSIT_WALLPAPER_CLOSE:
             case AppTransition::TRANSIT_WALLPAPER_INTRA_OPEN: {
-                Booelan result;
+                Boolean result;
                 mHandler->SendEmptyMessage(MyHandler::MESSAGE_NOTIFY_USER_CONTEXT_CHANGED, &result);
             }
         }
@@ -944,6 +958,7 @@ ECode AccessibilityController::WindowsForAccessibilityObserver::MyHandler::Handl
             mHost->ClearAndRecycleWindows(windows);
         } break;
     }
+    return NOERROR;
 }
 
 
@@ -1022,7 +1037,8 @@ void AccessibilityController::WindowsForAccessibilityObserver::ComputeChangedWin
         mTempPoint->GetY(&screenHeight);
 
         AutoPtr<IRegion> unaccountedSpace = mTempRegion;
-        unaccountedSpace->Set(0, 0, screenWidth, screenHeight);
+        Boolean result;
+        unaccountedSpace->Set(0, 0, screenWidth, screenHeight, &result);
 
         AutoPtr<ISparseArray> visibleWindows = mTempWindowStates;
         PopulateVisibleWindowsOnScreenLocked(visibleWindows);
@@ -1033,7 +1049,7 @@ void AccessibilityController::WindowsForAccessibilityObserver::ComputeChangedWin
         Set<AutoPtr<IBinder> > addedWindows = mTempBinderSet;
         addedWindows.Clear();
 
-        Boolean focusedWindowAdded = FALSE
+        Boolean focusedWindowAdded = FALSE;
 
         Int32 visibleWindowCount;
         visibleWindows->GetSize(&visibleWindowCount);
@@ -1150,19 +1166,25 @@ void AccessibilityController::WindowsForAccessibilityObserver::ComputeChangedWin
 
         // We computed the windows and if they changed notify the client.
         Boolean windowsChanged = FALSE;
-        if (mOldWindows.GetSize() != windows.GetSize()) {
+        Int32 size;
+        Boolean isEmpty;
+        if (windows->GetSize(&size), (Int32)mOldWindows.GetSize() != size) {
             // Different size means something changed.
             windowsChanged = TRUE;
         }
-        else if ((mOldWindows.Begin() != mOldWindows.End()) || (windows.Begin() != windows.End())) {
+        else if ((mOldWindows.Begin() != mOldWindows.End()) || (windows->IsEmpty(&isEmpty), !isEmpty)) {
             // Since we always traverse windows from high to low layer
             // the old and new windows at the same index should be the
             // same, otherwise something changed.
-            List<AutoPtr<IWindowInfo> >:Iterator oldIt = mOldWindows.Begin();
-            List<AutoPtr<IWindowInfo> >:Iterator winIt = windows.Begin();
-            for (; oldIt != mOldWindows.End(), winIt != windows.End(); ++oldIt, ++winIt) {
+            List<AutoPtr<IWindowInfo> >::Iterator oldIt = mOldWindows.Begin();
+            AutoPtr<IIterator> winIt;
+            windows->GetIterator((IIterator**)&winIt);
+            while (winIt->HasNext(&hasNext), hasNext) {
                 AutoPtr<IWindowInfo> oldWindow = *oldIt;
-                AutoPtr<IWindowInfo> newWindow = *winIt;
+                AutoPtr<IInterface> next;
+                winIt->GetNext((IInterface**)&next);
+                AutoPtr<IWindowInfo> newWindow = IWindowInfo::Probe(next);
+
                 // We do not care for layer changes given the window
                 // order does not change. This brings no new information
                 // to the clients.
@@ -1170,6 +1192,7 @@ void AccessibilityController::WindowsForAccessibilityObserver::ComputeChangedWin
                     windowsChanged = TRUE;
                     break;
                 }
+                ++oldIt;
             }
         }
 
@@ -1203,7 +1226,8 @@ void AccessibilityController::WindowsForAccessibilityObserver::ComputeWindowBoun
     AutoPtr<IRegion> touchableRegion = mTempRegion1;
     windowState->GetTouchableRegion(touchableRegion);
     AutoPtr<IRect> touchableFrame = mTempRect;
-    touchableRegion->GetBounds(touchableFrame);
+    Boolean result;
+    touchableRegion->GetBounds(touchableFrame, &result);
 
     // Move to origin as all transforms are captured by the matrix.
     AutoPtr<IRectF> windowFrame = mTempRectF;
@@ -1216,15 +1240,15 @@ void AccessibilityController::WindowsForAccessibilityObserver::ComputeWindowBoun
     // Map the frame to get what appears on the screen.
     AutoPtr<IMatrix> matrix = mTempMatrix;
     PopulateTransformationMatrixLocked(windowState, matrix);
-    matrix->MapRect(windowFrame);
+    matrix->MapRect(windowFrame, &result);
 
     // Got the bounds.
-    Float left, top, right, bottom;
-    windowFrame->GetLeft(&left);
-    windowFrame->GetTop(&top);
-    windowFrame->GetRight(&right);
-    windowFrame->GetBottom(&bottom);
-    outBounds->Set((Int32)left, (Int32)top, (Int32)right, (Int32)bottom);
+    Float leftF, topF, rightF, bottomF;
+    windowFrame->GetLeft(&leftF);
+    windowFrame->GetTop(&topF);
+    windowFrame->GetRight(&rightF);
+    windowFrame->GetBottom(&bottomF);
+    outBounds->Set((Int32)leftF, (Int32)topF, (Int32)rightF, (Int32)bottomF);
 }
 
 AutoPtr<IWindowInfo> AccessibilityController::WindowsForAccessibilityObserver::ObtainPopulatedWindowInfo(
@@ -1258,7 +1282,7 @@ AutoPtr<IWindowInfo> AccessibilityController::WindowsForAccessibilityObserver::O
             CArrayList::New((IList**)&childTokens);
             window->SetChildTokens(childTokens);
         }
-        WindowList::Iterator it = windowState->mChildWindows.Begin();
+        List<AutoPtr<WindowState> >::Iterator it = windowState->mChildWindows.Begin();
         for (; it != windowState->mChildWindows.End(); ++it) {
             AutoPtr<WindowState> child = *it;
             childTokens->Add(IBinder::Probe(child->mClient));
@@ -1277,13 +1301,13 @@ void AccessibilityController::WindowsForAccessibilityObserver::CacheWindows(
         it = mOldWindows.Erase(it);
     }
     AutoPtr<IWindowInfoHelper> helper;
-    CWindowInfoHelper::New((IWindowInfoHelper**)&helper);
-    AutoPtr<IIterator> it;
-    windows->GetIterator((IIterator**)&it);
+    CWindowInfoHelper::AcquireSingleton((IWindowInfoHelper**)&helper);
+    AutoPtr<IIterator> winit;
+    windows->GetIterator((IIterator**)&winit);
     Boolean hasNext;
-    while (it->HasNext(&hasNext), hasNext) {
+    while (winit->HasNext(&hasNext), hasNext) {
         AutoPtr<IInterface> value;
-        it->GetNext((IInterface**)&value);
+        winit->GetNext((IInterface**)&value);
         AutoPtr<IWindowInfo> newWindow = IWindowInfo::Probe(value);
         AutoPtr<IWindowInfo> winInfo;
         helper->Obtain(newWindow, (IWindowInfo**)&winInfo);
@@ -1349,9 +1373,9 @@ Boolean AccessibilityController::WindowsForAccessibilityObserver::WindowChangedN
     }
 
     AutoPtr<IList> oldChild, newChild;
-    newWindow->GetChildTokens((IBinder**)&newChild);
-    if ((oldWindow->GetChildTokens((IBinder**)&oldChild), oldChild != NULL) &&
-            (newWindow->GetChildTokens((IBinder**)&newChild), newChild != NULL)
+    newWindow->GetChildTokens((IList**)&newChild);
+    if ((oldWindow->GetChildTokens((IList**)&oldChild), oldChild != NULL) &&
+            (newWindow->GetChildTokens((IList**)&newChild), newChild != NULL)
             && (IObject::Probe(oldChild)->Equals(newChild, &equals), !equals)) {
         return TRUE;
     }
@@ -1390,15 +1414,16 @@ Boolean AccessibilityController::WindowsForAccessibilityObserver::IsReportedWind
 }
 
 void AccessibilityController::WindowsForAccessibilityObserver::PopulateVisibleWindowsOnScreenLocked(
-    /* [in] */ HashMap<Int32, AutoPtr<WindowState> >& outWindows)
+    /* [in] */ ISparseArray* outWindows)
 {
     AutoPtr<DisplayContent> displayContent = mWindowManagerService->GetDefaultDisplayContentLocked();
-    AutoPtr<WindowList> windowList = displayContent->GetWindowList();
-    WindowList::Iterator it = windowList->Begin();
+    AutoPtr<List<AutoPtr<WindowState> > > windowList = displayContent->GetWindowList();
+    List<AutoPtr<WindowState> >::Iterator it = windowList->Begin();
     for (; it != windowList->End(); ++it) {
         AutoPtr<WindowState> windowState = *it;
-        if (windowState->IsVisibleLw()) {
-            outWindows[windowState->mLayer] = windowState;
+        Boolean isVisible;
+        if (windowState->IsVisibleLw(&isVisible), isVisible) {
+            outWindows->Put(windowState->mLayer, (IWindowState*)windowState.Get());
         }
     }
 }
@@ -1408,21 +1433,21 @@ void AccessibilityController::WindowsForAccessibilityObserver::PopulateVisibleWi
 //                  AccessibilityController
 //==============================================================================
 
-const AccessibilityController::TAG("AccessibilityController");
+const String AccessibilityController::TAG("AccessibilityController");
 
 static AutoPtr<ArrayOf<Float> > InitTempFloats()
 {
     AutoPtr<ArrayOf<Float> > floats = ArrayOf<Float>::Alloc(9);
     return floats;
 }
-static AutoPtr<ArrayOf<Float> > AccessibilityController::sTempFloats = InitTempFloats();
+AutoPtr<ArrayOf<Float> > AccessibilityController::sTempFloats = InitTempFloats();
 
 AccessibilityController::AccessibilityController(
     /* [in] */ CWindowManagerService* service)
     : mWindowManagerService(service)
 {}
 
-Ecode AccessibilityController::SetMagnificationCallbacksLocked(
+ECode AccessibilityController::SetMagnificationCallbacksLocked(
     /* [in] */ IMagnificationCallbacks* callbacks)
 {
     if (callbacks != NULL) {

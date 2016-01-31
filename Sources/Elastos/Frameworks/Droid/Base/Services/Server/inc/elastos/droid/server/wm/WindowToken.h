@@ -22,16 +22,24 @@ class WindowToken
     : public Object
 {
 public:
-    CAR_INTERFACE_DECL()
-
-    CARAPI GetWeakReference(
-        /* [out] */ IWeakReference** weakReference);
-
     WindowToken(
-        /* [in] */ CWindowManagerService* service,
-        /* [in] */ IBinder* token,
-        /* [in] */ Int32 type,
-        /* [in] */ Boolean _explicit);
+    /* [in] */ CWindowManagerService* service,
+    /* [in] */ IBinder* token,
+    /* [in] */ Int32 type,
+    /* [in] */ Boolean _explicit)
+        : mService(service)
+        , mToken(token)
+        , mWindowType(type)
+        , mExplicit(_explicit)
+        , mAppWindowToken(NULL)
+        , mPaused(FALSE)
+        , mHidden(FALSE)
+        , mHasVisible(FALSE)
+        , mWaitingToShow(FALSE)
+        , mWaitingToHide(FALSE)
+        , mSendingToBottom(FALSE)
+        , mSendingToTop(FALSE)
+    {}
 
 public:
     // The window manager!

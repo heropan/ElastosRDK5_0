@@ -18,27 +18,28 @@ public:
     CAR_INTERFACE_DECL();
 
     InputApplicationHandle(
-        /* [in] */ IInterface* appWindowToken);
+        /* [in] */ IObject* appWindowToken);
 
     virtual ~InputApplicationHandle();
 
 private:
     CARAPI_(void) NativeDispose();
 
-private:
-    // Pointer to the native input application handle.
-    // This field is lazily initialized via JNI.
-    //@SuppressWarnings("unused")
-    Int64 mPtr;
-
+public:
     // The window manager's application window token.
-    AutoPtr<IInterface> mAppWindowToken;
+    AutoPtr<IObject> mAppWindowToken;
 
     // Application name.
     String mName;
 
     // Dispatching timeout.
     Int64 mDispatchingTimeoutNanos;
+
+private:
+    // Pointer to the native input application handle.
+    // This field is lazily initialized via JNI.
+    //@SuppressWarnings("unused")
+    Int64 mPtr;
 };
 
 } // Input

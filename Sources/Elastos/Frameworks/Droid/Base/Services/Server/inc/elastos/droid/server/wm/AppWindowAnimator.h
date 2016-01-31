@@ -14,6 +14,7 @@ using Elastos::Droid::View::Animation::Animation;
 using Elastos::Droid::View::Animation::ITransformation;
 using Elastos::Droid::View::Animation::IAnimationAnimationListener;
 using Elastos::Droid::View::Animation::IInterpolator;
+using Elastos::Droid::View::Animation::IAnimation;
 using Elastos::Droid::Os::IHandler;
 using Elastos::Droid::Content::IContext;
 using Elastos::Utility::Etl::List;
@@ -36,6 +37,9 @@ public:
             /* [in] */ Int64 currentTime,
             /* [in, out] */ ITransformation* outTransformation,
             /* [out] */ Boolean* result);
+
+        CARAPI Clone(
+            /* [out] */ IInterface** obj);
     };
 
 public:

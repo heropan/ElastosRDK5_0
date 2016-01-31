@@ -35,7 +35,8 @@ module
         StartViewServer(
             [in] Int32 port,
             [out] Boolean* result);   // Transaction #1
-        StopViewServer();            // Transaction #2
+        StopViewServer(
+            [out] Boolean* result);            // Transaction #2
         IsViewServerRunning(
             [out] Boolean* result);       // Transaction #3
 

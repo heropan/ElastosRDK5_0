@@ -2,8 +2,7 @@
 #define __ELASTOS_DROID_SERVER_WM_WINDOWSTATEANIMATOR_H__
 
 #include "_Elastos.Droid.Server.h"
-#include "elastos/droid/server/wm/WindowAnimator.h"
-// #include "elastos/droid/server/wm/WindowState.h"
+#include "elastos/droid/server/wm/WindowState.h"
 
 using Elastos::Droid::View::Animation::ITransformation;
 using Elastos::Droid::View::Animation::IAnimation;
@@ -19,6 +18,9 @@ namespace Elastos {
 namespace Droid {
 namespace Server {
 namespace Wm {
+
+class WindowAnimator;
+class AppWindowAnimator;
 
 /**
  * Singleton class that carries out the animations and AutoPtr<ISurface> operations in a separate task
@@ -131,19 +133,19 @@ public:
     static const String TAG;
 
     /** This is set when there is no AutoPtr<ISurface> */
-    static const Int32 NO_SURFACE;
+    static const Int32 NO_SURFACE = 0;
     /** This is set after the AutoPtr<ISurface> has been created but before the window has been drawn. During
      * this time the surface is hidden. */
-    static const Int32 DRAW_PENDING;
+    static const Int32 DRAW_PENDING = 1;
     /** This is set after the window has finished drawing for the first time but before its surface
      * is shown.  The surface will be displayed when the next layout is run. */
-    static const Int32 COMMIT_DRAW_PENDING;
+    static const Int32 COMMIT_DRAW_PENDING = 2;
     /** This is set during the time after the window's drawing has been committed, and before its
      * surface is actually shown.  It is used to delay showing the surface until all windows in a
      * token are ready to be shown. */
-    static const Int32 READY_TO_SHOW;
+    static const Int32 READY_TO_SHOW = 3;
     /** Set when the window has been shown in the screen the first time. */
-    static const Int32 HAS_DRAWN;
+    static const Int32 HAS_DRAWN = 4;
 
 public:
     // Unchanging local convenience fields.

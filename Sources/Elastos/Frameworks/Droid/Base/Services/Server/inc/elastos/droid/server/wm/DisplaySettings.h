@@ -11,6 +11,7 @@ using Org::Xmlpull::V1::IXmlPullParser;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Graphics::IRect;
 using Elastos::Droid::Utility::IAtomicFile;
+using Elastos::Utility::Etl::HashMap;
 
 namespace Elastos {
 namespace Droid {

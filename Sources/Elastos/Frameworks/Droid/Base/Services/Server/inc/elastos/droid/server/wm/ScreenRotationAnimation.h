@@ -105,10 +105,10 @@ private:
 
 public:
     static const String TAG;
-    static const Boolean DEBUG_STATE;
-    static const Boolean DEBUG_TRANSFORMS;
-    static const Boolean TWO_PHASE_ANIMATION;
-    static const Boolean USE_CUSTOM_BLACK_FRAME;
+    static const Boolean DEBUG_STATE = FALSE;
+    static const Boolean DEBUG_TRANSFORMS = FALSE;
+    static const Boolean TWO_PHASE_ANIMATION = FALSE;
+    static const Boolean USE_CUSTOM_BLACK_FRAME = FALSE;
 
     static const Int32 FREEZE_LAYER;
 

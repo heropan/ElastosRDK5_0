@@ -886,7 +886,7 @@ void CInputManagerService::SwitchKeyboardLayout(
 }
 
 void CInputManagerService::SetInputWindows(
-    /* [in] */ ArrayOf<InputWindowHandle*> windowHandles)
+    /* [in] */ ArrayOf<InputWindowHandle*>* windowHandles)
 {
 }
 

@@ -2,7 +2,7 @@
 #define __ELASTOS_DROID_SERVER_WM_STACKTAPPOINTEREVENTLISTENER_H__
 
 #include "_Elastos.Droid.Server.h"
-// #include "elastos/droid/server/wm/CWindowManagerService.h"
+#include "elastos/droid/server/wm/CWindowManagerService.h"
 
 using Elastos::Droid::Graphics::IRegion;
 using Elastos::Droid::View::IPointerEventListener;

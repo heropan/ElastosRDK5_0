@@ -121,6 +121,12 @@ public:
     CARAPI SetVerticalMargin(
         /* [in] */ Float verticalMargin);
 
+    CARAPI GetSurfaceInsets(
+        /* [out] */ IRect** surfaceInsets);
+
+    CARAPI SetSurfaceInsets(
+        /* [in] */ IRect* surfaceInsets);
+
     CARAPI GetFormat(
         /* [out] */ Int32* format);
 

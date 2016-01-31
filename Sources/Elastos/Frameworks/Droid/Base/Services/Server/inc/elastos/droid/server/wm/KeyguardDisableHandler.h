@@ -2,6 +2,8 @@
 #define __ELASTOS_DROID_SERVER_WM_KEYGURADDISABLEHANDLER_H__
 
 #include "_Elastos.Droid.Server.h"
+#include <Elastos.Droid.Content.h>
+#include <Elastos.Droid.View.h>
 #include "elastos/droid/os/Handler.h"
 #include "elastos/droid/os/TokenWatcher.h"
 

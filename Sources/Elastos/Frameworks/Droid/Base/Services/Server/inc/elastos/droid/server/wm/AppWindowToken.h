@@ -1,10 +1,7 @@
 #ifndef __ELASTOS_DROID_SERVER_WM_APPWINDOWTOKEN_H__
 #define __ELASTOS_DROID_SERVER_WM_APPWINDOWTOKEN_H__
 
-// #include "elastos/droid/server/wm/WindowState.h"
 #include "elastos/droid/server/wm/WindowToken.h"
-#include "elastos/droid/server/wm/AppWindowAnimator.h"
-// #include "elastos/droid/server/wm/WindowAnimator.h"
 #include "elastos/droid/server/wm/StartingData.h"
 #include "elastos/droid/server/input/InputApplicationHandle.h"
 
@@ -16,6 +13,9 @@ namespace Elastos {
 namespace Droid {
 namespace Server {
 namespace Wm {
+
+class AppWindowAnimator;
+class WindowAnimator;
 
 class AppWindowToken : public WindowToken
 {

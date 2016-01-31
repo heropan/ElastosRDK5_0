@@ -2703,7 +2703,7 @@ Int32 CWindowManagerService::AddWindow(
                 & IWindowManagerLayoutParams::INPUT_FEATURE_NO_INPUT_CHANNEL) == 0) {
             String name = win->MakeInputChannelName();
             AutoPtr<IInputChannelHelper> helper;
-            ASSERT_SUCCEEDED(CInputChannelHelper::AcquireSingleton((IInputChannelHelper**)&helper));
+            CInputChannelHelper::AcquireSingleton((IInputChannelHelper**)&helper);
             AutoPtr<ArrayOf<IInputChannel*> > inputChannels;
             ASSERT_SUCCEEDED(helper->OpenInputChannelPair(name, (ArrayOf<IInputChannel*>**)&inputChannels));
             win->SetInputChannel((*inputChannels)[0]);
@@ -7768,7 +7768,7 @@ ECode CWindowManagerService::StartViewServer(
     /* [in] */ Int32 port,
     /* [out] */ Boolean* result)
 {
-    VALIDATE_NOT_NULL(result);
+    VALIDATE_NOT_NULL(result)
     if (IsSystemSecure()) {
         *result = FALSE;
         return NOERROR;
@@ -9613,7 +9613,7 @@ ECode CWindowManagerService::OpenSession(
         // throw new IllegalArgumentException("NULL inputContext");
     }
 
-    return CSession::New((Handle64)this, client, callback, inputContext, session);
+    return CSession::New((Handle64)this, callback, client, inputContext, session);
 }
 
 ECode CWindowManagerService::InputMethodClientHasFocus(
@@ -11203,7 +11203,7 @@ void CWindowManagerService::HandleNotObscuredLocked(
                 // Allow full screen keyguard presentation dialogs to be seen.
                 mInnerFields->mDisplayHasContent = TRUE;
             }
-            Int32 preferredRefreshRate;
+            Float preferredRefreshRate;
             if (mInnerFields->mPreferredRefreshRate == 0
                     && (w->mAttrs->GetPreferredRefreshRate(&preferredRefreshRate), preferredRefreshRate != 0)) {
                 mInnerFields->mPreferredRefreshRate = preferredRefreshRate;
@@ -13069,6 +13069,15 @@ void CWindowManagerService::HandleDisplayChangedLocked(
         displayContent->UpdateDisplayInfo();
     }
     RequestTraversalLocked();
+}
+
+ECode CWindowManagerService::GetWindowManagerLock(
+    /* [out] */ IInterface** lock)
+{
+    VALIDATE_NOT_NULL(*lock)
+    *lock = (IObject*)&mWindowMapLock;
+    REFCOUNT_ADD(*lock)
+    return NOERROR;
 }
 
 ECode CWindowManagerService::ToString(

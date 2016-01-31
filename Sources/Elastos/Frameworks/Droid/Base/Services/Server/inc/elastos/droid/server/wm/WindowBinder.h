@@ -3,6 +3,7 @@
 #define __ELASTOS_DROID_SERVER_WM_WINDOWBINDER_H__
 
 #include "_Elastos.Droid.Server.h"
+#include <elastos/core/Object.h>
 
 namespace Elastos {
 namespace Droid {

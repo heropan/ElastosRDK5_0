@@ -422,7 +422,7 @@ public:
         /* [in] */ Int32 direction);
 
     CARAPI_(void) SetInputWindows(
-        /* [in] */ ArrayOf<InputWindowHandle*> windowHandles);
+        /* [in] */ ArrayOf<InputWindowHandle*>* windowHandles);
 
     CARAPI_(void) SetFocusedApplication(
         /* [in] */ InputApplicationHandle* application);

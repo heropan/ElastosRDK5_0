@@ -2,14 +2,19 @@
 #include "elastos/droid/server/wm/InputMonitor.h"
 #include "elastos/droid/server/wm/DragState.h"
 #include "elastos/droid/server/wm/CWindowManagerService.h"
+#include "elastos/droid/server/wm/DisplayContent.h"
 #include "elastos/droid/server/input/InputApplicationHandle.h"
 #include "elastos/droid/server/input/InputWindowHandle.h"
 #include "elastos/droid/app/ActivityManagerNative.h"
+#include <elastos/utility/logging/Slogger.h>
 
+using Elastos::Droid::App::ActivityManagerNative;
 using Elastos::Droid::Graphics::CRect;
 using Elastos::Droid::Server::Input::EIID_IWindowManagerCallbacks;
 using Elastos::Droid::Server::Input::InputApplicationHandle;
 using Elastos::Droid::Server::Input::InputWindowHandle;
+using Elastos::Core::ICharSequence;
+using Elastos::Utility::Logging::Slogger;
 
 namespace Elastos {
 namespace Droid {
@@ -36,11 +41,11 @@ ECode InputMonitor::NotifyInputChannelBroken(
     AutoPtr<InputWindowHandle> inputWindowHandle = (InputWindowHandle*)_inputWindowHandle;
 
     if (inputWindowHandle == NULL) {
-        return;
+        return NOERROR;
     }
 
     AutoLock lock(mService->mWindowMapLock);
-    WindowState* windowState = (WindowState*)inputWindowHandle->mWindowState;
+    WindowState* windowState = (WindowState*)(IWindowState*)inputWindowHandle->mWindowState.Get();
     if (windowState != NULL) {
         // Slog.i(WindowManagerService.TAG, "WINDOW DIED " + windowState);
         mService->RemoveWindowLocked(windowState->mSession, windowState);
@@ -53,7 +58,7 @@ ECode InputMonitor::NotifyANR(
     /* [in] */ IInputApplicationHandle* _inputApplicationHandle,
     /* [in] */ IInputWindowHandle* _inputWindowHandle,
     /* [in] */ const String& reason,
-    /* [out] */ Int64* timeout)
+    /* [out] */ Int64* _timeout)
 {
     VALIDATE_NOT_NULL(_timeout)
 
@@ -68,20 +73,22 @@ ECode InputMonitor::NotifyANR(
         AutoLock lock(mService->mWindowMapLock);
 
         if (inputWindowHandle != NULL) {
-            windowState = (WindowState*)inputWindowHandle->mWindowState;
+            windowState = (WindowState*)(IWindowState*)inputWindowHandle->mWindowState.Get();
             if (windowState != NULL) {
                 appWindowToken = windowState->mAppToken;
             }
         }
         if (appWindowToken == NULL && inputApplicationHandle != NULL) {
-            appWindowToken = (AppWindowToken*)inputApplicationHandle->mAppWindowToken;
+            appWindowToken = (AppWindowToken*)(Object*)inputApplicationHandle->mAppWindowToken.Get();
         }
 
         if (windowState != NULL) {
-            String title;
-            windowState->mAttrs->GetTitle(&title);
+            AutoPtr<ICharSequence> title;
+            windowState->mAttrs->GetTitle((ICharSequence**)&title);
+            String titleStr;
+            title->ToString(&titleStr);
             Slogger::I(CWindowManagerService::TAG, "Input event dispatching timed out sending to %s.  Reason: %s"
-                    , title.string(), reason.string());
+                    , titleStr.string(), reason.string());
             // Figure out whether this window is layered above system windows.
             // We need to do this here to help the activity manager know how to
             // layer its ANR dialog.
@@ -162,14 +169,15 @@ void InputMonitor::AddInputWindowHandleLw(
     /* [in] */ Boolean hasWallpaper)
 {
     // Add a window to our list of input windows.
-    inputWindowHandle->mName = child->ToString();
+    child->ToString(&inputWindowHandle->mName);
     Boolean modal = (flags & (IWindowManagerLayoutParams::FLAG_NOT_TOUCH_MODAL
             | IWindowManagerLayoutParams::FLAG_NOT_FOCUSABLE)) == 0;
     if (modal && child->mAppToken != NULL) {
         // Limit the outer touch to the activity stack region.
         flags |= IWindowManagerLayoutParams::FLAG_NOT_TOUCH_MODAL;
         child->GetStackBounds(mTmpRect);
-        inputWindowHandle->mTouchableRegion->Set(mTmpRect);
+        Boolean result;
+        inputWindowHandle->mTouchableRegion->Set(mTmpRect, &result);
     }
     else {
         // Not modal or full screen modal
@@ -265,14 +273,14 @@ void InputMonitor::UpdateInputWindowsLw(
     mService->mDisplayContents->GetSize(&numDisplays);
     for (Int32 displayNdx = 0; displayNdx < numDisplays; ++displayNdx) {
         AutoPtr<IInterface> value;
-        mService->mDisplayContents->ValueAt((IInterface**)&value);
+        mService->mDisplayContents->ValueAt(displayNdx, (IInterface**)&value);
         AutoPtr<DisplayContent> displayContent = (DisplayContent*)(IObject*)value.Get();
-        AutoPtr<WindowList> windows = displayContent->GetWindowList();
-        WindowList::ReverseIterator winRit = windows->RBegin();
+        AutoPtr<List<AutoPtr<WindowState> > > windows = displayContent->GetWindowList();
+        List<AutoPtr<WindowState> >::ReverseIterator winRit = windows->RBegin();
         for (; winRit != windows->REnd(); ++winRit) {
-            AutoPtr<WindowState> child = *rit;
+            AutoPtr<WindowState> child = *winRit;
             AutoPtr<IInputChannel> inputChannel = child->mInputChannel;
-            AutoPtr<IInputWindowHandle> inputWindowHandle = child->mInputWindowHandle;
+            AutoPtr<InputWindowHandle> inputWindowHandle = child->mInputWindowHandle;
             if (inputChannel == NULL || inputWindowHandle == NULL || child->mRemoved) {
                 // Skip this window because it cannot possibly receive input.
                 continue;
@@ -286,7 +294,8 @@ void InputMonitor::UpdateInputWindowsLw(
             child->mAttrs->GetType(&type);
 
             Boolean hasFocus = (child == mInputFocus);
-            Boolean isVisible = child->IsVisibleLw();
+            Boolean isVisible;
+            child->IsVisibleLw(&isVisible);
             Boolean hasWallpaper = (child == mService->mWallpaperTarget)
                     && (privateFlags & IWindowManagerLayoutParams::PRIVATE_FLAG_KEYGUARD) == 0;
             Boolean onDefaultDisplay = (child->GetDisplayId() == IDisplay::DEFAULT_DISPLAY);
@@ -321,7 +330,7 @@ void InputMonitor::UpdateInputWindowsLw(
     }
 
     // Send windows to native code.
-    mService->mInputManager->SetInputWindows(mInputWindowHandles);
+    mService->mInputManager->SetInputWindows(mInputWindowHandles.Get());
 
     // Clear the list in preparation for the next round.
     ClearInputWindowHandlesLw();
@@ -374,7 +383,7 @@ ECode InputMonitor::InterceptKeyBeforeQueueing(
     /* [out] */ Int32* result)
 {
     VALIDATE_NOT_NULL(result)
-    return mService->mPolicy->InterceptMotionBeforeQueueingNonInteractive(whenNanos, policyFlags, result);
+    return mService->mPolicy->InterceptKeyBeforeQueueing(event, policyFlags, result);
 }
 
 ECode InputMonitor::InterceptMotionBeforeQueueingNonInteractive(
@@ -394,7 +403,7 @@ ECode InputMonitor::InterceptKeyBeforeDispatching(
     /* [out] */ Int64* ret)
 {
     AutoPtr<WindowState> windowState = focus != NULL ?
-            (WindowState*)((InputWindowHandle*)focus)->mWindowState : NULL;
+            (WindowState*)(IWindowState*)((InputWindowHandle*)focus)->mWindowState.Get() : NULL;
     return mService->mPolicy->InterceptKeyBeforeDispatching(windowState, event, policyFlags, ret);
 }
 
@@ -406,7 +415,7 @@ ECode InputMonitor::DispatchUnhandledKey(
 {
     VALIDATE_NOT_NULL(keyEvent)
     AutoPtr<WindowState> windowState = focus != NULL ?
-            (WindowState*)((InputWindowHandle*)focus)->mWindowState : NULL;
+            (WindowState*)(IWindowState*)((InputWindowHandle*)focus)->mWindowState.Get() : NULL;
     return mService->mPolicy->DispatchUnhandledKey(windowState, event, policyFlags, keyEvent);
 }
 
@@ -455,7 +464,7 @@ void InputMonitor::SetFocusedAppLw(
     }
     else {
         AutoPtr<InputApplicationHandle> handle = newApp->mInputApplicationHandle;
-        handle->mName = newApp->ToString();
+        newApp->ToString(&handle->mName);
         handle->mDispatchingTimeoutNanos = newApp->mInputDispatchingTimeoutNanos;
 
         mService->mInputManager->SetFocusedApplication(handle);

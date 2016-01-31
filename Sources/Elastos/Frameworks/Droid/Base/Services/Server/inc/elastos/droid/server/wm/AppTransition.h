@@ -3,6 +3,7 @@
 #define __ELASTOS_DROID_SERVER_WM_AppTransition_H__
 
 #include <Elastos.Droid.Animation.h>
+#include <Elastos.Droid.View.h>
 #include "elastos/droid/server/AttributeCache.h"
 #include <elastos/utility/etl/List.h>
 
@@ -36,6 +37,9 @@ private:
         CARAPI GetInterpolation(
             /* [in] */ Float input,
             /* [out] */ Float* output);
+
+        CARAPI HasNativeInterpolator(
+            /* [out] */ Boolean* res);
     };
 
     class FadeOutInterpolator
@@ -49,6 +53,9 @@ private:
         CARAPI GetInterpolation(
             /* [in] */ Float input,
             /* [out] */ Float* output);
+
+        CARAPI HasNativeInterpolator(
+            /* [out] */ Boolean* res);
     };
 
 public:

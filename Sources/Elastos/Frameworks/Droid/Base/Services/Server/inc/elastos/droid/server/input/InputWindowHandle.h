@@ -111,4 +111,6 @@ private:
 } // Droid
 } // Elastos
 
+DEFINE_CONVERSION_FOR(Elastos::Droid::Server::Input::InputWindowHandle, IInterface)
+
 #endif // __ELASTOS_DROID_Server_Input_InputWindowHandle_H__

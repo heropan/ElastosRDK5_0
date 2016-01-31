@@ -7,6 +7,7 @@
 #include "elastos/droid/ext/frameworkhash.h"
 #include "_Elastos_Droid_Server_Wm_CWindowManagerService.h"
 #include <Elastos.Droid.App.h>
+#include <Elastos.Droid.Internal.h>
 #include "elastos/droid/database/ContentObserver.h"
 #include "elastos/droid/os/Runnable.h"
 #include "elastos/droid/view/InputEventReceiver.h"
@@ -17,7 +18,6 @@
 #include "elastos/droid/server/wm/WindowToken.h"
 #include "elastos/droid/server/wm/Watermark.h"
 #include "elastos/droid/server/wm/StrictModeFlash.h"
-#include "elastos/droid/server/wm/WindowAnimator.h"
 #include "elastos/droid/server/wm/CSession.h"
 #include "elastos/droid/server/wm/AppWindowAnimator.h"
 #include "elastos/droid/server/wm/WindowStateAnimator.h"
@@ -26,10 +26,10 @@
 #include "elastos/droid/server/wm/EmulatorDisplayOverlay.h"
 #include "elastos/droid/server/wm/FocusedStackFrame.h"
 #include "elastos/droid/server/wm/AppTransition.h"
-#include "elastos/droid/server/wm/AccessibilityController.h"
 #include "elastos/droid/server/wm/WindowBinder.h"
 #include "elastos/droid/server/wm/TaskStack.h"
 #include "elastos/droid/server/wm/TaskGroup.h"
+#include "elastos/droid/server/wm/AccessibilityController.h"
 #include "elastos/droid/server/wm/PointerEventDispatcher.h"
 #include "elastos/droid/server/input/CInputManagerService.h"
 #include "elastos/droid/server/display/CDisplayManagerService.h"
@@ -81,6 +81,7 @@ using Elastos::Droid::Server::Power::CPowerManagerService;
 using Elastos::Droid::Utility::IArraySet;
 using Elastos::Droid::Utility::ISparseArray;
 using Elastos::Droid::View::IWindowManagerInternal;
+using Elastos::Droid::View::IIWindowId;
 using Elastos::Droid::View::IWindowSession;
 using Elastos::Droid::View::IInputChannel;
 using Elastos::Droid::View::IIWindow;
@@ -102,6 +103,7 @@ using Elastos::Droid::View::IWindowContentFrameStats;
 using Elastos::Droid::View::IIWindowManager;
 using Elastos::Droid::View::IWindowManagerPolicyWindowManagerFuncs;
 using Elastos::Droid::View::IMagnificationSpec;
+using Elastos::Droid::View::IIWindowSessionCallback;;
 using Elastos::Droid::View::IWindowsForAccessibilityCallback;
 using Elastos::Droid::View::IMagnificationCallbacks;
 using Elastos::Droid::View::Animation::IInterpolator;
@@ -118,11 +120,12 @@ namespace Server {
 namespace Wm {
 
 class KeyguardDisableHandler;
+class DragState;
 class ViewServer;
 class FakeWindowImpl;
 class DisplayContent;
-class DragState;
 class InputMonitor;
+class WindowAnimator;
 
 CarClass(CWindowManagerService)
     , public Object
@@ -202,19 +205,6 @@ public:
 
     private:
         CWindowManagerService* mHost;
-    };
-
-    interface IWindowChangeListener : public IInterface
-    {
-        virtual CARAPI_(void) WindowsChanged() = 0;
-
-        virtual CARAPI_(void) FocusChanged() = 0;
-    };
-
-    interface IOnHardKeyboardStatusChangeListener : public IInterface
-    {
-        virtual CARAPI_(void) OnHardKeyboardStatusChange(
-            /* [in] */ Boolean available) = 0;
     };
 
     class LocalBroadcastReceiver : public BroadcastReceiver
@@ -1630,6 +1620,9 @@ public:
 
     CARAPI OnDisplayChanged(
         /* [in] */ Int32 displayId);
+
+    CARAPI GetWindowManagerLock(
+        /* [out] */ IInterface** lock);
 
     CARAPI ToString(
         /* [ou] */ String* str);

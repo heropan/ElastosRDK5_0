@@ -795,9 +795,9 @@ module
         interface IFocusFinderHelper;
     }
 
-    //     singleton class CDragEventHelper {
-    //         interface IDragEventHelper;
-    //     }
+    singleton class CDragEventHelper {
+        interface IDragEventHelper;
+    }
 
     [local]
     class CViewConfiguration {

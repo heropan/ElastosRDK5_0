@@ -20,9 +20,9 @@ namespace Animation {
 CarClass(CDecelerateInterpolator)
     , public Object
     , public IDecelerateInterpolator
+    , public ITimeInterpolator
     , public INativeInterpolatorFactory
     , public IInterpolator
-    , public ITimeInterpolator
 {
 public:
     CAR_INTERFACE_DECL();

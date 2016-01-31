@@ -9,7 +9,7 @@ namespace Input {
 CAR_INTERFACE_IMPL(InputApplicationHandle, Object, IInputApplicationHandle);
 
 InputApplicationHandle::InputApplicationHandle(
-    /* [in] */ IInterface* appWindowToken)
+    /* [in] */ IObject* appWindowToken)
     : mPtr(0)
     , mAppWindowToken(appWindowToken)
     , mDispatchingTimeoutNanos(0)

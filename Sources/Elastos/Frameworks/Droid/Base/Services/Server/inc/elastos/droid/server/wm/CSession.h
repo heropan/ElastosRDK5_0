@@ -3,6 +3,7 @@
 
 #include "_Elastos_Droid_Server_Wm_CSession.h"
 #include "elastos/droid/server/wm/CWindowManagerService.h"
+#include <elastos/core/Object.h>
 
 using Elastos::Droid::View::IWindowSession;
 using Elastos::Droid::View::IIWindow;
@@ -314,8 +315,9 @@ public:
         /* [in] */ IBinder* token,
         /* [in] */ IRect* rectangle);
 
-    CARAPI_(AutoPtr<IIWindowId>) GetWindowId(
-        /* [in] */ IBinder* window);
+    CARAPI GetWindowId(
+        /* [in] */ IBinder* window,
+        /* [out] */ IIWindowId** winId);
 
     CARAPI ProxyDied();
 

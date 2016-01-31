@@ -2,9 +2,11 @@
 #define __ELASTOS_DROID_SERVER_WM_WINDOWANIMATOR_H__
 
 #include "_Elastos.Droid.Server.h"
-// #include "elastos/droid/server/wm/CWindowManagerService.h"
-// #include "elastos/droid/server/wm/WindowState.h"
-#include "elastos/droid/server/wm/ScreenRotationAnimation.h"
+#include "elastos/droid/server/wm/WindowState.h"
+#include "elastos/droid/server/wm/WindowToken.h"
+#include "elastos/droid/os/Runnable.h"
+#include <elastos/utility/etl/HashMap.h>
+#include <elastos/utility/etl/List.h>
 
 using Elastos::Utility::Etl::List;
 using Elastos::Utility::Etl::HashMap;
@@ -17,8 +19,10 @@ namespace Droid {
 namespace Server {
 namespace Wm {
 
+class CWindowManagerService;
 class AppWindowAnimator;
 class WindowStateAnimator;
+class ScreenRotationAnimation;
 
 /**
  * Singleton class that carries out the animations and Surface operations in a separate task
@@ -55,8 +59,6 @@ public:
     WindowAnimator(
         /* [in] */ CWindowManagerService* service);
 
-    ~WindowAnimator();
-
     CARAPI_(void) AddDisplayLocked(
         /* [in] */ Int32 displayId);
 
@@ -64,10 +66,7 @@ public:
         /* [in] */ Int32 displayId);
 
     CARAPI_(void) HideWallpapersLocked(
-        /* [in] */ WindowState* w,
-        /* [in] */ WindowState* wallpaperTarget,
-        /* [in] */ WindowState* lowerWallpaperTarget,
-        /* [in] */ List< AutoPtr<WindowToken> >& wallpaperTokens);
+        /* [in] */ WindowState* w);
 
     static CARAPI_(String) BulkUpdateParamsToString(
         /* [in] */ Int32 bulkUpdateParams);
@@ -172,6 +171,8 @@ private:
     Int32 mAnimTransactionSequence;
 
     friend class AnimationRunnable;
+    typedef List<AutoPtr<AppWindowToken> > AppTokenList;
+    typedef List<AutoPtr<WindowState> > WindowList;
 };
 
 } // Wm

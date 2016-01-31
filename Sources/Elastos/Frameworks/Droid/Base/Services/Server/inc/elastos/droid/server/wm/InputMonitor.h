@@ -2,9 +2,9 @@
 #define __ELASTOS_DROID_SERVER_WM_INPUTMONITOR_H__
 
 #include "_Elastos.Droid.Server.h"
-// #include "elastos/droid/server/wm/WindowState.h"
-// #include "elastos/droid/server/wm/AppWindowToken.h"
-// #include "elastos/droid/server/wm/WindowToken.h"
+#include "elastos/droid/server/wm/WindowState.h"
+#include "elastos/droid/server/wm/AppWindowToken.h"
+#include "elastos/droid/server/wm/WindowToken.h"
 #include "elastos/droid/server/input/CInputManagerService.h"
 
 using Elastos::Droid::View::IKeyEvent;

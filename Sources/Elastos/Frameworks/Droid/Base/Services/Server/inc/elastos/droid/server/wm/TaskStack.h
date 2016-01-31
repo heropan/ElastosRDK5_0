@@ -4,8 +4,6 @@
 #include "_Elastos.Droid.Server.h"
 #include "elastos/droid/server/wm/Task.h"
 #include "elastos/droid/server/wm/DimLayer.h"
-// #include "elastos/droid/server/wm/CWindowManagerService.h"
-// #include "elastos/droid/server/wm/AppWindowToken.h"
 #include <elastos/utility/etl/List.h>
 
 using Elastos::Droid::Graphics::IRect;
@@ -17,6 +15,7 @@ namespace Server {
 namespace Wm {
 
 class DisplayContent;
+class WindowStateAnimator;
 
 class TaskStack : public Object
 {

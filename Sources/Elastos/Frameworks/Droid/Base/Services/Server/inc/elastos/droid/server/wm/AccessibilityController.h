@@ -4,9 +4,8 @@
 
 #include "_Elastos.Droid.Server.h"
 #include "elastos/droid/ext/frameworkext.h"
-#include "elastos/droid/os/Handler.h"
 #include <Elastos.Droid.Graphics.h>
-#include "elastos/droid/server/wm/WindowState.h"
+#include "elastos/droid/os/Handler.h"
 #include <elastos/core/Object.h>
 #include <elastos/utility/etl/List.h>
 #include <elastos/utility/etl/HashMap.h>
@@ -18,8 +17,12 @@ using Elastos::Droid::Graphics::IRect;
 using Elastos::Droid::Graphics::IMatrix;
 using Elastos::Droid::Graphics::IRegion;
 using Elastos::Droid::Graphics::IPaint;
+using Elastos::Droid::Graphics::IRectF;
+using Elastos::Droid::Graphics::IPoint;
 using Elastos::Droid::Os::Handler;
+using Elastos::Droid::Os::IBinder;
 using Elastos::Droid::Utility::ISparseArray;
+using Elastos::Droid::View::IWindowManager;
 using Elastos::Droid::View::IMagnificationCallbacks;
 using Elastos::Droid::View::IMagnificationSpec;
 using Elastos::Droid::View::IWindowsForAccessibilityCallback;
@@ -37,6 +40,8 @@ namespace Server {
 namespace Wm {
 
 class CWindowManagerService;
+class WindowState;
+class DisplayContent;
 
 /**
  * This class contains the accessibility related logic of the window manger.
@@ -331,14 +336,14 @@ private:
             /* [in] */ Int32 windowType);
 
         CARAPI_(void) PopulateVisibleWindowsOnScreenLocked(
-            /* [in] */ HashMap<Int32, AutoPtr<WindowState> >& outWindows);
+            /* [in] */ ISparseArray* outWindows);
 
     private:
         static const String TAG;
 
         static const Boolean DEBUG = FALSE;
 
-        HashMap<Int32, AutoPtr<WindowState> > mTempWindowStates;
+        AutoPtr<ISparseArray> mTempWindowStates;
 
         List<AutoPtr<IWindowInfo> > mOldWindows;
 

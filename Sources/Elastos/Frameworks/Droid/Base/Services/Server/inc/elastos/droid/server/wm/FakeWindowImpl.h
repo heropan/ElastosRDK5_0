@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_SERVER_WM_FAKEWINDOWIMPL_H__
 #define __ELASTOS_DROID_SERVER_WM_FAKEWINDOWIMPL_H__
 
-// #include "elastos/droid/server/wm/CWindowManagerService.h"
+#include "elastos/droid/server/wm/CWindowManagerService.h"
 #include "elastos/droid/server/input/InputApplicationHandle.h"
 #include "elastos/droid/server/input/InputWindowHandle.h"
 
@@ -35,16 +35,7 @@ public:
         /* [in] */ Boolean hasFocus,
         /* [in] */ Boolean touchFullscreen);
 
-    CARAPI_(PInterface) Probe(
-        /* [in] */ REIID riid);
-
-    CARAPI_(UInt32) AddRef();
-
-    CARAPI_(UInt32) Release();
-
-    CARAPI GetInterfaceID(
-        /* [in] */ IInterface *pObject,
-        /* [out] */ InterfaceID *pIID);
+    CAR_INTERFACE_DECL()
 
     CARAPI_(void) Layout(
         /* [in] */ Int32 dw,

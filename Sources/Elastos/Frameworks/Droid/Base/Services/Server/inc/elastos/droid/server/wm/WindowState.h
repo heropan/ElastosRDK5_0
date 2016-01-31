@@ -2,17 +2,19 @@
 #define __ELASTOS_DROID_SERVER_WM_WINDOWSTATE_H__
 
 #include "elastos/droid/server/wm/CSession.h"
-#include "elastos/droid/server/wm/TaskStack.h"
+#include "elastos/droid/server/wm/WindowToken.h"
 #include "elastos/droid/server/input/InputWindowHandle.h"
+#include "elastos/droid/os/Runnable.h"
+#include <elastos/utility/etl/List.h>
 
 using Elastos::Core::ICharSequence;
 using Elastos::Droid::View::IWindowState;
+using Elastos::Droid::View::IIWindowId;
 using Elastos::Droid::View::IWindowManagerLayoutParams;
 using Elastos::Droid::View::IApplicationToken;
 using Elastos::Droid::View::IInputChannel;
 using Elastos::Droid::View::IWindowManagerPolicy;
 using Elastos::Droid::View::IIWindow;
-using Elastos::Droid::View::IIWindowId;
 using Elastos::Droid::View::IIWindowFocusObserver;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Content::Res::IConfiguration;
@@ -20,7 +22,11 @@ using Elastos::Droid::Graphics::IRect;
 using Elastos::Droid::Graphics::IRegion;
 using Elastos::Droid::Graphics::IRectF;
 using Elastos::Droid::Graphics::IMatrix;
+using Elastos::Droid::Graphics::IPoint;
+using Elastos::Droid::Os::IRemoteCallbackList;
+using Elastos::Droid::Os::Runnable;
 using Elastos::Droid::Server::Input::InputWindowHandle;
+using Elastos::Utility::Etl::List;
 
 namespace Elastos {
 namespace Droid {
@@ -28,6 +34,8 @@ namespace Server {
 namespace Wm {
 
 class DisplayContent;
+class TaskStack;
+class WindowStateAnimator;
 
 class WindowState
     : public Object
@@ -375,7 +383,7 @@ public:
     CARAPI_(void) GetTouchableRegion(
         /* [in] */ IRegion* outRegion);
 
-    CARAPI_(AutoPtr<WindowList>) GetWindowList();
+    CARAPI_(AutoPtr<List<AutoPtr<WindowState> > >) GetWindowList();
 
     /**
      * Report a focus change.  Must be called with no locks held, and consistently

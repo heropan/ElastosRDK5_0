@@ -30,6 +30,7 @@ SOURCES += DisplayInfo.cpp
 SOURCES += CDisplayInfo.cpp
 SOURCES += DragEvent.cpp
 SOURCES += CDragEvent.cpp
+SOURCES += CDragEventHelper.cpp
 SOURCES += FocusFinder.cpp
 SOURCES += FocusFinderWrapper.cpp
 SOURCES += GhostView.cpp
