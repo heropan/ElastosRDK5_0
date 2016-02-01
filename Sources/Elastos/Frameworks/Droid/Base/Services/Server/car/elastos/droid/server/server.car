@@ -68,6 +68,8 @@ module
 
     merge("wallpaper/WallpaperManagerService.car");
 
+    merge("wm/WindowManagerService.car");
+
     merge("NetworkManagementService.car");
     // merge("power/SuspendBlocker.car");
     // merge("power/ScreenOnBlocker.car");
@@ -665,42 +667,42 @@ module
 //         }
 //     }
 
-    //namespace Wm {
-//
-    //[local]
-    //class CWindowManagerService {
-    //    constructor(
-    //        [in] IContext* ctx,
-    //        [in] Handle64 inputManager,
-    //        [in] Boolean haveInputMethods,
-    //        [in] Boolean showBootMsgs,
-    //        [in] Boolean onlyCore);
-//
-    //    interface IIWindowManager;
-    //    interface IWindowManagerPolicyWindowManagerFuncs;
-    //    interface IBinder;
-    //}
-//
-    //class CSession {
-    //    constructor(
-    //        [in] Handle64 service,
-    //        [in] IInputMethodClient* client,
-    //        [in] IIWindowSessionCallback* cb,
-    //        [in] IInputContext* inputContext);
-//
-    //    interface IWindowSession;
-    //    interface IProxyDeathRecipient;
-    //}
-//
-    //[local]
-    //class CWindowId {
-    //    constructor(
-    //        [in] IWindowState* host);
-//
-    //    interface IIWindowId;
-    //}
-//
-    //} // Wm
+    namespace Wm {
+
+    [local]
+    class CWindowManagerService {
+        constructor(
+            [in] IContext* ctx,
+            [in] Handle64 inputManager,
+            [in] Boolean haveInputMethods,
+            [in] Boolean showBootMsgs,
+            [in] Boolean onlyCore);
+
+        interface IIWindowManager;
+        interface IWindowManagerPolicyWindowManagerFuncs;
+        interface IBinder;
+    }
+
+    class CSession {
+        constructor(
+            [in] Handle64 service,
+            [in] IIWindowSessionCallback* cb,
+            [in] IInputMethodClient* client,
+            [in] IInputContext* inputContext);
+
+        interface IWindowSession;
+        interface IProxyDeathRecipient;
+    }
+
+    [local]
+    class CWindowId {
+        constructor(
+            [in] IWindowState* host);
+
+        interface IIWindowId;
+    }
+
+    } // Wm
 
 
 //     [local]

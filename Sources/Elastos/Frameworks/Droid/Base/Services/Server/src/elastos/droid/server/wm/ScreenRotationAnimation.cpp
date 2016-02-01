@@ -1,6 +1,7 @@
 
 #include "elastos/droid/server/wm/ScreenRotationAnimation.h"
 #include "elastos/droid/server/wm/CWindowManagerService.h"
+#include "elastos/droid/server/wm/DisplayContent.h"
 #include "elastos/droid/R.h"
 #include <elastos/core/Math.h>
 #include <elastos/utility/logging/Slogger.h>

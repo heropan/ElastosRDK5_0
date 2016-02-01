@@ -3,7 +3,6 @@
 
 #include "_Elastos.Droid.Server.h"
 #include "elastos/droid/server/wm/BlackFrame.h"
-#include "elastos/droid/server/wm/DisplayContent.h"
 
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Graphics::IMatrix;
@@ -18,6 +17,8 @@ namespace Elastos {
 namespace Droid {
 namespace Server {
 namespace Wm {
+
+class DisplayContent;
 
 class ScreenRotationAnimation : public Object
 {

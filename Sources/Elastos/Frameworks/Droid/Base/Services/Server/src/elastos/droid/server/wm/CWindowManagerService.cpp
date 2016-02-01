@@ -7,6 +7,7 @@
 #include "elastos/droid/server/wm/DragState.h"
 #include "elastos/droid/server/wm/InputMonitor.h"
 #include "elastos/droid/server/wm/FakeWindowImpl.h"
+#include "elastos/droid/server/wm/DisplayContent.h"
 #include "elastos/droid/server/DisplayThread.h"
 #include "elastos/droid/server/UiThread.h"
 #include "elastos/droid/server/LocalServices.h"
@@ -299,10 +300,10 @@ CWindowManagerService::LayoutFields::LayoutFields()
 
 
 //==============================================================================
-//                  CWindowManagerService::DragInputEventReceiver
+//                  DragInputEventReceiver
 //==============================================================================
 
-CWindowManagerService::DragInputEventReceiver::DragInputEventReceiver(
+DragInputEventReceiver::DragInputEventReceiver(
     /* [in] */ IInputChannel* inputChannel,
     /* [in] */ ILooper* looper,
     /* [in] */ CWindowManagerService* host)
@@ -310,7 +311,7 @@ CWindowManagerService::DragInputEventReceiver::DragInputEventReceiver(
     , mHost(host)
 {}
 
-ECode CWindowManagerService::DragInputEventReceiver::OnInputEvent(
+ECode DragInputEventReceiver::OnInputEvent(
     /* [in] */ IInputEvent* event)
 {
     VALIDATE_NOT_NULL(event)

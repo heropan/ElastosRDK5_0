@@ -1,4 +1,5 @@
 
+#include <Elastos.Droid.View.h>
 #include "elastos/droid/server/wm/AppWindowAnimator.h"
 #include "elastos/droid/server/wm/ScreenRotationAnimation.h"
 #include <elastos/utility/logging/Slogger.h>

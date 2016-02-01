@@ -2,14 +2,17 @@
 #define __ELASTOS_DROID_SERVER_WM_INPUTMONITOR_H__
 
 #include "_Elastos.Droid.Server.h"
-#include "elastos/droid/server/wm/WindowState.h"
-#include "elastos/droid/server/wm/AppWindowToken.h"
+#define HASH_FOR_OS
+#include "elastos/droid/ext/frameworkhash.h"
 #include "elastos/droid/server/wm/WindowToken.h"
+#include "elastos/droid/server/input/InputWindowHandle.h"
 #include "elastos/droid/server/input/CInputManagerService.h"
 
+using Elastos::Droid::Graphics::IRect;
 using Elastos::Droid::View::IKeyEvent;
 using Elastos::Droid::Server::Input::IWindowManagerCallbacks;
 using Elastos::Droid::Server::Input::IInputApplicationHandle;
+using Elastos::Droid::Server::Input::InputWindowHandle;
 using Elastos::Droid::Server::Input::IInputWindowHandle;
 
 namespace Elastos {
@@ -18,6 +21,8 @@ namespace Server {
 namespace Wm {
 
 class CWindowManagerService;
+class AppWindowToken;
+class WindowState;
 
 class InputMonitor
     : public Object

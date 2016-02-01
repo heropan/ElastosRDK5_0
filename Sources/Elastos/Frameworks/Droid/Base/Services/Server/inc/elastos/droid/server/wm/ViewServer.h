@@ -3,15 +3,19 @@
 
 #include "_Elastos.Droid.Server.h"
 #include <Elastos.CoreLibrary.Net.h>
-#include "elastos/droid/server/wm/CWindowManagerService.h"
+#include "elastos/droid/os/Runnable.h"
 
+using Elastos::Droid::Os::Runnable;
 using Elastos::Net::IServerSocket;
+using Elastos::Net::ISocket;
 using Elastos::Core::IThread;
 
 namespace Elastos {
 namespace Droid {
 namespace Server {
 namespace Wm {
+
+class CWindowManagerService;
 
 /**
  * The ViewServer is local socket server that can be used to communicate with the

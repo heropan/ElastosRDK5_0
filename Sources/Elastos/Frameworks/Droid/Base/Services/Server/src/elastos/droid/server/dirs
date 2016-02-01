@@ -13,6 +13,7 @@ DIRS += net
 DIRS += notification
 DIRS += os
 DIRS += pm
+DIRS += wm
 DIRS += power
 DIRS += statusbar
 DIRS += trust
@@ -22,7 +23,6 @@ DIRS += wallpaper
 
 #DIRS = accessibility
 #DIRS += usb
-#DIRS += wm
 #DIRS += accounts
 #DIRS += search
 #DIRS += zigbee

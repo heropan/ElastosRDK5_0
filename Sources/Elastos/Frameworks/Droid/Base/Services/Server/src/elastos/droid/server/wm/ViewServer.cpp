@@ -1,5 +1,6 @@
 
 #include "elastos/droid/server/wm/ViewServer.h"
+#include "elastos/droid/server/wm/CWindowManagerService.h"
 #include <Elastos.CoreLibrary.IO.h>
 #include <elastos/core/Thread.h>
 #include <elastos/core/StringUtils.h>

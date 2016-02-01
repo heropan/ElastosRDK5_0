@@ -1,5 +1,6 @@
 
 #include "elastos/droid/server/wm/DragState.h"
+#include "elastos/droid/server/wm/CWindowManagerService.h"
 #include "elastos/droid/server/wm/InputMonitor.h"
 #include "elastos/droid/server/wm/DisplayContent.h"
 #include "elastos/droid/os/Process.h"
@@ -73,7 +74,7 @@ void DragState::Register(
         mService->mInputManager->RegisterInputChannel(mServerChannel, NULL);
         AutoPtr<ILooper> hLooper;
         mService->mH->GetLooper((ILooper**)&hLooper);
-        mInputEventReceiver = new CWindowManagerService::DragInputEventReceiver(
+        mInputEventReceiver = new DragInputEventReceiver(
                 mClientChannel, hLooper, mService);
 
         mDragApplicationHandle = new InputApplicationHandle(NULL);

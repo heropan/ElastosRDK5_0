@@ -3,6 +3,7 @@
 #include "elastos/droid/server/wm/AppWindowAnimator.h"
 #include "elastos/droid/server/wm/ScreenRotationAnimation.h"
 #include "elastos/droid/server/wm/AccessibilityController.h"
+#include "elastos/droid/server/wm/DisplayContent.h"
 #include "elastos/droid/os/SystemClock.h"
 #include "elastos/droid/os/Handler.h"
 #include <elastos/core/StringBuilder.h>

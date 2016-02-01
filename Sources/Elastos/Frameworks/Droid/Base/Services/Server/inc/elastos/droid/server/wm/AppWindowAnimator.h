@@ -4,7 +4,6 @@
 #include "_Elastos.Droid.Server.h"
 #include <Elastos.Droid.View.h>
 #include "elastos/droid/view/animation/Animation.h"
-// #include "elastos/droid/server/wm/CWindowManagerService.h"
 #include "elastos/droid/server/wm/WindowStateAnimator.h"
 #include "elastos/droid/server/wm/WindowAnimator.h"
 #include <elastos/utility/etl/List.h>

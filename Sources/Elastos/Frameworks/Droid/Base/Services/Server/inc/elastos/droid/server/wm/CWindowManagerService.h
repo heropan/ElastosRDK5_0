@@ -31,6 +31,10 @@
 #include "elastos/droid/server/wm/TaskGroup.h"
 #include "elastos/droid/server/wm/AccessibilityController.h"
 #include "elastos/droid/server/wm/PointerEventDispatcher.h"
+#include "elastos/droid/server/wm/KeyguardDisableHandler.h"
+#include "elastos/droid/server/wm/InputMonitor.h"
+#include "elastos/droid/server/wm/ViewServer.h"
+#include "elastos/droid/server/wm/DragState.h"
 #include "elastos/droid/server/input/CInputManagerService.h"
 #include "elastos/droid/server/display/CDisplayManagerService.h"
 // #include "elastos/droid/server/power/CPowerManagerService.h"
@@ -119,13 +123,25 @@ namespace Droid {
 namespace Server {
 namespace Wm {
 
-class KeyguardDisableHandler;
-class DragState;
-class ViewServer;
 class FakeWindowImpl;
 class DisplayContent;
-class InputMonitor;
 class WindowAnimator;
+
+class DragInputEventReceiver : public InputEventReceiver
+{
+public:
+    DragInputEventReceiver(
+        /* [in] */ IInputChannel* inputChannel,
+        /* [in] */ ILooper* looper,
+        /* [in] */ CWindowManagerService* host);
+
+    CARAPI OnInputEvent(
+        /* [in] */ IInputEvent* event);
+
+private:
+    CWindowManagerService* mHost;
+};
+
 
 CarClass(CWindowManagerService)
     , public Object
@@ -190,21 +206,6 @@ public:
         Boolean mUpdateRotation;
 
         friend class CWindowManagerService;
-    };
-
-    class DragInputEventReceiver : public InputEventReceiver
-    {
-    public:
-        DragInputEventReceiver(
-            /* [in] */ IInputChannel* inputChannel,
-            /* [in] */ ILooper* looper,
-            /* [in] */ CWindowManagerService* host);
-
-        CARAPI OnInputEvent(
-            /* [in] */ IInputEvent* event);
-
-    private:
-        CWindowManagerService* mHost;
     };
 
     class LocalBroadcastReceiver : public BroadcastReceiver

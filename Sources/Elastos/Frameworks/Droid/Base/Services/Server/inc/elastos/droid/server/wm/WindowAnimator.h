@@ -4,6 +4,7 @@
 #include "_Elastos.Droid.Server.h"
 #include "elastos/droid/server/wm/WindowState.h"
 #include "elastos/droid/server/wm/WindowToken.h"
+#include "elastos/droid/server/wm/ScreenRotationAnimation.h"
 #include "elastos/droid/os/Runnable.h"
 #include <elastos/utility/etl/HashMap.h>
 #include <elastos/utility/etl/List.h>
@@ -22,7 +23,6 @@ namespace Wm {
 class CWindowManagerService;
 class AppWindowAnimator;
 class WindowStateAnimator;
-class ScreenRotationAnimation;
 
 /**
  * Singleton class that carries out the animations and Surface operations in a separate task
@@ -49,7 +49,7 @@ private:
     class DisplayContentsAnimator : public Object
     {
     public:
-        DisplayContentsAnimator();
+        DisplayContentsAnimator() {}
 
     public:
         AutoPtr<ScreenRotationAnimation> mScreenRotationAnimation;
