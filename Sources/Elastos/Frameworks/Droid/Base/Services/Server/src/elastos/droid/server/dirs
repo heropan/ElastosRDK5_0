@@ -19,6 +19,7 @@ DIRS += statusbar
 DIRS += trust
 DIRS += twilight
 DIRS += wallpaper
+DIRS += webkit
 
 
 #DIRS = accessibility

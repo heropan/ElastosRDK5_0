@@ -7,6 +7,7 @@
 
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Database::IDatabaseErrorHandler;
+using Elastos::Droid::Database::Sqlite::ISQLiteOpenHelper;
 
 namespace Elastos {
 namespace Droid {

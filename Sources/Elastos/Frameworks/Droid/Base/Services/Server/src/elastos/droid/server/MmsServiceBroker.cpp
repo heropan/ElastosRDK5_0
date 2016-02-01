@@ -168,7 +168,7 @@ ECode MmsServiceBroker::BinderService::DeleteStoredConversation(
     /* [in] */ const String& callingPkg,
     /* [in] */ Int64 conversationId,
     /* [out] */ Boolean* result)
-        {
+{
     mContext->EnforceCallingPermission(Manifest::permission::WRITE_SMS, "Delete conversation");
     if (GetAppOpsManager()->NoteOp(AppOpsManager.OP_WRITE_SMS, Binder::GetCallingUid(),
             callingPkg) != AppOpsManager.MODE_ALLOWED) {

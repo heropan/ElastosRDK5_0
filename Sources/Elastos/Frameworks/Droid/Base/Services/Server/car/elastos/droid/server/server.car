@@ -127,11 +127,12 @@ module
     using interface Elastos.Droid.Internal.Os.IBatteryCallback;
     using interface Elastos.Droid.Internal.Os.IIParcelFileDescriptorFactory;
     using interface Elastos.Droid.Internal.Os.IIDropBoxManagerService;
+    using interface Elastos.Droid.Internal.View.IInputMethodClient;
+    using interface Elastos.Droid.Internal.View.IInputContext;
+    using interface Elastos.Droid.Internal.Widget.IILockSettings;
     using interface Elastos.Droid.Internal.StatusBar.IIStatusBarService;
     using interface Elastos.Droid.Internal.TextService.IITextServicesManager;
     using interface Elastos.Droid.Internal.Telephony.IITelephonyRegistry;
-    using interface Elastos.Droid.Internal.View.IInputMethodClient;
-    using interface Elastos.Droid.Internal.View.IInputContext;
     using interface Elastos.Droid.Location.IICountryDetector;
     using interface Elastos.Droid.Location.IIFusedGeofenceHardware;
     using interface Elastos.Droid.Location.IIGpsGeofenceHardware;
@@ -178,6 +179,7 @@ module
     using interface Elastos.Droid.View.IWindowState;
     using interface Elastos.Droid.View.IIWindowId;
     using interface Elastos.Droid.View.IWindowSession;
+    using interface Elastos.Droid.Webkit.IIWebViewUpdateService;
 
     using interface Elastos.Core.IRunnable;
     using interface Elastos.Core.IThread;
@@ -419,6 +421,14 @@ module
         interface IBinder;
     }
 
+    class CLockSettingsService {
+
+        constructor(
+            [in] IContext* ctx);
+
+        interface IILockSettings;
+        interface IBinder;
+    }
 
 //     class CBootReceiver {
 //         interface IBroadcastReceiver;
@@ -997,25 +1007,23 @@ module
     } // namepsace Droid
     } // namespace Elastos
 
+    namespace Elastos {
+    namespace Droid {
+    namespace Server {
+    namespace Webkit {
 
-//     namespace Elastos {
-//     namespace Droid {
-//     namespace Widget {
-//     namespace Internal {
+    class CWebViewUpdateBinderService {
+        constructor(
+            [in] ISystemService* batteryService);
 
-//     [local]
-//     class CLockSettingsService {
+        interface IIWebViewUpdateService;
+        interface IBinder;
+    }
 
-//         constructor(
-//             [in] IContext* ctx);
-
-//         interface ILockSettings;
-//     }
-
-//     } // namespace Internal
-//     } // namespace Widget
-//     } // namespace Droid
-//     } // namespace Elastos
+    } // namespace Webkit
+    } // namespace Server
+    } // namepsace Droid
+    } // namespace Elastos
 
 
     namespace Elastos {
