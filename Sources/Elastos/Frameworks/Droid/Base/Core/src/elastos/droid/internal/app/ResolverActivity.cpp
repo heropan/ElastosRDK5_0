@@ -17,7 +17,7 @@
 #include "elastos/droid/text/TextUtils.h"
 #include "elastos/droid/view/LayoutInflater.h"
 #include "elastos/droid/widget/ListView.h"
-// #include "elastos/droid/widget/Toast.h"
+#include "elastos/droid/widget/Toast.h"
 #include "elastos/droid/R.h"
 #include <elastos/core/CoreUtils.h>
 #include <elastos/core/StringUtils.h>
@@ -59,7 +59,7 @@ using Elastos::Droid::Widget::EIID_IAdapterViewOnItemLongClickListener;
 using Elastos::Droid::Widget::IAbsListView;
 using Elastos::Droid::Widget::IToast;
 using Elastos::Droid::Widget::ListView;
-// using Elastos::Droid::Widget::Toast;
+using Elastos::Droid::Widget::Toast;
 using Elastos::Core::CoreUtils;
 using Elastos::Core::CSystem;
 using Elastos::Core::EIID_IComparator;
@@ -1288,9 +1288,8 @@ ECode ResolverActivity::OnItemClick(
         params->Set(0, label);
         String strText = StringUtils::Format(format, params);
 
-        assert(0);
         AutoPtr<IToast> toast;
-        // Toast::MakeText(this, CoreUtils::Convert(strText), IToast::LENGTH_LONG, (IToast**)&toast);
+        Toast::MakeText(this, CoreUtils::Convert(strText), IToast::LENGTH_LONG, (IToast**)&toast);
         toast->Show();
         return NOERROR;
     }

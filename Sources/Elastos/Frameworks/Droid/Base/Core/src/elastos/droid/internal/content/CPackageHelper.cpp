@@ -13,7 +13,7 @@
 #include "elastos/droid/os/FileUtils.h"
 #include "elastos/droid/os/ServiceManager.h"
 #include "elastos/droid/os/storage/StorageResultCode.h"
-// #include "elastos/droid/os/storage/CStorageManagerHelper.h"
+#include "elastos/droid/os/storage/CStorageManagerHelper.h"
 #include "elastos/droid/os/Environment.h"
 #include "elastos/droid/os/CUserEnvironment.h"
 #include <elastos/utility/logging/Logger.h>
@@ -32,7 +32,7 @@ using Elastos::Droid::Os::ServiceManager;
 using Elastos::Droid::Os::IUserHandle;
 using Elastos::Droid::Os::Storage::StorageResultCode;
 using Elastos::Droid::Os::Storage::IStorageManager;
-// using Elastos::Droid::Os::Storage::CStorageManagerHelper;
+using Elastos::Droid::Os::Storage::CStorageManagerHelper;
 using Elastos::Droid::Os::Storage::IStorageManagerHelper;
 using Libcore::IO::IIoUtils;
 using Libcore::IO::CIoUtils;
@@ -618,8 +618,7 @@ ECode CPackageHelper::ResolveInstallLocation(
 
     Boolean emulated = Environment::IsExternalStorageEmulated();
     AutoPtr<IStorageManagerHelper> smHelper;
-    assert(0 && "TODO: CStorageManagerHelper is not implemented!");
-    // CStorageManagerHelper::AcquireSingleton((IStorageManagerHelper**)&smHelper);
+    CStorageManagerHelper::AcquireSingleton((IStorageManagerHelper**)&smHelper);
     AutoPtr<IStorageManager> storage;
     smHelper->From(context, (IStorageManager**)&storage);
 

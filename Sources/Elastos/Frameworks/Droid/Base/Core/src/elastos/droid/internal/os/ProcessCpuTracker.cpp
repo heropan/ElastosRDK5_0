@@ -2,6 +2,7 @@
 #include <Elastos.CoreLibrary.IO.h>
 #include "elastos/droid/internal/os/ProcessCpuTracker.h"
 #include "elastos/droid/internal/os/CProcessCpuTracker.h"
+#include "elastos/droid/internal/utility/CFastPrintWriter.h"
 #include "elastos/droid/os/Process.h"
 #include "elastos/droid/os/FileUtils.h"
 #include "elastos/droid/os/SystemClock.h"
@@ -10,6 +11,7 @@
 #include <elastos/core/StringUtils.h>
 #include <elastos/utility/logging/Slogger.h>
 
+using Elastos::Droid::Internal::Utility::CFastPrintWriter;
 using Elastos::Droid::Os::FileUtils;
 using Elastos::Droid::Os::SystemClock;
 using Elastos::Droid::Os::Process;
@@ -1098,18 +1100,17 @@ ECode ProcessCpuTracker::PrintCurrentLoad(
 {
     VALIDATE_NOT_NULL(str);
 
-    AutoPtr<IStringWriter> sw;
-    CStringWriter::New((IStringWriter**)&sw);
+    AutoPtr<IWriter> sw;
+    CStringWriter::New((IWriter**)&sw);
     AutoPtr<IPrintWriter> pw;
-    assert(0 && "TODO:CFastPrintWriter is not implemented");
-    // CFastPrintWriter::New(sw, FALSE, 128, (IPrintWriter**)&pw);
+    CFastPrintWriter::New(sw, FALSE, 128, (IPrintWriter**)&pw);
     pw->Print(String("Load: "));
     pw->Print(mLoad1);
     pw->Print(String(" / "));
     pw->Print(mLoad5);
     pw->Print(String(" / "));
     pw->Print(mLoad15);
-    sw->ToString(str);
+    IStringWriter::Probe(sw)->ToString(str);
     IFlushable::Probe(pw)->Flush();
     return NOERROR;
 }
@@ -1122,11 +1123,10 @@ ECode ProcessCpuTracker::PrintCurrentState(
 
     BuildWorkingProcs();
 
-    AutoPtr<IStringWriter> sw;
-    CStringWriter::New((IStringWriter**)&sw);
+    AutoPtr<IWriter> sw;
+    CStringWriter::New((IWriter**)&sw);
     AutoPtr<IPrintWriter> pw;
-    assert(0 && "TODO:CFastPrintWriter is not implemented");
-    // CFastPrintWriter::New(sw, FALSE, 1024, (IPrintWriter**)&pw);
+    CFastPrintWriter::New(sw, FALSE, 1024, (IPrintWriter**)&pw);
 
     pw->Print(String("CPU usage from "));
     if (now > mLastSampleTime) {
@@ -1180,7 +1180,7 @@ ECode ProcessCpuTracker::PrintCurrentState(
            mRelIoWaitTime, mRelIrqTime, mRelSoftIrqTime, 0, 0);
 
     IFlushable::Probe(pw)->Flush();
-    sw->ToString(str);
+    IStringWriter::Probe(sw)->ToString(str);
     return NOERROR;
 }
 

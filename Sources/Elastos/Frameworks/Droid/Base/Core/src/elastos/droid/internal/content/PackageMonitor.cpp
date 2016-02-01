@@ -2,6 +2,7 @@
 #include "Elastos.Droid.App.h"
 #include "Elastos.Droid.Net.h"
 #include "elastos/droid/internal/content/PackageMonitor.h"
+#include "elastos/droid/internal/os/BackgroundThread.h"
 #include "elastos/droid/content/CIntentFilter.h"
 #include "elastos/droid/os/CHandler.h"
 #include <elastos/core/AutoLock.h>
@@ -11,6 +12,7 @@ using Elastos::Droid::App::IActivity;
 using Elastos::Droid::Content::CIntentFilter;
 using Elastos::Droid::Content::IBroadcastReceiver;
 using Elastos::Droid::Content::EIID_IBroadcastReceiver;
+using Elastos::Droid::Internal::Os::BackgroundThread;
 using Elastos::Droid::Net::IUri;
 using Elastos::Droid::Os::CHandler;
 using Elastos::Core::AutoLock;
@@ -93,8 +95,7 @@ ECode PackageMonitor::Register(
     mRegisteredContext = context;
     mRegisteredHandler = NULL;
     if (NULL == thread) {
-        assert(0 && "BackgroundThread is not implemented!");
-        // BackgroundThread::GetHandler((IHandler**)&mRegisteredHandler);
+        mRegisteredHandler = BackgroundThread::GetHandler();
     }
     else {
         CHandler::New(thread, (IHandler**)&mRegisteredHandler);

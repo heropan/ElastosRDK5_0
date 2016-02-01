@@ -3,16 +3,16 @@
 #include "Elastos.Droid.View.h"
 #include "Elastos.Droid.Widget.h"
 #include "elastos/droid/internal/os/storage/CExternalStorageFormatter.h"
-// #include "elastos/droid/app/CProgressDialog.h"
+#include "elastos/droid/app/CProgressDialog.h"
 #include "elastos/droid/content/CComponentName.h"
 #include "elastos/droid/content/CIntent.h"
 #include "elastos/droid/os/Environment.h"
 #include "elastos/droid/os/ServiceManager.h"
-// #include "elastos/droid/widget/CToastHelper.h"
+#include "elastos/droid/widget/Toast.h"
 #include "elastos/droid/R.h"
 #include <elastos/utility/logging/Logger.h>
 
-// using Elastos::Droid::App::CProgressDialog;
+using Elastos::Droid::App::CProgressDialog;
 using Elastos::Droid::App::IAlertDialog;
 using Elastos::Droid::App::IDialog;
 using Elastos::Droid::Content::CComponentName;
@@ -24,8 +24,7 @@ using Elastos::Droid::Os::ServiceManager;
 using Elastos::Droid::View::IWindow;
 using Elastos::Droid::View::IWindowManagerLayoutParams;
 using Elastos::Droid::Widget::IToast;
-using Elastos::Droid::Widget::IToastHelper;
-// using Elastos::Droid::Widget::CToastHelper;
+using Elastos::Droid::Widget::Toast;
 using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
@@ -65,11 +64,8 @@ ECode CExternalStorageFormatter::MyThread::Run()
     AutoPtr<IIMountService> mountService = mOwner->GetMountService();
     Int32 res;
     if (FAILED(mountService->FormatVolume(mExtStoragePath, &res))) {
-        AutoPtr<IToastHelper> toastHelper;
-        assert(0);
-        // CToast;Helper::AcquireSingleton((IToastHelper**)&toastHelper);
         AutoPtr<IToast> toast;
-        toastHelper->MakeText(mOwner, R::string::format_error, IToast::LENGTH_LONG, (IToast**)&toast);
+        Toast::MakeText(mOwner, R::string::format_error, IToast::LENGTH_LONG, (IToast**)&toast);
         toast->Show();
     }
     else
@@ -191,8 +187,7 @@ ECode CExternalStorageFormatter::OnStartCommand(
     mStorageVolume = IStorageVolume::Probe(value);
 
     if (mProgressDialog == NULL) {
-        assert(0 && "TODO:CProgressDialog is not implemented!");
-        // CProgressDialog::New(this, (IProgressDialog**)&mProgressDialog);
+        CProgressDialog::New(this, (IProgressDialog**)&mProgressDialog);
         AutoPtr<IDialog> dialog = IDialog::Probe(mProgressDialog);
         mProgressDialog->SetIndeterminate(TRUE);
         dialog->SetCancelable(TRUE);
@@ -253,11 +248,8 @@ ECode CExternalStorageFormatter::OnCancel(
 void CExternalStorageFormatter::Fail(
     /* [in] */ Int32 msg)
 {
-    AutoPtr<IToastHelper> toastHelper;
-    assert(0);
-    // CToastHelper::AcquireSingleton((IToastHelper**)&toastHelper);
     AutoPtr<IToast> toast;
-    toastHelper->MakeText(this, msg, IToast::LENGTH_LONG, (IToast**)&toast);
+    Toast::MakeText(this, msg, IToast::LENGTH_LONG, (IToast**)&toast);
     toast->Show();
 
     if (mAlwaysReset) {
@@ -339,8 +331,7 @@ ECode CExternalStorageFormatter::UpdateProgressDialog(
     /* [in] */ Int32 msg)
 {
     if (mProgressDialog == NULL) {
-        assert(0 && "TODO:CProgressDialog is not implemented!");
-        // CProgressDialog::New(this, (IProgressDialog**)&mProgressDialog);
+        CProgressDialog::New(this, (IProgressDialog**)&mProgressDialog);
         AutoPtr<IDialog> dialog = IDialog::Probe(mProgressDialog);
         mProgressDialog->SetIndeterminate(TRUE);
         dialog->SetCancelable(FALSE);
