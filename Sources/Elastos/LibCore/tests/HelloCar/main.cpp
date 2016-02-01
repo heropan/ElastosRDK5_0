@@ -202,5 +202,7 @@ int main(int argc, char *argv[])
 
     // other tests
     otherTests();
+
+    printf("=========== Exit Hello Car ============\n");
     return 0;
 }

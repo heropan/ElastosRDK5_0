@@ -14,8 +14,8 @@ namespace Gles {
 
 static AutoPtr<IEGL> InitStatic()
 {
-    AutoPtr<CEGLImpl> tmp;
-    CEGLImpl::NewByFriend((CEGLImpl**)&tmp);
+    AutoPtr<IEGL> tmp;
+    CEGLImpl::New((IEGL**)&tmp);
     return tmp;
 }
 

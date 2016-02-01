@@ -99,9 +99,9 @@ CAR_OBJECT_IMPL(CEGLImpl)
 
 ECode CEGLImpl::constructor()
 {
-    CEGLContextImpl::New(-1, (XIEGLContext**)&mContext);
-    CEGLDisplayImpl::New(-1, (XIEGLDisplay**)&mDisplay);
-    CEGLSurfaceImpl::New(-1, (XIEGLSurface**)&mSurface);
+    CEGLContextImpl::NewByFriend(-1, (CEGLContextImpl**)&mContext);
+    CEGLDisplayImpl::NewByFriend(-1, (CEGLDisplayImpl**)&mDisplay);
+    CEGLSurfaceImpl::NewByFriend(-1, (CEGLSurfaceImpl**)&mSurface);
     return NOERROR;
 }
 

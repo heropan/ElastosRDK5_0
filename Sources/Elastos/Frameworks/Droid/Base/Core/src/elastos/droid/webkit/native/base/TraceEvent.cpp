@@ -187,7 +187,7 @@ AutoPtr<TraceEvent::BasicLooperMonitor> BasicLooperMonitor_Create()
     return instant;
 }
 
-const AutoPtr<TraceEvent::BasicLooperMonitor> TraceEvent::LooperMonitorHolder::sInstance = BasicLooperMonitor_Create();
+const AutoPtr<TraceEvent::BasicLooperMonitor> TraceEvent::LooperMonitorHolder::sInstance;// = BasicLooperMonitor_Create();
 
 //===============================================================
 //                         TraceEvent

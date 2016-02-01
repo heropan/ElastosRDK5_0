@@ -63,7 +63,6 @@ using Org::Apache::Http::Message::IBasicHttpEntityEnclosingRequest;
 using Org::Apache::Http::Message::IBasicHttpRequest;
 using Org::Apache::Http::Protocol::CRequestContent;
 using Org::Apache::Http::Protocol::IHttpContext;
-using Org::Apache::Http::Protocol::IRequestContent;
 
 namespace Elastos {
 namespace Droid {
@@ -75,13 +74,12 @@ CAR_INTERFACE_IMPL(Request, Object, IRequest)
 const String Request::HOST_HEADER("Host");
 const String Request::ACCEPT_ENCODING_HEADER("Accept-Encoding");
 const String Request::CONTENT_LENGTH_HEADER("content-length");
-AutoPtr<IRequestContent> Request::mRequestContentProcessor = InitRequestContentProcessor();
+AutoPtr<IHttpRequestInterceptor> Request::mRequestContentProcessor = InitRequestContentProcessor();
 
-AutoPtr<IRequestContent> Request::InitRequestContentProcessor()
+AutoPtr<IHttpRequestInterceptor> Request::InitRequestContentProcessor()
 {
-    AutoPtr<IRequestContent> rev;
-    assert(0);
-    // CRequestContent::New((IRequestContent**)&rev);
+    AutoPtr<IHttpRequestInterceptor> rev;
+    CRequestContent::New((IHttpRequestInterceptor**)&rev);
     return rev;
 }
 

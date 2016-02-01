@@ -200,8 +200,6 @@ module
     namespace Http {
     namespace Protocol {
 
-        interface IRequestContent {}
-
         interface IBasicHttpContext {}
 
     }}}} // Org.Apache.Http.Protocol
