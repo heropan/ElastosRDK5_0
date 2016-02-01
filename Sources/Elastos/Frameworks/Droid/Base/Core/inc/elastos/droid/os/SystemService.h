@@ -17,7 +17,7 @@ namespace Os {
  *
  * @hide
  */
-class ECO_PUBLIC SystemService
+class SystemService
 {
 public:
     /** Request that the init daemon start a named service. */

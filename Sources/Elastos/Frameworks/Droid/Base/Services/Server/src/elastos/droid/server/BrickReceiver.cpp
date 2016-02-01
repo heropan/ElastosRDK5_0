@@ -1,10 +1,11 @@
 
+#include <Elastos.Droid.Os.h>
 #include "elastos/droid/server/BrickReceiver.h"
-#include "elastos/droid/os/SystemService.h"
 #include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Utility::Logging::Slogger;
-using Elastos::Droid::Os::SystemService;
+using Elastos::Droid::Os::ISystemService;
+using Elastos::Droid::Os::CSystemService;
 
 namespace Elastos {
 namespace Droid {
@@ -15,7 +16,9 @@ ECode BrickReceiver::OnReceive(
     /* [in] */ IIntent *intent)
 {
     Slogger::W("BrickReceiver", "!!! BRICKING DEVICE !!!");
-    return SystemService::Start(String("brick"));
+    AutoPtr<Elastos::Droid::Os::ISystemService> systemService;
+    CSystemService::AcquireSingleton((Elastos::Droid::Os::ISystemService**)&systemService);
+    return systemService->Start(String("brick"));
 }
 
 ECode BrickReceiver::ToString(

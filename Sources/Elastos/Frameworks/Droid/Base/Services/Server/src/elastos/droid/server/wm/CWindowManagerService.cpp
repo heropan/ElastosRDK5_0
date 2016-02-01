@@ -16,7 +16,6 @@
 #include "elastos/droid/os/Binder.h"
 #include "elastos/droid/os/Looper.h"
 #include "elastos/droid/os/Build.h"
-#include "elastos/droid/os/SystemService.h"
 #include "elastos/droid/provider/Settings.h"
 #include "elastos/droid/app/ActivityManagerNative.h"
 #include "elastos/droid/server/am/CActivityManagerService.h"
@@ -92,6 +91,9 @@ using Elastos::Droid::Os::EIID_IPowerManagerInternal;
 using Elastos::Droid::Os::IProcess;
 using Elastos::Droid::Os::Build;
 using Elastos::Droid::Os::CWorkSource;
+using Elastos::Droid::Os::IWorkSource;
+using Elastos::Droid::Os::ISystemService;
+using Elastos::Droid::Os::CSystemService;
 using Elastos::Droid::Os::IWorkSource;
 // using Elastos::Droid::Os::CTrace;
 using Elastos::Droid::Provider::ISettingsGlobal;
@@ -6816,7 +6818,10 @@ void CWindowManagerService::PerformEnableScreen()
 
 Boolean CWindowManagerService::CheckBootAnimationCompleteLocked()
 {
-    if (Elastos::Droid::Os::SystemService::IsRunning(BOOT_ANIMATION_SERVICE)) {
+    AutoPtr<Elastos::Droid::Os::ISystemService> systemService;
+    CSystemService::AcquireSingleton((Elastos::Droid::Os::ISystemService**)&systemService);
+    Boolean isRunning;
+    if (systemService->IsRunning(BOOT_ANIMATION_SERVICE, &isRunning), isRunning) {
         mH->RemoveMessages(H::CHECK_IF_BOOT_ANIMATION_FINISHED);
         Boolean result;
         mH->SendEmptyMessageDelayed(H::CHECK_IF_BOOT_ANIMATION_FINISHED,

@@ -83,7 +83,6 @@ EXPORT_HEADERS += elastos/droid/os/FactoryTest.h
 EXPORT_HEADERS += elastos/droid/os/RemoteCallbackList.h
 EXPORT_HEADERS += elastos/droid/os/UEventObserver.h
 EXPORT_HEADERS += elastos/droid/os/SELinux.h
-EXPORT_HEADERS += elastos/droid/os/SystemService.h
 
 EXPORT_HEADERS += elastos/droid/provider/Settings.h
 //EXPORT_HEADERS += elastos/droid/preference/PreferenceActivity.h

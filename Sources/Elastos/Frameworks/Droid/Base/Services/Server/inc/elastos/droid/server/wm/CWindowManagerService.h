@@ -37,21 +37,9 @@
 #include "elastos/droid/server/wm/DragState.h"
 #include "elastos/droid/server/input/CInputManagerService.h"
 #include "elastos/droid/server/display/CDisplayManagerService.h"
-// #include "elastos/droid/server/power/CPowerManagerService.h"
 #include <elastos/core/AutoLock.h>
 #include <elastos/utility/etl/List.h>
 #include <elastos/utility/etl/HashMap.h>
-
-// TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO
-namespace Elastos {
-namespace Droid {
-namespace Server {
-namespace Power {
-    class CPowerManagerService;
-}
-}
-}
-}
 
 using Elastos::Droid::App::IAppOpsManagerOnOpChangedInternalListener;
 using Elastos::Droid::App::IAppOpsManagerOnOpChangedListener;
@@ -81,7 +69,6 @@ using Elastos::Droid::Os::Runnable;
 using Elastos::Droid::Os::ILowPowerModeListener;
 using Elastos::Droid::Server::Display::CDisplayManagerService;
 using Elastos::Droid::Server::Input::CInputManagerService;
-using Elastos::Droid::Server::Power::CPowerManagerService;
 using Elastos::Droid::Utility::IArraySet;
 using Elastos::Droid::Utility::ISparseArray;
 using Elastos::Droid::View::IWindowManagerInternal;
