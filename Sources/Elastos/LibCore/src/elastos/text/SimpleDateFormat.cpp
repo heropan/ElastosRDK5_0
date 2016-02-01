@@ -509,7 +509,7 @@ ECode SimpleDateFormat::Append(
         position->GetField(&f);
         position->GetEndIndex(&ei);
         Boolean isflag = FALSE;
-        if ( (IObject::Probe(ff)->Equals(dateFormatField, &isflag), isflag || ff == NULL) && (f == index) && (ei == 0) ) {
+        if ((IObject::Probe(dateFormatField)->Equals(ff, &isflag), isflag || ((ff == NULL) && (f == index))) && (ei == 0)) {
             position->SetBeginIndex(beginPosition);
             position->SetEndIndex(buffer->GetLength());
         }
