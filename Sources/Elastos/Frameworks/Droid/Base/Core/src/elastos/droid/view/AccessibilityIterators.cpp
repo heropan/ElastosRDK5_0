@@ -291,8 +291,7 @@ Boolean AccessibilityIterators::WordTextSegmentIterator::IsLetterOrDigit(
         if (index < 0 || index >= mText.GetLength()) {
             assert(0);
         }
-        Int32 codePoint;
-        Character::CodePointAt(mText.GetChars(), index, mText.GetLength(), &codePoint);
+        Int32 codePoint = mText.GetChar(index);
 
         return Character::IsLetterOrDigit(codePoint);
     }

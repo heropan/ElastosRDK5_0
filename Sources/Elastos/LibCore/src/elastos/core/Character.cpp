@@ -729,104 +729,104 @@ ECode Character::GetCharCount(
     return NOERROR;
 }
 
-ECode Character::CodePointAt(
-    /*[in]*/ ArrayOf<Char32>* seq,
-    /*[in]*/ Int32 index,
-    /*[out]*/ Int32* code)
-{
-    VALIDATE_NOT_NULL(code)
+// ECode Character::CodePointAt(
+//     /*[in]*/ ArrayOf<Char32>* seq,
+//     /*[in]*/ Int32 index,
+//     /*[out]*/ Int32* code)
+// {
+//     VALIDATE_NOT_NULL(code)
 
-    if (seq == NULL) {
-        SLOGGERD("Character", "seq == null")
-        return E_NULL_POINTER_EXCEPTION;
-    }
+//     if (seq == NULL) {
+//         SLOGGERD("Character", "seq == null")
+//         return E_NULL_POINTER_EXCEPTION;
+//     }
 
-    Int32 len = seq->GetLength();
-    if (index < 0 || index >= len) {
-        return E_INDEX_OUT_OF_BOUNDS_EXCEPTION;
-    }
+//     Int32 len = seq->GetLength();
+//     if (index < 0 || index >= len) {
+//         return E_INDEX_OUT_OF_BOUNDS_EXCEPTION;
+//     }
 
-    Char32 high = (*seq)[index++];
-    if (index >= len) {
-        *code = high;
-        return NOERROR;
-    }
+//     Char32 high = (*seq)[index++];
+//     if (index >= len) {
+//         *code = high;
+//         return NOERROR;
+//     }
 
-    Char32 low = (*seq)[index];
-    if (IsSurrogatePair(high, low)) {
-        return ToCodePoint(high, low, code);
-    }
+//     Char32 low = (*seq)[index];
+//     if (IsSurrogatePair(high, low)) {
+//         return ToCodePoint(high, low, code);
+//     }
 
-    *code = high;
-    return NOERROR;
-}
+//     *code = high;
+//     return NOERROR;
+// }
 
-ECode Character::CodePointAt(
-    /*[in]*/ ICharSequence* seq,
-    /*[in]*/ Int32 index,
-    /* [out] */ Int32* code)
-{
-    if (seq == NULL) {
-        SLOGGERD("Character", "seq == null")
-        return E_NULL_POINTER_EXCEPTION;
-    }
-    Int32 len;
-    seq->GetLength(&len);
-    if (index < 0 || index >= len) {
-        return E_INDEX_OUT_OF_BOUNDS_EXCEPTION;
-    }
+// ECode Character::CodePointAt(
+//     /*[in]*/ ICharSequence* seq,
+//     /*[in]*/ Int32 index,
+//     /* [out] */ Int32* code)
+// {
+//     if (seq == NULL) {
+//         SLOGGERD("Character", "seq == null")
+//         return E_NULL_POINTER_EXCEPTION;
+//     }
+//     Int32 len;
+//     seq->GetLength(&len);
+//     if (index < 0 || index >= len) {
+//         return E_INDEX_OUT_OF_BOUNDS_EXCEPTION;
+//     }
 
-    Char32 high;
-    seq->GetCharAt(index++, &high);
-    if (index >= len) {
-        *code = high;
-        return NOERROR;
-    }
-    Char32 low;
-    seq->GetCharAt(index, &low);
-    if (IsSurrogatePair(high, low)) {
-        return ToCodePoint(high, low, code);
-    }
-    *code = high;
-    return NOERROR;
-}
+//     Char32 high;
+//     seq->GetCharAt(index++, &high);
+//     if (index >= len) {
+//         *code = high;
+//         return NOERROR;
+//     }
+//     Char32 low;
+//     seq->GetCharAt(index, &low);
+//     if (IsSurrogatePair(high, low)) {
+//         return ToCodePoint(high, low, code);
+//     }
+//     *code = high;
+//     return NOERROR;
+// }
 
-ECode Character::CodePointAt(
-    /*[in]*/ ArrayOf<Char32>* seq,
-    /*[in]*/ Int32 index,
-    /*[in]*/ Int32 limit,
-    /* [out] */ Int32* code)
-{
-    if (index < 0 || index >= limit || limit < 0 || limit > seq->GetLength()) {
-        return E_INDEX_OUT_OF_BOUNDS_EXCEPTION;
-    }
+// ECode Character::CodePointAt(
+//     /*[in]*/ ArrayOf<Char32>* seq,
+//     /*[in]*/ Int32 index,
+//     [in] Int32 limit,
+//     /* [out] */ Int32* code)
+// {
+//     if (index < 0 || index >= limit || limit < 0 || limit > seq->GetLength()) {
+//         return E_INDEX_OUT_OF_BOUNDS_EXCEPTION;
+//     }
 
-    Char32 high = (*seq)[index++];
-    if (index >= limit) {
-        *code = high;
-    }
-    Char32 low = (*seq)[index];
-    if (IsSurrogatePair(high, low)) {
-        return ToCodePoint(high, low, code);
-    }
-    *code = high;
-    return NOERROR;
-}
+//     Char32 high = (*seq)[index++];
+//     if (index >= limit) {
+//         *code = high;
+//     }
+//     Char32 low = (*seq)[index];
+//     if (IsSurrogatePair(high, low)) {
+//         return ToCodePoint(high, low, code);
+//     }
+//     *code = high;
+//     return NOERROR;
+// }
 
-ECode Character::ToCodePoint(
-    /*[in]*/ Char32 high,
-    /*[in]*/ Char32 low,
-    /*[out]*/ Int32* value)
-{
-    VALIDATE_NOT_NULL(value)
+// ECode Character::ToCodePoint(
+//     /*[in]*/ Char32 high,
+//     /*[in]*/ Char32 low,
+//     /*[out]*/ Int32* value)
+// {
+//     VALIDATE_NOT_NULL(value)
 
-    // See RFC 2781, Section 2.2
-    // http://www.ietf.org/rfc/rfc2781.txt
-    Int32 h = (high & 0x3FF) << 10;
-    Int32 l = low & 0x3FF;
-    *value = (h | l) + 0x10000;
-    return NOERROR;
-}
+//     // See RFC 2781, Section 2.2
+//     // http://www.ietf.org/rfc/rfc2781.txt
+//     Int32 h = (high & 0x3FF) << 10;
+//     Int32 l = low & 0x3FF;
+//     *value = (h | l) + 0x10000;
+//     return NOERROR;
+// }
 
 ECode Character::GetOffsetByChars(
     /*[in]*/ const ArrayOf<Byte>& seq,
