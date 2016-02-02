@@ -274,6 +274,18 @@ public:
     static CARAPI_(Boolean) Equals(
         /* [in] */ const AutoPtr<T1>& lhs,
         /* [in] */ const AutoPtr<T2>& rhs);
+
+    static String GetClassName(
+        /* [in] */ IInterface* obj);
+
+    static String GetFullClassName(
+        /* [in] */ IInterface* obj);
+
+    static String GetNamespace(
+        /* [in] */ IInterface* obj);
+
+    static String GetModulePath(
+        /* [in] */ IInterface* obj);
 };
 
 //====================================================================

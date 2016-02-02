@@ -12,15 +12,34 @@ namespace Server {
 
 const String MmsServiceBroker::TAG("MmsServiceBroker");
 
-const ComponentName MmsServiceBroker::MMS_SERVICE_COMPONENT =
-        new ComponentName("com.android.mms.service", "com.android.mms.service.MmsService");
+static AutoPtr<IComponentName> InitMMS_SERVICE_COMPONENT()
+{
+    AutoPtr<IComponentName> cn;
+    CComponentName::New(
+        String("com.android.mms.service"),
+        String("com.android.mms.service.MmsService"),
+        (IComponentName**)&cn);
+    return cn;
+}
+
+const AutoPtr<IComponentName> MmsServiceBroker::MMS_SERVICE_COMPONENT = InitMMS_SERVICE_COMPONENT();
 
 const Int32 MmsServiceBroker::MSG_TRY_CONNECTING = 1;
 
-const AutoPtr<IUri> MmsServiceBroker::FAKE_SMS_SENT_URI = Uri->Parse("content://sms/sent/0");
-const AutoPtr<IUri> MmsServiceBroker::FAKE_MMS_SENT_URI = Uri->Parse("content://mms/sent/0");
-const AutoPtr<IUri> MmsServiceBroker::FAKE_SMS_DRAFT_URI = Uri->Parse("content://sms/draft/0");
-const AutoPtr<IUri> MmsServiceBroker::FAKE_MMS_DRAFT_URI = Uri->Parse("content://mms/draft/0");
+static AutoPtr<IUri> InitUri(
+    /* [in] */ const String& str)
+{
+    AutoPtr<IUriHelper> helper;
+    CUriHelper::AcquireSingleton((IUriHelper**)&helper);
+    AutoPtr<IUri> uri;
+    helper->Parse(str, (IUri**)&uri);
+    return uri;
+}
+
+const AutoPtr<IUri> MmsServiceBroker::FAKE_SMS_SENT_URI = InitUri("content://sms/sent/0");
+const AutoPtr<IUri> MmsServiceBroker::FAKE_MMS_SENT_URI = InitUri("content://mms/sent/0");
+const AutoPtr<IUri> MmsServiceBroker::FAKE_SMS_DRAFT_URI = InitUri("content://sms/draft/0");
+const AutoPtr<IUri> MmsServiceBroker::FAKE_MMS_DRAFT_URI = InitUri("content://mms/draft/0");
 
 const Int64 MmsServiceBroker::SERVICE_CONNECTION_WAIT_TIME_MS = 4 * 1000L; // 4 seconds
 const Int64 MmsServiceBroker::RETRY_DELAY_ON_DISCONNECTION_MS = 3 * 1000L; // 3 seconds
@@ -47,16 +66,19 @@ ECode MmsServiceBroker::BinderService::SendMessage(
     /* [in] */ IBundle* configOverrides,
     /* [in] */ IPendingIntent* sentIntent)
 {
-    ECode ec = mHost->mContext->EnforceCallingPermission(Manifest::permission::SEND_SMS, "Send MMS message");
+    ECode ec = mHost->mContext->EnforceCallingPermission(
+        Manifest::permission::SEND_SMS, String("Send MMS message"));
     FAIL_RETURN(ec)
 
     AutoPtr<IAppOpsManager> aom = mHost->GetAppOpsManager();
-    if (->NoteOp(AppOpsManager.OP_SEND_SMS, Binder::GetCallingUid(),
-            callingPkg) != AppOpsManager.MODE_ALLOWED) {
-        return;
+    Int32 op;
+    aom->NoteOp(IAppOpsManager::OP_SEND_SMS, Binder::GetCallingUid(), callingPkg, &op);
+    if (op != IAppOpsManager::MODE_ALLOWED) {
+        return NOERROR;
     }
-    GetServiceGuarded()->SendMessage(subId, callingPkg, contentUri, locationUrl,
-            configOverrides, sentIntent);
+    AutoPtr<IIMms> mms = mHost->GetServiceGuarded();
+    mms->SendMessage(subId, callingPkg, contentUri, locationUrl, configOverrides, sentIntent);
+    return NOERROR;
 }
 
 //@Override
@@ -68,13 +90,18 @@ ECode MmsServiceBroker::BinderService::DownloadMessage(
     /* [in] */ IBundle* configOverrides,
     /* [in] */ IPendingIntent* downloadedIntent)
 {
-    mContext->EnforceCallingPermission(Manifest::permission::RECEIVE_MMS,
-            "Download MMS message");
-    if (GetAppOpsManager()->NoteOp(AppOpsManager.OP_RECEIVE_MMS, Binder::GetCallingUid(),
-            callingPkg) != AppOpsManager.MODE_ALLOWED) {
-        return;
+    ECode ec = mHost->mContext->EnforceCallingPermission(
+        Manifest::permission::RECEIVE_MMS, String("Download MMS message"));
+    FAIL_RETURN(ec)
+
+    AutoPtr<IAppOpsManager> aom = mHost->GetAppOpsManager();
+    Int32 op;
+    aom->NoteOp(IAppOpsManager::OP_RECEIVE_MMS, Binder::GetCallingUid(), callingPkg, &op);
+    if (op != IAppOpsManager::MODE_ALLOWED) {
+        return NOERROR;
     }
-    GetServiceGuarded()->DownloadMessage(subId, callingPkg, locationUrl, contentUri,
+    AutoPtr<IIMms> mms = mHost->GetServiceGuarded();
+    return mms->DownloadMessage(subId, callingPkg, locationUrl, contentUri,
             configOverrides, downloadedIntent);
 }
 
@@ -84,8 +111,9 @@ ECode MmsServiceBroker::BinderService::UpdateMmsSendStatus(
     /* [in] */ ArrayOf<Byte>* pdu,
     /* [in] */ Int32 status)
 {
-    EnforceCarrierPrivilege();
-    GetServiceGuarded()->UpdateMmsSendStatus(messageRef, pdu, status);
+    FAIL_RETURN(mHost->EnforceCarrierPrivilege())
+    AutoPtr<IIMms> mms = mHost->GetServiceGuarded();
+    return mms->UpdateMmsSendStatus(messageRef, pdu, status);
 }
 
 //@Override
@@ -93,8 +121,9 @@ ECode MmsServiceBroker::BinderService::UpdateMmsDownloadStatus(
     /* [in] */ Int32 messageRef,
     /* [in] */ Int32 status)
 {
-    EnforceCarrierPrivilege();
-    GetServiceGuarded()->UpdateMmsDownloadStatus(messageRef, status);
+    FAIL_RETURN(mHost->EnforceCarrierPrivilege())
+    AutoPtr<IIMms> mms = mHost->GetServiceGuarded();
+    return mms->UpdateMmsDownloadStatus(messageRef, status);
 }
 
 //@Override
@@ -102,7 +131,9 @@ ECode MmsServiceBroker::BinderService::GetCarrierConfigValues(
     /* [in] */ Int64 subId,
     /* [out] */ IBundle* bundle)
 {
-    return GetServiceGuarded()->GetCarrierConfigValues(subId);
+    VALIDATE_NOT_NULL(bundle)
+    AutoPtr<IIMms> mms = mHost->GetServiceGuarded();
+    return mms->GetCarrierConfigValues(subId, bundle);
 }
 
 //@Override
@@ -116,15 +147,26 @@ ECode MmsServiceBroker::BinderService::ImportTextMessage(
     /* [in] */ Boolean read,
     /* [out] */ IUri** uri)
 {
-    mContext->EnforceCallingPermission(Manifest::permission::WRITE_SMS, "Import SMS message");
-    if (GetAppOpsManager()->NoteOp(AppOpsManager.OP_WRITE_SMS, Binder::GetCallingUid(),
-            callingPkg) != AppOpsManager.MODE_ALLOWED) {
+    VALIDATE_NOT_NULL(uri)
+    *uri = NULL;
+
+    ECode ec = mContext->EnforceCallingPermission(
+        Manifest::permission::WRITE_SMS, String("Import SMS message"));
+    FAIL_RETURN(ec)
+
+    AutoPtr<IAppOpsManager> aom = mHost->GetAppOpsManager();
+    Int32 op;
+    aom->NoteOp(IAppOpsManager::OP_WRITE_SMS, Binder::GetCallingUid(), callingPkg, &op);
+    if (op != IAppOpsManager::MODE_ALLOWED) {
         // Silently fail AppOps failure due to not being the default SMS app
         // while writing the TelephonyProvider
-        return FAKE_SMS_SENT_URI;
+        *uri = MmsServiceBroker::FAKE_SMS_SENT_URI;
+        REFCOUNT_ADD(*uri)
+        return NOERROR;
     }
-    return GetServiceGuarded()->ImportTextMessage(
-            callingPkg, address, type, text, timestampMillis, seen, read);
+    AutoPtr<IIMms> mms = mHost->GetServiceGuarded();
+    return mms->ImportTextMessage(
+        callingPkg, address, type, text, timestampMillis, seen, read, uri);
 }
 
 //@Override
@@ -137,15 +179,26 @@ ECode MmsServiceBroker::BinderService::ImportMultimediaMessage(
     /* [in] */ Boolean read,
     /* [out] */ IUri** uri)
 {
-    mContext->EnforceCallingPermission(Manifest::permission::WRITE_SMS, "Import MMS message");
-    if (GetAppOpsManager()->NoteOp(AppOpsManager.OP_WRITE_SMS, Binder::GetCallingUid(),
-            callingPkg) != AppOpsManager.MODE_ALLOWED) {
+    VALIDATE_NOT_NULL(uri)
+    *uri = NULL;
+
+    ECode ec = mContext->EnforceCallingPermission(
+        Manifest::permission::WRITE_SMS, String("Import SMS message"));
+    FAIL_RETURN(ec)
+
+    AutoPtr<IAppOpsManager> aom = mHost->GetAppOpsManager();
+    Int32 op;
+    aom->NoteOp(IAppOpsManager::OP_WRITE_SMS, Binder::GetCallingUid(), callingPkg, &op);
+    if (op != IAppOpsManager::MODE_ALLOWED) {
         // Silently fail AppOps failure due to not being the default SMS app
         // while writing the TelephonyProvider
-        return FAKE_MMS_SENT_URI;
+        *uri = MmsServiceBroker::FAKE_MMS_SENT_URI;
+        REFCOUNT_ADD(*uri)
+        return NOERROR;
     }
-    return GetServiceGuarded()->ImportMultimediaMessage(
-            callingPkg, contentUri, messageId, timestampSecs, seen, read);
+    AutoPtr<IIMms> mms = mHost->GetServiceGuarded();
+    return mms->ImportMultimediaMessage(
+            callingPkg, contentUri, messageId, timestampSecs, seen, read, uri);
 }
 
 //@Override
@@ -154,13 +207,21 @@ ECode MmsServiceBroker::BinderService::DeleteStoredMessage(
     /* [in] */ IUri* messageUri,
     /* [out] */ Boolean* result)
 {
-    mContext->EnforceCallingPermission(Manifest::permission::WRITE_SMS,
-            "Delete SMS/MMS message");
-    if (GetAppOpsManager()->NoteOp(AppOpsManager.OP_WRITE_SMS, Binder::GetCallingUid(),
-            callingPkg) != AppOpsManager.MODE_ALLOWED) {
+    VALIDATE_NOT_NULL(result)
+    *result = FALSE;
+
+    ECode ec = mContext->EnforceCallingPermission(
+        Manifest::permission::WRITE_SMS, String("Delete SMS/MMS message"));
+    FAIL_RETURN(ec)
+
+    AutoPtr<IAppOpsManager> aom = mHost->GetAppOpsManager();
+    Int32 op;
+    aom->NoteOp(IAppOpsManager::OP_WRITE_SMS, Binder::GetCallingUid(), callingPkg, &op);
+    if (op != IAppOpsManager::MODE_ALLOWED) {
         return FALSE;
     }
-    return GetServiceGuarded()->DeleteStoredMessage(callingPkg, messageUri);
+    AutoPtr<IIMms> mms = mHost->GetServiceGuarded();
+    return mms->DeleteStoredMessage(callingPkg, messageUri, result);
 }
 
 //@Override
@@ -169,12 +230,21 @@ ECode MmsServiceBroker::BinderService::DeleteStoredConversation(
     /* [in] */ Int64 conversationId,
     /* [out] */ Boolean* result)
 {
-    mContext->EnforceCallingPermission(Manifest::permission::WRITE_SMS, "Delete conversation");
-    if (GetAppOpsManager()->NoteOp(AppOpsManager.OP_WRITE_SMS, Binder::GetCallingUid(),
-            callingPkg) != AppOpsManager.MODE_ALLOWED) {
+    VALIDATE_NOT_NULL(result)
+    *result = FALSE;
+
+    ECode ec = mContext->EnforceCallingPermission(
+        Manifest::permission::WRITE_SMS, String("Delete conversation"));
+    FAIL_RETURN(ec)
+
+    AutoPtr<IAppOpsManager> aom = mHost->GetAppOpsManager();
+    Int32 op;
+    aom->NoteOp(IAppOpsManager::OP_WRITE_SMS, Binder::GetCallingUid(), callingPkg, &op);
+    if (op != IAppOpsManager::MODE_ALLOWED) {
         return FALSE;
     }
-    return GetServiceGuarded()->DeleteStoredConversation(callingPkg, conversationId);
+    AutoPtr<IIMms> mms = mHost->GetServiceGuarded();
+    return mms->DeleteStoredConversation(callingPkg, conversationId, result);
 }
 
 //@Override
@@ -184,10 +254,15 @@ ECode MmsServiceBroker::BinderService::UpdateStoredMessageStatus(
     /* [in] */ IContentValues* statusValues,
     /* [out] */ Boolean* result)
 {
-    mContext->EnforceCallingPermission(Manifest::permission::WRITE_SMS,
-            "Update SMS/MMS message");
-    return GetServiceGuarded()
-            .UpdateStoredMessageStatus(callingPkg, messageUri, statusValues);
+    VALIDATE_NOT_NULL(result)
+    *result = FALSE;
+
+    ECode ec = mContext->EnforceCallingPermission(
+        Manifest::permission::WRITE_SMS, String("Update SMS/MMS message"));
+    FAIL_RETURN(ec)
+
+    AutoPtr<IIMms> mms = mHost->GetServiceGuarded();
+    return mms->UpdateStoredMessageStatus(callingPkg, messageUri, statusValues, result);
 }
 
 //@Override
@@ -197,10 +272,15 @@ ECode MmsServiceBroker::BinderService::ArchiveStoredConversation(
     /* [in] */ Boolean archived,
     /* [out] */ Boolean* result)
 {
-    mContext->EnforceCallingPermission(Manifest::permission::WRITE_SMS,
-            "Update SMS/MMS message");
-    return GetServiceGuarded()
-            .ArchiveStoredConversation(callingPkg, conversationId, archived);
+    VALIDATE_NOT_NULL(result)
+    *result = FALSE;
+
+    ECode ec = mContext->EnforceCallingPermission(
+        Manifest::permission::WRITE_SMS, String("Update SMS/MMS message"));
+    FAIL_RETURN(ec)
+
+    AutoPtr<IIMms> mms = mHost->GetServiceGuarded();
+    return mms->ArchiveStoredConversation(callingPkg, conversationId, archived);
 }
 
 //@Override
@@ -210,14 +290,25 @@ ECode MmsServiceBroker::BinderService::AddTextMessageDraft(
     /* [in] */ const String& text,
     /* [out] */ IUri** uri)
 {
-    mContext->EnforceCallingPermission(Manifest::permission::WRITE_SMS, "Add SMS draft");
-    if (GetAppOpsManager()->NoteOp(AppOpsManager.OP_WRITE_SMS, Binder::GetCallingUid(),
-            callingPkg) != AppOpsManager.MODE_ALLOWED) {
+    VALIDATE_NOT_NULL(uri)
+    *uri = NULL;
+
+    ECode ec = mContext->EnforceCallingPermission(
+        Manifest::permission::WRITE_SMS, String("Add SMS draft"));
+    FAIL_RETURN(ec)
+
+    AutoPtr<IAppOpsManager> aom = mHost->GetAppOpsManager();
+    Int32 op;
+    aom->NoteOp(IAppOpsManager::OP_WRITE_SMS, Binder::GetCallingUid(), callingPkg, &op);
+    if (op != IAppOpsManager::MODE_ALLOWED) {
         // Silently fail AppOps failure due to not being the default SMS app
         // while writing the TelephonyProvider
-        return FAKE_SMS_DRAFT_URI;
+        *uri = FAKE_SMS_DRAFT_URI;
+        REFCOUNT_ADD(*uri)
+        return NOERROR;
     }
-    return GetServiceGuarded()->AddTextMessageDraft(callingPkg, address, text);
+    AutoPtr<IIMms> mms = mHost->GetServiceGuarded();
+    return mms->AddTextMessageDraft(callingPkg, address, text, uri);
 }
 
 //@Override
@@ -226,14 +317,25 @@ ECode MmsServiceBroker::BinderService::AddMultimediaMessageDraft(
     /* [in] */ IUri* contentUri,
     /* [out] */ IUri** uri)
 {
-    mContext->EnforceCallingPermission(Manifest::permission::WRITE_SMS, "Add MMS draft");
-    if (GetAppOpsManager()->NoteOp(AppOpsManager.OP_WRITE_SMS, Binder::GetCallingUid(),
-            callingPkg) != AppOpsManager.MODE_ALLOWED) {
+    VALIDATE_NOT_NULL(uri)
+    *uri = NULL;
+
+    ECode ec = mContext->EnforceCallingPermission(
+        Manifest::permission::WRITE_SMS, String("Add MMS draft"));
+    FAIL_RETURN(ec)
+
+    AutoPtr<IAppOpsManager> aom = mHost->GetAppOpsManager();
+    Int32 op;
+    aom->NoteOp(IAppOpsManager::OP_WRITE_SMS, Binder::GetCallingUid(), callingPkg, &op);
+    if (op != IAppOpsManager::MODE_ALLOWED) {
         // Silently fail AppOps failure due to not being the default SMS app
         // while writing the TelephonyProvider
-        return FAKE_MMS_DRAFT_URI;
+        *uri = FAKE_MMS_DRAFT_URI;
+        REFCOUNT_ADD(*uri)
+        return NOERROR;
     }
-    return GetServiceGuarded()->AddMultimediaMessageDraft(callingPkg, contentUri);
+    AutoPtr<IIMms> mms = mHost->GetServiceGuarded();
+    return mms->AddMultimediaMessageDraft(callingPkg, contentUri, uri);
 }
 
 //@Override
@@ -244,14 +346,19 @@ ECode MmsServiceBroker::BinderService::SendStoredMessage(
     /* [in] */ IBundle* configOverrides,
     /* [in] */ IPendingIntent* sentIntent)
 {
-    mContext->EnforceCallingPermission(Manifest::permission::SEND_SMS,
-            "Send stored MMS message");
-    if (GetAppOpsManager()->NoteOp(AppOpsManager.OP_SEND_SMS, Binder::GetCallingUid(),
-            callingPkg) != AppOpsManager.MODE_ALLOWED) {
-        return;
+    ECode ec = mContext->EnforceCallingPermission(
+        Manifest::permission::SEND_SMS, String("Send stored MMS message"));
+    FAIL_RETURN(ec)
+
+    AutoPtr<IAppOpsManager> aom = mHost->GetAppOpsManager();
+    Int32 op;
+    aom->NoteOp(IAppOpsManager::OP_SEND_SMS, Binder::GetCallingUid(), callingPkg, &op);
+    if (op != IAppOpsManager::MODE_ALLOWED) {
+        return NOERROR;
     }
-    GetServiceGuarded()->SendStoredMessage(subId, callingPkg, messageUri, configOverrides,
-            sentIntent);
+
+    AutoPtr<IIMms> mms = mHost->GetServiceGuarded();
+    return mms->SendStoredMessage(subId, callingPkg, messageUri, configOverrides, sentIntent);
 }
 
 //@Override
@@ -259,31 +366,38 @@ ECode MmsServiceBroker::BinderService::SetAutoPersisting(
     /* [in] */ const String& callingPkg,
     /* [in] */ Boolean enabled)
 {
-    mContext->EnforceCallingPermission(Manifest::permission::WRITE_SMS, "Set auto persist");
-    if (GetAppOpsManager()->NoteOp(AppOpsManager.OP_WRITE_SMS, Binder::GetCallingUid(),
-            callingPkg) != AppOpsManager.MODE_ALLOWED) {
-        return;
+    ECode ec = mContext->EnforceCallingPermission(
+        Manifest::permission::WRITE_SMS, String("Set auto persist"));
+    FAIL_RETURN(ec)
+
+    AutoPtr<IAppOpsManager> aom = mHost->GetAppOpsManager();
+    Int32 op;
+    aom->NoteOp(IAppOpsManager::OP_WRITE_SMS, Binder::GetCallingUid(), callingPkg, &op);
+    if (op != IAppOpsManager::MODE_ALLOWED) {
+        return NOERROR;
     }
-    GetServiceGuarded()->SetAutoPersisting(callingPkg, enabled);
+
+    AutoPtr<IIMms> mms = mHost->GetServiceGuarded();
+    return mms->SetAutoPersisting(callingPkg, enabled);
 }
 
 //@Override
 ECode MmsServiceBroker::BinderService::GetAutoPersisting(
     /* [out] */ Boolean* result)
 {
-    return GetServiceGuarded()->GetAutoPersisting();
+    VALIDATE_NOT_NULL(result)
+    AutoPtr<IIMms> mms = mHost->GetServiceGuarded();
+    return mms->GetAutoPersisting(result);
 }
-
 
 //==========================================================================================
 // MmsServiceBroker::ConnectionHandler
 //==========================================================================================
-class ConnectionHandler
-    : public Handler
-{
-public:
-ConnectionHandler(
-    /* [in] */ MmsServiceBroker* host);
+
+MmsServiceBroker::ConnectionHandler::ConnectionHandler(
+    /* [in] */ MmsServiceBroker* host)
+    : mHost(host)
+{}
 
 //@Override
 ECode MmsServiceBroker::ConnectionHandler::HandleMessage(
@@ -291,147 +405,157 @@ ECode MmsServiceBroker::ConnectionHandler::HandleMessage(
 {
     switch (msg.what) {
         case MSG_TRY_CONNECTING:
-            TryConnecting();
+            mHost->TryConnecting();
             break;
         default:
             Slogger::E(TAG, "Unknown message");
     }
+    return NOERROR;
 }
-private:
-    MmsServiceBroker* mHost;
-};
 
 //==========================================================================================
 // MmsServiceBroker::Connection
 //==========================================================================================
-class Connection
-    : public Object
-    , public IServiceConnection
+
+CAR_INTERFACE_IMPL(MmsServiceBroker::Connection, Override, IServiceConnection)
+
+MmsServiceBroker::Connection::Connection(
+    /* [in] */ MmsServiceBroker* host)
+    : mHost(host)
+{}
+
+//@Override
+ECode MmsServiceBroker::Connection::OnServiceConnected(
+    /* [in] */ IComponentName* name,
+    /* [in] */ IBinder* service)
 {
-public:
-    Connection(
-        /* [in] */ MmsServiceBroker* host);
-
-    //@Override
-    ECode MmsServiceBroker::Connection::OnServiceConnected(
-        /* [in] */ IComponentName* name,
-        /* [in] */ IBinder* service)
-    {
-        Slogger::I(TAG, "MmsService connected");
-        synchronized(MmsServiceBroker.this) {
-            mService = IMms.Stub->AsInterface(service);
-            MmsServiceBroker.this->NotifyAll();
-        }
+    Slogger::I(TAG, "MmsService connected");
+    ISynchronize* sync = ISynchronize::Probe(mHost);
+    synchronized(sync) {
+        mHost->mService = IIMms::Probe(service);
+        sync->NotifyAll();
     }
+    return NOERROR;
+}
 
-    //@Override
-    ECode MmsServiceBroker::Connection::OnServiceDisconnected(
-        /* [in] */ IComponentName* name)
-    {
-        Slogger::I(TAG, "MmsService unexpectedly disconnected");
-        synchronized(MmsServiceBroker.this) {
-            mService = NULL;
-            MmsServiceBroker.this->NotifyAll();
-        }
-        // Retry connecting, but not too eager (with a delay)
-        // since it may come back by itself.
-        mConnectionHandler->SendMessageDelayed(
-                mConnectionHandler->ObtainMessage(MSG_TRY_CONNECTING),
-                RETRY_DELAY_ON_DISCONNECTION_MS);
+//@Override
+ECode MmsServiceBroker::Connection::OnServiceDisconnected(
+    /* [in] */ IComponentName* name)
+{
+    Slogger::I(TAG, "MmsService unexpectedly disconnected");
+    ISynchronize* sync = ISynchronize::Probe(mHost);
+    synchronized(sync) {
+        mHost->mService = NULL;
+        sync->NotifyAll();
     }
-private:
-    MmsServiceBroker* mHost;
-};
-
+    // Retry connecting, but not too eager (with a delay)
+    // since it may come back by itself.
+    AutoPtr<IMessage> msg;
+    mHost->mConnectionHandler->ObtainMessage(MSG_TRY_CONNECTING, (IMessage**)&msg);
+    Boolean bval;
+    return mHost->mConnectionHandler->SendMessageDelayed(
+        msg, RETRY_DELAY_ON_DISCONNECTION_MS, &bval);
+}
 
 //==========================================================================================
 // MmsServiceBroker
 //==========================================================================================
-MmsServiceBroker();
+MmsServiceBroker::MmsServiceBroker()
+{}
 
 ECode MmsServiceBroker::constructor(
     /* [in] */ IContext* context)
 {
-    Super(context);
+    SystemService::constructor(context);
     mContext = context;
     mService = NULL;
+    return NOERROR;
 }
 
 //@Override
 ECode MmsServiceBroker::OnStart()
 {
-    PublishBinderService("imms", new BinderService());
+    AutoPtr<IBinder> service;
+    CMmsServiceBrokerBinderService::New((IBinder**)&service);
+    PublishBinderService(String("imms"), service);
+    return NOERROR;
 }
 
 ECode MmsServiceBroker::SystemRunning()
 {
     TryConnecting();
+    return NOERROR;
 }
 
-private:
-void TryConnecting()
+ECode MmsServiceBroker::TryConnecting()
 {
+    ECode ec = NOERROR;
     Slogger::I(TAG, "Connecting to MmsService");
     synchronized(this) {
         if (mService != NULL) {
             Slogger::D(TAG, "Already connected");
             return;
         }
-        final Intent intent = new Intent();
+        AutoPtr<IIntent> intent;
+        CIntent::New((IIntent**)&intent);
         intent->SetComponent(MMS_SERVICE_COMPONENT);
-        try {
-            if (!mContext->BindService(intent, mConnection, Context.BIND_AUTO_CREATE)) {
-                Slogger::E(TAG, "Failed to bind to MmsService");
-            }
-        } catch (SecurityException e) {
-            Slogger::E(TAG, "Forbidden to bind to MmsService", e);
+        Boolean bval;
+        ECode ec = mContext->BindService(intent, mConnection, Context.BIND_AUTO_CREATE, &bval);
+        if (ec == (ECode)E_SECURITY_EXCEPTION) {
+            Slogger::E(TAG, "Forbidden to bind to MmsService");
+            return ec;
+        }
+        else if (!bval) {
+            Slogger::E(TAG, "Failed to bind to MmsService");
         }
     }
+    return ec;
 }
 
-void EnsureService()
+ECode MmsServiceBroker::EnsureService()
 {
     synchronized(this) {
         if (mService == NULL) {
             // Service is not connected. Try blocking connecting.
             Slogger::W(TAG, "MmsService not connected. Try connecting...");
-            mConnectionHandler->SendMessage(
-                    mConnectionHandler->ObtainMessage(MSG_TRY_CONNECTING));
-            final Int64 shouldEnd =
-                    SystemClock->ElapsedRealtime() + SERVICE_CONNECTION_WAIT_TIME_MS;
+            AutoPtr<IMessage> msg;
+            mConnectionHandler->ObtainMessage(MSG_TRY_CONNECTING, (IMessage**)&msg);
+            mConnectionHandler->SendMessage(msg, &bval);
+            Int64 shouldEnd = SystemClock::GetElapsedRealtime() + SERVICE_CONNECTION_WAIT_TIME_MS;
             Int64 waitTime = SERVICE_CONNECTION_WAIT_TIME_MS;
             while (waitTime > 0) {
-                try {
+                // try {
                     // TODO: consider using Java concurrent construct instead of raw object wait
-                    this->Wait(waitTime);
-                } catch (InterruptedException e) {
-                    Slogger::W(TAG, "Connection wait interrupted", e);
+                ECode ec = Wait(waitTime);
+                if (ec == (ECode)E_INTERRUPTED_EXCEPTION) {
+                    Slogger::W(TAG, "Connection wait interrupted");
                 }
                 if (mService != NULL) {
                     // Success
                     return;
                 }
                 // Calculate remaining waiting time to make sure we wait the full timeout period
-                waitTime = shouldEnd - SystemClock->ElapsedRealtime();
+                waitTime = shouldEnd - SystemClock::GetElapsedRealtime();
             }
             // Timed out. Something's really wrong.
             Slogger::E(TAG, "Can not connect to MmsService (timed out)");
-            throw new RuntimeException("Timed out in connecting to MmsService");
+            return E_RUNTIME_EXCEPTION;
         }
     }
+    return NOERROR;
 }
 
 /**
  * Making sure when we obtain the mService instance it is always valid.
  * Throws {@link RuntimeException} when it is empty.
  */
-AutoPtr<IIMms> GetServiceGuarded()
+AutoPtr<IIMms> MmsServiceBroker::GetServiceGuarded()
 {
     EnsureService();
     return mService;
 }
 
-AutoPtr<IAppOpsManager> GetAppOpsManager()
+AutoPtr<IAppOpsManager> MmsServiceBroker::GetAppOpsManager()
 {
     if (mAppOpsManager == NULL) {
         mAppOpsManager = (AppOpsManager) mContext->GetSystemService(Context.APP_OPS_SERVICE);
@@ -439,7 +563,7 @@ AutoPtr<IAppOpsManager> GetAppOpsManager()
     return mAppOpsManager;
 }
 
-AutoPtr<IPackageManager> GetPackageManager()
+AutoPtr<IPackageManager> MmsServiceBroker::GetPackageManager()
 {
     if (mPackageManager == NULL) {
         mPackageManager = mContext->GetPackageManager();
@@ -447,7 +571,7 @@ AutoPtr<IPackageManager> GetPackageManager()
     return mPackageManager;
 }
 
-AutoPtr<ITelephonyManager> GetTelephonyManager()
+AutoPtr<ITelephonyManager> MmsServiceBroker::GetTelephonyManager()
 {
     if (mTelephonyManager == NULL) {
         mTelephonyManager = (TelephonyManager) mContext->GetSystemService(

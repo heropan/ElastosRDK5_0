@@ -26,6 +26,7 @@ module
     merge("view/HardwareCanvas.car");
     merge("view/HardwareLayer.car");
     merge("view/IApplicationToken.car");
+    merge("view/IAssetAtlas.car");
     merge("view/IInputFilter.car");
     merge("view/IInputFilterHost.car");
     merge("view/IOnKeyguardExitResult.car");

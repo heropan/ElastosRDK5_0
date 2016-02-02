@@ -204,10 +204,11 @@ public:
     CARAPI OnStart();
 
     CARAPI SystemRunning();
-private:
-    void TryConnecting();
 
-    void EnsureService();
+private:
+    CARAPI TryConnecting();
+
+    CARAPI EnsureService();
 
     /**
      * Making sure when we obtain the mService instance it is always valid.
