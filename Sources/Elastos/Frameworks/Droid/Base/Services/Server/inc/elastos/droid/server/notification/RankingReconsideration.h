@@ -13,8 +13,6 @@ namespace Droid {
 namespace Server {
 namespace Notification {
 
-class NotificationRecord;
-
 /**
  * Sorts notifications individually into attention-relelvant order.
  */
