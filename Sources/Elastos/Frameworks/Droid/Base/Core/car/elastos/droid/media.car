@@ -1212,19 +1212,19 @@ module
         interface IMediaScannerConnectionHelper;
     }
 
-    //class CRemoteDisplay {
+    class CRemoteDisplay {
 
-        //constructor(
-        //    [in] IRemoteDisplayListener* listener,
-        //    [in] IHandler* handler);
+        constructor(
+            [in] IRemoteDisplayListener* listener,
+            [in] IHandler* handler);
 
-      //  interface IRemoteDisplay;
-    //}
+        interface IRemoteDisplay;
+    }
 
-    //singleton class CRemoteDisplayHelper {
+    singleton class CRemoteDisplayHelper {
 
-      //  interface IRemoteDisplayHelper;
-    //}
+        interface IRemoteDisplayHelper;
+    }
 
     singleton class CRatingHelper {
         interface IRatingHelper;

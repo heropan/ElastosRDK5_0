@@ -4,6 +4,7 @@
 
 #include "_Elastos_Droid_Media_CRemoteDisplay.h"
 #include "Elastos.Droid.Media.h"
+#include "Elastos.Droid.Os.h"
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/os/Runnable.h"
 #include <elastos/core/Object.h>

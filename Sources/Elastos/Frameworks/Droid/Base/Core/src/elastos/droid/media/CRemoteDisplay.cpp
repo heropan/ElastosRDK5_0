@@ -5,6 +5,8 @@
 #include <media/IMediaPlayerService.h>
 #include <media/IRemoteDisplayClient.h>
 #include <elastos/utility/logging/Logger.h>
+#include <gui/Surface.h>
+
 #include "elastos/droid/view/CSurface.h"
 
 using Elastos::Droid::Graphics::ISurfaceTexture;
@@ -177,10 +179,10 @@ public:
             return;
         }
 
-        android::sp<android::Surface> surface(new android::Surface(surfaceTexture));
+        android::sp<android::Surface> surface(new android::Surface(bufferProducer));
         if (surface == NULL) {
             Logger::E("NativeRemoteDisplayClient", "Could not create Surface from surface texture %p provided by media server.",
-                surfaceTexture.get());
+                bufferProducer.get());
             return;
         }
 
@@ -191,9 +193,7 @@ public:
             return;
         }
 
-        surfaceObj->SetSurface((Handle32)surface.get());
-
-        mRemoteDisplayObjGlobal->NotifyDisplayConnected(surfaceObj, width, height, flags);
+        mRemoteDisplayObjGlobal->NotifyDisplayConnected(surfaceObj, width, height, flags, session);
 
         CheckAndClearExceptionFromCallback("notifyDisplayConnected");
     }
@@ -239,7 +239,7 @@ public:
         mDisplay->dispose();
     }
 
-    void Pause()
+    void pause()
     {
         mDisplay->pause();
     }
@@ -294,18 +294,20 @@ void CRemoteDisplay::NativeResume(
     /* [in] */ Handle32 ptr)
 {
     NativeRemoteDisplay* wrapper = reinterpret_cast<NativeRemoteDisplay*>(ptr);
-    wrapper->resume();
+    wrapper->pause();
 }
 
 //------------------------------------------------
-void CRemoteDisplay::Pause()
+ECode CRemoteDisplay::Pause()
 {
     NativePause(mPtr);
+    return NOERROR;
 }
 
-void CRemoteDisplay::Resume()
+ECode CRemoteDisplay::Resume()
 {
     NativeResume(mPtr);
+    return NOERROR;
 }
 
 void CRemoteDisplay::Dispose(
