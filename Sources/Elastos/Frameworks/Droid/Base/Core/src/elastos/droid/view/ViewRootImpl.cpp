@@ -27,6 +27,7 @@
 #include "elastos/droid/view/accessibility/CAccessibilityEvent.h"
 #include "elastos/droid/view/accessibility/CAccessibilityManager.h"
 #include "elastos/droid/view/accessibility/CAccessibilityNodeInfo.h"
+#include "elastos/droid/view/CAccessibilityInteractionConnection.h"
 #include "elastos/droid/view/animation/CAccelerateDecelerateInterpolator.h"
 #include "elastos/droid/view/inputmethod/CInputMethodManager.h"
 #include "elastos/droid/os/SystemClock.h"
@@ -94,6 +95,7 @@ using Elastos::Droid::View::CAccessibilityInteractionController;
 using Elastos::Droid::View::Accessibility::CAccessibilityEvent;
 using Elastos::Droid::View::Accessibility::CAccessibilityManager;
 using Elastos::Droid::View::Accessibility::CAccessibilityNodeInfo;
+using Elastos::Droid::View::Accessibility::IIAccessibilityInteractionConnection;
 using Elastos::Droid::View::Animation::IInterpolator;
 using Elastos::Droid::View::Animation::CAccelerateDecelerateInterpolator;
 using Elastos::Droid::View::InputMethod::IInputConnection;
@@ -1046,14 +1048,15 @@ ECode ViewRootImpl::AccessibilityInteractionConnectionManager::EnsureConnection(
     Boolean registered =
         mViewRootImpl->mAttachInfo->mAccessibilityWindowId != IAccessibilityNodeInfo::UNDEFINED_ITEM_ID;
     if (!registered) {
-        assert(0 && "TODO");
-        /*AutoPtr<IAccessibilityInteractionConnection> connection;
+        AutoPtr<IIAccessibilityInteractionConnection> connection;
+        AutoPtr<IWeakReference> weakThis;
+        mViewRootImpl->GetWeakReference((IWeakReference**)&weakThis);
         CAccessibilityInteractionConnection::New(
-            (Handle32)mViewRootImpl, (IAccessibilityInteractionConnection**)&connection);
+            weakThis, (IIAccessibilityInteractionConnection**)&connection);
         Int32 status;
         mViewRootImpl->mAttachInfo->mAccessibilityWindowId =
             mViewRootImpl->mAccessibilityManager->AddAccessibilityInteractionConnection(
-                mViewRootImpl->mWindow, connection, &status);*/
+                mViewRootImpl->mWindow, connection, &status);
     }
     return NOERROR;
 }

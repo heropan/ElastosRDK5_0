@@ -235,7 +235,7 @@ module
     interface Elastos.Droid.Internal.TextService.IITextServicesManager;
     interface Elastos.Droid.Content.IContextWrapper;
 
-    // interface Elastos.Droid.View.Accessibility.IIAccessibilityInteractionConnection;
+    interface Elastos.Droid.View.Accessibility.IIAccessibilityInteractionConnection;
     // interface Elastos.Droid.View.Accessibility.IAccessibilityManager;
     // interface Elastos.Droid.View.InputMethod.ICorrectionInfo;
     interface Elastos.Droid.Utility.IAttributeSet;
@@ -890,12 +890,12 @@ module
         interface IViewPropertyAnimator;
     }
 
-    //     class CAccessibilityInteractionConnection {
-    //         constructor(
-    //             [in] Handle32 viewRootImpl);
+    class CAccessibilityInteractionConnection {
+        constructor(
+            [in] IWeakReference* viewRootImpl);
 
-    //         interface IIAccessibilityInteractionConnection;
-    //     }
+        interface IIAccessibilityInteractionConnection;
+    }
 
     [local]
     class CAccessibilityInteractionController {

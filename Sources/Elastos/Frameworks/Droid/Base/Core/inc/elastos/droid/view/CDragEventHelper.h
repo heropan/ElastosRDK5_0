@@ -2,11 +2,13 @@
 #define __ELASTOS_DROID_VIEW_CDRAGEVENTHELPER_H__
 
 #include "_Elastos_Droid_View_CDragEventHelper.h"
-#include "elastos/core/Singleton.h"
+#include <elastos/core/Singleton.h>
 
 using Elastos::Droid::Content::IClipData;
 using Elastos::Droid::Content::IClipDescription;
 using Elastos::Droid::View::IDragEvent;
+
+using Elastos::Core::Singleton;
 
 namespace Elastos {
 namespace Droid {
@@ -14,8 +16,11 @@ namespace View {
 
 CarClass(CDragEventHelper)
     , public Singleton
+    , public IDragEventHelper
 {
 public:
+    CAR_INTERFACE_DECL()
+
     CAR_SINGLETON_DECL()
 
     CARAPI Obtain(

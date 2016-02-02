@@ -6,14 +6,18 @@ namespace Elastos {
 namespace Droid {
 namespace View {
 
+CAR_INTERFACE_IMPL(CDragEventHelper, Singleton, IDragEventHelper)
 CAR_SINGLETON_IMPL(CDragEventHelper)
 
 ECode CDragEventHelper::Obtain(
     /* [out] */ IDragEvent** event)
 {
     VALIDATE_NOT_NULL(event)
-    *event = CDragEvent::Obtain();
+
+    AutoPtr<IDragEvent> tmp = CDragEvent::Obtain();
+    *event = tmp;
     REFCOUNT_ADD(*event)
+
     return NOERROR;
 }
 
@@ -28,8 +32,13 @@ ECode CDragEventHelper::Obtain(
     /* [out] */ IDragEvent** event)
 {
     VALIDATE_NOT_NULL(event)
-    *event = CDragEvent::Obtain(action, x, y, localState, description, data, result);
+
+    AutoPtr<IDragEvent> tmp = CDragEvent::Obtain(
+        action, x, y, localState, description,
+        data, result);
+    *event = tmp;
     REFCOUNT_ADD(*event)
+
     return NOERROR;
 }
 
@@ -38,8 +47,11 @@ ECode CDragEventHelper::Obtain(
     /* [out] */ IDragEvent** event)
 {
     VALIDATE_NOT_NULL(event)
-    *event = CDragEvent::Obtain(source);
+
+    AutoPtr<IDragEvent> tmp = CDragEvent::Obtain(source);
+    *event = tmp;
     REFCOUNT_ADD(*event)
+
     return NOERROR;
 }
 
