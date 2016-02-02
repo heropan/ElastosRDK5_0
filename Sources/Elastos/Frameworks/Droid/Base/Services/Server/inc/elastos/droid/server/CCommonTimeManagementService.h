@@ -157,6 +157,11 @@ private:
         AutoPtr<CCommonTimeManagementService> mHost;
     };
 
+    class StaticInitializer
+    {
+    public:
+        StaticInitializer();
+    };
 
 public:
     CAR_INTERFACE_DECL()
@@ -196,23 +201,22 @@ private:
 
     CARAPI_(void) ReevaluateServiceState();
 
-public:
+private:
     /*
      * Constants and globals.
      */
-    const static String TAG;
-    const static Int32 NATIVE_SERVICE_RECONNECT_TIMEOUT = 5000;
-    const static String AUTO_DISABLE_PROP;
-    const static String ALLOW_WIFI_PROP;
-    const static String SERVER_PRIO_PROP;
-    const static String NO_INTERFACE_TIMEOUT_PROP;
+    static const String TAG;
+    static const Int32 NATIVE_SERVICE_RECONNECT_TIMEOUT = 5000;
+    static const String AUTO_DISABLE_PROP;
+    static const String ALLOW_WIFI_PROP;
+    static const String SERVER_PRIO_PROP;
+    static const String NO_INTERFACE_TIMEOUT_PROP;
     static Boolean AUTO_DISABLE;
     static Boolean ALLOW_WIFI;
     static Byte BASE_SERVER_PRIO;
     static Int32 NO_INTERFACE_TIMEOUT;
     static AutoPtr<ArrayOf<InterfaceScoreRule* > > IFACE_SCORE_RULES;
 
-private:
     /*
      * Internal state
      */
@@ -235,6 +239,7 @@ private:
 
     AutoPtr<IRunnable> mReconnectRunnable;
     AutoPtr<IRunnable> mNoInterfaceRunnable;
+    static const StaticInitializer sInitializer;
 };
 
 }//namespace Server

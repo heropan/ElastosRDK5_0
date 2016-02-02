@@ -21,7 +21,7 @@ CAR_INTERFACE_IMPL(PassiveProvider, Object, ILocationProviderInterface)
 
 static AutoPtr<IProviderProperties> PROPERTIES_Init()
 {
-    assert(0);
+    // TODO:
     // AutoPtr<IProviderProperties> temp;
     // CProviderProperties::New(FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE,
     //     ICriteria::Criteria_POWER_LOW, ICriteria::Criteria_ACCURACY_COARSE,

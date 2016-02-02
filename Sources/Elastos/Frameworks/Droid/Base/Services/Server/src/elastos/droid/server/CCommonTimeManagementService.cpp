@@ -36,12 +36,8 @@ namespace Elastos {
 namespace Droid {
 namespace Server {
 
-static AutoPtr< ArrayOf<CCommonTimeManagementService::InterfaceScoreRule*> > InitIFACE_SCORE_RULES()
+CCommonTimeManagementService::StaticInitializer::StaticInitializer()
 {
-    assert(0 && "TODO");
-
-    AutoPtr<ArrayOf<CCommonTimeManagementService::InterfaceScoreRule *> > result;
-
     AutoPtr<ISystemProperties> sysProp;
     CSystemProperties::AcquireSingleton((ISystemProperties**)&sysProp);
     Int32 value;
@@ -54,29 +50,30 @@ static AutoPtr< ArrayOf<CCommonTimeManagementService::InterfaceScoreRule*> > Ini
     CCommonTimeManagementService::NO_INTERFACE_TIMEOUT = tmp;
 
     sysProp->GetInt32(CCommonTimeManagementService::SERVER_PRIO_PROP, 1, &tmp);
-    if (tmp < 1)
+    if (tmp < 1) {
         CCommonTimeManagementService::BASE_SERVER_PRIO = 1;
-    else if (tmp > 30)
+    }
+    else if (tmp > 30) {
         CCommonTimeManagementService::BASE_SERVER_PRIO = 30;
-    else
-        CCommonTimeManagementService::BASE_SERVER_PRIO = (byte)tmp;
-
-    if (CCommonTimeManagementService::ALLOW_WIFI) {
-        AutoPtr<CCommonTimeManagementService::InterfaceScoreRule> isr1, isr2;
-        result = ArrayOf<CCommonTimeManagementService::InterfaceScoreRule*>::Alloc(2);
-        isr1 = new CCommonTimeManagementService::InterfaceScoreRule(String("wlan"), (Byte)1);
-        isr2 = new CCommonTimeManagementService::InterfaceScoreRule(String("eth"), (Byte)2);
-        result->Set(0, isr1);
-        result->Set(1, isr2);
     }
     else {
-        result = ArrayOf<CCommonTimeManagementService::InterfaceScoreRule* >::Alloc(1);
-        AutoPtr<CCommonTimeManagementService::InterfaceScoreRule> isr2;
-        isr2 = new CCommonTimeManagementService::InterfaceScoreRule(String("eth"), (Byte)2);
-        result->Set(0, isr2);
+        CCommonTimeManagementService::BASE_SERVER_PRIO = (Byte)tmp;
     }
 
-    return result;
+    if (CCommonTimeManagementService::ALLOW_WIFI) {
+        IFACE_SCORE_RULES = ArrayOf<CCommonTimeManagementService::InterfaceScoreRule*>::Alloc(2);
+        AutoPtr<CCommonTimeManagementService::InterfaceScoreRule> isr1, isr2;
+        isr1 = new CCommonTimeManagementService::InterfaceScoreRule(String("wlan"), (Byte)1);
+        isr2 = new CCommonTimeManagementService::InterfaceScoreRule(String("eth"), (Byte)2);
+        IFACE_SCORE_RULES->Set(0, isr1);
+        IFACE_SCORE_RULES->Set(1, isr2);
+    }
+    else {
+        IFACE_SCORE_RULES = ArrayOf<CCommonTimeManagementService::InterfaceScoreRule* >::Alloc(1);
+        AutoPtr<CCommonTimeManagementService::InterfaceScoreRule> isr1;
+        isr1 = new CCommonTimeManagementService::InterfaceScoreRule(String("eth"), (Byte)2);
+        IFACE_SCORE_RULES->Set(0, isr1);
+    }
 }
 
 
@@ -90,9 +87,8 @@ Boolean CCommonTimeManagementService::AUTO_DISABLE = FALSE;
 Boolean CCommonTimeManagementService::ALLOW_WIFI = FALSE;
 Byte CCommonTimeManagementService::BASE_SERVER_PRIO = 0x0;
 Int32 CCommonTimeManagementService::NO_INTERFACE_TIMEOUT = 0;
-AutoPtr<ArrayOf<CCommonTimeManagementService::InterfaceScoreRule *> > CCommonTimeManagementService::IFACE_SCORE_RULES
-    = InitIFACE_SCORE_RULES();
-
+AutoPtr<ArrayOf<CCommonTimeManagementService::InterfaceScoreRule *> > CCommonTimeManagementService::IFACE_SCORE_RULES;
+const CCommonTimeManagementService::StaticInitializer CCommonTimeManagementService::sInitializer;
 
 //====================================================================
 // CCommonTimeManagementService::ReconnectRunnable

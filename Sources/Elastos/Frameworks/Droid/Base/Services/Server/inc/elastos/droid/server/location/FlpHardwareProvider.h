@@ -196,6 +196,12 @@ private:
         FlpHardwareProvider* mHost;
     };
 
+    class StaticInitializer
+    {
+    public:
+        StaticInitializer();
+    };
+
 public:
     CAR_INTERFACE_DECL()
 
@@ -343,7 +349,7 @@ private:
     /**
      * Private native methods accessing FLP HAL.
      */
-    static Boolean sInit;
+    static const StaticInitializer sInitializer;
 
     // static jobject sCallbacksObj;
     // static JNIEnv *sCallbackEnv;

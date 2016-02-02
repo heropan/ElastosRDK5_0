@@ -163,6 +163,12 @@ void loadFrameworkModule()
         printf("<%s, %d> dlopen '%s' failed.\n", __FILE__, __LINE__, "Elastos.Droid.Core.eco");
         printf("error: %s\n", dlerror());
     }
+
+    module = dlopen("Elastos.Droid.Server.eco", RTLD_NOW);
+    if (NULL == module) {
+        printf("<%s, %d> dlopen '%s' failed.\n", __FILE__, __LINE__, "Elastos.Droid.Server.eco");
+        printf("error: %s\n", dlerror());
+    }
 }
 
 int main(int argc, char *argv[])

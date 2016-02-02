@@ -246,6 +246,15 @@ ECode FlpHardwareProvider::NetworkLocationListener::OnProviderDisabled(
     return NOERROR;
 }
 
+
+//====================================
+// FlpHardwareProvider::StaticInitializer
+//====================================
+FlpHardwareProvider::StaticInitializer::StaticInitializer()
+{
+    NativeClassInit();
+}
+
 //====================================
 // FlpHardwareProvider
 //====================================
@@ -260,8 +269,7 @@ const Int32 FlpHardwareProvider::FLP_RESULT_ID_UNKNOWN = -5;
 const Int32 FlpHardwareProvider::FLP_RESULT_INVALID_GEOFENCE_TRANSITION = -6;
 const Int32 FlpHardwareProvider::FLP_GEOFENCE_MONITOR_STATUS_UNAVAILABLE = 1<<0;
 const Int32 FlpHardwareProvider::FLP_GEOFENCE_MONITOR_STATUS_AVAILABLE = 1<<1;
-
-Boolean FlpHardwareProvider::sInit = NativeClassInit();
+const FlpHardwareProvider::StaticInitializer FlpHardwareProvider::sInitializer;
 
 CAR_INTERFACE_IMPL(FlpHardwareProvider, Object, IFlpHardwareProvider)
 
@@ -493,7 +501,7 @@ AutoPtr<ILocation> FlpHardwareProvider::UpdateLocationInformation(
 
 Boolean FlpHardwareProvider::NativeClassInit()
 {
-    assert(0);
+    // TODO:
 /*
     sFlpInterface = NULL;
 
