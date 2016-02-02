@@ -130,6 +130,7 @@
 > Elastos/Frameworks/Droid/ServiceManager
 - Elastos/Frameworks/Droid/DroidRuntime/lib
 > Elastos/Frameworks/Droid/DroidRuntime
+# ==== buid Framework Core ====
 - Elastos/Frameworks/Droid/Base/Core/inc
 - Elastos/Frameworks/Droid/Base/Core/src/elastos/droid Elastos.Droid.Core.car
 > Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/os/storage
@@ -295,11 +296,7 @@
 > Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/sax
 > Elastos/Frameworks/Droid/Base/Core/src/elastos/droid
 > Elastos/Frameworks/Droid/Base/Core
-- Elastos/Frameworks/Droid/Base/Packages/SystemUI/src/elastos/droid/packages/systemui SystemUI.car
-- Elastos/Frameworks/Droid/Base/Packages/SystemUI/src/elastos/droid/packages/systemui/doze
-- Elastos/Frameworks/Droid/Base/Packages/SystemUI/src/elastos/droid/packages/systemui/statusbar/phone
-- Elastos/Frameworks/Droid/Base/Packages/SystemUI/src/elastos/droid/packages/systemui/statusbar
-- Elastos/Frameworks/Droid/Base/Packages/SystemUI/src/elastos/droid/packages/systemui
+# ==== buid Framework Server ====
 - Elastos/Frameworks/Droid/Base/Services/Server/src/elastos/droid/server Elastos.Droid.Server.car
 #- Elastos/Frameworks/Droid/Base/Services/Server/src/elastos/droid Elastos.Droid.System.eco
 #- Elastos/Frameworks/Droid/Base/Services/Server/src/elastos/droid Org.Kxml2.IO.eco
@@ -331,12 +328,19 @@
 > Elastos/Frameworks/Droid/Base/Services/Server/src/elastos/droid/server/wm
 > Elastos/Frameworks/Droid/Base/Services/Server/src/elastos/droid/server
 > Elastos/Frameworks/Droid/Base/Services/Server/
+# ==== buid App_process ====
 > Elastos/Frameworks/Droid/App_process Elastos.Droid.Core.eco
 > Elastos/Frameworks/Droid/App_process
+# ==== buid Framework JavaProxy ====
 #> Elastos/Frameworks/Droid/JavaProxy Elastos.Droid.JavaProxy.car
 #- Elastos/Frameworks/Droid/JavaProxy/src
 #> Elastos/Frameworks/Droid/JavaProxy
-> Elastos/Frameworks/Droid/Base/Packages/SystemUI
+# ==== buid SystemUI ====
+  Elastos/Frameworks/Droid/Base/Packages/SystemUI/src/elastos/droid/packages/systemui SystemUI.car
+> Elastos/Frameworks/Droid/Base/Packages/SystemUI/src/elastos/droid/packages/systemui/doze
+  Elastos/Frameworks/Droid/Base/Packages/SystemUI/src/elastos/droid/packages/systemui/statusbar/phone
+  Elastos/Frameworks/Droid/Base/Packages/SystemUI/src/elastos/droid/packages/systemui/statusbar
+> Elastos/Frameworks/Droid/Base/Packages/SystemUI/src/elastos/droid/packages/systemui
 #- Elastos/Frameworks/Droid/Base/Packages/SettingsProvider Org.Kxml2.IO.eco
 #- Elastos/Frameworks/Droid/Base/Packages/SettingsProvider
 #  Elastos/Frameworks/Droid/DevSamples/SoftKeyboard
@@ -369,6 +373,7 @@
 #> Elastos/Frameworks/Droid/Commands
 - Elastos/Frameworks/Droid/DCARServer
 - Elastos/Frameworks/Droid/DCARServiceManager
+# ==== buid Framework Test ====
   Elastos/Frameworks/Droid/Base/Test/inc
 > Elastos/Frameworks/Droid/Base/Test/src/eunit Eunit.car
   Elastos/Frameworks/Droid/Base/Test/src/eunit/framework
