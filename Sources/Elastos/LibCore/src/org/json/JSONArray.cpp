@@ -199,7 +199,7 @@ ECode JSONArray::Put(
         FAIL_RETURN(JSON::CheckDouble(result));
     }
     Int32 size;
-    while ((mValues->GetSize(&size), size) <= index) {
+    while (mValues->GetSize(&size), size <= index) {
         mValues->Add(NULL);
     }
     mValues->Set(index, value);
@@ -616,14 +616,14 @@ ECode JSONArray::Join(
     mValues->GetSize(&size);
     for (Int32 i = 0; i < size; i++) {
         if (i > 0) {
-            (stringer->mOut)->Append(separator);
+            stringer->mOut->Append(separator);
         }
         AutoPtr<IInterface> object;
         mValues->Get(i, (IInterface**)&object);
         stringer->Value(object);
     }
     stringer->Close(JSONStringerScope_NULL, JSONStringerScope_NULL, String(""));
-    *res = (stringer->mOut)->ToString();
+    *res = stringer->mOut->ToString();
     return NOERROR;
 }
 

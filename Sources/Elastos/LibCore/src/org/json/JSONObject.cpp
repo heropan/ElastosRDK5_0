@@ -241,16 +241,16 @@ ECode JSONObject::Accumulate(
 
     if (IJSONArray::Probe(current) != NULL) {
         AutoPtr<IJSONArray> obj = IJSONArray::Probe(current);
-        AutoPtr<JSONArray> array = (JSONArray*)obj.Get();
+        JSONArray* array = (JSONArray*)obj.Get();
         return array->CheckedPut(value);
     }
     else {
         AutoPtr<IJSONArray> obj;
         CJSONArray::New((IJSONArray**)&obj);
-        AutoPtr<JSONArray> array = (JSONArray*)obj.Get();
+        JSONArray* array = (JSONArray*)obj.Get();
         FAIL_RETURN(array->CheckedPut(current));
         FAIL_RETURN(array->CheckedPut(value));
-        mNameValuePairs->Put(CoreUtils::Convert(name), (IJSONArray*)array.Get());
+        mNameValuePairs->Put(CoreUtils::Convert(name), obj);
     }
     return NOERROR;
 }
@@ -279,9 +279,7 @@ ECode JSONObject::Append(
         // throw new JSONException("Key " + name + " is not a JSONArray");
     }
 
-    ((JSONArray*)array.Get())->CheckedPut(value);
-
-    return NOERROR;
+    return ((JSONArray*)array.Get())->CheckedPut(value);
 }
 
 ECode JSONObject::CheckName(
@@ -883,7 +881,7 @@ ECode JSONObject::Wrap(
     CObject::ReflectClassInfo(o, (IClassInfo**)&classInfo);
     String name;;
     classInfo->GetNamespace(&name);
-    if (name.StartWith("java.")) {
+    if (name.StartWith("Elastos.")) {
         String str;
         IObject::Probe(o)->ToString(&str);
         AutoPtr<ICharSequence> cs = CoreUtils::Convert(str);

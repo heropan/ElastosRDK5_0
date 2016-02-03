@@ -181,9 +181,7 @@ ECode JSON::ToString(
         return seq->ToString(result);
     }
     else if (value != NULL) {
-        String str = Object::ToString(value);
-        AutoPtr<ICharSequence> seq = CoreUtils::Convert(str);
-        return seq->ToString(result);
+        return Object::ToString(value);
     }
     return NOERROR;
 }
