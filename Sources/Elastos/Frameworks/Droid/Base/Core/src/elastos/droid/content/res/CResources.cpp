@@ -12,6 +12,7 @@
 //#include "elastos/droid/graphics/drawable/CColorDrawable.h"
 //#include "elastos/droid/graphics/drawable/Drawable.h"
 #include "elastos/droid/os/Build.h"
+#include "elastos/droid/utility/CInt64SparseArray.h"
 #include "elastos/droid/R.h"
 #include <elastos/utility/logging/Slogger.h>
 #include <elastos/utility/logging/Logger.h>
@@ -19,16 +20,17 @@
 #include <elastos/core/StringUtils.h>
 #include <elastos/core/AutoLock.h>
 
+using Elastos::Droid::Content::Pm::IActivityInfoHelper;
+using Elastos::Droid::Content::Pm::IActivityInfo;
+using Elastos::Droid::Content::Pm::CActivityInfo;
 using Elastos::Droid::Internal::Utility::XmlUtils;
 using Elastos::Droid::Os::Build;
 //using Elastos::Droid::Graphics::Movie;
 //using Elastos::Droid::Graphics::Drawable::CColorDrawable;
 using Elastos::Droid::Graphics::Drawable::IColorDrawable;
-//using Elastos::Droid::Graphics::Drawable::Drawable;
 using Elastos::Droid::Graphics::Drawable::EIID_IDrawableConstantState;
-using Elastos::Droid::Content::Pm::IActivityInfoHelper;
-using Elastos::Droid::Content::Pm::IActivityInfo;
-using Elastos::Droid::Content::Pm::CActivityInfo;
+//using Elastos::Droid::Graphics::Drawable::Drawable;
+using Elastos::Droid::Utility::CInt64SparseArray;
 
 using Libcore::ICU::INativePluralRulesHelper;
 using Libcore::ICU::CNativePluralRulesHelper;
@@ -356,6 +358,15 @@ ECode CResources::Theme::GetTheme(
 CResources::StaticInitializer::StaticInitializer()
 {
     CResources::LAYOUT_DIR_CONFIG = CActivityInfo::ActivityInfoConfigToNative(IActivityInfo::CONFIG_LAYOUT_DIRECTION);
+    sPreloadedDrawables = ArrayOf<IInt64SparseArray*>::Alloc(2);
+    AutoPtr<IInt64SparseArray> array;
+    CInt64SparseArray::New((IInt64SparseArray**)&array);
+    sPreloadedDrawables->Set(0, array);
+    array = NULL;
+    CInt64SparseArray::New((IInt64SparseArray**)&array);
+    sPreloadedDrawables->Set(1, array);
+
+    CInt64SparseArray::New((IInt64SparseArray**)&sPreloadedColorDrawables);
 }
 
 
@@ -369,9 +380,9 @@ Int32 CResources::LAYOUT_DIR_CONFIG = 0;
 const String CResources::WIDGET_SUFFIX("widget_preview");
 
 INIT_PROI_4 AutoPtr<IResources> CResources::sSystem;
-INIT_PROI_4 List< AutoPtr<CResources::ConstantStateMap> > CResources::sPreloadedDrawables;
-CResources::ConstantStateMap CResources::sPreloadedColorDrawables;
-CResources::ColorStateMap CResources::sPreloadedColorStateLists;
+INIT_PROI_4 AutoPtr< ArrayOf<IInt64SparseArray*> > CResources::sPreloadedDrawables;
+INIT_PROI_4 AutoPtr<IInt64SparseArray> CResources::sPreloadedColorDrawables;
+INIT_PROI_4 CResources::ColorStateMap CResources::sPreloadedColorStateLists;
 Boolean CResources::sPreloaded = FALSE;
 Int32 CResources::sPreloadedDensity = 0;
 INIT_PROI_4 Object CResources::sSync;
@@ -1499,31 +1510,37 @@ void CResources::ClearDrawableCachesLocked(
 }
 
 void CResources::ClearDrawableCacheLocked(
-    /* [in] */ ConstantStateMap* cache,
+    /* [in] */ IInt64SparseArray* cache,
     /* [in] */ Int32 configChanges)
 {
     if (DEBUG_CONFIG) {
         Slogger::D(TAG, "Cleaning up drawables config changes: 0x%08x", configChanges);
     }
 
-    AutoPtr<IWeakReference> wr;
-    ConstantStateMapIterator it;
-    Int32 con;
-    for (it = cache->Begin(); it != cache->End(); ++it) {
-        wr = it->mSecond;
-        if (wr.Get() != NULL) {
+    Int32 N;
+    cache->GetSize(&N);
+    for (Int32 i = 0; i < N; i++) {
+        AutoPtr<IInterface> value;
+        cache->ValueAt(i, (IInterface**)&value);
+        IWeakReference* wr = IWeakReference::Probe(value);
+        if (wr != NULL) {
             AutoPtr<IDrawableConstantState> cs;
             wr->Resolve(EIID_IDrawableConstantState, (IInterface**)&cs);
             if (cs != NULL) {
+                Int32 con;
                 cs->GetChangingConfigurations(&con);
                 if (CConfiguration::NeedNewResources(configChanges, con)) {
                     if (DEBUG_CONFIG) {
-                        Slogger::D(TAG, "FLUSHING #0x%08x /%p with changes: 0x%08x", it->mFirst, cs.Get(), con);
+                        Int64 key;
+                        cache->KeyAt(i, &key);
+                        Slogger::D(TAG, "FLUSHING #0x%08x /%p with changes: 0x%08x", key, cs.Get(), con);
                     }
-                    (*cache)[it->mFirst] = NULL;
+                    cache->SetValueAt(i, NULL);
                 }
                 else if (DEBUG_CONFIG) {
-                    Slogger::D(TAG, "(Keeping #0x%080x /%p with changes: 0x%08x", it->mFirst, cs.Get(), con);
+                    Int64 key;
+                    cache->KeyAt(i, &key);
+                    Slogger::D(TAG, "(Keeping #0x%08x /%p with changes: 0x%08x", key, cs.Get(), con);
                 }
             }
         }
@@ -1865,22 +1882,12 @@ ECode CResources::FinishPreloading()
     return NOERROR;
 }
 
-AutoPtr<CResources::ConstantStateMap> CResources::GetPreloadedDrawables()
-{
-    return sPreloadedDrawables[0];
-}
-
-ECode CResources::GetPreloadedDrawables(
-    /* [out] */ IHashMap** drawables)
-{
-    VALIDATE_NOT_NULL(drawables)
-    assert(0 && "TODO");
-    return NOERROR;
-}
-
 ECode CResources::GetPreloadedDrawables(
     /* [out] */ IInt64SparseArray** drawables)
 {
+    VALIDATE_NOT_NULL(drawables);
+    *drawables = (*sPreloadedDrawables)[0];
+    REFCOUNT_ADD(*drawables);
     return NOERROR;
 }
 
@@ -1972,19 +1979,16 @@ ECode CResources::LoadDrawable(
     // themeable attributes.
     AutoPtr<IWeakReference> wr;
     if (isColorDrawable) {
-        ConstantStateMapIterator it = sPreloadedColorDrawables.Find(key);
-        if (it != sPreloadedColorDrawables.End()) {
-            wr = it->mSecond;
-        }
+        AutoPtr<IInterface> value;
+        sPreloadedColorDrawables->Get(key, (IInterface**)&value);
+        wr = IWeakReference::Probe(value);
     }
     else {
         Int32 direction;
         mConfiguration->GetLayoutDirection(&direction);
-        AutoPtr<ConstantStateMap> map = sPreloadedDrawables[direction];
-        ConstantStateMapIterator it = map->Find(key);
-        if (it != map->End()) {
-            wr = it->mSecond;
-        }
+        AutoPtr<IInterface> value;
+        (*sPreloadedDrawables)[direction]->Get(key, (IInterface**)&value);
+        wr = IWeakReference::Probe(value);
     }
 
     AutoPtr<IDrawableConstantState> cs;
@@ -2042,8 +2046,7 @@ ECode CResources::CacheDrawable(
 
         if (isColorDrawable) {
             if (VerifyPreloadConfig(changingConfigs, 0, value->mResourceId, String("drawable"))) {
-
-                sPreloadedColorDrawables[key] = wr;
+                sPreloadedColorDrawables->Put(key, wr);
             }
         }
         else {
@@ -2052,17 +2055,14 @@ ECode CResources::CacheDrawable(
                 if ((changingConfigs & LAYOUT_DIR_CONFIG) == 0) {
                     // If this resource does not vary based on layout direction,
                     // we can put it in all of the preload maps.
-                    AutoPtr<ConstantStateMap> map0 = sPreloadedDrawables[0];
-                    (*map0)[key] = wr;
-                    AutoPtr<ConstantStateMap> map1 = sPreloadedDrawables[1];
-                    (*map1)[key] = wr;
+                    (*sPreloadedDrawables)[0]->Put(key, wr);
+                    (*sPreloadedDrawables)[1]->Put(key, wr);
                 }
                 else {
                     // Otherwise, only in the layout dir we loaded it for.
                     Int32 direction;
                     mConfiguration->GetLayoutDirection(&direction);
-                    AutoPtr<ConstantStateMap> map = sPreloadedDrawables[direction];
-                    (*map)[key] = wr;
+                    (*sPreloadedDrawables)[direction]->Put(key, wr);
                 }
             }
         }
@@ -2075,16 +2075,15 @@ ECode CResources::CacheDrawable(
             }
 
             DrawableMapIterator it = caches.Find(themeKey);
-            AutoPtr<ConstantStateMap> themedCache;
+            AutoPtr<IInt64SparseArray> themedCache;
             if (it == caches.End()) {
-                themedCache = new ConstantStateMap(1);
+                CInt64SparseArray::New(1, (IInt64SparseArray**)&themedCache);
                 caches[themeKey] = themedCache;
             }
             else {
                 themedCache = it->mSecond;
             }
-
-            (*themedCache)[key] = wr;
+            themedCache->Put(key, wr);
         }
     }
 
@@ -2169,7 +2168,7 @@ AutoPtr<IDrawable> CResources::GetCachedDrawable(
 
         DrawableMapIterator it = caches.Find(themeKey);
         if (it != caches.End()) {
-            AutoPtr<ConstantStateMap> themedCache = it->mSecond;
+            AutoPtr<IInt64SparseArray> themedCache = it->mSecond;
             AutoPtr<IDrawable> themedDrawable = GetCachedDrawableLocked(themedCache, key);
             if (themedDrawable != NULL) {
                 return themedDrawable;
@@ -2182,12 +2181,13 @@ AutoPtr<IDrawable> CResources::GetCachedDrawable(
 }
 
 AutoPtr<IDrawableConstantState> CResources::GetConstantStateLocked(
-    /* [in] */ ConstantStateMap* drawableCache,
+    /* [in] */ IInt64SparseArray* drawableCache,
     /* [in] */ Int64 key)
 {
-    ConstantStateMapIterator it = drawableCache->Find(key);
-    if (it != drawableCache->End()) { // we have the key
-        AutoPtr<IWeakReference> wr = it->mSecond;
+    AutoPtr<IInterface> value;
+    drawableCache->Get(key, (IInterface**)&value);
+    IWeakReference* wr = IWeakReference::Probe(value);
+    if (wr != NULL) { // we have the key
         AutoPtr<IDrawableConstantState> entry;
         wr->Resolve(EIID_IDrawableConstantState, (IInterface**)&entry);
         if (entry != NULL) {
@@ -2197,14 +2197,14 @@ AutoPtr<IDrawableConstantState> CResources::GetConstantStateLocked(
             return entry;
         }
         else {  // our entry has been purged
-            drawableCache->Erase(it);
+            drawableCache->Delete(key);
         }
     }
     return NULL;
 }
 
 AutoPtr<IDrawable> CResources::GetCachedDrawableLocked(
-    /* [in] */ ConstantStateMap* drawableCache,
+    /* [in] */ IInt64SparseArray* drawableCache,
     /* [in] */ Int64 key)
 {
     AutoPtr<IDrawableConstantState> entry = GetConstantStateLocked(drawableCache, key);

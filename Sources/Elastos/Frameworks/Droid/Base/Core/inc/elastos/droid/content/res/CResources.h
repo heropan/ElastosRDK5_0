@@ -68,9 +68,7 @@ public:
     // private final ArrayMap<String, LongSparseArray<WeakReference<ConstantState>>> mDrawableCache
     // private final ArrayMap<String, LongSparseArray<WeakReference<ConstantState>>> mColorStateListCache
     // private final LongSparseArray<WeakReference<ColorStateList>> mColorDrawableCache
-    typedef HashMap<Int64, AutoPtr<IWeakReference> > ConstantStateMap;
-    typedef typename ConstantStateMap::Iterator ConstantStateMapIterator;
-    typedef HashMap<String, AutoPtr<ConstantStateMap> > DrawableMap;
+    typedef HashMap<String, AutoPtr<IInt64SparseArray> > DrawableMap;
     typedef typename DrawableMap::Iterator DrawableMapIterator;
 
     typedef HashMap<Int64, AutoPtr<IWeakReference> > ColorStateMap;
@@ -1239,11 +1237,6 @@ public:
     /**
      * @hide
      */
-    AutoPtr<ConstantStateMap> GetPreloadedDrawables();
-
-    CARAPI GetPreloadedDrawables(
-        /* [out] */ IHashMap** drawables);
-
     CARAPI GetPreloadedDrawables(
         /* [out] */ IInt64SparseArray** drawables);
 
@@ -1298,7 +1291,7 @@ private:
         /* [in] */ Int32 configChanges);
 
     CARAPI_(void) ClearDrawableCacheLocked(
-        /* [in] */ ConstantStateMap* cache,
+        /* [in] */ IInt64SparseArray* cache,
         /* [in] */ Int32 configChanges);
 
     CARAPI_(Boolean) VerifyPreloadConfig(
@@ -1313,11 +1306,11 @@ private:
         /* [in] */ IResourcesTheme* theme);
 
     CARAPI_(AutoPtr<IDrawableConstantState>) GetConstantStateLocked(
-        /* [in] */ ConstantStateMap* drawableCache,
+        /* [in] */ IInt64SparseArray* drawableCache,
         /* [in] */ Int64 key);
 
     CARAPI_(AutoPtr<IDrawable>) GetCachedDrawableLocked(
-        /* [in] */ ConstantStateMap* drawableCache,
+        /* [in] */ IInt64SparseArray* drawableCache,
         /* [in] */ Int64 key);
 
     CARAPI_(AutoPtr<IColorStateList>) GetCachedColorStateList(
@@ -1357,7 +1350,7 @@ private:
     static Object sSync;
 
     static AutoPtr< ArrayOf<IInt64SparseArray*> > sPreloadedDrawables;
-    static ConstantStateMap sPreloadedColorDrawables;
+    static AutoPtr<IInt64SparseArray> sPreloadedColorDrawables;
     static ColorStateMap sPreloadedColorStateLists;
 
     // Pool of TypedArrays targeted to this Resources object.
@@ -1369,7 +1362,7 @@ private:
     static Int32 sPreloadedDensity;
 
     // These are protected by the mTmpValue lock.
-    Object mAccessLock;// = new Object();
+    Object mAccessLock;
     AutoPtr<CConfiguration> mTmpConfig;
     DrawableMap mDrawableCache;
     DrawableMap mColorDrawableCache;
