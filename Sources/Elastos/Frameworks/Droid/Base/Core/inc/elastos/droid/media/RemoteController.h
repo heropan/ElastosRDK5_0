@@ -5,7 +5,17 @@
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/media/session/CMediaController.h"
 #include "elastos/droid/media/MediaMetadataEditor.h"
+#include <elastos/utility/etl/List.h>
 #include <elastos/core/Object.h>
+
+using Elastos::Droid::Media::Session::EIID_IMediaControllerCallback;
+using Elastos::Droid::Media::Session::CMediaController;
+using Elastos::Droid::Media::Session::IMediaController;
+using Elastos::Droid::Media::Session::IMediaControllerCallback;
+using Elastos::Droid::Media::Session::IMediaSessionManager;
+using Elastos::Droid::Media::Session::IMediaSessionManagerOnActiveSessionsChangedListener;
+using Elastos::Droid::Media::Session::IPlaybackState;
+using Elastos::Utility::Etl::List;
 
 namespace Elastos{
 namespace Droid {
@@ -22,6 +32,7 @@ private:
         : public Object
         , public IIRemoteControlDisplay
     {
+        friend class RemoteController;
     public:
         RcDisplay(
             /* [in] */ RemoteController* rc);
@@ -63,13 +74,14 @@ private:
             /* [in] */ IBundle* metadata,
             /* [in] */ IBitmap* artwork);
     private:
-        AutoPtr<IWeakReference> mController;
+        RemoteController* mController;
     };
 
     class MediaControllerCallback
         : public Object
         , public IMediaControllerCallback
     {
+        friend class RemoteController;
     public:
         MediaControllerCallback(
             /* [in] */ RemoteController* host);
@@ -97,21 +109,26 @@ private:
         , public IMediaSessionManagerOnActiveSessionsChangedListener
     {
     public:
-        TopTransportSessionListener();
+        TopTransportSessionListener(
+            /* [in] */ RemoteController* host);
 
         ~TopTransportSessionListener();
 
         CAR_INTERFACE_DECL()
 
         CARAPI OnActiveSessionsChanged(
-            /* [in] */ List<AutoPtr<CMediaController> >* controllers);
+            /* [in] */ IList * controllers);
+
+    private:
+        RemoteController* mHost;
     };
 
     class EventHandler
         : public Handler
     {
+    public:
         EventHandler(
-            /* [in] */ IRemoteController* rc,
+            /* [in] */ RemoteController* host,
             /* [in] */ ILooper* looper);
 
         ~EventHandler();
@@ -120,10 +137,14 @@ private:
 
         CARAPI HandleMessage(
             /* [in] */ IMessage* msg);
+
+    private:
+        RemoteController* mHost;
     };
 
     class PlaybackInfo
         : public Object
+        , public IPlaybackInfo
     {
     public:
         PlaybackInfo(
@@ -133,6 +154,8 @@ private:
             /* [in] */ Float speed);
 
         ~PlaybackInfo();
+
+        CAR_INTERFACE_DECL()
 
     public:
         Int32 mState;
@@ -144,7 +167,9 @@ private:
 public:
     class MetadataEditor
         : public MediaMetadataEditor
+        , public IRemoteControllerMetadataEditor
     {
+        friend class RemoteController;
     public:
         CARAPI Apply();
 
@@ -154,17 +179,20 @@ public:
         /**
          * @hide
          */
-        MetadataEditor();
+        MetadataEditor(
+            /* [in] */ RemoteController* host);
 
-        CARAPI constructor();
-
-        CARAPI constructor(
+        MetadataEditor(
+            /* [in] */ RemoteController* host,
             /* [in] */ IBundle* metadata,
             /* [in] */ Int64 editableKeys);
 
     private:
-        CARAPPI_(void) CleanupBitmapFromBundle(
+        CARAPI_(void) CleanupBitmapFromBundle(
             /* [in] */ Int32 key);
+
+    private:
+        RemoteController* mHost;
     };
 
 public:
@@ -201,7 +229,7 @@ public:
         /* [in] */ Boolean wantBitmap,
         /* [in] */ Int32 width,
         /* [in] */ Int32 height,
-        /* [out] */ Boolean* result)；
+        /* [out] */ Boolean* result);
 
     CARAPI SetArtworkConfiguration(
         /* [in] */ Int32 width,
@@ -226,7 +254,7 @@ public:
         /* [in] */ Boolean registered);
 
     CARAPI GetRcDisplay(
-        /* [out] */ IRcDisplay** result);
+        /* [out] */ IIRemoteControlDisplay** result);
 
     CARAPI GetArtworkSize(
         /* [out, callee] */ ArrayOf<Int32>** result);
@@ -265,16 +293,16 @@ private:
         /* [in] */ Boolean clearing);
 
     CARAPI_(void) OnDisplayEnable(
-        /* [in] */ boolean enabled);
+        /* [in] */ Boolean enabled);
 
     CARAPI_(void) UpdateController(
-        /* [in] */ CMediaController* controller);
+        /* [in] */ IMediaController* controller);
 
     CARAPI_(void) OnNewPlaybackState(
-        /* [in] */ PlaybackState* state);
+        /* [in] */ IPlaybackState* state);
 
-    CARAPI_(void) onNewMediaMetadata(
-        /* [in] */ MediaMetadata* metadata);
+    CARAPI_(void) OnNewMediaMetadata(
+        /* [in] */ IMediaMetadata* metadata);
 
 private:
     const static Int32 MAX_BITMAP_DIMENSION;
@@ -282,8 +310,8 @@ private:
     const static String TAG;
     const static Boolean DEBUG;
     const static Boolean USE_SESSIONS;
-    const static Object mGenLock;
-    const static Object mInfoLock;
+    /*const*/ static Object mGenLock;
+    /*const*/ static Object mInfoLock;
 
     AutoPtr<RcDisplay> mRcd;
     AutoPtr<IContext> mContext;
@@ -291,7 +319,7 @@ private:
     Int32 mMaxBitmapDimension;
     AutoPtr<MetadataEditor> mMetadataEditor;
 
-    AutoPtr<MediaSessionManager> mSessionManager;
+    AutoPtr<IMediaSessionManager> mSessionManager;
     AutoPtr<IMediaSessionManagerOnActiveSessionsChangedListener> mSessionListener;
     AutoPtr<IMediaControllerCallback> mSessionCb;
 
@@ -311,7 +339,7 @@ private:
     Int32 mArtworkHeight;
     Boolean mEnabled;
     // synchronized on mInfoLock, for USE_SESSION apis.
-    AutoPtr<MediaController> mCurrentSession;
+    AutoPtr<IMediaController> mCurrentSession;
 
     //==================================================
     // Event handling

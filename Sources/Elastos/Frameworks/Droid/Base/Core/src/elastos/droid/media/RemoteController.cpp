@@ -1,16 +1,47 @@
+#include "elastos/droid/app/CActivityManager.h"
 #include "elastos/droid/content/CComponentName.h"
+#include "elastos/droid/content/Intent.h"
 #include "elastos/droid/media/RemoteController.h"
 #include "elastos/droid/media/CRemoteControlClient.h"
+#include "elastos/droid/media/session/CMediaSessionLegacyHelper.h"
+#include "elastos/droid/media/session/CPlaybackState.h"
 #include "elastos/droid/os/SystemClock.h"
+#include "elastos/droid/os/CBundle.h"
 #include "elastos/droid/view/KeyEvent.h"
 #include "Elastos.Droid.Content.h"
 #include "Elastos.Droid.App.h"
+#include "Elastos.Droid.Utility.h"
 #include <elastos/utility/logging/Slogger.h>
+#include <elastos/core/AutoLock.h>
+#include <elastos/core/StringUtils.h>
+#include <elastos/droid/os/SystemClock.h>
+#include <elastos/droid/os/Looper.h>
+#include <elastos/droid/os/UserHandle.h>
+#include <elastos/core/Math.h>
 
+using Elastos::Droid::App::CActivityManager;
 using Elastos::Droid::App::IPendingIntent;
+using Elastos::Droid::Content::CComponentName;
+using Elastos::Droid::Content::Intent;
 using Elastos::Droid::Graphics::IBitmap;
+using Elastos::Droid::Os::EIID_IHandler;
+using Elastos::Droid::Os::CBundle;
 using Elastos::Droid::Os::IBundle;
+using Elastos::Droid::Os::Looper;
+using Elastos::Droid::Os::SystemClock;
+using Elastos::Droid::Os::UserHandle;
+using Elastos::Droid::Media::Session::EIID_IMediaSessionManagerOnActiveSessionsChangedListener;
+using Elastos::Droid::Media::Session::CMediaSessionLegacyHelper;
+using Elastos::Droid::Media::Session::CPlaybackState;
+using Elastos::Droid::Media::Session::IMediaController;
+using Elastos::Droid::Media::Session::IMediaControllerTransportControls;
+using Elastos::Droid::Media::Session::IMediaSessionToken;
+using Elastos::Droid::View::KeyEvent;
 using Elastos::Utility::Logging::Slogger;
+using Elastos::Droid::Utility::IDisplayMetrics;
+using Elastos::Core::AutoLock;
+using Elastos::Core::Math;
+using Elastos::Core::StringUtils;
 
 namespace Elastos{
 namespace Droid {
@@ -18,43 +49,37 @@ namespace Media {
 //================================================================================
 //                      RemoteController::RcDisplay
 //================================================================================
-RemoteController::RcDisplay::RcDisplay()
+RemoteController::RcDisplay::RcDisplay(
+    /* [in] */ RemoteController* rc)
+    : mController(rc)
 {}
 
 RemoteController::RcDisplay::~RcDisplay()
 {}
 
-CAR_INTERFACE_IMPL(RemoteController::RcDisplay, Object, IRemoteControlDisplayStub)
-
-ECode RemoteController::RcDisplay::constructor(
-    /* [in] */ RemoteController* rc)
-{
-    mController = IWeakReference::Probe(rc);
-    return NOERROR;
-}
+CAR_INTERFACE_IMPL(RemoteController::RcDisplay, Object, IIRemoteControlDisplay)
 
 ECode RemoteController::RcDisplay::SetCurrentClientId(
     /* [in] */ Int32 genId,
     /* [in] */ IPendingIntent* clientMediaIntent,
     /* [in] */ Boolean clearing)
 {
-    RemoteController* rc = mController.Get();
-    if (rc == NULL) {
-        return;
+    if (mController == NULL) {
+        return NOERROR;
     }
     Boolean isNew = FALSE;
-    synchronized(mGenLock) {
-        if (rc->mClientGenerationIdCurrent != genId) {
-            rc->mClientGenerationIdCurrent = genId;
+    synchronized(mController->mGenLock) {
+        if (mController->mClientGenerationIdCurrent != genId) {
+            mController->mClientGenerationIdCurrent = genId;
             isNew = TRUE;
         }
     }
     if (clientMediaIntent != NULL) {
-        SendMsg(rc->mEventHandler, MSG_NEW_PENDING_INTENT, SENDMSG_REPLACE,
+        SendMsg(mController->mEventHandler, MSG_NEW_PENDING_INTENT, SENDMSG_REPLACE,
                 genId /*arg1*/, 0, clientMediaIntent /*obj*/, 0 /*delay*/);
     }
     if (isNew || clearing) {
-        SendMsg(rc->mEventHandler, MSG_CLIENT_CHANGE, SENDMSG_REPLACE,
+        SendMsg(mController->mEventHandler, MSG_CLIENT_CHANGE, SENDMSG_REPLACE,
                 genId /*arg1*/, clearing ? 1 : 0, NULL /*obj*/, 0 /*delay*/);
     }
     return NOERROR;
@@ -63,11 +88,10 @@ ECode RemoteController::RcDisplay::SetCurrentClientId(
 ECode RemoteController::RcDisplay::SetEnabled(
     /* [in] */ Boolean enabled)
 {
-    RemoteController* rc = mController.Get();
-    if (rc == NULL) {
-        return;
+    if (mController == NULL) {
+        return NOERROR;
     }
-    SendMsg(rc.mEventHandler, MSG_DISPLAY_ENABLE, SENDMSG_REPLACE,
+    SendMsg(mController->mEventHandler, MSG_DISPLAY_ENABLE, SENDMSG_REPLACE,
             enabled ? 1 : 0 /*arg1*/, 0, NULL /*obj*/, 0 /*delay*/);
     return NOERROR;
 }
@@ -79,8 +103,7 @@ ECode RemoteController::RcDisplay::SetPlaybackState(
     /* [in] */ Int64 currentPosMs,
     /* [in] */ Float speed)
 {
-    RemoteController* rc = mController.Get();
-    if (rc == NULL) {
+    if (mController == NULL) {
         return NOERROR;
     }
     if (DEBUG) {
@@ -88,15 +111,16 @@ ECode RemoteController::RcDisplay::SetPlaybackState(
                 ,state ,stateChangeTimeMs, currentPosMs, speed);
     }
 
-    synchronized(mGenLock) {
-        if (rc->mClientGenerationIdCurrent != genId) {
+    synchronized(mController->mGenLock) {
+        if (mController->mClientGenerationIdCurrent != genId) {
             return NOERROR;
         }
     }
-    AutoPtr<PlaybackInfo> playbackInfo = new PlaybackInfo();
-    playbackInfo->constructor(state, stateChangeTimeMs, currentPosMs, speed);
-    SendMsg(rc->mEventHandler, MSG_NEW_PLAYBACK_INFO, SENDMSG_REPLACE,
-            genId /*arg1*/, 0, playbackInfo /*obj*/, 0 /*delay*/);
+    AutoPtr<PlaybackInfo> playbackInfo =
+        new PlaybackInfo(state, stateChangeTimeMs, currentPosMs, speed);
+    AutoPtr<IPlaybackInfo> obj = IPlaybackInfo::Probe(playbackInfo);
+    SendMsg(mController->mEventHandler, MSG_NEW_PLAYBACK_INFO, SENDMSG_REPLACE,
+            genId /*arg1*/, 0, obj.Get() /*obj*/, 0 /*delay*/);
 
     return NOERROR;
 }
@@ -106,16 +130,15 @@ ECode RemoteController::RcDisplay::SetTransportControlInfo(
     /* [in] */ Int32 transportControlFlags,
     /* [in] */ Int32 posCapabilities)
 {
-    RemoteController* rc = mController.Get();
-    if (rc == NULL) {
+    if (mController == NULL) {
         return NOERROR;
     }
-    synchronized(mGenLock) {
-        if (rc->mClientGenerationIdCurrent != genId) {
-            return;
+    synchronized(mController->mGenLock) {
+        if (mController->mClientGenerationIdCurrent != genId) {
+            return NOERROR;
         }
     }
-    SendMsg(rc->mEventHandler, MSG_NEW_TRANSPORT_INFO, SENDMSG_REPLACE,
+    SendMsg(mController->mEventHandler, MSG_NEW_TRANSPORT_INFO, SENDMSG_REPLACE,
             genId /*arg1*/, transportControlFlags /*arg2*/,
             NULL /*obj*/, 0 /*delay*/);
 
@@ -126,22 +149,21 @@ ECode RemoteController::RcDisplay::SetMetadata(
     /* [in] */ Int32 genId,
     /* [in] */ IBundle* metadata)
 {
-    RemoteController* rc = mController.Get();
-    if (rc == NULL) {
+    if (mController == NULL) {
         return NOERROR;
     }
     if (DEBUG) {
-        Slogger::E(TAG, "setMetadata("+%d+")", genId);
+        Slogger::E(TAG, "setMetadata(\"%d\")", genId);
     }
     if (metadata == NULL) {
         return NOERROR;
     }
-    synchronized(mGenLock) {
-        if (rc->mClientGenerationIdCurrent != genId) {
+    synchronized(mController->mGenLock) {
+        if (mController->mClientGenerationIdCurrent != genId) {
             return NOERROR;
         }
     }
-    SendMsg(rc.mEventHandler, MSG_NEW_METADATA, SENDMSG_QUEUE,
+    SendMsg(mController->mEventHandler, MSG_NEW_METADATA, SENDMSG_QUEUE,
             genId /*arg1*/, 0 /*arg2*/,
             metadata /*obj*/, 0 /*delay*/);
 
@@ -152,23 +174,22 @@ ECode RemoteController::RcDisplay::SetArtwork(
     /* [in] */ Int32 genId,
     /* [in] */ IBitmap* artwork)
 {
-    RemoteController* rc = mController.Get();
-    if (rc == NULL) {
+    if (mController == NULL) {
         return NOERROR;
     }
     if (DEBUG) {
-        Slogger::V(TAG, "setArtwork("+%d+")", genId);
+        Slogger::V(TAG, "setArtwork(\"%d\")", genId);
     }
 
-    synchronized(mGenLock) {
-        if (rc->mClientGenerationIdCurrent != genId) {
+    synchronized(mController->mGenLock) {
+        if (mController->mClientGenerationIdCurrent != genId) {
             return NOERROR;
         }
     }
     AutoPtr<IBundle> metadata;
     CBundle::New(1, (IBundle**)&metadata);
-    metadata->PutParcelable(StringUtils::ToString(IMediaMetadataEditor::BITMAP_KEY_ARTWORK), artwork);
-    SendMsg(rc->mEventHandler, MSG_NEW_METADATA, SENDMSG_QUEUE,
+    metadata->PutParcelable(StringUtils::ToString(IMediaMetadataEditor::BITMAP_KEY_ARTWORK), IParcelable::Probe(artwork));
+    SendMsg(mController->mEventHandler, MSG_NEW_METADATA, SENDMSG_QUEUE,
             genId /*arg1*/, 0 /*arg2*/,
             metadata /*obj*/, 0 /*delay*/);
     return NOERROR;
@@ -179,28 +200,27 @@ ECode RemoteController::RcDisplay::SetAllMetadata(
     /* [in] */ IBundle* metadata,
     /* [in] */ IBitmap* artwork)
 {
-    RemoteController* rc = mController->Get();
-    if (rc == NULL) {
-        return;
+    if (mController == NULL) {
+        return NOERROR;
     }
     if (DEBUG) {
-        Slogger::E(TAG, "setAllMetadata("+%d+")", genId); }
+        Slogger::E(TAG, "setAllMetadata(\"%d\")", genId); }
     if ((metadata == NULL) && (artwork == NULL)) {
         return NOERROR;
     }
-    synchronized(mGenLock) {
-        if (rc->mClientGenerationIdCurrent != genId) {
-            return;
+    synchronized(mController->mGenLock) {
+        if (mController->mClientGenerationIdCurrent != genId) {
+            return NOERROR;
         }
     }
     if (metadata == NULL) {
         CBundle::New(1, (IBundle**)&metadata);
     }
     if (artwork != NULL) {
-        metadata->PutParcelable(/*String.valueOf(IMediaMetadataEditor::BITMAP_KEY_ARTWORK)*/,
-                artwork)
+        metadata->PutParcelable(StringUtils::ToString(IMediaMetadataEditor::BITMAP_KEY_ARTWORK),
+                IParcelable::Probe(artwork));
     }
-    SendMsg(rc.mEventHandler, MSG_NEW_METADATA, SENDMSG_QUEUE,
+    SendMsg(mController->mEventHandler, MSG_NEW_METADATA, SENDMSG_QUEUE,
             genId /*arg1*/, 0 /*arg2*/,
             metadata /*obj*/, 0 /*delay*/);
 
@@ -209,7 +229,9 @@ ECode RemoteController::RcDisplay::SetAllMetadata(
 //================================================================================
 //                      RemoteController::MediaControllerCallback
 //================================================================================
-RemoteController::MediaControllerCallback::MediaControllerCallback()
+RemoteController::MediaControllerCallback::MediaControllerCallback(
+    /* [in] */ RemoteController* host)
+    : mHost(host)
 {}
 
 RemoteController::MediaControllerCallback::~MediaControllerCallback()
@@ -227,14 +249,16 @@ ECode RemoteController::MediaControllerCallback::OnPlaybackStateChanged(
 ECode RemoteController::MediaControllerCallback::OnMetadataChanged(
     /* [in] */ IMediaMetadata* metadata)
 {
-    OnNewMediaMetadata(metadata);
+    mHost->OnNewMediaMetadata(metadata);
     return NOERROR;
 }
 
 //================================================================================
 //                      RemoteController::TopTransportSessionListener
 //================================================================================
-RemoteController::TopTransportSessionListener::TopTransportSessionListener()
+RemoteController::TopTransportSessionListener::TopTransportSessionListener(
+    /* [in] */ RemoteController* host)
+    : mHost(host)
 {}
 
 RemoteController::TopTransportSessionListener::~TopTransportSessionListener()
@@ -243,78 +267,88 @@ RemoteController::TopTransportSessionListener::~TopTransportSessionListener()
 CAR_INTERFACE_IMPL(RemoteController::TopTransportSessionListener, Object, IMediaSessionManagerOnActiveSessionsChangedListener)
 
 ECode RemoteController::TopTransportSessionListener::OnActiveSessionsChanged(
-    /* [in] */ List<AutoPtr<MediaController> >* controllers)
+    /* [in] */ IList * controllers)
 {
-    Int32 size = controllers.GetSize();
-    List<AutoPtr<MediaController> >::Iterator it =
-        controllers.Begin();
-
-    for (; it != controllers.End(); ++it) {
-        AutoPtr<MediaController> controller = *it;
+    VALIDATE_NOT_NULL(controllers);
+    Int32 size;
+    controllers->GetSize(&size);
+    AutoPtr<IInterface> obj;
+    AutoPtr<IMediaController> controller;
+    for (Int32 i = 0; i < size; ++i) {
+        obj = NULL;
+        controllers->Get(i, (IInterface**)&obj);
+        controller = NULL;
+        controller = IMediaController::Probe(obj);
         Int64 flags;
         controller->GetFlags(&flags);
         // We only care about sessions that handle transport controls,
         // which will be true for apps using RCC
         if ((flags & IMediaSession::FLAG_HANDLES_TRANSPORT_CONTROLS) != 0) {
-            UpdateController(controller);
+            mHost->UpdateController(IMediaController::Probe(controller));
             return NOERROR;
         }
     }
-    UpdateController(NULL);
+    mHost->UpdateController(NULL);
     return NOERROR;
 }
 
 //================================================================================
 //                      RemoteController::EventHandler
 //================================================================================
-RemoteController::EventHandler::EventHandler()
-{}
+RemoteController::EventHandler::EventHandler(
+    /* [in] */ RemoteController* host,
+    /* [in] */ ILooper* looper)
+    : mHost(host)
+{
+    Handler::constructor(looper);
+}
 
 RemoteController::EventHandler::~EventHandler()
 {}
 
 CAR_INTERFACE_IMPL(RemoteController::EventHandler, Object, IHandler)
 
-ECode RemoteController::EventHandler::constructor(
-    /* [in] */ IRemoteController* rc,
-    /* [in] */ ILooper* looper)
-{
-    return Handler::constructor(looper);
-}
-
 ECode RemoteController::EventHandler::HandleMessage(
     /* [in] */ IMessage* msg)
 {
     Int32 what;
     msg->GetWhat(&what);
+    Int32 arg1;
+    msg->GetArg1(&arg1);
+    Int32 arg2;
+    msg->GetArg2(&arg2);
+    AutoPtr<IInterface> obj;
+    msg->GetObj((IInterface**)&obj);
+    AutoPtr<IPendingIntent> pi = IPendingIntent::Probe(obj);
+    AutoPtr<PlaybackInfo> bi = (PlaybackInfo*)IObject::Probe(obj);
     switch(what) {
-        case MSG_NEW_PENDING_INTENT:
-            OnNewPendingIntent(/*msg.arg1*/, (PendingIntent) /*msg.obj*/);
+        case 0:
+            mHost->OnNewPendingIntent(arg1, pi.Get());
             break;
-        case MSG_NEW_PLAYBACK_INFO:
-            OnNewPlaybackInfo/*(msg.arg1*/, (PlaybackInfo) /*msg.obj*/);
+        case 1:
+            mHost->OnNewPlaybackInfo(arg1, bi.Get());
             break;
-        case MSG_NEW_TRANSPORT_INFO:
-            OnNewTransportInfo/*(msg.arg1*/, msg.arg2);
+        case 2:
+            mHost->OnNewTransportInfo(arg1, arg2);
             break;
-        case MSG_NEW_METADATA:
-            OnNewMetadata/*(msg.arg1*/, (Bundle)/*msg.obj*/);
+        case 3:
+            mHost->OnNewMetadata(arg1, IBundle::Probe(obj));
             break;
-        case MSG_CLIENT_CHANGE:
-            OnClientChange/*(msg.arg1*/, msg.arg2 == 1);
+        case 4:
+            mHost->OnClientChange(arg1, arg2 == 1);
             break;
-        case MSG_DISPLAY_ENABLE:
-            OnDisplayEnable/*(msg.arg1*/ == 1);
+        case 5:
+            mHost->OnDisplayEnable(arg1 == 1);
             break;
-        case MSG_NEW_PLAYBACK_STATE:
+        case 6:
             // same as new playback info but using new apis
-            OnNewPlaybackState((PlaybackState) /*msg.obj*/);
+            mHost->OnNewPlaybackState(IPlaybackState::Probe(obj));
             break;
-        case MSG_NEW_MEDIA_METADATA:
-            OnNewMediaMetadata((MediaMetadata) /*msg.obj*/);
+        case 7:
+            mHost->OnNewMediaMetadata(IMediaMetadata::Probe(obj));
             break;
         default:
-            Slogger::E(TAG, "unknown event %d" + msg.what);
+            Slogger::E(TAG, "unknown event %d", what);
     }
     return NOERROR;
 }
@@ -322,13 +356,7 @@ ECode RemoteController::EventHandler::HandleMessage(
 //================================================================================
 //                      RemoteController::PlaybackInfo
 //================================================================================
-RemoteController::PlaybackInfo::PlaybackInfo()
-{}
-
-RemoteController::PlaybackInfo::~PlaybackInfo()
-{}
-
-ECode RemoteController::PlaybackInfo::constructor(
+RemoteController::PlaybackInfo::PlaybackInfo(
     /* [in] */ Int32 state,
     /* [in] */ Int64 stateChangeTimeMs,
     /* [in] */ Int64 currentPosMs,
@@ -338,12 +366,45 @@ ECode RemoteController::PlaybackInfo::constructor(
     mStateChangeTimeMs = stateChangeTimeMs;
     mCurrentPosMs = currentPosMs;
     mSpeed = speed;
-    return NOERROR;
 }
+
+RemoteController::PlaybackInfo::~PlaybackInfo()
+{}
+
+CAR_INTERFACE_IMPL(RemoteController::PlaybackInfo, Object, IPlaybackInfo)
 
 //================================================================================
 //                      RemoteController::MetadataEditor
 //================================================================================
+RemoteController::MetadataEditor::MetadataEditor(
+    /* [in] */ RemoteController* host)
+    : mHost(host)
+{}
+
+RemoteController::MetadataEditor::MetadataEditor(
+    /* [in] */ RemoteController* host,
+    /* [in] */ IBundle* metadata,
+    /* [in] */ Int64 editableKeys)
+{
+    mHost = host;
+    mEditorMetadata = metadata;
+    mEditableKeys = editableKeys;
+
+    AutoPtr<IParcelable> pl;
+    metadata->GetParcelable(
+            StringUtils::ToString(IMediaMetadataEditor::BITMAP_KEY_ARTWORK), (IParcelable**)&pl);
+    mEditorArtwork = IBitmap::Probe(pl);
+    if (mEditorArtwork != NULL) {
+        CleanupBitmapFromBundle(IMediaMetadataEditor::BITMAP_KEY_ARTWORK);
+    }
+
+    mMetadataChanged = TRUE;
+    mArtworkChanged = TRUE;
+    mApplied = FALSE;
+}
+
+CAR_INTERFACE_IMPL_2(RemoteController::MetadataEditor, Object, IMediaMetadataEditor, IRemoteControllerMetadataEditor)
+
 ECode RemoteController::MetadataEditor::Apply()
 {
     // "applying" a metadata bundle in RemoteController is only for sending edited
@@ -352,14 +413,20 @@ ECode RemoteController::MetadataEditor::Apply()
     if (!mMetadataChanged) {
         return NOERROR;
     }
-    synchronized (mInfoLock) {
-        if (mCurrentSession != NULL) {
-            if (mEditorMetadata->ContainsKey(
-                    /*String.valueOf(MediaMetadataEditor.RATING_KEY_BY_USER)*/)) {
-                AutoPtr<Rating> rating = (Rating*) GetObject(
-                        IMediaMetadataEditor::RATING_KEY_BY_USER, NULL);
+    synchronized(mHost->mInfoLock) {
+        if (mHost->mCurrentSession != NULL) {
+            Boolean flag = FALSE;
+            mEditorMetadata->ContainsKey(
+                    StringUtils::ToString(IMediaMetadataEditor::RATING_KEY_BY_USER), &flag);
+            if (flag) {
+                AutoPtr<IInterface> obj;
+                MediaMetadataEditor::GetObject(
+                        IMediaMetadataEditor::RATING_KEY_BY_USER, NULL, (IInterface**)&obj);
+                AutoPtr<IRating> rating = IRating::Probe(obj);
                 if (rating != NULL) {
-                    mCurrentSession->GetTransportControls()->SetRating(rating);
+                    AutoPtr<IMediaControllerTransportControls> ret;
+                    mHost->mCurrentSession->GetTransportControls((IMediaControllerTransportControls**)&ret);
+                    ret->SetRating(rating.Get());
                 }
             }
         }
@@ -371,38 +438,13 @@ ECode RemoteController::MetadataEditor::Apply()
     return NOERROR;
 }
 
-CAR_INTERFACE_IMPL(RemoteController::MetadataEditor, Object, IMediaMetadataEditor)
-
-RemoteController::MetadataEditor::MetadataEditor()
-{}
-
-ECode RemoteController::MetadataEditor::constructor()
-{}
-
-ECode RemoteController::MetadataEditor::constructor(
-    /* [in] */ IBundle* metadata,
-    /* [in] */ Int64 editableKeys)
-{
-    mEditorMetadata = metadata;
-    mEditableKeys = editableKeys;
-
-    mEditorArtwork = (Bitmap) metadata->GetParcelable(
-            S/*tring.valueOf(MediaMetadataEditor.BITMAP_KEY_ARTWORK)*/);
-    if (mEditorArtwork != NULL) {
-        CleanupBitmapFromBundle(MediaMetadataEditor.BITMAP_KEY_ARTWORK);
-    }
-
-    mMetadataChanged = TRUE;
-    mArtworkChanged = TRUE;
-    mApplied = FALSE;
-    return NOERROR;
-}
-
 void RemoteController::MetadataEditor::CleanupBitmapFromBundle(
     /* [in] */ Int32 key)
 {
-    if (METADATA_KEYS_TYPE->Get(key, METADATA_TYPE_INVALID) == METADATA_TYPE_BITMAP) {
-        mEditorMetadata->Remove(/*String.valueOf(key)*/);
+    Int32 ret;
+    METADATA_KEYS_TYPE->Get(key, METADATA_TYPE_INVALID, &ret);
+    if (ret == METADATA_TYPE_BITMAP) {
+        mEditorMetadata->Remove(StringUtils::ToString(key));
     }
 }
 
@@ -414,8 +456,8 @@ const Int32 RemoteController::TRANSPORT_UNKNOWN = 0;
 const String RemoteController::TAG(String("RemoteController"));
 const Boolean RemoteController::DEBUG = FALSE;
 const Boolean RemoteController::USE_SESSIONS = TRUE;
-const Object RemoteController::mGenLock;
-const Object RemoteController::mInfoLocka;
+/*const*/ Object RemoteController::mGenLock;
+/*const*/ Object RemoteController::mInfoLock;
 
 const Int32 RemoteController::MSG_NEW_PENDING_INTENT = 0;
 const Int32 RemoteController::MSG_NEW_PLAYBACK_INFO =  1;
@@ -477,8 +519,7 @@ ECode RemoteController::constructor(
     } else {
         AutoPtr<ILooper> l = Looper::GetMyLooper();
         if (l != NULL) {
-            mEventHandler = new EventHandler()
-            mEventHandler->constructor(this, l);
+            mEventHandler = new EventHandler(this, l.Get());
         } else {
             Slogger::E(TAG, "Calling thread not associated with a looper");
             return E_ILLEGAL_ARGUMENT_EXCEPTION;
@@ -486,17 +527,15 @@ ECode RemoteController::constructor(
     }
     mOnClientUpdateListener = updateListener;
     mContext = context;
-    mRcd = new RcDisplay();
-    mRcd->constructor(this);
+    mRcd = new RcDisplay(this);
     AutoPtr<IInterface> obj;
     context->GetSystemService(IContext::AUDIO_SERVICE, (IInterface**)&obj);
     mAudioManager = IAudioManager::Probe(obj);
 
     obj = NULL;
     context->GetSystemService(IContext::MEDIA_SESSION_SERVICE, (IInterface**)&obj);
-    AutoPtr<IMediaSessionManager> sessionManager = IMediaSessionManager::Probe(obj);
-    mSessionManager = (MediaSessionManager*)sessionManager;
-    mSessionListener = new TopTransportSessionListener();
+    mSessionManager = IMediaSessionManager::Probe(obj);
+    mSessionListener = new TopTransportSessionListener(this);
 
     if (CActivityManager::IsLowRamDeviceStatic()) {
         mMaxBitmapDimension = MAX_BITMAP_DIMENSION;
@@ -508,8 +547,8 @@ ECode RemoteController::constructor(
         Int32 widthPixels;
         Int32 heightPixels;
         dm->GetWidthPixels(&widthPixels);
-        GetHeightPixels(&heightPixels);
-        mMaxBitmapDimension = Elaost::Core::Math::Max(widthPixels, heightPixels);
+        dm->GetHeightPixels(&heightPixels);
+        mMaxBitmapDimension = Elastos::Core::Math::Max(widthPixels, heightPixels);
     }
     return NOERROR;
 }
@@ -520,7 +559,7 @@ ECode RemoteController::GetRemoteControlClientPackageName(
     VALIDATE_NOT_NULL(result);
     String packageName;
     if (USE_SESSIONS) {
-        synchronized (mInfoLock) {
+        synchronized(mInfoLock) {
             if (mCurrentSession != NULL) {
                 return mCurrentSession->GetPackageName(&packageName);
             } else {
@@ -544,7 +583,7 @@ ECode RemoteController::GetEstimatedMediaPosition(
     VALIDATE_NOT_NULL(result);
 
     if (USE_SESSIONS) {
-        synchronized (mInfoLock) {
+        synchronized(mInfoLock) {
             if (mCurrentSession != NULL) {
                 AutoPtr<IPlaybackState> state;
                 mCurrentSession->GetPlaybackState((IPlaybackState**)&state);
@@ -555,13 +594,13 @@ ECode RemoteController::GetEstimatedMediaPosition(
         }
     } else {
         AutoPtr<PlaybackInfo> lastPlaybackInfo;
-        synchronized (mInfoLock) {
+        synchronized(mInfoLock) {
             lastPlaybackInfo = mLastPlaybackInfo;
         }
         if (lastPlaybackInfo != NULL) {
             Boolean flag = FALSE;
-
-            if (!CRemoteControlClient::PlaybackPositionShouldMove(lastPlaybackInfo->mState)) {
+            CRemoteControlClient::PlaybackPositionShouldMove(lastPlaybackInfo->mState, &flag);
+            if (!flag) {
                 *result = lastPlaybackInfo->mCurrentPosMs;
                 return NOERROR;
             }
@@ -600,7 +639,7 @@ ECode RemoteController::SendMediaKeyEvent(
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
     if (USE_SESSIONS) {
-        synchronized (mInfoLock) {
+        synchronized(mInfoLock) {
             if (mCurrentSession != NULL) {
                 return mCurrentSession->DispatchMediaButtonEvent(keyEvent, result);
             }
@@ -609,7 +648,7 @@ ECode RemoteController::SendMediaKeyEvent(
         }
     } else {
         AutoPtr<IPendingIntent> pi;
-        synchronized (mInfoLock) {
+        synchronized(mInfoLock) {
             if (!mIsRegistered) {
                 Slogger::E(TAG,
                         "Cannot use sendMediaKeyEvent() from an unregistered RemoteController");
@@ -663,7 +702,7 @@ ECode RemoteController::SeekTo(
         Slogger::E(TAG, "illegal negative time value");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
-    synchronized (mInfoLock) {
+    synchronized(mInfoLock) {
         if (mCurrentSession != NULL) {
             AutoPtr<IMediaControllerTransportControls> mt;
             mCurrentSession->GetTransportControls((IMediaControllerTransportControls**)&mt);
@@ -682,7 +721,7 @@ ECode RemoteController::SetArtworkConfiguration(
 {
     VALIDATE_NOT_NULL(result);
 
-    synchronized (mInfoLock) {
+    synchronized(mInfoLock) {
         if (wantBitmap) {
             if ((width > 0) && (height > 0)) {
                 if (width > mMaxBitmapDimension) { width = mMaxBitmapDimension; }
@@ -715,7 +754,7 @@ ECode RemoteController::ClearArtworkConfiguration(
     /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result);
-    return setArtworkConfiguration(FALSE, -1, -1, result);
+    return SetArtworkConfiguration(FALSE, -1, -1, result);
 }
 
 ECode RemoteController::SetSynchronizationMode(
@@ -743,7 +782,7 @@ ECode RemoteController::EditMetadata(
     /* [out] */ IMediaMetadataEditor** result)
 {
     VALIDATE_NOT_NULL(result);
-    AutoPtr<MetadataEditor> editor = new MetadataEditor();
+    AutoPtr<MetadataEditor> editor = new MetadataEditor(this);
     AutoPtr<IBundle> bundle;
     CBundle::New((IBundle**)&bundle);
     ((MediaMetadataEditor*)editor)->mEditorMetadata = bundle.Get();
@@ -759,8 +798,8 @@ ECode RemoteController::EditMetadata(
 ECode RemoteController::StartListeningToSessions()
 {
     AutoPtr<IComponentName> listenerComponent;
-    CComponentName::New(mContext,
-        EIID_IRemoteControllerOnClientUpdateListener, (IComponentName**)&listenerComponent);
+    // CComponentName::New(mContext,
+    //     EIID_IRemoteControllerOnClientUpdateListener, (IComponentName**)&listenerComponent);
     AutoPtr<Handler> handler;
     AutoPtr<ILooper> looper = Looper::GetMyLooper();
     if (looper == NULL) {
@@ -771,10 +810,10 @@ ECode RemoteController::StartListeningToSessions()
     mSessionManager->AddOnActiveSessionsChangedListener(mSessionListener, listenerComponent.Get(),
             userId, IHandler::Probe(handler));
     AutoPtr<IList> list;
-    GetActiveSessions(listenerComponent, (IList**)&list);
+    mSessionManager->GetActiveSessions(listenerComponent.Get(), (IList**)&list);
     mSessionListener->OnActiveSessionsChanged(list.Get());
     if (DEBUG) {
-        Logger::D(TAG, "Registered session listener with component %p for user %d", listenerComponent, userId);
+        Slogger::D(TAG, "Registered session listener with component %p for user %d", listenerComponent.Get(), userId);
     }
     return NOERROR;
 }
@@ -783,8 +822,7 @@ ECode RemoteController::StopListeningToSessions()
 {
     mSessionManager->RemoveOnActiveSessionsChangedListener(mSessionListener.Get());
     if (DEBUG) {
-        Int32 userId;
-        UserHandle::MyUserId(&userId);
+        Int32 userId = UserHandle::GetMyUserId();
         Slogger::D(TAG, "Unregistered session listener for user %d", userId);
     }
     return NOERROR;
@@ -793,17 +831,17 @@ ECode RemoteController::StopListeningToSessions()
 ECode RemoteController::SetIsRegistered(
     /* [in] */ Boolean registered)
 {
-    synchronized (mInfoLock) {
+    synchronized(mInfoLock) {
         mIsRegistered = registered;
     }
     return NOERROR;
 }
 
 ECode RemoteController::GetRcDisplay(
-    /* [out] */ IRcDisplay** result)
+    /* [out] */ IIRemoteControlDisplay** result)
 {
     VALIDATE_NOT_NULL(result);
-    *result = (RcDisplay*)mRcd.Get();
+    *result = IIRemoteControlDisplay::Probe(mRcd);
     REFCOUNT_ADD(*result);
     return NOERROR;
 }
@@ -812,7 +850,7 @@ ECode RemoteController::GetArtworkSize(
     /* [out, callee] */ ArrayOf<Int32>** result)
 {
     VALIDATE_NOT_NULL(result);
-    synchronized (mInfoLock) {
+    synchronized(mInfoLock) {
         AutoPtr<ArrayOf<Int32> > size = ArrayOf<Int32>::Alloc(2);
         (*size)[0] = mArtworkWidth;
         (*size)[1] = mArtworkHeight;
@@ -944,8 +982,7 @@ void RemoteController::OnNewMetadata(
             mMetadataEditor->PutBitmap(IMediaMetadataEditor::BITMAP_KEY_ARTWORK, bitmap.Get());
             mMetadataEditor->CleanupBitmapFromBundle(IMediaMetadataEditor::BITMAP_KEY_ARTWORK);
         } else {
-            mMetadataEditor = new MetadataEditor();
-            mMetadataEditor->constructor(metadata, editableKeys);
+            mMetadataEditor = new MetadataEditor(this, metadata, editableKeys);
         }
         metadataEditor = mMetadataEditor;
     }
@@ -984,17 +1021,16 @@ void RemoteController::OnDisplayEnable(
     if (!enabled) {
         // when disabling, reset all info sent to the userId
         Int32 genId;
-        synchronized (mGenLock) {
+        synchronized(mGenLock) {
             genId = mClientGenerationIdCurrent;
         }
-        Int64 realTime;
-        SystemClock::ElapsedRealtime(&realTime);
+        Int64 realTime = SystemClock::GetElapsedRealtime();
         // send "stopped" state, happened "now", playback position is 0, speed 0.0f
         AutoPtr<PlaybackInfo> pi = new PlaybackInfo(IRemoteControlClient::PLAYSTATE_STOPPED,
                 realTime /*stateChangeTimeMs*/,
                 0 /*currentPosMs*/, 0.0f /*speed*/);
         SendMsg(mEventHandler, MSG_NEW_PLAYBACK_INFO, SENDMSG_REPLACE,
-                genId /*arg1*/, 0 /*arg2, ignored*/, pi /*obj*/, 0 /*delay*/);
+                genId /*arg1*/, 0 /*arg2, ignored*/, IPlaybackInfo::Probe(pi) /*obj*/, 0 /*delay*/);
         // send "blank" transport control info: no controls are supported
         SendMsg(mEventHandler, MSG_NEW_TRANSPORT_INFO, SENDMSG_REPLACE,
                 genId /*arg1*/, 0 /*arg2, no flags*/,
@@ -1011,12 +1047,12 @@ void RemoteController::OnDisplayEnable(
 }
 
 void RemoteController::UpdateController(
-    /* [in] */ MediaController* controller)
+    /* [in] */ IMediaController* controller)
 {
     if (DEBUG) {
-        Slogger::D(TAG, "Updating controller to %p previous controller is %p", controller, mCurrentSession);
+        Slogger::D(TAG, "Updating controller to %p previous controller is %p", controller, mCurrentSession.Get());
     }
-    synchronized (mInfoLock) {
+    synchronized(mInfoLock) {
         AutoPtr<IMediaSessionToken> msToken;
         controller->GetSessionToken((IMediaSessionToken**)&msToken);
         AutoPtr<IMediaSessionToken> _msToken;
@@ -1043,19 +1079,20 @@ void RemoteController::UpdateController(
             SendMsg(mEventHandler, MSG_NEW_PLAYBACK_STATE, SENDMSG_REPLACE,
                     0 /* genId */, 0, state.Get() /* obj */, 0 /* delay */);
 
-            MediaMetadata metadata = controller.getMetadata();
+            AutoPtr<IMediaMetadata> metadata;
+            controller->GetMetadata((IMediaMetadata**)&metadata);
             SendMsg(mEventHandler, MSG_NEW_MEDIA_METADATA, SENDMSG_REPLACE,
-                    0 /* arg1 */, 0 /* arg2 */, metadata /* obj */, 0 /* delay */);
+                    0 /* arg1 */, 0 /* arg2 */, metadata.Get() /* obj */, 0 /* delay */);
         }
         // else same controller, no need to update
     }
 }
 
 void RemoteController::OnNewPlaybackState(
-    /* [in] */ PlaybackState* state)
+    /* [in] */ IPlaybackState* state)
 {
     AutoPtr<IRemoteControllerOnClientUpdateListener> l;
-    synchronized (mInfoLock) {
+    synchronized(mInfoLock) {
         l = mOnClientUpdateListener;
     }
     if (l != NULL) {
@@ -1091,8 +1128,8 @@ void RemoteController::OnNewPlaybackState(
     }
 }
 
-void RemoteController::onNewMediaMetadata(
-    /* [in] */ MediaMetadata* metadata)
+void RemoteController::OnNewMediaMetadata(
+    /* [in] */ IMediaMetadata* metadata)
 {
     if (metadata == NULL) {
         // RemoteController only handles non-null metadata
@@ -1111,11 +1148,11 @@ void RemoteController::onNewMediaMetadata(
         AutoPtr<IBundle> legacyMetadata;
         CMediaSessionLegacyHelper::GetOldMetadata(metadata,
                 mArtworkWidth, mArtworkHeight, (IBundle**)&legacyMetadata);
-        mMetadataEditor = new MetadataEditor(legacyMetadata.Get(), editableKeys);
+        mMetadataEditor = new MetadataEditor(this, legacyMetadata.Get(), editableKeys);
         metadataEditor = mMetadataEditor;
     }
     if (l != NULL) {
-        l->OnClientMetadataUpdate(metadataEditor);
+        l->OnClientMetadataUpdate(IRemoteControllerMetadataEditor::Probe(metadataEditor));
     }
 }
 
