@@ -19,18 +19,16 @@ TruncatedFilter::TruncatedFilter(
     /* [in] */ IScanFilter* filter,
     /* [in] */ IList* storageDescriptors)
 {
-    // ==================before translated======================
-    // mFilter = filter;
-    // mStorageDescriptors = storageDescriptors;
+    mFilter = filter;
+    mStorageDescriptors = storageDescriptors;
 }
 
 ECode TruncatedFilter::GetFilter(
     /* [out] */ IScanFilter** result)
 {
     VALIDATE_NOT_NULL(result);
-    // ==================before translated======================
-    // return mFilter;
-    assert(0);
+    *result = mFilter;
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
@@ -38,9 +36,8 @@ ECode TruncatedFilter::GetStorageDescriptors(
     /* [out] */ IList** result)
 {
     VALIDATE_NOT_NULL(result);
-    // ==================before translated======================
-    // return mStorageDescriptors;
-    assert(0);
+    *result = mStorageDescriptors;
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 

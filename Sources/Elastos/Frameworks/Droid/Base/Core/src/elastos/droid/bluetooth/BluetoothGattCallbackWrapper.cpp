@@ -27,7 +27,7 @@ ECode BluetoothGattCallbackWrapper::OnClientConnectionState(
     /* [in] */ Int32 status,
     /* [in] */ Int32 clientIf,
     /* [in] */ Boolean connected,
-    /* [in] */ String address)
+    /* [in] */ const String& address)
 {
     return NOERROR;
 }
@@ -47,7 +47,7 @@ ECode BluetoothGattCallbackWrapper::OnBatchScanResults(
 }
 
 ECode BluetoothGattCallbackWrapper::OnGetService(
-    /* [in] */ String address,
+    /* [in] */ const String& address,
     /* [in] */ Int32 srvcType,
     /* [in] */ Int32 srvcInstId,
     /* [in] */ IParcelUuid* srvcUuid)
@@ -56,7 +56,7 @@ ECode BluetoothGattCallbackWrapper::OnGetService(
 }
 
 ECode BluetoothGattCallbackWrapper::OnGetIncludedService(
-    /* [in] */ String address,
+    /* [in] */ const String& address,
     /* [in] */ Int32 srvcType,
     /* [in] */ Int32 srvcInstId,
     /* [in] */ IParcelUuid* srvcUuid,
@@ -68,7 +68,7 @@ ECode BluetoothGattCallbackWrapper::OnGetIncludedService(
 }
 
 ECode BluetoothGattCallbackWrapper::OnGetCharacteristic(
-    /* [in] */ String address,
+    /* [in] */ const String& address,
     /* [in] */ Int32 srvcType,
     /* [in] */ Int32 srvcInstId,
     /* [in] */ IParcelUuid* srvcUuid,
@@ -80,7 +80,7 @@ ECode BluetoothGattCallbackWrapper::OnGetCharacteristic(
 }
 
 ECode BluetoothGattCallbackWrapper::OnGetDescriptor(
-    /* [in] */ String address,
+    /* [in] */ const String& address,
     /* [in] */ Int32 srvcType,
     /* [in] */ Int32 srvcInstId,
     /* [in] */ IParcelUuid* srvcUuid,
@@ -93,14 +93,14 @@ ECode BluetoothGattCallbackWrapper::OnGetDescriptor(
 }
 
 ECode BluetoothGattCallbackWrapper::OnSearchComplete(
-    /* [in] */ String address,
+    /* [in] */ const String& address,
     /* [in] */ Int32 status)
 {
     return NOERROR;
 }
 
 ECode BluetoothGattCallbackWrapper::OnCharacteristicRead(
-    /* [in] */ String address,
+    /* [in] */ const String& address,
     /* [in] */ Int32 status,
     /* [in] */ Int32 srvcType,
     /* [in] */ Int32 srvcInstId,
@@ -113,7 +113,7 @@ ECode BluetoothGattCallbackWrapper::OnCharacteristicRead(
 }
 
 ECode BluetoothGattCallbackWrapper::OnCharacteristicWrite(
-    /* [in] */ String address,
+    /* [in] */ const String& address,
     /* [in] */ Int32 status,
     /* [in] */ Int32 srvcType,
     /* [in] */ Int32 srvcInstId,
@@ -125,14 +125,14 @@ ECode BluetoothGattCallbackWrapper::OnCharacteristicWrite(
 }
 
 ECode BluetoothGattCallbackWrapper::OnExecuteWrite(
-    /* [in] */ String address,
+    /* [in] */ const String& address,
     /* [in] */ Int32 status)
 {
     return NOERROR;
 }
 
 ECode BluetoothGattCallbackWrapper::OnDescriptorRead(
-    /* [in] */ String address,
+    /* [in] */ const String& address,
     /* [in] */ Int32 status,
     /* [in] */ Int32 srvcType,
     /* [in] */ Int32 srvcInstId,
@@ -147,7 +147,7 @@ ECode BluetoothGattCallbackWrapper::OnDescriptorRead(
 }
 
 ECode BluetoothGattCallbackWrapper::OnDescriptorWrite(
-    /* [in] */ String address,
+    /* [in] */ const String& address,
     /* [in] */ Int32 status,
     /* [in] */ Int32 srvcType,
     /* [in] */ Int32 srvcInstId,
@@ -161,7 +161,7 @@ ECode BluetoothGattCallbackWrapper::OnDescriptorWrite(
 }
 
 ECode BluetoothGattCallbackWrapper::OnNotify(
-    /* [in] */ String address,
+    /* [in] */ const String& address,
     /* [in] */ Int32 srvcType,
     /* [in] */ Int32 srvcInstId,
     /* [in] */ IParcelUuid* srvcUuid,
@@ -173,7 +173,7 @@ ECode BluetoothGattCallbackWrapper::OnNotify(
 }
 
 ECode BluetoothGattCallbackWrapper::OnReadRemoteRssi(
-    /* [in] */ String address,
+    /* [in] */ const String& address,
     /* [in] */ Int32 rssi,
     /* [in] */ Int32 status)
 {
@@ -189,7 +189,7 @@ ECode BluetoothGattCallbackWrapper::OnMultiAdvertiseCallback(
 }
 
 ECode BluetoothGattCallbackWrapper::OnConfigureMTU(
-    /* [in] */ String address,
+    /* [in] */ const String& address,
     /* [in] */ Int32 mtu,
     /* [in] */ Int32 status)
 {

@@ -64,12 +64,14 @@ private:
         {
         public:
             ScanResultRunnable(
+                /* [in] */ IScanResult* scanResult,
                 /* [in] */ BleScanCallbackWrapper* owner);
 
             // @Override
             CARAPI Run();
 
         private:
+            AutoPtr<IScanResult> mScanResult;
             BleScanCallbackWrapper* mOwner;
         };
 
@@ -78,12 +80,14 @@ private:
         {
         public:
             BatchScanResultsRunnable(
+                /* [in] */ IList* results,
                 /* [in] */ BleScanCallbackWrapper* owner);
 
             // @Override
             CARAPI Run();
 
         private:
+            AutoPtr<IList> mResults;
             BleScanCallbackWrapper* mOwner;
         };
 
@@ -92,12 +96,16 @@ private:
         {
         public:
             FoundOrLostRunnable(
+                /* [in] */ IScanResult* scanResult,
+                /* [in] */ Boolean onFound,
                 /* [in] */ BleScanCallbackWrapper* owner);
 
             // @Override
             CARAPI Run();
 
         private:
+            AutoPtr<IScanResult> mScanResult;
+            Boolean mOnFound;
             BleScanCallbackWrapper* mOwner;
         };
 
@@ -144,6 +152,7 @@ private:
 
     private:
         static const Int32 REGISTRATION_CALLBACK_TIMEOUT_MILLIS = 2000;
+        static Object sLock;
         AutoPtr<IScanCallback> mScanCallback;
         AutoPtr<IList> mFilters;// ScanFilter
         AutoPtr<IScanSettings> mSettings;// IScanSettings
@@ -161,12 +170,16 @@ private:
     {
     public:
         CallbackErrorRunnable(
+            /* [in] */ IScanCallback* callback,
+            /* [in] */ Int32 errorCode,
             /* [in] */ BluetoothLeScanner* owner);
 
         // @Override
         CARAPI Run();
 
     private:
+        AutoPtr<IScanCallback> mCallback;
+        Int32 mErrorCode;
         BluetoothLeScanner* mOwner;
     };
 
@@ -250,7 +263,7 @@ public:
     CARAPI Cleanup();
 
 private:
-    CARAPI_(void) StartScan(
+    CARAPI StartScan(
         /* [in] */ IList* filters, // ScanFilter
         /* [in] */ IScanSettings* settings,
         /* [in] */ IScanCallback* callback,
@@ -269,6 +282,7 @@ private:
     AutoPtr<IIBluetoothManager> mBluetoothManager;
     AutoPtr<IHandler> mHandler;
     AutoPtr<IBluetoothAdapter> mBluetoothAdapter;
+    Int32 mErrorCode;
     //<ScanCallback, BleScanCallbackWrapper>
     AutoPtr<IMap> mLeScanClients;
 };

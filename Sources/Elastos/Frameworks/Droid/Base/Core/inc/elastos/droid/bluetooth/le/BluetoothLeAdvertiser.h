@@ -57,14 +57,16 @@ private:
         : public BluetoothGattCallbackWrapper
     {
     public:
-        AdvertiseCallbackWrapper();
+        AdvertiseCallbackWrapper(
+            /* [in] */ BluetoothLeAdvertiser* owner);
 
         AdvertiseCallbackWrapper(
             /* [in] */ IAdvertiseCallback* advertiseCallback,
             /* [in] */ IAdvertiseData* advertiseData,
             /* [in] */ IAdvertiseData* scanResponse,
             /* [in] */ IAdvertiseSettings* settings,
-            /* [in] */ IIBluetoothGatt* bluetoothGatt);
+            /* [in] */ IIBluetoothGatt* bluetoothGatt,
+            /* [in] */ BluetoothLeAdvertiser* owner);
 
         virtual CARAPI StartRegisteration();
 
@@ -86,6 +88,7 @@ private:
 
     private:
         static const Int32 LE_CALLBACK_TIMEOUT_MILLIS = 2000;
+        static Object sLock;
         AutoPtr<IAdvertiseCallback> mAdvertiseCallback;
         AutoPtr<IAdvertiseData> mAdvertisement;
         AutoPtr<IAdvertiseData> mScanResponse;
@@ -96,6 +99,7 @@ private:
         // >0: registered and scan started
         Int32 mClientIf;
         Boolean mIsAdvertising;
+        BluetoothLeAdvertiser* mOwner;
     };
 
     class StartFailureRunnable
@@ -103,12 +107,16 @@ private:
     {
     public:
         StartFailureRunnable(
+            /* [in] */ IAdvertiseCallback* callback,
+            /* [in] */ Int32 error,
             /* [in] */ BluetoothLeAdvertiser* owner);
 
         // @Override
         CARAPI Run();
 
     private:
+        AutoPtr<IAdvertiseCallback> mCallback;
+        Int32 mError;
         BluetoothLeAdvertiser* mOwner;
     };
 
@@ -117,12 +125,16 @@ private:
     {
     public:
         StartSuccessRunnable(
+            /* [in] */ IAdvertiseCallback* callback,
+            /* [in] */ IAdvertiseSettings* settings,
             /* [in] */ BluetoothLeAdvertiser* owner);
 
         // @Override
         CARAPI Run();
 
     private:
+        AutoPtr<IAdvertiseCallback> mCallback;
+        AutoPtr<IAdvertiseSettings> mSettings;
         BluetoothLeAdvertiser* mOwner;
     };
 

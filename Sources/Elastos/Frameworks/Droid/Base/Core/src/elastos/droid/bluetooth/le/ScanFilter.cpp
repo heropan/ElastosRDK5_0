@@ -1,6 +1,14 @@
-
+#include "Elastos.CoreLibrary.Utility.h"
 #include "Elastos.Droid.Os.h"
 #include "elastos/droid/bluetooth/le/ScanFilter.h"
+#include "elastos/droid/bluetooth/CBluetoothAdapter.h"
+#include "elastos/core/CoreUtils.h"
+#include "elastos/utility/Objects.h"
+#include <elastos/utility/logging/Logger.h>
+
+using Elastos::Droid::Bluetooth::CBluetoothAdapter;
+using Elastos::Utility::Objects;
+using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
 namespace Droid {
@@ -19,35 +27,30 @@ ScanFilter::Builder::Builder()
 ECode ScanFilter::Builder::SetDeviceName(
     /* [in] */ const String& deviceName)
 {
-    // ==================before translated======================
-    // mDeviceName = deviceName;
+    mDeviceName = deviceName;
     // return this;
-    assert(0);
     return NOERROR;
 }
 
 ECode ScanFilter::Builder::SetDeviceAddress(
     /* [in] */ const String& deviceAddress)
 {
-    // ==================before translated======================
-    // if (deviceAddress != null && !BluetoothAdapter.checkBluetoothAddress(deviceAddress)) {
-    //     throw new IllegalArgumentException("invalid device address " + deviceAddress);
-    // }
-    // mDeviceAddress = deviceAddress;
-    // return this;
-    assert(0);
+    if (deviceAddress.IsNullOrEmpty() && !CBluetoothAdapter::CheckBluetoothAddress(deviceAddress)) {
+        //throw new IllegalArgumentException("invalid device address " + deviceAddress);
+        Logger::E("ScanFilter::Builder::SetDeviceAddress", "invalid device address %s", deviceAddress.string());
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
+    mDeviceAddress = deviceAddress;
+    //return this;
     return NOERROR;
 }
 
 ECode ScanFilter::Builder::SetServiceUuid(
     /* [in] */ IParcelUuid* serviceUuid)
 {
-    VALIDATE_NOT_NULL(serviceUuid);
-    // ==================before translated======================
-    // mServiceUuid = serviceUuid;
-    // mUuidMask = null; // clear uuid mask
-    // return this;
-    assert(0);
+    mServiceUuid = serviceUuid;
+    mUuidMask = NULL; // clear uuid mask
+    //return this;
     return NOERROR;
 }
 
@@ -55,16 +58,14 @@ ECode ScanFilter::Builder::SetServiceUuid(
     /* [in] */ IParcelUuid* serviceUuid,
     /* [in] */ IParcelUuid* uuidMask)
 {
-    VALIDATE_NOT_NULL(serviceUuid);
-    VALIDATE_NOT_NULL(uuidMask);
-    // ==================before translated======================
-    // if (mUuidMask != null && mServiceUuid == null) {
-    //     throw new IllegalArgumentException("uuid is null while uuidMask is not null!");
-    // }
-    // mServiceUuid = serviceUuid;
-    // mUuidMask = uuidMask;
+    if (mUuidMask != NULL && mServiceUuid == NULL) {
+        //throw new IllegalArgumentException("uuid is null while uuidMask is not null!");
+        Logger::E("ScanFilter::Builder::SetServiceUuid", "uuid is null while uuidMask is not null!");
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
+    mServiceUuid = serviceUuid;
+    mUuidMask = uuidMask;
     // return this;
-    assert(0);
     return NOERROR;
 }
 
@@ -72,17 +73,15 @@ ECode ScanFilter::Builder::SetServiceData(
     /* [in] */ IParcelUuid* serviceDataUuid,
     /* [in] */ ArrayOf<Byte>* serviceData)
 {
-    VALIDATE_NOT_NULL(serviceDataUuid);
-    VALIDATE_NOT_NULL(serviceData);
-    // ==================before translated======================
-    // if (serviceDataUuid == null) {
-    //     throw new IllegalArgumentException("serviceDataUuid is null");
-    // }
-    // mServiceDataUuid = serviceDataUuid;
-    // mServiceData = serviceData;
-    // mServiceDataMask = null; // clear service data mask
+    if (serviceDataUuid == NULL) {
+        //throw new IllegalArgumentException("serviceDataUuid is null");
+        Logger::E("ScanFilter::Builder::SetServiceData", "serviceDataUuid is null");
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
+    mServiceDataUuid = serviceDataUuid;
+    mServiceData = serviceData;
+    mServiceDataMask = NULL; // clear service data mask
     // return this;
-    assert(0);
     return NOERROR;
 }
 
@@ -91,30 +90,32 @@ ECode ScanFilter::Builder::SetServiceData(
     /* [in] */ ArrayOf<Byte>* serviceData,
     /* [in] */ ArrayOf<Byte>* serviceDataMask)
 {
-    VALIDATE_NOT_NULL(serviceDataUuid);
-    VALIDATE_NOT_NULL(serviceData);
-    VALIDATE_NOT_NULL(serviceDataMask);
-    // ==================before translated======================
-    // if (serviceDataUuid == null) {
-    //     throw new IllegalArgumentException("serviceDataUuid is null");
-    // }
-    // if (mServiceDataMask != null) {
-    //     if (mServiceData == null) {
-    //         throw new IllegalArgumentException(
-    //                 "serviceData is null while serviceDataMask is not null");
-    //     }
-    //     // Since the mServiceDataMask is a bit mask for mServiceData, the lengths of the two
-    //     // byte array need to be the same.
-    //     if (mServiceData.length != mServiceDataMask.length) {
-    //         throw new IllegalArgumentException(
-    //                 "size mismatch for service data and service data mask");
-    //     }
-    // }
-    // mServiceDataUuid = serviceDataUuid;
-    // mServiceData = serviceData;
-    // mServiceDataMask = serviceDataMask;
+    if (serviceDataUuid == NULL) {
+        //throw new IllegalArgumentException("serviceDataUuid is null");
+        Logger::E("ScanFilter::Builder::SetServiceData", "serviceDataUuid is null");
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
+    if (mServiceDataMask != NULL) {
+        if (mServiceData == NULL) {
+            //throw new IllegalArgumentException(
+            //        "serviceData is null while serviceDataMask is not null");
+            Logger::E("ScanFilter::Builder::SetServiceData", "serviceData is null while serviceDataMask is not null");
+            return E_ILLEGAL_ARGUMENT_EXCEPTION;
+        }
+        // Since the mServiceDataMask is a bit mask for mServiceData, the lengths of the two
+        // byte array need to be the same.
+        if (mServiceData->GetLength() != mServiceDataMask->GetLength()) {
+            //throw new IllegalArgumentException(
+            //        "size mismatch for service data and service data mask");
+            Logger::E("ScanFilter::Builder::SetServiceData",
+                    "size mismatch for service data and service data mask");
+            return E_ILLEGAL_ARGUMENT_EXCEPTION;
+        }
+    }
+    mServiceDataUuid = serviceDataUuid;
+    mServiceData = serviceData;
+    mServiceDataMask = serviceDataMask;
     // return this;
-    assert(0);
     return NOERROR;
 }
 
@@ -122,16 +123,15 @@ ECode ScanFilter::Builder::SetManufacturerData(
     /* [in] */ Int32 manufacturerId,
     /* [in] */ ArrayOf<Byte>* manufacturerData)
 {
-    VALIDATE_NOT_NULL(manufacturerData);
-    // ==================before translated======================
-    // if (manufacturerData != null && manufacturerId < 0) {
-    //     throw new IllegalArgumentException("invalid manufacture id");
-    // }
-    // mManufacturerId = manufacturerId;
-    // mManufacturerData = manufacturerData;
-    // mManufacturerDataMask = null; // clear manufacturer data mask
+    if (manufacturerData != NULL && manufacturerId < 0) {
+        //throw new IllegalArgumentException("invalid manufacture id");
+        Logger::E("ScanFilter::Builder::SetManufacturerData", "invalid manufacture id");
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
+    mManufacturerId = manufacturerId;
+    mManufacturerData = manufacturerData;
+    mManufacturerDataMask = NULL; // clear manufacturer data mask
     // return this;
-    assert(0);
     return NOERROR;
 }
 
@@ -140,29 +140,33 @@ ECode ScanFilter::Builder::SetManufacturerData(
     /* [in] */ ArrayOf<Byte>* manufacturerData,
     /* [in] */ ArrayOf<Byte>* manufacturerDataMask)
 {
-    VALIDATE_NOT_NULL(manufacturerData);
-    VALIDATE_NOT_NULL(manufacturerDataMask);
-    // ==================before translated======================
-    // if (manufacturerData != null && manufacturerId < 0) {
-    //     throw new IllegalArgumentException("invalid manufacture id");
-    // }
-    // if (mManufacturerDataMask != null) {
-    //     if (mManufacturerData == null) {
-    //         throw new IllegalArgumentException(
-    //                 "manufacturerData is null while manufacturerDataMask is not null");
-    //     }
-    //     // Since the mManufacturerDataMask is a bit mask for mManufacturerData, the lengths
-    //     // of the two byte array need to be the same.
-    //     if (mManufacturerData.length != mManufacturerDataMask.length) {
-    //         throw new IllegalArgumentException(
-    //                 "size mismatch for manufacturerData and manufacturerDataMask");
-    //     }
-    // }
-    // mManufacturerId = manufacturerId;
-    // mManufacturerData = manufacturerData;
-    // mManufacturerDataMask = manufacturerDataMask;
+    if (manufacturerData != NULL && manufacturerId < 0) {
+        //throw new IllegalArgumentException("invalid manufacture id");
+        Logger::E("ScanFilter::Builder::SetManufacturerData", "invalid manufacture id");
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
+    if (mManufacturerDataMask != NULL) {
+        if (mManufacturerData == NULL) {
+            //throw new IllegalArgumentException(
+            //        "manufacturerData is null while manufacturerDataMask is not null");
+            Logger::E("ScanFilter::Builder::SetManufacturerData",
+                    "manufacturerData is null while manufacturerDataMask is not null");
+            return E_ILLEGAL_ARGUMENT_EXCEPTION;
+        }
+        // Since the mManufacturerDataMask is a bit mask for mManufacturerData, the lengths
+        // of the two byte array need to be the same.
+        if (mManufacturerData->GetLength() != mManufacturerDataMask->GetLength()) {
+            //throw new IllegalArgumentException(
+            //        "size mismatch for manufacturerData and manufacturerDataMask");
+            Logger::E("ScanFilter::Builder::SetManufacturerData",
+                    "size mismatch for manufacturerData and manufacturerDataMask");
+            return E_ILLEGAL_ARGUMENT_EXCEPTION;
+        }
+    }
+    mManufacturerId = manufacturerId;
+    mManufacturerData = manufacturerData;
+    mManufacturerDataMask = manufacturerDataMask;
     // return this;
-    assert(0);
     return NOERROR;
 }
 
@@ -170,12 +174,13 @@ ECode ScanFilter::Builder::Build(
     /* [out] */ IScanFilter** result)
 {
     VALIDATE_NOT_NULL(result);
-    // ==================before translated======================
-    // return new ScanFilter(mDeviceName, mDeviceAddress,
-    //         mServiceUuid, mUuidMask,
-    //         mServiceDataUuid, mServiceData, mServiceDataMask,
-    //         mManufacturerId, mManufacturerData, mManufacturerDataMask);
-    assert(0);
+    AutoPtr<IScanFilter> scanFilter = new ScanFilter(mDeviceName, mDeviceAddress,
+            mServiceUuid, mUuidMask,
+            mServiceDataUuid, mServiceData, mServiceDataMask,
+            mManufacturerId, mManufacturerData, mManufacturerDataMask);
+
+    *result = scanFilter;
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
@@ -186,62 +191,144 @@ ScanFilter::ScanFilter()
 }
 
 ECode ScanFilter::WriteToParcel(
-    /* [in] */ IParcel* dest,
-    /* [in] */ Int32 flags)
+    /* [in] */ IParcel* dest)
 {
-    VALIDATE_NOT_NULL(dest);
-    // ==================before translated======================
-    // dest.writeInt(mDeviceName == null ? 0 : 1);
-    // if (mDeviceName != null) {
-    //     dest.writeString(mDeviceName);
-    // }
-    // dest.writeInt(mDeviceAddress == null ? 0 : 1);
-    // if (mDeviceAddress != null) {
-    //     dest.writeString(mDeviceAddress);
-    // }
-    // dest.writeInt(mServiceUuid == null ? 0 : 1);
-    // if (mServiceUuid != null) {
-    //     dest.writeParcelable(mServiceUuid, flags);
-    //     dest.writeInt(mServiceUuidMask == null ? 0 : 1);
-    //     if (mServiceUuidMask != null) {
-    //         dest.writeParcelable(mServiceUuidMask, flags);
-    //     }
-    // }
-    // dest.writeInt(mServiceDataUuid == null ? 0 : 1);
-    // if (mServiceDataUuid != null) {
-    //     dest.writeParcelable(mServiceDataUuid, flags);
-    //     dest.writeInt(mServiceData == null ? 0 : 1);
-    //     if (mServiceData != null) {
-    //         dest.writeInt(mServiceData.length);
-    //         dest.writeByteArray(mServiceData);
-    //
-    //         dest.writeInt(mServiceDataMask == null ? 0 : 1);
-    //         if (mServiceDataMask != null) {
-    //             dest.writeInt(mServiceDataMask.length);
-    //             dest.writeByteArray(mServiceDataMask);
-    //         }
-    //     }
-    // }
-    // dest.writeInt(mManufacturerId);
-    // dest.writeInt(mManufacturerData == null ? 0 : 1);
-    // if (mManufacturerData != null) {
-    //     dest.writeInt(mManufacturerData.length);
-    //     dest.writeByteArray(mManufacturerData);
-    //
-    //     dest.writeInt(mManufacturerDataMask == null ? 0 : 1);
-    //     if (mManufacturerDataMask != null) {
-    //         dest.writeInt(mManufacturerDataMask.length);
-    //         dest.writeByteArray(mManufacturerDataMask);
-    //     }
-    // }
-    assert(0);
+    dest->WriteInt32(mDeviceName.IsNullOrEmpty()? 0 : 1);
+    if (!mDeviceName.IsNullOrEmpty()) {
+        dest->WriteString(mDeviceName);
+    }
+    dest->WriteInt32(mDeviceAddress.IsNullOrEmpty() ? 0 : 1);
+    if (!mDeviceAddress.IsNullOrEmpty()) {
+        dest->WriteString(mDeviceAddress);
+    }
+    dest->WriteInt32(mServiceUuid == NULL? 0 : 1);
+    if (mServiceUuid != NULL) {
+        //dest->WriteParcelable(mServiceUuid, flags);
+        dest->WriteInterfacePtr(TO_IINTERFACE(mServiceUuid));
+        dest->WriteInt32(mServiceUuidMask == NULL? 0 : 1);
+        if (mServiceUuidMask != NULL) {
+            //dest.writeParcelable(mServiceUuidMask, flags);
+            dest->WriteInterfacePtr(TO_IINTERFACE(mServiceUuidMask));
+        }
+    }
+    dest->WriteInt32(mServiceDataUuid == NULL? 0 : 1);
+    if (mServiceDataUuid != NULL) {
+        //dest->WriteParcelable(mServiceDataUuid, flags);
+        dest->WriteInterfacePtr(TO_IINTERFACE(mServiceDataUuid));
+        dest->WriteInt32(mServiceData == NULL? 0 : 1);
+        if (mServiceData != NULL) {
+            dest->WriteInt32(mServiceData->GetLength());
+            //dest.writeByteArray(mServiceData);
+            dest->WriteArrayOf((Handle32)(mServiceData.Get()));
+
+            dest->WriteInt32(mServiceDataMask == NULL? 0 : 1);
+            if (mServiceDataMask != NULL) {
+                dest->WriteInt32(mServiceDataMask->GetLength());
+                //dest->WriteByteArray(mServiceDataMask);
+                dest->WriteArrayOf((Handle32)(mServiceDataMask.Get()));
+            }
+        }
+    }
+    dest->WriteInt32(mManufacturerId);
+    dest->WriteInt32(mManufacturerData == NULL? 0 : 1);
+    if (mManufacturerData != NULL) {
+        dest->WriteInt32(mManufacturerData->GetLength());
+        //dest.writeByteArray(mManufacturerData);
+        dest->WriteArrayOf((Handle32)(mManufacturerData.Get()));
+
+        dest->WriteInt32(mManufacturerDataMask == NULL? 0 : 1);
+        if (mManufacturerDataMask != NULL) {
+            dest->WriteInt32(mManufacturerDataMask->GetLength());
+            //dest->writeByteArray(mManufacturerDataMask);
+            dest->WriteArrayOf((Handle32)(mManufacturerDataMask.Get()));
+        }
+    }
     return NOERROR;
 }
 
 ECode ScanFilter::ReadFromParcel(
-    /* [in] */ IParcel* source)
+    /* [in] */ IParcel* in)
 {
-    assert(0);
+    //Builder builder = new Builder();
+    Int32 flag = 0;
+    if ((in->ReadInt32(&flag), flag) == 1) {
+        //builder.setDeviceName(in.readString());
+        in->ReadString(&mDeviceName);
+    }
+    flag = 0;
+    if ((in->ReadInt32(&flag), flag) == 1) {
+        //builder.setDeviceAddress(in.readString());
+        in->ReadString(&mDeviceAddress);
+    }
+    if ((in->ReadInt32(&flag), flag) == 1) {
+        //ParcelUuid uuid = in.readParcelable(ParcelUuid.class.getClassLoader());
+        mServiceUuid = NULL;
+        in->ReadInterfacePtr((Handle32*)((IParcelUuid**)&mServiceUuid));
+        //builder.setServiceUuid(uuid);
+        flag = 0;
+        if ((in->ReadInt32(&flag), flag) == 1) {
+            //ParcelUuid uuidMask = in.readParcelable(ParcelUuid.class.getClassLoader());
+            //builder.setServiceUuid(uuid, uuidMask);
+            mServiceUuidMask = NULL;
+            in->ReadInterfacePtr((Handle32*)((IParcelUuid**)&mServiceUuidMask));
+        }
+    }
+    flag = 0;
+    if ((in->ReadInt32(&flag), flag) == 1) {
+        //ParcelUuid servcieDataUuid = in.readParcelable(ParcelUuid.class.getClassLoader());
+        mServiceDataUuid = NULL;
+        in->ReadInterfacePtr((Handle32*)((IParcelUuid**)&mServiceDataUuid));
+        flag = 0;
+        if ((in->ReadInt32(&flag), flag) == 1) {
+            Int32 serviceDataLength;
+            in->ReadInt32(&serviceDataLength);
+            //byte[] serviceData = new byte[serviceDataLength];
+            //in.readByteArray(serviceData);
+            mServiceData = NULL;
+            in->ReadArrayOf((Handle32*)&mServiceData);
+            flag = 0;
+            if ((in->ReadInt32(&flag), flag) == 0) {
+                //builder.setServiceData(servcieDataUuid, serviceData);
+                mServiceDataMask = NULL;
+            } else {
+                Int32 serviceDataMaskLength;
+                in->ReadInt32(&serviceDataMaskLength);
+                //byte[] serviceDataMask = new byte[serviceDataMaskLength];
+                //in.readByteArray(serviceDataMask);
+                //builder.setServiceData(
+                //        servcieDataUuid, serviceData, serviceDataMask);
+                mServiceDataMask = NULL;
+                in->ReadArrayOf((Handle32*)&mServiceDataMask);
+            }
+        }
+    }
+
+    //int manufacturerId = in.readInt();
+    in->ReadInt32(&mManufacturerId);
+    flag = 0;
+    if ((in->ReadInt32(&flag), flag) == 1) {
+        Int32 manufacturerDataLength;
+        in->ReadInt32(&manufacturerDataLength);
+        //byte[] manufacturerData = new byte[manufacturerDataLength];
+        //in.readByteArray(manufacturerData);
+        mManufacturerData = NULL;
+        in->ReadArrayOf((Handle32*)&mManufacturerData);
+        flag = 0;
+        if ((in->ReadInt32(&flag), flag) == 0) {
+            //builder.setManufacturerData(manufacturerId, manufacturerData);
+            mManufacturerDataMask = NULL;
+        } else {
+            Int32 manufacturerDataMaskLength;
+            in->ReadInt32(&manufacturerDataMaskLength);
+            //byte[] manufacturerDataMask = new byte[manufacturerDataMaskLength];
+            //in.readByteArray(manufacturerDataMask);
+            //builder.setManufacturerData(manufacturerId, manufacturerData,
+            //        manufacturerDataMask);
+            in->ReadArrayOf((Handle32*)&mManufacturerDataMask);
+        }
+    }
+
+    //return builder.build();
     return NOERROR;
 }
 
@@ -249,10 +336,7 @@ ECode ScanFilter::GetDeviceName(
     /* [out] */ String* str)
 {
     VALIDATE_NOT_NULL(str);
-    // ==================before translated======================
-    // return mDeviceName;
-    assert(0);
-    *str = String("");
+    *str = mDeviceName;
     return NOERROR;
 }
 
@@ -260,9 +344,8 @@ ECode ScanFilter::GetServiceUuid(
     /* [out] */ IParcelUuid** uuid)
 {
     VALIDATE_NOT_NULL(uuid);
-    // ==================before translated======================
-    // return mServiceUuid;
-    assert(0);
+    *uuid = mServiceUuid;
+    REFCOUNT_ADD(*uuid);
     return NOERROR;
 }
 
@@ -270,9 +353,8 @@ ECode ScanFilter::GetServiceUuidMask(
     /* [out] */ IParcelUuid** uuid)
 {
     VALIDATE_NOT_NULL(uuid);
-    // ==================before translated======================
-    // return mServiceUuidMask;
-    assert(0);
+    *uuid = mServiceUuidMask;
+    REFCOUNT_ADD(*uuid);
     return NOERROR;
 }
 
@@ -280,9 +362,7 @@ ECode ScanFilter::GetDeviceAddress(
     /* [out] */ String* str)
 {
     VALIDATE_NOT_NULL(str);
-    // ==================before translated======================
-    // return mDeviceAddress;
-    assert(0);
+    *str = mDeviceAddress;
     return NOERROR;
 }
 
@@ -290,9 +370,8 @@ ECode ScanFilter::GetServiceData(
     /* [out, callee] */ ArrayOf<Byte>** result)
 {
     VALIDATE_NOT_NULL(result);
-    // ==================before translated======================
-    // return mServiceData;
-    assert(0);
+    *result = mServiceData;
+    REFCOUNT_ADD(*result);
     return NOERROR;;
 }
 
@@ -300,9 +379,8 @@ ECode ScanFilter::GetServiceDataMask(
     /* [out, callee] */ ArrayOf<Byte>** result)
 {
     VALIDATE_NOT_NULL(result);
-    // ==================before translated======================
-    // return mServiceDataMask;
-    assert(0);
+    *result = mServiceDataMask;
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
@@ -310,9 +388,8 @@ ECode ScanFilter::GetServiceDataUuid(
     /* [out] */ IParcelUuid** uuid)
 {
     VALIDATE_NOT_NULL(uuid);
-    // ==================before translated======================
-    // return mServiceDataUuid;
-    assert(0);
+    *uuid = mServiceDataUuid;
+    REFCOUNT_ADD(*uuid);
     return NOERROR;
 }
 
@@ -320,9 +397,7 @@ ECode ScanFilter::GetManufacturerId(
     /* [out] */ Int32* result)
 {
     VALIDATE_NOT_NULL(result);
-    // ==================before translated======================
-    // return mManufacturerId;
-    assert(0);
+    *result = mManufacturerId;
     return NOERROR;
 }
 
@@ -330,9 +405,8 @@ ECode ScanFilter::GetManufacturerData(
     /* [out, callee] */ ArrayOf<Byte>** result)
 {
     VALIDATE_NOT_NULL(result);
-    // ==================before translated======================
-    // return mManufacturerData;
-    assert(0);
+    *result = mManufacturerData;
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
@@ -340,9 +414,8 @@ ECode ScanFilter::GetManufacturerDataMask(
     /* [out, callee] */ ArrayOf<Byte>** result)
 {
     VALIDATE_NOT_NULL(result);
-    // ==================before translated======================
-    // return mManufacturerDataMask;
-    assert(0);
+    *result = mManufacturerDataMask;
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
@@ -350,57 +423,68 @@ ECode ScanFilter::Matches(
     /* [in] */ IScanResult* scanResult,
     /* [out] */ Boolean* result)
 {
-    VALIDATE_NOT_NULL(scanResult);
     VALIDATE_NOT_NULL(result);
-    // ==================before translated======================
-    // if (scanResult == null) {
-    //     return false;
-    // }
-    // BluetoothDevice device = scanResult.getDevice();
-    // // Device match.
-    // if (mDeviceAddress != null
-    //         && (device == null || !mDeviceAddress.equals(device.getAddress()))) {
-    //     return false;
-    // }
-    //
-    // ScanRecord scanRecord = scanResult.getScanRecord();
-    //
-    // // Scan record is null but there exist filters on it.
-    // if (scanRecord == null
-    //         && (mDeviceName != null || mServiceUuid != null || mManufacturerData != null
-    //                 || mServiceData != null)) {
-    //     return false;
-    // }
-    //
-    // // Local name match.
-    // if (mDeviceName != null && !mDeviceName.equals(scanRecord.getDeviceName())) {
-    //     return false;
-    // }
-    //
-    // // UUID match.
-    // if (mServiceUuid != null && !matchesServiceUuids(mServiceUuid, mServiceUuidMask,
-    //         scanRecord.getServiceUuids())) {
-    //     return false;
-    // }
-    //
-    // // Service data match
-    // if (mServiceDataUuid != null) {
-    //     if (!matchesPartialData(mServiceData, mServiceDataMask,
-    //             scanRecord.getServiceData(mServiceDataUuid))) {
-    //         return false;
-    //     }
-    // }
-    //
-    // // Manufacturer data match.
-    // if (mManufacturerId >= 0) {
-    //     if (!matchesPartialData(mManufacturerData, mManufacturerDataMask,
-    //             scanRecord.getManufacturerSpecificData(mManufacturerId))) {
-    //         return false;
-    //     }
-    // }
-    // // All filters match.
-    // return true;
-    assert(0);
+    if (scanResult == NULL) {
+        *result = FALSE;
+        return NOERROR;
+    }
+    AutoPtr<IBluetoothDevice> device;
+    scanResult->GetDevice((IBluetoothDevice**)&device);
+    // Device match.
+    String address;
+    if (mDeviceAddress != NULL
+            && (device == NULL || !mDeviceAddress.Equals((device->GetAddress(&address), address)))) {
+        *result = FALSE;
+        return NOERROR;
+    }
+
+    AutoPtr<IScanRecord> scanRecord;
+    scanResult->GetScanRecord((IScanRecord**)&scanResult);
+
+    // Scan record is null but there exist filters on it.
+    if (scanRecord == NULL
+            && (!mDeviceName.IsNullOrEmpty() || mServiceUuid != NULL|| mManufacturerData != NULL
+                    || mServiceData != NULL)) {
+        *result = FALSE;
+        return NOERROR;
+    }
+
+    // Local name match.
+    String deviceName;
+    if (!mDeviceName.IsNullOrEmpty() && !mDeviceName.Equals((scanRecord->GetDeviceName(&deviceName), deviceName))) {
+        *result = FALSE;
+        return NOERROR;
+    }
+
+    // UUID match.
+    AutoPtr<IList> uuids;
+    scanRecord->GetServiceUuids((IList**)&uuids);
+    if (mServiceUuid != NULL && !MatchesServiceUuids(mServiceUuid, mServiceUuidMask, uuids)) {
+        *result = FALSE;
+        return NOERROR;
+    }
+
+    // Service data match
+    AutoPtr<ArrayOf<Byte> > serviceData;
+    scanRecord->GetServiceData(mServiceDataUuid, (ArrayOf<Byte>**)&serviceData);
+    if (mServiceDataUuid != NULL) {
+        if (!MatchesPartialData(mServiceData, mServiceDataMask, serviceData)) {
+            *result = FALSE;
+            return NOERROR;
+        }
+    }
+
+    // Manufacturer data match.
+    AutoPtr<ArrayOf<Byte> > msData;
+    scanRecord->GetManufacturerSpecificData(mManufacturerId, (ArrayOf<Byte>**)&msData);
+    if (mManufacturerId >= 0) {
+        if (!MatchesPartialData(mManufacturerData, mManufacturerDataMask, msData)) {
+            *result = FALSE;
+            return NOERROR;
+        }
+    }
+    // All filters match.
+    *result = TRUE;
     return NOERROR;
 }
 
@@ -408,16 +492,15 @@ ECode ScanFilter::ToString(
     /* [out] */ String* info)
 {
     VALIDATE_NOT_NULL(info);
-    // ==================before translated======================
-    // return "BluetoothLeScanFilter [mDeviceName=" + mDeviceName + ", mDeviceAddress="
-    //         + mDeviceAddress
-    //         + ", mUuid=" + mServiceUuid + ", mUuidMask=" + mServiceUuidMask
-    //         + ", mServiceDataUuid=" + Objects.toString(mServiceDataUuid) + ", mServiceData="
-    //         + Arrays.toString(mServiceData) + ", mServiceDataMask="
-    //         + Arrays.toString(mServiceDataMask) + ", mManufacturerId=" + mManufacturerId
-    //         + ", mManufacturerData=" + Arrays.toString(mManufacturerData)
-    //         + ", mManufacturerDataMask=" + Arrays.toString(mManufacturerDataMask) + "]";
-    assert(0);
+    *info = String("BluetoothLeScanFilter [mDeviceName=") + mDeviceName + String(", mDeviceAddress=")
+            + mDeviceAddress;
+    //TODO
+            //+ ", mUuid=" + mServiceUuid + ", mUuidMask=" + mServiceUuidMask
+            //+ ", mServiceDataUuid=" + Objects.toString(mServiceDataUuid) + ", mServiceData="
+            //+ Arrays.toString(mServiceData) + ", mServiceDataMask="
+            //+ Arrays.toString(mServiceDataMask) + ", mManufacturerId=" + mManufacturerId
+            //+ ", mManufacturerData=" + Arrays.toString(mManufacturerData)
+            //+ ", mManufacturerDataMask=" + Arrays.toString(mManufacturerDataMask) + "]";
     return NOERROR;
 }
 
@@ -425,37 +508,58 @@ ECode ScanFilter::GetHashCode(
     /* [out] */ Int32* hashCode)
 {
     VALIDATE_NOT_NULL(hashCode);
-    // ==================before translated======================
-    // return Objects.hash(mDeviceName, mDeviceAddress, mManufacturerId, mManufacturerData,
-    //         mManufacturerDataMask, mServiceDataUuid, mServiceData, mServiceDataMask,
-    //         mServiceUuid, mServiceUuidMask);
+    //TODO
+    //*hashCode = Objects.hash(mDeviceName, mDeviceAddress, mManufacturerId, mManufacturerData,
+    //        mManufacturerDataMask, mServiceDataUuid, mServiceData, mServiceDataMask,
+    //        mServiceUuid, mServiceUuidMask);
     assert(0);
-    return 0;
+    return NOERROR;
 }
 
 ECode ScanFilter::Equals(
     /* [in] */ IInterface* obj,
     /* [out] */ Boolean* result)
 {
-    // ==================before translated======================
-    // if (this == obj) {
-    //     return true;
-    // }
-    // if (obj == null || getClass() != obj.getClass()) {
-    //     return false;
-    // }
-    // ScanFilter other = (ScanFilter) obj;
-    // return Objects.equals(mDeviceName, other.mDeviceName) &&
-    //         Objects.equals(mDeviceAddress, other.mDeviceAddress) &&
-    //                 mManufacturerId == other.mManufacturerId &&
-    //         Objects.deepEquals(mManufacturerData, other.mManufacturerData) &&
-    //         Objects.deepEquals(mManufacturerDataMask, other.mManufacturerDataMask) &&
-    //         Objects.deepEquals(mServiceDataUuid, other.mServiceDataUuid) &&
-    //         Objects.deepEquals(mServiceData, other.mServiceData) &&
-    //         Objects.deepEquals(mServiceDataMask, other.mServiceDataMask) &&
-    //         Objects.equals(mServiceUuid, other.mServiceUuid) &&
-    //         Objects.equals(mServiceUuidMask, other.mServiceUuidMask);
-    assert(0);
+    if (TO_IINTERFACE(this) == obj) {
+        return TRUE;
+    }
+    //if (obj == NULL|| getClass() != obj.getClass())
+    if (obj == NULL|| IScanFilter::Probe(obj) == NULL) {
+        return FALSE;
+    }
+    AutoPtr<ScanFilter> other = (ScanFilter*)(IScanFilter::Probe(obj));
+    //return Objects.equals(mDeviceName, other.mDeviceName) &&
+    //        Objects.equals(mDeviceAddress, other.mDeviceAddress) &&
+    //                mManufacturerId == other.mManufacturerId &&
+    //        Objects.deepEquals(mManufacturerData, other.mManufacturerData) &&
+    //        Objects.deepEquals(mManufacturerDataMask, other.mManufacturerDataMask) &&
+    //        Objects.deepEquals(mServiceDataUuid, other.mServiceDataUuid) &&
+    //        Objects.deepEquals(mServiceData, other.mServiceData) &&
+    //        Objects.deepEquals(mServiceDataMask, other.mServiceDataMask) &&
+    //        Objects.equals(mServiceUuid, other.mServiceUuid) &&
+    //        Objects.equals(mServiceUuidMask, other.mServiceUuidMask);
+    AutoPtr<IArrayOf> md1 = CoreUtils::ConvertByteArray(mManufacturerData);
+    AutoPtr<IArrayOf> md2 = CoreUtils::ConvertByteArray(other->mManufacturerData);
+    AutoPtr<IArrayOf> mdm1 = CoreUtils::ConvertByteArray(mManufacturerDataMask);
+    AutoPtr<IArrayOf> mdm2 = CoreUtils::ConvertByteArray(other->mManufacturerDataMask);
+    AutoPtr<IArrayOf> sd1 = CoreUtils::ConvertByteArray(mServiceData);
+    AutoPtr<IArrayOf> sd2 = CoreUtils::ConvertByteArray(other->mServiceData);
+    AutoPtr<IArrayOf> sdm1 = CoreUtils::ConvertByteArray(mServiceDataMask);
+    AutoPtr<IArrayOf> sdm2 = CoreUtils::ConvertByteArray(other->mServiceDataMask);
+    *result =
+            mDeviceName.Equals(other->mDeviceName) &&
+            mDeviceAddress.Equals(other->mDeviceAddress) &&
+            mManufacturerId == other->mManufacturerId &&
+            Objects::Equals(mServiceDataUuid, other->mServiceDataUuid) &&//need check, no DeepEquals for IParcelUuid
+
+            Objects::DeepEquals(md1, md2) &&
+            Objects::DeepEquals(mdm1, mdm2) &&
+            Objects::DeepEquals(sd1, sd2) &&
+            Objects::DeepEquals(sdm1, sdm2) &&
+
+            Objects::Equals(mServiceUuid, other->mServiceUuid) &&
+            Objects::Equals(mServiceUuidMask, other->mServiceUuidMask);
+
     return NOERROR;
 }
 
@@ -471,17 +575,16 @@ ScanFilter::ScanFilter(
     /* [in] */ ArrayOf<Byte>* manufacturerData,
     /* [in] */ ArrayOf<Byte>* manufacturerDataMask)
 {
-    // ==================before translated======================
-    // mDeviceName = name;
-    // mServiceUuid = uuid;
-    // mServiceUuidMask = uuidMask;
-    // mDeviceAddress = deviceAddress;
-    // mServiceDataUuid = serviceDataUuid;
-    // mServiceData = serviceData;
-    // mServiceDataMask = serviceDataMask;
-    // mManufacturerId = manufacturerId;
-    // mManufacturerData = manufacturerData;
-    // mManufacturerDataMask = manufacturerDataMask;
+    mDeviceName = name;
+    mServiceUuid = uuid;
+    mServiceUuidMask = uuidMask;
+    mDeviceAddress = deviceAddress;
+    mServiceDataUuid = serviceDataUuid;
+    mServiceData = serviceData;
+    mServiceDataMask = serviceDataMask;
+    mManufacturerId = manufacturerId;
+    mManufacturerData = manufacturerData;
+    mManufacturerDataMask = manufacturerDataMask;
 }
 
 Boolean ScanFilter::MatchesServiceUuids(
@@ -489,22 +592,31 @@ Boolean ScanFilter::MatchesServiceUuids(
     /* [in] */ IParcelUuid* parcelUuidMask,
     /* [in] */ IList* uuids)
 {
-    // ==================before translated======================
-    // if (uuid == null) {
-    //     return true;
-    // }
-    // if (uuids == null) {
-    //     return false;
-    // }
-    //
-    // for (ParcelUuid parcelUuid : uuids) {
-    //     UUID uuidMask = parcelUuidMask == null ? null : parcelUuidMask.getUuid();
-    //     if (matchesServiceUuid(uuid.getUuid(), uuidMask, parcelUuid.getUuid())) {
-    //         return true;
-    //     }
-    // }
-    // return false;
-    assert(0);
+    if (uuid == NULL) {
+        return TRUE;
+    }
+    if (uuids == NULL) {
+        return FALSE;
+    }
+
+    //for (ParcelUuid parcelUuid : uuids)
+    Int32 size;
+    uuids->GetSize(&size);
+    for (Int32 i = 0; i < size; ++i) {
+        AutoPtr<IInterface> obj;
+        uuids->Get(i, (IInterface**)&obj);
+        IParcelUuid* parcelUuid = IParcelUuid::Probe(obj);
+        AutoPtr<IUUID> uuidMask;
+        if (parcelUuidMask != NULL) {
+            parcelUuidMask->GetUuid((IUUID**)&uuidMask);
+        }
+        AutoPtr<IUUID> iuuid, data;
+        uuid->GetUuid((IUUID**)&iuuid);
+        parcelUuid->GetUuid((IUUID**)&data);
+        if (MatchesServiceUuid(iuuid, uuidMask, data)) {
+            return TRUE;
+        }
+    }
     return FALSE;
 }
 
@@ -513,18 +625,25 @@ Boolean ScanFilter::MatchesServiceUuid(
     /* [in] */ IUUID* mask,
     /* [in] */ IUUID* data)
 {
-    // ==================before translated======================
-    // if (mask == null) {
-    //     return uuid.equals(data);
-    // }
-    // if ((uuid.getLeastSignificantBits() & mask.getLeastSignificantBits()) !=
-    //         (data.getLeastSignificantBits() & mask.getLeastSignificantBits())) {
-    //     return false;
-    // }
-    // return ((uuid.getMostSignificantBits() & mask.getMostSignificantBits()) ==
-    //         (data.getMostSignificantBits() & mask.getMostSignificantBits()));
-    assert(0);
-    return FALSE;
+    if (mask == NULL) {
+        Boolean result;
+        uuid->Equals(TO_IINTERFACE(data), &result);
+        return result;
+    }
+    Int64 uLeastSignificantBits, mLeastSignificantBits, dLeastSignificantBits;
+    uuid->GetLeastSignificantBits(&uLeastSignificantBits);
+    mask->GetLeastSignificantBits(&mLeastSignificantBits);
+    data->GetLeastSignificantBits(&dLeastSignificantBits);
+    if ((uLeastSignificantBits & mLeastSignificantBits) !=
+            (dLeastSignificantBits & mLeastSignificantBits)) {
+        return FALSE;
+    }
+    Int64 uMostSignificantBits, mMostSignificantBits, dMostSignificantBits;
+    uuid->GetMostSignificantBits(&uMostSignificantBits);
+    mask->GetMostSignificantBits(&mMostSignificantBits);
+    data->GetMostSignificantBits(&dMostSignificantBits);
+    return ((uMostSignificantBits & mMostSignificantBits) ==
+            (dMostSignificantBits & mMostSignificantBits));
 }
 
 Boolean ScanFilter::MatchesPartialData(
@@ -532,26 +651,23 @@ Boolean ScanFilter::MatchesPartialData(
     /* [in] */ ArrayOf<Byte>* dataMask,
     /* [in] */ ArrayOf<Byte>* parsedData)
 {
-    // ==================before translated======================
-    // if (parsedData == null || parsedData.length < data.length) {
-    //     return false;
-    // }
-    // if (dataMask == null) {
-    //     for (int i = 0; i < data.length; ++i) {
-    //         if (parsedData[i] != data[i]) {
-    //             return false;
-    //         }
-    //     }
-    //     return true;
-    // }
-    // for (int i = 0; i < data.length; ++i) {
-    //     if ((dataMask[i] & parsedData[i]) != (dataMask[i] & data[i])) {
-    //         return false;
-    //     }
-    // }
-    // return true;
-    assert(0);
-    return FALSE;
+    if (parsedData == NULL || parsedData->GetLength() < data->GetLength()) {
+        return FALSE;
+    }
+    if (dataMask == NULL) {
+        for (Int32 i = 0; i < data->GetLength(); ++i) {
+            if ((*parsedData)[i] != (*data)[i]) {
+                return FALSE;
+            }
+        }
+        return TRUE;
+    }
+    for (Int32 i = 0; i < data->GetLength(); ++i) {
+        if (((*dataMask)[i] & (*parsedData)[i]) != ((*dataMask)[i] & (*data)[i])) {
+            return FALSE;
+        }
+    }
+    return TRUE;
 }
 
 } // namespace LE

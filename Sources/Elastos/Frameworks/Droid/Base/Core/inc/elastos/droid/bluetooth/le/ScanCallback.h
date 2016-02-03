@@ -25,6 +25,8 @@ public:
     CAR_INTERFACE_DECL();
 
     ScanCallback();
+
+    ~ScanCallback() = 0;
     /**
       * Callback when a BLE advertisement has been found.
       *
