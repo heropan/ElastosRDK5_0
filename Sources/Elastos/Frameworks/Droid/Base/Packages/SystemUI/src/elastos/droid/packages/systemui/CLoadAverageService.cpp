@@ -55,7 +55,9 @@ ECode CLoadAverageService::CpuTracker::OnMeasureProcessName(
 CLoadAverageService::LoadView::LoadViewHandler::LoadViewHandler(
     /* [in] */ LoadView* host)
     : mHost(host)
-{}
+{
+    Handler::constructor();
+}
 
 ECode CLoadAverageService::LoadView::LoadViewHandler::HandleMessage(
     /* [in] */ IMessage* msg)

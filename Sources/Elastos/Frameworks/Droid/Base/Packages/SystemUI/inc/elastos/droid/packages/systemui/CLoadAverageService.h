@@ -53,7 +53,8 @@ private:
     class LoadView : public Elastos::Droid::View::View
     {
     private:
-        class LoadViewHandler : public Handler {
+        class LoadViewHandler : public Handler
+        {
         public:
             LoadViewHandler(
                 /* [in] */ LoadView* host);

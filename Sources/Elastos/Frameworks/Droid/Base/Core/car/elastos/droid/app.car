@@ -1112,6 +1112,10 @@ module
         interface INotificationBuilder;
     }
 
+    singleton class CNotificationBuilderHelper {
+        interface INotificationBuilderHelper;
+    }
+
     [local]
     class CNotificationBigPictureStyle {
         constructor();

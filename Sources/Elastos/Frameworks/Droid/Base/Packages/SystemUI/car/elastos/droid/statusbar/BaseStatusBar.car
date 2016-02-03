@@ -133,6 +133,10 @@ module
             [out] Boolean* showing);
 
         Destroy();
+
+        RemoveNotification(
+            [in] String key,
+            [in] INotificationListenerServiceRankingMap* ranking);
     }
 
     } // namespace StatusBar

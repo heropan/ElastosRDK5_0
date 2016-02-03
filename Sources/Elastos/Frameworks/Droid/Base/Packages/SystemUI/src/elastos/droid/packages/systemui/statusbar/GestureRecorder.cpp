@@ -37,7 +37,9 @@ namespace StatusBar {
 GestureRecorder::GHandler::GHandler(
     /* [in] */ GestureRecorder* host)
     : mHost(host)
-{}
+{
+    Handler::constructor();
+}
 
 ECode GestureRecorder::GHandler::HandleMessage(
     /* [in] */ IMessage* msg)

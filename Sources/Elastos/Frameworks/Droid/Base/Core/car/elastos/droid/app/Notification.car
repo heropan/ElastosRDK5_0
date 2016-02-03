@@ -1457,6 +1457,14 @@ module
             [out] INotification** notification);
     }
 
+    interface INotificationBuilderHelper {
+        CalculateTopPadding(
+            [in] IContext* ctx,
+            [in] Boolean hasThreeLines,
+            [in] Float fontScale,
+            [out] Int32* result);
+    }
+
     /**
      * An object that can apply a rich notification style to a Notification.Builder
      * object.

@@ -111,6 +111,7 @@ SOURCES += CNotification.cpp
 SOURCES += CNotificationHelper.cpp
 SOURCES += CNotificationAction.cpp
 SOURCES += CNotificationBuilder.cpp
+SOURCES += CNotificationBuilderHelper.cpp
 SOURCES += NotificationStyle.cpp
 SOURCES += CNotificationBigPictureStyle.cpp
 SOURCES += CNotificationBigTextStyle.cpp

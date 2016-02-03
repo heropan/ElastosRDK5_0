@@ -597,21 +597,13 @@ ECode CStatusBarManagerService::EnforceStatusBarService()
 
 ECode CStatusBarManagerService::RegisterStatusBar(
     /* [in] */ IIStatusBar* bar,
-    /* [out] */ IStatusBarIconList** iconList,
-    /* [out, callee] */ ArrayOf<Int32>** switches,
-    /* [out] */ IList** binders)/*List<IBinder*>*/
+    /* [in, out] */ IStatusBarIconList* iconList,
+    /* [in, out] */ ArrayOf<Int32>* switches,
+    /* [in, out] */ IList* binders)/*List<IBinder*>*/
 {
     VALIDATE_NOT_NULL(binders);
-    *binders = NULL;
     VALIDATE_NOT_NULL(iconList);
     VALIDATE_NOT_NULL(switches);
-
-    AutoPtr<IList> list;
-    CArrayList::New((IList**)&list);
-
-    *switches = ArrayOf<Int32>::Alloc(6);
-    REFCOUNT_ADD(*switches);
-    CStatusBarIconList::New(iconList);
 
     FAIL_RETURN(EnforceStatusBarService());
 
@@ -620,22 +612,20 @@ ECode CStatusBarManagerService::RegisterStatusBar(
 
     {
         AutoLock Lock(mIconsLock);
-        (*iconList)->CopyFrom(mIcons);
+        iconList->CopyFrom(mIcons);
     }
 
     {
         AutoLock lock(this);
-        GatherDisableActionsLocked(mCurrentUserId, &((**switches)[0]));
-        (**switches)[1] = mSystemUiVisibility;
-        (**switches)[2] = mMenuVisible ? 1 : 0;
-        (**switches)[3] = mImeWindowVis;
-        (**switches)[4] = mImeBackDisposition;
-        (**switches)[5] = mShowImeSwitcher ? 1 : 0;
-        list->Add(mImeToken);
+        GatherDisableActionsLocked(mCurrentUserId, &((*switches)[0]));
+        (*switches)[1] = mSystemUiVisibility;
+        (*switches)[2] = mMenuVisible ? 1 : 0;
+        (*switches)[3] = mImeWindowVis;
+        (*switches)[4] = mImeBackDisposition;
+        (*switches)[5] = mShowImeSwitcher ? 1 : 0;
+        binders->Add(mImeToken);
     }
 
-    *binders = list;
-    REFCOUNT_ADD(*binders)
     return NOERROR;
 }
 

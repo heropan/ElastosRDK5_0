@@ -237,7 +237,7 @@ ECode CComponentName::ToString(
 }
 
 ECode CComponentName::Equals(
-    /* [in] */ IComponentName* obj,
+    /* [in] */ IInterface* obj,
     /* [out] */ Boolean* isEqual)
 {
     VALIDATE_NOT_NULL(isEqual)
@@ -247,8 +247,8 @@ ECode CComponentName::Equals(
         // never be null.
         String pkg;
         String cls;
-        obj->GetPackageName(&pkg);
-        obj->GetClassName(&cls);
+        IComponentName::Probe(obj)->GetPackageName(&pkg);
+        IComponentName::Probe(obj)->GetClassName(&cls);
         if (mPackage.Equals(pkg) && mClass.Equals(cls)) {
             *isEqual = TRUE;
             return NOERROR;

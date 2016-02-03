@@ -49,7 +49,9 @@ ECode KeyguardIndicationController::ControllerBroadcastReceiver::OnReceive(
 KeyguardIndicationController::ControllerHandler::ControllerHandler(
     /* [in] */ KeyguardIndicationController* host)
     : mHost(host)
-{}
+{
+    Handler::constructor();
+}
 
 ECode KeyguardIndicationController::ControllerHandler::HandleMessage(
     /* [in] */ IMessage* msg)

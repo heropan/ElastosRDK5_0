@@ -130,7 +130,7 @@ public:
         /* [out] */ String* str);
 
     CARAPI Equals(
-        /* [in] */ IComponentName* obj,
+        /* [in] */ IInterface* obj,
         /* [out] */ Boolean* isEqual);
 
     CARAPI GetHashCode(
