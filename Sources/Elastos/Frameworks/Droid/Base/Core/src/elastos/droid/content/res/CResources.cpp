@@ -1878,6 +1878,12 @@ ECode CResources::GetPreloadedDrawables(
     return NOERROR;
 }
 
+ECode CResources::GetPreloadedDrawables(
+    /* [out] */ IInt64SparseArray** drawables)
+{
+    return NOERROR;
+}
+
 Boolean CResources::VerifyPreloadConfig(
     /* [in] */ Int32 changingConfigurations,
     /* [in] */ Int32 allowVarying,

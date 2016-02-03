@@ -20,6 +20,7 @@ using Elastos::Droid::Graphics::Drawable::IDrawable;
 using Elastos::Droid::Graphics::Drawable::IDrawableConstantState;
 using Elastos::Droid::Utility::IAttributeSet;
 using Elastos::Droid::Utility::IDisplayMetrics;
+using Elastos::Droid::Utility::IInt64SparseArray;
 using Elastos::Droid::Utility::CTypedValue;
 using Elastos::Droid::Utility::CDisplayMetrics;
 using Elastos::Droid::Utility::Pools;
@@ -1243,6 +1244,9 @@ public:
     CARAPI GetPreloadedDrawables(
         /* [out] */ IHashMap** drawables);
 
+    CARAPI GetPreloadedDrawables(
+        /* [out] */ IInt64SparseArray** drawables);
+
     CARAPI LoadDrawable(
         /* [in] */ ITypedValue* value,
         /* [in] */ Int32 id,
@@ -1352,7 +1356,7 @@ private:
 
     static Object sSync;
 
-    static List< AutoPtr<ConstantStateMap> > sPreloadedDrawables;
+    static AutoPtr< ArrayOf<IInt64SparseArray*> > sPreloadedDrawables;
     static ConstantStateMap sPreloadedColorDrawables;
     static ColorStateMap sPreloadedColorStateLists;
 

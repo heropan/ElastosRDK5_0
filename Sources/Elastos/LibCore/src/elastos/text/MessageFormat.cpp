@@ -274,13 +274,11 @@ ECode MessageFormat::FormatImpl(
         AutoPtr<IFormat> format = (*mFormats)[i];
         if (format == NULL || arg == NULL) {
             if (INumber::Probe(arg) != NULL) {
-                format = NULL;
                 AutoPtr<INumberFormat> nf;
                 NumberFormat::GetInstance((INumberFormat**)&nf);
                 format = IFormat::Probe(nf);
             }
             else if (IDate::Probe(arg) != NULL) {
-                format = NULL;
                 AutoPtr<IDateFormat> df;
                 DateFormat::GetInstance((IDateFormat**)&df);
                 format = IFormat::Probe(df);
