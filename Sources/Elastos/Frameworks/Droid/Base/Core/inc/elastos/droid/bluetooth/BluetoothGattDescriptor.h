@@ -141,22 +141,19 @@ private:
         /* [in] */ Int32 instance,
         /* [in] */ Int32 permissions);
 
-public:
-    /**
-      * Value used to enable notification for a client configuration descriptor
-      */
-    //static AutoPtr< ArrayOf<Byte> > ENABLE_NOTIFICATION_VALUE;
-    /**
-      * Value used to enable indication for a client configuration descriptor
-      */
-    //static AutoPtr< ArrayOf<Byte> > ENABLE_INDICATION_VALUE;
-    /**
-      * Value used to disable notifications or indicatinos
-      */
-    //static AutoPtr< ArrayOf<Byte> > DISABLE_NOTIFICATION_VALUE;
-    /**
-      * Descriptor read permission
-      */
+//public:
+//    /**
+//      * Value used to enable notification for a client configuration descriptor
+//      */
+//    static AutoPtr< ArrayOf<Byte> > ENABLE_NOTIFICATION_VALUE;
+//    /**
+//      * Value used to enable indication for a client configuration descriptor
+//      */
+//    static AutoPtr< ArrayOf<Byte> > ENABLE_INDICATION_VALUE;
+//    /**
+//      * Value used to disable notifications or indicatinos
+//      */
+//    static AutoPtr< ArrayOf<Byte> > DISABLE_NOTIFICATION_VALUE;
 protected:
     /**
       * The UUID of this descriptor.

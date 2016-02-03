@@ -1,5 +1,17 @@
-
+#include "Elastos.Droid.Os.h"
 #include "elastos/droid/bluetooth/le/ScanRecord.h"
+#include "elastos/droid/bluetooth/le/BluetoothLeUtils.h"
+#include "elastos/droid/bluetooth/BluetoothUuid.h"
+#include "elastos/droid/utility/CSparseArray.h"
+#include "elastos/droid/utility/CArrayMap.h"
+#include "elastos/core/CoreUtils.h"
+#include "elastos/core/Math.h"
+
+using Elastos::Droid::Bluetooth::BluetoothUuid;
+using Elastos::Droid::Utility::CSparseArray;
+using Elastos::Droid::Utility::CArrayMap;
+using Elastos::Core::StringUtils;
+using Elastos::Utility::CArrayList;
 
 namespace Elastos {
 namespace Droid {
@@ -33,9 +45,7 @@ ECode ScanRecord::GetAdvertiseFlags(
     /* [out] */ Int32* result)
 {
     VALIDATE_NOT_NULL(result);
-    // ==================before translated======================
-    // return mAdvertiseFlags;
-    assert(0);
+    *result = mAdvertiseFlags;
     return NOERROR;
 }
 
@@ -43,9 +53,8 @@ ECode ScanRecord::GetServiceUuids(
     /* [out] */ IList** result)
 {
     VALIDATE_NOT_NULL(result);
-    // ==================before translated======================
-    // return mServiceUuids;
-    assert(0);
+    *result = mServiceUuids;
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
@@ -53,9 +62,8 @@ ECode ScanRecord::GetManufacturerSpecificData(
     /* [out] */ ISparseArray** result)
 {
     VALIDATE_NOT_NULL(result);
-    // ==================before translated======================
-    // return mManufacturerSpecificData;
-    assert(0);
+    *result = mManufacturerSpecificData;
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
@@ -64,9 +72,23 @@ ECode ScanRecord::GetManufacturerSpecificData(
     /* [out, callee] */ ArrayOf<Byte>** data)
 {
     VALIDATE_NOT_NULL(data);
-    // ==================before translated======================
-    // return mManufacturerSpecificData.get(manufacturerId);
-    assert(0);
+    AutoPtr<IInterface> obj;
+    mManufacturerSpecificData->Get(manufacturerId, (IInterface**)&obj);
+    IArrayOf* iArray = IArrayOf::Probe(obj);
+    Int32 size;
+    iArray->GetLength(&size);
+    AutoPtr<ArrayOf<Byte> > array = ArrayOf<Byte>::Alloc(size);
+    for (Int32 j = 0; j < size; ++j) {
+        AutoPtr<IInterface> obj;
+        iArray->Get(j, (IInterface**)&obj);
+        IByte* iByte = IByte::Probe(obj);
+        Byte bValue;
+        iByte->GetValue(&bValue);
+        array->Set(j, bValue);
+    }
+    *data = array;
+    REFCOUNT_ADD(*data);
+
     return NOERROR;
 }
 
@@ -74,9 +96,8 @@ ECode ScanRecord::GetServiceData(
     /* [out] */ IMap** result)
 {
     VALIDATE_NOT_NULL(result);
-    // ==================before translated======================
-    // return mServiceData;
-    assert(0);
+    *result = mServiceData;
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
@@ -85,12 +106,26 @@ ECode ScanRecord::GetServiceData(
     /* [out, callee] */ ArrayOf<Byte>** data)
 {
     VALIDATE_NOT_NULL(data);
-    // ==================before translated======================
-    // if (serviceDataUuid == null) {
-    //     return null;
-    // }
-    // return mServiceData.get(serviceDataUuid);
-    assert(0);
+    if (serviceDataUuid == NULL) {
+        *data = NULL;
+        return NOERROR;
+    }
+    AutoPtr<IInterface> obj;
+    mServiceData->Get(TO_IINTERFACE(serviceDataUuid), (IInterface**)&obj);
+    IArrayOf* iArray = IArrayOf::Probe(obj);
+    Int32 size;
+    iArray->GetLength(&size);
+    AutoPtr<ArrayOf<Byte> > array = ArrayOf<Byte>::Alloc(size);
+    for (Int32 j = 0; j < size; ++j) {
+        AutoPtr<IInterface> obj;
+        iArray->Get(j, (IInterface**)&obj);
+        IByte* iByte = IByte::Probe(obj);
+        Byte bValue;
+        iByte->GetValue(&bValue);
+        array->Set(j, bValue);
+    }
+    *data = array;
+    REFCOUNT_ADD(*data);
     return NOERROR;
 }
 
@@ -98,9 +133,7 @@ ECode ScanRecord::GetTxPowerLevel(
     /* [out] */ Int32* result)
 {
     VALIDATE_NOT_NULL(result);
-    // ==================before translated======================
-    // return mTxPowerLevel;
-    assert(0);
+    *result = mTxPowerLevel;
     return NOERROR;
 }
 
@@ -108,9 +141,7 @@ ECode ScanRecord::GetDeviceName(
     /* [out] */ String* result)
 {
     VALIDATE_NOT_NULL(result);
-    // ==================before translated======================
-    // return mDeviceName;
-    assert(0);
+    *result = mDeviceName;
     return NOERROR;
 }
 
@@ -118,120 +149,132 @@ ECode ScanRecord::GetBytes(
     /* [out] */ ArrayOf<Byte>** result)
 {
     VALIDATE_NOT_NULL(result);
-    // ==================before translated======================
-    // return mBytes;
-    assert(0);
+    *result = mBytes;
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
 AutoPtr<IScanRecord> ScanRecord::ParseFromBytes(
     /* [in] */ ArrayOf<Byte>* scanRecord)
 {
-    // ==================before translated======================
-    // if (scanRecord == null) {
-    //     return null;
-    // }
-    //
-    // int currentPos = 0;
-    // int advertiseFlag = -1;
-    // List<ParcelUuid> serviceUuids = new ArrayList<ParcelUuid>();
-    // String localName = null;
-    // int txPowerLevel = Integer.MIN_VALUE;
-    //
-    // SparseArray<byte[]> manufacturerData = new SparseArray<byte[]>();
-    // Map<ParcelUuid, byte[]> serviceData = new ArrayMap<ParcelUuid, byte[]>();
-    //
-    // try {
-    //     while (currentPos < scanRecord.length) {
-    //         // length is unsigned int.
-    //         int length = scanRecord[currentPos++] & 0xFF;
-    //         if (length == 0) {
-    //             break;
-    //         }
-    //         // Note the length includes the length of the field type itself.
-    //         int dataLength = length - 1;
-    //         // fieldType is unsigned int.
-    //         int fieldType = scanRecord[currentPos++] & 0xFF;
-    //         switch (fieldType) {
-    //             case DATA_TYPE_FLAGS:
-    //                 advertiseFlag = scanRecord[currentPos] & 0xFF;
-    //                 break;
-    //             case DATA_TYPE_SERVICE_UUIDS_16_BIT_PARTIAL:
-    //             case DATA_TYPE_SERVICE_UUIDS_16_BIT_COMPLETE:
-    //                 parseServiceUuid(scanRecord, currentPos,
-    //                         dataLength, BluetoothUuid.UUID_BYTES_16_BIT, serviceUuids);
-    //                 break;
-    //             case DATA_TYPE_SERVICE_UUIDS_32_BIT_PARTIAL:
-    //             case DATA_TYPE_SERVICE_UUIDS_32_BIT_COMPLETE:
-    //                 parseServiceUuid(scanRecord, currentPos, dataLength,
-    //                         BluetoothUuid.UUID_BYTES_32_BIT, serviceUuids);
-    //                 break;
-    //             case DATA_TYPE_SERVICE_UUIDS_128_BIT_PARTIAL:
-    //             case DATA_TYPE_SERVICE_UUIDS_128_BIT_COMPLETE:
-    //                 parseServiceUuid(scanRecord, currentPos, dataLength,
-    //                         BluetoothUuid.UUID_BYTES_128_BIT, serviceUuids);
-    //                 break;
-    //             case DATA_TYPE_LOCAL_NAME_SHORT:
-    //             case DATA_TYPE_LOCAL_NAME_COMPLETE:
-    //                 localName = new String(
-    //                         extractBytes(scanRecord, currentPos, dataLength));
-    //                 break;
-    //             case DATA_TYPE_TX_POWER_LEVEL:
-    //                 txPowerLevel = scanRecord[currentPos];
-    //                 break;
-    //             case DATA_TYPE_SERVICE_DATA:
-    //                 // The first two bytes of the service data are service data UUID in little
-    //                 // endian. The rest bytes are service data.
-    //                 int serviceUuidLength = BluetoothUuid.UUID_BYTES_16_BIT;
-    //                 byte[] serviceDataUuidBytes = extractBytes(scanRecord, currentPos,
-    //                         serviceUuidLength);
-    //                 ParcelUuid serviceDataUuid = BluetoothUuid.parseUuidFrom(
-    //                         serviceDataUuidBytes);
-    //                 byte[] serviceDataArray = extractBytes(scanRecord,
-    //                         currentPos + serviceUuidLength, dataLength - serviceUuidLength);
-    //                 serviceData.put(serviceDataUuid, serviceDataArray);
-    //                 break;
-    //             case DATA_TYPE_MANUFACTURER_SPECIFIC_DATA:
-    //                 // The first two bytes of the manufacturer specific data are
-    //                 // manufacturer ids in little endian.
-    //                 int manufacturerId = ((scanRecord[currentPos + 1] & 0xFF) << 8) +
-    //                         (scanRecord[currentPos] & 0xFF);
-    //                 byte[] manufacturerDataBytes = extractBytes(scanRecord, currentPos + 2,
-    //                         dataLength - 2);
-    //                 manufacturerData.put(manufacturerId, manufacturerDataBytes);
-    //                 break;
-    //             default:
-    //                 // Just ignore, we don't handle such data type.
-    //                 break;
-    //         }
-    //         currentPos += dataLength;
-    //     }
-    //
-    //     if (serviceUuids.isEmpty()) {
-    //         serviceUuids = null;
-    //     }
-    //     return new ScanRecord(serviceUuids, manufacturerData, serviceData,
-    //             advertiseFlag, txPowerLevel, localName, scanRecord);
-    // } catch (Exception e) {
-    //     Log.e(TAG, "unable to parse scan record: " + Arrays.toString(scanRecord));
-    //     // As the record is invalid, ignore all the parsed results for this packet
-    //     // and return an empty record with raw scanRecord bytes in results
-    //     return new ScanRecord(null, null, null, -1, Integer.MIN_VALUE, null, scanRecord);
-    // }
-    assert(0);
-    AutoPtr<IScanRecord> empty;
-    return empty;
+    if (scanRecord == NULL) {
+        return NULL;
+    }
+
+    Int32 currentPos = 0;
+    Int32 advertiseFlag = -1;
+    //List<ParcelUuid> serviceUuids = new ArrayList<ParcelUuid>();
+    AutoPtr<IList> serviceUuids;
+    CArrayList::New((IList**)&serviceUuids);
+    String localName;;
+    Int32 txPowerLevel = Elastos::Core::Math::INT32_MIN_VALUE;
+
+    //SparseArray<byte[]> manufacturerData = new SparseArray<byte[]>();
+    AutoPtr<ISparseArray> manufacturerData;
+    CSparseArray::New((ISparseArray**)&manufacturerData);
+    //Map<ParcelUuid, byte[]> serviceData = new ArrayMap<ParcelUuid, byte[]>();
+    AutoPtr<IMap> serviceData;
+    CArrayMap::New((IMap**)&serviceData);
+
+    //try {
+    Int32 length = scanRecord->GetLength();
+    while (currentPos < length) {
+        // length is unsigned int.
+        Int32 length = (*scanRecord)[currentPos++] & 0xFF;
+        if (length == 0) {
+            break;
+        }
+        // Note the length includes the length of the field type itself.
+        Int32 dataLength = length - 1;
+        // fieldType is unsigned int.
+        Int32 fieldType = (*scanRecord)[currentPos++] & 0xFF;
+        switch (fieldType) {
+            case DATA_TYPE_FLAGS:
+                advertiseFlag = (*scanRecord)[currentPos] & 0xFF;
+                break;
+            case DATA_TYPE_SERVICE_UUIDS_16_BIT_PARTIAL:
+            case DATA_TYPE_SERVICE_UUIDS_16_BIT_COMPLETE:
+                ParseServiceUuid(scanRecord, currentPos,
+                        dataLength, BluetoothUuid::UUID_BYTES_16_BIT, serviceUuids);
+                break;
+            case DATA_TYPE_SERVICE_UUIDS_32_BIT_PARTIAL:
+            case DATA_TYPE_SERVICE_UUIDS_32_BIT_COMPLETE:
+                ParseServiceUuid(scanRecord, currentPos, dataLength,
+                        BluetoothUuid::UUID_BYTES_32_BIT, serviceUuids);
+                break;
+            case DATA_TYPE_SERVICE_UUIDS_128_BIT_PARTIAL:
+            case DATA_TYPE_SERVICE_UUIDS_128_BIT_COMPLETE:
+                ParseServiceUuid(scanRecord, currentPos, dataLength,
+                        BluetoothUuid::UUID_BYTES_128_BIT, serviceUuids);
+                break;
+            case DATA_TYPE_LOCAL_NAME_SHORT:
+            case DATA_TYPE_LOCAL_NAME_COMPLETE:
+            {
+                AutoPtr<ArrayOf<Byte> > bytes =
+                        ExtractBytes(scanRecord, currentPos, dataLength);
+                localName = String(*(bytes.Get()));
+                break;
+            }
+            case DATA_TYPE_TX_POWER_LEVEL:
+                txPowerLevel = (*scanRecord)[currentPos];
+                break;
+            case DATA_TYPE_SERVICE_DATA:
+            {
+                // The first two bytes of the service data are service data UUID in little
+                // endian. The rest bytes are service data.
+                Int32 serviceUuidLength = BluetoothUuid::UUID_BYTES_16_BIT;
+                AutoPtr<ArrayOf<Byte> > serviceDataUuidBytes = ExtractBytes(scanRecord, currentPos,
+                        serviceUuidLength);
+                AutoPtr<IParcelUuid> serviceDataUuid = BluetoothUuid::ParseUuidFrom(
+                        serviceDataUuidBytes);
+                AutoPtr<ArrayOf<Byte> > serviceDataArray = ExtractBytes(scanRecord,
+                        currentPos + serviceUuidLength, dataLength - serviceUuidLength);
+
+                AutoPtr<IArrayOf> iArrayOf = CoreUtils::ConvertByteArray(serviceDataArray);
+                serviceData->Put(TO_IINTERFACE(serviceDataUuid), TO_IINTERFACE(iArrayOf));
+                break;
+            }
+            case DATA_TYPE_MANUFACTURER_SPECIFIC_DATA:
+            {
+                // The first two bytes of the manufacturer specific data are
+                // manufacturer ids in little endian.
+                Int32 manufacturerId = (((*scanRecord)[currentPos + 1] & 0xFF) << 8) +
+                    ((*scanRecord)[currentPos] & 0xFF);
+                AutoPtr<ArrayOf<Byte> > manufacturerDataBytes = ExtractBytes(scanRecord, currentPos + 2,
+                        dataLength - 2);
+                AutoPtr<IArrayOf> iArrayOf = CoreUtils::ConvertByteArray(manufacturerDataBytes);
+                manufacturerData->Put(manufacturerId, TO_IINTERFACE(iArrayOf));
+                break;
+            }
+            default:
+                // Just ignore, we don't handle such data type.
+                break;
+        }
+        currentPos += dataLength;
+    }
+
+    Boolean isEmpty;
+    if (serviceUuids->IsEmpty(&isEmpty), isEmpty) {
+        serviceUuids = NULL;
+    }
+    return new ScanRecord(serviceUuids, manufacturerData, serviceData,
+                advertiseFlag, txPowerLevel, localName, scanRecord);
+    //} catch (Exception e) {
+    //TODO need check the error code
+    //    Log.e(TAG, "unable to parse scan record: " + Arrays.toString(scanRecord));
+    //    // As the record is invalid, ignore all the parsed results for this packet
+    //    // and return an empty record with raw scanRecord bytes in results
+    //    return new ScanRecord(null, null, null, -1, Integer.MIN_VALUE, null, scanRecord);
+    //}
 }
 
 ECode ScanRecord::ToString(
     /* [out] */ String* info)
 {
-    // ==================before translated======================
-    // return "ScanRecord [mAdvertiseFlags=" + mAdvertiseFlags + ", mServiceUuids=" + mServiceUuids
-    //         + ", mManufacturerSpecificData=" + BluetoothLeUtils.toString(mManufacturerSpecificData)
-    //         + ", mServiceData=" + BluetoothLeUtils.toString(mServiceData)
-    //         + ", mTxPowerLevel=" + mTxPowerLevel + ", mDeviceName=" + mDeviceName + "]";
-    assert(0);
+    *info = String("ScanRecord [mAdvertiseFlags=") + StringUtils::ToString(mAdvertiseFlags) + String(", mServiceUuids=list")// + mServiceUuids
+             + String(", mManufacturerSpecificData=") + BluetoothLeUtils::ToString(mManufacturerSpecificData)
+             + String(", mServiceData=") + BluetoothLeUtils::ToString(mServiceData)
+             + String(", mTxPowerLevel=") + StringUtils::ToString(mTxPowerLevel) + String(", mDeviceName=") + mDeviceName + String("]");
     return NOERROR;
 }
 
@@ -244,14 +287,13 @@ ScanRecord::ScanRecord(
     /* [in] */ const String& localName,
     /* [in] */ ArrayOf<Byte>* bytes)
 {
-    // ==================before translated======================
-    // mServiceUuids = serviceUuids;
-    // mManufacturerSpecificData = manufacturerData;
-    // mServiceData = serviceData;
-    // mDeviceName = localName;
-    // mAdvertiseFlags = advertiseFlags;
-    // mTxPowerLevel = txPowerLevel;
-    // mBytes = bytes;
+    mServiceUuids = serviceUuids;
+    mManufacturerSpecificData = manufacturerData;
+    mServiceData = serviceData;
+    mDeviceName = localName;
+    mAdvertiseFlags = advertiseFlags;
+    mTxPowerLevel = txPowerLevel;
+    mBytes = bytes;
 }
 
 Int32 ScanRecord::ParseServiceUuid(
@@ -261,17 +303,14 @@ Int32 ScanRecord::ParseServiceUuid(
     /* [in] */ Int32 uuidLength,
     /* [in] */ IList* serviceUuids)
 {
-    // ==================before translated======================
-    // while (dataLength > 0) {
-    //     byte[] uuidBytes = extractBytes(scanRecord, currentPos,
-    //             uuidLength);
-    //     serviceUuids.add(BluetoothUuid.parseUuidFrom(uuidBytes));
-    //     dataLength -= uuidLength;
-    //     currentPos += uuidLength;
-    // }
-    // return currentPos;
-    assert(0);
-    return 0;
+    while (dataLength > 0) {
+        AutoPtr<ArrayOf<Byte> > uuidBytes
+            = ExtractBytes(scanRecord, currentPos, uuidLength);
+        serviceUuids->Add(TO_IINTERFACE(BluetoothUuid::ParseUuidFrom(uuidBytes)));
+        dataLength -= uuidLength;
+        currentPos += uuidLength;
+    }
+    return currentPos;
 }
 
 AutoPtr<ArrayOf<Byte> > ScanRecord::ExtractBytes(
@@ -279,18 +318,20 @@ AutoPtr<ArrayOf<Byte> > ScanRecord::ExtractBytes(
     /* [in] */ Int32 start,
     /* [in] */ Int32 length)
 {
-    // ==================before translated======================
-    // byte[] bytes = new byte[length];
-    // System.arraycopy(scanRecord, start, bytes, 0, length);
-    // return bytes;
-    assert(0);
-    AutoPtr< ArrayOf<Byte> > empty;
-    return empty;
+    AutoPtr<ArrayOf<Byte> > bytes = ArrayOf<Byte>::Alloc(length);
+    //System.arraycopy(scanRecord, start, bytes, 0, length);
+    Int32 size = scanRecord->GetLength();
+    size = size - start + 1;
+    if (length > size)
+        length = size;
+    for (Int32 i = 0; i < length; ++i) {
+        bytes->Set(i, (*scanRecord)[i+start]);
+    }
+
+    return bytes;
 }
 
 } // namespace LE
 } // namespace Bluetooth
 } // namespace Droid
 } // namespace Elastos
-
-

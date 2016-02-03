@@ -1,5 +1,25 @@
 
 #include "elastos/droid/bluetooth/le/BluetoothLeScanner.h"
+#include "elastos/droid/bluetooth/le/ScanSettings.h"
+#include "elastos/droid/bluetooth/le/BluetoothLeUtils.h"
+#include "elastos/droid/bluetooth/CBluetoothAdapter.h"
+#include "elastos/droid/os/CHandler.h"
+#include "elastos/droid/os/CParcelUuid.h"
+#include "elastos/droid/os/Looper.h"
+#include "elastos/core/AutoLock.h"
+#include <elastos/utility/logging/Logger.h>
+
+using Elastos::Droid::Bluetooth::CBluetoothAdapter;
+using Elastos::Droid::Os::CHandler;
+using Elastos::Droid::Os::ILooper;
+using Elastos::Droid::Os::Looper;
+using Elastos::Droid::Os::CParcelUuid;
+using Elastos::Core::AutoLock;
+using Elastos::Utility::CHashMap;
+using Elastos::Utility::CArrayList;
+using Elastos::Utility::CUUIDHelper;
+using Elastos::Utility::IUUIDHelper;
+using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
 namespace Droid {
@@ -10,18 +30,16 @@ namespace LE {
 //      BluetoothLeScanner::BleScanCallbackWrapper::ScanResultRunnable
 //=====================================================================
 BluetoothLeScanner::BleScanCallbackWrapper::ScanResultRunnable::ScanResultRunnable(
+    /* [in] */ IScanResult* scanResult,
     /* [in] */ BleScanCallbackWrapper* owner)
-    : mOwner(owner)
+    : mScanResult(scanResult)
+    , mOwner(owner)
 {
-    // ==================before translated======================
-    // mOwner = owner;
 }
 
 ECode BluetoothLeScanner::BleScanCallbackWrapper::ScanResultRunnable::Run()
 {
-    // ==================before translated======================
-    // mScanCallback.onScanResult(ScanSettings.CALLBACK_TYPE_ALL_MATCHES, scanResult);
-    assert(0);
+    mOwner->mScanCallback->OnScanResult(IScanSettings::CALLBACK_TYPE_ALL_MATCHES, mScanResult);
     return NOERROR;
 }
 
@@ -29,18 +47,16 @@ ECode BluetoothLeScanner::BleScanCallbackWrapper::ScanResultRunnable::Run()
 //      BluetoothLeScanner::BleScanCallbackWrapper::BatchScanResultsRunnable
 //=====================================================================
 BluetoothLeScanner::BleScanCallbackWrapper::BatchScanResultsRunnable::BatchScanResultsRunnable(
+    /* [in] */ IList* results,
     /* [in] */ BleScanCallbackWrapper* owner)
-    : mOwner(owner)
+    : mResults(results)
+    , mOwner(owner)
 {
-    // ==================before translated======================
-    // mOwner = owner;
 }
 
 ECode BluetoothLeScanner::BleScanCallbackWrapper::BatchScanResultsRunnable::Run()
 {
-    // ==================before translated======================
-    // mScanCallback.onBatchScanResults(results);
-    assert(0);
+    mOwner->mScanCallback->OnBatchScanResults(mResults);
     return NOERROR;
 }
 
@@ -48,24 +64,24 @@ ECode BluetoothLeScanner::BleScanCallbackWrapper::BatchScanResultsRunnable::Run(
 //      BluetoothLeScanner::BleScanCallbackWrapper::FoundOrLostRunnable
 //=====================================================================
 BluetoothLeScanner::BleScanCallbackWrapper::FoundOrLostRunnable::FoundOrLostRunnable(
+    /* [in] */ IScanResult* scanResult,
+    /* [in] */ Boolean onFound,
     /* [in] */ BleScanCallbackWrapper* owner)
-    : mOwner(owner)
+    : mScanResult(scanResult)
+    , mOnFound(onFound)
+    , mOwner(owner)
 {
-    // ==================before translated======================
-    // mOwner = owner;
 }
 
 ECode BluetoothLeScanner::BleScanCallbackWrapper::FoundOrLostRunnable::Run()
 {
-    // ==================before translated======================
-    // if (onFound) {
-    //     mScanCallback.onScanResult(ScanSettings.CALLBACK_TYPE_FIRST_MATCH,
-    //             scanResult);
-    // } else {
-    //     mScanCallback.onScanResult(ScanSettings.CALLBACK_TYPE_MATCH_LOST,
-    //             scanResult);
-    // }
-    assert(0);
+    if (mOnFound) {
+        mOwner->mScanCallback->OnScanResult(IScanSettings::CALLBACK_TYPE_FIRST_MATCH,
+                mScanResult);
+    } else {
+        mOwner->mScanCallback->OnScanResult(IScanSettings::CALLBACK_TYPE_MATCH_LOST,
+                mScanResult);
+    }
     return NOERROR;
 }
 
@@ -73,6 +89,7 @@ ECode BluetoothLeScanner::BleScanCallbackWrapper::FoundOrLostRunnable::Run()
 //              BluetoothLeScanner::BleScanCallbackWrapper
 //=====================================================================
 const Int32 BluetoothLeScanner::BleScanCallbackWrapper::REGISTRATION_CALLBACK_TIMEOUT_MILLIS;
+Object BluetoothLeScanner::BleScanCallbackWrapper::sLock;
 
 BluetoothLeScanner::BleScanCallbackWrapper::BleScanCallbackWrapper(
     /* [in] */ IIBluetoothGatt* bluetoothGatt,
@@ -82,76 +99,83 @@ BluetoothLeScanner::BleScanCallbackWrapper::BleScanCallbackWrapper(
     /* [in] */ IList* resultStorages,
     /* [in] */ BluetoothLeScanner* owner)
 {
-    // ==================before translated======================
-    // mBluetoothGatt = bluetoothGatt;
-    // mFilters = filters;
-    // mSettings = settings;
-    // mScanCallback = scanCallback;
-    // mClientIf = 0;
-    // mResultStorages = resultStorages;
+    mBluetoothGatt = bluetoothGatt;
+    mFilters = filters;
+    mSettings = settings;
+    mScanCallback = scanCallback;
+    mClientIf = 0;
+    mResultStorages = resultStorages;
     mOwner = owner;
 }
 
 ECode BluetoothLeScanner::BleScanCallbackWrapper::StartRegisteration()
 {
-    // ==================before translated======================
-    // synchronized (this) {
-    //     // Scan stopped.
-    //     if (mClientIf == -1) return;
-    //     try {
-    //         UUID uuid = UUID.randomUUID();
-    //         mBluetoothGatt.registerClient(new ParcelUuid(uuid), this);
-    //         wait(REGISTRATION_CALLBACK_TIMEOUT_MILLIS);
-    //     } catch (InterruptedException | RemoteException e) {
-    //         Log.e(TAG, "application registeration exception", e);
-    //         postCallbackError(mScanCallback, ScanCallback.SCAN_FAILED_INTERNAL_ERROR);
-    //     }
-    //     if (mClientIf > 0) {
-    //         mLeScanClients.put(mScanCallback, this);
-    //     } else {
-    //         postCallbackError(mScanCallback,
-    //                 ScanCallback.SCAN_FAILED_APPLICATION_REGISTRATION_FAILED);
-    //     }
-    // }
-    assert(0);
+    {
+        AutoLock lock(sLock);
+        // Scan stopped.
+        if (mClientIf == -1) return NOERROR;
+        //try {
+            AutoPtr<IUUIDHelper> uuidHelper;
+            CUUIDHelper::AcquireSingleton((IUUIDHelper**)&uuidHelper);
+            AutoPtr<IUUID> uuid;
+            uuidHelper->RandomUUID((IUUID**)&uuid);
+            AutoPtr<IParcelUuid> parcelUuid;
+            CParcelUuid::New(uuid, (IParcelUuid**)&parcelUuid);
+
+            ECode ec1 = mBluetoothGatt->RegisterClient(parcelUuid, this);
+            ECode ec2 = Wait(REGISTRATION_CALLBACK_TIMEOUT_MILLIS);
+        //} catch (InterruptedException | RemoteException e) {
+        if (FAILED(ec1) || FAILED(ec2)) {//need check, maybe only the specific exception
+            //Log.e(TAG, "application registeration exception", e);
+            Logger::E(TAG, "application registeration exception");
+            mOwner->PostCallbackError(mScanCallback, IScanCallback::SCAN_FAILED_INTERNAL_ERROR);
+        }
+        //}
+        if (mClientIf > 0) {
+            mOwner->mLeScanClients->Put(TO_IINTERFACE(mScanCallback), TO_IINTERFACE(this));
+        } else {
+            mOwner->PostCallbackError(mScanCallback,
+                    IScanCallback::SCAN_FAILED_APPLICATION_REGISTRATION_FAILED);
+        }
+    }
     return NOERROR;
 }
 
 ECode BluetoothLeScanner::BleScanCallbackWrapper::StopLeScan()
 {
-    // ==================before translated======================
-    // synchronized (this) {
-    //     if (mClientIf <= 0) {
-    //         Log.e(TAG, "Error state, mLeHandle: " + mClientIf);
-    //         return;
-    //     }
-    //     try {
-    //         mBluetoothGatt.stopScan(mClientIf, false);
-    //         mBluetoothGatt.unregisterClient(mClientIf);
-    //     } catch (RemoteException e) {
-    //         Log.e(TAG, "Failed to stop scan and unregister", e);
-    //     }
-    //     mClientIf = -1;
-    // }
-    assert(0);
+    {
+        AutoLock lock(sLock);
+        if (mClientIf <= 0) {
+            //Log.e(TAG, "Error state, mLeHandle: " + mClientIf);
+            Logger::E(TAG, "Error state, mLeHandle: ");
+            return NOERROR;
+        }
+        //try {
+            mBluetoothGatt->StopScan(mClientIf, FALSE);
+            mBluetoothGatt->UnregisterClient(mClientIf);
+        //} catch (RemoteException e) {
+        //    Log.e(TAG, "Failed to stop scan and unregister", e);
+        //}
+        mClientIf = -1;
+    }
     return NOERROR;
 }
 
 ECode BluetoothLeScanner::BleScanCallbackWrapper::FlushPendingBatchResults()
 {
-    // ==================before translated======================
-    // synchronized (this) {
-    //     if (mClientIf <= 0) {
-    //         Log.e(TAG, "Error state, mLeHandle: " + mClientIf);
-    //         return;
-    //     }
-    //     try {
-    //         mBluetoothGatt.flushPendingBatchResults(mClientIf, false);
-    //     } catch (RemoteException e) {
-    //         Log.e(TAG, "Failed to get pending scan results", e);
-    //     }
-    // }
-    assert(0);
+    {
+        AutoLock lock(sLock);
+        if (mClientIf <= 0) {
+            //Log.e(TAG, "Error state, mLeHandle: " + mClientIf);
+            Logger::E(TAG, "Error state, mLeHandle: %d", mClientIf);
+            return NOERROR;
+        }
+        //try {
+            mBluetoothGatt->FlushPendingBatchResults(mClientIf, FALSE);
+        //} catch (RemoteException e) {
+        //    Log.e(TAG, "Failed to get pending scan results", e);
+        //}
+    }
     return NOERROR;
 }
 
@@ -159,68 +183,62 @@ ECode BluetoothLeScanner::BleScanCallbackWrapper::OnClientRegistered(
     /* [in] */ Int32 status,
     /* [in] */ Int32 clientIf)
 {
-    // ==================before translated======================
-    // Log.d(TAG, "onClientRegistered() - status=" + status +
-    //         " clientIf=" + clientIf);
-    // synchronized (this) {
-    //     if (mClientIf == -1) {
-    //         if (DBG) Log.d(TAG, "onClientRegistered LE scan canceled");
-    //     }
-    //
-    //     if (status == BluetoothGatt.GATT_SUCCESS) {
-    //         mClientIf = clientIf;
-    //         try {
-    //             mBluetoothGatt.startScan(mClientIf, false, mSettings, mFilters,
-    //                     mResultStorages);
-    //         } catch (RemoteException e) {
-    //             Log.e(TAG, "fail to start le scan: " + e);
-    //             mClientIf = -1;
-    //         }
-    //     } else {
-    //         // registration failed
-    //         mClientIf = -1;
-    //     }
-    //     notifyAll();
-    // }
-    assert(0);
+    Logger::D(TAG, "onClientRegistered() - status=%d clientIf=%d", status, clientIf);
+    {
+        AutoLock lock(sLock);
+        if (mClientIf == -1) {
+            if (DBG)
+                Logger::D(TAG, "onClientRegistered LE scan canceled");
+        }
+
+        if (status == IBluetoothGatt::GATT_SUCCESS) {
+            mClientIf = clientIf;
+            //try {
+            ECode ec = mBluetoothGatt->StartScan(mClientIf, FALSE, mSettings, mFilters,
+                        mResultStorages);
+            //} catch (RemoteException e) {
+            if (FAILED(ec)) {//need check, maybe only if E_REMOTE_EXCEPTION
+                Logger::E(TAG, "fail to start le scan: ");
+                mClientIf = -1;
+            }
+            //}
+        } else {
+            // registration failed
+            mClientIf = -1;
+        }
+        NotifyAll();
+    }
     return NOERROR;
 }
 
 ECode BluetoothLeScanner::BleScanCallbackWrapper::OnScanResult(
     /* [in] */ IScanResult* scanResult)
 {
-    VALIDATE_NOT_NULL(scanResult);
-    // ==================before translated======================
-    // if (DBG) Log.d(TAG, "onScanResult() - " + scanResult.toString());
-    //
-    // // Check null in case the scan has been stopped
-    // synchronized (this) {
-    //     if (mClientIf <= 0) return;
-    // }
-    // Handler handler = new Handler(Looper.getMainLooper());
-    // handler.post(new Runnable() {
-    //     @Override
-    //     public void run() {
-    //         mScanCallback.onScanResult(ScanSettings.CALLBACK_TYPE_ALL_MATCHES, scanResult);
-    //     }
-    // });
-    assert(0);
+    if (DBG) Logger::D(TAG, "onScanResult() - ");// + scanResult.toString());
+
+    // Check null in case the scan has been stopped
+    {
+        AutoLock lock(sLock);
+        if (mClientIf <= 0) return NOERROR;
+    }
+    AutoPtr<ILooper> mainLooper = Looper::GetMainLooper();
+    AutoPtr<IHandler> handler;
+    CHandler::New(mainLooper, (IHandler**)&handler);
+    AutoPtr<ScanResultRunnable> run = new ScanResultRunnable(scanResult, this);
+    Boolean result;
+    handler->Post(run, &result);
     return NOERROR;
 }
 
 ECode BluetoothLeScanner::BleScanCallbackWrapper::OnBatchScanResults(
     /* [in] */ IList* results)
 {
-    VALIDATE_NOT_NULL(results);
-    // ==================before translated======================
-    // Handler handler = new Handler(Looper.getMainLooper());
-    // handler.post(new Runnable() {
-    //     @Override
-    //     public void run() {
-    //         mScanCallback.onBatchScanResults(results);
-    //     }
-    // });
-    assert(0);
+    AutoPtr<ILooper> mainLooper = Looper::GetMainLooper();
+    AutoPtr<IHandler> handler;
+    CHandler::New(mainLooper, (IHandler**)&handler);
+    AutoPtr<BatchScanResultsRunnable> run = new BatchScanResultsRunnable(results, this);
+    Boolean result;
+    handler->Post(run, &result);
     return NOERROR;
 }
 
@@ -228,32 +246,22 @@ ECode BluetoothLeScanner::BleScanCallbackWrapper::OnFoundOrLost(
     /* [in] */ Boolean onFound,
     /* [in] */ IScanResult* scanResult)
 {
-    VALIDATE_NOT_NULL(scanResult);
-    // ==================before translated======================
-    // if (DBG) {
-    //     Log.d(TAG, "onFoundOrLost() - onFound = " + onFound +
-    //             " " + scanResult.toString());
-    // }
-    //
-    // // Check null in case the scan has been stopped
-    // synchronized (this) {
-    //     if (mClientIf <= 0)
-    //         return;
-    // }
-    // Handler handler = new Handler(Looper.getMainLooper());
-    // handler.post(new Runnable() {
-    //         @Override
-    //     public void run() {
-    //         if (onFound) {
-    //             mScanCallback.onScanResult(ScanSettings.CALLBACK_TYPE_FIRST_MATCH,
-    //                     scanResult);
-    //         } else {
-    //             mScanCallback.onScanResult(ScanSettings.CALLBACK_TYPE_MATCH_LOST,
-    //                     scanResult);
-    //         }
-    //     }
-    // });
-    assert(0);
+    if (DBG) {
+        Logger::D(TAG, "onFoundOrLost() - onFound = %d", onFound);//, scanResult.toString());
+    }
+
+    // Check null in case the scan has been stopped
+    {
+        AutoLock lock(sLock);
+        if (mClientIf <= 0)
+            return NOERROR;
+    }
+    AutoPtr<ILooper> mainLooper = Looper::GetMainLooper();
+    AutoPtr<IHandler> handler;
+    CHandler::New(mainLooper, (IHandler**)&handler);
+    AutoPtr<FoundOrLostRunnable> run = new FoundOrLostRunnable(scanResult, onFound, this);
+    Boolean result;
+    handler->Post(run, &result);
     return NOERROR;
 }
 
@@ -261,18 +269,18 @@ ECode BluetoothLeScanner::BleScanCallbackWrapper::OnFoundOrLost(
 //                  BluetoothLeScanner::CallbackErrorRunnable
 //=====================================================================
 BluetoothLeScanner::CallbackErrorRunnable::CallbackErrorRunnable(
+    /* [in] */ IScanCallback* callback,
+    /* [in] */ Int32 errorCode,
     /* [in] */ BluetoothLeScanner* owner)
-    : mOwner(owner)
+    : mCallback(callback)
+    , mErrorCode(errorCode)
+    , mOwner(owner)
 {
-    // ==================before translated======================
-    // mOwner = owner;
 }
 
 ECode BluetoothLeScanner::CallbackErrorRunnable::Run()
 {
-    // ==================before translated======================
-    // callback.onScanFailed(errorCode);
-    assert(0);
+    mCallback->OnScanFailed(mErrorCode);
     return NOERROR;
 }
 
@@ -291,23 +299,27 @@ BluetoothLeScanner::BluetoothLeScanner()
 BluetoothLeScanner::BluetoothLeScanner(
     /* [in] */ IIBluetoothManager* bluetoothManager)
 {
-    // ==================before translated======================
-    // mBluetoothManager = bluetoothManager;
-    // mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-    // mHandler = new Handler(Looper.getMainLooper());
-    // mLeScanClients = new HashMap<ScanCallback, BleScanCallbackWrapper>();
+    mBluetoothManager = bluetoothManager;
+    mBluetoothAdapter = CBluetoothAdapter::GetDefaultAdapter();
+    AutoPtr<ILooper> mainLooper = Looper::GetMainLooper();
+    CHandler::New(mainLooper, (IHandler**)&mHandler);
+    //mLeScanClients = new HashMap<ScanCallback, BleScanCallbackWrapper>();
+    CHashMap::New((IMap**)&mLeScanClients);
 }
 
 ECode BluetoothLeScanner::StartScan(
     /* [in] */ IScanCallback* callback)
 {
-    VALIDATE_NOT_NULL(callback);
-    // ==================before translated======================
-    // if (callback == null) {
-    //     throw new IllegalArgumentException("callback is null");
-    // }
-    // startScan(null, new ScanSettings.Builder().build(), callback);
-    assert(0);
+    if (callback == NULL) {
+        //throw new IllegalArgumentException("callback is null");
+        Logger::E("BluetoothLeScanner::StartScan", "callback is null");
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
+    AutoPtr<IScanSettings> scanSettings;
+    AutoPtr<ScanSettings::Builder> builder = new ScanSettings::Builder();
+    builder->Build((IScanSettings**)&scanSettings);
+
+    StartScan(NULL, scanSettings, callback);
     return NOERROR;
 }
 
@@ -316,50 +328,47 @@ ECode BluetoothLeScanner::StartScan(
     /* [in] */ IScanSettings* settings,
     /* [in] */ IScanCallback* callback)
 {
-    VALIDATE_NOT_NULL(filters);
-    VALIDATE_NOT_NULL(settings);
-    VALIDATE_NOT_NULL(callback);
-    // ==================before translated======================
-    // startScan(filters, settings, callback, null);
-    assert(0);
+    StartScan(filters, settings, callback, NULL);
     return NOERROR;
 }
 
 ECode BluetoothLeScanner::StopScan(
     /* [in] */ IScanCallback* callback)
 {
-    VALIDATE_NOT_NULL(callback);
-    // ==================before translated======================
-    // BluetoothLeUtils.checkAdapterStateOn(mBluetoothAdapter);
-    // synchronized (mLeScanClients) {
-    //     BleScanCallbackWrapper wrapper = mLeScanClients.remove(callback);
-    //     if (wrapper == null) {
-    //         if (DBG) Log.d(TAG, "could not find callback wrapper");
-    //         return;
-    //     }
-    //     wrapper.stopLeScan();
-    // }
-    assert(0);
+    BluetoothLeUtils::CheckAdapterStateOn(mBluetoothAdapter);
+    {
+        AutoLock lock(mLeScanClients);
+        AutoPtr<IInterface> value;
+        mLeScanClients->Remove(TO_IINTERFACE(callback), (IInterface**)&value);
+        AutoPtr<BleScanCallbackWrapper> wrapper = (BleScanCallbackWrapper*)(IIBluetoothGattCallback::Probe(value));
+        if (wrapper == NULL) {
+            if (DBG) Logger::D(TAG, "could not find callback wrapper");
+            return NOERROR;
+        }
+        wrapper->StopLeScan();
+    }
     return NOERROR;
 }
 
 ECode BluetoothLeScanner::FlushPendingScanResults(
     /* [in] */ IScanCallback* callback)
 {
-    VALIDATE_NOT_NULL(callback);
-    // ==================before translated======================
-    // BluetoothLeUtils.checkAdapterStateOn(mBluetoothAdapter);
-    // if (callback == null) {
-    //     throw new IllegalArgumentException("callback cannot be null!");
-    // }
-    // synchronized (mLeScanClients) {
-    //     BleScanCallbackWrapper wrapper = mLeScanClients.get(callback);
-    //     if (wrapper == null) {
-    //         return;
-    //     }
-    //     wrapper.flushPendingBatchResults();
-    // }
-    assert(0);
+    BluetoothLeUtils::CheckAdapterStateOn(mBluetoothAdapter);
+    if (callback == NULL) {
+        //throw new IllegalArgumentException("callback cannot be null!");
+        Logger::E("BluetoothLeScanner::FlushPendingScanResults", "callback cannot be null");
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
+    {
+        AutoLock lock(mLeScanClients);
+        AutoPtr<IInterface> value;
+        mLeScanClients->Get(TO_IINTERFACE(callback), (IInterface**)&value);
+        AutoPtr<BleScanCallbackWrapper> wrapper = (BleScanCallbackWrapper*)(IIBluetoothGattCallback::Probe(value));
+        if (wrapper == NULL) {
+            return NOERROR;
+        }
+        wrapper->FlushPendingBatchResults();
+    }
     return NOERROR;
 }
 
@@ -368,98 +377,104 @@ ECode BluetoothLeScanner::StartTruncatedScan(
     /* [in] */ IScanSettings* settings,
     /* [in] */ IScanCallback* callback)
 {
-    VALIDATE_NOT_NULL(truncatedFilters);
-    VALIDATE_NOT_NULL(settings);
-    VALIDATE_NOT_NULL(callback);
-    // ==================before translated======================
-    // int filterSize = truncatedFilters.size();
-    // List<ScanFilter> scanFilters = new ArrayList<ScanFilter>(filterSize);
-    // List<List<ResultStorageDescriptor>> scanStorages =
-    //         new ArrayList<List<ResultStorageDescriptor>>(filterSize);
-    // for (TruncatedFilter filter : truncatedFilters) {
-    //     scanFilters.add(filter.getFilter());
-    //     scanStorages.add(filter.getStorageDescriptors());
-    // }
-    // startScan(scanFilters, settings, callback, scanStorages);
-    assert(0);
+    Int32 filterSize;
+    truncatedFilters->GetSize(&filterSize);
+    //List<ScanFilter> scanFilters = new ArrayList<ScanFilter>(filterSize);
+    AutoPtr<IList> scanFilters;
+    CArrayList::New((IList**)&scanFilters);
+    //List<List<ResultStorageDescriptor>> scanStorages =
+    //        new ArrayList<List<ResultStorageDescriptor>>(filterSize);
+    AutoPtr<IList> scanStorages;
+    CArrayList::New((IList**)&scanStorages);
+    //for (TruncatedFilter filter : truncatedFilters) {
+    Int32 size;
+    truncatedFilters->GetSize(&size);
+    for (Int32 i = 0; i < size; ++i) {
+        AutoPtr<IInterface> obj;
+        truncatedFilters->Get(i, (IInterface**)&obj);
+        ITruncatedFilter* filter = ITruncatedFilter::Probe(obj);
+        AutoPtr<IScanFilter> scanFilter;
+        filter->GetFilter((IScanFilter**)&scanFilter);
+        scanFilters->Add(TO_IINTERFACE(scanFilters));
+        AutoPtr<IList> list;
+        filter->GetStorageDescriptors((IList**)&list);
+        scanStorages->Add(TO_IINTERFACE(list));
+    }
+    StartScan(scanFilters, settings, callback, scanStorages);
     return NOERROR;
 }
 
 ECode BluetoothLeScanner::Cleanup()
 {
-    // ==================before translated======================
-    // mLeScanClients.clear();
-    assert(0);
+    mLeScanClients->Clear();
     return NOERROR;
 }
 
-void BluetoothLeScanner::StartScan(
+ECode BluetoothLeScanner::StartScan(
     /* [in] */ IList* filters,
     /* [in] */ IScanSettings* settings,
     /* [in] */ IScanCallback* callback,
     /* [in] */ IList* resultStorages)
 {
-    // ==================before translated======================
-    // BluetoothLeUtils.checkAdapterStateOn(mBluetoothAdapter);
-    // if (settings == null || callback == null) {
-    //     throw new IllegalArgumentException("settings or callback is null");
-    // }
-    // synchronized (mLeScanClients) {
-    //     if (mLeScanClients.containsKey(callback)) {
-    //         postCallbackError(callback, ScanCallback.SCAN_FAILED_ALREADY_STARTED);
-    //         return;
-    //     }
-    //     IBluetoothGatt gatt;
-    //     try {
-    //         gatt = mBluetoothManager.getBluetoothGatt();
-    //     } catch (RemoteException e) {
-    //         gatt = null;
-    //     }
-    //     if (gatt == null) {
-    //         postCallbackError(callback, ScanCallback.SCAN_FAILED_INTERNAL_ERROR);
-    //         return;
-    //     }
-    //     if (!isSettingsConfigAllowedForScan(settings)) {
-    //         postCallbackError(callback,
-    //                 ScanCallback.SCAN_FAILED_FEATURE_UNSUPPORTED);
-    //         return;
-    //     }
-    //     BleScanCallbackWrapper wrapper = new BleScanCallbackWrapper(gatt, filters,
-    //             settings, callback, resultStorages);
-    //     wrapper.startRegisteration();
-    // }
-    assert(0);
+    BluetoothLeUtils::CheckAdapterStateOn(mBluetoothAdapter);
+    if (settings == NULL|| callback == NULL) {
+        //throw new IllegalArgumentException("settings or callback is null");
+        Logger::E("BluetoothLeScanner::StartScan", "settings or callback is null");
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
+    {
+        AutoLock lock(mLeScanClients);
+        Boolean containsKey;
+        if (mLeScanClients->ContainsKey(TO_IINTERFACE(callback), &containsKey), containsKey) {
+            PostCallbackError(callback, IScanCallback::SCAN_FAILED_ALREADY_STARTED);
+            return NOERROR;
+        }
+        AutoPtr<IIBluetoothGatt> gatt;
+        //try {
+            mBluetoothManager->GetBluetoothGatt((IIBluetoothGatt**)&gatt);
+        //} catch (RemoteException e) {
+        //    gatt = NULL;
+        //}
+        if (gatt == NULL) {
+            PostCallbackError(callback, IScanCallback::SCAN_FAILED_INTERNAL_ERROR);
+            return NOERROR;
+        }
+        if (!IsSettingsConfigAllowedForScan(settings)) {
+            PostCallbackError(callback,
+                    IScanCallback::SCAN_FAILED_FEATURE_UNSUPPORTED);
+            return NOERROR;
+        }
+        AutoPtr<BleScanCallbackWrapper> wrapper = new BleScanCallbackWrapper(gatt, filters,
+                settings, callback, resultStorages, this);
+        wrapper->StartRegisteration();
+    }
+    return NOERROR;
 }
 
 void BluetoothLeScanner::PostCallbackError(
     /* [in] */ IScanCallback* callback,
     /* [in] */ Int32 errorCode)
 {
-    // ==================before translated======================
-    // mHandler.post(new Runnable() {
-    //     @Override
-    //     public void run() {
-    //         callback.onScanFailed(errorCode);
-    //     }
-    // });
-    assert(0);
+    AutoPtr<CallbackErrorRunnable> run = new CallbackErrorRunnable(callback, errorCode, this);
+    Boolean result;
+    mHandler->Post(run, &result);
 }
 
 Boolean BluetoothLeScanner::IsSettingsConfigAllowedForScan(
     /* [in] */ IScanSettings* settings)
 {
-    // ==================before translated======================
-    // if (mBluetoothAdapter.isOffloadedFilteringSupported()) {
-    //     return true;
-    // }
-    // final int callbackType = settings.getCallbackType();
-    // // Only support regular scan if no offloaded filter support.
-    // if (callbackType == ScanSettings.CALLBACK_TYPE_ALL_MATCHES
-    //         && settings.getReportDelayMillis() == 0) {
-    //     return true;
-    // }
-    // return false;
-    assert(0);
+    Boolean supported = FALSE;
+    if (mBluetoothAdapter->IsOffloadedFilteringSupported(&supported), supported) {
+        return TRUE;
+    }
+    Int32 callbackType;
+    settings->GetCallbackType(&callbackType);
+    // Only support regular scan if no offloaded filter support.
+    Int64 delayMillis = 0;
+    if (callbackType == IScanSettings::CALLBACK_TYPE_ALL_MATCHES
+            && (settings->GetReportDelayMillis(&delayMillis), delayMillis) == 0) {
+        return TRUE;
+    }
     return FALSE;
 }
 
@@ -467,5 +482,3 @@ Boolean BluetoothLeScanner::IsSettingsConfigAllowedForScan(
 } // namespace Bluetooth
 } // namespace Droid
 } // namespace Elastos
-
-

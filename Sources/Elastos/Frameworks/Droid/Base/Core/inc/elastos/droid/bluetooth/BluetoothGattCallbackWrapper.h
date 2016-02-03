@@ -41,7 +41,7 @@ public:
         /* [in] */ Int32 status,
         /* [in] */ Int32 clientIf,
         /* [in] */ Boolean connected,
-        /* [in] */ String address);
+        /* [in] */ const String& address);
 
     // @Override
     CARAPI OnScanResult(
@@ -53,14 +53,14 @@ public:
 
     // @Override
     CARAPI OnGetService(
-        /* [in] */ String address,
+        /* [in] */ const String& address,
         /* [in] */ Int32 srvcType,
         /* [in] */ Int32 srvcInstId,
         /* [in] */ IParcelUuid* srvcUuid);
 
     // @Override
     CARAPI OnGetIncludedService(
-        /* [in] */ String address,
+        /* [in] */ const String& address,
         /* [in] */ Int32 srvcType,
         /* [in] */ Int32 srvcInstId,
         /* [in] */ IParcelUuid* srvcUuid,
@@ -70,7 +70,7 @@ public:
 
     // @Override
     CARAPI OnGetCharacteristic(
-        /* [in] */ String address,
+        /* [in] */ const String& address,
         /* [in] */ Int32 srvcType,
         /* [in] */ Int32 srvcInstId,
         /* [in] */ IParcelUuid* srvcUuid,
@@ -80,7 +80,7 @@ public:
 
     // @Override
     CARAPI OnGetDescriptor(
-        /* [in] */ String address,
+        /* [in] */ const String& address,
         /* [in] */ Int32 srvcType,
         /* [in] */ Int32 srvcInstId,
         /* [in] */ IParcelUuid* srvcUuid,
@@ -91,12 +91,12 @@ public:
 
     // @Override
     CARAPI OnSearchComplete(
-        /* [in] */ String address,
+        /* [in] */ const String& address,
         /* [in] */ Int32 status);
 
     // @Override
     CARAPI OnCharacteristicRead(
-        /* [in] */ String address,
+        /* [in] */ const String& address,
         /* [in] */ Int32 status,
         /* [in] */ Int32 srvcType,
         /* [in] */ Int32 srvcInstId,
@@ -107,7 +107,7 @@ public:
 
     // @Override
     CARAPI OnCharacteristicWrite(
-        /* [in] */ String address,
+        /* [in] */ const String& address,
         /* [in] */ Int32 status,
         /* [in] */ Int32 srvcType,
         /* [in] */ Int32 srvcInstId,
@@ -117,12 +117,12 @@ public:
 
     // @Override
     CARAPI OnExecuteWrite(
-        /* [in] */ String address,
+        /* [in] */ const String& address,
         /* [in] */ Int32 status);
 
     // @Override
     CARAPI OnDescriptorRead(
-        /* [in] */ String address,
+        /* [in] */ const String& address,
         /* [in] */ Int32 status,
         /* [in] */ Int32 srvcType,
         /* [in] */ Int32 srvcInstId,
@@ -135,7 +135,7 @@ public:
 
     // @Override
     CARAPI OnDescriptorWrite(
-        /* [in] */ String address,
+        /* [in] */ const String& address,
         /* [in] */ Int32 status,
         /* [in] */ Int32 srvcType,
         /* [in] */ Int32 srvcInstId,
@@ -147,7 +147,7 @@ public:
 
     // @Override
     CARAPI OnNotify(
-        /* [in] */ String address,
+        /* [in] */ const String& address,
         /* [in] */ Int32 srvcType,
         /* [in] */ Int32 srvcInstId,
         /* [in] */ IParcelUuid* srvcUuid,
@@ -157,7 +157,7 @@ public:
 
     // @Override
     CARAPI OnReadRemoteRssi(
-        /* [in] */ String address,
+        /* [in] */ const String& address,
         /* [in] */ Int32 rssi,
         /* [in] */ Int32 status);
 
@@ -169,7 +169,7 @@ public:
 
     // @Override
     CARAPI OnConfigureMTU(
-        /* [in] */ String address,
+        /* [in] */ const String& address,
         /* [in] */ Int32 mtu,
         /* [in] */ Int32 status);
 

@@ -1,5 +1,27 @@
-
+#include "Elastos.Droid.Utility.h"
 #include "elastos/droid/bluetooth/le/BluetoothLeAdvertiser.h"
+#include "elastos/droid/bluetooth/le/BluetoothLeUtils.h"
+#include "elastos/droid/bluetooth/CBluetoothAdapter.h"
+#include "elastos/droid/bluetooth/BluetoothUuid.h"
+#include "elastos/droid/os/CHandler.h"
+#include "elastos/droid/os/CParcelUuid.h"
+#include "elastos/droid/os/Looper.h"
+#include "elastos/core/AutoLock.h"
+#include <elastos/utility/logging/Logger.h>
+
+using Elastos::Droid::Bluetooth::BluetoothUuid;
+using Elastos::Droid::Bluetooth::IBluetoothAdapter;
+using Elastos::Droid::Bluetooth::CBluetoothAdapter;
+using Elastos::Droid::Os::CHandler;
+using Elastos::Droid::Os::CParcelUuid;
+using Elastos::Droid::Os::ILooper;
+using Elastos::Droid::Os::Looper;
+using Elastos::Core::AutoLock;
+using Elastos::Core::IArrayOf;
+using Elastos::Utility::ISet;
+using Elastos::Utility::CUUIDHelper;
+using Elastos::Utility::IUUIDHelper;
+using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
 namespace Droid {
@@ -10,74 +32,89 @@ namespace LE {
 //           BluetoothLeAdvertiser::AdvertiseCallbackWrapper
 //=====================================================================
 const Int32 BluetoothLeAdvertiser::AdvertiseCallbackWrapper::LE_CALLBACK_TIMEOUT_MILLIS;
+Object BluetoothLeAdvertiser::AdvertiseCallbackWrapper::sLock;
+
+BluetoothLeAdvertiser::AdvertiseCallbackWrapper::AdvertiseCallbackWrapper(
+    /* [in] */ BluetoothLeAdvertiser* owner)
+{
+    mClientIf = 0;
+    mIsAdvertising = FALSE;
+    mOwner = owner;
+}
 
 BluetoothLeAdvertiser::AdvertiseCallbackWrapper::AdvertiseCallbackWrapper(
     /* [in] */ IAdvertiseCallback* advertiseCallback,
     /* [in] */ IAdvertiseData* advertiseData,
     /* [in] */ IAdvertiseData* scanResponse,
     /* [in] */ IAdvertiseSettings* settings,
-    /* [in] */ IIBluetoothGatt* bluetoothGatt)
+    /* [in] */ IIBluetoothGatt* bluetoothGatt,
+    /* [in] */ BluetoothLeAdvertiser* owner)
 {
-    // ==================before translated======================
-    // mAdvertiseCallback = advertiseCallback;
-    // mAdvertisement = advertiseData;
-    // mScanResponse = scanResponse;
-    // mSettings = settings;
-    // mBluetoothGatt = bluetoothGatt;
-    // mClientIf = 0;
+    mAdvertiseCallback = advertiseCallback;
+    mAdvertisement = advertiseData;
+    mScanResponse = scanResponse;
+    mSettings = settings;
+    mBluetoothGatt = bluetoothGatt;
+    mClientIf = 0;
+    mIsAdvertising = FALSE;
+    mOwner = owner;
 }
 
 ECode BluetoothLeAdvertiser::AdvertiseCallbackWrapper::StartRegisteration()
 {
-    // ==================before translated======================
-    // synchronized (this) {
-    //     if (mClientIf == -1) return;
-    //
-    //     try {
-    //         UUID uuid = UUID.randomUUID();
-    //         mBluetoothGatt.registerClient(new ParcelUuid(uuid), this);
-    //         wait(LE_CALLBACK_TIMEOUT_MILLIS);
-    //     } catch (InterruptedException | RemoteException e) {
-    //         Log.e(TAG, "Failed to start registeration", e);
-    //     }
-    //     if (mClientIf > 0 && mIsAdvertising) {
-    //         mLeAdvertisers.put(mAdvertiseCallback, this);
-    //     } else if (mClientIf <= 0) {
-    //         // Post internal error if registration failed.
-    //         postStartFailure(mAdvertiseCallback,
-    //                 AdvertiseCallback.ADVERTISE_FAILED_INTERNAL_ERROR);
-    //     } else {
-    //         // Unregister application if it's already registered but advertise failed.
-    //         try {
-    //             mBluetoothGatt.unregisterClient(mClientIf);
-    //             mClientIf = -1;
-    //         } catch (RemoteException e) {
-    //             Log.e(TAG, "remote exception when unregistering", e);
-    //         }
-    //     }
-    // }
-    assert(0);
+    {
+        AutoLock lock(sLock);
+        if (mClientIf == -1) return NOERROR;
+
+        //try {
+        AutoPtr<IUUIDHelper> uuidHelper;
+        CUUIDHelper::AcquireSingleton((IUUIDHelper**)&uuidHelper);
+        AutoPtr<IUUID> uuid;
+        uuidHelper->RandomUUID((IUUID**)&uuid);
+        AutoPtr<IParcelUuid> parcelUuid;
+        CParcelUuid::New(uuid, (IParcelUuid**)&parcelUuid);
+        mBluetoothGatt->RegisterClient(parcelUuid, this);
+        Wait(LE_CALLBACK_TIMEOUT_MILLIS);
+        //} catch (InterruptedException | RemoteException e) {
+        //    Log.e(TAG, "Failed to start registeration", e);
+        //}
+        if (mClientIf > 0 && mIsAdvertising) {
+            mOwner->mLeAdvertisers->Put(mAdvertiseCallback, TO_IINTERFACE(this));
+        } else if (mClientIf <= 0) {
+            // Post internal error if registration failed.
+            mOwner->PostStartFailure(mAdvertiseCallback,
+                    IAdvertiseCallback::ADVERTISE_FAILED_INTERNAL_ERROR);
+        } else {
+            // Unregister application if it's already registered but advertise failed.
+            //try {
+            mBluetoothGatt->UnregisterClient(mClientIf);
+            mClientIf = -1;
+            //} catch (RemoteException e) {
+            //    Log.e(TAG, "remote exception when unregistering", e);
+            //}
+        }
+    }
     return NOERROR;
 }
 
 ECode BluetoothLeAdvertiser::AdvertiseCallbackWrapper::StopAdvertising()
 {
-    // ==================before translated======================
-    // synchronized (this) {
-    //     try {
-    //         mBluetoothGatt.stopMultiAdvertising(mClientIf);
-    //         wait(LE_CALLBACK_TIMEOUT_MILLIS);
-    //     } catch (InterruptedException | RemoteException e) {
-    //         Log.e(TAG, "Failed to stop advertising", e);
-    //     }
-    //     // Advertise callback should have been removed from LeAdvertisers when
-    //     // onMultiAdvertiseCallback was called. In case onMultiAdvertiseCallback is never
-    //     // invoked and wait timeout expires, remove callback here.
-    //     if (mLeAdvertisers.containsKey(mAdvertiseCallback)) {
-    //         mLeAdvertisers.remove(mAdvertiseCallback);
-    //     }
-    // }
-    assert(0);
+    {
+        AutoLock lock(sLock);
+        //try {
+        mBluetoothGatt->StopMultiAdvertising(mClientIf);
+        Wait(LE_CALLBACK_TIMEOUT_MILLIS);
+        //} catch (InterruptedException | RemoteException e) {
+        //    Log.e(TAG, "Failed to stop advertising", e);
+        //}
+        // Advertise callback should have been removed from LeAdvertisers when
+        // onMultiAdvertiseCallback was called. In case onMultiAdvertiseCallback is never
+        // invoked and wait timeout expires, remove callback here.
+        Boolean bTemp = FALSE;
+        if (mOwner->mLeAdvertisers->ContainsKey(TO_IINTERFACE(mAdvertiseCallback), &bTemp), bTemp) {
+            mOwner->mLeAdvertisers->Remove(mAdvertiseCallback);
+        }
+    }
     return NOERROR;
 }
 
@@ -85,24 +122,23 @@ ECode BluetoothLeAdvertiser::AdvertiseCallbackWrapper::OnClientRegistered(
     /* [in] */ Int32 status,
     /* [in] */ Int32 clientIf)
 {
-    // ==================before translated======================
-    // Log.d(TAG, "onClientRegistered() - status=" + status + " clientIf=" + clientIf);
-    // synchronized (this) {
-    //     if (status == BluetoothGatt.GATT_SUCCESS) {
-    //         mClientIf = clientIf;
-    //         try {
-    //             mBluetoothGatt.startMultiAdvertising(mClientIf, mAdvertisement,
-    //                     mScanResponse, mSettings);
-    //             return;
-    //         } catch (RemoteException e) {
-    //             Log.e(TAG, "failed to start advertising", e);
-    //         }
-    //     }
-    //     // Registration failed.
-    //     mClientIf = -1;
-    //     notifyAll();
-    // }
-    assert(0);
+    Logger::D(TAG, "onClientRegistered() - status=%d clientIf=%d", status, clientIf);
+    {
+        AutoLock lock(sLock);
+        if (status == IBluetoothGatt::GATT_SUCCESS) {
+            mClientIf = clientIf;
+            //try {
+                mBluetoothGatt->StartMultiAdvertising(mClientIf, mAdvertisement,
+                        mScanResponse, mSettings);
+                return NOERROR;
+            //} catch (RemoteException e) {
+            //    Log.e(TAG, "failed to start advertising", e);
+            //}
+        }
+        // Registration failed.
+        mClientIf = -1;
+        NotifyAll();
+    }
     return NOERROR;
 }
 
@@ -111,32 +147,30 @@ ECode BluetoothLeAdvertiser::AdvertiseCallbackWrapper::OnMultiAdvertiseCallback(
     /* [in] */ Boolean isStart,
     /* [in] */ IAdvertiseSettings* settings)
 {
-    VALIDATE_NOT_NULL(settings);
-    // ==================before translated======================
-    // synchronized (this) {
-    //     if (isStart) {
-    //         if (status == AdvertiseCallback.ADVERTISE_SUCCESS) {
-    //             // Start success
-    //             mIsAdvertising = true;
-    //             postStartSuccess(mAdvertiseCallback, settings);
-    //         } else {
-    //             // Start failure.
-    //             postStartFailure(mAdvertiseCallback, status);
-    //         }
-    //     } else {
-    //         // unregister client for stop.
-    //         try {
-    //             mBluetoothGatt.unregisterClient(mClientIf);
-    //             mClientIf = -1;
-    //             mIsAdvertising = false;
-    //             mLeAdvertisers.remove(mAdvertiseCallback);
-    //         } catch (RemoteException e) {
-    //             Log.e(TAG, "remote exception when unregistering", e);
-    //         }
-    //     }
-    //     notifyAll();
-    // }
-    assert(0);
+    {
+        AutoLock lock(sLock);
+        if (isStart) {
+            if (status == IAdvertiseCallback::ADVERTISE_SUCCESS) {
+                // Start success
+                mIsAdvertising = TRUE;
+                mOwner->PostStartSuccess(mAdvertiseCallback, settings);
+            } else {
+                // Start failure.
+                mOwner->PostStartFailure(mAdvertiseCallback, status);
+            }
+        } else {
+            // unregister client for stop.
+            //try {
+                mBluetoothGatt->UnregisterClient(mClientIf);
+                mClientIf = -1;
+                mIsAdvertising = FALSE;
+                mOwner->mLeAdvertisers->Remove(mAdvertiseCallback);
+            //} catch (RemoteException e) {
+            //    Log.e(TAG, "remote exception when unregistering", e);
+            //}
+        }
+        NotifyAll();
+    }
     return NOERROR;
 }
 
@@ -144,18 +178,18 @@ ECode BluetoothLeAdvertiser::AdvertiseCallbackWrapper::OnMultiAdvertiseCallback(
 //                BluetoothLeAdvertiser::InnerRunnable1
 //=====================================================================
 BluetoothLeAdvertiser::StartFailureRunnable::StartFailureRunnable(
+    /* [in] */ IAdvertiseCallback* callback,
+    /* [in] */ Int32 error,
     /* [in] */ BluetoothLeAdvertiser* owner)
-    : mOwner(owner)
+    : mCallback(callback)
+    , mError(error)
+    , mOwner(owner)
 {
-    // ==================before translated======================
-    // mOwner = owner;
 }
 
 ECode BluetoothLeAdvertiser::StartFailureRunnable::Run()
 {
-    // ==================before translated======================
-    // callback.onStartFailure(error);
-    assert(0);
+    mCallback->OnStartFailure(mError);
     return NOERROR;
 }
 
@@ -163,18 +197,18 @@ ECode BluetoothLeAdvertiser::StartFailureRunnable::Run()
 //                BluetoothLeAdvertiser::InnerRunnable3
 //=====================================================================
 BluetoothLeAdvertiser::StartSuccessRunnable::StartSuccessRunnable(
+    /* [in] */ IAdvertiseCallback* callback,
+    /* [in] */ IAdvertiseSettings* settings,
     /* [in] */ BluetoothLeAdvertiser* owner)
-    : mOwner(owner)
+    : mCallback(callback)
+    , mSettings(settings)
+    , mOwner(owner)
 {
-    // ==================before translated======================
-    // mOwner = owner;
 }
 
 ECode BluetoothLeAdvertiser::StartSuccessRunnable::Run()
 {
-    // ==================before translated======================
-    // callback.onStartSuccess(settings);
-    assert(0);
+    mCallback->OnStartSuccess(mSettings);
     return NOERROR;
 }
 
@@ -197,10 +231,10 @@ BluetoothLeAdvertiser::BluetoothLeAdvertiser()
 BluetoothLeAdvertiser::BluetoothLeAdvertiser(
     /* [in] */ IIBluetoothManager* bluetoothManager)
 {
-    // ==================before translated======================
-    // mBluetoothManager = bluetoothManager;
-    // mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-    // mHandler = new Handler(Looper.getMainLooper());
+    mBluetoothManager = bluetoothManager;
+    mBluetoothAdapter = CBluetoothAdapter::GetDefaultAdapter();
+    AutoPtr<ILooper> mainLooper = Looper::GetMainLooper();
+    CHandler::New(mainLooper, (IHandler**)&mHandler);
 }
 
 ECode BluetoothLeAdvertiser::StartAdvertising(
@@ -208,13 +242,7 @@ ECode BluetoothLeAdvertiser::StartAdvertising(
     /* [in] */ IAdvertiseData* advertiseData,
     /* [in] */ IAdvertiseCallback* callback)
 {
-    VALIDATE_NOT_NULL(settings);
-    VALIDATE_NOT_NULL(advertiseData);
-    VALIDATE_NOT_NULL(callback);
-    // ==================before translated======================
-    // startAdvertising(settings, advertiseData, null, callback);
-    assert(0);
-    return NOERROR;
+    return StartAdvertising(settings, advertiseData, NULL, callback);
 }
 
 ECode BluetoothLeAdvertiser::StartAdvertising(
@@ -223,163 +251,207 @@ ECode BluetoothLeAdvertiser::StartAdvertising(
     /* [in] */ IAdvertiseData* scanResponse,
     /* [in] */ IAdvertiseCallback* callback)
 {
-    VALIDATE_NOT_NULL(settings);
-    VALIDATE_NOT_NULL(advertiseData);
-    VALIDATE_NOT_NULL(scanResponse);
-    VALIDATE_NOT_NULL(callback);
-    // ==================before translated======================
-    // synchronized (mLeAdvertisers) {
-    //     BluetoothLeUtils.checkAdapterStateOn(mBluetoothAdapter);
-    //     if (callback == null) {
-    //         throw new IllegalArgumentException("callback cannot be null");
-    //     }
-    //     if (!mBluetoothAdapter.isMultipleAdvertisementSupported()) {
-    //         postStartFailure(callback,
-    //                 AdvertiseCallback.ADVERTISE_FAILED_FEATURE_UNSUPPORTED);
-    //         return;
-    //     }
-    //     if (totalBytes(advertiseData) > MAX_ADVERTISING_DATA_BYTES ||
-    //             totalBytes(scanResponse) > MAX_ADVERTISING_DATA_BYTES) {
-    //         postStartFailure(callback, AdvertiseCallback.ADVERTISE_FAILED_DATA_TOO_LARGE);
-    //         return;
-    //     }
-    //     if (mLeAdvertisers.containsKey(callback)) {
-    //         postStartFailure(callback, AdvertiseCallback.ADVERTISE_FAILED_ALREADY_STARTED);
-    //         return;
-    //     }
-    //
-    //     IBluetoothGatt gatt;
-    //     try {
-    //         gatt = mBluetoothManager.getBluetoothGatt();
-    //     } catch (RemoteException e) {
-    //         Log.e(TAG, "Failed to get Bluetooth gatt - ", e);
-    //         postStartFailure(callback, AdvertiseCallback.ADVERTISE_FAILED_INTERNAL_ERROR);
-    //         return;
-    //     }
-    //     AdvertiseCallbackWrapper wrapper = new AdvertiseCallbackWrapper(callback, advertiseData,
-    //             scanResponse, settings, gatt);
-    //     wrapper.startRegisteration();
-    // }
-    assert(0);
+    {
+        AutoLock lock(mLeAdvertisers);
+        BluetoothLeUtils::CheckAdapterStateOn(mBluetoothAdapter);
+        if (callback == NULL) {
+            //throw new IllegalArgumentException("callback cannot be null");
+            Logger::E("BluetoothLeAdvertiser::StartAdvertising", "callback cannot be null");
+            return E_ILLEGAL_ARGUMENT_EXCEPTION;
+        }
+        Boolean supported;
+        if (!(mBluetoothAdapter->IsMultipleAdvertisementSupported(&supported), supported)) {
+            PostStartFailure(callback,
+                    IAdvertiseCallback::ADVERTISE_FAILED_FEATURE_UNSUPPORTED);
+            return NOERROR;
+        }
+        if (TotalBytes(advertiseData) > MAX_ADVERTISING_DATA_BYTES ||
+                TotalBytes(scanResponse) > MAX_ADVERTISING_DATA_BYTES) {
+            PostStartFailure(callback, IAdvertiseCallback::ADVERTISE_FAILED_DATA_TOO_LARGE);
+            return NOERROR;
+        }
+        Boolean bTemp;
+        if (mLeAdvertisers->ContainsKey(TO_IINTERFACE(callback), &bTemp), bTemp) {
+            PostStartFailure(callback, IAdvertiseCallback::ADVERTISE_FAILED_ALREADY_STARTED);
+            return NOERROR;
+        }
+
+        AutoPtr<IIBluetoothGatt> gatt;
+        //try {
+        ECode ec = mBluetoothManager->GetBluetoothGatt((IIBluetoothGatt**)&gatt);
+        //} catch (RemoteException e) {
+        if (FAILED(ec)) {//need check, maybe only if E_REMOTE_EXCEPTION
+            //Log.e(TAG, "Failed to get Bluetooth gatt - ", e);
+            Logger::E(TAG, "Failed to get Bluetooth gatt - ");
+            PostStartFailure(callback, IAdvertiseCallback::ADVERTISE_FAILED_INTERNAL_ERROR);
+            return NOERROR;
+        }
+        //}
+        AutoPtr<AdvertiseCallbackWrapper> wrapper = new AdvertiseCallbackWrapper(callback, advertiseData,
+                scanResponse, settings, gatt, this);
+        wrapper->StartRegisteration();
+    }
     return NOERROR;
 }
 
 ECode BluetoothLeAdvertiser::StopAdvertising(
     /* [in] */ IAdvertiseCallback* callback)
 {
-    VALIDATE_NOT_NULL(callback);
-    // ==================before translated======================
-    // synchronized (mLeAdvertisers) {
-    //     BluetoothLeUtils.checkAdapterStateOn(mBluetoothAdapter);
-    //     if (callback == null) {
-    //         throw new IllegalArgumentException("callback cannot be null");
-    //     }
-    //     AdvertiseCallbackWrapper wrapper = mLeAdvertisers.get(callback);
-    //     if (wrapper == null) return;
-    //     wrapper.stopAdvertising();
-    // }
-    assert(0);
+    {
+        AutoLock lock(mLeAdvertisers);
+        BluetoothLeUtils::CheckAdapterStateOn(mBluetoothAdapter);
+        if (callback == NULL) {
+            //throw new IllegalArgumentException("callback cannot be null");
+            Logger::E("BluetoothLeAdvertiser::StopAdvertising", "callback cannot be null");
+            return E_ILLEGAL_ARGUMENT_EXCEPTION;
+        }
+        AutoPtr<IInterface> value;
+        mLeAdvertisers->Get(TO_IINTERFACE(callback), (IInterface**)&value);
+        AutoPtr<AdvertiseCallbackWrapper> wrapper = (AdvertiseCallbackWrapper*)(IIBluetoothGattCallback::Probe(value));
+        if (wrapper == NULL) return NOERROR;
+        wrapper->StopAdvertising();
+    }
     return NOERROR;
 }
 
 ECode BluetoothLeAdvertiser::Cleanup()
 {
-    // ==================before translated======================
-    // mLeAdvertisers.clear();
-    assert(0);
+    mLeAdvertisers->Clear();
     return NOERROR;
 }
 
 Int32 BluetoothLeAdvertiser::TotalBytes(
     /* [in] */ IAdvertiseData* data)
 {
-    // ==================before translated======================
-    // if (data == null) return 0;
-    // int size = FLAGS_FIELD_BYTES; // flags field is always set.
-    // if (data.getServiceUuids() != null) {
-    //     int num16BitUuids = 0;
-    //     int num32BitUuids = 0;
-    //     int num128BitUuids = 0;
-    //     for (ParcelUuid uuid : data.getServiceUuids()) {
-    //         if (BluetoothUuid.is16BitUuid(uuid)) {
-    //             ++num16BitUuids;
-    //         } else if (BluetoothUuid.is32BitUuid(uuid)) {
-    //             ++num32BitUuids;
-    //         } else {
-    //             ++num128BitUuids;
-    //         }
-    //     }
-    //     // 16 bit service uuids are grouped into one field when doing advertising.
-    //     if (num16BitUuids != 0) {
-    //         size += OVERHEAD_BYTES_PER_FIELD +
-    //                 num16BitUuids * BluetoothUuid.UUID_BYTES_16_BIT;
-    //     }
-    //     // 32 bit service uuids are grouped into one field when doing advertising.
-    //     if (num32BitUuids != 0) {
-    //         size += OVERHEAD_BYTES_PER_FIELD +
-    //                 num32BitUuids * BluetoothUuid.UUID_BYTES_32_BIT;
-    //     }
-    //     // 128 bit service uuids are grouped into one field when doing advertising.
-    //     if (num128BitUuids != 0) {
-    //         size += OVERHEAD_BYTES_PER_FIELD +
-    //                 num128BitUuids * BluetoothUuid.UUID_BYTES_128_BIT;
-    //     }
-    // }
-    // for (ParcelUuid uuid : data.getServiceData().keySet()) {
-    //     size += OVERHEAD_BYTES_PER_FIELD + SERVICE_DATA_UUID_LENGTH
-    //             + byteLength(data.getServiceData().get(uuid));
-    // }
-    // for (int i = 0; i < data.getManufacturerSpecificData().size(); ++i) {
-    //     size += OVERHEAD_BYTES_PER_FIELD + MANUFACTURER_SPECIFIC_DATA_LENGTH +
-    //             byteLength(data.getManufacturerSpecificData().valueAt(i));
-    // }
-    // if (data.getIncludeTxPowerLevel()) {
-    //     size += OVERHEAD_BYTES_PER_FIELD + 1; // tx power level value is one byte.
-    // }
-    // if (data.getIncludeDeviceName() && mBluetoothAdapter.getName() != null) {
-    //     size += OVERHEAD_BYTES_PER_FIELD + mBluetoothAdapter.getName().length();
-    // }
-    // return size;
-    assert(0);
-    return 0;
+    if (data == NULL) return 0;
+    Int32 size = FLAGS_FIELD_BYTES; // flags field is always set.
+    AutoPtr<IList> uuids;
+    data->GetServiceUuids((IList**)&uuids);
+    if (uuids != NULL) {
+        Int32 num16BitUuids = 0;
+        Int32 num32BitUuids = 0;
+        Int32 num128BitUuids = 0;
+        Int32 listSize;
+        uuids->GetSize(&listSize);
+        for (Int32 i = 0; i < listSize; ++i) {
+            AutoPtr<IInterface> obj;
+            uuids->Get(i, (IInterface**)&obj);
+            IParcelUuid* uuid = IParcelUuid::Probe(obj);
+
+            if (BluetoothUuid::Is16BitUuid(uuid)) {
+                ++num16BitUuids;
+            } else if (BluetoothUuid::Is32BitUuid(uuid)) {
+                ++num32BitUuids;
+            } else {
+                ++num128BitUuids;
+            }
+        }
+        // 16 bit service uuids are grouped into one field when doing advertising.
+        if (num16BitUuids != 0) {
+            size += OVERHEAD_BYTES_PER_FIELD +
+                    num16BitUuids * BluetoothUuid::UUID_BYTES_16_BIT;
+        }
+        // 32 bit service uuids are grouped into one field when doing advertising.
+        if (num32BitUuids != 0) {
+            size += OVERHEAD_BYTES_PER_FIELD +
+                    num32BitUuids * BluetoothUuid::UUID_BYTES_32_BIT;
+        }
+        // 128 bit service uuids are grouped into one field when doing advertising.
+        if (num128BitUuids != 0) {
+            size += OVERHEAD_BYTES_PER_FIELD +
+                    num128BitUuids * BluetoothUuid::UUID_BYTES_128_BIT;
+        }
+    }
+    AutoPtr<IMap> serviceData;
+    data->GetServiceData((IMap**)&serviceData);
+    AutoPtr<ISet> keySet;
+    serviceData->GetKeySet((ISet**)&keySet);
+    AutoPtr<ArrayOf<IInterface*> > keyArray;
+    keySet->ToArray((ArrayOf<IInterface*>**)&keyArray);
+    for (Int32 i = 0; i < keyArray->GetLength(); ++i) {
+        AutoPtr<IInterface> key = (*keyArray)[i];
+        AutoPtr<IInterface> value;
+        serviceData->Get(key, (IInterface**)&value);
+        IArrayOf* vArrayOf = IArrayOf::Probe(value);
+        Int32 length;
+        vArrayOf->GetLength(&length);
+        //for the fucntion *ByteLength* only to get length of the array
+        //AutoPtr<ArrayOf<Byte> > arrayByte = ArrayOf<Byte>::Alloc(length);
+        //for (Int32 j = 0; j < length; ++j) {
+        //    AutoPtr<IInterface> obj;
+        //    vArrayOf->Get(j, (IInterface**)&obj);
+        //    IByte* iByte = IByte::Probe(obj);
+        //    Byte bValue;
+        //    iByte->GetValue(&bValue);
+        //    arrayByte->Set(j, bValue);
+        //}
+
+        size += OVERHEAD_BYTES_PER_FIELD +
+            SERVICE_DATA_UUID_LENGTH +
+            length;
+        //        ByteLength(arrayByte);
+    }
+    AutoPtr<ISparseArray> mSpecData;
+    data->GetManufacturerSpecificData((ISparseArray**)&mSpecData);
+    Int32 msdSize;
+    mSpecData->GetSize(&msdSize);
+    for (Int32 i = 0; i < msdSize; ++i) {
+        AutoPtr<IInterface> value;
+        mSpecData->ValueAt(i, (IInterface**)&value);
+        AutoPtr<IArrayOf> vArrayOf = IArrayOf::Probe(value);
+        Int32 length;
+        vArrayOf->GetLength(&length);
+        //for the fucntion *ByteLength* only to get length of the array
+        //AutoPtr<ArrayOf<Byte> > arrayByte = ArrayOf<Byte>::Alloc(length);
+        //for (Int32 j = 0; j < length; ++j) {
+        //    AutoPtr<IInterface> obj;
+        //    vArrayOf->Get(j, (IInterface**)&obj);
+        //    IByte* iByte = IByte::Probe(obj);
+        //    Byte bValue;
+        //    iByte->GetValue(&bValue);
+        //    arrayByte->Set(j, bValue);
+        //}
+
+        size += OVERHEAD_BYTES_PER_FIELD +
+            MANUFACTURER_SPECIFIC_DATA_LENGTH +
+            length;
+        //        ByteLength(arrayByte); this function to get the length of the array!
+    }
+    Boolean bTemp = FALSE;
+    if (data->GetIncludeTxPowerLevel(&bTemp), bTemp) {
+        size += OVERHEAD_BYTES_PER_FIELD + 1; // tx power level value is one byte.
+    }
+    bTemp = FALSE;
+    String name;
+    if ((data->GetIncludeDeviceName(&bTemp), bTemp)
+            && (mBluetoothAdapter->GetName(&name), !name.IsNullOrEmpty())) {
+        size += OVERHEAD_BYTES_PER_FIELD + name.GetLength();
+    }
+    return size;
 }
 
 Int32 BluetoothLeAdvertiser::ByteLength(
     /* [in] */ ArrayOf<Byte>* array)
 {
-    // ==================before translated======================
-    // return array == null ? 0 : array.length;
-    assert(0);
-    return 0;
+    return array == NULL? 0 : array->GetLength();
 }
 
 void BluetoothLeAdvertiser::PostStartFailure(
     /* [in] */ IAdvertiseCallback* callback,
     /* [in] */ Int32 error)
 {
-    // ==================before translated======================
-    // mHandler.post(new Runnable() {
-    //     @Override
-    //     public void run() {
-    //         callback.onStartFailure(error);
-    //     }
-    // });
-    assert(0);
+    AutoPtr<StartFailureRunnable> run = new StartFailureRunnable(callback, error, this);
+    Boolean result;
+    mHandler->Post(run, &result);
 }
 
 void BluetoothLeAdvertiser::PostStartSuccess(
     /* [in] */ IAdvertiseCallback* callback,
     /* [in] */ IAdvertiseSettings* settings)
 {
-    // ==================before translated======================
-    // mHandler.post(new Runnable() {
-    //
-    //     @Override
-    //     public void run() {
-    //         callback.onStartSuccess(settings);
-    //     }
-    // });
-    assert(0);
+    AutoPtr<StartSuccessRunnable> run = new StartSuccessRunnable(callback, settings, this);
+    Boolean result;
+    mHandler->Post(run, &result);
 }
 
 } // namespace LE

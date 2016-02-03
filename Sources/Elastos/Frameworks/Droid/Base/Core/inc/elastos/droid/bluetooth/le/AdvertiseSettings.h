@@ -129,14 +129,13 @@ public:
     CARAPI ReadFromParcel(
         /* [in] */ IParcel* source);
 
-private:
-    AdvertiseSettings(
+    CARAPI constructor(
         /* [in] */ Int32 advertiseMode,
         /* [in] */ Int32 advertiseTxPowerLevel,
         /* [in] */ Boolean advertiseConnectable,
         /* [in] */ Int32 advertiseTimeout);
 
-    AdvertiseSettings(
+    CARAPI constructor(
         /* [in] */ IParcel* in);
 
 private:

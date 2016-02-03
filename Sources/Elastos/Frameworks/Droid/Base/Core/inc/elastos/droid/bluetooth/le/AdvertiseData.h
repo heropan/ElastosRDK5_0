@@ -102,8 +102,8 @@ public:
         CARAPI Build(
             /* [out] */ IAdvertiseData** result);
 
-    private:
-        CARAPI_(AutoPtr<ISparseArray>) MiddleInitMmanufacturerspecificdata();
+    //private:
+    //    CARAPI_(AutoPtr<ISparseArray>) MiddleInitMmanufacturerspecificdata();
 
     private:
         // @Nullable
@@ -112,6 +112,8 @@ public:
         AutoPtr<IMap> mServiceData;// IParcelUuid, AutoPtr< ArrayOf<Byte> >
         Boolean mIncludeTxPowerLevel;
         Boolean mIncludeDeviceName;
+
+        friend AdvertiseData;
     };
 
 public:
@@ -178,8 +180,7 @@ public:
     CARAPI ReadFromParcel(
         /* [in] */ IParcel* source);
 
-private:
-    AdvertiseData(
+    CARAPI constructor(
         /* [in] */ IList* serviceUuids,// IParcelUuid
         /* [in] */ ISparseArray* manufacturerData,// ArrayOf<Byte>
         /* [in] */ IMap* serviceData,// IParcelUuid, ArrayOf<Byte>

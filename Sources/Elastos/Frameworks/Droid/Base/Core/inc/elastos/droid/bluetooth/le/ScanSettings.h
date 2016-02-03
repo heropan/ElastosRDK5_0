@@ -118,8 +118,8 @@ public:
 
     // @Override
     CARAPI WriteToParcel(
-        /* [in] */ IParcel* dest,
-        /* [in] */ Int32 flags);
+        /* [in] */ IParcel* dest);
+    //    /* [in] */ Int32 flags);
 
     // @Override
     CARAPI ReadFromParcel(

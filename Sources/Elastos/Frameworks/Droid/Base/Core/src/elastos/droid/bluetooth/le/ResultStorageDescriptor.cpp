@@ -13,6 +13,9 @@ CAR_INTERFACE_IMPL_2(ResultStorageDescriptor, Object, IResultStorageDescriptor, 
 
 ResultStorageDescriptor::ResultStorageDescriptor()
 {
+    mType = 0;
+    mOffset = 0;
+    mLength = 0;
 }
 
 ResultStorageDescriptor::ResultStorageDescriptor(
@@ -20,19 +23,16 @@ ResultStorageDescriptor::ResultStorageDescriptor(
     /* [in] */ Int32 offset,
     /* [in] */ Int32 length)
 {
-    // ==================before translated======================
-    // mType = type;
-    // mOffset = offset;
-    // mLength = length;
+    mType = type;
+    mOffset = offset;
+    mLength = length;
 }
 
 ECode ResultStorageDescriptor::GetType(
     /* [out] */ Int32* result)
 {
     VALIDATE_NOT_NULL(result);
-    // ==================before translated======================
-    // return mType;
-    assert(0);
+    *result = mType;
     return NOERROR;
 }
 
@@ -40,9 +40,7 @@ ECode ResultStorageDescriptor::GetOffset(
     /* [out] */ Int32* result)
 {
     VALIDATE_NOT_NULL(result);
-    // ==================before translated======================
-    // return mOffset;
-    assert(0);
+    *result = mOffset;
     return NOERROR;
 }
 
@@ -50,9 +48,7 @@ ECode ResultStorageDescriptor::GetLength(
     /* [out] */ Int32* result)
 {
     VALIDATE_NOT_NULL(result);
-    // ==================before translated======================
-    // return mLength;
-    assert(0);
+    *result = mLength;
     return NOERROR;
 }
 
@@ -60,30 +56,24 @@ ECode ResultStorageDescriptor::WriteToParcel(
     /* [in] */ IParcel* dest,
     /* [in] */ Int32 flags)
 {
-    VALIDATE_NOT_NULL(dest);
-    // ==================before translated======================
-    // dest.writeInt(mType);
-    // dest.writeInt(mOffset);
-    // dest.writeInt(mLength);
-    assert(0);
+    dest->WriteInt32(mType);
+    dest->WriteInt32(mOffset);
+    dest->WriteInt32(mLength);
     return NOERROR;
 }
 
 ResultStorageDescriptor::ResultStorageDescriptor(
     /* [in] */ IParcel* in)
 {
-    // ==================before translated======================
-    // ReadFromParcel(in);
+    ReadFromParcel(in);
 }
 
 ECode ResultStorageDescriptor::ReadFromParcel(
     /* [in] */ IParcel* in)
 {
-    // ==================before translated======================
-    // mType = in.readInt();
-    // mOffset = in.readInt();
-    // mLength = in.readInt();
-    assert(0);
+    in->ReadInt32(&mType);
+    in->ReadInt32(&mOffset);
+    in->ReadInt32(&mLength);
     return NOERROR;
 }
 
@@ -91,5 +81,3 @@ ECode ResultStorageDescriptor::ReadFromParcel(
 } // namespace Bluetooth
 } // namespace Droid
 } // namespace Elastos
-
-

@@ -23,6 +23,8 @@ public:
 
     AdvertiseCallback();
 
+    ~AdvertiseCallback() = 0;
+
     /**
       * Callback triggered in response to {@link BluetoothLeAdvertiser#startAdvertising} indicating
       * that the advertising has been started successfully.

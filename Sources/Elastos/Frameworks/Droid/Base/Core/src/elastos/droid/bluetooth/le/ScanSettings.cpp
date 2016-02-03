@@ -1,5 +1,8 @@
 
 #include "elastos/droid/bluetooth/le/ScanSettings.h"
+#include <elastos/utility/logging/Logger.h>
+
+using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
 namespace Droid {
@@ -13,60 +16,63 @@ CAR_INTERFACE_IMPL(ScanSettings::Builder, Object, IScanSettingsBuilder);
 
 ScanSettings::Builder::Builder()
 {
+    mScanMode = SCAN_MODE_LOW_POWER;
+    mCallbackType = CALLBACK_TYPE_ALL_MATCHES;
+    mScanResultType = SCAN_RESULT_TYPE_FULL;
+    mReportDelayMillis = 0;
 }
 
 ECode ScanSettings::Builder::SetScanMode(
     /* [in] */ Int32 scanMode)
 {
-    // ==================before translated======================
-    // if (scanMode < SCAN_MODE_LOW_POWER || scanMode > SCAN_MODE_LOW_LATENCY) {
-    //     throw new IllegalArgumentException("invalid scan mode " + scanMode);
-    // }
-    // mScanMode = scanMode;
-    // return this;
-    assert(0);
+    if (scanMode < SCAN_MODE_LOW_POWER || scanMode > SCAN_MODE_LOW_LATENCY) {
+        //throw new IllegalArgumentException("invalid scan mode " + scanMode);
+        Logger::E("canSettings::Builder::SetScanMode", "invalid scan mode %d", scanMode);
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
+    mScanMode = scanMode;
+    //return this;
     return NOERROR;
 }
 
 ECode ScanSettings::Builder::SetCallbackType(
     /* [in] */ Int32 callbackType)
 {
-    // ==================before translated======================
-    //
-    // if (!isValidCallbackType(callbackType)) {
-    //     throw new IllegalArgumentException("invalid callback type - " + callbackType);
-    // }
-    // mCallbackType = callbackType;
+    if (!IsValidCallbackType(callbackType)) {
+        //throw new IllegalArgumentException("invalid callback type - " + callbackType);
+        Logger::E("canSettings::Builder::SetCallbackType", "invalid callback type  %d", callbackType);
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
+    mCallbackType = callbackType;
     // return this;
-    assert(0);
     return NOERROR;
 }
 
 ECode ScanSettings::Builder::SetScanResultType(
     /* [in] */ Int32 scanResultType)
 {
-    // ==================before translated======================
-    // if (scanResultType < SCAN_RESULT_TYPE_FULL
-    //         || scanResultType > SCAN_RESULT_TYPE_ABBREVIATED) {
-    //     throw new IllegalArgumentException(
-    //             "invalid scanResultType - " + scanResultType);
-    // }
-    // mScanResultType = scanResultType;
+    if (scanResultType < SCAN_RESULT_TYPE_FULL
+            || scanResultType > SCAN_RESULT_TYPE_ABBREVIATED) {
+        //throw new IllegalArgumentException(
+        //        "invalid scanResultType - " + scanResultType);
+        Logger::E("canSettings::Builder::SetScanResultType", "invalid scanResultType - %d", scanResultType);
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
+    mScanResultType = scanResultType;
     // return this;
-    assert(0);
     return NOERROR;
 }
 
 ECode ScanSettings::Builder::SetReportDelay(
     /* [in] */ Int64 reportDelayMillis)
 {
-    // ==================before translated======================
-    // if (reportDelayMillis < 0) {
-    //     throw new IllegalArgumentException("reportDelay must be > 0");
-    // }
-    // mReportDelayMillis = reportDelayMillis;
+    if (reportDelayMillis < 0) {
+        //throw new IllegalArgumentException("reportDelay must be > 0");
+        Logger::E("canSettings::Builder::SetReportDelay", "reportDelay must be > 0");
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
+    mReportDelayMillis = reportDelayMillis;
     // return this;
-    assert(0);
     return NOERROR;
 }
 
@@ -74,25 +80,22 @@ ECode ScanSettings::Builder::Build(
     /* [out] */ IScanSettings** result)
 {
     VALIDATE_NOT_NULL(result);
-    // ==================before translated======================
-    // return new ScanSettings(mScanMode, mCallbackType, mScanResultType,
-    //         mReportDelayMillis);
-    assert(0);
+    AutoPtr<IScanSettings> ss = new ScanSettings(mScanMode, mCallbackType, mScanResultType,
+            mReportDelayMillis);
+    *result = ss;
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
 Boolean ScanSettings::Builder::IsValidCallbackType(
     /* [in] */ Int32 callbackType)
 {
-    // ==================before translated======================
-    // if (callbackType == CALLBACK_TYPE_ALL_MATCHES ||
-    //         callbackType == CALLBACK_TYPE_FIRST_MATCH ||
-    //         callbackType == CALLBACK_TYPE_MATCH_LOST) {
-    //     return true;
-    // }
-    // return callbackType == (CALLBACK_TYPE_FIRST_MATCH | CALLBACK_TYPE_MATCH_LOST);
-    assert(0);
-    return FALSE;
+    if (callbackType == CALLBACK_TYPE_ALL_MATCHES ||
+            callbackType == CALLBACK_TYPE_FIRST_MATCH ||
+            callbackType == CALLBACK_TYPE_MATCH_LOST) {
+        return TRUE;
+    }
+    return callbackType == (CALLBACK_TYPE_FIRST_MATCH | CALLBACK_TYPE_MATCH_LOST);
 }
 
 //=====================================================================
@@ -107,9 +110,7 @@ ECode ScanSettings::GetScanMode(
     /* [out] */ Int32* result)
 {
     VALIDATE_NOT_NULL(result);
-    // ==================before translated======================
-    // return mScanMode;
-    assert(0);
+    *result = mScanMode;
     return NOERROR;
 }
 
@@ -117,9 +118,7 @@ ECode ScanSettings::GetCallbackType(
     /* [out] */ Int32* result)
 {
     VALIDATE_NOT_NULL(result);
-    // ==================before translated======================
-    // return mCallbackType;
-    assert(0);
+    *result = mCallbackType;
     return NOERROR;
 }
 
@@ -127,9 +126,7 @@ ECode ScanSettings::GetScanResultType(
     /* [out] */ Int32* result)
 {
     VALIDATE_NOT_NULL(result);
-    // ==================before translated======================
-    // return mScanResultType;
-    assert(0);
+    *result = mScanResultType;
     return NOERROR;
 }
 
@@ -137,30 +134,28 @@ ECode ScanSettings::GetReportDelayMillis(
     /* [out] */ Int64* result)
 {
     VALIDATE_NOT_NULL(result);
-    // ==================before translated======================
-    // return mReportDelayMillis;
-    assert(0);
+    *result = mReportDelayMillis;
     return NOERROR;
 }
 
 ECode ScanSettings::WriteToParcel(
-    /* [in] */ IParcel* dest,
-    /* [in] */ Int32 flags)
+    /* [in] */ IParcel* dest)
 {
-    VALIDATE_NOT_NULL(dest);
-    // ==================before translated======================
-    // dest.writeInt(mScanMode);
-    // dest.writeInt(mCallbackType);
-    // dest.writeInt(mScanResultType);
-    // dest.writeLong(mReportDelayMillis);
-    assert(0);
+    dest->WriteInt32(mScanMode);
+    dest->WriteInt32(mCallbackType);
+    dest->WriteInt32(mScanResultType);
+    dest->WriteInt64(mReportDelayMillis);
     return NOERROR;
 }
 
 // @Override
 CARAPI ScanSettings::ReadFromParcel(
-    /* [in] */ IParcel* source)
+    /* [in] */ IParcel* in)
 {
+    in->ReadInt32(&mScanMode);
+    in->ReadInt32(&mCallbackType);
+    in->ReadInt32(&mScanResultType);
+    in->ReadInt64(&mReportDelayMillis);
     return NOERROR;
 }
 
@@ -170,21 +165,19 @@ ScanSettings::ScanSettings(
     /* [in] */ Int32 scanResultType,
     /* [in] */ Int64 reportDelayMillis)
 {
-    // ==================before translated======================
-    // mScanMode = scanMode;
-    // mCallbackType = callbackType;
-    // mScanResultType = scanResultType;
-    // mReportDelayMillis = reportDelayMillis;
+    mScanMode = scanMode;
+    mCallbackType = callbackType;
+    mScanResultType = scanResultType;
+    mReportDelayMillis = reportDelayMillis;
 }
 
 ScanSettings::ScanSettings(
     /* [in] */ IParcel* in)
 {
-    // ==================before translated======================
-    // mScanMode = in.readInt();
-    // mCallbackType = in.readInt();
-    // mScanResultType = in.readInt();
-    // mReportDelayMillis = in.readLong();
+    in->ReadInt32(&mScanMode);
+    in->ReadInt32(&mCallbackType);
+    in->ReadInt32(&mScanResultType);
+    in->ReadInt64(&mReportDelayMillis);
 }
 
 } // namespace LE
