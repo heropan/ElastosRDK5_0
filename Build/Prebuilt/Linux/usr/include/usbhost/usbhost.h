@@ -176,13 +176,13 @@ void usb_descriptor_iter_init(struct usb_device *device, struct usb_descriptor_i
  */
 struct usb_descriptor_header *usb_descriptor_iter_next(struct usb_descriptor_iter *iter);
 
-/* Claims the specified _interface of a USB device */
+/* Claims the specified interface of a USB device */
 int usb_device_claim_interface(struct usb_device *device, unsigned int _interface);
 
-/* Releases the specified _interface of a USB device */
+/* Releases the specified interface of a USB device */
 int usb_device_release_interface(struct usb_device *device, unsigned int _interface);
 
-/* Requests the kernel to connect or disconnect its driver for the specified _interface.
+/* Requests the kernel to connect or disconnect its driver for the specified interface.
  * This can be used to ask the kernel to disconnect its driver for a device
  * so usb_device_claim_interface can claim it instead.
  */
@@ -192,7 +192,7 @@ int usb_device_connect_kernel_driver(struct usb_device *device,
 /* Sets the current configuration for the device to the specified configuration */
 int usb_device_set_configuration(struct usb_device *device, int configuration);
 
-/* Sets the specified _interface of a USB device */
+/* Sets the specified interface of a USB device */
 int usb_device_set_interface(struct usb_device *device, unsigned int _interface,
                             unsigned int alt_setting);
 
