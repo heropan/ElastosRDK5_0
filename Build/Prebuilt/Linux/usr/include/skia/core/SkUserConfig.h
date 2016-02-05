@@ -193,7 +193,7 @@
 // Android defines:
 #ifndef SkUserConfig_Android_DEFINED
 #define SkUserConfig_Android_DEFINED
-#ifdef ANDROID
+#ifdef ELASTOS
     #include <utils/misc.h>
 #endif
 
