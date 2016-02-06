@@ -1,6 +1,7 @@
 #include "elastos/droid/app/CActivityManager.h"
 #include "elastos/droid/content/CComponentName.h"
 #include "elastos/droid/content/CIntent.h"
+#include "elastos/droid/media/CAudioService.h"
 #include "elastos/droid/media/CFocusRequester.h"
 #include "elastos/droid/media/MediaFocusControl.h"
 #include "elastos/droid/os/Binder.h"

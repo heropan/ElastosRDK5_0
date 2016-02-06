@@ -563,8 +563,8 @@ ECode CMediaMetadataRetriever::ReleaseResources()
         assert(retriever != NULL);
         delete retriever;
         SetRetriever(NULL);
-        return NOERROR;
     }
+    return NOERROR;
 }
 
 ECode CMediaMetadataRetriever::NativeSetup()

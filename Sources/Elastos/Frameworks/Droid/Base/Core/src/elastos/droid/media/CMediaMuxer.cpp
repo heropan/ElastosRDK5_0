@@ -463,7 +463,7 @@ ECode CMediaMuxer::NativeWriteSampleData(
     IBuffer::Probe(byteBuf)->GetEffectiveDirectAddress(&addr);
     void *dst = (void*)addr;
 
-    Int32 dstSize;
+    Int64 dstSize;
     AutoPtr<ArrayOf<Byte> > byteArray;
 
     if (dst == NULL) {
@@ -481,7 +481,9 @@ ECode CMediaMuxer::NativeWriteSampleData(
         dstSize = byteArray->GetLength();
     }
     else {
-        IBuffer::Probe(byteBuf)->GetCapacity(&dstSize);
+        Int32 size;
+        IBuffer::Probe(byteBuf)->GetCapacity(&size);
+        dstSize = size;
     }
 
     if (dstSize < (offset + size)) {
