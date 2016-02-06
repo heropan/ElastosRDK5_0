@@ -916,12 +916,12 @@ module
         interface ISubtitleControllerListener;
     }
 
-    class CMediaRouterSimpleCallback {
-        constructor();
-
-        interface IMediaRouterSimpleCallback;
-        interface IMediaRouterCallback;
-    }
+    //class CMediaRouterSimpleCallback {
+    //    constructor();
+    //
+    //    interface IMediaRouterSimpleCallback;
+    //    interface IMediaRouterCallback;
+    //}
 
     [deprecated]
     class CSubtitleController {
@@ -1278,6 +1278,63 @@ module
 
         interface ISubtitleControllerRenderer;
         interface ITtmlRenderer;
+    }
+
+//    class CMediaRouter {
+//        constructor(
+//            [in] IContext* context);
+//
+//        interface IMediaRouter;
+//    }
+//
+//    class CMediaRouteInfo {
+//        constructor(
+//            [in] IMediaRouterRouteCategory* category);
+//
+//        interface IMediaRouterRouteInfo;
+//    }
+//
+//    class CRouteGroup {
+//        constructor(
+//            [in] IMediaRouterRouteCategory* category);
+//
+//        interface IMediaRouterRouteGroup;
+//        interface IMediaRouterRouteInfo;
+//    }
+//
+//    class CRouteCategory {
+//        constructor(
+//            [in] ICharSequence* name,
+//            [in] Int32 types,
+//            [in] Boolean groupable);
+//
+//        constructor(
+//            [in] Int32 nameResId,
+//            [in] Int32 types,
+//            [in] Boolean groupable);
+//
+//        interface IMediaRouterRouteCategory;
+//    }
+//
+//    class CUserRouteInfo {
+//        constructor(
+//            [in] IMediaRouterRouteCategory* category);
+//
+//        interface IMediaRouterUserRouteInfo;
+//        interface IMediaRouterRouteInfo;
+//    }
+
+    class CSoundPool {
+        constructor(
+            [in] Int32 maxStreams,
+            [in] Int32 streamType,
+            [in] Int32 srcQuality);
+
+        constructor(
+            [in] Int32 maxStreams,
+            [in] IAudioAttributes* attributes);
+
+        interface ISoundPool;
     }
 
     } // namespace media

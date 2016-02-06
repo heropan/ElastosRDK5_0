@@ -44,6 +44,9 @@ module
             [in] IMediaRouterRouteInfo* info,
             [in] Boolean isExplicit);
 
+        RebindAsUser(
+            [in] Int32 userId);
+
         PublishClientDiscoveryRequest();
 
         PublishClientSelectedRoute(
@@ -70,8 +73,6 @@ module
         FindGlobalRoute(
             [in] String globalRouteId,
             [out] IMediaRouterRouteInfo** result);
-
-
     }
 
     interface IMediaRouterStaticClient
@@ -207,6 +208,9 @@ module
         GetName(
             [out] ICharSequence ** result);
 
+        SetName(
+            [in] ICharSequence* name);
+
         /**
          * Return the properly localized/resource user-visible name of this route.
          * <p>
@@ -271,6 +275,9 @@ module
          */
         GetSupportedTypes(
             [out] Int32 * result);
+
+        SetSupportedTypes(
+            [in] Int32 type);
 
         /** @hide */
         MatchesTypes(
@@ -1227,6 +1234,11 @@ module
 
     interface IMediaRouterHelper
     {
+        SelectRouteStatic(
+            [in] Int32 types,
+            [in] IMediaRouterRouteInfo* route,
+            [in] Boolean isexplicit);
+
         SelectDefaultRouteStatic();
 
         /**

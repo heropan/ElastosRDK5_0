@@ -100,10 +100,9 @@ SOURCES += CMediaRecorderHelper.cpp
 SOURCES += CMediaPlayerTrackInfo.cpp
 SOURCES += CMediaPlayer.cpp
 
-SOURCES += CMediaRouterSimpleCallback.cpp
+#SOURCES += CMediaRouter.cpp
 SOURCES += CTextTrackCueSpan.cpp
 SOURCES += CWebVttRenderer.cpp
-SOURCES += MediaRouterSimpleCallback.cpp
 SOURCES += SubtitleTrack.cpp
 SOURCES += SubtitleController.cpp
 SOURCES += SubtitleData.cpp
@@ -146,6 +145,8 @@ SOURCES += Utils.cpp
 SOURCES += PlayerRecord.cpp
 SOURCES += TtmlRenderer.cpp
 SOURCES += RemoteController.cpp
+SOURCES += CSoundPool.cpp
+
 
 SOURCES += Media_Utils.cpp
 SOURCES += media.cpp
