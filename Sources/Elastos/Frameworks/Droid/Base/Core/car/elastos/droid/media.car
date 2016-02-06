@@ -735,20 +735,20 @@ module
         interface IMediaCodec;
     }
 
-//    [deprecated]
-//    class CMediaCrypto {
-//        constructor();
-//
-//        constructor(
-//            [in] IUUID* uuid,
-//            [in] ArrayOf<Byte>* initData);
-//
-//        interface IMediaCrypto;
-//    }
-//
-//    singleton class CMediaCryptoHelper {
-//        interface IMediaCryptoHelper;
-//    }
+    [deprecated]
+    class CMediaCrypto {
+        constructor();
+
+        constructor(
+            [in] IUUID* uuid,
+            [in] ArrayOf<Byte>* initData);
+
+        interface IMediaCrypto;
+    }
+
+    singleton class CMediaCryptoHelper {
+        interface IMediaCryptoHelper;
+    }
 
     class CMediaDescription {
         constructor();
@@ -781,11 +781,11 @@ module
         interface IMediaDrm;
     }
 
-//    class CMediaExtractor {
-//        constructor();
-//
-//        interface IMediaExtractor;
-//    }
+    class CMediaExtractor {
+        constructor();
+
+        interface IMediaExtractor;
+    }
 
     singleton class CMediaFile {
         interface IMediaFile;
@@ -872,11 +872,11 @@ module
         interface IMediaMetadataHelper;
     }
 
-//    class CMediaMetadataRetriever {
-//        constructor();
-//
-//        interface IMediaMetadataRetriever;
-//    }
+    class CMediaMetadataRetriever {
+        constructor();
+
+        interface IMediaMetadataRetriever;
+    }
 
     class CMediaMuxer {
         constructor();

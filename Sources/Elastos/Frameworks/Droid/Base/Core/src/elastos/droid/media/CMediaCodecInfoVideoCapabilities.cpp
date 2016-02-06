@@ -2,6 +2,7 @@
 #include "elastos/droid/media/CMediaCodecInfoCodecCapabilities.h"
 #include "elastos/droid/media/CMediaCodecInfoCodecProfileLevel.h"
 #include "elastos/droid/media/CMediaCodecInfoVideoCapabilities.h"
+#include "elastos/droid/media/Utils.h"
 #include "elastos/droid/utility/CSize.h"
 #include "elastos/droid/utility/CRational.h"
 #include <elastos/core/Math.h>
@@ -124,8 +125,7 @@ ECode CMediaCodecInfoVideoCapabilities::GetSupportedWidthsFor(
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
     Int32 heightInBlocks;
-// TODO: Need Utils
-    // heightInBlocks = Utils::DivUp(height, mBlockHeight);
+    heightInBlocks = Utils::DivUp(height, mBlockHeight);
 
     // constrain by block count and by block aspect ratio
     AutoPtr<IInterface> bcUpper;
@@ -205,8 +205,7 @@ ECode CMediaCodecInfoVideoCapabilities::GetSupportedHeightsFor(
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
     Int32 widthInBlocks;
-// TODO: Need Utils
-    // widthInBlocks = Utils::DivUp(width, mBlockWidth);
+    widthInBlocks = Utils::DivUp(width, mBlockWidth);
 
     // constrain by block count and by block aspect ratio
     AutoPtr<IInterface> bcUpper;
@@ -287,8 +286,7 @@ ECode CMediaCodecInfoVideoCapabilities::GetSupportedFrameRatesFor(
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
     Int32 blockCount;
-// TODO: Need Utils
-    // blockCount = Utils::DivUp(width, mBlockWidth) * Utils::DivUp(height, mBlockHeight);
+    blockCount = Utils::DivUp(width, mBlockWidth) * Utils::DivUp(height, mBlockHeight);
 
     AutoPtr<IInterface> bpsUpper;
     mBlocksPerSecondRange->GetUpper((IInterface**)&bpsUpper);
