@@ -15,7 +15,7 @@ TruncatedFilter::TruncatedFilter()
 {
 }
 
-TruncatedFilter::TruncatedFilter(
+TruncatedFilter::constructor(
     /* [in] */ IScanFilter* filter,
     /* [in] */ IList* storageDescriptors)
 {

@@ -310,9 +310,8 @@ ECode AdvertiseData::ReadFromParcel(
 {
     AutoPtr<Builder> builder = new Builder();
     //List<ParcelUuid> uuids = in.readArrayList(ParcelUuid.class.getClassLoader());
-    Handle32 itpp;
-    in->ReadInterfacePtr(&itpp);
-    AutoPtr<IInterface> listInterface((IInterface*)itpp);
+    AutoPtr<IInterface> listInterface;
+    in->ReadInterfacePtr((Handle32*)(IInterface**)&listInterface);
     AutoPtr<IList> uuids = IList::Probe(listInterface.Get());
     Int32 listSize;
     uuids->GetSize(&listSize);
@@ -344,9 +343,9 @@ ECode AdvertiseData::ReadFromParcel(
     in->ReadInt32(&serviceDataSize);
     for (Int32 i = 0; i < serviceDataSize; ++i) {
         //ParcelUuid serviceDataUuid = in.readParcelable( ParcelUuid.class.getClassLoader());
-        Handle32 itfp;
-        in->ReadInterfacePtr(&itfp);
-        AutoPtr<IParcelUuid> serviceDataUuid = IParcelUuid::Probe((IInterface*)itfp);
+        AutoPtr<IInterface> itfp;
+        in->ReadInterfacePtr((Handle32*)(IInterface**)&itfp);
+        AutoPtr<IParcelUuid> serviceDataUuid = IParcelUuid::Probe(itfp);
         Int32 flag;
         in->ReadInt32(&flag);
         if (flag == 1) {
@@ -371,6 +370,12 @@ ECode AdvertiseData::ReadFromParcel(
     this->mServiceData = builder->mServiceData;
     this->mIncludeTxPowerLevel = builder->mIncludeTxPowerLevel;
     this->mIncludeDeviceName = builder->mIncludeDeviceName;
+    return NOERROR;
+}
+ECode AdvertiseData::constructor(
+    /* [in] */ IParcel* source)
+{
+    ReadFromParcel(source);
     return NOERROR;
 }
 
