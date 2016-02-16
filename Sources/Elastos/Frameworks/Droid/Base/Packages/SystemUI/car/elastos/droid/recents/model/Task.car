@@ -4,11 +4,10 @@ module
     interface Elastos.Droid.Graphics.IBitmap;
     interface Elastos.Droid.Graphics.Drawable.IDrawable;
 
-    interface Elastos.Droid.Packages.SystemUI.Recents.Model.ITaskGrouping;
+    interface Elastos.Droid.SystemUI.Recents.Model.ITaskGrouping;
 
     namespace Elastos {
     namespace Droid {
-    namespace Packages {
     namespace SystemUI {
     namespace Recents {
     namespace Model {
@@ -67,7 +66,6 @@ module
     } // namespace Model
     } // namespace Recents
     } // namespace SystemUI
-    } // namespace Packages
     } // namespace Droid
     } // namespace Elastos
 }

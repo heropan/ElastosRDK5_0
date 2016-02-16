@@ -4,11 +4,10 @@ module
     using interface Elastos.Utility.IList;
     using interface Elastos.Utility.IArrayList;
 
-    interface Elastos.Droid.Packages.SystemUI.Recents.IRecentsConfiguration;
+    interface Elastos.Droid.SystemUI.Recents.IRecentsConfiguration;
 
     namespace Elastos {
     namespace Droid {
-    namespace Packages {
     namespace SystemUI {
     namespace Recents {
     namespace Model {
@@ -134,7 +133,6 @@ module
     } // namespace Model
     } // namespace Recents
     } // namespace SystemUI
-    } // namespace Packages
     } // namespace Droid
     } // namespace Elastos
 }

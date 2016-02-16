@@ -1,11 +1,10 @@
 
 module
 {
-    interface Elastos.Droid.Packages.SystemUI.Recents.Model.ITask;
+    interface Elastos.Droid.SystemUI.Recents.Model.ITask;
 
     namespace Elastos {
     namespace Droid {
-    namespace Packages {
     namespace SystemUI {
     namespace Recents {
     namespace Views {
@@ -54,7 +53,6 @@ module
     } // namespace Views
     } // namespace Recents
     } // namespace SystemUI
-    } // namespace Packages
     } // namespace Droid
     } // namespace Elastos
 }
