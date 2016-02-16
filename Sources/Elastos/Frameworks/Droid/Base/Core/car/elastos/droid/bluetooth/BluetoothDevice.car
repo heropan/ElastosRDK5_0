@@ -1010,7 +1010,7 @@ module
              * @throws IllegalArgumentException if callback is null
              */
             ConnectGatt(
-                [in] IContext* context,
+                [in] IContext* ctx,
                 [in] Boolean autoConnect,
                 [in] IBluetoothGattCallback* cb,
                 [out] IBluetoothGatt** btGatt);
@@ -1032,7 +1032,7 @@ module
              * @hide
              */
             ConnectGatt(
-                [in] IContext* context,
+                [in] IContext* ctx,
                 [in] Boolean autoConnect,
                 [in] IBluetoothGattCallback* cb,
                 [in] Int32 transport,

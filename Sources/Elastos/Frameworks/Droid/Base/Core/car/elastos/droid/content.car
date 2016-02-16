@@ -1096,7 +1096,7 @@ module
              [in] IContext* context);
 
          constructor(
-             [in] IContext* context,
+             [in] IContext* ctx,
              [in] IResolveInfo* info,
              [in] IUserHandle* user,
              [in] Int64 firstInstallTime);
@@ -1107,7 +1107,7 @@ module
     [local]
     class CLauncherApps {
          constructor(
-             [in] IContext* context,
+             [in] IContext* ctx,
              [in] IILauncherApps* service);
 
         interface ILauncherApps;
@@ -1217,7 +1217,7 @@ module
         constructor();
 
         constructor(
-            [in] IContext* context,
+            [in] IContext* ctx,
             [in] IPackageManager* pm,
             [in] IIPackageInstaller* installer,
             [in] String installerPackageName,

@@ -329,7 +329,7 @@ module
                 [in] IFile* cacheDir);
 
             Create(
-                [in] IContext* context,
+                [in] IContext* ctx,
                 [in] Boolean translucent,
                 [out] IHardwareRenderer** res);
 

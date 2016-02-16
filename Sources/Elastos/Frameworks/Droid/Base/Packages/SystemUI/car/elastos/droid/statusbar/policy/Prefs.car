@@ -8,11 +8,11 @@ module
 
     interface IPrefs {
         Read(
-            [in] IContext* context,
+            [in] IContext* ctx,
             [out] ISharedPreferences** prefs);
 
         Edit(
-            [in] IContext* context,
+            [in] IContext* ctx,
             [out] ISharedPreferences** prefs);
     }
 

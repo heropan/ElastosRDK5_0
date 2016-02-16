@@ -63,7 +63,7 @@ using Elastos::Droid::Graphics::CBitmap;
 using Elastos::Droid::Graphics::CBitmapFactory;
 using Elastos::Droid::Graphics::IBitmapFactory;
 using Elastos::Droid::Graphics::CRect;
-using Elastos::Droid::Internal::View::IInputContext;
+using Elastos::Droid::Internal::View::IIInputContext;
 using Elastos::Droid::Internal::View::IIInputMethodSession;
 using Elastos::Droid::Location::CProviderProperties;
 using Elastos::Droid::Text::TextUtils;
@@ -5403,7 +5403,7 @@ jobject Util::ToJavaInputBinding(
             jmethodID m = env->GetMethodID(conKlass, "<init>", "(I)V");
             Util::CheckErrorAndLog(env, "ToJavaInputBinding", "GetMethodID: ElIInputContextProxy line: %d", __LINE__);
 
-            jconnToken = env->NewObject(conKlass, m, (jint)IInputContext::Probe(connToken));
+            jconnToken = env->NewObject(conKlass, m, (jint)IIInputContext::Probe(connToken));
             Util::CheckErrorAndLog(env, "ToJavaInputBinding", "NewObject: ElIInputContextProxy line: %d", __LINE__);
             connToken->AddRef();
 

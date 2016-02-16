@@ -43,7 +43,7 @@ module
      */
     interface IStatusBarIconViewHelper {
         GetIcon(
-            [in] IContext* context,
+            [in] IContext* ctx,
             [in] IStatusBarIcon* icon,
             [out] IDrawable** drawable);
     }

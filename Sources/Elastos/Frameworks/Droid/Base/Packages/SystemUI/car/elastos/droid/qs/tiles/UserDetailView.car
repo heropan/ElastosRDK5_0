@@ -40,7 +40,7 @@ module
     [local]
     interface IUserDetailViewHelper {
         Inflate(
-            [in] IContext* context,
+            [in] IContext* ctx,
             [in] IViewGroup* parent,
             [in] Boolean attach,
             [out] IUserDetailView** ret);

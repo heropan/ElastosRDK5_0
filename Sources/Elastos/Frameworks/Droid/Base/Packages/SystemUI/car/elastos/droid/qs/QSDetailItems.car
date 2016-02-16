@@ -85,7 +85,7 @@ module
     [local]
     interface IQSDetailItemsHelper {
         OnvertOrInflate(
-            [in] IContext* context,
+            [in] IContext* ctx,
             [in] IView* convert,
             [in] IViewGroup* parent,
             [out] IQSDetailItems** ret);

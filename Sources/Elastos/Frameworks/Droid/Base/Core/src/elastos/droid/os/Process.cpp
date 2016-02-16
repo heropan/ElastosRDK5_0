@@ -112,8 +112,7 @@ ECode Process::ZygoteState::Connect(
     AutoPtr<IDataInputStream> zygoteInputStream = NULL;
     AutoPtr<IBufferedWriter> zygoteWriter = NULL;
     AutoPtr<ILocalSocket> zygoteSocket;
-    assert(0 && "TODO");
-    //CLocalSocket::New((ILocalSocket**)&zygoteSocket);
+    CLocalSocket::New((ILocalSocket**)&zygoteSocket);
 
     AutoPtr<IInputStream> inputStream;
     AutoPtr<IOutputStream> outputStream;

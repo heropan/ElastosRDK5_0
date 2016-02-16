@@ -27,7 +27,7 @@ using Elastos::Droid::Content::Pm::IApplicationInfo;
 using Elastos::Droid::Content::Res::CConfiguration;
 using Elastos::Droid::Internal::Utility::CFastPrintWriter;
 using Elastos::Droid::Internal::Utility::IFastPrintWriter;
-using Elastos::Droid::Internal::View::IInputContext;
+using Elastos::Droid::Internal::View::IIInputContext;
 using Elastos::Droid::Internal::View::IInputMethodClient;
 using Elastos::Droid::Os::Build;
 using Elastos::Droid::Os::CServiceManager;
@@ -159,8 +159,8 @@ AutoPtr<IWindowSession> CWindowManagerGlobal::GetWindowSession()
 
             AutoPtr<IInputMethodClient> client;
             imm->GetClient((IInputMethodClient**)&client);
-            AutoPtr<IInputContext> ctx;
-            imm->GetInputContext((IInputContext**)&ctx);
+            AutoPtr<IIInputContext> ctx;
+            imm->GetInputContext((IIInputContext**)&ctx);
             AutoPtr<IIWindowSessionCallback> cb = new CWindowManagerGlobal::InnerWindowSessionCallbackStub();
             wm->OpenSession(cb, client, ctx, (IWindowSession**)&sWindowSession);
 

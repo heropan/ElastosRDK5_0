@@ -58,7 +58,7 @@ using Elastos::Droid::Hardware::Display::IDisplayManager;
 using Elastos::Droid::Internal::App::IIBatteryStats;
 using Elastos::Droid::Internal::View::IInputMethodClient;
 using Elastos::Droid::Internal::View::IIInputMethodManager;
-using Elastos::Droid::Internal::View::IInputContext;
+using Elastos::Droid::Internal::View::IIInputContext;
 using Elastos::Droid::Os::IPowerManagerWakeLock;
 using Elastos::Droid::Os::IHandler;
 using Elastos::Droid::Os::IIRemoteCallback;
@@ -1352,7 +1352,7 @@ public:
     CARAPI OpenSession(
         /* [in] */ IIWindowSessionCallback* callback,
         /* [in] */ IInputMethodClient* client,
-        /* [in] */ IInputContext* inputContext,
+        /* [in] */ IIInputContext* inputContext,
         /* [out] */ IWindowSession** session);
 
     CARAPI InputMethodClientHasFocus(

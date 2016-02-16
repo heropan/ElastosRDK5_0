@@ -36,7 +36,7 @@ module
     [local]
     interface IUserDetailItemViewHelper {
         ConvertOrInflate(
-            [in] IContext* context,
+            [in] IContext* ctx,
             [in] IView* convertView,
             [in] IViewGroup* root,
             [out] IUserDetailItemView** ret);

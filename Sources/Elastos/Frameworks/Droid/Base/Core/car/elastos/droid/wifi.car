@@ -81,7 +81,7 @@ module
 
         class CRttManager {
             constructor(
-                [in] IContext* context,
+                [in] IContext* ctx,
                 [in] IIRttManager* service);
 
             interface IRttManager;
@@ -203,7 +203,7 @@ module
 
         class CWifiScanner {
             constructor(
-                [in] IContext* context,
+                [in] IContext* ctx,
                 [in] IIWifiScanner* service);
 
             interface IWifiScanner;

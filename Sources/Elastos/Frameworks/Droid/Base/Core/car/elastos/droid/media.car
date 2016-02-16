@@ -927,7 +927,7 @@ module
     class CSubtitleController {
 
         constructor(
-            [in] IContext* context,
+            [in] IContext* ctx,
             [in] IMediaTimeProvider* timeProvider,
             [in] ISubtitleControllerListener* listener);
 
@@ -1017,16 +1017,16 @@ module
             [in] IContext* context);
 
         constructor(
-            [in] IContext* context,
+            [in] IContext* ctx,
             [in] IAttributeSet* attrs);
 
         constructor(
-            [in] IContext* context,
+            [in] IContext* ctx,
             [in] IAttributeSet* attrs,
             [in] Int32 defStyleAttr);
 
         constructor(
-            [in] IContext* context,
+            [in] IContext* ctx,
             [in] IAttributeSet* attrs,
             [in] Int32 defStyleAttr,
             [in] Int32 defStyleRes);
@@ -1085,7 +1085,7 @@ module
             [in] IContext* context);
 
         constructor(
-            [in] IContext* context,
+            [in] IContext* ctx,
             [in] IHandler* eventHandler);
 
         interface ISubtitleControllerRenderer;
@@ -1625,7 +1625,7 @@ module
 
     class CMediaBrowser {
         constructor(
-            [in] IContext* context,
+            [in] IContext* ctx,
             [in] IComponentName* serviceComponent,
             [in] IMediaBrowserConnectionCallback* cb,
             [in] IBundle* rootHints);
@@ -1649,7 +1649,7 @@ module
 
     class CMediaProjection {
         constructor(
-            [in] IContext* context,
+            [in] IContext* ctx,
             [in] IIMediaProjection* impl);
 
         interface IMediaProjection;
@@ -1701,11 +1701,11 @@ module
 
     class CMediaController {
         constructor(
-            [in] IContext* context,
+            [in] IContext* ctx,
             [in] IISessionController* sessionBinder);
 
         constructor(
-            [in] IContext* context,
+            [in] IContext* ctx,
             [in] IMediaSessionToken* token);
 
         interface IMediaController;
@@ -1744,11 +1744,11 @@ module
 
     class CMediaSession {
         constructor(
-            [in] IContext* context,
+            [in] IContext* ctx,
             [in] String tag);
 
         constructor(
-            [in] IContext* context,
+            [in] IContext* ctx,
             [in] String tag,
             [in] Int32 userId);
 
@@ -1849,7 +1849,7 @@ module
     [local]
     class CITvInputSessionWrapper {
         constructor(
-            [in] IContext* context,
+            [in] IContext* ctx,
             [in] ITvInputServiceSession* sessionImpl,
             [in] IInputChannel* channel);
 
@@ -2007,11 +2007,11 @@ module
             [in] IContext* context);
 
         constructor(
-            [in] IContext* context,
+            [in] IContext* ctx,
             [in] IAttributeSet* attrs);
 
         constructor(
-            [in] IContext* context,
+            [in] IContext* ctx,
             [in] IAttributeSet* attrs,
             [in] Int32 defStyleAttr);
 

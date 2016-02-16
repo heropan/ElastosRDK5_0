@@ -23470,7 +23470,7 @@ ECode CActivityManagerService::DispatchUserSwitch(
             // try {
             AutoPtr<IInterface> item;
             mUserSwitchObservers->GetBroadcastItem(i, (IInterface**)&item);
-            AutoPtr<IUserSwitchObserver> observer = IUserSwitchObserver::Probe(item);
+            AutoPtr<IIUserSwitchObserver> observer = IIUserSwitchObserver::Probe(item);
             observer->OnUserSwitching(newUserId, callback);
             // } catch (RemoteException e) {
             // }
@@ -23583,7 +23583,7 @@ ECode CActivityManagerService::CompleteSwitchAndInitalize(
             // try {
             AutoPtr<IInterface> item;
             mUserSwitchObservers->GetBroadcastItem(i, (IInterface**)&item);
-            AutoPtr<IUserSwitchObserver> observer = IUserSwitchObserver::Probe(item);
+            AutoPtr<IIUserSwitchObserver> observer = IIUserSwitchObserver::Probe(item);
             observer->OnUserSwitchComplete(newUserId);
             // } catch (RemoteException e) {
             // }
@@ -23987,7 +23987,7 @@ ECode CActivityManagerService::UpdateStartedUserArrayLocked()
 }
 
 ECode CActivityManagerService::RegisterUserSwitchObserver(
-    /* [in] */ IUserSwitchObserver* observer)
+    /* [in] */ IIUserSwitchObserver* observer)
 {
    if (CheckCallingPermission(Manifest::permission::INTERACT_ACROSS_USERS_FULL)
            != IPackageManager::PERMISSION_GRANTED) {
@@ -24007,7 +24007,7 @@ ECode CActivityManagerService::RegisterUserSwitchObserver(
 }
 
 ECode CActivityManagerService::UnregisterUserSwitchObserver(
-    /* [in] */ IUserSwitchObserver* observer)
+    /* [in] */ IIUserSwitchObserver* observer)
 {
     Boolean result;
     return mUserSwitchObservers->Unregister(observer, &result);

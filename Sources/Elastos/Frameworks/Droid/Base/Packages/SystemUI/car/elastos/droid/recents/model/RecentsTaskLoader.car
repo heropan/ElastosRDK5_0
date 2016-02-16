@@ -58,7 +58,7 @@ module
 
         /** Reload the set of recent tasks */
         Reload(
-            [in] IContext* context,
+            [in] IContext* ctx,
             [in] Int32 preloadCount,
             [in] Boolean isTopTaskHome,
             [out] ISpaceNode** result);
@@ -93,7 +93,7 @@ module
 
         /** Registers any broadcast receivers. */
         RegisterReceivers(
-            [in] IContext* context,
+            [in] IContext* ctx,
             [in] IPackageCallbacks* cb);
 
         /** Unregisters any broadcast receivers. */
@@ -112,7 +112,7 @@ module
 
         /** Initializes the recents task loader */
         Initialize(
-            [in] IContext* context,
+            [in] IContext* ctx,
             [out] IRecentsTaskLoader** result);
 
         /** Returns the current recents task loader */

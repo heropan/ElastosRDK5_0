@@ -11,7 +11,7 @@
 #include "elastos/droid/graphics/CRect.h"
 #include "elastos/droid/graphics/CPaintFlagsDrawFilter.h"
 #include "elastos/droid/graphics/drawable/CBitmapDrawable.h"
-//#include "elastos/droid/widget/CFilterResults.h"
+// #include "elastos/droid/widget/CFilterResults.h"
 #include <elastos/core/StringUtils.h>
 #include <elastos/core/AutoLock.h>
 #include <elastos/core/CoreUtils.h>
@@ -39,7 +39,7 @@ using Elastos::Droid::Graphics::Drawable::CBitmapDrawable;
 using Elastos::Droid::Graphics::Drawable::IPaintDrawable;
 using Elastos::Droid::Graphics::Drawable::IShapeDrawable;
 using Elastos::Droid::View::EIID_IViewOnClickListener;
-//using Elastos::Droid::Widget::CFilterResults;
+// using Elastos::Droid::Widget::CFilterResults;
 using Elastos::Droid::Widget::BaseAdapter;
 using Elastos::Droid::Widget::Filter;
 using Elastos::Droid::Widget::IButton;

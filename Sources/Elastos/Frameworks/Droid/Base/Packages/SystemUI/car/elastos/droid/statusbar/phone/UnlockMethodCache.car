@@ -44,7 +44,7 @@ module
     interface IUnlockMethodCacheHelper {
 
         GetInstance(
-            [in] IContext* context,
+            [in] IContext* ctx,
             [out] IUnlockMethodCache** result);
     }
 

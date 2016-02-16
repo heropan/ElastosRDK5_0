@@ -60,7 +60,7 @@ using Elastos::Droid::App::IIProcessObserver;
 using Elastos::Droid::App::IPendingIntent;
 using Elastos::Droid::App::IProfilerInfo;
 using Elastos::Droid::App::IStopUserCallback;
-using Elastos::Droid::App::IUserSwitchObserver;
+using Elastos::Droid::App::IIUserSwitchObserver;
 using Elastos::Droid::App::Usage::IUsageStatsManagerInternal;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Content::IIntent;
@@ -2126,10 +2126,10 @@ public:
         /* [out] */ String* launchedFromPackage);
 
     CARAPI RegisterUserSwitchObserver(
-        /* [in] */ IUserSwitchObserver* observer);
+        /* [in] */ IIUserSwitchObserver* observer);
 
     CARAPI UnregisterUserSwitchObserver(
-        /* [in] */ IUserSwitchObserver* observer);
+        /* [in] */ IIUserSwitchObserver* observer);
 
     CARAPI RequestBugReport();
 
@@ -3944,7 +3944,7 @@ public:
     /**
      * Registered observers of the user switching mechanics.
      */
-    //AutoPtr< RemoteCallbackList<IUserSwitchObserver> > mUserSwitchObservers;
+    //AutoPtr< RemoteCallbackList<IIUserSwitchObserver> > mUserSwitchObservers;
     AutoPtr<IRemoteCallbackList> mUserSwitchObservers;
 
     /**

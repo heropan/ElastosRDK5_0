@@ -7682,7 +7682,7 @@ module
                 [out] Int32* res);
 
             Inflate(
-                [in] IContext* context,
+                [in] IContext* ctx,
                 [in] Int32 resource,
                 [in] IViewGroup* root,
                 [out] IView** res);

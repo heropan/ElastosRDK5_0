@@ -549,7 +549,7 @@ module
          * @hide
          */
         CreateGuest(
-            [in] IContext* context,
+            [in] IContext* ctx,
             [in] String name,
             [out] IUserInfo** userInfo);
 

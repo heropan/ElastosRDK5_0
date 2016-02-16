@@ -143,7 +143,7 @@ module
          * Returns a global setting.
          */
         GetGlobalSetting(
-            [in] IContext* context,
+            [in] IContext* ctx,
             [in] String setting,
             [out] Int32* result);
 
@@ -151,7 +151,7 @@ module
          * Returns a system setting.
          */
         GetSystemSetting(
-            [in] IContext* context,
+            [in] IContext* ctx,
             [in] String setting,
             [out] Int32* result);
 
@@ -180,7 +180,7 @@ module
 
         /** Starts an activity from recents. */
         StartActivityFromRecents(
-            [in] IContext* context,
+            [in] IContext* ctx,
             [in] Int32 taskId,
             [in] String taskName,
             [in] IActivityOptions* options,

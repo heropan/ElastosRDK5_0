@@ -9607,7 +9607,7 @@ ECode CWindowManagerService::HandleWaitingForDrawnTimeout()
 ECode CWindowManagerService::OpenSession(
     /* [in] */ IIWindowSessionCallback* callback,
     /* [in] */ IInputMethodClient* client,
-    /* [in] */ IInputContext* inputContext,
+    /* [in] */ IIInputContext* inputContext,
     /* [out] */ IWindowSession** session)
 {
     VALIDATE_NOT_NULL(session)

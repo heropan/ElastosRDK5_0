@@ -35,7 +35,7 @@ module
             [out] Boolean* state);
 
         CreateDetailView(
-            [in] IContext* context,
+            [in] IContext* ctx,
             [in] IView* convertView,
             [in] IViewGroup* parent,
             [out] IView** view);
@@ -221,7 +221,7 @@ module
             [out] IQSTileHost** host);
 
         CreateTileView(
-            [in] IContext* context,
+            [in] IContext* ctx,
             [out] IQSTileView** view);
 
         GetDetailAdapter(

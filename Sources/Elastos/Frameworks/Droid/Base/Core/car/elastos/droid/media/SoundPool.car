@@ -368,7 +368,7 @@ module
             [out] Int32* result);
 
         Load(
-            [in] IContext* context,
+            [in] IContext* ctx,
             [in] Int32 resId,
             [in] Int32 priority,
             [out] Int32* result);
@@ -446,7 +446,7 @@ module
             [out] Int32* result);
 
         Load(
-            [in] IContext* context,
+            [in] IContext* ctx,
             [in] Int32 resId,
             [in] Int32 priority,
             [out] Int32* result);
@@ -533,7 +533,7 @@ module
             [out] Int32* result);
 
         Load(
-            [in] IContext* context,
+            [in] IContext* ctx,
             [in] Int32 resId,
             [in] Int32 priority,
             [out] Int32* result);

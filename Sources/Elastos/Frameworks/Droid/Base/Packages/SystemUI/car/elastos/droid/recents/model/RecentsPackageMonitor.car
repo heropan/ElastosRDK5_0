@@ -29,7 +29,7 @@ module
 
         /** Registers the broadcast receivers with the specified callbacks. */
         Register(
-            [in] IContext* context,
+            [in] IContext* ctx,
             [in] IPackageCallbacks* cb);
 
         /** Sets the list of tasks to match against package broadcast changes. */
