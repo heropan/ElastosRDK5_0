@@ -8,14 +8,13 @@ module
     interface Elastos.Droid.Graphics.Drawable.IDrawable;
     interface Elastos.Droid.App.IActivityManagerTaskDescription;
 
-    interface Elastos.Droid.Packages.SystemUI.Recent.ITaskDescription;
-    interface Elastos.Droid.Packages.SystemUI.Recents.IRecentsConfiguration;
-    interface Elastos.Droid.Packages.SystemUI.Recents.Misc.ISystemServicesProxy;
-    interface Elastos.Droid.Packages.SystemUI.Recents.Model.ITaskKey;
+    interface Elastos.Droid.SystemUI.Recent.ITaskDescription;
+    interface Elastos.Droid.SystemUI.Recents.IRecentsConfiguration;
+    interface Elastos.Droid.SystemUI.Recents.Misc.ISystemServicesProxy;
+    interface Elastos.Droid.SystemUI.Recents.Model.ITaskKey;
 
     namespace Elastos {
     namespace Droid {
-    namespace Packages {
     namespace SystemUI {
     namespace Recents {
     namespace Model {
@@ -124,7 +123,6 @@ module
     } // namespace Model
     } // namespace Recents
     } // namespace SystemUI
-    } // namespace Packages
     } // namespace Droid
     } // namespace Elastos
 }

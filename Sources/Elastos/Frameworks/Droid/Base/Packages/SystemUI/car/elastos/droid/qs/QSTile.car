@@ -10,20 +10,19 @@ module
     using interface Elastos.Core.IStringBuilder;
     using interface Elastos.Utility.ICollection;
 
-    interface Elastos.Droid.Packages.SystemUI.Qs.IQSTileView;
-    interface Elastos.Droid.Packages.SystemUI.StatusBar.Policy.IBluetoothController;
-    interface Elastos.Droid.Packages.SystemUI.StatusBar.Policy.ICastController;
-    interface Elastos.Droid.Packages.SystemUI.StatusBar.Policy.IFlashlightController;
-    interface Elastos.Droid.Packages.SystemUI.StatusBar.Policy.IHotspotController;
-    interface Elastos.Droid.Packages.SystemUI.StatusBar.Policy.IKeyguardMonitor;
-    interface Elastos.Droid.Packages.SystemUI.StatusBar.Policy.INetworkController;
-    interface Elastos.Droid.Packages.SystemUI.StatusBar.Policy.ILocationController;
-    interface Elastos.Droid.Packages.SystemUI.StatusBar.Policy.IRotationLockController;
-    interface Elastos.Droid.Packages.SystemUI.StatusBar.Policy.IZenModeController;
+    interface Elastos.Droid.SystemUI.Qs.IQSTileView;
+    interface Elastos.Droid.SystemUI.StatusBar.Policy.IBluetoothController;
+    interface Elastos.Droid.SystemUI.StatusBar.Policy.ICastController;
+    interface Elastos.Droid.SystemUI.StatusBar.Policy.IFlashlightController;
+    interface Elastos.Droid.SystemUI.StatusBar.Policy.IHotspotController;
+    interface Elastos.Droid.SystemUI.StatusBar.Policy.IKeyguardMonitor;
+    interface Elastos.Droid.SystemUI.StatusBar.Policy.INetworkController;
+    interface Elastos.Droid.SystemUI.StatusBar.Policy.ILocationController;
+    interface Elastos.Droid.SystemUI.StatusBar.Policy.IRotationLockController;
+    interface Elastos.Droid.SystemUI.StatusBar.Policy.IZenModeController;
 
     namespace Elastos {
     namespace Droid {
-    namespace Packages {
     namespace SystemUI {
     namespace Qs {
 
@@ -278,7 +277,6 @@ module
 
     } // namespace Qs
     } // namespace SystemUI
-    } // namespace Packages
     } // namespace Droid
     } // namespace Elastos
 }

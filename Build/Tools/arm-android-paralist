@@ -341,11 +341,11 @@
 #- Elastos/Frameworks/Droid/JavaProxy/src
 #> Elastos/Frameworks/Droid/JavaProxy
 # ==== buid SystemUI ====
-  Elastos/Frameworks/Droid/Base/Packages/SystemUI/src/elastos/droid/packages/systemui SystemUI.car
-> Elastos/Frameworks/Droid/Base/Packages/SystemUI/src/elastos/droid/packages/systemui/doze
-  Elastos/Frameworks/Droid/Base/Packages/SystemUI/src/elastos/droid/packages/systemui/statusbar/phone
-  Elastos/Frameworks/Droid/Base/Packages/SystemUI/src/elastos/droid/packages/systemui/statusbar
-> Elastos/Frameworks/Droid/Base/Packages/SystemUI/src/elastos/droid/packages/systemui
+  Elastos/Frameworks/Droid/Base/Packages/SystemUI/src/elastos/droid/systemui SystemUI.car
+> Elastos/Frameworks/Droid/Base/Packages/SystemUI/src/elastos/droid/systemui/doze
+  Elastos/Frameworks/Droid/Base/Packages/SystemUI/src/elastos/droid/systemui/statusbar/phone
+  Elastos/Frameworks/Droid/Base/Packages/SystemUI/src/elastos/droid/systemui/statusbar
+> Elastos/Frameworks/Droid/Base/Packages/SystemUI/src/elastos/droid/systemui
 #- Elastos/Frameworks/Droid/Base/Packages/SettingsProvider Org.Kxml2.IO.eco
 #- Elastos/Frameworks/Droid/Base/Packages/SettingsProvider
 #  Elastos/Frameworks/Droid/DevSamples/SoftKeyboard
