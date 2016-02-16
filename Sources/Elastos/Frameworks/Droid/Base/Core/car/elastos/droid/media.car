@@ -1886,6 +1886,26 @@ module
         interface ITvContentRatingSystemInfoHelper;
     }
 
+    singleton class CTvContract {
+        interface ITvContract;
+    }
+
+    singleton class CTvContractChannels {
+        interface ITvContractChannels;
+    }
+
+    singleton class CTvContractPrograms {
+        interface ITvContractPrograms;
+    }
+
+    singleton class CTvContractProgramsGenres {
+        interface ITvContractProgramsGenres;
+    }
+
+    singleton class CTvContractWatchedPrograms {
+        interface ITvContractWatchedPrograms;
+    }
+
     class CTvInputHardwareInfo {
         constructor();
 
