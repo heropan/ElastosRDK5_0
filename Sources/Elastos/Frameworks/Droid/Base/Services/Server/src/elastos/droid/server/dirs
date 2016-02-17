@@ -30,6 +30,7 @@ DIRS += power
 DIRS += statusbar
 #DIRS += storage
 DIRS += trust
+DIRS += tv
 DIRS += twilight
 #DIRS += updates
 #DIRS += usb

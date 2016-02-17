@@ -314,6 +314,7 @@
   Elastos/Frameworks/Droid/Base/Services/Server/src/elastos/droid/server/statusbar
   Elastos/Frameworks/Droid/Base/Services/Server/src/elastos/droid/server/input
   Elastos/Frameworks/Droid/Base/Services/Server/src/elastos/droid/server/trust
+  Elastos/Frameworks/Droid/Base/Services/Server/src/elastos/droid/server/tv
 > Elastos/Frameworks/Droid/Base/Services/Server/src/elastos/droid/server/lights
 - Elastos/Frameworks/Droid/Base/Services/Server/src/elastos/droid/server/location
 > Elastos/Frameworks/Droid/Base/Services/Server/src/elastos/droid/server/net

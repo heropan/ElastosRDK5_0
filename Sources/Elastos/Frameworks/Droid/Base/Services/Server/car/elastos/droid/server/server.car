@@ -62,6 +62,9 @@ module
 
     merge("trust/TrustManagerService.car");
 
+    merge("tv/TvInputHal.car");
+    merge("tv/TvInputHardwareManager.car");
+
     merge("twilight/TwilightState.car");
     merge("twilight/TwilightManager.car");
     merge("twilight/TwilightListener.car");
