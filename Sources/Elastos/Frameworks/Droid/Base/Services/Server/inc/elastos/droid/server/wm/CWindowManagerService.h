@@ -694,7 +694,7 @@ public:
 
     CARAPI_(void) ValidateAppTokens(
         /* [in] */ Int32 stackId,
-        /* [in] */ List< AutoPtr<TaskGroup> >& tasks);
+        /* [in] */ IArrayList* tasks);
 
     CARAPI_(void) ValidateStackOrder(
         /* [in] */ ArrayOf<IInteger32*>* remoteStackIds);

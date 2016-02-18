@@ -1,26 +1,16 @@
-/*
- * Copyright (C) 2014 The Android Open Source Project
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 
-package com.android.settings;
+#ifndef __ELASTOS_DROID_SETTINGS_SETTINGS_ACTIVITY_H__
+#define __ELASTOS_DROID_SETTINGS_SETTINGS_ACTIVITY_H__
 
+#include <elastos/droid/app/Activity.h>
+
+using Elastos::Droid::App::Activity;
 using Elastos::Droid::App::IActionBar;
 using Elastos::Droid::App::IActivity;
 using Elastos::Droid::App::IFragment;
 using Elastos::Droid::App::IFragmentManager;
 using Elastos::Droid::App::IFragmentTransaction;
+using Elastos::Droid::App::IFragmentManagerOnBackStackChangedListener;
 using Elastos::Droid::Content::IBroadcastReceiver;
 using Elastos::Droid::Content::IComponentName;
 using Elastos::Droid::Content::IContext;
@@ -45,71 +35,76 @@ using Elastos::Droid::Preference::IPreference;
 using Elastos::Droid::Preference::IPreferenceFragment;
 using Elastos::Droid::Preference::IPreferenceManager;
 using Elastos::Droid::Preference::IPreferenceScreen;
-using Elastos::Droid::Text::ITextUtils;
+using Elastos::Droid::Preference::IPreferenceManagerOnPreferenceTreeClickListener;
+using Elastos::Droid::Preference::IPreferenceFragmentOnPreferenceStartFragmentCallback;
 using Elastos::Droid::Transition::ITransitionManager;
 using Elastos::Droid::Utility::IAttributeSet;
-using Elastos::Droid::Utility::ILog;
 using Elastos::Droid::Utility::ITypedValue;
-using Elastos::Droid::Utility::IXml;
 using Elastos::Droid::View::IMenu;
 using Elastos::Droid::View::IMenuInflater;
 using Elastos::Droid::View::IMenuItem;
+using Elastos::Droid::View::IMenuItemOnActionExpandListener;
 using Elastos::Droid::View::IView;
 using Elastos::Droid::View::View::IOnClickListener;
 using Elastos::Droid::View::IViewGroup;
 using Elastos::Droid::Widget::IButton;
 using Elastos::Droid::Widget::ISearchView;
+using Elastos::Droid::Widget::ISearchViewOnCloseListener;
+using Elastos::Droid::Widget::ISearchViewOnQueryTextListener;
 
-using Elastos::Droid::Internal::Utility::IArrayUtils;
-using Elastos::Droid::Internal::Utility::IXmlUtils;
-using Elastos::Droid::Settings::Accessibility::IAccessibilitySettings;
-using Elastos::Droid::Settings::Accessibility::ICaptionPropertiesFragment;
-using Elastos::Droid::Settings::Accounts::IAccountSettings;
-using Elastos::Droid::Settings::Accounts::IAccountSyncSettings;
-using Elastos::Droid::Settings::Applications::IInstalledAppDetails;
-using Elastos::Droid::Settings::Applications::IManageApplications;
-using Elastos::Droid::Settings::Applications::IProcessStatsUi;
-using Elastos::Droid::Settings::Bluetooth::IBluetoothSettings;
-using Elastos::Droid::Settings::Dashboard::IDashboardCategory;
-using Elastos::Droid::Settings::Dashboard::IDashboardSummary;
-using Elastos::Droid::Settings::Dashboard::IDashboardTile;
-using Elastos::Droid::Settings::Dashboard::INoHomeDialogFragment;
-using Elastos::Droid::Settings::Dashboard::ISearchResultsSummary;
-using Elastos::Droid::Settings::Deviceinfo::IMemory;
-using Elastos::Droid::Settings::Deviceinfo::IUsbSettings;
-using Elastos::Droid::Settings::Fuelgauge::IBatterySaverSettings;
-using Elastos::Droid::Settings::Fuelgauge::IPowerUsageSummary;
-using Elastos::Droid::Settings::Notification::INotificationAppList;
-using Elastos::Droid::Settings::Notification::IOtherSoundSettings;
-using Elastos::Droid::Settings::Quicklaunch::IQuickLaunchSettings;
-using Elastos::Droid::Settings::Search::IDynamicIndexableContentMonitor;
-using Elastos::Droid::Settings::Search::IIndex;
-using Elastos::Droid::Settings::Inputmethod::IInputMethodAndLanguageSettings;
-using Elastos::Droid::Settings::Inputmethod::IKeyboardLayoutPickerFragment;
-using Elastos::Droid::Settings::Inputmethod::ISpellCheckersSettings;
-using Elastos::Droid::Settings::Inputmethod::IUserDictionaryList;
-using Elastos::Droid::Settings::Location::ILocationSettings;
-using Elastos::Droid::Settings::Nfc::IAndroidBeam;
-using Elastos::Droid::Settings::Nfc::IPaymentSettings;
-using Elastos::Droid::Settings::Notification::IAppNotificationSettings;
-using Elastos::Droid::Settings::Notification::IConditionProviderSettings;
-using Elastos::Droid::Settings::Notification::INotificationAccessSettings;
-using Elastos::Droid::Settings::Notification::INotificationSettings;
-using Elastos::Droid::Settings::Notification::INotificationStation;
-using Elastos::Droid::Settings::Notification::IZenModeSettings;
-using Elastos::Droid::Settings::Print::IPrintJobSettingsFragment;
-using Elastos::Droid::Settings::Print::IPrintSettingsFragment;
-using Elastos::Droid::Settings::Sim::ISimSettings;
-using Elastos::Droid::Settings::Tts::ITextToSpeechSettings;
-using Elastos::Droid::Settings::Users::IUserSettings;
-using Elastos::Droid::Settings::Voice::IVoiceInputSettings;
-using Elastos::Droid::Settings::Vpn2::IVpnSettings;
-using Elastos::Droid::Settings::Wfd::IWifiDisplaySettings;
-using Elastos::Droid::Settings::Widget::ISwitchBar;
-using Elastos::Droid::Settings::Wifi::IAdvancedWifiSettings;
-using Elastos::Droid::Settings::Wifi::ISavedAccessPointsWifiSettings;
-using Elastos::Droid::Settings::Wifi::IWifiSettings;
-using Elastos::Droid::Settings::Wifi::P2p::IWifiP2pSettings;
+using Elastos::Droid::Text::TextUtils;
+using Elastos::Droid::Utility::Xml;
+using Elastos::Droid::Internal::Utility::ArrayUtils;
+using Elastos::Droid::Internal::Utility::XmlUtils;
+
+// using Elastos::Droid::Settings::Accessibility::IAccessibilitySettings;
+// using Elastos::Droid::Settings::Accessibility::ICaptionPropertiesFragment;
+// using Elastos::Droid::Settings::Accounts::IAccountSettings;
+// using Elastos::Droid::Settings::Accounts::IAccountSyncSettings;
+// using Elastos::Droid::Settings::Applications::IInstalledAppDetails;
+// using Elastos::Droid::Settings::Applications::IManageApplications;
+// using Elastos::Droid::Settings::Applications::IProcessStatsUi;
+// using Elastos::Droid::Settings::Bluetooth::IBluetoothSettings;
+// using Elastos::Droid::Settings::Dashboard::IDashboardCategory;
+// using Elastos::Droid::Settings::Dashboard::IDashboardSummary;
+// using Elastos::Droid::Settings::Dashboard::IDashboardTile;
+// using Elastos::Droid::Settings::Dashboard::INoHomeDialogFragment;
+// using Elastos::Droid::Settings::Dashboard::ISearchResultsSummary;
+// using Elastos::Droid::Settings::Deviceinfo::IMemory;
+// using Elastos::Droid::Settings::Deviceinfo::IUsbSettings;
+// using Elastos::Droid::Settings::Fuelgauge::IBatterySaverSettings;
+// using Elastos::Droid::Settings::Fuelgauge::IPowerUsageSummary;
+// using Elastos::Droid::Settings::Notification::INotificationAppList;
+// using Elastos::Droid::Settings::Notification::IOtherSoundSettings;
+// using Elastos::Droid::Settings::Quicklaunch::IQuickLaunchSettings;
+// using Elastos::Droid::Settings::Search::IDynamicIndexableContentMonitor;
+// using Elastos::Droid::Settings::Search::IIndex;
+// using Elastos::Droid::Settings::Inputmethod::IInputMethodAndLanguageSettings;
+// using Elastos::Droid::Settings::Inputmethod::IKeyboardLayoutPickerFragment;
+// using Elastos::Droid::Settings::Inputmethod::ISpellCheckersSettings;
+// using Elastos::Droid::Settings::Inputmethod::IUserDictionaryList;
+// using Elastos::Droid::Settings::Location::ILocationSettings;
+// using Elastos::Droid::Settings::Nfc::IAndroidBeam;
+// using Elastos::Droid::Settings::Nfc::IPaymentSettings;
+// using Elastos::Droid::Settings::Notification::IAppNotificationSettings;
+// using Elastos::Droid::Settings::Notification::IConditionProviderSettings;
+// using Elastos::Droid::Settings::Notification::INotificationAccessSettings;
+// using Elastos::Droid::Settings::Notification::INotificationSettings;
+// using Elastos::Droid::Settings::Notification::INotificationStation;
+// using Elastos::Droid::Settings::Notification::IZenModeSettings;
+// using Elastos::Droid::Settings::Print::IPrintJobSettingsFragment;
+// using Elastos::Droid::Settings::Print::IPrintSettingsFragment;
+// using Elastos::Droid::Settings::Sim::ISimSettings;
+// using Elastos::Droid::Settings::Tts::ITextToSpeechSettings;
+// using Elastos::Droid::Settings::Users::IUserSettings;
+// using Elastos::Droid::Settings::Voice::IVoiceInputSettings;
+// using Elastos::Droid::Settings::Vpn2::IVpnSettings;
+// using Elastos::Droid::Settings::Wfd::IWifiDisplaySettings;
+// using Elastos::Droid::Settings::Widget::ISwitchBar;
+// using Elastos::Droid::Settings::Wifi::IAdvancedWifiSettings;
+// using Elastos::Droid::Settings::Wifi::ISavedAccessPointsWifiSettings;
+// using Elastos::Droid::Settings::Wifi::IWifiSettings;
+// using Elastos::Droid::Settings::Wifi::P2p::IWifiP2pSettings;
 
 using Org::Xmlpull::V1::IXmlPullParser;
 
@@ -117,197 +112,36 @@ using Elastos::Utility::IArrayList;
 using Elastos::Utility::IList;
 using Elastos::Utility::ISet;
 
-using static com::Android::Settings::Dashboard::DashboardTile::ITILE_ID_UNDEFINED;
+// using static com::Android::Settings::Dashboard::DashboardTile::ITILE_ID_UNDEFINED;
 
-public class SettingsActivity extends Activity
-        implements PreferenceManager.OnPreferenceTreeClickListener,
-        PreferenceFragment.OnPreferenceStartFragmentCallback,
-        ButtonBarHandler, FragmentManager.OnBackStackChangedListener,
-        SearchView.OnQueryTextListener, SearchView.OnCloseListener,
-        MenuItem.OnActionExpandListener {
-
-    private static const String LOG_TAG = "Settings";
-
-    // Constants for state save/restore
-    private static const String SAVE_KEY_CATEGORIES = ":settings:categories";
-    private static const String SAVE_KEY_SEARCH_MENU_EXPANDED = ":settings:search_menu_expanded";
-    private static const String SAVE_KEY_SEARCH_QUERY = ":settings:search_query";
-    private static const String SAVE_KEY_SHOW_HOME_AS_UP = ":settings:show_home_as_up";
-    private static const String SAVE_KEY_SHOW_SEARCH = ":settings:show_search";
-    private static const String SAVE_KEY_HOME_ACTIVITIES_COUNT = ":settings:home_activities_count";
-
-    /**
-     * When starting this activity, the invoking Intent can contain this extra
-     * string to specify which fragment should be initially displayed.
-     * <p/>Starting from Key Lime Pie, when this argument is passed in, the activity
-     * will call IsValidFragment() to confirm that the fragment class name is valid for this
-     * activity.
-     */
-    public static const String EXTRA_SHOW_FRAGMENT = ":settings:show_fragment";
-
-    /**
-     * When starting this activity and using {@link #EXTRA_SHOW_FRAGMENT},
-     * this extra can also be specified to supply a Bundle of arguments to pass
-     * to that fragment when it is instantiated during the initial creation
-     * of the activity.
-     */
-    public static const String EXTRA_SHOW_FRAGMENT_ARGUMENTS = ":settings:show_fragment_args";
-
-    /**
-     * Fragment "key" argument passed thru {@link #EXTRA_SHOW_FRAGMENT_ARGUMENTS}
-     */
-    public static const String EXTRA_FRAGMENT_ARG_KEY = ":settings:fragment_args_key";
-
-    public static const String BACK_STACK_PREFS = ":settings:prefs";
-
-    // extras that allow any preference activity to be launched as part of a wizard
-
-    // show Back and Next buttons? takes Boolean parameter
-    // Back will then return RESULT_CANCELED and Next RESULT_OK
-    protected static const String EXTRA_PREFS_SHOW_BUTTON_BAR = "extra_prefs_show_button_bar";
-
-    // add a Skip button?
-    private static const String EXTRA_PREFS_SHOW_SKIP = "extra_prefs_show_skip";
-
-    // specify custom text for the Back or Next buttons, or cause a button to not appear
-    // at all by setting it to NULL
-    protected static const String EXTRA_PREFS_SET_NEXT_TEXT = "extra_prefs_set_next_text";
-    protected static const String EXTRA_PREFS_SET_BACK_TEXT = "extra_prefs_set_back_text";
-
-    /**
-     * When starting this activity and using {@link #EXTRA_SHOW_FRAGMENT},
-     * those extra can also be specify to supply the title or title res id to be shown for
-     * that fragment.
-     */
-    public static const String EXTRA_SHOW_FRAGMENT_TITLE = ":settings:show_fragment_title";
-    public static const String EXTRA_SHOW_FRAGMENT_TITLE_RESID =
-            ":settings:show_fragment_title_resid";
-    public static const String EXTRA_SHOW_FRAGMENT_AS_SHORTCUT =
-            ":settings:show_fragment_as_shortcut";
-
-    public static const String EXTRA_SHOW_FRAGMENT_AS_SUBSETTING =
-            ":settings:show_fragment_as_subsetting";
-
-    private static const String META_DATA_KEY_FRAGMENT_CLASS =
-        "com.android.settings.FRAGMENT_CLASS";
-
-    private static const String EXTRA_UI_OPTIONS = "settings:ui_options";
-
-    private static const String EMPTY_QUERY = "";
-
-    private static Boolean sShowNoHomeNotice = FALSE;
-
-    private String mFragmentClass;
-
-    private CharSequence mInitialTitle;
-    private Int32 mInitialTitleResId;
-
-    // Show only these settings for restricted users
-    private Int32[] SETTINGS_FOR_RESTRICTED = {
-            R.id.wireless_section,
-            R.id.wifi_settings,
-            R.id.bluetooth_settings,
-            R.id.data_usage_settings,
-            R.id.sim_settings,
-            R.id.wireless_settings,
-            R.id.device_section,
-            R.id.notification_settings,
-            R.id.display_settings,
-            R.id.storage_settings,
-            R.id.application_settings,
-            R.id.battery_settings,
-            R.id.personal_section,
-            R.id.location_settings,
-            R.id.security_settings,
-            R.id.language_settings,
-            R.id.user_settings,
-            R.id.account_settings,
-            R.id.system_section,
-            R.id.date_time_settings,
-            R.id.about_settings,
-            R.id.accessibility_settings,
-            R.id.print_settings,
-            R.id.nfc_payment_settings,
-            R.id.home_settings,
-            R.id.dashboard
-    };
-
-    private static const String[] ENTRY_FRAGMENTS = {
-            WirelessSettings.class->GetName(),
-            WifiSettings.class->GetName(),
-            AdvancedWifiSettings.class->GetName(),
-            SavedAccessPointsWifiSettings.class->GetName(),
-            BluetoothSettings.class->GetName(),
-            SimSettings.class->GetName(),
-            TetherSettings.class->GetName(),
-            WifiP2pSettings.class->GetName(),
-            VpnSettings.class->GetName(),
-            DateTimeSettings.class->GetName(),
-            LocalePicker.class->GetName(),
-            InputMethodAndLanguageSettings.class->GetName(),
-            VoiceInputSettings.class->GetName(),
-            SpellCheckersSettings.class->GetName(),
-            UserDictionaryList.class->GetName(),
-            UserDictionarySettings.class->GetName(),
-            HomeSettings.class->GetName(),
-            DisplaySettings.class->GetName(),
-            DeviceInfoSettings.class->GetName(),
-            ManageApplications.class->GetName(),
-            ProcessStatsUi.class->GetName(),
-            NotificationStation.class->GetName(),
-            LocationSettings.class->GetName(),
-            SecuritySettings.class->GetName(),
-            UsageAccessSettings.class->GetName(),
-            PrivacySettings.class->GetName(),
-            DeviceAdminSettings.class->GetName(),
-            AccessibilitySettings.class->GetName(),
-            CaptionPropertiesFragment.class->GetName(),
-            com.android.settings.accessibility.ToggleDaltonizerPreferenceFragment.class->GetName(),
-            TextToSpeechSettings.class->GetName(),
-            Memory.class->GetName(),
-            DevelopmentSettings.class->GetName(),
-            UsbSettings.class->GetName(),
-            AndroidBeam.class->GetName(),
-            WifiDisplaySettings.class->GetName(),
-            PowerUsageSummary.class->GetName(),
-            AccountSyncSettings.class->GetName(),
-            AccountSettings.class->GetName(),
-            CryptKeeperSettings.class->GetName(),
-            DataUsageSummary.class->GetName(),
-            DreamSettings.class->GetName(),
-            UserSettings.class->GetName(),
-            NotificationAccessSettings.class->GetName(),
-            ConditionProviderSettings.class->GetName(),
-            PrintSettingsFragment.class->GetName(),
-            PrintJobSettingsFragment.class->GetName(),
-            TrustedCredentialsSettings.class->GetName(),
-            PaymentSettings.class->GetName(),
-            KeyboardLayoutPickerFragment.class->GetName(),
-            ZenModeSettings.class->GetName(),
-            NotificationSettings.class->GetName(),
-            ChooseLockPassword.ChooseLockPasswordFragment.class->GetName(),
-            ChooseLockPattern.ChooseLockPatternFragment.class->GetName(),
-            InstalledAppDetails.class->GetName(),
-            BatterySaverSettings.class->GetName(),
-            NotificationAppList.class->GetName(),
-            AppNotificationSettings.class->GetName(),
-            OtherSoundSettings.class->GetName(),
-            QuickLaunchSettings.class->GetName(),
-            ApnSettings.class->GetName()
-    };
+namespace Elastos {
+namespace Droid {
+namespace Settings {
 
 
-    private static const String[] LIKE_SHORTCUT_INTENT_ACTION_ARRAY = {
-            "android.settings.APPLICATION_DETAILS_SETTINGS"
-    };
+class SettingsActivity
+    : public Activity
+    , public IPreferenceManagerOnPreferenceTreeClickListener,
+    , public IPreferenceFragmentOnPreferenceStartFragmentCallback,
+    , public IButtonBarHandler,
+    , public IFragmentManagerOnBackStackChangedListener,
+    , public ISearchViewOnQueryTextListener,
+    , public ISearchViewOnCloseListener,
+    , public IMenuItemOnActionExpandListener
+{
+private:
+    class BatteryInfoReceiver
+        : public BroadcastReceiver
+    {
+    public:
+        CARAPI constructor(
+            /* [in] */ SettingsActivity* host);
 
-    private SharedPreferences mDevelopmentPreferences;
-    private SharedPreferences.OnSharedPreferenceChangeListener mDevelopmentPreferencesListener;
-
-    private Boolean mBatteryPresent = TRUE;
-    private BroadcastReceiver mBatteryInfoReceiver = new BroadcastReceiver() {
         //@Override
-        CARAPI OnReceive(Context context, Intent intent) {
+        CARAPI OnReceive(
+            /* [in] */ IContext* context,
+            /* [in] */ IIntent* intent)
+        {
             String action = intent->GetAction();
             if (IIntent::ACTION_BATTERY_CHANGED->Equals(action)) {
                 Boolean batteryPresent = Utils->IsBatteryPresent(intent);
@@ -318,38 +152,22 @@ public class SettingsActivity extends Activity
                 }
             }
         }
+
+    private:
+        SettingsActivity* mHost;
     };
 
-    private final DynamicIndexableContentMonitor mDynamicIndexableContentMonitor =
-            new DynamicIndexableContentMonitor();
+    class BuildCategoriesHandler
+        : public Handler()
+    {
+    public:
+        CARAPI constructor(
+            /* [in] */ SettingsActivity* host);
 
-    private ActionBar mActionBar;
-    private SwitchBar mSwitchBar;
-
-    private Button mNextButton;
-
-    private Boolean mDisplayHomeAsUpEnabled;
-    private Boolean mDisplaySearch;
-
-    private Boolean mIsShowingDashboard;
-    private Boolean mIsShortcut;
-
-    private ViewGroup mContent;
-
-    private SearchView mSearchView;
-    private MenuItem mSearchMenuItem;
-    private Boolean mSearchMenuItemExpanded = FALSE;
-    private SearchResultsSummary mSearchResultsFragment;
-    private String mSearchQuery;
-
-    // Categories
-    private ArrayList<DashboardCategory> mCategories = new ArrayList<DashboardCategory>();
-
-    private static const String MSG_DATA_FORCE_REFRESH = "msg_data_force_refresh";
-    private static const Int32 MSG_BUILD_CATEGORIES = 1;
-    private Handler mHandler = new Handler() {
         //@Override
-        CARAPI HandleMessage(Message msg) {
+        CARAPI HandleMessage(
+            /* [in] */ IMessage* msg)
+        {
             switch (msg.what) {
                 case MSG_BUILD_CATEGORIES: {
                     final Boolean forceRefresh = msg->GetData()->GetBoolean(MSG_DATA_FORCE_REFRESH);
@@ -359,18 +177,22 @@ public class SettingsActivity extends Activity
                 } break;
             }
         }
+    private:
+        SettingsActivity* mHost;
     };
 
-    private Boolean mNeedToRevertToInitialFragment = FALSE;
-    private Int32 mHomeActivitiesCount = 1;
+public:
 
-    private Intent mResultIntentData;
-
-    public SwitchBar GetSwitchBar() {
+    CARAPI GetSwitchBar(
+        /* [out] */ ISwitchBar** switchBar)
+    {
         return mSwitchBar;
     }
 
-    public List<DashboardCategory> GetDashboardCategories(Boolean forceRefresh) {
+    CARAPI GetDashboardCategories(
+        /* [in] */ Boolean forceRefresh,
+        /* [out] */ IList** categories) //List<DashboardCategory>
+    {
         if (forceRefresh || mCategories->Size() == 0) {
             BuildDashboardCategories(mCategories);
         }
@@ -378,7 +200,11 @@ public class SettingsActivity extends Activity
     }
 
     //@Override
-    public Boolean OnPreferenceStartFragment(PreferenceFragment caller, Preference pref) {
+    CARAPI OnPreferenceStartFragment(
+        /* [in] */ IPreferenceFragment* caller,
+        /* [in] */ IPreference* pref,
+        /* [out] */ Boolean* result)
+    {
         // Override the fragment title for Wallpaper settings
         Int32 titleRes = pref->GetTitleRes();
         if (pref->GetFragment()->Equals(WallpaperTypeSettings.class->GetName())) {
@@ -397,11 +223,17 @@ public class SettingsActivity extends Activity
     }
 
     //@Override
-    public Boolean OnPreferenceTreeClick(PreferenceScreen preferenceScreen, Preference preference) {
+    CARAPI OnPreferenceTreeClick(
+        /* [in] */ PreferenceScreen* preferenceScreen,
+        /* [in] */ IPreference* pref,
+        /* [out] */ Boolean* result)
+    (
         return FALSE;
     }
 
-    private void InvalidateCategories(Boolean forceRefresh) {
+    private void InvalidateCategories(
+        /* [in] */ Boolean forceRefresh)
+    {
         if (!mHandler->HasMessages(MSG_BUILD_CATEGORIES)) {
             Message msg = new Message();
             msg.what = MSG_BUILD_CATEGORIES;
@@ -410,13 +242,16 @@ public class SettingsActivity extends Activity
     }
 
     //@Override
-    CARAPI OnConfigurationChanged(Configuration newConfig) {
+    CARAPI OnConfigurationChanged(
+        /* [in] */ IConfiguration* newConfig)
+    {
         super->OnConfigurationChanged(newConfig);
         Index->GetInstance(this).Update();
     }
 
     //@Override
-    protected void OnStart() {
+    protected CARAPI OnStart()
+    {
         super->OnStart();
 
         if (mNeedToRevertToInitialFragment) {
@@ -425,7 +260,10 @@ public class SettingsActivity extends Activity
     }
 
     //@Override
-    public Boolean OnCreateOptionsMenu(Menu menu) {
+    CARAPI OnCreateOptionsMenu(
+        /* [in] */ IMenu* menu,
+        /* [out] */ Boolean* result)
+    {
         if (!mDisplaySearch) {
             return FALSE;
         }
@@ -459,12 +297,16 @@ public class SettingsActivity extends Activity
         return TRUE;
     }
 
-    private static Boolean IsShortCutIntent(final Intent intent) {
+    private static Boolean IsShortCutIntent(
+        /* [in] */ IIntent* intent)
+    {
         Set<String> categories = intent->GetCategories();
         return (categories != NULL) && categories->Contains("com.android.settings.SHORTCUT");
     }
 
-    private static Boolean IsLikeShortCutIntent(final Intent intent) {
+    private static Boolean IsLikeShortCutIntent(
+        /* [in] */ IIntent* intent)
+    {
         String action = intent->GetAction();
         if (action == NULL) {
             return FALSE;
@@ -476,7 +318,9 @@ public class SettingsActivity extends Activity
     }
 
     //@Override
-    protected void OnCreate(Bundle savedState) {
+    protected CARAPI OnCreate(
+        /* [in] */ IBundle* savedState)
+    {
         super->OnCreate(savedState);
 
         // Should happen before any call to GetIntent()
@@ -642,13 +486,16 @@ public class SettingsActivity extends Activity
         mHomeActivitiesCount = GetHomeActivitiesCount();
     }
 
-    private Int32 GetHomeActivitiesCount() {
+    private Int32 GetHomeActivitiesCount()
+    {
         final ArrayList<ResolveInfo> homeApps = new ArrayList<ResolveInfo>();
         GetPackageManager()->GetHomeActivities(homeApps);
         return homeApps->Size();
     }
 
-    private void SetTitleFromIntent(Intent intent) {
+    private void SetTitleFromIntent(
+        /* [in] */ IIntent* intent)
+    {
         final Int32 initialTitleResId = intent->GetIntExtra(EXTRA_SHOW_FRAGMENT_TITLE_RESID, -1);
         if (initialTitleResId > 0) {
             mInitialTitle = NULL;
@@ -663,11 +510,13 @@ public class SettingsActivity extends Activity
     }
 
     //@Override
-    CARAPI OnBackStackChanged() {
+    CARAPI OnBackStackChanged()
+    {
         SetTitleFromBackStack();
     }
 
-    private Int32 SetTitleFromBackStack() {
+    private Int32 SetTitleFromBackStack()
+    {
         final Int32 count = GetFragmentManager()->GetBackStackEntryCount();
 
         if (count == 0) {
@@ -685,7 +534,9 @@ public class SettingsActivity extends Activity
         return count;
     }
 
-    private void SetTitleFromBackStackEntry(FragmentManager.BackStackEntry bse) {
+    private void SetTitleFromBackStackEntry(
+        /* [in] */ IFragmentManagerBackStackEntry* bse)
+    {
         final CharSequence title;
         final Int32 titleRes = bse->GetBreadCrumbTitleRes();
         if (titleRes > 0) {
@@ -699,7 +550,9 @@ public class SettingsActivity extends Activity
     }
 
     //@Override
-    protected void OnSaveInstanceState(Bundle outState) {
+    protected CARAPI OnSaveInstanceState(
+        /* [in] */ IBundle* outState)
+    {
         super->OnSaveInstanceState(outState);
 
         if (mCategories->Size() > 0) {
@@ -726,7 +579,8 @@ public class SettingsActivity extends Activity
     }
 
     //@Override
-    CARAPI OnResume() {
+    CARAPI OnResume()
+    {
         super->OnResume();
 
         final Int32 newHomeActivityCount = GetHomeActivitiesCount();
@@ -754,7 +608,8 @@ public class SettingsActivity extends Activity
     }
 
     //@Override
-    CARAPI OnPause() {
+    CARAPI OnPause()
+    {
         super->OnPause();
 
         UnregisterReceiver(mBatteryInfoReceiver);
@@ -762,7 +617,8 @@ public class SettingsActivity extends Activity
     }
 
     //@Override
-    CARAPI OnDestroy() {
+    CARAPI OnDestroy()
+    {
         super->OnDestroy();
 
         mDevelopmentPreferences->UnregisterOnSharedPreferenceChangeListener(
@@ -770,7 +626,9 @@ public class SettingsActivity extends Activity
         mDevelopmentPreferencesListener = NULL;
     }
 
-    protected Boolean IsValidFragment(String fragmentName) {
+    protected Boolean IsValidFragment(
+        /* [in] */ const String& fragmentName)
+    {
         // Almost all fragments are wrapped in this,
         // except for a few that have their own activities.
         for (Int32 i = 0; i < ENTRY_FRAGMENTS.length; i++) {
@@ -780,7 +638,9 @@ public class SettingsActivity extends Activity
     }
 
     //@Override
-    public Intent GetIntent() {
+    CARAPI GetIntent(
+        /* [out] */ IIntent** intent)
+    {
         Intent superIntent = super->GetIntent();
         String startingFragment = GetStartingFragmentClass(superIntent);
         // This is called from super.onCreate, IsMultiPane() is not yet reliable
@@ -805,7 +665,9 @@ public class SettingsActivity extends Activity
      * Checks if the component name in the intent is different from the Settings class and
      * returns the class name to load as a fragment.
      */
-    private String GetStartingFragmentClass(Intent intent) {
+    private String GetStartingFragmentClass(
+        /* [in] */ IIntent* intent)
+    {
         if (mFragmentClass != NULL) return mFragmentClass;
 
         String intentClass = intent->GetComponent()->GetClassName();
@@ -840,8 +702,14 @@ public class SettingsActivity extends Activity
      * @param resultRequestCode If resultTo is non-NULL, this is the caller's
      * request code to be received with the result.
      */
-    CARAPI StartPreferencePanel(String fragmentClass, Bundle args, Int32 titleRes,
-            CharSequence titleText, Fragment resultTo, Int32 resultRequestCode) {
+    CARAPI StartPreferencePanel(
+        /* [in] */ const String& fragmentClass,
+        /* [in] */ IBundle* args,
+        /* [in] */ Int32 titleRes,
+        /* [in] */ ICharSequence* titleText,
+        /* [in] */ IFragment* resultTo,
+        /* [in] */ Int32 resultRequestCode)
+    {
         String title = NULL;
         if (titleRes < 0) {
             if (titleText != NULL) {
@@ -867,8 +735,13 @@ public class SettingsActivity extends Activity
      * @param titleText Optional text of the title of this fragment.
      * @param userHandle The user for which the panel has to be started.
      */
-    CARAPI StartPreferencePanelAsUser(String fragmentClass, Bundle args, Int32 titleRes,
-            CharSequence titleText, UserHandle userHandle) {
+    CARAPI StartPreferencePanelAsUser(
+        /* [in] */ const String& fragmentClass,
+        /* [in] */ IBundle* args,
+        /* [in] */ Int32 titleRes,
+        /* [in] */ ICharSequence* titleText,
+        /* [in] */ IUserHandle* userHandle)
+    {
         String title = NULL;
         if (titleRes < 0) {
             if (titleText != NULL) {
@@ -891,7 +764,11 @@ public class SettingsActivity extends Activity
      * @param resultData Optional result data to send back to the original
      * launching fragment.
      */
-    CARAPI FinishPreferencePanel(Fragment caller, Int32 resultCode, Intent resultData) {
+    CARAPI FinishPreferencePanel(
+        /* [in] */ IFragment* caller,
+        /* [in] */ Int32 resultCode,
+        /* [in] */ IIntent* resultData)
+    {
         SetResult(resultCode, resultData);
         Finish();
     }
@@ -903,7 +780,10 @@ public class SettingsActivity extends Activity
      * @param push If TRUE, the current fragment will be pushed onto the back stack.  If FALSE,
      * the current fragment will be replaced.
      */
-    CARAPI StartPreferenceFragment(Fragment fragment, Boolean push) {
+    CARAPI StartPreferenceFragment(
+        /* [in] */ IFragment* fragment,
+        /* [in] */ Boolean push)
+    {
         FragmentTransaction transaction = GetFragmentManager()->BeginTransaction();
         transaction->Replace(R.id.main_content, fragment);
         if (push) {
@@ -918,8 +798,15 @@ public class SettingsActivity extends Activity
     /**
      * Switch to a specific Fragment with taking care of validation, Title and BackStack
      */
-    private Fragment SwitchToFragment(String fragmentName, Bundle args, Boolean validate,
-            Boolean addToBackStack, Int32 titleResId, CharSequence title, Boolean withTransition) {
+    private Fragment SwitchToFragment(
+        /* [in] */ const String& fragmentName,
+        /* [in] */ IBundle* args,
+        /* [in] */ Boolean validate,
+        /* [in] */ Boolean addToBackStack,
+        /* [in] */ Int32 titleResId,
+        /* [in] */ ICharSequence* title,
+        /* [in] */ Boolean withTransition)
+    {
         if (validate && !IsValidFragment(fragmentName)) {
             throw new IllegalArgumentException("Invalid fragment for this activity: "
                     + fragmentName);
@@ -948,7 +835,9 @@ public class SettingsActivity extends Activity
      *
      * @param categories The list in which to place the tiles categories.
      */
-    private void BuildDashboardCategories(List<DashboardCategory> categories) {
+    private void BuildDashboardCategories(
+        /* [in] */ IList* categories) //List<DashboardCategory>
+    {
         categories->Clear();
         LoadCategoriesFromResource(R.xml.dashboard_categories, categories);
         UpdateTilesList(categories);
@@ -961,7 +850,10 @@ public class SettingsActivity extends Activity
      * @param resid The XML resource to load and parse.
      * @param target The list in which the parsed categories and tiles should be placed.
      */
-    private void LoadCategoriesFromResource(Int32 resid, List<DashboardCategory> target) {
+    private void LoadCategoriesFromResource(
+        /* [in] */ Int32 resid,
+        /* [in] */ IList* target) //List<DashboardCategory>
+    {
         XmlResourceParser parser = NULL;
         try {
             parser = GetResources()->GetXml(resid);
@@ -1104,7 +996,9 @@ public class SettingsActivity extends Activity
         }
     }
 
-    private void UpdateTilesList(List<DashboardCategory> target) {
+    private void UpdateTilesList(
+        /* [in] */ IList* target) // List<DashboardCategory>
+    {
         final Boolean showDev = mDevelopmentPreferences->GetBoolean(
                 DevelopmentSettings.PREF_SHOW,
                 android.os.Build.TYPE->Equals("eng"));
@@ -1207,7 +1101,9 @@ public class SettingsActivity extends Activity
         }
     }
 
-    private Boolean UpdateHomeSettingTiles(DashboardTile tile) {
+    private Boolean UpdateHomeSettingTiles(
+        /* [in] */ IDashboardTile* tile)
+    {
         // Once we decide to show Home settings, keep showing it forever
         SharedPreferences sp = GetSharedPreferences(HomeSettings.HOME_PREFS, Context.MODE_PRIVATE);
         if (sp->GetBoolean(HomeSettings.HOME_PREFS_DO_SHOW, FALSE)) {
@@ -1244,7 +1140,8 @@ public class SettingsActivity extends Activity
         return TRUE;
     }
 
-    private void GetMetaData() {
+    private void GetMetaData()
+    {
         try {
             ActivityInfo ai = GetPackageManager()->GetActivityInfo(GetComponentName(),
                     PackageManager.GET_META_DATA);
@@ -1257,32 +1154,46 @@ public class SettingsActivity extends Activity
     }
 
     // give subclasses access to the Next button
-    public Boolean HasNextButton() {
+    CARAPI HasNextButton(
+        /* [out] */ Boolean* result)
+    {
         return mNextButton != NULL;
     }
 
-    public Button GetNextButton() {
+    CARAPI GetNextButton(
+        /* [out] */ IButton** button)
+    {
         return mNextButton;
     }
 
     //@Override
-    public Boolean ShouldUpRecreateTask(Intent targetIntent) {
+    CARAPI ShouldUpRecreateTask(
+        /* [in] */ IIntent* targetIntent,
+        /* [out] */ Boolean* result)
+    {
         return super->ShouldUpRecreateTask(new Intent(this, SettingsActivity.class));
     }
 
-    public static void RequestHomeNotice() {
+    public static CARAPI RequestHomeNotice()
+    {
         sShowNoHomeNotice = TRUE;
     }
 
     //@Override
-    public Boolean OnQueryTextSubmit(String query) {
+    public CARAPI OnQueryTextSubmit(
+        /* [in] */ const String& query,
+        /* [out] */ Boolean* result)
+    {
         SwitchToSearchResultsFragmentIfNeeded();
         mSearchQuery = query;
         return mSearchResultsFragment->OnQueryTextSubmit(query);
     }
 
     //@Override
-    public Boolean OnQueryTextChange(String newText) {
+    public CARAPI OnQueryTextChange(
+        /* [in] */ const String& newText,
+        /* [out] */ Boolean* result)
+    {
         mSearchQuery = newText;
         if (mSearchResultsFragment == NULL) {
             return FALSE;
@@ -1291,12 +1202,17 @@ public class SettingsActivity extends Activity
     }
 
     //@Override
-    public Boolean OnClose() {
+    public CARAPI OnClose(
+        /* [out] */ Boolean* result)
+    {
         return FALSE;
     }
 
     //@Override
-    public Boolean OnMenuItemActionExpand(MenuItem item) {
+    public CARAPI OnMenuItemActionExpand(
+        /* [in] */ IMenuItem* item,
+        /* [out] */ Boolean* result)
+    {
         if (item->GetItemId() == mSearchMenuItem->GetItemId()) {
             SwitchToSearchResultsFragmentIfNeeded();
         }
@@ -1304,7 +1220,10 @@ public class SettingsActivity extends Activity
     }
 
     //@Override
-    public Boolean OnMenuItemActionCollapse(MenuItem item) {
+    public CARAPI OnMenuItemActionCollapse(
+        /* [in] */ IMenuItem* item,
+        /* [out] */ Boolean* result)
+    {
         if (item->GetItemId() == mSearchMenuItem->GetItemId()) {
             if (mSearchMenuItemExpanded) {
                 RevertToInitialFragment();
@@ -1313,7 +1232,8 @@ public class SettingsActivity extends Activity
         return TRUE;
     }
 
-    private void SwitchToSearchResultsFragmentIfNeeded() {
+    private void SwitchToSearchResultsFragmentIfNeeded()
+    {
         if (mSearchResultsFragment != NULL) {
             return;
         }
@@ -1329,11 +1249,13 @@ public class SettingsActivity extends Activity
         mSearchMenuItemExpanded = TRUE;
     }
 
-    CARAPI NeedToRevertToInitialFragment() {
+    CARAPI NeedToRevertToInitialFragment()
+    {
         mNeedToRevertToInitialFragment = TRUE;
     }
 
-    private void RevertToInitialFragment() {
+    private void RevertToInitialFragment()
+    {
         mNeedToRevertToInitialFragment = FALSE;
         mSearchResultsFragment = NULL;
         mSearchMenuItemExpanded = FALSE;
@@ -1344,11 +1266,241 @@ public class SettingsActivity extends Activity
         }
     }
 
-    public Intent GetResultIntentData() {
+    public CARAPI GetResultIntentData(
+        /* [out] */ IIntent** intent)
+    {
         return mResultIntentData;
     }
 
-    CARAPI SetResultIntentData(Intent resultIntentData) {
+    CARAPI SetResultIntentData(
+        /* [in] */ IIntent* resultIntentData)
+    {
         mResultIntentData = resultIntentData;
     }
-}
+
+public:
+    /**
+     * When starting this activity, the invoking Intent can contain this extra
+     * string to specify which fragment should be initially displayed.
+     * <p/>Starting from Key Lime Pie, when this argument is passed in, the activity
+     * will call IsValidFragment() to confirm that the fragment class name is valid for this
+     * activity.
+     */
+    static const String EXTRA_SHOW_FRAGMENT = ":settings:show_fragment";
+
+    /**
+     * When starting this activity and using {@link #EXTRA_SHOW_FRAGMENT},
+     * this extra can also be specified to supply a Bundle of arguments to pass
+     * to that fragment when it is instantiated during the initial creation
+     * of the activity.
+     */
+    static const String EXTRA_SHOW_FRAGMENT_ARGUMENTS = ":settings:show_fragment_args";
+
+    /**
+     * Fragment "key" argument passed thru {@link #EXTRA_SHOW_FRAGMENT_ARGUMENTS}
+     */
+    static const String EXTRA_FRAGMENT_ARG_KEY = ":settings:fragment_args_key";
+
+    static const String BACK_STACK_PREFS = ":settings:prefs";
+
+    /**
+     * When starting this activity and using {@link #EXTRA_SHOW_FRAGMENT},
+     * those extra can also be specify to supply the title or title res id to be shown for
+     * that fragment.
+     */
+    static const String EXTRA_SHOW_FRAGMENT_TITLE = ":settings:show_fragment_title";
+    static const String EXTRA_SHOW_FRAGMENT_TITLE_RESID =
+            ":settings:show_fragment_title_resid";
+    static const String EXTRA_SHOW_FRAGMENT_AS_SHORTCUT =
+            ":settings:show_fragment_as_shortcut";
+
+    static const String EXTRA_SHOW_FRAGMENT_AS_SUBSETTING =
+            ":settings:show_fragment_as_subsetting";
+
+private:
+    // extras that allow any preference activity to be launched as part of a wizard
+
+    // show Back and Next buttons? takes Boolean parameter
+    // Back will then return RESULT_CANCELED and Next RESULT_OK
+    static const String EXTRA_PREFS_SHOW_BUTTON_BAR = "extra_prefs_show_button_bar";
+
+    // specify custom text for the Back or Next buttons, or cause a button to not appear
+    // at all by setting it to NULL
+    static const String EXTRA_PREFS_SET_NEXT_TEXT = "extra_prefs_set_next_text";
+    static const String EXTRA_PREFS_SET_BACK_TEXT = "extra_prefs_set_back_text";
+
+private:
+
+    static const String LOG_TAG = "Settings";
+
+    // Constants for state save/restore
+    static const String SAVE_KEY_CATEGORIES = ":settings:categories";
+    static const String SAVE_KEY_SEARCH_MENU_EXPANDED = ":settings:search_menu_expanded";
+    static const String SAVE_KEY_SEARCH_QUERY = ":settings:search_query";
+    static const String SAVE_KEY_SHOW_HOME_AS_UP = ":settings:show_home_as_up";
+    static const String SAVE_KEY_SHOW_SEARCH = ":settings:show_search";
+    static const String SAVE_KEY_HOME_ACTIVITIES_COUNT = ":settings:home_activities_count";
+
+
+    // add a Skip button?
+    static const String EXTRA_PREFS_SHOW_SKIP = "extra_prefs_show_skip";
+
+    static const String META_DATA_KEY_FRAGMENT_CLASS =
+        "com.android.settings.FRAGMENT_CLASS";
+
+    static const String EXTRA_UI_OPTIONS = "settings:ui_options";
+
+    static const String EMPTY_QUERY = "";
+
+    static Boolean sShowNoHomeNotice = FALSE;
+
+    String mFragmentClass;
+
+    AutoPtr<CharSequence> mInitialTitle;
+    Int32 mInitialTitleResId;
+
+    // Show only these settings for restricted users
+    Int32[26] SETTINGS_FOR_RESTRICTED = {
+            R.id.wireless_section,
+            R.id.wifi_settings,
+            R.id.bluetooth_settings,
+            R.id.data_usage_settings,
+            R.id.sim_settings,
+            R.id.wireless_settings,
+            R.id.device_section,
+            R.id.notification_settings,
+            R.id.display_settings,
+            R.id.storage_settings,
+            R.id.application_settings,
+            R.id.battery_settings,
+            R.id.personal_section,
+            R.id.location_settings,
+            R.id.security_settings,
+            R.id.language_settings,
+            R.id.user_settings,
+            R.id.account_settings,
+            R.id.system_section,
+            R.id.date_time_settings,
+            R.id.about_settings,
+            R.id.accessibility_settings,
+            R.id.print_settings,
+            R.id.nfc_payment_settings,
+            R.id.home_settings,
+            R.id.dashboard
+    };
+
+    static const AutoPtr<ArrayOf<String> > ENTRY_FRAGMENTS = {
+            WirelessSettings.class->GetName(),
+            WifiSettings.class->GetName(),
+            AdvancedWifiSettings.class->GetName(),
+            SavedAccessPointsWifiSettings.class->GetName(),
+            BluetoothSettings.class->GetName(),
+            SimSettings.class->GetName(),
+            TetherSettings.class->GetName(),
+            WifiP2pSettings.class->GetName(),
+            VpnSettings.class->GetName(),
+            DateTimeSettings.class->GetName(),
+            LocalePicker.class->GetName(),
+            InputMethodAndLanguageSettings.class->GetName(),
+            VoiceInputSettings.class->GetName(),
+            SpellCheckersSettings.class->GetName(),
+            UserDictionaryList.class->GetName(),
+            UserDictionarySettings.class->GetName(),
+            HomeSettings.class->GetName(),
+            DisplaySettings.class->GetName(),
+            DeviceInfoSettings.class->GetName(),
+            ManageApplications.class->GetName(),
+            ProcessStatsUi.class->GetName(),
+            NotificationStation.class->GetName(),
+            LocationSettings.class->GetName(),
+            SecuritySettings.class->GetName(),
+            UsageAccessSettings.class->GetName(),
+            PrivacySettings.class->GetName(),
+            DeviceAdminSettings.class->GetName(),
+            AccessibilitySettings.class->GetName(),
+            CaptionPropertiesFragment.class->GetName(),
+            com.android.settings.accessibility.ToggleDaltonizerPreferenceFragment.class->GetName(),
+            TextToSpeechSettings.class->GetName(),
+            Memory.class->GetName(),
+            DevelopmentSettings.class->GetName(),
+            UsbSettings.class->GetName(),
+            AndroidBeam.class->GetName(),
+            WifiDisplaySettings.class->GetName(),
+            PowerUsageSummary.class->GetName(),
+            AccountSyncSettings.class->GetName(),
+            AccountSettings.class->GetName(),
+            CryptKeeperSettings.class->GetName(),
+            DataUsageSummary.class->GetName(),
+            DreamSettings.class->GetName(),
+            UserSettings.class->GetName(),
+            NotificationAccessSettings.class->GetName(),
+            ConditionProviderSettings.class->GetName(),
+            PrintSettingsFragment.class->GetName(),
+            PrintJobSettingsFragment.class->GetName(),
+            TrustedCredentialsSettings.class->GetName(),
+            PaymentSettings.class->GetName(),
+            KeyboardLayoutPickerFragment.class->GetName(),
+            ZenModeSettings.class->GetName(),
+            NotificationSettings.class->GetName(),
+            ChooseLockPassword.ChooseLockPasswordFragment.class->GetName(),
+            ChooseLockPattern.ChooseLockPatternFragment.class->GetName(),
+            InstalledAppDetails.class->GetName(),
+            BatterySaverSettings.class->GetName(),
+            NotificationAppList.class->GetName(),
+            AppNotificationSettings.class->GetName(),
+            OtherSoundSettings.class->GetName(),
+            QuickLaunchSettings.class->GetName(),
+            ApnSettings.class->GetName()
+    };
+
+
+    static const AutoPtr< ArrayOf<String> > LIKE_SHORTCUT_INTENT_ACTION_ARRAY = {
+            "android.settings.APPLICATION_DETAILS_SETTINGS"
+    };
+
+    AutoPtr<ISharedPreferences> mDevelopmentPreferences;
+    AutoPtr<ISharedPreferencesOnSharedPreferenceChangeListener> mDevelopmentPreferencesListener;
+
+    Boolean mBatteryPresent = TRUE;
+    AutoPtr<IBroadcastReceiver> mBatteryInfoReceiver;
+
+    AutoPtr<IDynamicIndexableContentMonitor> mDynamicIndexableContentMonitor;
+        // = new DynamicIndexableContentMonitor();
+
+    AutoPtr<IActionBar> mActionBar;
+    AutoPtr<ISwitchBar> mSwitchBar;
+
+    AutoPtr<IButton> mNextButton;
+
+    Boolean mDisplayHomeAsUpEnabled;
+    Boolean mDisplaySearch;
+
+    Boolean mIsShowingDashboard;
+    Boolean mIsShortcut;
+
+    AutoPtr<IViewGroup> mContent;
+
+    AutoPtr<ISearchView> mSearchView;
+    AutoPtr<IMenuItem> mSearchMenuItem;
+    Boolean mSearchMenuItemExpanded = FALSE;
+    AutoPtr<ISearchResultsSummary> mSearchResultsFragment;
+    String mSearchQuery;
+
+    // Categories
+    AutoPtr<IArrayList> mCategories;// = new ArrayList<DashboardCategory>();
+
+    static const String MSG_DATA_FORCE_REFRESH = "msg_data_force_refresh";
+    static const Int32 MSG_BUILD_CATEGORIES = 1;
+    AutoPtr<BuildCategoriesHandler> mHandler;
+
+    Boolean mNeedToRevertToInitialFragment = FALSE;
+    Int32 mHomeActivitiesCount = 1;
+
+    AutoPtr<IIntent> mResultIntentData;
+};
+
+} // namespace Settings
+} // namespace Droid
+} // namespace Elastos
+
+#endif //__ELASTOS_DROID_SETTINGS_SETTINGS_ACTIVITY_H__

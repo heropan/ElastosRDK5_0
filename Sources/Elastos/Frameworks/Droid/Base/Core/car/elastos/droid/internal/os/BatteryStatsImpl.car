@@ -65,7 +65,7 @@ module
 
     /**
      * @Involve
-     * interface IBatteryStatsLongCounter
+     * interface IBatteryStatsInt64Counter
      * interface ITimeBaseObs;
      */
     [local]

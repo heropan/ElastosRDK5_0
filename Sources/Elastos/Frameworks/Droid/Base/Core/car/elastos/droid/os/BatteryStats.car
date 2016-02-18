@@ -40,7 +40,7 @@ module
      * State for keeping track of Int64 counting information.
      */
     [local]
-    interface IBatteryStatsLongCounter {
+    interface IBatteryStatsInt64Counter {
         /**
          * Returns the count associated with this Counter for the
          * selected type of statistics.
