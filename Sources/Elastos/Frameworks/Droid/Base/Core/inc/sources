@@ -34,6 +34,8 @@ EXPORT_HEADERS += elastos/droid/content/pm/PackageUserState.h
 EXPORT_HEADERS += elastos/droid/database/sqlite/SQLiteOpenHelper.h
 EXPORT_HEADERS += elastos/droid/database/ContentObserver.h
 
+EXPORT_HEADERS += elastos/droid/graphics/drawable/Drawable.h
+
 EXPORT_HEADERS += elastos/droid/ext/frameworkdef.h
 EXPORT_HEADERS += elastos/droid/ext/frameworkext.h
 EXPORT_HEADERS += elastos/droid/ext/frameworkhash.h

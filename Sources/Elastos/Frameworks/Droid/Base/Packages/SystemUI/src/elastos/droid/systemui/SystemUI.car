@@ -236,7 +236,6 @@ module
     merge("../../../../car/elastos/droid/recents/model/RecentsTaskLoader.car");
 
     //recents/views
-    merge("../../../../car/elastos/droid/recents/views/AnimateableViewBounds.car");
     merge("../../../../car/elastos/droid/recents/views/DebugOverlayView.car");
     merge("../../../../car/elastos/droid/recents/views/FakeShadowDrawable.car");
     merge("../../../../car/elastos/droid/recents/views/FixedSizeImageView.car");
@@ -674,6 +673,72 @@ module
 //             interface IAccessibilityEventSource;
 //         }
 //     } // Recent
+
+    //===========================================================================
+    //                              Recents
+    //===========================================================================
+    namespace Recents {
+    namespace Views {
+
+        class CDebugOverlayView {
+            constructor(
+                [in] IContext* ctx);
+
+            constructor(
+                [in] IContext* ctx,
+                [in] IAttributeSet* attrs);
+
+            constructor(
+                [in] IContext* ctx,
+                [in] IAttributeSet* attrs,
+                [in] Int32 defStyleAttr);
+
+            constructor(
+                [in] IContext* ctx,
+                [in] IAttributeSet* attrs,
+                [in] Int32 defStyleAttr,
+                [in] Int32 defStyleRes);
+
+            interface IDebugOverlayView;
+            interface IFrameLayout;
+            interface IViewGroup;
+            interface IView;
+            interface IViewParent;
+            interface IViewManager;
+            interface IDrawableCallback;
+            interface IKeyEventCallback;
+            interface IAccessibilityEventSource;
+        }
+
+        class CFixedSizeImageView {
+            constructor(
+                [in] IContext* ctx);
+
+            constructor(
+                [in] IContext* ctx,
+                [in] IAttributeSet* attrs);
+
+            constructor(
+                [in] IContext* ctx,
+                [in] IAttributeSet* attrs,
+                [in] Int32 defStyleAttr);
+
+            constructor(
+                [in] IContext* ctx,
+                [in] IAttributeSet* attrs,
+                [in] Int32 defStyleAttr,
+                [in] Int32 defStyleRes);
+
+            interface IFixedSizeImageView;
+            interface IImageView;
+            interface IView;
+            interface IDrawableCallback;
+            interface IKeyEventCallback;
+            interface IAccessibilityEventSource;
+        }
+
+    } // namespace Views
+    } // namespace Recents
 
     //===========================================================================
     //                              StatusBar

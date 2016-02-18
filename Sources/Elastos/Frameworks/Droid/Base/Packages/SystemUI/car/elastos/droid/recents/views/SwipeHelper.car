@@ -11,8 +11,7 @@ module
     namespace Views {
 
     [local]
-    interface ICallback {
-
+    interface ISwipeHelperCallback {
         GetChildAtPosition(
             [in] IMotionEvent* ev,
             [out] IView** result);
@@ -36,46 +35,6 @@ module
 
         OnDragCancelled(
             [in] IView* v);
-    }
-
-    /**
-     * This class facilitates swipe to dismiss. It defines an interface to be implemented by the
-     * by the class hosting the views that need to swiped, and, using this interface, handles touch
-     * events and translates / fades / animates the view as it is dismissed.
-     */
-    [local]
-    interface ISwipeHelper {
-
-        const Int32 X = 0;
-        const Int32 Y = 1;
-
-        const Float ALPHA_FADE_START = 0.15; // fraction of thumbnail width
-
-        SetDensityScale(
-            [in] Float densityScale);
-
-        SetPagingTouchSlop(
-            [in] Float pagingTouchSlop);
-
-        CancelOngoingDrag();
-
-        ResetTranslation(
-            [in] IView* v);
-
-        SetMinAlpha(
-            [in] Float minAlpha);
-
-        GetAlphaForOffset(
-            [in] IView* view,
-            [out] Float* result);
-
-        OnInterceptTouchEvent(
-            [in] IMotionEvent* ev,
-            [out] Boolean* result);
-
-        OnTouchEvent(
-            [in] IMotionEvent* ev,
-            [out] Boolean* result);
     }
 
     } // namespace Views
