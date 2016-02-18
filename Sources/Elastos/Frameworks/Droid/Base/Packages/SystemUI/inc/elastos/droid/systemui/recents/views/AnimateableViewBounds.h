@@ -2,8 +2,16 @@
 #ifndef  __ELASTOS_DROID_SYSTEMUI_RECENTS_VIEWS_ANIMATEABLEVIEWBOUNDS_H__
 #define  __ELASTOS_DROID_SYSTEMUI_RECENTS_VIEWS_ANIMATEABLEVIEWBOUNDS_H__
 
+#include "_SystemUI.h"
+#include "Elastos.Droid.Animation.h"
+#include "Elastos.Droid.Graphics.h"
 #include <elastos/droid/view/ViewOutlineProvider.h>
 
+using Elastos::Droid::Animation::IAnimator;
+using Elastos::Droid::Animation::IAnimatorUpdateListener;
+using Elastos::Droid::Animation::IObjectAnimator;
+using Elastos::Droid::Graphics::IRect;
+using Elastos::Droid::View::IView;
 using Elastos::Droid::View::ViewOutlineProvider;
 
 namespace Elastos {
@@ -12,157 +20,85 @@ namespace SystemUI {
 namespace Recents {
 namespace Views {
 
-
 /* An outline provider that has a clip and outline that can be animated. */
-public class AnimateableViewBounds extends ViewOutlineProvider {
+class AnimateableViewBounds : public ViewOutlineProvider
+{
+public:
+    AnimateableViewBounds(
+        /* [in] */ ITaskView* source,
+        /* [in] */ Int32 cornerRadius);
 
-    RecentsConfiguration mConfig;
-
-    TaskView mSourceView;
-    Rect mTmpRect = new Rect();
-    Rect mClipRect = new Rect();
-    Rect mClipBounds = new Rect();
-    Rect mOutlineClipRect = new Rect();
-    int mCornerRadius;
-    float mAlpha = 1f;
-    final float mMinAlpha = 0.25f;
-
-    ObjectAnimator mClipTopAnimator;
-    ObjectAnimator mClipRightAnimator;
-    ObjectAnimator mClipBottomAnimator;
-
-    public AnimateableViewBounds(TaskView source, int cornerRadius) {
-        mConfig = RecentsConfiguration.getInstance();
-        mSourceView = source;
-        mCornerRadius = cornerRadius;
-        setClipTop(getClipTop());
-        setClipRight(getClipRight());
-        setClipBottom(getClipBottom());
-        setOutlineClipBottom(getOutlineClipBottom());
-    }
-
-    @Override
-    public void getOutline(View view, Outline outline) {
-        outline.setAlpha(mMinAlpha + mAlpha / (1f - mMinAlpha));
-        outline.setRoundRect(Math.max(mClipRect.left, mOutlineClipRect.left),
-                Math.max(mClipRect.top, mOutlineClipRect.top),
-                mSourceView.getWidth() - Math.max(mClipRect.right, mOutlineClipRect.right),
-                mSourceView.getHeight() - Math.max(mClipRect.bottom, mOutlineClipRect.bottom),
-                mCornerRadius);
-    }
+    // @Override
+    CARAPI GetOutline(
+        /* [in] */ IView* view,
+        /* [in] */ IOutline* outline);
 
     /** Sets the view outline alpha. */
-    void setAlpha(float alpha) {
-        if (Float.compare(alpha, mAlpha) != 0) {
-            mAlpha = alpha;
-            mSourceView.invalidateOutline();
-        }
-    }
+    CARAPI_(void) SetAlpha(
+        /* [in] */ Float alpha);
 
     /** Animates the top clip. */
-    void animateClipTop(int top, int duration, ValueAnimator.AnimatorUpdateListener updateListener) {
-        if (mClipTopAnimator != null) {
-            mClipTopAnimator.removeAllListeners();
-            mClipTopAnimator.cancel();
-        }
-        mClipTopAnimator = ObjectAnimator.ofInt(this, "clipTop", top);
-        mClipTopAnimator.setDuration(duration);
-        mClipTopAnimator.setInterpolator(mConfig.fastOutSlowInInterpolator);
-        if (updateListener != null) {
-            mClipTopAnimator.addUpdateListener(updateListener);
-        }
-        mClipTopAnimator.start();
-    }
+    CARAPI_(void) AnimateClipTop(
+        /* [in] */ Int32 top,
+        /* [in] */ Int32 duration,
+        /* [in] */ IAnimatorUpdateListener* updateListener);
 
     /** Sets the top clip. */
-    public void setClipTop(int top) {
-        if (top != mClipRect.top) {
-            mClipRect.top = top;
-            mSourceView.invalidateOutline();
-            updateClipBounds();
-        }
-    }
+    CARAPI_(void) SetClipTop(
+        /* [in] */ Int32 top);
 
     /** Returns the top clip. */
-    public int getClipTop() {
-        return mClipRect.top;
-    }
+    CARAPI_(Int32) GetClipTop();
 
     /** Animates the right clip. */
-    void animateClipRight(int right, int duration) {
-        if (mClipRightAnimator != null) {
-            mClipRightAnimator.removeAllListeners();
-            mClipRightAnimator.cancel();
-        }
-        mClipRightAnimator = ObjectAnimator.ofInt(this, "clipRight", right);
-        mClipRightAnimator.setDuration(duration);
-        mClipRightAnimator.setInterpolator(mConfig.fastOutSlowInInterpolator);
-        mClipRightAnimator.start();
-    }
+    CARAPI_(void) AnimateClipRight(
+        /* [in] */ Int32 right,
+        /* [in] */ Int32 duration);
 
     /** Sets the right clip. */
-    public void setClipRight(int right) {
-        if (right != mClipRect.right) {
-            mClipRect.right = right;
-            mSourceView.invalidateOutline();
-            updateClipBounds();
-        }
-    }
+    CARAPI_(void) SetClipRight(
+        /* [in] */ Int32 right);
 
     /** Returns the right clip. */
-    public int getClipRight() {
-        return mClipRect.right;
-    }
+    CARAPI_(Int32) GetClipRight();
 
     /** Animates the bottom clip. */
-    void animateClipBottom(int bottom, int duration) {
-        if (mClipBottomAnimator != null) {
-            mClipBottomAnimator.removeAllListeners();
-            mClipBottomAnimator.cancel();
-        }
-        mClipBottomAnimator = ObjectAnimator.ofInt(this, "clipBottom", bottom);
-        mClipBottomAnimator.setDuration(duration);
-        mClipBottomAnimator.setInterpolator(mConfig.fastOutSlowInInterpolator);
-        mClipBottomAnimator.start();
-    }
+    CARAPI_(void) AnimateClipBottom(
+        /* [in] */ Int32 bottom,
+        /* [in] */ Int32 duration);
 
     /** Sets the bottom clip. */
-    public void setClipBottom(int bottom) {
-        if (bottom != mClipRect.bottom) {
-            mClipRect.bottom = bottom;
-            mSourceView.invalidateOutline();
-            updateClipBounds();
-            if (!mConfig.useHardwareLayers) {
-                mSourceView.mThumbnailView.updateVisibility(
-                        bottom - mSourceView.getPaddingBottom());
-            }
-        }
-    }
+    CARAPI_(void) SetClipBottom(
+        /* [in] */ Int32 bottom);
 
     /** Returns the bottom clip. */
-    public int getClipBottom() {
-        return mClipRect.bottom;
-    }
+    CARAPI_(Int32) GetClipBottom();
 
     /** Sets the outline bottom clip. */
-    public void setOutlineClipBottom(int bottom) {
-        if (bottom != mOutlineClipRect.bottom) {
-            mOutlineClipRect.bottom = bottom;
-            mSourceView.invalidateOutline();
-        }
-    }
+    CARAPI_(void) SetOutlineClipBottom(
+        /* [in] */ Int32 bottom);
 
     /** Gets the outline bottom clip. */
-    public int getOutlineClipBottom() {
-        return mOutlineClipRect.bottom;
-    }
+    CARAPI_(Int32) GetOutlineClipBottom();
 
-    private void updateClipBounds() {
-        mClipBounds.set(mClipRect.left, mClipRect.top,
-                mSourceView.getWidth() - mClipRect.right,
-                mSourceView.getHeight() - mClipRect.bottom);
-        mSourceView.setClipBounds(mClipBounds);
-    }
+private:
+    CARAPI_(void) UpdateClipBounds();
+
+public:
+    // AutoPtr<RecentsConfiguration> mConfig;
+
+    AutoPtr<IView> mSourceView; // ITaskView
+    AutoPtr<IRect> mTmpRect;
+    AutoPtr<IRect> mClipRect;
+    AutoPtr<IRect> mClipBounds;
+    AutoPtr<IRect> mOutlineClipRect;
+    Int32 mCornerRadius;
+    Float mAlpha;
+    Float mMinAlpha;
+
+    AutoPtr<IAnimator> mClipTopAnimator; //IObjectAnimator
+    AutoPtr<IAnimator> mClipRightAnimator; //IObjectAnimator
+    AutoPtr<IAnimator> mClipBottomAnimator; //IObjectAnimator
 };
 
 } // namespace Views

@@ -1,0 +1,14 @@
+
+TARGET_NAME= views
+TARGET_TYPE= lib
+
+include $(MAKEDIR)/../../../../../../../../../sources.inc
+INCLUDES += ../../
+INCLUDES += $(MAKEDIR)/../../../../../../inc/
+
+SOURCES += AnimateableViewBounds.cpp
+SOURCES += DebugOverlayView.cpp
+SOURCES += FakeShadowDrawable.cpp
+SOURCES += FixedSizeImageView.cpp
+#SOURCES += RecentsView.cpp
+SOURCES += Views.cpp

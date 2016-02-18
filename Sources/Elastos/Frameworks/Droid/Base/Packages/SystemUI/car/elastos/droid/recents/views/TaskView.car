@@ -63,10 +63,6 @@ module
         GetTask(
             [out] ITask** result);
 
-        /** Returns the view bounds. */
-        GetViewBounds(
-            [out] IAnimateableViewBounds** result);
-
         /** Synchronizes this view's properties with the task's transform */
         UpdateViewPropertiesToTaskTransform(
             [in] ITaskViewTransform* toTransform,

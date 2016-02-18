@@ -2,6 +2,7 @@
 DIRS += doze
 #DIRS += media
 #DIRS += recent
+DIRS += recents
 DIRS += statusbar
 #DIRS += egg
 #DIRS += keyguard
