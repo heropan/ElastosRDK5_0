@@ -126,7 +126,7 @@ ECode DecimalFormat::InitNative(
 ECode DecimalFormat::ApplyLocalizedPattern(
     /* [in] */ const String& pattern)
 {
-    mNdf->ApplyLocalizedPattern(pattern);
+    FAIL_RETURN(mNdf->ApplyLocalizedPattern(pattern));
     UpdateFieldsFromNative();
     return NOERROR;
 }
@@ -134,7 +134,7 @@ ECode DecimalFormat::ApplyLocalizedPattern(
 ECode DecimalFormat::ApplyPattern(
     /* [in] */ const String& pattern)
 {
-    mNdf->ApplyPattern(pattern);
+    FAIL_RETURN(mNdf->ApplyPattern(pattern));
     UpdateFieldsFromNative();
     return NOERROR;
 }

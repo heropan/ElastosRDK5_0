@@ -406,7 +406,7 @@ ECode SimpleDateFormat::Append(
             break;
         case IDateFormat::MONTH_FIELD: // M
             dateFormatField = DateFormat::Field::MONTH;
-            AppendMonth(buffer, count, TRUE);
+            AppendMonth(buffer, count, FALSE);
             break;
         case IDateFormat::DATE_FIELD:
             dateFormatField = DateFormat::Field::DAY_OF_MONTH;
@@ -442,7 +442,7 @@ ECode SimpleDateFormat::Append(
             break;
         case IDateFormat::DAY_OF_WEEK_FIELD:
             dateFormatField = DateFormat::Field::DAY_OF_WEEK;
-            AppendDayOfWeek(buffer, count, TRUE);
+            AppendDayOfWeek(buffer, count, FALSE);
             break;
         case IDateFormat::DAY_OF_YEAR_FIELD:
             dateFormatField = DateFormat::Field::DAY_OF_YEAR;
