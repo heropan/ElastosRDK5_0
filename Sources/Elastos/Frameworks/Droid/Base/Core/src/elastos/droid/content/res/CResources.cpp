@@ -7,10 +7,10 @@
 #include "elastos/droid/content/res/CColorStateList.h"
 #include "elastos/droid/content/res/XmlBlock.h"
 #include "elastos/droid/content/pm/CActivityInfo.h"
-//#include "elastos/droid/graphics/Movie.h"
+#include "elastos/droid/graphics/Movie.h"
 #include "elastos/droid/internal/utility/XmlUtils.h"
-//#include "elastos/droid/graphics/drawable/CColorDrawable.h"
-//#include "elastos/droid/graphics/drawable/Drawable.h"
+#include "elastos/droid/graphics/drawable/CColorDrawable.h"
+#include "elastos/droid/graphics/drawable/Drawable.h"
 #include "elastos/droid/os/Build.h"
 #include "elastos/droid/utility/CInt64SparseArray.h"
 #include "elastos/droid/R.h"
@@ -25,11 +25,11 @@ using Elastos::Droid::Content::Pm::IActivityInfo;
 using Elastos::Droid::Content::Pm::CActivityInfo;
 using Elastos::Droid::Internal::Utility::XmlUtils;
 using Elastos::Droid::Os::Build;
-//using Elastos::Droid::Graphics::Movie;
-//using Elastos::Droid::Graphics::Drawable::CColorDrawable;
+using Elastos::Droid::Graphics::Movie;
+using Elastos::Droid::Graphics::Drawable::CColorDrawable;
 using Elastos::Droid::Graphics::Drawable::IColorDrawable;
 using Elastos::Droid::Graphics::Drawable::EIID_IDrawableConstantState;
-//using Elastos::Droid::Graphics::Drawable::Drawable;
+using Elastos::Droid::Graphics::Drawable::Drawable;
 using Elastos::Droid::Utility::CInt64SparseArray;
 
 using Libcore::ICU::INativePluralRulesHelper;
@@ -1018,8 +1018,8 @@ ECode CResources::GetMovie(
 
     AutoPtr<IInputStream> is;
     OpenRawResource(id, (IInputStream**)&is);
-    assert(0 && "TODO");
-    ECode ec = NOERROR;// Movie::DecodeStream(is, movie);
+
+    ECode ec = Movie::DecodeStream(is, movie);
     is->Close(); // don't care, since the return value is valid
 
     return ec;
@@ -1996,13 +1996,12 @@ ECode CResources::LoadDrawable(
         wr->Resolve(EIID_IDrawableConstantState, (IInterface**)&cs);
     }
 
-    assert(0 && "TODO");
     AutoPtr<IDrawable> dr;
     if (cs != NULL) {
         cs->NewDrawable(THIS_PROBE(IResources), theme, (IDrawable**)&dr);
     }
     else if (isColorDrawable) {
-        // CColorDrawable::New(value->mData, (IDrawable**)&dr);
+        CColorDrawable::New(value->mData, (IDrawable**)&dr);
     }
     else {
         LoadDrawableForCookie(typedValue, id, theme, (IDrawable**)&dr);

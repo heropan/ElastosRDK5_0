@@ -89,7 +89,7 @@ module
     interface Elastos.Droid.Server.Wallpaper.IWallpaperData;
     interface Elastos.Droid.Server.Wallpaper.IWallpaperManagerService;
 
-    using interface Elastos.Droid.App.IActivityContainer;
+    using interface Elastos.Droid.App.IIActivityContainer;
     using interface Elastos.Droid.App.IIActivityManager;
     using interface Elastos.Droid.App.IIAlarmManager;
     using interface Elastos.Droid.App.IIAppTask;
@@ -1333,7 +1333,7 @@ module
             [in] Int32 stackId,
             [in] IInterface* owner);
         interface IBinder;
-        interface IActivityContainer;
+        interface IIActivityContainer;
     }
 
     [local]

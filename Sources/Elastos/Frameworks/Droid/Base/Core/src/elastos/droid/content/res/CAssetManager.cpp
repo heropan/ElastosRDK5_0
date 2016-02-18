@@ -2495,11 +2495,40 @@ ECode CAssetManager::GetArrayIntResource(
 }
 
 ECode CAssetManager::GetStyleAttributes(
-    /* [in] */ Int32 arrayRes,
+    /* [in] */ Int32 styleId,
     /* [out] */ ArrayOf<Int32>** result)
 {
     VALIDATE_NOT_NULL(result)
-    assert(0 && "TODO");
+    *result = NULL;
+
+    android::AssetManager* am = (android::AssetManager*)mObject;
+    if (am == NULL) {
+        return NOERROR;
+    }
+
+    const android::ResTable& res(am->getResources());
+    const android::ResTable::bag_entry* startOfBag;
+    const ssize_t N = res.lockBag(styleId, &startOfBag);
+    if (N < 0) {
+        return NOERROR;
+    }
+
+    AutoPtr<ArrayOf<Int32> > array = ArrayOf<Int32>::Alloc(N);
+    if (array == NULL) {
+        res.unlockBag(startOfBag);
+        return NOERROR;
+    }
+
+    android::Res_value value;
+    const android::ResTable::bag_entry* bag = startOfBag;
+    for (size_t i=0; ((ssize_t)i)<N; i++, bag++) {
+        Int32 resourceId = bag->map.name.ident;
+        array->Set(i, resourceId);
+    }
+    res.unlockBag(startOfBag);
+
+    *result = array;
+    REFCOUNT_ADD(*result)
     return NOERROR;
 }
 

@@ -988,14 +988,14 @@ module
         CreateActivityContainer(
             [in] IBinder* parentActivityToken,
             [in] IActivityContainerCallback* cb,
-            [out] IActivityContainer** container);
+            [out] IIActivityContainer** container);
 
         DeleteActivityContainer(
-            [in] IActivityContainer* container);
+            [in] IIActivityContainer* container);
 
         GetEnclosingActivityContainer(
             [in] IBinder* activityToken,
-            [out] IActivityContainer** container);
+            [out] IIActivityContainer** container);
 
         GetHomeActivityToken(
             [out] IBinder** result);

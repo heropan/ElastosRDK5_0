@@ -27,7 +27,7 @@ using Elastos::Droid::App::CActivityOptions;
 using Elastos::Droid::App::CActivityOptionsHelper;
 using Elastos::Droid::App::CResultInfo;
 using Elastos::Droid::App::IActivity;
-using Elastos::Droid::App::IActivityContainer;
+using Elastos::Droid::App::IIActivityContainer;
 using Elastos::Droid::App::IIActivityController;
 using Elastos::Droid::App::IActivityManager;
 using Elastos::Droid::App::IActivityManagerHelper;
@@ -4600,9 +4600,9 @@ void ActivityStack::SetVisibile(
     r->mVisible = visible;
     //TODO mWindowManager->SetAppVisibility(IBinder::Probe(r->mAppToken), visible);
     //final ArrayList<ActivityContainer> containers = r.mChildContainers;
-    List<AutoPtr<IActivityContainer> > containers = r->mChildContainers;
+    List<AutoPtr<IIActivityContainer> > containers = r->mChildContainers;
     for (Int32 containerNdx = containers.GetSize() - 1; containerNdx >= 0; --containerNdx) {
-        AutoPtr<IActivityContainer> icontainer = containers[containerNdx];
+        AutoPtr<IIActivityContainer> icontainer = containers[containerNdx];
         ActivityStackSupervisor::ActivityContainer* container = (ActivityStackSupervisor::ActivityContainer*)(icontainer.Get());
         container->SetVisible(visible);
     }

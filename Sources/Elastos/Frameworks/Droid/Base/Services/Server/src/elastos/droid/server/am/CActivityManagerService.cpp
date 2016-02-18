@@ -5067,7 +5067,7 @@ ECode CActivityManagerService::StartActivityInPackage(
     /* [in] */ Int32 startFlags,
     /* [in] */ IBundle* options,
     /* [in] */ Int32 userId,
-    /* [in] */ IActivityContainer* container,
+    /* [in] */ IIActivityContainer* container,
     /* [in] */ TaskRecord* inTask,
     /* [out] */ Int32* result)
 {
@@ -11139,7 +11139,7 @@ ECode CActivityManagerService::GetHomeActivityToken(
 ECode CActivityManagerService::CreateActivityContainer(
     /* [in] */ IBinder* parentActivityToken,
     /* [in] */ IActivityContainerCallback* callback,
-    /* [out] */ IActivityContainer** container)
+    /* [out] */ IIActivityContainer** container)
 {
     VALIDATE_NOT_NULL(container);
     *container = NULL;
@@ -11158,7 +11158,7 @@ ECode CActivityManagerService::CreateActivityContainer(
             Slogger::E(TAG, "callback must not be NULL");
             return E_ILLEGAL_ARGUMENT_EXCEPTION;
         }
-        AutoPtr<IActivityContainer> temp = mStackSupervisor->CreateActivityContainer(r, callback);
+        AutoPtr<IIActivityContainer> temp = mStackSupervisor->CreateActivityContainer(r, callback);
         *container = temp;
         REFCOUNT_ADD(*container);
     }
@@ -11166,7 +11166,7 @@ ECode CActivityManagerService::CreateActivityContainer(
 }
 
 ECode CActivityManagerService::DeleteActivityContainer(
-    /* [in] */ IActivityContainer* container)
+    /* [in] */ IIActivityContainer* container)
 {
     FAIL_RETURN(EnforceCallingPermission(Manifest::permission::MANAGE_ACTIVITY_STACKS,
             String("deleteActivityContainer()")));
@@ -11178,7 +11178,7 @@ ECode CActivityManagerService::DeleteActivityContainer(
 
 ECode CActivityManagerService::GetEnclosingActivityContainer(
     /* [in] */ IBinder* activityToken,
-    /* [out] */ IActivityContainer** container)
+    /* [out] */ IIActivityContainer** container)
 {
     VALIDATE_NOT_NULL(container);
     synchronized (this) {

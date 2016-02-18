@@ -463,6 +463,10 @@ module
 
             constructor();
 
+            constructor(
+                [in] IContentProviderOperation* cpo,
+                [in] Boolean removeUserIdFromUri);
+
             interface IContentProviderOperation;
             interface IParcelable;
         }
@@ -487,6 +491,10 @@ module
                 [in] Int32 count);
 
             constructor();
+
+            constructor(
+                [in] IContentProviderResult* cpr,
+                [in] Int32 userId);
 
             interface IContentProviderResult;
             interface IParcelable;

@@ -22,32 +22,6 @@ class HardwareRenderer
     : public Object
 {
 public:
-    /**
-     * Interface used to receive callbacks whenever a view is drawn by
-     * a hardware renderer instance.
-     */
-    interface HardwareDrawCallbacks
-        : public IInterface
-    {
-    public:
-        /**
-         * Invoked before a view is drawn by a hardware renderer.
-         *
-         * @param canvas The Canvas used to render the view.
-         */
-        virtual CARAPI OnHardwarePreDraw(
-            /* [in] */ IHardwareCanvas* canvas) = 0;
-
-        /**
-         * Invoked after a view is drawn by a hardware renderer.
-         *
-         * @param canvas The Canvas used to render the view.
-         */
-        virtual CARAPI OnHardwarePostDraw(
-            /* [in] */ IHardwareCanvas* canvas) = 0;
-    };
-
-public:
     HardwareRenderer();
 
     /**

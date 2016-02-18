@@ -266,7 +266,6 @@ ECode CTypedArray::GetBoolean(
         return NOERROR;
     }
 
-    assert(0 && "TODO");
     AutoPtr<CTypedValue> v = mValue;
     if (GetValueAt(index, v)) {
         Slogger::W(CResources::TAG, "Converting to boolean: %p", v.Get());

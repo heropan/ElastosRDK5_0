@@ -103,6 +103,12 @@ using Elastos::Droid::Text::CLengthFilter;
 using Elastos::Droid::Text::ISpannableString;
 using Elastos::Droid::Text::CSpannableString;
 using Elastos::Droid::Text::TextDirectionHeuristics;
+using Elastos::Droid::Text::TextUtilsTruncateAt_MARQUEE;
+using Elastos::Droid::Text::TextUtilsTruncateAt_NONE;
+using Elastos::Droid::Text::TextUtilsTruncateAt_START;
+using Elastos::Droid::Text::TextUtilsTruncateAt_MIDDLE;
+using Elastos::Droid::Text::TextUtilsTruncateAt_END;
+using Elastos::Droid::Text::TextUtilsTruncateAt_END_SMALL;
 using Elastos::Droid::Text::Style::ISuggestionSpan;
 using Elastos::Droid::Text::Style::EIID_IClickableSpan;
 using Elastos::Droid::Text::Style::EIID_ISuggestionSpan;
@@ -1140,7 +1146,7 @@ void TextView::InitFields()
 
     mPreDrawRegistered = FALSE;
 
-    mEllipsize = Elastos::Droid::Text::TextUtilsTruncateAt_NONE;
+    mEllipsize = TextUtilsTruncateAt_NONE;
 
     mRestartMarquee = (FALSE);
 
@@ -1397,7 +1403,7 @@ ECode TextView::InitFromAttributes(
     Boolean selectallonfocus = FALSE;
     AutoPtr<IDrawable> drawableLeft, drawableTop, drawableRight, drawableBottom, drawableStart, drawableEnd;
     Int32 drawablePadding = 0;
-    Int32 ellipsize = Elastos::Droid::Text::TextUtilsTruncateAt_NONE;
+    Int32 ellipsize = TextUtilsTruncateAt_NONE;
     Boolean singleLine = FALSE;
     Int32 maxlength = -1;
     AutoPtr<ICharSequence> text;
@@ -1975,18 +1981,18 @@ ECode TextView::InitFromAttributes(
     AutoPtr<IKeyListener> keyListener;
     GetKeyListener((IKeyListener**)&keyListener);
     if (singleLine && keyListener == NULL && ellipsize < 0) {
-        ellipsize = Elastos::Droid::Text::TextUtilsTruncateAt_END; // END
+        ellipsize = TextUtilsTruncateAt_END; // END
     }
 
     switch (ellipsize) {
         case 1:
-            SetEllipsize(Elastos::Droid::Text::TextUtilsTruncateAt_START);
+            SetEllipsize(TextUtilsTruncateAt_START);
             break;
         case 2:
-            SetEllipsize(Elastos::Droid::Text::TextUtilsTruncateAt_MIDDLE);
+            SetEllipsize(TextUtilsTruncateAt_MIDDLE);
             break;
         case 3:
-            SetEllipsize(Elastos::Droid::Text::TextUtilsTruncateAt_END);
+            SetEllipsize(TextUtilsTruncateAt_END);
             break;
         case 4:
             {
@@ -2004,7 +2010,7 @@ ECode TextView::InitFromAttributes(
                     SetHorizontalFadingEdgeEnabled(FALSE);
                     mMarqueeFadeMode = MARQUEE_FADE_SWITCH_SHOW_ELLIPSIS;
                 }
-                SetEllipsize(Elastos::Droid::Text::TextUtilsTruncateAt_MARQUEE);
+                SetEllipsize(TextUtilsTruncateAt_MARQUEE);
 
             }
             break;
@@ -4522,7 +4528,7 @@ ECode TextView::SetText(
     AutoPtr<ISpanned> spanned = ISpanned::Probe(text);
     if (spanned) {
         AutoPtr<IInteger32> iobj;
-        CInteger32::New(Elastos::Droid::Text::TextUtilsTruncateAt_MARQUEE, (IInteger32**)&iobj);
+        CInteger32::New(TextUtilsTruncateAt_MARQUEE, (IInteger32**)&iobj);
         Int32 spanStart = 0;
         spanned->GetSpanStart(iobj->Probe(EIID_IInterface), &spanStart);
         if (spanStart >= 0) {
@@ -4539,7 +4545,7 @@ ECode TextView::SetText(
                 SetHorizontalFadingEdgeEnabled(FALSE);
                 mMarqueeFadeMode = MARQUEE_FADE_SWITCH_SHOW_ELLIPSIS;
             }
-            SetEllipsize(Elastos::Droid::Text::TextUtilsTruncateAt_MARQUEE);
+            SetEllipsize(TextUtilsTruncateAt_MARQUEE);
         }
     }
 
@@ -5359,7 +5365,7 @@ Boolean TextView::SetFrame(
 
 void TextView::RestartMarqueeIfNeeded()
 {
-    if (mRestartMarquee && mEllipsize == Elastos::Droid::Text::TextUtilsTruncateAt_MARQUEE) {
+    if (mRestartMarquee && mEllipsize == TextUtilsTruncateAt_MARQUEE) {
         mRestartMarquee = FALSE;
         StartMarquee();
     }
@@ -6253,7 +6259,7 @@ void TextView::OnDraw(
     Int32 layoutDirection;
     GetLayoutDirection(&layoutDirection);
     Int32 absoluteGravity = Gravity::GetAbsoluteGravity(mGravity, layoutDirection);
-    if (mEllipsize == Elastos::Droid::Text::TextUtilsTruncateAt_MARQUEE &&
+    if (mEllipsize == TextUtilsTruncateAt_MARQUEE &&
         mMarqueeFadeMode != MARQUEE_FADE_SWITCH_SHOW_ELLIPSIS) {
         Int32 linecount;
         if (!mSingleLine && (GetLineCount(&linecount), linecount) == 1 && CanMarquee() &&
@@ -7365,13 +7371,13 @@ void TextView::MakeNewLayout(
     AutoPtr<IKeyListener> keyListener;
     GetKeyListener((IKeyListener**)&keyListener);
     Boolean shouldEllipsize = mEllipsize !=
-        Elastos::Droid::Text::TextUtilsTruncateAt_NONE && keyListener == NULL;
-    Boolean switchEllipsize = mEllipsize == Elastos::Droid::Text::TextUtilsTruncateAt_MARQUEE &&
+        TextUtilsTruncateAt_NONE && keyListener == NULL;
+    Boolean switchEllipsize = mEllipsize == TextUtilsTruncateAt_MARQUEE &&
         mMarqueeFadeMode != MARQUEE_FADE_NORMAL;
     TextUtilsTruncateAt effectiveEllipsize = mEllipsize;
-    if (mEllipsize == Elastos::Droid::Text::TextUtilsTruncateAt_MARQUEE &&
+    if (mEllipsize == TextUtilsTruncateAt_MARQUEE &&
         mMarqueeFadeMode == MARQUEE_FADE_SWITCH_SHOW_ELLIPSIS) {
-            effectiveEllipsize = Elastos::Droid::Text::TextUtilsTruncateAt_END_SMALL;
+            effectiveEllipsize = TextUtilsTruncateAt_END_SMALL;
     }
 
     if (mTextDir == NULL) {
@@ -7382,13 +7388,13 @@ void TextView::MakeNewLayout(
         effectiveEllipsize, effectiveEllipsize == mEllipsize);
     if (switchEllipsize) {
         TextUtilsTruncateAt oppositeEllipsize = effectiveEllipsize ==
-            Elastos::Droid::Text::TextUtilsTruncateAt_MARQUEE ?
-            Elastos::Droid::Text::TextUtilsTruncateAt_END : Elastos::Droid::Text::TextUtilsTruncateAt_MARQUEE;
+            TextUtilsTruncateAt_MARQUEE ?
+            TextUtilsTruncateAt_END : TextUtilsTruncateAt_MARQUEE;
         mSavedMarqueeModeLayout = MakeSingleLayout(wantWidth, boring, ellipsisWidth, alignment,
             shouldEllipsize, oppositeEllipsize, effectiveEllipsize != mEllipsize);
     }
 
-    shouldEllipsize = mEllipsize != Elastos::Droid::Text::TextUtilsTruncateAt_NONE;
+    shouldEllipsize = mEllipsize != TextUtilsTruncateAt_NONE;
     mHintLayout = NULL;
 
     if (mHint != NULL) {
@@ -7469,7 +7475,7 @@ void TextView::MakeNewLayout(
     if (bringIntoView || (testDirChange && oldDir != paragraphDirection)) {
         RegisterForPreDraw();
     }
-    if (mEllipsize == Elastos::Droid::Text::TextUtilsTruncateAt_MARQUEE) {
+    if (mEllipsize == TextUtilsTruncateAt_MARQUEE) {
         if (!CompressText(ellipsisWidth)) {
             Int32 height;
             mLayoutParams->GetHeight(&height);
@@ -7508,7 +7514,7 @@ AutoPtr<ILayout> TextView::MakeSingleLayout(
         GetKeyListener((IKeyListener**)&keyListener);
         ASSERT_SUCCEEDED(CDynamicLayout::New(mText, mTransformed, mTextPaint, wantWidth,
             alignment, mTextDir, mSpacingMult, mSpacingAdd, mIncludePad,
-            keyListener == NULL ? effectiveEllipsize : Elastos::Droid::Text::TextUtilsTruncateAt_NONE,
+            keyListener == NULL ? effectiveEllipsize : TextUtilsTruncateAt_NONE,
             ellipsisWidth, (IDynamicLayout**)&result));
     }
     else {
@@ -7524,7 +7530,7 @@ AutoPtr<ILayout> TextView::MakeSingleLayout(
             Int32 bwidth;
             boring->GetWidth(&bwidth);
             if (bwidth <= wantWidth &&
-                (effectiveEllipsize == Elastos::Droid::Text::TextUtilsTruncateAt_NONE
+                (effectiveEllipsize == TextUtilsTruncateAt_NONE
                 || bwidth <= ellipsisWidth)) {
                     if (useSaved && mSavedLayout != NULL) {
                         AutoPtr<IBoringLayout> temp;
@@ -7686,7 +7692,7 @@ void TextView::OnMeasure(
         width = widthSize;
     }
     else {
-        if (mLayout != NULL && mEllipsize == Elastos::Droid::Text::TextUtilsTruncateAt_NONE) {
+        if (mLayout != NULL && mEllipsize == TextUtilsTruncateAt_NONE) {
             des = Desired(mLayout);
         }
 
@@ -7720,7 +7726,7 @@ void TextView::OnMeasure(
         if (mHint != NULL) {
             Int32 hintDes = -1;
             Int32 hintWidth;
-            if (mHintLayout != NULL && mEllipsize == Elastos::Droid::Text::TextUtilsTruncateAt_NONE) {
+            if (mHintLayout != NULL && mEllipsize == TextUtilsTruncateAt_NONE) {
                 hintDes = Desired(mHintLayout);
             }
 
@@ -7806,7 +7812,7 @@ void TextView::OnMeasure(
             (layoutEllipsizedWidth != width - compoundPaddingLeft - compoundPaddingRight);
 
         Boolean widthChanged = (mHint == NULL) &&
-            (mEllipsize == Elastos::Droid::Text::TextUtilsTruncateAt_NONE) &&
+            (mEllipsize == TextUtilsTruncateAt_NONE) &&
             (want > layoutWidth) &&
             (IBoringLayout::Probe(mLayout) || (fromexisting && des >= 0 && des <= want));
         Boolean maximumChanged = (mMaxMode != mOldMaxMode) || (mMaximum != mOldMaximum);
@@ -7873,7 +7879,7 @@ Int32 TextView::GetDesiredHeight()
 {
     return Elastos::Core::Math::Max(
             GetDesiredHeight(mLayout, TRUE),
-            GetDesiredHeight(mHintLayout, mEllipsize != Elastos::Droid::Text::TextUtilsTruncateAt_NONE));
+            GetDesiredHeight(mHintLayout, mEllipsize != TextUtilsTruncateAt_NONE));
 }
 
 Int32 TextView::GetDesiredHeight(
@@ -8018,7 +8024,7 @@ void TextView::CheckForRelayout()
             mRight - mLeft - compoundPaddingLeft - compoundPaddingRight,
             FALSE);
 
-        if (mEllipsize != Elastos::Droid::Text::TextUtilsTruncateAt_MARQUEE) {
+        if (mEllipsize != TextUtilsTruncateAt_MARQUEE) {
             // In a fixed-height view, so use our new text layout.
             if (lh != IViewGroupLayoutParams::WRAP_CONTENT
                     && lh != IViewGroupLayoutParams::MATCH_PARENT) {
@@ -8810,7 +8816,7 @@ void TextView::StopMarquee()
 void TextView::StartStopMarquee(
     /* [in] */ Boolean start)
 {
-    if (mEllipsize == Elastos::Droid::Text::TextUtilsTruncateAt_MARQUEE) {
+    if (mEllipsize == TextUtilsTruncateAt_MARQUEE) {
         if (start) {
             StartMarquee();
         } else {
@@ -9233,7 +9239,7 @@ ECode TextView::SetSelected(
 
     View::SetSelected(selected);
 
-    if (selected != wasSelected && mEllipsize == Elastos::Droid::Text::TextUtilsTruncateAt_MARQUEE) {
+    if (selected != wasSelected && mEllipsize == TextUtilsTruncateAt_MARQUEE) {
         if (selected) {
             StartMarquee();
         }
@@ -9415,7 +9421,7 @@ ECode TextView::SetScroller(
 
 Float TextView::GetLeftFadingEdgeStrength()
 {
-    if (mEllipsize == Elastos::Droid::Text::TextUtilsTruncateAt_MARQUEE) {
+    if (mEllipsize == TextUtilsTruncateAt_MARQUEE) {
         Int32 linecount;
         if (mMarquee != NULL && !mMarquee->IsStopped()) {
             AutoPtr<Marquee> marquee = mMarquee;
@@ -9468,7 +9474,7 @@ Float TextView::GetLeftFadingEdgeStrength()
 
 Float TextView::GetRightFadingEdgeStrength()
 {
-    if (mEllipsize == Elastos::Droid::Text::TextUtilsTruncateAt_MARQUEE &&
+    if (mEllipsize == TextUtilsTruncateAt_MARQUEE &&
             mMarqueeFadeMode != MARQUEE_FADE_SWITCH_SHOW_ELLIPSIS) {
         Int32 linecount;
         if (mMarquee != NULL && !mMarquee->IsStopped()) {

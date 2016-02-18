@@ -32,11 +32,18 @@ namespace App {
 //  MediaRouteButton::MyMediaRouterCallback
 //=========================================================================
 
-MediaRouteButton::MyMediaRouterCallback::MyMediaRouterCallback(
+MediaRouteButton::MyMediaRouterCallback::MyMediaRouterCallback()
+{}
+
+ECode MediaRouteButton::MyMediaRouterCallback::constructor(
     /* [in] */ IMediaRouteButton* provider)
 {
+    assert(0 && "TODO");
+    // CMediaRouter::SimpleCallback::constructor();
+
     AutoPtr<IWeakReferenceSource> wrs = IWeakReferenceSource::Probe(provider);
     wrs->GetWeakReference((IWeakReference**)&mProviderWeak);
+    return NOERROR;
 }
 
 ECode MediaRouteButton::MyMediaRouterCallback::OnRouteAdded(
@@ -168,8 +175,9 @@ ECode MediaRouteButton::constructor(
     AutoPtr<IInterface> obj;
     context->GetSystemService(IContext::MEDIA_ROUTER_SERVICE, (IInterface**)&obj);
     mRouter = IMediaRouter::Probe(obj);
-    assert(0 && "TODO");
-    // mCallback = new MyMediaRouterCallback(this);
+    AutoPtr<MyMediaRouterCallback> cb = new MyMediaRouterCallback();
+    cb->constructor(this);
+    mCallback = (IMediaRouterCallback*)cb.Get();
 
     AutoPtr<ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(
         const_cast<Int32 *>(R::styleable::MediaRouteButton),

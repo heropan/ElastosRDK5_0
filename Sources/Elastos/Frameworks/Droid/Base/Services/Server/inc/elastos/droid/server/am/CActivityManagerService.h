@@ -1450,14 +1450,14 @@ public:
     CARAPI CreateActivityContainer(
         /* [in] */ IBinder* parentActivityToken,
         /* [in] */ IActivityContainerCallback* callback,
-        /* [out] */ IActivityContainer** container);
+        /* [out] */ IIActivityContainer** container);
 
     CARAPI DeleteActivityContainer(
-        /* [in] */ IActivityContainer* container);
+        /* [in] */ IIActivityContainer* container);
 
     CARAPI GetEnclosingActivityContainer(
         /* [in] */ IBinder* activityToken,
-        /* [out] */ IActivityContainer** container);
+        /* [out] */ IIActivityContainer** container);
 
     CARAPI MoveTaskToStack(
         /* [in] */ Int32 taskId,
@@ -2776,7 +2776,7 @@ public:
         /* [in] */ Int32 startFlags,
         /* [in] */ IBundle* options,
         /* [in] */ Int32 userId,
-        /* [in] */ IActivityContainer* container,
+        /* [in] */ IIActivityContainer* container,
         /* [in] */ TaskRecord* inTask,
         /* [out] */ Int32* result);
 

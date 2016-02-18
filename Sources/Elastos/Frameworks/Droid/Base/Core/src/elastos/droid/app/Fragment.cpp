@@ -2270,19 +2270,20 @@ ECode Fragment::PerformStop()
 
     if (mLoadersStarted) {
         mLoadersStarted = FALSE;
-        assert(0 && "TODO");
-        // AutoPtr<Activity> act = (Activity*)mActivity.Get();;
-        // if (!mCheckedForLoaderManager) {
-        //     mCheckedForLoaderManager = TRUE;
-        //     mLoaderManager = act->GetLoaderManager(mWho, mLoadersStarted, FALSE);
-        // }
-        // if (mLoaderManager != NULL) {
-        //     if (mActivity == NULL || !act->mChangingConfigurations) {
-        //         ILoaderManager::Probe(mLoaderManager)->DoStop();
-        //     } else {
-        //         ILoaderManager::Probe(mLoaderManager)->DoRetain();
-        //     }
-        // }
+        AutoPtr<Activity> act = (Activity*)mActivity.Get();;
+        if (!mCheckedForLoaderManager) {
+            mCheckedForLoaderManager = TRUE;
+            mLoaderManager = act->GetLoaderManager(mWho, mLoadersStarted, FALSE);
+        }
+        if (mLoaderManager != NULL) {
+            assert(0 && "TODO");
+            // if (mActivity == NULL || !act->mChangingConfigurations) {
+            //     ILoaderManager::Probe(mLoaderManager)->DoStop();
+            // }
+            // else {
+            //     ILoaderManager::Probe(mLoaderManager)->DoRetain();
+            // }
+        }
     }
     return NOERROR;
 }
