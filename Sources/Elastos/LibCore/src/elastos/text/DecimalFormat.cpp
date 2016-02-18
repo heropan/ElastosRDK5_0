@@ -504,11 +504,11 @@ ECode DecimalFormat::SetCurrency(
 {
     String currencySymbol, currencyCode;
     currency->GetCurrencyCode(&currencyCode);
-    AutoPtr<IDecimalFormatSymbols> symbols;
-    mSymbols->GetCurrencySymbol(&currencySymbol);
 
     AutoPtr<ICurrency> instance = Currency::GetInstance(currencyCode);
     FAIL_RETURN(mSymbols->SetCurrency(instance));
+
+    mSymbols->GetCurrencySymbol(&currencySymbol);
     return mNdf->SetCurrency(currencySymbol, currencyCode);
 }
 

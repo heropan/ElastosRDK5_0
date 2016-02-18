@@ -1340,6 +1340,7 @@ AutoPtr<ArrayOf<String> > SimpleDateFormat::IArrayofToStringArray(
     for (Int32 i = 0;i < size; ++i) {
         AutoPtr<IInterface> obj;
         arrayOf->Get(i, (IInterface**)&obj);
+        if (obj == NULL) continue;
         String str;
         ICharSequence::Probe(obj)->ToString(&str);
         array->Set(i, str);
@@ -1354,7 +1355,7 @@ ECode SimpleDateFormat::Set2DigitYearStart(
     mDefaultCenturyStart = NULL;
     FAIL_RETURN (ICloneable::Probe(date)->Clone((IInterface**)&mDefaultCenturyStart));
     AutoPtr<ICalendar> cal;
-    CGregorianCalendar::New((IGregorianCalendar**)&cal);
+    CGregorianCalendar::New((ICalendar**)&cal);
     cal->SetTime((IDate*)mDefaultCenturyStart);
     mCreationYear = 0;
     cal->Get(ICalendar::YEAR, &mCreationYear);
