@@ -505,8 +505,9 @@ ECode DecimalFormat::SetCurrency(
     String currencySymbol, currencyCode;
     currency->GetCurrencyCode(&currencyCode);
 
-    AutoPtr<ICurrency> instance = Currency::GetInstance(currencyCode);
-    FAIL_RETURN(mSymbols->SetCurrency(instance));
+    AutoPtr<ICurrency> instance;
+    FAIL_RETURN(Currency::GetInstance(currencyCode, (ICurrency**)&instance));
+    mSymbols->SetCurrency(instance);
 
     mSymbols->GetCurrencySymbol(&currencySymbol);
     return mNdf->SetCurrency(currencySymbol, currencyCode);
