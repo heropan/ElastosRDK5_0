@@ -1,10 +1,10 @@
 
-#ifndef __ELASTOS_DROID_MEDIA_CUSERROUTEINFO_H__
-#define __ELASTOS_DROID_MEDIA_CUSERROUTEINFO_H__
+#ifndef __ELASTOS_DROID_MEDIA_CMEDIAROUTERUSERROUTEINFO_H__
+#define __ELASTOS_DROID_MEDIA_CMEDIAROUTERUSERROUTEINFO_H__
 
-#include "_Elastos_Droid_Media_CUserRouteInfo.h"
+#include "_Elastos_Droid_Media_CMediaRouterUserRouteInfo.h"
 #include "elastos/droid/ext/frameworkext.h"
-#include "elastos/droid/media/CMediaRouter.h"
+#include "elastos/droid/media/MediaRouterUserRouteInfo.h"
 
 using Elastos::Droid::Graphics::Drawable::IDrawable;
 
@@ -19,8 +19,8 @@ namespace Media {
  *
  * @see MediaRouter.RouteInfo
  */
-CarClass(CUserRouteInfo)
-    , public CMediaRouter::UserRouteInfo
+CarClass(CMediaRouterUserRouteInfo)
+    , public MediaRouterUserRouteInfo
 {
 public:
     CAR_OBJECT_DECL()
@@ -30,4 +30,4 @@ public:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __CMEDIAROUTER_H__
+#endif // __ELASTOS_DROID_MEDIA_CMEDIAROUTERUSERROUTEINFO_H__

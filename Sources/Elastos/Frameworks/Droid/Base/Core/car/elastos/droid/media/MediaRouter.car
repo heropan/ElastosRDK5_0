@@ -226,10 +226,6 @@ module
             [in] IContext * context,
             [out] ICharSequence ** result);
 
-        GetName(
-            [in] IResources* res,
-            [out] ICharSequence** result);
-
         /**
          * Gets the user-visible description of the route.
          * <p>
@@ -857,14 +853,6 @@ module
     }
 
     /**
-     * @Involve
-     * interface IVolumeProvider
-     */
-    interface IMediaRouterUserRouteInfoSessionVolumeProvider
-    {
-    }
-
-    /**
      * MediaRouter allows applications to control the routing of media channels
      * and streams from the current device to external speakers and destination devices.
      *
@@ -1135,7 +1123,7 @@ module
         /**
          * @hide internal use only
          */
-        RemoveRouteInt(
+        RemoveRouteInt32(
             [in] IMediaRouterRouteInfo * info);
 
         /**

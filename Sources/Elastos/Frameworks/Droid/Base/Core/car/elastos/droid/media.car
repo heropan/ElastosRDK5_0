@@ -916,12 +916,12 @@ module
         interface ISubtitleControllerListener;
     }
 
-    //class CMediaRouterSimpleCallback {
-    //    constructor();
-    //
-    //    interface IMediaRouterSimpleCallback;
-    //    interface IMediaRouterCallback;
-    //}
+    class CMediaRouterSimpleCallback {
+        constructor();
+
+        interface IMediaRouterSimpleCallback;
+        interface IMediaRouterCallback;
+    }
 
     [deprecated]
     class CSubtitleController {
@@ -1280,49 +1280,54 @@ module
         interface ITtmlRenderer;
     }
 
-//    class CMediaRouter {
-//        constructor(
-//            [in] IContext* context);
-//
-//        interface IMediaRouter;
-//    }
-//
-//    class CMediaRouteInfo {
-//        constructor(
-//            [in] IMediaRouterRouteCategory* category);
-//
-//        interface IMediaRouterRouteInfo;
-//    }
-//
-//    class CRouteGroup {
-//        constructor(
-//            [in] IMediaRouterRouteCategory* category);
-//
-//        interface IMediaRouterRouteGroup;
-//        interface IMediaRouterRouteInfo;
-//    }
-//
-//    class CRouteCategory {
-//        constructor(
-//            [in] ICharSequence* name,
-//            [in] Int32 types,
-//            [in] Boolean groupable);
-//
-//        constructor(
-//            [in] Int32 nameResId,
-//            [in] Int32 types,
-//            [in] Boolean groupable);
-//
-//        interface IMediaRouterRouteCategory;
-//    }
-//
-//    class CUserRouteInfo {
-//        constructor(
-//            [in] IMediaRouterRouteCategory* category);
-//
-//        interface IMediaRouterUserRouteInfo;
-//        interface IMediaRouterRouteInfo;
-//    }
+    class CMediaRouter {
+        constructor(
+            [in] IContext* context);
+
+        interface IMediaRouter;
+    }
+
+    [local]
+    class CMediaRouterRouteInfo {
+        constructor(
+            [in] IMediaRouterRouteCategory* category,
+            [in] IMediaRouter* host);
+
+        interface IMediaRouterRouteInfo;
+    }
+
+    class CMediaRouterRouteGroup {
+        constructor(
+            [in] IMediaRouterRouteCategory* category);
+
+        interface IMediaRouterRouteGroup;
+        interface IMediaRouterRouteInfo;
+    }
+
+    [local]
+    class CRouteCategory {
+        constructor(
+            [in] ICharSequence* name,
+            [in] Int32 types,
+            [in] Boolean groupable,
+            [in] IMediaRouter* host);
+
+        constructor(
+            [in] Int32 nameResId,
+            [in] Int32 types,
+            [in] Boolean groupable,
+            [in] IMediaRouter* host);
+
+        interface IMediaRouterRouteCategory;
+    }
+
+    class CMediaRouterUserRouteInfo {
+        constructor(
+            [in] IMediaRouterRouteCategory* category);
+
+        interface IMediaRouterUserRouteInfo;
+        interface IMediaRouterRouteInfo;
+    }
 
     class CSoundPool {
         constructor(
