@@ -10,10 +10,9 @@ INCLUDES += $(MAKEDIR)/../../../../inc/
 CAR_FLAGS += -n -u
 LUBE_FLAGS += -n -u
 
-IMPORTS += Elastos.CoreLibrary.eco
-
 SOURCES = SettingsProvider.car
-
+SOURCES += Elastos.Droid.Core.cpp
+SOURCES += Elastos.CoreLibrary.cpp
 SOURCES += R.cpp
 SOURCES += CSettingsBackupAgent.cpp
 SOURCES += CSettingsProvider.cpp
@@ -21,8 +20,6 @@ SOURCES += DatabaseHelper.cpp
 SOURCES += SettingsBackupAgent.cpp
 SOURCES += SettingsHelper.cpp
 SOURCES += SettingsProvider.cpp
-SOURCES += Elastos.Droid.Core.cpp
-SOURCES += Elastos.CoreLibrary.cpp
 
 LIBRARIES += $(XDK_USER_LIB)/Elastos.Runtime.lib
 LIBRARIES += $(XDK_TARGETS)/Elastos.Runtime.eco
