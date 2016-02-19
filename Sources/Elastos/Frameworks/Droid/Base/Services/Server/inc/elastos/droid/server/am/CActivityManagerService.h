@@ -1143,7 +1143,7 @@ public:
     CARAPI_(void) SetUsageStatsManager(
         /* [in] */ IUsageStatsManagerInternal* usageStatsManager);
 
-    CARAPI_(void) StartObservingNativeCrashes();
+    CARAPI StartObservingNativeCrashes();
 
     CARAPI_(AutoPtr<IIAppOpsService>) GetAppOpsService();
 

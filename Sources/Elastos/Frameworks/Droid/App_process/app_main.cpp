@@ -75,22 +75,27 @@ void AppRuntime::SetClassNameAndArgs(
 
 void AppRuntime::OnStarted()
 {
-    // sp<ProcessState> proc = ProcessState::self();
-    // ALOGV("App process: starting thread pool.\n");
-    // proc->startThreadPool();
+    ALOGV("App process: OnStarted.\n");
+    sp<ProcessState> proc = ProcessState::self();
+    ALOGV("App process: starting thread pool.\n");
+    proc->startThreadPool();
 
-    // DroidRuntime::GetRuntime()->CallMain(mModuleName, mClassName, mArgs);
-    // proc->stopProcess();
+    AutoPtr<DroidRuntime> ar = DroidRuntime::GetRuntime();
+    ar->CallMain(mModuleName, mClassName, mArgs);
+
+    IPCThreadState::self()->stopProcess();
 }
 
 void AppRuntime::OnZygoteInit()
 {
-    // // Re-enable tracing now that we're no longer in Zygote.
-    // atrace_set_tracing_enabled(true);
+    ALOGV("App process: OnZygoteInit.\n");
+    // Re-enable tracing now that we're no longer in Zygote.
+    // TODO
+    //atrace_set_tracing_enabled(true);
 
-    // sp<ProcessState> proc = ProcessState::self();
-    // ALOGV("App process: starting thread pool.\n");
-    // proc->startThreadPool();
+    sp<ProcessState> proc = ProcessState::self();
+    ALOGV("App process: starting thread pool.\n");
+    proc->startThreadPool();
 }
 
 void AppRuntime::OnExit(int code)
@@ -109,6 +114,7 @@ void AppRuntime::OnExit(int code)
 
 void app_usage()
 {
+    // /system/bin/ElApp_process -Xzygote /system/bin --zygote --start-system-server
     fprintf(stderr,
         "Usage: ElApp_process [java-options] cmd-dir start-class-name [options]\n");
 }
@@ -184,6 +190,8 @@ static const char ZYGOTE_NICE_NAME[] = "elzygote";
 
 int main(int argc, char* argv[])
 {
+    ALOGV("App_process main()\n");
+
     if (prctl(PR_SET_NO_NEW_PRIVS, 1, 0, 0, 0) < 0) {
         // Older kernels don't understand PR_SET_NO_NEW_PRIVS and return
         // EINVAL. Don't die on such kernels.
@@ -317,7 +325,7 @@ int main(int argc, char* argv[])
     if (zygote) {
         runtime.Start(
             String("Elastos.Droid.Core.eco"),
-            String("CZygoteInit"),
+            String("LElastos/Droid/Internal/Os/CZygoteInit;"),
             argArray);
     }
     else if (className) {
@@ -330,7 +338,7 @@ int main(int argc, char* argv[])
 
         runtime.Start(
             String("Elastos.Droid.Core.eco"),
-            String("CRuntimeInit"),
+            String("LElastos/Droid/Internal/Os/CRuntimeInit;"),
             argArray);
     }
     else {

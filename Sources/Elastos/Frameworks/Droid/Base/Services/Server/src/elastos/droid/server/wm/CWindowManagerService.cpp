@@ -8826,7 +8826,7 @@ Boolean CWindowManagerService::DetectSafeMode()
     return mSafeMode;
 }
 
-void CWindowManagerService::DisplayReady()
+ECode CWindowManagerService::DisplayReady()
 {
     //ActionsCode(author:wh, BUGFIXED:BUG00238382 init all displays which surfaceflinger decteced before system ready)
     //displayReady(Display.DEFAULT_DISPLAY);
@@ -8861,6 +8861,7 @@ void CWindowManagerService::DisplayReady()
     mActivityManager->UpdateConfiguration(NULL);
     // } catch (RemoteException e) {
     // }
+    return NOERROR;
 }
 
 void CWindowManagerService::DisplayReady(

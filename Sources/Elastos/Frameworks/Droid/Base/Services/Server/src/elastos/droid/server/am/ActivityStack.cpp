@@ -511,7 +511,6 @@ AutoPtr<ActivityRecord> ActivityStack::FindTaskLocked(
         AutoPtr<IIntent> affinityIntent = task->mAffinityIntent;
         Boolean taskIsDocument = FALSE, affinityIsDocument = FALSE;
         AutoPtr<IUri> taskDocumentData;
-        Boolean tiIsDoc = FALSE;
         if (taskIntent != NULL) {
             taskIntent->IsDocument(&taskIsDocument);
         }
@@ -586,7 +585,6 @@ AutoPtr<ActivityRecord> ActivityStack::FindActivityLocked(
     if (!sTargetActivity.IsNull()) {
         String sPackagename;
         IPackageItemInfo::Probe(info)->GetPackageName(&sPackagename);
-        //cls = new ComponentName(info.packageName, info.targetActivity);
         CComponentName::New(sPackagename, sTargetActivity, (IComponentName**)&cls);
     }
     AutoPtr<IUserHandleHelper> helper;

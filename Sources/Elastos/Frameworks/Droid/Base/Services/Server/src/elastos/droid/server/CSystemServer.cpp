@@ -8,12 +8,14 @@
 #include "elastos/droid/server/Watchdog.h"
 #include "elastos/droid/server/CVibratorService.h"
 #include "elastos/droid/server/CConsumerIrService.h"
+#include "elastos/droid/server/CInputMethodManagerService.h"
 
 #include "elastos/droid/server/content/CContentService.h"
 #include "elastos/droid/server/lights/LightsService.h"
 #include "elastos/droid/server/os/CSchedulingPolicyService.h"
 #include "elastos/droid/server/power/ShutdownThread.h"
 #include "elastos/droid/server/webkit/WebViewUpdateService.h"
+#include "elastos/droid/server/wm/InputMonitor.h"
 #include "elastos/droid/server/wm/CWindowManagerService.h"
 
 #include <Elastos.Droid.Os.h>
@@ -27,6 +29,7 @@
 #include <elastos/droid/os/UserHandle.h>
 #include <elastos/droid/os/Looper.h>
 #include <elastos/droid/os/Build.h>
+#include <elastos/droid/app/ActivityManagerNative.h>
 #include <elastos/utility/logging/Slogger.h>
 
 #include <SensorService.h>
@@ -52,6 +55,7 @@ using Elastos::Droid::App::IIAlarmManager;
 using Elastos::Droid::App::IActivityThread;
 using Elastos::Droid::App::IActivityThreadHelper;
 using Elastos::Droid::App::CActivityThreadHelper;
+using Elastos::Droid::App::ActivityManagerNative;
 using Elastos::Droid::Content::IComponentName;
 using Elastos::Droid::Content::CComponentName;
 using Elastos::Droid::Content::IIntent;
@@ -59,12 +63,13 @@ using Elastos::Droid::Content::CIntent;
 using Elastos::Droid::View::IIWindowManager;
 using Elastos::Droid::Hardware::Input::IIInputManager;
 using Elastos::Droid::Webkit::IWebViewFactory;
-// using Elastos::Droid::Webkit::CWebViewFactory;
+using Elastos::Droid::Webkit::CWebViewFactory;
 using Elastos::Droid::Server::Content::CContentService;
 using Elastos::Droid::Server::Lights::LightsService;
 using Elastos::Droid::Server::Os::CSchedulingPolicyService;
 using Elastos::Droid::Server::Power::ShutdownThread;
 using Elastos::Droid::Server::Webkit::WebViewUpdateService;
+using Elastos::Droid::Server::Wm::InputMonitor;
 
 using Elastos::Core::ISystem;
 using Elastos::Core::CSystem;
@@ -141,6 +146,7 @@ ECode SystemServer::NativeInit()
 
 ECode SystemServer::Run()
 {
+    Slogger::I(TAG, " === SystemServer::Run() ===");
     ECode ec = NOERROR;
 
     // If a device's clock is before 1970 (before 0), a lot of
@@ -294,6 +300,7 @@ ECode SystemServer::CreateSystemContext()
 
 ECode SystemServer::StartBootstrapServices()
 {
+    Slogger::I(TAG, " === StartBootstrapServices ===");
     AutoPtr<ISystemService> service;
 
     // // Wait for installd to finish starting up so that it has a chance to
@@ -367,6 +374,7 @@ ECode SystemServer::StartBootstrapServices()
 
 ECode SystemServer::StartCoreServices()
 {
+    Slogger::I(TAG, " === StartCoreServices ===");
     // Manages LEDs and display backlight.
     Slogger::I(TAG, "Lights Service");
     AutoPtr<LightsService> ligthService = new LightsService();
@@ -417,7 +425,7 @@ ECode SystemServer::StartOtherServices()
     // AutoPtr<CSerialService> serial;
     // AutoPtr<CNetworkTimeUpdateService> networkTimeUpdater;
     // AutoPtr<CCommonTimeManagementService> commonTimeMgmtService;
-    // AutoPtr<CInputManagerService> inputManager;
+    AutoPtr<CInputManagerService> inputManager;
     // AutoPtr<CTelephonyRegistry> telephonyRegistry;
     AutoPtr<CConsumerIrService> consumerIr;
     // AutoPtr<CAudioService> audioService;
@@ -425,7 +433,7 @@ ECode SystemServer::StartOtherServices()
 
     // AutoPtr<CStatusBarManagerService> statusBar;
     // AutoPtr<IINotificationManager> notification;
-    // AutoPtr<CInputMethodManagerService> imm;
+    AutoPtr<CInputMethodManagerService> imm;
     // AutoPtr<CWallpaperManagerService> wallpaper;
     // AutoPtr<CLocationManagerService> location;
     // AutoPtr<CCountryDetectorService> countryDetector;
@@ -507,28 +515,28 @@ ECode SystemServer::StartOtherServices()
     alarm = IIAlarmManager::Probe(alarmMgrObj);
 
     Slogger::I(TAG, "Init Watchdog");
-    AutoPtr<Watchdog> watchdog = Watchdog::GetInstance();
-    watchdog->Init(context, mActivityManagerService);
+    Watchdog::GetInstance()->Init(context, mActivityManagerService);
 
     Slogger::I(TAG, "Input Manager");
     AutoPtr<IIInputManager> inputMgr;
-    // CInputManagerService::New(context, (IIInputManager**)&inputMgr);
-    // inputManager = (CInputManagerService*)inputMgr.Get();
+    CInputManagerService::New(context, (IIInputManager**)&inputMgr);
+    inputManager = (CInputManagerService*)inputMgr.Get();
 
     Slogger::I(TAG, "Window Manager");
-    // wm = CWindowManagerService::Main(context, inputManager,
-    //         mFactoryTestMode != FactoryTest::FACTORY_TEST_LOW_LEVEL,
-    //         !mFirstBoot, mOnlyCore);
+    wm = CWindowManagerService::Main(context, inputManager,
+            mFactoryTestMode != FactoryTest::FACTORY_TEST_LOW_LEVEL,
+            !mFirstBoot, mOnlyCore);
     ServiceManager::AddService(IContext::WINDOW_SERVICE, IIWindowManager::Probe(wm));
     ServiceManager::AddService(IContext::INPUT_SERVICE, inputMgr.Get());
 
     mActivityManagerService->SetWindowManager(wm);
 
-//     inputManager->SetWindowManagerCallbacks(wm.getInputMonitor());
-//     inputManager->Start();
+    AutoPtr<InputMonitor> inputMonitor = wm->GetInputMonitor();
+    inputManager->SetWindowManagerCallbacks((IWindowManagerCallbacks*)inputMonitor.Get());
+    inputManager->Start();
 
-//     // TODO: Use service dependencies instead.
-//     mDisplayManagerService.windowManagerAndInputReady();
+    // TODO: Use service dependencies instead.
+    mDisplayManagerService->WindowManagerAndInputReady();
 
 //     // Skip Bluetooth if we have an emulator kernel
 //     // TODO: Use a more reliable check to see if this product should
@@ -559,7 +567,7 @@ ECode SystemServer::StartOtherServices()
     //     if (true) {
     //         try {
     //             Slogger::I(TAG, "Input Method Service");
-    //             imm = new InputMethodManagerService(context, wm);
+    //             imm = new CInputMethodManagerService(context, wm);
     //             ServiceManager::AddService(Context.INPUT_METHOD_SERVICE, imm);
     //         } catch (Throwable e) {
     //             ReportWtf("starting Input Manager Service", ec);
@@ -575,25 +583,21 @@ ECode SystemServer::StartOtherServices()
     //     }
     // }
 
-    // try {
-    //     wm.displayReady();
-    // } catch (Throwable e) {
-    //     ReportWtf("making display ready", ec);
-    // }
+    ec = wm->DisplayReady();
+    if (FAILED(ec)) {
+        ReportWtf("making display ready", ec);
+    }
 
-    // try {
-    //     mPackageManagerService.performBootDexOpt();
-    // } catch (Throwable e) {
-    //     ReportWtf("performing boot dexopt", ec);
-    // }
+    ec = mPackageManagerService->PerformBootDexOpt();
+    if (FAILED(ec)) {
+        ReportWtf("making display ready", ec);
+    }
 
-    // try {
-    //     ActivityManagerNative.getDefault().showBootMessage(
-    //             context.getResources().getText(
-    //                     com.android.internal.R.string.android_upgrading_starting_apps),
-    //             false);
-    // } catch (RemoteException e) {
-    // }
+    AutoPtr<IResources> res;
+    context->GetResources((IResources**)&res);
+    AutoPtr<ICharSequence> bootMsg;
+    res->GetText(R::string::android_upgrading_starting_apps, (ICharSequence**)&bootMsg);
+    ActivityManagerNative::GetDefault()->ShowBootMessage(bootMsg, FALSE);
 
     // if (mFactoryTestMode != FactoryTest::FACTORY_TEST_LOW_LEVEL) {
     //     if (!disableStorage &&
@@ -1023,11 +1027,10 @@ ECode SystemServer::StartOtherServices()
 
     // mSystemServiceManager->StartBootPhase(ISystemService::PHASE_SYSTEM_SERVICES_READY);
 
-    // try {
-    //     wm->SystemReady();
-    // } catch (Throwable e) {
-    //     ReportWtf("making Window Manager Service ready", ec);
-    // }
+    ec = wm->SystemReady();
+    if (FAILED(ec)) {
+        ReportWtf("making Window Manager Service ready", ec);
+    }
 
     // if (safeMode) {
     //     mActivityManagerService.showSafeModeOverlay();
@@ -1049,11 +1052,10 @@ ECode SystemServer::StartOtherServices()
     //     ReportWtf("making Power Manager Service ready", ec);
     // }
 
-    // try {
-    //     mPackageManagerService->SystemReady();
-    // } catch (Throwable e) {
-    //     ReportWtf("making Package Manager Service ready", ec);
-    // }
+    ec = mPackageManagerService->SystemReady();
+    if (FAILED(ec)) {
+        ReportWtf("making Package Manager Service ready", ec);
+    }
 
     // TODO: use boot phase and communicate these flags some other way
     ec = mDisplayManagerService->SystemReady(safeMode, mOnlyCore);
@@ -1078,7 +1080,7 @@ ECode SystemServer::StartOtherServices()
     // bundle->mTextServiceManagerServiceF = tsms;
     // bundle->mStatusBarF = statusBar;
     // bundle->mAtlasF = atlas;
-    // bundle->mInputManagerF = inputManager;
+    bundle->mInputManagerF = inputManager;
     // bundle->mTelephonyRegistryF = telephonyRegistry;
     // bundle->mMediaRouterF = mediaRouter;
     // bundle->mAudioServiceF = audioService;
@@ -1090,7 +1092,7 @@ ECode SystemServer::StartOtherServices()
     // started launching the initial applications), for us to complete our
     // initialization.
     AutoPtr<IRunnable> runnable = new SystemReadyRunnable(this, bundle);
-    // mActivityManagerService->SystemReady(runnable);
+    mActivityManagerService->SystemReady(runnable);
     return NOERROR;
 }
 
@@ -1125,21 +1127,20 @@ SystemServer::SystemReadyRunnable::SystemReadyRunnable(
 ECode SystemServer::SystemReadyRunnable::Run()
 {
     Slogger::I(TAG, "Making services ready");
-    assert(0 && "TODO");
+
+    ECode ec = NOERROR;
 
     mHost->mSystemServiceManager->StartBootPhase(
         ISystemService::PHASE_ACTIVITY_MANAGER_READY);
 
-    ECode ec = NOERROR;
+    ec = mHost->mActivityManagerService->StartObservingNativeCrashes();
+    if (FAILED(ec)) {
+        mHost->ReportWtf("observing native crashes", ec);
+    }
 
-    // ec = mActivityManagerService->StartObservingNativeCrashes();
-    // if (FAILED(ec)) {
-    //     mHost->ReportWtf("observing native crashes", ec);
-    // }
-
-    // Slogger::I(SystemServer::TAG, "WebViewFactory preparation");
+    Slogger::I(SystemServer::TAG, "WebViewFactory preparation");
     AutoPtr<IWebViewFactory> webViewFactory;
-    // CWebViewFactory::AcquireSingleton((IWebViewFactory**)&webViewFactory);
+    CWebViewFactory::AcquireSingleton((IWebViewFactory**)&webViewFactory);
     webViewFactory->PrepareWebViewInSystemServer();
 
     ec = StartSystemUi(mHost->mSystemContext);
@@ -1196,12 +1197,12 @@ ECode SystemServer::SystemReadyRunnable::Run()
     //     }
     // }
 
-    // // Watchdog.getInstance().start();
+    Watchdog::GetInstance()->Start();
 
-    // // It is now okay to let the various system services start their
-    // // third party code...
-    // mSystemServiceManager->StartBootPhase(
-    //     ISystemService::PHASE_THIRD_PARTY_APPS_CAN_START);
+    // It is now okay to let the various system services start their
+    // third party code...
+    mHost->mSystemServiceManager->StartBootPhase(
+        ISystemService::PHASE_THIRD_PARTY_APPS_CAN_START);
 
     // if (mServiceBundle->mWallpaperF != NULL) {
     //     ec = mServiceBundle->mWallpaperF->SystemRunning();

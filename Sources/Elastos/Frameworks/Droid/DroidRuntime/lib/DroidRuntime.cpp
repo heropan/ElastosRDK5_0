@@ -111,7 +111,7 @@ ECode DroidRuntime::CallMain(
     /* [in] */ const String& className,
     /* [in] */ ArrayOf<String>* args)
 {
-    Logger::D("Calling main entry \"%s/%s\"", moduleName.string(), className.string());
+    Logger::D(TAG, "Calling main entry \"%s/%s\"", moduleName.string(), className.string());
 
     AutoPtr<IModuleInfo> moduleInfo;
     AutoPtr<IClassInfo> classInfo;
@@ -135,12 +135,13 @@ ECode DroidRuntime::CallMain(
 
     ec = classInfo->CreateObject((IInterface**)&object);
     if (FAILED(ec)) {
-        Logger::E(TAG, "Create object failed!\n");
+        Logger::E(TAG, "Create object failed! \"%s/%s\" \n",
+            moduleName.string(), className.string());
         return ec;
     }
 
     ec = classInfo->GetMethodInfo(
-            String("Main"), String("[LElastos/String;)E"), (IMethodInfo**)&methodInfo);
+            String("Main"), String("([LElastos/String;)E"), (IMethodInfo**)&methodInfo);
     if (FAILED(ec)) {
         Logger::E(TAG, "Acquire \"%s/%s\" \"Main\" method info failed!\n",
             moduleName.string(), className.string());

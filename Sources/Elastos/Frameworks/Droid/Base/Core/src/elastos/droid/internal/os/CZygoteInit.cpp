@@ -54,7 +54,7 @@ namespace Droid {
 namespace Internal {
 namespace Os {
 
-const String CZygoteInit::TAG("zygote");
+const String CZygoteInit::TAG("CZygoteInit");
 const String CZygoteInit::PROPERTY_DISABLE_OPENGL_PRELOADING("ro.zygote.disable_gl_preload");
 const String CZygoteInit::ANDROID_SOCKET_PREFIX("ANDROID_SOCKET_");
 const Int32 CZygoteInit::LOG_BOOT_PROGRESS_PRELOAD_START = 3020;
@@ -109,32 +109,38 @@ ECode CZygoteInit::RegisterZygoteSocket(
         AutoPtr<Elastos::Core::ISystem> system;
         Elastos::Core::CSystem::AcquireSingleton((Elastos::Core::ISystem**)&system);
 
-        Int32 fd;
+        Int32 fileDesc;
         // try {
         String env;
         system->GetEnv(fullSocketName, &env);
         if (env.IsNull()) {
-            return E_ILLEGAL_ARGUMENT_EXCEPTION;
+            Logger::E("CZygoteInit", "%s unset or invalid", fullSocketName.string());
+            return E_RUNTIME_EXCEPTION;
         }
 
-        fd = StringUtils::ParseInt32(env);
+        ECode ec = StringUtils::Parse(env, &fileDesc);
+        if (FAILED(ec)) {
+            Logger::E("CZygoteInit", "%s, %s unset or invalid", fullSocketName.string(), env.string());
+            return E_RUNTIME_EXCEPTION;
+        }
         // } catch (RuntimeException ex) {
         //     throw new RuntimeException(
-        //             ANDROID_SOCKET_ENV + " unset or invalid", ex);
+        //             fullSocketName + " unset or invalid", ex);
         // }
 
         // try {
-        //     sServerSocket = new LocalServerSocket(
-        //             createFileDescriptor(fileDesc));
-        ECode ec = CLocalServerSocket::New(CreateFileDescriptor(fd), (ILocalServerSocket**)&sServerSocket);
+        ec = CLocalServerSocket::New(CreateFileDescriptor(fileDesc), (ILocalServerSocket**)&sServerSocket);
         if (FAILED(ec)) {
-            Logger::E("CZygoteInit", "Error binding to local socket!\n");
+            Logger::E("CZygoteInit", "Error binding to local socket! %s, ec=%08x\n",
+                fullSocketName.string(), ec);
+            return E_RUNTIME_EXCEPTION;
         }
         // } catch (IOException ex) {
         //     throw new RuntimeException(
         //             "Error binding to local socket '" + fileDesc + "'", ex);
         // }
     }
+
     return NOERROR;
 }
 
@@ -142,6 +148,7 @@ ECode CZygoteInit::AcceptCommandPeer(
     /* [in] */ const String& abiList,
     /* [out] */ ZygoteConnection** peer)
 {
+    VALIDATE_NOT_NULL(peer)
     // try {
     AutoPtr<ILocalSocket> socket;
     FAIL_RETURN(sServerSocket->Accept((ILocalSocket**)&socket));
@@ -204,40 +211,44 @@ void CZygoteInit::Preload()
 
 void CZygoteInit::PreloadOpenGL()
 {
+    Logger::I(TAG, "Preloading opengl...");
     Boolean bval;
     SystemProperties::GetBoolean(PROPERTY_DISABLE_OPENGL_PRELOADING, FALSE, &bval);
     if (!bval) {
         AutoPtr<IEGL14> egl14;
         CEGL14::AcquireSingleton((IEGL14**)&egl14);
         AutoPtr<IEGLDisplay> eglDisplay;
-        egl14->EglGetDisplay(0/*IEGL14::_EGL_DEFAULT_DISPLAY*/, (IEGLDisplay**)&eglDisplay);
+        egl14->EglGetDisplay(IEGL14::_EGL_DEFAULT_DISPLAY, (IEGLDisplay**)&eglDisplay);
     }
 }
 
 void CZygoteInit::PreloadResources()
 {
     // Debug.startAllocCounting();
-
+    Logger::I(TAG, "Preloading resources...");
     mResources = CResources::GetSystem();
     mResources->StartPreloading();
     if (PRELOAD_RESOURCES) {
-        Logger::I(TAG, "Preloading resources...");
-
         Int64 startTime = SystemClock::GetUptimeMillis();
         AutoPtr<ITypedArray> ar;
         mResources->ObtainTypedArray(R::array::preloaded_drawables, (ITypedArray**)&ar);
-        Int32 N = PreloadDrawables(ar);
-        ar->Recycle();
-        Logger::I(TAG, "...preloaded %d drawables in %lld ms",
-            N, (SystemClock::GetUptimeMillis() - startTime));
+        if (ar != NULL) {
+            Int32 N = PreloadDrawables(ar);
+            ar->Recycle();
+            Logger::I(TAG, "...preloaded %d drawables in %lld ms",
+                N, (SystemClock::GetUptimeMillis() - startTime));
 
-        startTime = SystemClock::GetUptimeMillis();
-        ar = NULL;
-        mResources->ObtainTypedArray(R::array::preloaded_color_state_lists, (ITypedArray**)&ar);
-        N = PreloadColorStateLists(ar);
-        ar->Recycle();
-        Logger::I(TAG, "...preloaded %d color state lists in %lld ms",
-            N, (SystemClock::GetUptimeMillis() - startTime));
+            startTime = SystemClock::GetUptimeMillis();
+            ar = NULL;
+            mResources->ObtainTypedArray(R::array::preloaded_color_state_lists, (ITypedArray**)&ar);
+            N = PreloadColorStateLists(ar);
+            ar->Recycle();
+            Logger::I(TAG, "...preloaded %d color state lists in %lld ms",
+                N, (SystemClock::GetUptimeMillis() - startTime));
+        }
+        else {
+            Logger::E(TAG, "failed to ObtainTypedArray R::array::preloaded_drawables");
+        }
     }
     mResources->FinishPreloading();
 
@@ -247,6 +258,7 @@ void CZygoteInit::PreloadResources()
 Int32 CZygoteInit::PreloadColorStateLists(
     /* [in] */ ITypedArray* ar)
 {
+    Logger::I(TAG, "Preloading ColorStateLists...");
     Int32 N, id;
     ar->GetLength(&N);
     for (Int32 i = 0; i < N; i++) {
@@ -281,6 +293,7 @@ Int32 CZygoteInit::PreloadColorStateLists(
 Int32 CZygoteInit::PreloadDrawables(
     /* [in] */ ITypedArray* ar)
 {
+    Logger::I(TAG, "Preloading Drawables...");
     Int32 N, id;
     ar->GetLength(&N);
     for (Int32 i = 0; i < N; i++) {
@@ -316,6 +329,7 @@ ECode CZygoteInit::HandleSystemServerProcess(
     /* [in] */ ZygoteConnection::Arguments* parsedArgs,
     /* [out] */ IRunnable** task)
 {
+    Logger::I(TAG, "Handleing system server process...");
     VALIDATE_NOT_NULL(task);
     *task = NULL;
 
@@ -372,6 +386,7 @@ ECode CZygoteInit::StartSystemServer(
     /* [in] */ const String& socketName,
     /* [out] */ IRunnable** task)
 {
+    Logger::I(TAG, "CZygoteInit::StartSystemServer.");
     VALIDATE_NOT_NULL(task);
     *task = NULL;
 
@@ -409,13 +424,12 @@ ECode CZygoteInit::StartSystemServer(
     (*args)[4] = "--runtime-init";
     (*args)[5] = "--nice-name=elsystemserver";
     (*args)[6] = "Elastos.Droid.Server.eco";
-    (*args)[7] = "CSystemServer";
-    AutoPtr<ZygoteConnection::Arguments> parsedArgs;
+    (*args)[7] = "LElastos/Droid/Server/CSystemServer;";
 
     Int32 pid;
 
 //    try {
-    parsedArgs = new ZygoteConnection::Arguments(*args);
+    AutoPtr<ZygoteConnection::Arguments> parsedArgs = new ZygoteConnection::Arguments(*args);
     ZygoteConnection::ApplyDebuggerSystemProperty(parsedArgs);
     ZygoteConnection::ApplyInvokeWithSystemProperty(parsedArgs);
 
@@ -445,10 +459,12 @@ ECode CZygoteInit::StartSystemServer(
 ECode CZygoteInit::Main(
     /* [in] */ const ArrayOf<String>& argv)
 {
+    Logger::I(TAG, "CZygoteInit::Main.");
     // try {
         // Start profiling the zygote initialization.
         //SamplingProfilerIntegration.start();
 
+        ECode ec = NOERROR;
         AutoPtr<IRunnable> task;
         Boolean startSystemServer = FALSE;
         String socketName("elzygote");
@@ -476,7 +492,9 @@ ECode CZygoteInit::Main(
             //throw new RuntimeException("No ABI list supplied.");
         }
 
-        RegisterZygoteSocket(socketName);
+        ec = RegisterZygoteSocket(socketName);
+        if (FAILED(ec)) goto _RUNTIME_EXCEPTION_EXIT_;
+
         // EventLog.writeEvent(LOG_BOOT_PROGRESS_PRELOAD_START,
         //     SystemClock.uptimeMillis());
         Preload();

@@ -1345,7 +1345,7 @@ public:
 
     CARAPI_(Boolean) DetectSafeMode();
 
-    CARAPI_(void) DisplayReady();
+    CARAPI DisplayReady();
 
     CARAPI SystemReady();
 

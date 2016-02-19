@@ -10,7 +10,7 @@
 #include <elastos/core/AutoLock.h>
 #include <elastos/core/StringBuilder.h>
 #include <elastos/core/CoreUtils.h>
-#include <elastos/utility/logging/Slogger.h>
+#include <elastos/utility/logging/Logger.h>
 #include <androidfw/AssetManager.h>
 #include <androidfw/ResourceTypes.h>
 
@@ -25,7 +25,7 @@ using Elastos::IO::ICloseable;
 using Elastos::IO::EIID_ICloseable;
 using Elastos::IO::EIID_IInputStream;
 using Elastos::IO::CFileDescriptor;
-using Elastos::Utility::Logging::Slogger;
+using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
 namespace Droid {
@@ -177,12 +177,12 @@ CAssetManager::~CAssetManager()
 {
     Close();
     if (DEBUG_REFS && mNumRefs > 1 && this != sSystem) {
-        Slogger::V(TAG, "==== CAssetManager::~CAssetManager, mNumRefs: %d, this: %p ====",
+        Logger::V(TAG, "==== CAssetManager::~CAssetManager, mNumRefs: %d, this: %p ====",
             mNumRefs, THIS_PROBE(IAssetManager));
 
         HashMap<Int64, String>::Iterator it;
         for (it = mRefStacks.Begin(); it != mRefStacks.End(); ++it) {
-            Slogger::V(TAG, "==== CAssetManager reference through [%s]", it->mSecond.string());
+            Logger::V(TAG, "==== CAssetManager reference through [%s]", it->mSecond.string());
         }
         assert(0);
     }
@@ -199,7 +199,7 @@ ECode CAssetManager::constructor()
     }
 
     Init(FALSE);
-    if (LocalLOGV) Slogger::V(TAG, "New asset manager: %p", this);
+    if (LocalLOGV) Logger::V(TAG, "New asset manager: %p", this);
     return EnsureSystemAssets();
 }
 
@@ -214,7 +214,7 @@ ECode CAssetManager::constructor(
     }
 
     Init(TRUE);
-    if (LocalLOGV) Slogger::V(TAG, "New asset manager: %p", this);
+    if (LocalLOGV) Logger::V(TAG, "New asset manager: %p", this);
     return NOERROR;
 }
 
@@ -228,7 +228,7 @@ ECode CAssetManager::EnsureSystemAssets()
         system->MakeStringBlocks(NULL);
         sSystem = system;
 
-        if (LocalLOGV) Slogger::V(TAG, "EnsureSystemAssets: %p", system->Probe(EIID_IAssetManager));
+        if (LocalLOGV) Logger::V(TAG, "EnsureSystemAssets: %p", system->Probe(EIID_IAssetManager));
     }
     return NOERROR;
 }
@@ -394,7 +394,7 @@ void CAssetManager::MakeStringBlocks(
     Int32 num = GetStringBlockCount();
     mStringBlocks = ArrayOf<StringBlock*>::Alloc(num);
     if (LocalLOGV) {
-        Slogger::V(TAG, "Making string blocks for %p: %d",
+        Logger::V(TAG, "Making string blocks for %p: %d",
                 this, num);
     }
 
@@ -434,7 +434,7 @@ ECode CAssetManager::Open(
     AutoLock lock(this);
 
     if (!mOpen) {
-        // Slogger::E(TAG, "Assetmanager has been closed");
+        // Logger::E(TAG, "Assetmanager has been closed");
         *stream = NULL;
         return E_RUNTIME_EXCEPTION;
     }
@@ -447,7 +447,7 @@ ECode CAssetManager::Open(
         IncRefsLocked((Int32)*stream, "AssetManager::OpenEx");
         return NOERROR;
     }
-    if (LocalLOGV) Slogger::E(TAG, "Asset file: %s", fileName.string());
+    if (LocalLOGV) Logger::E(TAG, "Asset file: %s", fileName.string());
     *stream = NULL;
     return E_FILE_NOT_FOUND_EXCEPTION;
 }
@@ -461,7 +461,7 @@ ECode CAssetManager::OpenFd(
     AutoLock lock(this);
 
     if (!mOpen) {
-        // Slogger::E(TAG, "Assetmanager has been closed");
+        // Logger::E(TAG, "Assetmanager has been closed");
         *fd = NULL;
         return E_RUNTIME_EXCEPTION;
     }
@@ -470,7 +470,7 @@ ECode CAssetManager::OpenFd(
     if (pfd != NULL) {
         return CAssetFileDescriptor::New(pfd, (*mOffsets)[0], (*mOffsets)[1], fd);
     }
-    if (LocalLOGV) Slogger::E(TAG, "Asset file: %s", fileName.string());
+    if (LocalLOGV) Logger::E(TAG, "Asset file: %s", fileName.string());
     *fd = NULL;
     return E_FILE_NOT_FOUND_EXCEPTION;
 }
@@ -565,7 +565,7 @@ ECode CAssetManager::OpenNonAsset(
             return NOERROR;
         }
     }
-    if (LocalLOGV) Slogger::E(TAG, "Asset absolute file: %s", fileName.string());
+    if (LocalLOGV) Logger::E(TAG, "Asset absolute file: %s", fileName.string());
     *stream = NULL;
     return E_FILE_NOT_FOUND_EXCEPTION;
 }
@@ -588,7 +588,7 @@ ECode CAssetManager::OpenNonAssetFd(
         AutoLock lock(this);
 
         if (!mOpen) {
-            // Slogger::E(TAG, "Assetmanager has been closed");
+            // Logger::E(TAG, "Assetmanager has been closed");
             *fd = NULL;
             return E_RUNTIME_EXCEPTION;
         }
@@ -597,7 +597,7 @@ ECode CAssetManager::OpenNonAssetFd(
             return CAssetFileDescriptor::New(pfd, (*mOffsets)[0], (*mOffsets)[1], fd);
         }
     }
-    if (LocalLOGV) Slogger::E(TAG, "Asset absolute file: %s", fileName.string());
+    if (LocalLOGV) Logger::E(TAG, "Asset absolute file: %s", fileName.string());
     *fd = NULL;
     return E_FILE_NOT_FOUND_EXCEPTION;
 }
@@ -645,7 +645,7 @@ ECode CAssetManager::OpenXmlBlockAsset(
     AutoLock lock(this);
 
     if (!mOpen) {
-        // Slogger::E(TAG, "Assetmanager has been closed");
+        // Logger::E(TAG, "Assetmanager has been closed");
         return E_RUNTIME_EXCEPTION;
     }
 
@@ -657,7 +657,7 @@ ECode CAssetManager::OpenXmlBlockAsset(
         IncRefsLocked((Int32)*res, "AssetManager::OpenXmlBlockAsset");
         return NOERROR;
     }
-    if (LocalLOGV) Slogger::E(TAG, String("Asset XML file: ") + fileName);
+    if (LocalLOGV) Logger::E(TAG, String("Asset XML file: ") + fileName);
     return E_FILE_NOT_FOUND_EXCEPTION;
 }
 
@@ -679,7 +679,7 @@ ECode CAssetManager::CreateTheme(
         AutoLock lock(this);
 
         if (!mOpen) {
-            // Slogger::E(TAG, "Assetmanager has been closed");
+            // Logger::E(TAG, "Assetmanager has been closed");
             return E_RUNTIME_EXCEPTION;
         }
 
@@ -1057,7 +1057,7 @@ ECode CAssetManager::OpenAsset(
         return NOERROR;
     }
 
-    if (LocalLOGV) Slogger::V(TAG, "openAsset in %p", am);
+    if (LocalLOGV) Logger::V(TAG, "openAsset in %p", am);
 
     if (fileName.IsNull()) {
         *asset = -1;
@@ -1125,7 +1125,7 @@ AutoPtr<IParcelFileDescriptor> CAssetManager::OpenAssetFd(
         return NULL;
     }
 
-    if (LocalLOGV) Slogger::V(TAG, "openAssetFd in %p", am);
+    if (LocalLOGV) Logger::V(TAG, "openAssetFd in %p", am);
 
     if (fileName.IsNull()) {
         return NULL;
@@ -1155,7 +1155,7 @@ ECode CAssetManager::OpenNonAssetNative(
         return NOERROR;
     }
 
-    if (LocalLOGV) Slogger::V(TAG, "openNonAssetNative in %p", am);
+    if (LocalLOGV) Logger::V(TAG, "openNonAssetNative in %p", am);
 
     if (fileName.IsNull()) {
         *value = -1;
@@ -1196,7 +1196,7 @@ AutoPtr<IParcelFileDescriptor> CAssetManager::OpenNonAssetFdNative(
         return NULL;
     }
 
-    if (LocalLOGV) Slogger::V(TAG, "OpenNonAssetFdNative in %p", am);
+    if (LocalLOGV) Logger::V(TAG, "OpenNonAssetFdNative in %p", am);
 
     if (fileName.IsNull()) {
         return NULL;
@@ -1334,9 +1334,11 @@ ECode CAssetManager::LoadResourceValue(
     /* [in] */ Boolean resolve,
     /* [out] */ Int32* result)
 {
+    VALIDATE_NOT_NULL(result)
+    *result = 0;
+
     android::AssetManager* am = (android::AssetManager*)mObject;
     if (am == NULL) {
-        *result = 0;
         return NOERROR;
     }
     const android::ResTable& res(am->getResources());
@@ -1348,7 +1350,6 @@ ECode CAssetManager::LoadResourceValue(
 #if THROW_ON_BAD_ID
     if (block == android::BAD_INDEX) {
         // jniThrowException(env, "java/lang/IllegalStateException", "Bad resource!");
-        *result = 0;
         return E_ILLEGAL_STATE_EXCEPTION;
     }
 #endif
@@ -1358,7 +1359,6 @@ ECode CAssetManager::LoadResourceValue(
 #if THROW_ON_BAD_ID
         if (block == android::BAD_INDEX) {
             // jniThrowException(env, "java/lang/IllegalStateException", "Bad resource!");
-            *result = 0;
             return E_ILLEGAL_STATE_EXCEPTION;
         }
 #endif
@@ -1383,9 +1383,11 @@ ECode CAssetManager::LoadResourceBagValue(
     /* [in] */ Boolean resolve,
     /* [out] */ Int32* result)
 {
+    VALIDATE_NOT_NULL(result)
+    *result = 0;
+
     android::AssetManager* am = (android::AssetManager*)mObject;
     if (am == NULL) {
-        *result = 0;
         return NOERROR;
     }
     const android::ResTable& res(am->getResources());
@@ -1421,7 +1423,6 @@ ECode CAssetManager::LoadResourceBagValue(
 #if THROW_ON_BAD_ID
         if (block == android::BAD_INDEX) {
             // jniThrowException(env, "java/lang/IllegalStateException", "Bad resource!");
-            *result = 0;
             return E_ILLEGAL_STATE_EXCEPTION;
         }
 #endif
@@ -1562,7 +1563,7 @@ ECode CAssetManager::ApplyStyle(
     for (Int32 ii = 0; ii < NI; ii++) {
         const uint32_t curIdent = (uint32_t)src[ii];
 
-        // DEBUG_STYLES(Slogger::I(TAG, "RETRIEVING ATTR 0x%08x...", (Int32)curIdent));
+        // DEBUG_STYLES(Logger::I(TAG, "RETRIEVING ATTR 0x%08x...", (Int32)curIdent));
 
         // Try to find a value for this attribute...  we prioritize values
         // coming from, first XML attributes, then XML style, then default
@@ -2051,15 +2052,17 @@ ECode CAssetManager::RetrieveArray(
     /* [in] */ ArrayOf<Int32>* outValues,
     /* [out] */ Int32* result)
 {
+    VALIDATE_NOT_NULL(result)
+    *result = 0;
+
     if (outValues == NULL) {
+        Logger::E(TAG, "E_NULL_POINTER_EXCEPTION out values");
         // jniThrowNullPointerException(env, "out values");
-        *result = 0;
         return E_NULL_POINTER_EXCEPTION;
     }
 
     android::AssetManager* am = (android::AssetManager*)mObject;
     if (am == NULL) {
-        *result = 0;
         return NOERROR;
     }
     const android::ResTable& res(am->getResources());
@@ -2073,7 +2076,7 @@ ECode CAssetManager::RetrieveArray(
     Int32* dest = baseDest;
     if (dest == NULL) {
         // jniThrowException(env, "java/lang/OutOfMemoryError", "");
-        *result = 0;
+        Logger::E(TAG, "E_OUT_OF_MEMORY_ERROR.");
         return E_OUT_OF_MEMORY_ERROR;
     }
 
@@ -2103,7 +2106,7 @@ ECode CAssetManager::RetrieveArray(
 #if THROW_ON_BAD_ID
             if (newBlock == android::BAD_INDEX) {
                 // jniThrowException(env, "java/lang/IllegalStateException", "Bad resource!");
-                *result = 0;
+                Logger::E(TAG, "E_ILLEGAL_STATE_EXCEPTION. Bad resource!");
                 return E_ILLEGAL_STATE_EXCEPTION;
             }
 #endif
@@ -2115,7 +2118,7 @@ ECode CAssetManager::RetrieveArray(
             value.dataType = android::Res_value::TYPE_NULL;
         }
 
-        //printf("Attribute 0x%08x: final type=0x%x, data=0x%08x\n", curIdent, value.dataType, value.data);
+        //Logger::I(TAG, "Attribute 0x%08x: final type=0x%x, data=0x%08x\n", curIdent, value.dataType, value.data);
 
         // Write the final value back to Java.
         dest[STYLE_TYPE] = (Int32)value.dataType;
@@ -2261,7 +2264,7 @@ ECode CAssetManager::OpenXmlAssetNative(
         return NOERROR;
     }
 
-    if (LocalLOGV) Slogger::V(TAG, "openXmlAsset in native object %p", am);
+    if (LocalLOGV) Logger::V(TAG, "openXmlAsset in native object %p", am);
 
     if (fileName.IsNull()) {
 //        jniThrowException(env, "java/lang/NullPointerException", "fileName");
@@ -2428,7 +2431,7 @@ ECode CAssetManager::Init(
 
     am->addDefaultAssets();
 
-    if (LocalLOGV) Slogger::V(TAG, "Created AssetManager %p for object %p\n", am, this);
+    if (LocalLOGV) Logger::V(TAG, "Created AssetManager %p for object %p\n", am, this);
     mObject = (Int64)am;
     return NOERROR;
 }
@@ -2439,7 +2442,7 @@ void CAssetManager::Destroy()
     if (am != NULL) {
         delete am;
         mObject = 0;
-        if (LocalLOGV) Slogger::V(TAG, "Destroying AssetManager %p for object %p\n", am, this);
+        if (LocalLOGV) Logger::V(TAG, "Destroying AssetManager %p for object %p\n", am, this);
     }
 }
 
