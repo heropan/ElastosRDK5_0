@@ -1507,6 +1507,12 @@ Int32 Process::KillProcessGroup(
     return killProcessGroup(uid, pid, SIGKILL);
 }
 
+ECode Process::RemoveAllProcessGroups()
+{
+    removeAllProcessGroups();
+    return NOERROR;
+}
+
 ECode Process::OpenZygoteSocketIfNeeded(
     /* [in] */ const String& abi,
     /* [out] */ Process::ZygoteState** state)

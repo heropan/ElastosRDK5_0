@@ -2,6 +2,7 @@
 #include "elastos/droid/ext/frameworkdef.h"
 #include "Elastos.Droid.Content.h"
 #include "Elastos.Droid.Graphics.h"
+#include "Elastos.Droid.Opengl.h"
 #include "elastos/droid/R.h"
 #include "elastos/droid/os/Process.h"
 #include "elastos/droid/os/SystemClock.h"
@@ -13,6 +14,8 @@
 #include "elastos/droid/internal/os/Zygote.h"
 #include "elastos/droid/internal/os/CZygoteInit.h"
 #include "elastos/droid/internal/os/RuntimeInit.h"
+#include "elastos/droid/webkit/WebViewFactory.h"
+#include "elastos/droid/opengl/CEGL14.h"
 #include <Elastos.CoreLibrary.h>
 #include <elastos/core/StringUtils.h>
 #include <elastos/core/StringBuilder.h>
@@ -34,6 +37,10 @@ using Elastos::Droid::Net::CLocalServerSocket;
 using Elastos::Droid::Graphics::Drawable::IDrawable;
 using Elastos::Droid::Content::Res::CResources;
 using Elastos::Droid::Content::Res::IColorStateList;
+using Elastos::Droid::Webkit::WebViewFactory;
+using Elastos::Droid::Opengl::IEGL14;
+using Elastos::Droid::Opengl::CEGL14;
+using Elastos::Droid::Opengl::IEGLDisplay;
 using Elastos::Core::StringUtils;
 using Elastos::Core::StringBuilder;
 using Elastos::Core::Thread;
@@ -76,7 +83,7 @@ ECode CZygoteInit::MethodAndArgsCaller::Run()
     AutoPtr<IArgumentList> argumentList;
     ECode ec = mMethod->CreateArgumentList((IArgumentList**)&argumentList);
     if (FAILED(ec)) {
-        printf("Create \"Main\" method argument list failed!\n");
+        Logger::E("CZygoteInit", "Create \"Main\" method argument list failed!\n");
         return ec;
     }
 
@@ -84,7 +91,7 @@ ECode CZygoteInit::MethodAndArgsCaller::Run()
 
     ec = mMethod->Invoke(mObject, argumentList);
     if (FAILED(ec)) {
-        printf("Invoke \"Main\" method failed!\n");
+        Logger::E("CZygoteInit", "Invoke \"Main\" method failed!\n");
         return ec;
     }
     return ec;
@@ -121,7 +128,7 @@ ECode CZygoteInit::RegisterZygoteSocket(
         //             createFileDescriptor(fileDesc));
         ECode ec = CLocalServerSocket::New(CreateFileDescriptor(fd), (ILocalServerSocket**)&sServerSocket);
         if (FAILED(ec)) {
-            printf("Error binding to local socket!\n");
+            Logger::E("CZygoteInit", "Error binding to local socket!\n");
         }
         // } catch (IOException ex) {
         //     throw new RuntimeException(
@@ -191,7 +198,7 @@ void CZygoteInit::Preload()
     // preloadSharedLibraries();
     // Ask the WebViewFactory to do any initialization that must run in the zygote process,
     // for memory sharing purposes.
-    //WebViewFactory.prepareWebViewInZygote();
+    WebViewFactory::PrepareWebViewInZygote();
     Logger::D(TAG, "end preload");
 }
 
@@ -200,8 +207,10 @@ void CZygoteInit::PreloadOpenGL()
     Boolean bval;
     SystemProperties::GetBoolean(PROPERTY_DISABLE_OPENGL_PRELOADING, FALSE, &bval);
     if (!bval) {
-        assert(0 && "TODO");
-        // EGL14::eglGetDisplay(IEGL14::EGL_DEFAULT_DISPLAY);
+        AutoPtr<IEGL14> egl14;
+        CEGL14::AcquireSingleton((IEGL14**)&egl14);
+        AutoPtr<IEGLDisplay> eglDisplay;
+        egl14->EglGetDisplay(0/*IEGL14::_EGL_DEFAULT_DISPLAY*/, (IEGLDisplay**)&eglDisplay);
     }
 }
 

@@ -756,7 +756,7 @@ Int32 MediaCodecBridge::QueueSecureInputBuffer(
         cryptoInfo->Set(numSubSamples, numBytesOfClearData, numBytesOfEncryptedData,
                 keyId, iv, IMediaCodec::CRYPTO_MODE_AES_CTR);
         UInt32 ecode = mMediaCodec->QueueSecureInputBuffer(index, offset, cryptoInfo, presentationTimeUs, 0);
-        if(ecode == E_CRYPTO_EXCEPTION)
+        if(ecode == (ECode)E_CRYPTO_EXCEPTION)
         {
             Logger::E(TAG, "MediaCodec.CryptoException with error code ,ecode:0x%x", ecode);
             return MEDIA_CODEC_ERROR;

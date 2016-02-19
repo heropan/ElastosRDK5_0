@@ -2060,7 +2060,7 @@ Boolean BaseStatusBar::InflateViews(
     AutoPtr<IApplicationInfo> info;
     String pkgname;
     sbn->GetPackageName(&pkgname);
-    if (pmUser->GetApplicationInfo(pkgname, 0, (IApplicationInfo**)&info) == E_NAME_NOT_FOUND_EXCEPTION) {
+    if (pmUser->GetApplicationInfo(pkgname, 0, (IApplicationInfo**)&info) == (ECode)E_NAME_NOT_FOUND_EXCEPTION) {
         Logger::E(TAG, "Failed looking up ApplicationInfo for %s", pkgname.string());
     }
     else {
@@ -2083,7 +2083,7 @@ Boolean BaseStatusBar::InflateViews(
         AutoPtr<ITextView> title = ITextView::Probe(view);
 
         info = NULL;
-        if (pmUser->GetApplicationInfo(pkgname, 0, (IApplicationInfo**)&info) == E_NAME_NOT_FOUND_EXCEPTION) {
+        if (pmUser->GetApplicationInfo(pkgname, 0, (IApplicationInfo**)&info) == (ECode)E_NAME_NOT_FOUND_EXCEPTION) {
             AutoPtr<ICharSequence> text;
             CString::New(pkgname, (ICharSequence**)&text);
             title->SetText(text);
@@ -2258,7 +2258,7 @@ ECode BaseStatusBar::OverrideActivityPendingAppTransition(
     /* [in] */ Boolean keyguardShowing)
 {
     if (keyguardShowing) {
-        if (mWindowManagerService->OverridePendingAppTransition(String(NULL), 0, 0, NULL) == E_REMOTE_EXCEPTION) {
+        if (mWindowManagerService->OverridePendingAppTransition(String(NULL), 0, 0, NULL) == (ECode)E_REMOTE_EXCEPTION) {
             Logger::W(TAG, "Error overriding app transition: ");
         }
     }

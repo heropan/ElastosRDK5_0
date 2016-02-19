@@ -170,6 +170,7 @@ using Elastos::Droid::Os::FactoryTest;
 using Elastos::Droid::Os::CMessageHelper;
 using Elastos::Droid::Os::IMessageHelper;
 using Elastos::Droid::Os::IPermissionController;
+using Elastos::Droid::Os::Process;
 using Elastos::Droid::Os::IProcess;
 using Elastos::Droid::Os::IPatternMatcher;
 using Elastos::Droid::Os::CRemoteCallbackList;
@@ -193,7 +194,6 @@ using Elastos::Droid::Os::ILooperHelper;
 using Elastos::Droid::Os::CLooperHelper;
 using Elastos::Droid::Os::IEnvironment;
 using Elastos::Droid::Os::CEnvironment;
-using Elastos::Droid::Os::Process;
 using Elastos::Droid::Os::SystemClock;
 using Elastos::Droid::Os::IProcessStartResult;
 using Elastos::Droid::Os::Storage::IIMountService;
@@ -2996,7 +2996,7 @@ AutoPtr<IIAppOpsService> CActivityManagerService::GetAppOpsService()
 // }
 
 void CActivityManagerService::SetSystemServiceManager(
-    /* [in] */ SystemServiceManager* mgr)
+    /* [in] */ ISystemServiceManager* mgr)
 {
     mSystemServiceManager = mgr;
 }

@@ -265,7 +265,7 @@ void AwSettings::EventHandler::RunOnUiThreadBlockingAndLocked(
                 ECode ecode = mOwner->mAwSettingsLock.Wait();
                 if (FAILED(ecode))
                 {
-                    if ((unsigned)ecode == E_INTERRUPTED_EXCEPTION)
+                    if ((unsigned)ecode == (ECode)E_INTERRUPTED_EXCEPTION)
                         mSynchronizationPending = false;
                     break;
                 }
