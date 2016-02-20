@@ -1,6 +1,6 @@
 
-#ifndef  __ELASTOS_DROID_PACKAGES_SYSTEMUI_CDESSERTCASE_H__
-#define  __ELASTOS_DROID_PACKAGES_SYSTEMUI_CDESSERTCASE_H__
+#ifndef  __ELASTOS_DROID_SYSTEMUI_CDESSERTCASE_H__
+#define  __ELASTOS_DROID_SYSTEMUI_CDESSERTCASE_H__
 
 #include "_Elastos_Droid_SystemUI_CDessertCase.h"
 #include <elastos/droid/app/Activity.h>
@@ -51,4 +51,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif // __ELASTOS_DROID_PACKAGES_SYSTEMUI_CDESSERTCASE_H__
+#endif // __ELASTOS_DROID_SYSTEMUI_CDESSERTCASE_H__

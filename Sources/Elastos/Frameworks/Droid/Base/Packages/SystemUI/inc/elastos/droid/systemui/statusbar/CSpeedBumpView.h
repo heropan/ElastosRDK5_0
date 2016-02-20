@@ -1,6 +1,6 @@
 
-#ifndef  __ELASTOS_DROID_PACKAGES_SYSTEMUI_STATUSBAR_CSPEEDBUMPVIEW_H__
-#define  __ELASTOS_DROID_PACKAGES_SYSTEMUI_STATUSBAR_CSPEEDBUMPVIEW_H__
+#ifndef  __ELASTOS_DROID_SYSTEMUI_STATUSBAR_CSPEEDBUMPVIEW_H__
+#define  __ELASTOS_DROID_SYSTEMUI_STATUSBAR_CSPEEDBUMPVIEW_H__
 
 #include "_Elastos_Droid_SystemUI_StatusBar_CSpeedBumpView.h"
 #include "elastos/droid/systemui/statusbar/ExpandableView.h"
@@ -101,4 +101,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif // __ELASTOS_DROID_PACKAGES_SYSTEMUI_STATUSBAR_CSPEEDBUMPVIEW_H__
+#endif // __ELASTOS_DROID_SYSTEMUI_STATUSBAR_CSPEEDBUMPVIEW_H__

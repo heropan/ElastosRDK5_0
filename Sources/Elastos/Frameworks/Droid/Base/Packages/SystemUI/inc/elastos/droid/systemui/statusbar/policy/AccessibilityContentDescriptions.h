@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_SYSTEMUI_STATUSBAR_POLICY_ACCESSIBILITYCONTENTDESCRIPTIONS_H__
 #define __ELASTOS_DROID_SYSTEMUI_STATUSBAR_POLICY_ACCESSIBILITYCONTENTDESCRIPTIONS_H__
 
-#include "elastos/droid/ext/frameworkext.h"
+#include <elastos/droid/ext/frameworkext.h>
 
 namespace Elastos {
 namespace Droid {
@@ -26,11 +26,10 @@ private:
     ~AccessibilityContentDescriptions();
 };
 
+} // namespace Policy
+} // namespace StatusBar
+} // namespace SystemUI
+} // namespace Droid
+} // namespace Elastos
 
-}// namespace Policy
-}// namespace StatusBar
-}// namespace SystemUI
-}// namespace Droid
-}// namespace Elastos
-
-#endif //__ELASTOS_DROID_SYSTEMUI_STATUSBAR_POLICY_ACCESSIBILITYCONTENTDESCRIPTIONS_H__
+#endif // __ELASTOS_DROID_SYSTEMUI_STATUSBAR_POLICY_ACCESSIBILITYCONTENTDESCRIPTIONS_H__

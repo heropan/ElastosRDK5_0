@@ -1,6 +1,6 @@
 
-#ifndef  __ELASTOS_DROID_PACKAGES_SYSTEMUI_DOZE_CDOZESERVICE_H__
-#define  __ELASTOS_DROID_PACKAGES_SYSTEMUI_DOZE_CDOZESERVICE_H__
+#ifndef  __ELASTOS_DROID_SYSTEMUI_DOZE_CDOZESERVICE_H__
+#define  __ELASTOS_DROID_SYSTEMUI_DOZE_CDOZESERVICE_H__
 
 #include "_Elastos_Droid_SystemUI_Doze_CDozeService.h"
 #include "Elastos.Droid.Hardware.h"
@@ -317,4 +317,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif // __ELASTOS_DROID_PACKAGES_SYSTEMUI_DOZE_CDOZESERVICE_H__
+#endif // __ELASTOS_DROID_SYSTEMUI_DOZE_CDOZESERVICE_H__

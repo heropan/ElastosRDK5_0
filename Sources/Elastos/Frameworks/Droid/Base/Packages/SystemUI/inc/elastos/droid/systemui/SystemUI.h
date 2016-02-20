@@ -1,6 +1,6 @@
 
-#ifndef  __ELASTOS_DROID_PACKAGES_SYSTEMUI_SYSTEMUI_H__
-#define  __ELASTOS_DROID_PACKAGES_SYSTEMUI_SYSTEMUI_H__
+#ifndef  __ELASTOS_DROID_SYSTEMUI_SYSTEMUI_H__
+#define  __ELASTOS_DROID_SYSTEMUI_SYSTEMUI_H__
 
 #include "_SystemUI.h"
 #include "elastos/droid/systemui/Utils.h"
@@ -70,4 +70,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif // __ELASTOS_DROID_PACKAGES_SYSTEMUI_SYSTEMUI_H__
+#endif // __ELASTOS_DROID_SYSTEMUI_SYSTEMUI_H__

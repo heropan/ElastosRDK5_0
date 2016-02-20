@@ -1,6 +1,6 @@
 
-#ifndef  __ELASTOS_DROID_PACKAGES_SYSTEMUI_FONTSIZEUTILS_H__
-#define  __ELASTOS_DROID_PACKAGES_SYSTEMUI_FONTSIZEUTILS_H__
+#ifndef  __ELASTOS_DROID_SYSTEMUI_FONTSIZEUTILS_H__
+#define  __ELASTOS_DROID_SYSTEMUI_FONTSIZEUTILS_H__
 
 #include <elastos/droid/ext/frameworkext.h>
 
@@ -34,4 +34,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif // __ELASTOS_DROID_PACKAGES_SYSTEMUI_FONTSIZEUTILS_H__
+#endif // __ELASTOS_DROID_SYSTEMUI_FONTSIZEUTILS_H__

@@ -1,6 +1,6 @@
 
-#ifndef  __ELASTOS_DROID_PACKAGES_SYSTEMUI_STATUSBAR_CDISMISSVIEW_H__
-#define  __ELASTOS_DROID_PACKAGES_SYSTEMUI_STATUSBAR_CDISMISSVIEW_H__
+#ifndef  __ELASTOS_DROID_SYSTEMUI_STATUSBAR_CDISMISSVIEW_H__
+#define  __ELASTOS_DROID_SYSTEMUI_STATUSBAR_CDISMISSVIEW_H__
 
 #include "_Elastos_Droid_SystemUI_StatusBar_CDismissView.h"
 #include "elastos/droid/systemui/statusbar/StackScrollerDecorView.h"
@@ -40,4 +40,4 @@ protected:
 } // namespace Droid
 } // namespace Elastos
 
-#endif // __ELASTOS_DROID_PACKAGES_SYSTEMUI_STATUSBAR_CDISMISSVIEW_H__
+#endif // __ELASTOS_DROID_SYSTEMUI_STATUSBAR_CDISMISSVIEW_H__

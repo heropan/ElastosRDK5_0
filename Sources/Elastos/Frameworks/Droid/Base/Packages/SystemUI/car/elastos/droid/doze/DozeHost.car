@@ -50,7 +50,6 @@ module
 
     } //namespace Doze
     } //namespace SystemUI
-    } //namespace Packages
     } //namespace Droid
     } //namespace Elastos
 }

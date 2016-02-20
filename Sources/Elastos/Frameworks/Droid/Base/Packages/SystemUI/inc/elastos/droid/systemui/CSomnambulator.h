@@ -1,6 +1,6 @@
 
-#ifndef  __ELASTOS_DROID_PACKAGES_SYSTEMUI_CSOMNAMBULATOR_H__
-#define  __ELASTOS_DROID_PACKAGES_SYSTEMUI_CSOMNAMBULATOR_H__
+#ifndef  __ELASTOS_DROID_SYSTEMUI_CSOMNAMBULATOR_H__
+#define  __ELASTOS_DROID_SYSTEMUI_CSOMNAMBULATOR_H__
 
 #include "_Elastos_Droid_SystemUI_CSomnambulator.h"
 #include <elastos/droid/app/Activity.h>
@@ -34,4 +34,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif // __ELASTOS_DROID_PACKAGES_SYSTEMUI_CSOMNAMBULATOR_H__
+#endif // __ELASTOS_DROID_SYSTEMUI_CSOMNAMBULATOR_H__

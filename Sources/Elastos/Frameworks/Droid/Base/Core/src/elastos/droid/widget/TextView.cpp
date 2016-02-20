@@ -6,6 +6,8 @@
 #include "elastos/droid/content/res/CColorStateList.h"
 #include "elastos/droid/content/res/CResourcesHelper.h"
 #include "elastos/droid/content/res/CColorStateListHelper.h"
+#include "elastos/droid/graphics/CRect.h"
+#include "elastos/droid/graphics/CRectF.h"
 #include "elastos/droid/graphics/CPath.h"
 #include "elastos/droid/graphics/CPaint.h"
 #include "elastos/droid/graphics/Insets.h"
@@ -70,9 +72,13 @@ using Elastos::Droid::Content::Res::CResourcesHelper;
 using Elastos::Droid::Content::Res::CColorStateList;
 using Elastos::Droid::Content::Res::ICompatibilityInfo;
 using Elastos::Droid::Content::Res::IResourcesTheme;
+using Elastos::Droid::Graphics::CRect;
+using Elastos::Droid::Graphics::CRectF;
 using Elastos::Droid::Graphics::CPath;
 using Elastos::Droid::Graphics::CPaint;
 using Elastos::Droid::Graphics::Insets;
+using Elastos::Droid::Graphics::IRect;
+using Elastos::Droid::Graphics::IRectF;
 using Elastos::Droid::Graphics::Typeface;
 using Elastos::Droid::Graphics::Drawable::EIID_IDrawableCallback;
 using Elastos::Droid::InputMethodService::EIID_IExtractEditText;
@@ -1036,10 +1042,10 @@ ECode ChangeWatcher::OnSpanRemoved(
 
 CAR_INTERFACE_IMPL_2(TextView, View, ITextView, IOnPreDrawListener)
 
-static AutoPtr<CRectF> InitCRectF()
+static AutoPtr<IRectF> InitCRectF()
 {
-    AutoPtr<CRectF> r;
-    CRectF::NewByFriend((CRectF**)&r);
+    AutoPtr<IRectF> r;
+    CRectF::New((IRectF**)&r);
     return r;
 }
 
@@ -1091,7 +1097,7 @@ const Int32 TextView::LINES;
 const Int32 TextView::EMS;
 const Int32 TextView::PIXELS;
 
-const AutoPtr<CRectF> TextView::TEMP_RECTF = InitCRectF();
+const AutoPtr<IRectF> TextView::TEMP_RECTF = InitCRectF();
 Object TextView::sTempRectLock;
 
 const Int32 TextView::VERY_WIDE;
@@ -5564,10 +5570,10 @@ void TextView::InvalidateCursorPath()
 
             mHighlightPath->ComputeBounds(TEMP_RECTF, FALSE);
 
-            Invalidate((Int32)Elastos::Core::Math::Floor(horizontalPadding + TEMP_RECTF->mLeft - thick),
-                        (Int32)Elastos::Core::Math::Floor(verticalPadding + TEMP_RECTF->mTop - thick),
-                        (Int32)Elastos::Core::Math::Ceil(horizontalPadding + TEMP_RECTF->mRight + thick),
-                        (Int32)Elastos::Core::Math::Ceil(verticalPadding + TEMP_RECTF->mBottom + thick));
+            Invalidate((Int32)Elastos::Core::Math::Floor(horizontalPadding + ((CRectF*)TEMP_RECTF.Get())->mLeft - thick),
+                        (Int32)Elastos::Core::Math::Floor(verticalPadding + ((CRectF*)TEMP_RECTF.Get())->mTop - thick),
+                        (Int32)Elastos::Core::Math::Ceil(horizontalPadding + ((CRectF*)TEMP_RECTF.Get())->mRight + thick),
+                        (Int32)Elastos::Core::Math::Ceil(verticalPadding + ((CRectF*)TEMP_RECTF.Get())->mBottom + thick));
         }
         else {
             assert(0);
@@ -6363,8 +6369,8 @@ ECode TextView::GetFocusedRect(
             {
                 AutoLock lock(TextView::sTempRectLock);
                 mHighlightPath->ComputeBounds(TEMP_RECTF, TRUE);
-                rect->SetLeft((Int32)TEMP_RECTF->mLeft - 1);
-                rect->SetRight((Int32)TEMP_RECTF->mRight + 1);
+                rect->SetLeft((Int32)((CRectF*)TEMP_RECTF.Get())->mLeft - 1);
+                rect->SetRight((Int32)((CRectF*)TEMP_RECTF.Get())->mRight + 1);
             }
         }
     }

@@ -1,6 +1,6 @@
 
-#ifndef  __ELASTOS_DROID_PACKAGES_SYSTEMUI_CIMAGEWALLPAPER_H__
-#define  __ELASTOS_DROID_PACKAGES_SYSTEMUI_CIMAGEWALLPAPER_H__
+#ifndef  __ELASTOS_DROID_SYSTEMUI_CIMAGEWALLPAPER_H__
+#define  __ELASTOS_DROID_SYSTEMUI_CIMAGEWALLPAPER_H__
 
 #include "_Elastos_Droid_SystemUI_CImageWallpaper.h"
 #include "Elastos.Droid.App.h"
@@ -204,4 +204,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif // __ELASTOS_DROID_PACKAGES_SYSTEMUI_CIMAGEWALLPAPER_H__
+#endif // __ELASTOS_DROID_SYSTEMUI_CIMAGEWALLPAPER_H__
