@@ -346,7 +346,7 @@
   Elastos/Frameworks/Droid/Base/Packages/SystemUI/src/elastos/droid/systemui/statusbar
 > Elastos/Frameworks/Droid/Base/Packages/SystemUI/src/elastos/droid/systemui
   Elastos/Frameworks/Droid/Base/Packages/SettingsProvider/src/elastos/droid/settingsprovider SettingsProvider.car
-  Elastos/Frameworks/Droid/Base/Packages/SettingsProvider/src/elastos/droid/settingsprovider
+>  Elastos/Frameworks/Droid/Base/Packages/SettingsProvider/src/elastos/droid/settingsprovider
 #  Elastos/Frameworks/Droid/DevSamples/SoftKeyboard
 #- Elastos/Frameworks/Droid/DevSamples/PinyinIME/share
 #> Elastos/Frameworks/Droid/DevSamples/PinyinIME

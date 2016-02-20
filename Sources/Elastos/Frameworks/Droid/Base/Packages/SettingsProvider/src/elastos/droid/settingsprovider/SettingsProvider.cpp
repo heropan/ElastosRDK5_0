@@ -418,6 +418,7 @@ Boolean SettingsProvider::SettingsCache::FullyMatchesDisk()
     synchronized(this) {
         return mCacheFullyMatchesDisk;
     }
+    return FALSE;
 }
 
 void SettingsProvider::SettingsCache::SetFullyMatchesDisk(
@@ -512,6 +513,7 @@ Boolean SettingsProvider::SettingsCache::IsRedundantSetValue(
         if ((oldValue.IsNull()) != (value.IsNull())) return FALSE;
         return oldValue.Equals(value);
     }
+    return FALSE;
 }
 
 //===============================================================================
@@ -1141,6 +1143,7 @@ Boolean SettingsProvider::IsManagedProfile(
         }
         return FALSE;
     }
+    return FALSE;
 }
 
 ECode SettingsProvider::Call(
