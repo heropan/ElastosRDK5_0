@@ -4,8 +4,6 @@ module
     interface Elastos.Droid.Graphics.IBitmap;
     interface Elastos.Droid.Graphics.Drawable.IDrawable;
 
-    interface Elastos.Droid.SystemUI.Recents.Model.ITaskGrouping;
-
     namespace Elastos {
     namespace Droid {
     namespace SystemUI {
@@ -47,10 +45,6 @@ module
         /** Set the callbacks */
         SetCallbacks(
             [in] ITaskCallbacks* cb);
-
-        /** Set the grouping */
-        SetGroup(
-            [in] ITaskGrouping* group);
 
         /** Notifies the callback listeners that this task has been loaded */
         NotifyTaskDataLoaded(

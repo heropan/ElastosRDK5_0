@@ -2,7 +2,7 @@
 #ifndef  __ELASTOS_DROID_SYSTEMUI_RECENTS_VIEWS_DEBUGOVERLAYVIEW_H__
 #define  __ELASTOS_DROID_SYSTEMUI_RECENTS_VIEWS_DEBUGOVERLAYVIEW_H__
 
-#include "_SystemUI.h"
+#include "elastos/droid/systemui/recents/RecentsConfiguration.h"
 #include <elastos/droid/widget/FrameLayout.h>
 #include <elastos/utility/etl/Pair.h>
 
@@ -140,7 +140,7 @@ protected:
 public:
     static const Int32 sCornerRectSize = 50;
 
-    // AutoPtr<RecentsConfiguration> mConfig;
+    AutoPtr<RecentsConfiguration> mConfig;
     AutoPtr<IDebugOverlayViewCallbacks> mCb;
 
     List<AutoPtr<Pair<AutoPtr<IRect>, Int32> > > mRects;

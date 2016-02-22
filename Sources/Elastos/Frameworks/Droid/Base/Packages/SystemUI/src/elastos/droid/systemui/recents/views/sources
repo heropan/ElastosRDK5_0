@@ -11,4 +11,7 @@ SOURCES += DebugOverlayView.cpp
 SOURCES += FakeShadowDrawable.cpp
 SOURCES += FixedSizeImageView.cpp
 #SOURCES += RecentsView.cpp
+SOURCES += SwipeHelper.cpp
+SOURCES += SystemBarScrimViews.cpp
+SOURCES += ViewPool.cpp
 SOURCES += Views.cpp

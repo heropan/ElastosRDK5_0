@@ -2,7 +2,7 @@
 #ifndef  __ELASTOS_DROID_SYSTEMUI_RECENTS_VIEWS_RECENTSVIEW_H__
 #define  __ELASTOS_DROID_SYSTEMUI_RECENTS_VIEWS_RECENTSVIEW_H__
 
-#include "_SystemUI.h"
+#include "elastos/droid/systemui/recents/RecentsConfiguration.h"
 #include <elastos/droid/os/Runnable.h>
 #include <elastos/droid/widget/FrameLayout.h>
 #include <elastos/utility/etl/List.h>

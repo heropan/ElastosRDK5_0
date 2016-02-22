@@ -242,7 +242,6 @@ module
     merge("../../../../car/elastos/droid/recents/views/ViewAnimation.car");
     merge("../../../../car/elastos/droid/recents/views/RecentsView.car");
     merge("../../../../car/elastos/droid/recents/views/SwipeHelper.car");
-    merge("../../../../car/elastos/droid/recents/views/SystemBarScrimViews.car");
     merge("../../../../car/elastos/droid/recents/views/TaskViewTransform.car");
     merge("../../../../car/elastos/droid/recents/views/TaskView.car");
     merge("../../../../car/elastos/droid/recents/views/TaskStackViewLayoutAlgorithm.car");

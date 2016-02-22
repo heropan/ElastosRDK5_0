@@ -51,8 +51,7 @@ FakeShadowDrawable::FakeShadowDrawable(
     CPaint::New(IPaint::ANTI_ALIAS_FLAG | IPaint::DITHER_FLAG, (IPaint**)&mCornerShadowPaint);
     mCornerShadowPaint->SetStyle(PaintStyle_FILL);
     mCornerShadowPaint->SetDither(TRUE);
-    assert(0);
-    // mCornerRadius = config->mTaskViewRoundedCornerRadiusPx;
+    mCornerRadius = config->mTaskViewRoundedCornerRadiusPx;
     CRectF::New((IRectF**)&mCardBounds);
     CPaint::New(mCornerShadowPaint, (IPaint**)&mEdgeShadowPaint);
 }

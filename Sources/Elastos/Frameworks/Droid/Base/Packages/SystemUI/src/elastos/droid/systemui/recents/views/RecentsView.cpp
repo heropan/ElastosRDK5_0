@@ -1,5 +1,6 @@
 
 #include "elastos/droid/systemui/recents/views/RecentsView.h"
+#include "elastos/droid/systemui/recents/Constants.h"
 #include <elastos/droid/view/LayoutInflater.h>
 
 using Elastos::Droid::App::CActivityOptionsHelper;

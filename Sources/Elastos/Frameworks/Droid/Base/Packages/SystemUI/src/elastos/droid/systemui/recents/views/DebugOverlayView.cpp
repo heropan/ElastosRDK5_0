@@ -84,8 +84,7 @@ ECode DebugOverlayView::constructor(
     /* [in] */ Int32 defStyleRes)
 {
     FAIL_RETURN(FrameLayout::constructor(context, attrs, defStyleAttr, defStyleRes));
-    assert(0);
-    // mConfig = RecentsConfiguration::GetInstance();
+    mConfig = RecentsConfiguration::GetInstance();
     mDebugOutline->SetColor(0xFFff0000);
     mDebugOutline->SetStyle(PaintStyle_STROKE);
     mDebugOutline->SetStrokeWidth(8.0f);
@@ -228,8 +227,7 @@ void DebugOverlayView::OnDraw(
             mTmpPaint->GetTextBounds(mText, 0, 1, mTmpRect);
             Int32 height, bottom;
             mTmpRect->GetHeight(&height);
-            assert(0);
-            // mConfig->mSystemInsets->GetBottom(&bottom);
+            mConfig->mSystemInsets->GetBottom(&bottom);
             canvas->DrawText(mText, 10.0f, h - height - bottom, mTmpPaint);
         }
     }

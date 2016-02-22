@@ -2,8 +2,7 @@
 #ifndef  __ELASTOS_DROID_SYSTEMUI_RECENTS_VIEWS_FAKESHADOWDRAWABLE_H__
 #define  __ELASTOS_DROID_SYSTEMUI_RECENTS_VIEWS_FAKESHADOWDRAWABLE_H__
 
-#include "_SystemUI.h"
-#include "Elastos.Droid.Graphics.h"
+#include "elastos/droid/systemui/recents/RecentsConfiguration.h"
 #include <elastos/droid/graphics/drawable/Drawable.h>
 
 using Elastos::Droid::Content::Res::IResources;
@@ -24,8 +23,6 @@ namespace Droid {
 namespace SystemUI {
 namespace Recents {
 namespace Views {
-
-class RecentsConfiguration;
 
 /**
  * A rounded rectangle drawable which also includes a shadow around. This is mostly copied from

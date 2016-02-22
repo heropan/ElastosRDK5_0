@@ -2,9 +2,8 @@
 #ifndef  __ELASTOS_DROID_SYSTEMUI_RECENTS_VIEWS_ANIMATEABLEVIEWBOUNDS_H__
 #define  __ELASTOS_DROID_SYSTEMUI_RECENTS_VIEWS_ANIMATEABLEVIEWBOUNDS_H__
 
-#include "_SystemUI.h"
+#include "elastos/droid/systemui/recents/RecentsConfiguration.h"
 #include "Elastos.Droid.Animation.h"
-#include "Elastos.Droid.Graphics.h"
 #include <elastos/droid/view/ViewOutlineProvider.h>
 
 using Elastos::Droid::Animation::IAnimator;
@@ -85,7 +84,7 @@ private:
     CARAPI_(void) UpdateClipBounds();
 
 public:
-    // AutoPtr<RecentsConfiguration> mConfig;
+    AutoPtr<RecentsConfiguration> mConfig;
 
     AutoPtr<IView> mSourceView; // ITaskView
     AutoPtr<IRect> mTmpRect;

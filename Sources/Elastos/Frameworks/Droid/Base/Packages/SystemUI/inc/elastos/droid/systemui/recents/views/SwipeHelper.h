@@ -13,7 +13,6 @@ using Elastos::Droid::Animation::AnimatorListenerAdapter;
 using Elastos::Droid::Animation::IObjectAnimator;
 using Elastos::Droid::Animation::IValueAnimator;
 using Elastos::Droid::Animation::IAnimatorUpdateListener;
-using Elastos::Droid::Os::Build;
 using Elastos::Droid::Utility::IDisplayMetrics;
 using Elastos::Droid::View::IMotionEvent;
 using Elastos::Droid::View::IVelocityTracker;
@@ -211,8 +210,8 @@ public:
                                               // beyond which alpha->0
     AutoPtr<ISwipeHelperCallback> mCallback;
 
-    Boolean mAllowSwipeTowardsStart = TRUE;
-    Boolean mAllowSwipeTowardsEnd = TRUE;
+    Boolean mAllowSwipeTowardsStart;
+    Boolean mAllowSwipeTowardsEnd;
 
 private:
     static const Boolean SLOW_ANIMATIONS; // DEBUG;

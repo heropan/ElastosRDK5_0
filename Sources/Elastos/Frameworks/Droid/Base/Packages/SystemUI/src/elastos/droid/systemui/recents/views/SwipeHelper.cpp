@@ -1,11 +1,17 @@
 
 #include "elastos/droid/systemui/recents/views/SwipeHelper.h"
+#include "elastos/droid/systemui/recents/RecentsConfiguration.h"
 #include "Elastos.Droid.Content.h"
+#include "Elastos.Droid.Utility.h"
+#include "Elastos.Droid.View.h"
 #include <elastos/droid/os/Build.h>
+#include <elastos/droid/view/View.h>
 #include <elastos/core/Math.h>
 
 using Elastos::Droid::Animation::CObjectAnimatorHelper;
 using Elastos::Droid::Animation::IObjectAnimatorHelper;
+using Elastos::Droid::Animation::ITimeInterpolator;
+using Elastos::Droid::Animation::EIID_IAnimatorUpdateListener;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Content::Res::IResources;
 using Elastos::Droid::Os::Build;
@@ -41,7 +47,7 @@ AutoPtr<ILinearInterpolator> SwipeHelper::sLinearInterpolator = InitLinearInterp
 
 const Int32 SwipeHelper::SNAP_ANIM_LEN = SLOW_ANIMATIONS ? 1000 : 250; // ms
 
-MyAnimatorListenerAdapter::MyAnimatorListenerAdapter(
+SwipeHelper::MyAnimatorListenerAdapter::MyAnimatorListenerAdapter(
     /* [in] */ ISwipeHelperCallback* callback,
     /* [in] */ IView* view,
     /* [in] */ Boolean canAnimViewBeDismissed)
@@ -82,7 +88,7 @@ ECode SwipeHelper::AnimatorUpdateListener::OnAnimationUpdate(
     return NOERROR;
 }
 
-MyAnimatorListenerAdapter2::MyAnimatorListenerAdapter2(
+SwipeHelper::MyAnimatorListenerAdapter2::MyAnimatorListenerAdapter2(
     /* [in] */ ISwipeHelperCallback* callback,
     /* [in] */ IView* view,
     /* [in] */ Boolean canAnimViewBeDismissed)
@@ -121,7 +127,7 @@ ECode SwipeHelper::AnimatorUpdateListener2::OnAnimationUpdate(
         mView->SetAlpha(mHost->GetAlphaForOffset(mView));
     }
     Float x;
-    view->GetTranslationX(&x);
+    mView->GetTranslationX(&x);
     mHost->mCallback->OnSwipeChanged(mHost->mCurrView, x);
     return NOERROR;
 }
@@ -195,7 +201,7 @@ Float SwipeHelper::GetTranslation(
     /* [in] */ IView* v)
 {
     Float x, y;
-    v->GetTranslationX(&x)
+    v->GetTranslationX(&x);
     v->GetTranslationY(&y);
     return mSwipeDirection == X ? x : y;
 }
@@ -254,7 +260,7 @@ Float SwipeHelper::GetSize(
     context->GetResources((IResources**)&res);
     AutoPtr<IDisplayMetrics> dm;
     res->GetDisplayMetrics((IDisplayMetrics**)&dm);
-    Float w, h;
+    Int32 w, h;
     dm->GetWidthPixels(&w);
     dm->GetHeightPixels(&h);
     return mSwipeDirection == X ? w : h;
@@ -294,7 +300,7 @@ Boolean SwipeHelper::IsLayoutRtl(
     if (Build::VERSION::SDK_INT >= Build::VERSION_CODES::JELLY_BEAN_MR1) {
         Int32 direction;
         view->GetLayoutDirection(&direction);
-        return View::LAYOUT_DIRECTION_RTL == direction;
+        return IView::LAYOUT_DIRECTION_RTL == direction;
     }
     else {
         return FALSE;
@@ -315,7 +321,7 @@ Boolean SwipeHelper::OnInterceptTouchEvent(
             mVelocityTracker->Clear();
             if (mCurrView != NULL) {
                 mRtl = IsLayoutRtl(mCurrView);
-                mCallback->CanChildBeDismissed(mCurrView), &mCanCurrViewBeDimissed;
+                mCallback->CanChildBeDismissed(mCurrView, &mCanCurrViewBeDimissed);
                 mVelocityTracker->AddMovement(ev);
                 mInitialTouchPos = GetPos(ev);
             }
@@ -367,14 +373,14 @@ void SwipeHelper::DismissChild(
     if (velocity != 0) {
         duration = Elastos::Core::Math::Min(duration,
             (Int32) (Elastos::Core::Math::Abs(newPos - GetTranslation(view)) *
-                    1000f / Elastos::Core::Math::Abs(velocity)));
+                    1000.0f / Elastos::Core::Math::Abs(velocity)));
     }
     else {
         duration = DEFAULT_ESCAPE_ANIMATION_DURATION;
     }
 
-    AutoPtgr<IValueAnimator> anim = IValueAnimator::Probe(CreateTranslationAnimation(view, newPos));
-    anim->SetInterpolator(sLinearInterpolator);
+    AutoPtr<IValueAnimator> anim = IValueAnimator::Probe(CreateTranslationAnimation(view, newPos));
+    IAnimator::Probe(anim)->SetInterpolator(ITimeInterpolator::Probe(sLinearInterpolator));
     anim->SetDuration(duration);
     AutoPtr<AnimatorListenerAdapter> adapter = new MyAnimatorListenerAdapter(
             mCallback, view, canAnimViewBeDismissed);
@@ -395,14 +401,15 @@ void SwipeHelper::SnapChild(
     AutoPtr<IValueAnimator> anim = IValueAnimator::Probe(CreateTranslationAnimation(view, 0));
     Int32 duration = SNAP_ANIM_LEN;
     anim->SetDuration(duration);
-    anim->SetInterpolator(RecentsConfiguration::GetInstance()->mLinearOutSlowInInterpolator);
+    IAnimator::Probe(anim)->SetInterpolator(
+        ITimeInterpolator::Probe(RecentsConfiguration::GetInstance()->mLinearOutSlowInInterpolator));
     AutoPtr<IAnimatorUpdateListener> listener = new AnimatorUpdateListener2(
             this, view, canAnimViewBeDismissed);
     anim->AddUpdateListener(listener);
     AutoPtr<AnimatorListenerAdapter> adapter = new MyAnimatorListenerAdapter2(
             mCallback, view, canAnimViewBeDismissed);
     IAnimator::Probe(anim)->AddListener(adapter);
-    anim->Start();
+    IAnimator::Probe(anim)->Start();
 }
 
 Boolean SwipeHelper::OnTouchEvent(
@@ -500,7 +507,7 @@ void SwipeHelper::EndSwipe(
 
     if (dismissChild) {
         // flingadingy
-        DismissChild(mCurrView, childSwipedFastEnough ? velocity : 0f);
+        DismissChild(mCurrView, childSwipedFastEnough ? velocity : 0.0f);
     }
     else {
         // snappity

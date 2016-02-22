@@ -2,6 +2,7 @@
 #include "elastos/droid/systemui/recents/views/AnimateableViewBounds.h"
 #include <elastos/core/Math.h>
 
+using Elastos::Droid::Animation::ITimeInterpolator;
 using Elastos::Droid::Animation::IValueAnimator;
 using Elastos::Droid::Animation::CObjectAnimatorHelper;
 using Elastos::Droid::Animation::IObjectAnimatorHelper;
@@ -25,8 +26,7 @@ AnimateableViewBounds::AnimateableViewBounds(
     CRect::New((IRect**)&mClipBounds);
     CRect::New((IRect**)&mOutlineClipRect);
 
-    assert(0);
-    // mConfig = RecentsConfiguration::GetInstance();
+    mConfig = RecentsConfiguration::GetInstance();
     mSourceView = IView::Probe(source);
     mCornerRadius = cornerRadius;
     SetClipTop(GetClipTop());
@@ -88,8 +88,8 @@ void AnimateableViewBounds::AnimateClipTop(
     oaHelper->OfInt32((IObject*)this, String("clipTop"), params, (IObjectAnimator**)&objectAnimator);
     mClipTopAnimator = IAnimator::Probe(mClipTopAnimator);
     mClipTopAnimator->SetDuration(duration);
-    assert(0);
-    // mClipTopAnimator->SetInterpolator(mConfig->mFastOutSlowInInterpolator);
+    IAnimator::Probe(mClipTopAnimator)->SetInterpolator(
+        ITimeInterpolator::Probe(mConfig->mFastOutSlowInInterpolator));
     if (updateListener != NULL) {
         IValueAnimator::Probe(mClipTopAnimator)->AddUpdateListener(updateListener);
     }
@@ -134,8 +134,8 @@ void AnimateableViewBounds::AnimateClipRight(
     oaHelper->OfInt32((IObject*)this, String("clipRight"), params, (IObjectAnimator**)&objectAnimator);
     mClipRightAnimator = IAnimator::Probe(mClipRightAnimator);
     mClipRightAnimator->SetDuration(duration);
-    assert(0);
-    // mClipRightAnimator->SetInterpolator(mConfig->mFastOutSlowInInterpolator);
+    IAnimator::Probe(mClipRightAnimator)->SetInterpolator(
+        ITimeInterpolator::Probe(mConfig->mFastOutSlowInInterpolator));
     mClipRightAnimator->Start();
 }
 
@@ -177,8 +177,8 @@ void AnimateableViewBounds::AnimateClipBottom(
     oaHelper->OfInt32((IObject*)this, String("clipBottom"), params, (IObjectAnimator**)&objectAnimator);
     mClipBottomAnimator = IAnimator::Probe(mClipBottomAnimator);
     mClipBottomAnimator->SetDuration(duration);
-    assert(0);
-    // mClipBottomAnimator->SetInterpolator(mConfig->mFastOutSlowInInterpolator);
+    IAnimator::Probe(mClipBottomAnimator)->SetInterpolator(
+        ITimeInterpolator::Probe(mConfig->mFastOutSlowInInterpolator));
     mClipBottomAnimator->Start();
 }
 
@@ -192,12 +192,12 @@ void AnimateableViewBounds::SetClipBottom(
         mClipRect->SetBottom(bottom);
         mSourceView->InvalidateOutline();
         UpdateClipBounds();
-        assert(0);
-        // if (!mConfig->mUseHardwareLayers) {
-        //     Int32 pb;
-        //     mSourceView->GetPaddingBottom(&pb);
-        //     mSourceView->mThumbnailView->UpdateVisibility(bottom - pb);
-        // }
+        if (!mConfig->mUseHardwareLayers) {
+            Int32 pb;
+            mSourceView->GetPaddingBottom(&pb);
+            assert(0);
+            // ((TaskView*)mSourceView.Get())->mThumbnailView->UpdateVisibility(bottom - pb);
+        }
     }
 }
 

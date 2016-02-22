@@ -341,6 +341,7 @@
   Elastos/Frameworks/Droid/Base/Packages/SystemUI/src/elastos/droid/systemui SystemUI.car
 > Elastos/Frameworks/Droid/Base/Packages/SystemUI/src/elastos/droid/systemui/doze
   Elastos/Frameworks/Droid/Base/Packages/SystemUI/src/elastos/droid/systemui/recents/views
+  Elastos/Frameworks/Droid/Base/Packages/SystemUI/src/elastos/droid/systemui/recents/model
 > Elastos/Frameworks/Droid/Base/Packages/SystemUI/src/elastos/droid/systemui/recents
   Elastos/Frameworks/Droid/Base/Packages/SystemUI/src/elastos/droid/systemui/statusbar/policy
   Elastos/Frameworks/Droid/Base/Packages/SystemUI/src/elastos/droid/systemui/statusbar/phone
