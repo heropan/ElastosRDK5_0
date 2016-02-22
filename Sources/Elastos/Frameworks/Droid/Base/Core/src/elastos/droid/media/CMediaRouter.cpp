@@ -1,7 +1,9 @@
 #include "Elastos.Droid.Graphics.h"
+#include "Elastos.Droid.Hardware.h"
 #include "elastos/droid/app/CActivityThread.h"
 #include "elastos/droid/content/CIntentFilter.h"
 #include "elastos/droid/content/res/CResourcesHelper.h"
+#include "elastos/droid/hardware/display/WifiDisplay.h"
 #include "elastos/droid/media/CAudioRoutesInfo.h"
 #include "elastos/droid/media/CMediaRouter.h"
 #include "elastos/droid/media/CRouteCategory.h"
@@ -10,7 +12,6 @@
 #include "elastos/droid/media/VolumeProvider.h"
 #include "elastos/droid/media/CMediaRouterUserRouteInfo.h"
 #include "elastos/droid/media/MediaRouterClientState.h"
-// #include "elastos/droid/media/CMediaRouterHelper.h"
 #include "elastos/droid/os/CHandler.h"
 #include "elastos/droid/os/CServiceManager.h"
 #include "elastos/droid/os/Process.h"
@@ -34,6 +35,7 @@ using Elastos::Droid::Content::IIntentFilter;
 using Elastos::Droid::Content::Res::CResourcesHelper;
 using Elastos::Droid::Content::Res::IResourcesHelper;
 using Elastos::Droid::Hardware::Display::EIID_IDisplayListener;
+using Elastos::Droid::Hardware::Display::WifiDisplay;
 using Elastos::Droid::Manifest;
 using Elastos::Droid::Os::CHandler;
 using Elastos::Droid::Os::Handler;
@@ -1326,8 +1328,7 @@ ECode CMediaRouter::CreateUserRoute(
   VALIDATE_NOT_NULL(result);
 
   AutoPtr<IMediaRouterUserRouteInfo> userRouteInfo;
-  assert(0 && "TODO");
-  // CMediaRouterUserRouteInfo::New(category, (IMediaRouterUserRouteInfo**)&userRouteInfo);
+  CMediaRouterUserRouteInfo::New(category, (IMediaRouterUserRouteInfo**)&userRouteInfo);
   *result = userRouteInfo;
   REFCOUNT_ADD(*result);
   return NOERROR;
@@ -1858,11 +1859,94 @@ ECode CMediaRouter::SystemVolumeChanged(
 }
 
 ECode CMediaRouter::UpdateWifiDisplayStatus(
-  /* [in] */ IWifiDisplayStatus* newStatus)
+  /* [in] */ IWifiDisplayStatus* status)
 {
-   assert(0 && "todo");
-//    //todo
+  AutoPtr<ArrayOf<IWifiDisplay*> > displays;
+  AutoPtr<IWifiDisplay> activeDisplay;
+  Int32 fStatus;
+  status->GetFeatureState(&fStatus);
+  if (fStatus == IWifiDisplayStatus::FEATURE_STATE_ON) {
+      status->GetDisplays((ArrayOf<IWifiDisplay*>**)&displays);
+      status->GetActiveDisplay((IWifiDisplay**)&activeDisplay);
+
+      // Only the system is able to connect to wifi display routes.
+      // The display manager will enforce this with a permission check but it
+      // still publishes information about all available displays.
+      // Filter the list down to just the active display.
+      if (!(((Static*)(sStatic.Get()))->mCanConfigureWifiDisplays)) {
+          if (activeDisplay != NULL) {
+            displays = NULL;
+            displays = ArrayOf<IWifiDisplay*>::Alloc(1);
+            (*displays)[0] = activeDisplay.Get();
+          } else {
+            displays = NULL;
+            displays = WifiDisplay::EMPTY_ARRAY;
+          }
+      }
+  } else {
+      displays = WifiDisplay::EMPTY_ARRAY;
+      activeDisplay = NULL;
+  }
+  String adAddress;
+  activeDisplay->GetDeviceAddress(&adAddress);
+  String activeDisplayAddress = activeDisplay != NULL ?
+          adAddress : String(NULL);
+
+  // Add or update routes.
+  Int32 length = displays->GetLength();
+  AutoPtr<IWifiDisplay> d;
+  for (Int32 i = 0; i < length; i++) {
+    d = NULL;
+    d = (*displays)[i];
+    if (ShouldShowWifiDisplay(d.Get(), activeDisplay.Get())) {
+      AutoPtr<IMediaRouterRouteInfo> route = FindWifiDisplayRoute(d);
+      if (route == NULL) {
+        MakeWifiDisplayRoute(d, status, (IMediaRouterRouteInfo**)&route);
+        AddRouteStatic(route);
+      } else {
+        String address;
+        d->GetDeviceAddress(&address);
+        Boolean disconnected = !address.Equals(activeDisplayAddress)
+                && address.Equals(((Static*)(sStatic.Get()))->mPreviousActiveWifiDisplayAddress);
+        UpdateWifiDisplayRoute(route.Get(), d.Get(), status, disconnected);
+      }
+      if (d == activeDisplay) {
+        Int32 types;
+        route->GetSupportedTypes(&types);
+        SelectRouteStatic(types, route.Get(), FALSE);
+      }
+    }
+  }
+
+  // Remove stale routes.
+  AutoPtr<IMediaRouterRouteInfo> rt;
+  AutoPtr<IWifiDisplay> d_;
+  for (Int32 i = (((Static*)(sStatic.Get()))->mRoutes).GetSize(); i-- > 0; ) {
+    rt = NULL;
+    rt = ((Static*)(sStatic.Get()))->mRoutes[i];
+    String address = ((MediaRouterRouteInfo*)rt.Get())->mDeviceAddress;
+    if (!address.IsNull()) {
+      d_ = NULL;
+      d_ = FindWifiDisplay(displays.Get(), address);
+      if (d_ == NULL || !ShouldShowWifiDisplay(d_.Get(), activeDisplay.Get())) {
+        RemoveRouteStatic(rt.Get());
+      }
+    }
+  }
+
+  // Remember the current active wifi display address so that we can infer disconnections.
+  // TODO: This hack will go away once all of this is moved into the media router service.
+  ((Static*)(sStatic.Get()))->mPreviousActiveWifiDisplayAddress = activeDisplayAddress;
   return NOERROR;
+}
+
+Boolean CMediaRouter::ShouldShowWifiDisplay(
+  /* [in] */ IWifiDisplay* d,
+  /* [in] */ IWifiDisplay* activeDisplay)
+{
+  Boolean flag = FALSE;
+  d->IsRemembered(&flag);
+  return flag || (d == activeDisplay);
 }
 
 ECode CMediaRouter::GetWifiDisplayStatusCode(
@@ -1999,7 +2083,7 @@ void CMediaRouter::UpdateWifiDisplayRoute(
 }
 
 AutoPtr<IWifiDisplay> CMediaRouter::FindWifiDisplay(
-  /* [in] */ ArrayOf<AutoPtr<IWifiDisplay> >* displays,
+  /* [in] */ ArrayOf<IWifiDisplay*>* displays,
   /* [in] */ const String& deviceAddress)
 {
   Int32 length = displays->GetLength();

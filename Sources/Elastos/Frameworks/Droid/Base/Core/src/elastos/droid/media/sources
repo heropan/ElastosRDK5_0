@@ -150,8 +150,8 @@ SOURCES += PlayerRecord.cpp
 SOURCES += TtmlRenderer.cpp
 SOURCES += RemoteController.cpp
 SOURCES += CSoundPool.cpp
-
-
+SOURCES += CMediaScanner.cpp
+SOURCES += CMediaRouterHelper.cpp
 SOURCES += Media_Utils.cpp
 SOURCES += media.cpp
 
