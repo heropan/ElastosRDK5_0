@@ -328,16 +328,16 @@ ECode Inet6Address::ToString(
     /* [out] */ String* result)
 {
     VALIDATE_NOT_NULL(result);
-    *result = String("");
 
     String addr;
-    FAIL_RETURN(InetAddress::ToString(&addr));
+    InetAddress::ToString(&addr);
     StringBuilder sb(addr);
-    sb.Append("%");
-    if (mIfname.IsNull()){
+    if (!mIfname.IsNull()){
+        sb.Append("%");
         sb.Append(mIfname);
     }
-    else {
+    else if (0 != mScopeId){
+        sb.Append("%");
         sb.Append(mScopeId);
     }
 
