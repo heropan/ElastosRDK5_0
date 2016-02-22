@@ -2,12 +2,11 @@
 #ifndef __ELASTOS_DROID_SYSTEMUI_STATUSBAR_POLICY_POLICY_PREFS_H__
 #define __ELASTOS_DROID_SYSTEMUI_STATUSBAR_POLICY_POLICY_PREFS_H__
 
-#include "elastos/droid/ext/frameworkext.h"
+#include <elastos/droid/ext/frameworkext.h>
 
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Content::ISharedPreferences;
 using Elastos::Droid::Content::ISharedPreferencesEditor;
-
 
 namespace Elastos {
 namespace Droid {
@@ -27,18 +26,9 @@ public:
 public:
     static const String SHARED_PREFS_NAME;// = "status_bar";
 
-    // a boolean
-    static const String DO_NOT_DISTURB_PREF;// = "do_not_disturb";
-    static const Boolean DO_NOT_DISTURB_DEFAULT;// = false;
-
-    static const String SHOWN_COMPAT_MODE_HELP;// = "shown_compat_mode_help";
-    static const String SHOWN_QUICK_SETTINGS_HELP;// = "shown_quick_settings_help";
-
 private:
-    Prefs();
-    ~Prefs();
+    Prefs(){};
 };
-
 
 }// namespace Policy
 }// namespace StatusBar

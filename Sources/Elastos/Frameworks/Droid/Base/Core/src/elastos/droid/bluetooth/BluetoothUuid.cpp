@@ -27,6 +27,8 @@ namespace Bluetooth {
 //         ParcelUuid.fromString("00001105-0000-1000-8000-00805f9b34fb");
 // const AutoPtr<IParcelUuid> BluetoothUuid::Hid =
 //         ParcelUuid.fromString("00001124-0000-1000-8000-00805f9b34fb");
+// const AutoPtr<IParcelUuid> BluetoothUuid::Hogp =
+//         ParcelUuid.fromString("00001812-0000-1000-8000-00805f9b34fb");
 // const AutoPtr<IParcelUuid> BluetoothUuid::PANU =
 //         ParcelUuid.fromString("00001115-0000-1000-8000-00805F9B34FB");
 // const AutoPtr<IParcelUuid> BluetoothUuid::NAP =

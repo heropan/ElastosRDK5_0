@@ -42,6 +42,6 @@ SOURCES += CSpeedBumpView.cpp
 SOURCES += ServiceMonitor.cpp
 SOURCES += CSystemBars.cpp
 
-#ELASTOS_LIBS += policy/policy.lib
+ELASTOS_LIBS += policy/policy.lib
 ELASTOS_LIBS += phone/phone.lib
 #ELASTOS_LIBS += tablet/tablet.lib

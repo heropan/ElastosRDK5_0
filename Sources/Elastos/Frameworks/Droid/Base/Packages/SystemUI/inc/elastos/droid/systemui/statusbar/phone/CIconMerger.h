@@ -1,5 +1,5 @@
-#ifndef  __ELASTOS_DROID_PACKAGES_SYSTEMUI_STATUSBAR_PHONE_CICONMERGER_H__
-#define  __ELASTOS_DROID_PACKAGES_SYSTEMUI_STATUSBAR_PHONE_CICONMERGER_H__
+#ifndef  __ELASTOS_DROID_SYSTEMUI_STATUSBAR_PHONE_CICONMERGER_H__
+#define  __ELASTOS_DROID_SYSTEMUI_STATUSBAR_PHONE_CICONMERGER_H__
 
 #include "_Elastos_Droid_SystemUI_StatusBar_Phone_CIconMerger.h"
 #include "elastos/droid/systemui/statusbar/phone/IconMerger.h"
@@ -22,4 +22,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif // __ELASTOS_DROID_PACKAGES_SYSTEMUI_STATUSBAR_PHONE_CICONMERGER_H__
+#endif // __ELASTOS_DROID_SYSTEMUI_STATUSBAR_PHONE_CICONMERGER_H__

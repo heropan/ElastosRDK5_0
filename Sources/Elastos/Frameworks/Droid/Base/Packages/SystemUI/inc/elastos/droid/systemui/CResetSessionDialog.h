@@ -1,6 +1,6 @@
 
-#ifndef  __ELASTOS_DROID_PACKAGES_SYSTEMUI_CRESETSESSIONDIALOG_H__
-#define  __ELASTOS_DROID_PACKAGES_SYSTEMUI_CRESETSESSIONDIALOG_H__
+#ifndef  __ELASTOS_DROID_SYSTEMUI_CRESETSESSIONDIALOG_H__
+#define  __ELASTOS_DROID_SYSTEMUI_CRESETSESSIONDIALOG_H__
 
 #include "_Elastos_Droid_SystemUI_CResetSessionDialog.h"
 #include "elastos/droid/systemui/statusbar/phone/SystemUIDialog.h"
@@ -42,4 +42,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif // __ELASTOS_DROID_PACKAGES_SYSTEMUI_CRESETSESSIONDIALOG_H__
+#endif // __ELASTOS_DROID_SYSTEMUI_CRESETSESSIONDIALOG_H__

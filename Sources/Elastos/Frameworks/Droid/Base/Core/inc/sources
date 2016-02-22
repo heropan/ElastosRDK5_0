@@ -23,6 +23,7 @@ EXPORT_HEADERS += elastos/droid/app/job/JobService.h
 //EXPORT_HEADERS += elastos/droid/app/backup/BackupAgentHelper.h
 //EXPORT_HEADERS += elastos/droid/appwidget/AppWidgetProvider.h
 
+EXPORT_HEADERS += elastos/droid/bluetooth/BluetoothUuid.h
 
 EXPORT_HEADERS += elastos/droid/content/BroadcastReceiver.h
 EXPORT_HEADERS += elastos/droid/content/Intent.h
@@ -59,6 +60,9 @@ EXPORT_HEADERS += elastos/droid/internal/os/ProcessCpuTracker.h
 EXPORT_HEADERS += elastos/droid/internal/os/SomeArgs.h
 
 //EXPORT_HEADERS += elastos/droid/Manifest.h
+
+EXPORT_HEADERS += elastos/droid/media/MediaRouterSimpleCallback.h
+EXPORT_HEADERS += elastos/droid/media/VolumeProvider.h
 
 EXPORT_HEADERS += elastos/droid/net/ReturnOutValue.h
 EXPORT_HEADERS += elastos/droid/net/NetworkUtils.h
@@ -104,6 +108,7 @@ EXPORT_HEADERS += elastos/droid/text/TextUtils.h
 //EXPORT_HEADERS += elastos/droid/text/AndroidBidi.h
 //EXPORT_HEADERS += elastos/droid/text/TextDirectionHeuristics.h
 //EXPORT_HEADERS += elastos/droid/text/method/MetaKeyKeyListener.h
+EXPORT_HEADERS += elastos/droid/text/format/DateFormat.h
 EXPORT_HEADERS += elastos/droid/text/format/Formatter.h
 
 EXPORT_HEADERS += elastos/droid/utility/Xml.h
@@ -146,3 +151,4 @@ EXPORT_HEADERS += elastos/droid/widget/FrameLayout.h
 EXPORT_HEADERS += elastos/droid/widget/ImageView.h
 EXPORT_HEADERS += elastos/droid/widget/ImageButton.h
 EXPORT_HEADERS += elastos/droid/widget/RemoteViews.h
+EXPORT_HEADERS += elastos/droid/widget/TextView.h

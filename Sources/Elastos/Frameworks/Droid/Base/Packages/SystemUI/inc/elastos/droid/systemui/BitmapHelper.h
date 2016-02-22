@@ -1,6 +1,6 @@
 
-#ifndef  __ELASTOS_DROID_PACKAGES_SYSTEMUI_CBITMAPHELPER_H__
-#define  __ELASTOS_DROID_PACKAGES_SYSTEMUI_CBITMAPHELPER_H__
+#ifndef  __ELASTOS_DROID_SYSTEMUI_CBITMAPHELPER_H__
+#define  __ELASTOS_DROID_SYSTEMUI_CBITMAPHELPER_H__
 
 #include "elastos/droid/ext/frameworkext.h"
 
@@ -23,4 +23,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif // __ELASTOS_DROID_PACKAGES_SYSTEMUI_CBITMAPHELPER_H__
+#endif // __ELASTOS_DROID_SYSTEMUI_CBITMAPHELPER_H__

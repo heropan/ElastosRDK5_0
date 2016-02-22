@@ -1,30 +1,27 @@
 #ifndef __ELASTOS_DROID_MEDIA_MEDIAROUTERSIMPLECALLBACK_H__
 #define __ELASTOS_DROID_MEDIA_MEDIAROUTERSIMPLECALLBACK_H__
 
+#include <elastos/droid/ext/frameworkext.h>
 #include <elastos/core/Object.h>
 #include "Elastos.Droid.Media.h"
-#include "elastos/droid/media/CMediaRouter.h"
-#include "elastos/droid/ext/frameworkext.h"
 
 namespace Elastos {
 namespace Droid {
 namespace Media {
 
-class MediaRouterSimpleCallback
+class ECO_PUBLIC MediaRouterSimpleCallback
     : public Object
     , public IMediaRouterCallback
     , public IMediaRouterSimpleCallback
 {
-   friend class CMediaRouter;
-
 public:
+    CAR_INTERFACE_DECL();
+
     MediaRouterSimpleCallback();
 
     virtual ~MediaRouterSimpleCallback();
 
     CARAPI constructor();
-
-    CAR_INTERFACE_DECL()
 
     CARAPI OnRouteSelected(
         /* [in] */ IMediaRouter* router,

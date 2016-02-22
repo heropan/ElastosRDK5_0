@@ -12,7 +12,7 @@ namespace Elastos {
 namespace Droid {
 namespace Bluetooth {
 
-class BluetoothUuid
+class ECO_PUBLIC BluetoothUuid
 {
 public:
     static CARAPI_(Boolean) IsAudioSource(
@@ -71,6 +71,7 @@ public:
         //TODO
         return NULL;
     };
+
 public:
     /* See Bluetooth Assigned Numbers document - SDP section, to get the values of UUIDs
      * for the various services.
@@ -89,6 +90,7 @@ public:
     static const AutoPtr<IParcelUuid> AvrcpTarget;
     static const AutoPtr<IParcelUuid> ObexObjectPush;
     static const AutoPtr<IParcelUuid> Hid;
+    static const AutoPtr<IParcelUuid> Hogp;
     static const AutoPtr<IParcelUuid> PANU;
     static const AutoPtr<IParcelUuid> NAP;
     static const AutoPtr<IParcelUuid> BNEP;
@@ -104,8 +106,6 @@ public:
     static const Int32 UUID_BYTES_32_BIT = 4;
     /** Length of bytes for 128 bit UUID */
     static const Int32 UUID_BYTES_128_BIT = 16;
-
-
 
     static const AutoPtr< ArrayOf<IParcelUuid*> > RESERVED_UUIDS;
 };

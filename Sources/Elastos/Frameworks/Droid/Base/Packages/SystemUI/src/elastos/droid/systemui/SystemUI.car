@@ -301,6 +301,7 @@ module
     using interface Elastos.Droid.View.IContextThemeWrapper;
     using interface Elastos.Droid.View.ILayoutInflaterFactory;
     using interface Elastos.Droid.View.ILayoutInflaterFactory2;
+    using interface Elastos.Droid.View.IOnPreDrawListener;
     using interface Elastos.Droid.View.IOnWindowDismissedCallback;
     using interface Elastos.Droid.View.IViewGroup;
     using interface Elastos.Droid.View.IViewManager;
@@ -315,11 +316,14 @@ module
     using interface Elastos.Droid.Widget.IImageButton;
     using interface Elastos.Droid.Widget.IImageView;
     using interface Elastos.Droid.Widget.ILinearLayout;
+    using interface Elastos.Droid.Widget.ITextView;
     using interface Elastos.Core.ICharSequence;
+    interface Elastos.Droid.SystemUI.IDemoMode;
     interface Elastos.Droid.SystemUI.ISystemUI;
     interface Elastos.Droid.SystemUI.StatusBar.INotificationOverflowIconsView;
     interface Elastos.Droid.SystemUI.StatusBar.IStatusBarPanel;
     interface Elastos.Droid.SystemUI.StatusBar.Policy.IBatteryStateChangeCallback;
+    interface Elastos.Droid.SystemUI.StatusBar.Policy.IClock;
     interface Elastos.Droid.SystemUI.StatusBar.Policy.INetworkControllerImplSignalCluster;
     interface Elastos.Droid.SystemUI.StatusBar.Policy.ISecurityControllerCallback;
     interface Elastos.Droid.SystemUI.StatusBar.Phone.IIconMerger;
@@ -1179,10 +1183,10 @@ module
             interface IAccessibilityEventSource;
         }
 
-//     //===========================================================================
-//     //                              Policy
-//     //===========================================================================
-//     namespace Policy {
+        //===========================================================================
+        //                              Policy
+        //===========================================================================
+        namespace Policy {
 
 //     class CFixedSizeDrawable {
 //         constructor(
@@ -1229,18 +1233,20 @@ module
 //         interface IOnComputeInternalInsetsListener;
 //     }
 
-//     [local]
-//     class CDateView {
-//         constructor(
-//             [in] IContext* ctx,
-//             [in] IAttributeSet* attrs);
+        [local]
+        class CDateView {
+            constructor(
+                [in] IContext* ctx,
+                [in] IAttributeSet* attrs);
 
-//         interface IDateView;
-//         interface IDrawableCallback;
-//         interface IKeyEventCallback;
-//         interface IAccessibilityEventSource;
-//         interface IOnPreDrawListener;
-//     }
+            interface IDateView;
+            interface ITextView;
+            interface IView;
+            interface IOnPreDrawListener;
+            interface IDrawableCallback;
+            interface IKeyEventCallback;
+            interface IAccessibilityEventSource;
+        }
 
 //     [local]
 //     class CCompatModeButton {
@@ -1259,43 +1265,47 @@ module
 //         interface IAccessibilityEventSource;
 //     }
 
-//     [local]
-//     class CClock {
-//         constructor(
-//             [in] IContext* ctx);
+        [local]
+        class CClock {
+            constructor(
+                [in] IContext* ctx);
 
-//         constructor(
-//             [in] IContext* ctx,
-//             [in] IAttributeSet* attrs);
+            constructor(
+                [in] IContext* ctx,
+                [in] IAttributeSet* attrs);
 
-//         constructor(
-//             [in] IContext* ctx,
-//             [in] IAttributeSet* attrs,
-//             [in] Int32 defStyle);
+            constructor(
+                [in] IContext* ctx,
+                [in] IAttributeSet* attrs,
+                [in] Int32 defStyle);
 
-//         interface IClock;
-//         interface IDrawableCallback;
-//         interface IKeyEventCallback;
-//         interface IAccessibilityEventSource;
-//         interface IOnPreDrawListener;
-//     }
+            interface IClock;
+            interface IDemoMode;
+            interface ITextView;
+            interface IView;
+            interface IOnPreDrawListener;
+            interface IDrawableCallback;
+            interface IKeyEventCallback;
+            interface IAccessibilityEventSource;
+        }
 
-//     [local]
-//     class CDeadZone {
-//         constructor(
-//             [in] IContext* ctx,
-//             [in] IAttributeSet* attrs);
+        [local]
+        class CDeadZone {
+            constructor(
+                [in] IContext* ctx,
+                [in] IAttributeSet* attrs);
 
-//         constructor(
-//             [in] IContext* ctx,
-//             [in] IAttributeSet* attrs,
-//             [in] Int32 defStyle);
+            constructor(
+                [in] IContext* ctx,
+                [in] IAttributeSet* attrs,
+                [in] Int32 defStyle);
 
-//         interface IDeadZone;
-//         interface IDrawableCallback;
-//         interface IKeyEventCallback;
-//         interface IAccessibilityEventSource;
-//     }
+            interface IDeadZone;
+            interface IView;
+            interface IDrawableCallback;
+            interface IKeyEventCallback;
+            interface IAccessibilityEventSource;
+        }
 
 //     [local]
 //     class CKeyButtonView {
@@ -1357,7 +1367,7 @@ module
 //         interface IExpandHelperCallback;
 //     }
 
-//     } // namespace Policy
+        } // namespace Policy
 
     //===========================================================================
     //                                  Phone

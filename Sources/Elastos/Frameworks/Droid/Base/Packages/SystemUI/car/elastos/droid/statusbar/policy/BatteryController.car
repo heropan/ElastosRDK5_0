@@ -21,7 +21,6 @@ module
      * interface Elastos.Droid.Content.IBroadcastReceiver
      */
     interface IBatteryController {
-
         AddStateChangedCallback(
             [in] IBatteryStateChangeCallback* cb);
 

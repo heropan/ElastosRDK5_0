@@ -1,6 +1,6 @@
 
-#ifndef  __ELASTOS_DROID_PACKAGES_SYSTEMUI_CDESSERTCASEVIEW_H__
-#define  __ELASTOS_DROID_PACKAGES_SYSTEMUI_CDESSERTCASEVIEW_H__
+#ifndef  __ELASTOS_DROID_SYSTEMUI_CDESSERTCASEVIEW_H__
+#define  __ELASTOS_DROID_SYSTEMUI_CDESSERTCASEVIEW_H__
 
 #include "_Elastos_Droid_SystemUI_CDessertCaseView.h"
 #include "Elastos.Droid.Os.h"
@@ -293,4 +293,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif // __ELASTOS_DROID_PACKAGES_SYSTEMUI_CDESSERTCASEVIEW_H__
+#endif // __ELASTOS_DROID_SYSTEMUI_CDESSERTCASEVIEW_H__

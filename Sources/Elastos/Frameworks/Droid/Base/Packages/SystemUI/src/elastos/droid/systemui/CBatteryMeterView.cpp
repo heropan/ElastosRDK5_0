@@ -1,6 +1,5 @@
 
 #include "elastos/droid/systemui/CBatteryMeterView.h"
-//#include "Elastos.Droid.Content.h"
 #include "Elastos.Droid.Os.h"
 #include "R.h"
 #include <elastos/droid/provider/Settings.h>

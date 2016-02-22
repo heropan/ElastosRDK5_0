@@ -49,7 +49,6 @@ module
     }
 
     interface IBluetoothController {
-
         AddStateChangedCallback(
             [in] IBluetoothControllerCallback* cb);
 
