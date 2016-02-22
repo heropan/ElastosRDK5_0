@@ -1269,7 +1269,7 @@ ECode Collections::_SingletonMap::MySet::GetSize(
 ECode Collections::_SingletonMap::MySet::GetIterator(
     /* [out] */ IIterator** it)
 {
-    VALIDATE_NOT_NULL(*it)
+    VALIDATE_NOT_NULL(it)
     *it = new Iterator(this);
     REFCOUNT_ADD(*it)
     return NOERROR;
@@ -1669,7 +1669,7 @@ ECode Collections::_SynchronizedCollection::GetSize(
 ECode Collections::_SynchronizedCollection::ToArray(
     /* [out, callee] */ ArrayOf<IInterface*>** array)
 {
-    VALIDATE_NOT_NULL(*array);
+    VALIDATE_NOT_NULL(array);
     synchronized (mLock) {
         mC->ToArray(array);
     }
@@ -1751,7 +1751,7 @@ ECode Collections::SynchronizedRandomAccessList::GetSubList(
     /* [in] */ Int32 end,
     /* [out] */ IList** subList)
 {
-    VALIDATE_NOT_NULL(*subList);
+    VALIDATE_NOT_NULL(subList);
     synchronized (mLock) {
         AutoPtr<IList> sub;
         mList->GetSubList(start, end, (IList**)&sub);
@@ -1840,7 +1840,7 @@ ECode Collections::_SynchronizedList::Get(
     /* [in] */ Int32 location,
     /* [out] */ IInterface** object)
 {
-    VALIDATE_NOT_NULL(*object);
+    VALIDATE_NOT_NULL(object);
     synchronized (mLock) {
         mList->Get(location, object);
     }
@@ -2187,7 +2187,7 @@ ECode Collections::_SynchronizedMap::ContainsValue(
 ECode Collections::_SynchronizedMap::GetEntrySet(
     /* [out, callee] */ ISet** entries)
 {
-    VALIDATE_NOT_NULL(*entries);
+    VALIDATE_NOT_NULL(entries);
     synchronized (mLock) {
         AutoPtr<ISet> entry;
         mM->GetEntrySet((ISet**)&entry);
@@ -6091,7 +6091,7 @@ ECode Collections::CheckedListIterator::HasPrevious(
 ECode Collections::CheckedListIterator::GetPrevious(
     /* [out] */ IInterface** object)
 {
-    VALIDATE_NOT_NULL(*object);
+    VALIDATE_NOT_NULL(object);
     return mI->GetPrevious(object);
 }
 

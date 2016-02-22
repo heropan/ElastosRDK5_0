@@ -126,7 +126,7 @@ ECode CNullCipherSpi::EngineUpdateEx2(
     /* [out] */ IByteBuffer * output,
     /* [out] */ Int32* number)
 {
-    VALIDATE_NOT_NULL(*number)
+    VALIDATE_NOT_NULL(number)
     if (NULL == input) {
         return E_NULL_POINTER_EXCEPTION;
     } else if (NULL == output) {

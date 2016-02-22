@@ -271,7 +271,7 @@ ECode CICUUtil::GetDateFormatOrder(
     /* [in] */ const String& pattern,
     /* [out, callee] */ ArrayOf<Char32>** locales)
 {
-    VALIDATE_NOT_NULL(*locales);
+    VALIDATE_NOT_NULL(locales);
     return ICUUtil::GetDateFormatOrder(pattern, locales);
 }
 
@@ -341,7 +341,7 @@ ECode CICUUtil::LocalesFromStrings(
     /* [out, callee] */ ArrayOf<ILocale*>** locales)
 {
     VALIDATE_NOT_NULL(localeNames)
-    VALIDATE_NOT_NULL(*locales)
+    VALIDATE_NOT_NULL(locales)
 
     return ICUUtil::LocalesFromStrings(*localeNames, locales);
 }
