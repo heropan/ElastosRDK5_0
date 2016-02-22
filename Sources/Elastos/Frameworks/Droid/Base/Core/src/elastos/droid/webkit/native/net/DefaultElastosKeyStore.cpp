@@ -2,14 +2,14 @@
 #include <Elastos.CoreLibrary.Security.h>
 #include "elastos/droid/webkit/native/net/DefaultElastosKeyStore.h"
 #include "elastos/droid/webkit/native/net/PrivateKeyType.h"
-//#include "elastos/security/Signature.h"
+//TODO: #include "elastos/security/Signature.h"
 #include <elastos/utility/logging/Logger.h>
 
 using Elastos::Droid::Webkit::Net::PrivateKeyType;
 using Elastos::Math::CBigInteger;
 using Elastos::Math::IBigInteger;
 using Elastos::Utility::Logging::Logger;
-//using Elastos::Security::CSignature;
+//TODO: using Elastos::Security::Signature;
 using Elastos::Security::ISignature;
 using Elastos::Security::Interfaces::EIID_IDSAKey;
 using Elastos::Security::Interfaces::EIID_IDSAPrivateKey;
@@ -239,13 +239,13 @@ AutoPtr< ArrayOf<Byte> > DefaultElastosKeyStore::RawSignDigestWithPrivateKey(
             // IMPORTANT: Due to a platform bug, this will throw NoSuchAlgorithmException
             // on Android 4.0.x and 4.1.x. Fixed in 4.2 and higher.
             // See https://android-review.googlesource.com/#/c/40352/
-            //CSignature::New(String("NONEwithRSA"), (ISignature**)&signature);
+            //Signature::GetInstance(String("NONEwithRSA"), (ISignature**)&signature);
         }
         else if (dsakey != NULL) {
-            //CSignature::New(String("NONEwithDSA"), (ISignature**)&signature);
+            //Signature::GetInstance(String("NONEwithDSA"), (ISignature**)&signature);
         }
         else if (eckey != NULL) {
-            //CSignature::New(String("NONEwithECDSA"), (ISignature**)&signature);
+            //Signature::GetInstance(String("NONEwithECDSA"), (ISignature**)&signature);
         }
     //} catch (NoSuchAlgorithmException e) {
     //    ;
@@ -260,7 +260,7 @@ AutoPtr< ArrayOf<Byte> > DefaultElastosKeyStore::RawSignDigestWithPrivateKey(
 
     // Sign the message.
     //try {
-        //signature->InitSign((IPrivateKey*)&javaKey);
+        signature->InitSign((IPrivateKey*)&javaKey);
         signature->Update(message);
         AutoPtr< ArrayOf<Byte> > res;
         signature->Sign((ArrayOf<Byte>**)&res);
@@ -408,8 +408,8 @@ Int64 DefaultElastosKeyStore::GetOpenSSLHandleForPrivateKey(
 
     // question: how to using reflection mechanism to initialize a class
     //Class<?> superClass;
-    //--AutoPtr<IOpenSSLRSAPrivateKey> superClass;
-    //--COpenSSLRSAPrivateKey::New((IOpenSSLRSAPrivateKey**)&superClass);
+    //TODO: AutoPtr<IOpenSSLRSAPrivateKey> superClass;
+    //TODO: COpenSSLRSAPrivateKey::New((IOpenSSLRSAPrivateKey**)&superClass);
     //try {
         //superClass = Class.forName(
         //        "org.apache.harmony.xnet.provider.jsse.OpenSSLRSAPrivateKey");
@@ -420,15 +420,15 @@ Int64 DefaultElastosKeyStore::GetOpenSSLHandleForPrivateKey(
     //    Log.e(TAG, "Cannot find system OpenSSLRSAPrivateKey class: " + e);
     //    return 0;
     //}
-    //--AutoPtr<IOpenSSLRSAPrivateKey> sslKey = IOpenSSLRSAPrivateKey::Probe(javaKey);
-    //--if (NULL == sslKey) {
+    //TODO: AutoPtr<IOpenSSLRSAPrivateKey> sslKey = IOpenSSLRSAPrivateKey::Probe(javaKey);
+    //TODO: if (NULL == sslKey) {
         // This may happen if the PrivateKey was not created by the "AndroidOpenSSL"
         // provider, which should be the default. That could happen if an OEM decided
         // to implement a different default provider. Also highly unlikely.
 
-        String canonicalName;// = javaKey.getClass().getCanonicalName();
-        Logger::E(TAG, String("Private key is not an OpenSSLRSAPrivateKey instance, its class name is:") + canonicalName);
-        return 0;
+        //String canonicalName;// = javaKey.getClass().getCanonicalName();
+        //Logger::E(TAG, String("Private key is not an OpenSSLRSAPrivateKey instance, its class name is:") + canonicalName);
+        //return 0;
     //--}
 
     //try {
@@ -448,8 +448,8 @@ Int64 DefaultElastosKeyStore::GetOpenSSLHandleForPrivateKey(
         //--if (opensslKey == NULL) {
             // Bail when detecting OEM "enhancement".
 
-            Logger::E(TAG, "getOpenSSLKey() returned null");
-            return 0;
+            //Logger::E(TAG, "getOpenSSLKey() returned null");
+            //return 0;
         //--}
 
         // Use reflection to invoke the 'getPkeyContext' method on the

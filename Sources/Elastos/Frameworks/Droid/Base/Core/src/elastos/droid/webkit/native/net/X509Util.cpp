@@ -16,7 +16,6 @@
 #include "elastos/core/AutoLock.h"
 #include "elastos/core/IntegralToString.h"
 #include <elastos/utility/logging/Logger.h>
-//#include "elastos/security/CKeyStoreHelper.h"
 
 using Elastos::Droid::Content::CIntent;
 using Elastos::Droid::Content::CIntentFilter;
@@ -42,7 +41,7 @@ using Elastos::Security::Cert::CCertificateFactoryHelper;
 using Elastos::Security::Cert::ICertificate;
 using Elastos::Security::Cert::ICertificateFactory;
 using Elastos::Security::Cert::ICertificateFactoryHelper;
-//using Elastos::Security::CKeyStoreHelper;
+//TODO; using Elastos::Security::CKeyStoreHelper;
 using Elastos::Security::CMessageDigestHelper;
 using Elastos::Security::IKeyStoreHelper;
 using Elastos::Security::IMessageDigest;
@@ -114,7 +113,7 @@ X509Util::X509TrustManagerIceCreamSandwich::X509TrustManagerIceCreamSandwich(
 }
 
 AutoPtr<IList> X509Util::X509TrustManagerIceCreamSandwich::CheckServerTrusted(
-    /* [in] */ /*ArrayOf<ICertificate*>* chain, //*/ ArrayOf<IX509Certificate*>* chain,
+    /* [in] */ ArrayOf<IX509Certificate*>* chain,
     /* [in] */ const String& authType,
     /* [in] */ const String& host)
 {

@@ -6,6 +6,7 @@
 #include "elastos/droid/os/Build.h"
 #include "elastos/droid/webkit/native/base/ApiCompatibilityUtils.h"
 #include "elastos/droid/webkit/native/ui/ColorPickerAdvancedComponent.h"
+#include "elastos/droid/webkit/native/ui/R_Ui.h"
 
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Content::Res::IResources;
@@ -17,6 +18,7 @@ using Elastos::Droid::Os::Build;
 using Elastos::Droid::Webkit::Base::ApiCompatibilityUtils;
 using Elastos::Droid::Widget::IAbsSeekBar;
 using Elastos::Droid::Widget::IProgressBar;
+using Elastos::Droid::Webkit::Ui::R;
 
 namespace Elastos {
 namespace Droid {
@@ -49,14 +51,14 @@ ColorPickerAdvancedComponent::ColorPickerAdvancedComponent(
     // mSeekBar.setThumbOffset(offset / 2);
 
     assert(0);
-    rootView->FindViewById(-1/*R::id::gradient*/, (IView**)&mGradientView);
+    rootView->FindViewById(R::id::gradient, (IView**)&mGradientView);
     IView* viewTmp = IView::Probe(mText);
-    rootView->FindViewById(-1/*R::id::text*/, (IView**)&viewTmp);
+    rootView->FindViewById(R::id::text, (IView**)&viewTmp);
     mText->SetText(textResourceId);
     CGradientDrawable::New(GradientDrawableOrientation_LEFT_RIGHT, NULL, (IGradientDrawable**)&mGradientDrawable);
 
     IView* viewTmp1 = IView::Probe(mSeekBar);
-    rootView->FindViewById(-1/*R::id::seek_bar*/, (IView**)&viewTmp1);
+    rootView->FindViewById(R::id::seek_bar, (IView**)&viewTmp1);
     mSeekBar->SetOnSeekBarChangeListener(seekBarListener);
 
     IProgressBar* progressBar = IProgressBar::Probe(mSeekBar);
@@ -70,7 +72,7 @@ ColorPickerAdvancedComponent::ColorPickerAdvancedComponent(
     context->GetResources((IResources**)&resources);
 
     AutoPtr<IDrawable> drawable;
-    resources->GetDrawable(-1/*R::drawable::color_picker_advanced_select_handle*/, (IDrawable**)&drawable);
+    resources->GetDrawable(R::drawable::color_picker_advanced_select_handle, (IDrawable**)&drawable);
     Int32 offset = 0;
     drawable->GetIntrinsicWidth(&offset);
 

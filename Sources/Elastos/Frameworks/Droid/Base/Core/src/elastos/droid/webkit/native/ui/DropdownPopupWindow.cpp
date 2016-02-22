@@ -5,6 +5,7 @@
 #include "Elastos.Droid.Utility.h"
 #include "elastos/droid/view/View.h"
 #include "elastos/droid/webkit/native/ui/DropdownPopupWindow.h"
+#include "elastos/droid/webkit/native/ui/R_Ui.h"
 #include "elastos/droid/widget/CLinearLayoutLayoutParams.h"
 #include "elastos/core/Math.h"
 
@@ -15,6 +16,7 @@ using Elastos::Droid::Utility::IDisplayMetrics;
 using Elastos::Droid::View::EIID_IViewOnLayoutChangeListener;
 using Elastos::Droid::View::IViewGroupLayoutParams;
 using Elastos::Droid::View::View;
+using Elastos::Droid::Webkit::Ui::R;
 using Elastos::Droid::Widget::CLinearLayoutLayoutParams;
 using Elastos::Droid::Widget::EIID_IPopupWindowOnDismissListener;
 using Elastos::Droid::Widget::IAdapter;
@@ -140,8 +142,8 @@ DropdownPopupWindow::DropdownPopupWindow(
     // setAnchorView(mAnchorView);
 
     assert(0);
-    ListPopupWindow::constructor(context, NULL, 0, -1/*R::style::DropdownPopupWindow*/);
-    mAnchorView->SetId(-1/*R::id::dropdown_popup_window*/);
+    ListPopupWindow::constructor(context, NULL, 0, R::style::DropdownPopupWindow);
+    mAnchorView->SetId(R::id::dropdown_popup_window);
     mAnchorView->SetTag(TO_IINTERFACE(this));
 
     mLayoutChangeListener = new InnerOnLayoutChangeListener(this);

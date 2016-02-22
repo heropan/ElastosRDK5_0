@@ -1,11 +1,13 @@
 
 #include "elastos/droid/webkit/native/ui/ColorPickerDialog.h"
+#include "elastos/droid/webkit/native/ui/R_Ui.h"
 
 using Elastos::Droid::Content::EIID_IDialogInterface;
 using Elastos::Droid::Content::EIID_IDialogInterfaceOnCancelListener;
 using Elastos::Droid::Content::EIID_IDialogInterfaceOnClickListener;
 using Elastos::Droid::View::EIID_IViewOnClickListener;
 using Elastos::Droid::View::ILayoutInflater;
+using Elastos::Droid::Webkit::Ui::R;
 using Elastos::Droid::Webkit::Ui::EIID_IOnColorChangedListener;
 using Elastos::Core::CString;
 using Elastos::Core::ICharSequence;
@@ -215,22 +217,19 @@ ColorPickerDialog::ColorPickerDialog(
     ILayoutInflater* inflater = ILayoutInflater::Probe(interfaceTmp);
 
     AutoPtr<IView> title;
-    inflater->Inflate(-1/*R::layout::color_picker_dialog_title*/, NULL, (IView**)&title);
+    inflater->Inflate(R::layout::color_picker_dialog_title, NULL, (IView**)&title);
     SetCustomTitle(title);
 
-    title->FindViewById(-1/*R::id::selected_color_view*/, (IView**)&mCurrentColorView);
+    title->FindViewById(R::id::selected_color_view, (IView**)&mCurrentColorView);
 
     AutoPtr<IView> titleTextTmp;
-    title->FindViewById(-1/*R::id::title*/, (IView**)&titleTextTmp);
+    title->FindViewById(R::id::title, (IView**)&titleTextTmp);
     ITextView* titleText = ITextView::Probe(titleTextTmp);
-
-    AutoPtr<ICharSequence> charSequence;
-    CString::New(String("")/*R::string::color_picker_dialog_title*/, (ICharSequence**)&charSequence);
-    titleText->SetText(charSequence);
+    titleText->SetText(R::string::color_picker_dialog_title);
 
     // Initialize Set/Cancel buttons
     String positiveButtonText;
-    context->GetString(-1/*R::string::color_picker_button_set*/, &positiveButtonText);
+    context->GetString(R::string::color_picker_button_set, &positiveButtonText);
     AutoPtr<InnerOnClickListener> positiveOnClickListener = new InnerOnClickListener(this);
     AutoPtr<ICharSequence> charSequenceTmp;
     CString::New(positiveButtonText, (ICharSequence**)&charSequenceTmp);
@@ -244,7 +243,7 @@ ColorPickerDialog::ColorPickerDialog(
     // returning
     // the color that we were initialized with.
     String negativeButtonText;
-    context->GetString(-1/*R::string::color_picker_button_cancel*/, &negativeButtonText);
+    context->GetString(R::string::color_picker_button_cancel, &negativeButtonText);
     AutoPtr<InnerOnClickListener1> negativeListener = new InnerOnClickListener1(this);
     AutoPtr<ICharSequence> charSequenceTmp1;
     CString::New(negativeButtonText, (ICharSequence**)&charSequenceTmp1);
@@ -255,12 +254,12 @@ ColorPickerDialog::ColorPickerDialog(
 
     // Initialize main content view
     AutoPtr<IView> content;
-    inflater->Inflate(-1/*R::layout::color_picker_dialog_content*/, NULL, (IView**)&content);
+    inflater->Inflate(R::layout::color_picker_dialog_content, NULL, (IView**)&content);
     SetView(content);
 
     // Initialize More button.
     AutoPtr<IView> viewTmp;
-    content->FindViewById(-1/*R::id::more_colors_button*/, (IView**)&viewTmp);
+    content->FindViewById(R::id::more_colors_button, (IView**)&viewTmp);
     mMoreButton = IButton::Probe(viewTmp);
 
     AutoPtr<InnerOnClickListener> onClickListener = new InnerOnClickListener(this);
@@ -268,13 +267,13 @@ ColorPickerDialog::ColorPickerDialog(
 
     // Initialize advanced color view (hidden initially).
     AutoPtr<IView> viewTmp1;
-    content->FindViewById(-1/*R::id::color_picker_advanced*/, (IView**)&viewTmp1);
+    content->FindViewById(R::id::color_picker_advanced, (IView**)&viewTmp1);
     mAdvancedColorPicker = (ColorPickerAdvanced*)viewTmp1.Get();
     viewTmp1->SetVisibility(IView::GONE);
 
     // Initialize simple color view (default view).
     AutoPtr<IView> viewTmp2;
-    content->FindViewById(-1/*R::id::color_picker_simple*/, (IView**)&viewTmp2);
+    content->FindViewById(R::id::color_picker_simple, (IView**)&viewTmp2);
     mSimpleColorPicker = (ColorPickerSimple*)viewTmp2.Get();
     mSimpleColorPicker->Init(suggestions, this);
 
@@ -309,11 +308,11 @@ ECode ColorPickerDialog::ShowAdvancedView()
     // Only need to hide the borders, not the Views themselves, since the Views are
     // contained within the borders.
     AutoPtr<IView> buttonBorder;
-    FindViewById(-1/*R::id::more_colors_button_border*/, (IView**)&buttonBorder);
+    FindViewById(R::id::more_colors_button_border, (IView**)&buttonBorder);
     buttonBorder->SetVisibility(IView::GONE);
 
     AutoPtr<IView> simpleView;
-    FindViewById(-1/*R::id::color_picker_simple*/, (IView**)&simpleView);
+    FindViewById(R::id::color_picker_simple, (IView**)&simpleView);
     simpleView->SetVisibility(IView::GONE);
 
     IView::Probe(mAdvancedColorPicker)->SetVisibility(IView::VISIBLE);

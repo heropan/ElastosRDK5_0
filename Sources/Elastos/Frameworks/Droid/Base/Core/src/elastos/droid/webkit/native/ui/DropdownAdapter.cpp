@@ -9,6 +9,7 @@
 #include "elastos/droid/webkit/native/ui/DropdownAdapter.h"
 #include "elastos/droid/webkit/native/ui/DropdownDividerDrawable.h"
 #include "elastos/droid/webkit/native/ui/DropdownItem.h"
+#include "elastos/droid/webkit/native/ui/R_Ui.h"
 
 using Elastos::Droid::Content::Res::IResources;
 using Elastos::Droid::Graphics::Drawable::IDrawable;
@@ -19,6 +20,7 @@ using Elastos::Droid::View::CViewGroupLayoutParams;
 using Elastos::Droid::View::ILayoutInflater;
 using Elastos::Droid::View::IViewGroupLayoutParams;
 using Elastos::Droid::Webkit::Base::ApiCompatibilityUtils;
+using Elastos::Droid::Webkit::Ui::R;
 using Elastos::Droid::Webkit::Ui::DropdownDividerDrawable;
 using Elastos::Droid::Webkit::Ui::DropdownItem;
 using Elastos::Core::CInteger32;
@@ -49,7 +51,7 @@ DropdownAdapter::DropdownAdapter(
     // mAreAllItemsEnabled = checkAreAllItemsEnabled();
 
     assert(0);
-    ArrayAdapter::constructor(context, -1/*R::layout::dropdown_item*/, items);
+    ArrayAdapter::constructor(context, R::layout::dropdown_item, items);
     mAreAllItemsEnabled = CheckAreAllItemsEnabled();
 }
 
@@ -72,7 +74,7 @@ DropdownAdapter::DropdownAdapter(
     for (Int32 idx=0; idx<items->GetLength(); ++idx) {
         itemsTmp->Set(idx, TO_IINTERFACE((*items)[idx]));
     }
-    ArrayAdapter::constructor(context, -1/*R::layout::dropdown_item*/, itemsTmp);
+    ArrayAdapter::constructor(context, R::layout::dropdown_item, itemsTmp);
     mAreAllItemsEnabled = CheckAreAllItemsEnabled();
 }
 
@@ -139,7 +141,7 @@ AutoPtr<IView> DropdownAdapter::GetView(
         mContext->GetSystemService(IContext::LAYOUT_INFLATER_SERVICE, (IInterface**)&interfaceTmp);
         ILayoutInflater* inflater = ILayoutInflater::Probe(interfaceTmp);
 
-        inflater->Inflate(-1/*R::layout::dropdown_item*/, NULL, (IView**)&layout);
+        inflater->Inflate(R::layout::dropdown_item, NULL, (IView**)&layout);
         AutoPtr<DropdownDividerDrawable> drawable = new DropdownDividerDrawable();
         AutoPtr<IDrawable> drawableTmp = (IDrawable*)drawable;
         ApiCompatibilityUtils::SetBackgroundForView(layout, drawableTmp);
@@ -150,7 +152,7 @@ AutoPtr<IView> DropdownAdapter::GetView(
     IObject* objTmp = IObject::Probe(interfaceTmp);
     DropdownItem* item = (DropdownItem*)objTmp;
     AutoPtr<IView> viewTmp;
-    layout->FindViewById(-1/*R::id::dropdown_label*/, (IView**)&viewTmp);
+    layout->FindViewById(R::id::dropdown_label, (IView**)&viewTmp);
     ITextView* labelView = ITextView::Probe(viewTmp);
 
     String label = item->GetLabel();
@@ -172,7 +174,7 @@ AutoPtr<IView> DropdownAdapter::GetView(
     Int32 height = 0;
     AutoPtr<IResources> resources;
     mContext->GetResources((IResources**)&resources);
-    resources->GetDimensionPixelSize(-1/*R::dimen::dropdown_item_height*/, &height);
+    resources->GetDimensionPixelSize(R::dimen::dropdown_item_height, &height);
     if (position == 0) {
         divider->SetColor(IColor::TRANSPARENT);
     }
@@ -180,7 +182,7 @@ AutoPtr<IView> DropdownAdapter::GetView(
         Int32 dividerHeight = 0;
         AutoPtr<IResources> resources;
         mContext->GetResources((IResources**)&resources);
-        resources->GetDimensionPixelSize(-1/*R::dimen::dropdown_item_divider_height*/, &dividerHeight);
+        resources->GetDimensionPixelSize(R::dimen::dropdown_item_divider_height, &dividerHeight);
         height += dividerHeight;
         divider->SetHeight(dividerHeight);
 
@@ -195,11 +197,11 @@ AutoPtr<IView> DropdownAdapter::GetView(
         AutoPtr<IResources> res;
         mContext->GetResources((IResources**)&res);
         if (NULL != mSeparators && contain) {
-            res->GetColor(-1/*R::color::dropdown_dark_divider_color*/, &color);
+            res->GetColor(R::color::dropdown_dark_divider_color, &color);
             divider->SetColor(color);
         }
         else {
-            res->GetColor(-1/*R::color::dropdown_divider_color*/, &color);
+            res->GetColor(R::color::dropdown_divider_color, &color);
             divider->SetColor(color);
         }
     }
@@ -209,7 +211,7 @@ AutoPtr<IView> DropdownAdapter::GetView(
     layout->SetLayoutParams(layoutParams);
 
     AutoPtr<IView> viewTmp1;
-    layout->FindViewById(-1/*R::id::dropdown_sublabel*/, (IView**)&viewTmp1);
+    layout->FindViewById(R::id::dropdown_sublabel, (IView**)&viewTmp1);
     ITextView* sublabelView = ITextView::Probe(viewTmp1);
 
     String subLabelTmp = item->GetSublabel();

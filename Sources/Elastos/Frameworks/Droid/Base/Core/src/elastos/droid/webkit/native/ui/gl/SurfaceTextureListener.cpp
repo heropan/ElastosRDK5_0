@@ -51,7 +51,6 @@ ECode SurfaceTextureListener::Finalize()
         NativeDestroy(mNativeSurfaceTextureListener);
     //}
     // finally {
-        //--: base class has no this func; super.finalize();
     //}
     return NOERROR;
 }

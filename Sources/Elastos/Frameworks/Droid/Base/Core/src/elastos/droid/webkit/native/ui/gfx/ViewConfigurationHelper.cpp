@@ -3,12 +3,14 @@
 #include "elastos/droid/view/CViewConfigurationHelper.h"
 #include "elastos/droid/webkit/native/ui/gfx/ViewConfigurationHelper.h"
 #include "elastos/droid/webkit/native/ui/api/ViewConfigurationHelper_dec.h"
+#include "elastos/droid/webkit/native/ui/R_Ui.h"
 #include <elastos/utility/logging/Logger.h>
 
 using Elastos::Droid::Content::EIID_IComponentCallbacks;
 using Elastos::Droid::Content::Res::IResources;
 using Elastos::Droid::View::CViewConfigurationHelper;
 using Elastos::Droid::View::IViewConfigurationHelper;
+using Elastos::Droid::Webkit::Ui::R;
 using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
@@ -239,7 +241,7 @@ Int32 ViewConfigurationHelper::GetScaledMinScalingSpan()
     Int32 id = 0;
     res->GetIdentifier(String("config_minScalingSpan"), String("dimen"), String("android"), &id);
     if (id == 0)
-        id = -1;/*R::dimen.config_min_scaling_span;*/
+        id = R::dimen::config_min_scaling_span;
     //try {
         Int32 dimensionPixelSize = 0;
         res->GetDimensionPixelSize(id, &dimensionPixelSize);
@@ -274,7 +276,7 @@ Int32 ViewConfigurationHelper::GetScaledMinScalingTouchMajor()
     Int32 id = 0;
     res->GetIdentifier(String("config_minScalingTouchMajor"), String("dimen"), String("android"), &id);
     if (id == 0)
-        id = -1;/*R::dimen::config_min_scaling_touch_major;*/
+        id = R::dimen::config_min_scaling_touch_major;
     //try {
         Int32 dimensionPixelSize = 0;
         res->GetDimensionPixelSize(id, &dimensionPixelSize);

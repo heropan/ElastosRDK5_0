@@ -3,8 +3,10 @@
 #include "Elastos.Droid.Graphics.h"
 #include "elastos/droid/webkit/native/ui/ColorPickerSimple.h"
 #include "elastos/droid/webkit/native/ui/ColorSuggestion.h"
+#include "elastos/droid/webkit/native/ui/R_Ui.h"
 
 using Elastos::Droid::Graphics::IColor;
+using Elastos::Droid::Webkit::Ui::R;
 using Elastos::Droid::Webkit::Ui::ColorSuggestion;
 using Elastos::Droid::Webkit::Ui::EIID_IOnColorSuggestionClickListener;
 
@@ -161,14 +163,14 @@ AutoPtr< ArrayOf<Int32> > ColorPickerSimple::MiddleInitDefaultColorLabelIds()
     // ->WWZ_SIGN: ARRAY_INIT_END }
 
     Int32 tmps[] = {
-        -1/*R::string::color_picker_button_red*/,
-        -1/*R::string::color_picker_button_cyan*/,
-        -1/*R::string::color_picker_button_blue*/,
-        -1/*R::string::color_picker_button_green*/,
-        -1/*R::string::color_picker_button_magenta*/,
-        -1/*R::string::color_picker_button_yellow*/,
-        -1/*R::string::color_picker_button_black*/,
-        -1/*R::string::color_picker_button_white*/
+        Elastos::Droid::Webkit::Ui::R::string::color_picker_button_red,
+        Elastos::Droid::Webkit::Ui::R::string::color_picker_button_cyan,
+        Elastos::Droid::Webkit::Ui::R::string::color_picker_button_blue,
+        Elastos::Droid::Webkit::Ui::R::string::color_picker_button_green,
+        Elastos::Droid::Webkit::Ui::R::string::color_picker_button_magenta,
+        Elastos::Droid::Webkit::Ui::R::string::color_picker_button_yellow,
+        Elastos::Droid::Webkit::Ui::R::string::color_picker_button_black,
+        R::string::color_picker_button_white
     };
 
     Int32 count = sizeof(tmps) / sizeof(tmps[0]);
