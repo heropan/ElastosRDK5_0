@@ -58,7 +58,7 @@ namespace Utility {
  * Support Package</a> for earlier releases.
  */
 template<typename K, typename V>
-class ECO_PUBLIC LruCache
+class LruCache
     : public Object
 {
 public:
@@ -221,7 +221,7 @@ protected:
         /* [in] */ V value);
 
 private:
-    ECO_LOCAL CARAPI_(Int32) SafeSizeOf(
+    CARAPI_(Int32) SafeSizeOf(
         /* [in] */ K key,
         /* [in] */ V value);
 
