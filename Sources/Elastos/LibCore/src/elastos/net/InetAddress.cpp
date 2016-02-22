@@ -187,7 +187,7 @@ ECode InetAddress::GetHostName(
     if(mHostname.IsNull()) {
         AutoPtr<IInetAddress> addr;
         if(SUCCEEDED(GetHostByAddrImpl(this, (IInetAddress**)&addr))) {
-            InetAddress* inetAddress = (InetAddress*)THIS_PROBE(IInetAddress);
+            InetAddress* inetAddress = (InetAddress*)(addr.Get());
             mHostname = inetAddress->mHostname;
         }
         else{
@@ -646,7 +646,10 @@ ECode InetAddress::LookupHostByName(
     return NOERROR;
 
 _EXIT_:
-    ADDRESS_CACHE->PutUnknownHost(host, netId, String("Unable to resolve") + host);
+    if (E_GAI_EXCEPTION == ec) {
+        ADDRESS_CACHE->PutUnknownHost(host, netId, String("Unable to resolve") + host);
+        ec = E_UNKNOWN_HOST_EXCEPTION;
+    }
     return ec;
 }
 
