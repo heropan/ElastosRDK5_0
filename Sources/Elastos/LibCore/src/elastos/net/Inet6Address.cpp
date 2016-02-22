@@ -348,7 +348,7 @@ ECode Inet6Address::ToString(
 ECode Inet6Address::GetANY(
     /* [out] */ IInetAddress** result)
 {
-    VALIDATE_NOT_NULL(*result)
+    VALIDATE_NOT_NULL(result)
 
     *result = ANY;
     REFCOUNT_ADD(*result)
@@ -358,7 +358,7 @@ ECode Inet6Address::GetANY(
 ECode Inet6Address::GetLOOPBACK(
     /* [out] */ IInetAddress** result)
 {
-    VALIDATE_NOT_NULL(*result)
+    VALIDATE_NOT_NULL(result)
 
     *result = LOOPBACK;
     REFCOUNT_ADD(*result)
