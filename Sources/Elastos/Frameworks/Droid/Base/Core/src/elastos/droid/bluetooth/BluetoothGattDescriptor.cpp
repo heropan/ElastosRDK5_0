@@ -22,8 +22,7 @@ BluetoothGattDescriptor::BluetoothGattDescriptor(
     /* [in] */ IUUID* uuid,
     /* [in] */ Int32 permissions)
 {
-    // ==================before translated======================
-    // initDescriptor(null, uuid, 0, permissions);
+    InitDescriptor(NULL, uuid, 0, permissions);
 }
 
 BluetoothGattDescriptor::BluetoothGattDescriptor(
@@ -32,27 +31,22 @@ BluetoothGattDescriptor::BluetoothGattDescriptor(
     /* [in] */ Int32 instance,
     /* [in] */ Int32 permissions)
 {
-    // ==================before translated======================
-    // initDescriptor(characteristic, uuid, instance, permissions);
+    InitDescriptor(characteristic, uuid, instance, permissions);
 }
 
 ECode BluetoothGattDescriptor::GetCharacteristic(
     /* [out] */ IBluetoothGattCharacteristic** result)
 {
     VALIDATE_NOT_NULL(result);
-    // ==================before translated======================
-    // return mCharacteristic;
-    assert(0);
+    *result = mCharacteristic;
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
 ECode BluetoothGattDescriptor::SetCharacteristic(
     /* [in] */ IBluetoothGattCharacteristic* characteristic)
 {
-    VALIDATE_NOT_NULL(characteristic);
-    // ==================before translated======================
-    // mCharacteristic = characteristic;
-    assert(0);
+    mCharacteristic = characteristic;
     return NOERROR;
 }
 
@@ -60,9 +54,8 @@ ECode BluetoothGattDescriptor::GetUuid(
     /* [out] */ IUUID** result)
 {
     VALIDATE_NOT_NULL(result);
-    // ==================before translated======================
-    // return mUuid;
-    assert(0);
+    *result = mUuid;
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
@@ -70,9 +63,7 @@ ECode BluetoothGattDescriptor::GetInstanceId(
     /* [out] */ Int32* result)
 {
     VALIDATE_NOT_NULL(result);
-    // ==================before translated======================
-    // return mInstance;
-    assert(0);
+    *result = mInstance;
     return NOERROR;
 }
 
@@ -80,9 +71,7 @@ ECode BluetoothGattDescriptor::GetPermissions(
     /* [out] */ Int32* result)
 {
     VALIDATE_NOT_NULL(result);
-    // ==================before translated======================
-    // return mPermissions;
-    assert(0);
+    *result = mPermissions;
     return NOERROR;
 }
 
@@ -90,9 +79,8 @@ ECode BluetoothGattDescriptor::GetValue(
     /* [out] */ ArrayOf<Byte>** result)
 {
     VALIDATE_NOT_NULL(result);
-    // ==================before translated======================
-    // return mValue;
-    assert(0);
+    *result = mValue;
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
@@ -100,12 +88,9 @@ ECode BluetoothGattDescriptor::SetValue(
     /* [in] */ ArrayOf<Byte>* value,
     /* [out] */ Boolean* result)
 {
-    VALIDATE_NOT_NULL(value);
     VALIDATE_NOT_NULL(result);
-    // ==================before translated======================
-    // mValue = value;
-    // return true;
-    assert(0);
+    mValue = value;
+    *result = TRUE;
     return NOERROR;
 }
 
@@ -148,12 +133,10 @@ void BluetoothGattDescriptor::InitDescriptor(
     /* [in] */ Int32 instance,
     /* [in] */ Int32 permissions)
 {
-    // ==================before translated======================
-    // mCharacteristic = characteristic;
-    // mUuid = uuid;
-    // mInstance = instance;
-    // mPermissions = permissions;
-    assert(0);
+    mCharacteristic = characteristic;
+    mUuid = uuid;
+    mInstance = instance;
+    mPermissions = permissions;
 }
 
 } // namespace Bluetooth

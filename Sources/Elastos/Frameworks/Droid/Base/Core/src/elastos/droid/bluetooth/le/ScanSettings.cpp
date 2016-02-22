@@ -103,6 +103,7 @@ Boolean ScanSettings::Builder::IsValidCallbackType(
 //                             ScanSettings
 //=====================================================================
 CAR_INTERFACE_IMPL_2(ScanSettings, Object, IScanSettings, IParcelable);
+
 ScanSettings::ScanSettings()
 {
 }

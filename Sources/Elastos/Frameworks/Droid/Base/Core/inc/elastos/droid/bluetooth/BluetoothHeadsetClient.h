@@ -7,10 +7,6 @@
 #include <elastos/core/Object.h>
 #include "elastos/droid/ext/frameworkext.h"
 
-// import android.content.IIntent;
-// import android.util.Log;
-// import java.util.ArrayList;
-
 using Elastos::Droid::Content::IComponentName;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Content::IServiceConnection;
@@ -509,7 +505,7 @@ private:
     static const Boolean VDBG;
     AutoPtr<IContext> mContext;
     AutoPtr<IBluetoothProfileServiceListener> mServiceListener;
-    AutoPtr<IBluetoothHeadsetClient> mService;
+    AutoPtr<IIBluetoothHeadsetClient> mService;
     AutoPtr<IBluetoothAdapter> mAdapter;
     AutoPtr<IIBluetoothStateChangeCallback> mBluetoothStateChangeCallback;
     AutoPtr<IServiceConnection> mConnection;

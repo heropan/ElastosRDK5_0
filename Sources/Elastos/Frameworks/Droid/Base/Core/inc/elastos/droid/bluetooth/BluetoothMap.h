@@ -7,10 +7,6 @@
 #include <elastos/core/Object.h>
 #include "elastos/droid/ext/frameworkext.h"
 
-// import java.util.ArrayList;
-// import android.content.IIntent;
-// import android.util.Log;
-
 using Elastos::Droid::Content::IComponentName;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Content::IServiceConnection;

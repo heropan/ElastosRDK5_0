@@ -1041,6 +1041,10 @@ module
                 [in] IBluetoothGattCallback* cb,
                 [in] Int32 transport,
                 [out] IBluetoothGatt** btGatt);
+
+            Equals(
+                [in] IInterface* obj,
+                [out] Boolean* result);
         }
 
     } // Bluetooth
