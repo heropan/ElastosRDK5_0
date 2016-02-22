@@ -557,11 +557,13 @@ Boolean CZygoteInit::HasSecondZygote(
 void CZygoteInit::WaitForSecondaryZygote(
     /* [in] */ const String& socketName)
 {
-    String otherZygoteName = Process::ZYGOTE_SOCKET.Equals(socketName) ?
-            Process::SECONDARY_ZYGOTE_SOCKET : Process::ZYGOTE_SOCKET;
+    ECode ec = NOERROR;
+    String otherZygoteName = Process::ZYGOTE_SOCKET_ELASTOS.Equals(socketName) ?
+            Process::SECONDARY_ZYGOTE_SOCKET_ELASTOS : Process::ZYGOTE_SOCKET_ELASTOS;
     while (TRUE) {
         AutoPtr<Process::ZygoteState> zs;
-        if (Process::ZygoteState::Connect(otherZygoteName, (Process::ZygoteState**)&zs) == (ECode)E_IO_EXCEPTION)
+        ec = Process::ZygoteState::Connect(otherZygoteName, (Process::ZygoteState**)&zs);
+        if (ec == (ECode)E_IO_EXCEPTION)
             Logger::W(TAG, "Got error connecting to zygote, retrying. msg= " /*+ ioe.getMessage()*/);
         else
             zs->Close();

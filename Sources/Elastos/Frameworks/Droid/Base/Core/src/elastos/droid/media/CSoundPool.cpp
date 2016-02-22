@@ -359,6 +359,7 @@ ECode CSoundPool::SoundPoolImpl::Stop(
         return NOERROR;
     }
     ap->stop(streamID);
+    return NOERROR;
 }
 
 ECode CSoundPool::SoundPoolImpl::SetVolume(
@@ -817,6 +818,7 @@ ECode CSoundPool::constructor(
     } else {
         mImpl = new SoundPoolImpl(this, maxStreams, attributes);
     }
+    return NOERROR;
 }
 
 ECode CSoundPool::Load(
@@ -892,7 +894,7 @@ ECode CSoundPool::Pause(
 ECode CSoundPool::Resume(
     /* [in] */ Int32 streamID)
 {
-    mImpl->Resume(streamID);
+    return mImpl->Resume(streamID);
 }
 
 ECode CSoundPool::AutoPause()

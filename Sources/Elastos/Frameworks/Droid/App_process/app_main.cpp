@@ -8,7 +8,7 @@
 #include <cutils/process_name.h>
 #include <cutils/properties.h>
 #include <cutils/trace.h>
-#include <DroidRuntime.h>
+#include <elastos/droid/DroidRuntime.h>
 //#include <private/android_filesystem_config.h>  // for AID_SYSTEM
 
 #include <skia/core/SkGraphics.h>

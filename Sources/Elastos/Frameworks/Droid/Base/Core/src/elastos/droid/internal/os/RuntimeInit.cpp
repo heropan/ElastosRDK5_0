@@ -5,7 +5,7 @@
 #include "elastos/droid/internal/os/CZygoteInit.h"
 #include <elastos/utility/logging/Logger.h>
 #include <elastos/utility/logging/Slogger.h>
-#include <DroidRuntime.h>
+#include <elastos/droid/DroidRuntime.h>
 
 using Elastos::Core::CSystem;
 using Elastos::Core::ISystem;

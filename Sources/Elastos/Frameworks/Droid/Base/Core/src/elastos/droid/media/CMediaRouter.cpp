@@ -363,6 +363,7 @@ ECode CMediaRouter::Static::IsBluetoothA2dpOn(
       *result = FALSE;
       return NOERROR;
   }
+      return NOERROR;
   // }
 }
 
@@ -612,6 +613,7 @@ ECode CMediaRouter::Static::UpdateClientState()
           }
       }
   }
+    return NOERROR;
 }
 
 void CMediaRouter::Static::UpdatePresentationDisplays(
@@ -911,7 +913,7 @@ ECode CMediaRouter::RouteCategory::GetRoutes(
       route = NULL;
       mHost->GetRouteAtStatic(i, (IMediaRouterRouteInfo**)&route);
 
-     if ((((MediaRouterRouteInfo*)(route.Get()))->mCategory) == IMediaRouterRouteCategory::Probe(this)) {
+     if ((((MediaRouterRouteInfo*)(route.Get()))->mCategory.Get()) == IMediaRouterRouteCategory::Probe(this)) {
          outList->Add(route.Get());
      }
   }
@@ -947,11 +949,15 @@ ECode CMediaRouter::RouteCategory::IsSystem(
 ECode CMediaRouter::RouteCategory::ToString(
   /* [out] */ String* result)
 {
-  VALIDATE_NOT_NULL(result);//
-  String name;
-  mName->ToString(&name);
-  *result = String("RouteCategory{ name=") + name + String(" types=") + TypesToString(mTypes) +
-         String(" groupable=") + mGroupable + String(" }");
+  VALIDATE_NOT_NULL(result);
+  StringBuilder sb("RouteCategory{ name=");
+  sb += Object::ToString(mName);
+  sb += " types=";
+  sb += TypesToString(mTypes);
+  sb += " groupable=";
+  sb += mGroupable;
+  sb += "}";
+  *result = sb.ToString();
   return NOERROR;
 }
 
@@ -963,9 +969,9 @@ CMediaRouter::CallbackInfo::CallbackInfo(
   /* [in] */ Int32 type,
   /* [in] */ Int32 flags,
   /* [in] */ IMediaRouter* router)
-  : mCb(cb)
-  , mType(type)
+  : mType(type)
   , mFlags(flags)
+  , mCb(cb)
 {
   mRouter = (CMediaRouter*)router;
 }
@@ -1215,9 +1221,10 @@ ECode CMediaRouter::RemoveCallback(
   }
 
   if (it == (((Static*)(sStatic.Get()))->mCallbacks).End()) {
-  Logger::W(TAG, "removeCallback(" /*+ cb +*/ "): callback not registered");
-  return NOERROR;
+    Logger::W(TAG, "removeCallback(" /*+ cb +*/ "): callback not registered");
+    return NOERROR;
   }
+    return NOERROR;
 }
 
 ECode CMediaRouter::SelectRoute(
@@ -1847,13 +1854,15 @@ ECode CMediaRouter::SystemVolumeChanged(
   } else {
      DispatchRouteVolumeChanged(((Static*)(sStatic.Get()))->mDefaultAudioVideo);
   }
+  return NOERROR;
 }
 
 ECode CMediaRouter::UpdateWifiDisplayStatus(
   /* [in] */ IWifiDisplayStatus* newStatus)
 {
-//    assert(0 && "todo");
+   assert(0 && "todo");
 //    //todo
+  return NOERROR;
 }
 
 ECode CMediaRouter::GetWifiDisplayStatusCode(
