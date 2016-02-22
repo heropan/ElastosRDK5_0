@@ -1342,6 +1342,17 @@ module
         interface ISoundPool;
     }
 
+    class CMediaScanner {
+        constructor(
+            [in] IContext* c);
+
+        interface IMediaScanner;
+    }
+
+    singleton class CMediaRouterHelper {
+        interface IMediaRouterHelper;
+    }
+
     } // namespace media
     } // namepsace Droid
     } // namespace Elastos

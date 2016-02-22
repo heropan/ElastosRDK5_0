@@ -46,6 +46,7 @@ CarClass(CMediaRouter)
   friend class MediaRouterRouteInfo;
   friend class MediaRouterUserRouteInfo;
   friend class MediaRouterRouteGroup;
+  friend class CMediaRouterHelper;
 
 public:
   class CallbackInfo;
@@ -676,7 +677,7 @@ private:
     /* [in] */ Int32 newValue);
 
   static CARAPI UpdateWifiDisplayStatus(
-    /* [in] */ IWifiDisplayStatus* newStatus);
+    /* [in] */ IWifiDisplayStatus* status);
 
   static CARAPI GetWifiDisplayStatusCode(
     /* [in] */ IWifiDisplay* d,
@@ -700,7 +701,7 @@ private:
     /* [in] */ Boolean disconnected);
 
   static CARAPI_(AutoPtr<IWifiDisplay>) FindWifiDisplay(
-    /* [in] */ ArrayOf<AutoPtr<IWifiDisplay> >* displays,
+    /* [in] */ ArrayOf<IWifiDisplay*>* displays,
     /* [in] */ const String& deviceAddress);
 
   static CARAPI_(AutoPtr<IMediaRouterRouteInfo>) FindWifiDisplayRoute(
@@ -708,6 +709,10 @@ private:
 
   CARAPI_(Int32) FindCallbackInfo(
     /* [in] */ IMediaRouterCallback* cb);
+
+  static CARAPI_(Boolean) ShouldShowWifiDisplay(
+    /* [in] */ IWifiDisplay* d,
+    /* [in] */ IWifiDisplay* activeDisplay);
 
 private:
    static const String TAG;
