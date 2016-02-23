@@ -271,10 +271,6 @@ ECode CICUUtil::GetDateFormatOrder(
     /* [in] */ const String& pattern,
     /* [out, callee] */ ArrayOf<Char32>** locales)
 {
-<<<<<<< HEAD
-    VALIDATE_NOT_NULL(locales);
-=======
->>>>>>> debug zygote.
     return ICUUtil::GetDateFormatOrder(pattern, locales);
 }
 
