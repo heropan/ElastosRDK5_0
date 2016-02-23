@@ -118,6 +118,30 @@ Boolean BluetoothUuid::IsBnep(
     return FALSE;
 }
 
+Boolean BluetoothUuid::IsMap(
+    /* [in] */ IParcelUuid* uuid)
+{
+    //return uuid->Equals(MAP);
+    assert(0);
+    return FALSE;
+}
+
+Boolean BluetoothUuid::IsMns(
+    /* [in] */ IParcelUuid* uuid)
+{
+    //return uuid.equals(MNS);
+    assert(0);
+    return FALSE;
+}
+
+Boolean BluetoothUuid::IsMas(
+    /* [in] */ IParcelUuid* uuid)
+{
+    //return uuid.equals(MAS);
+    assert(0);
+    return FALSE;
+}
+
 Boolean BluetoothUuid::IsUuidPresent(
     /* [in] */ ArrayOf<IParcelUuid*>* uuidArray,
     /* [in] */ IParcelUuid* uuid)
@@ -147,6 +171,72 @@ Int32 BluetoothUuid::GetServiceIdentifierFromParcelUuid(
 {
     assert(0);
     return 0;
+}
+
+Boolean BluetoothUuid::Is16BitUuid(
+    /* [in] */ IParcelUuid* parcelUuid)
+{
+    //UUID uuid = parcelUuid.getUuid();
+    //if (uuid.getLeastSignificantBits() != BASE_UUID.getUuid().getLeastSignificantBits()) {
+    //    return false;
+    //}
+    //return ((uuid.getMostSignificantBits() & 0xFFFF0000FFFFFFFFL) == 0x1000L);
+    assert(0);
+    return FALSE;
+}
+
+Boolean BluetoothUuid::Is32BitUuid(
+    /* [in] */ IParcelUuid* parcelUuid)
+{
+    //UUID uuid = parcelUuid.getUuid();
+    //if (uuid.getLeastSignificantBits() != BASE_UUID.getUuid().getLeastSignificantBits()) {
+    //    return false;
+    //}
+    //if (is16BitUuid(parcelUuid)) {
+    //    return false;
+    //}
+    //return ((uuid.getMostSignificantBits() & 0xFFFFFFFFL) == 0x1000L);
+    assert(0);
+    return FALSE;
+}
+
+AutoPtr<IParcelUuid> BluetoothUuid::ParseUuidFrom(
+    /* [in] */ ArrayOf<Byte>* uuidBytes)
+{
+    //if (uuidBytes == null) {
+    //    throw new IllegalArgumentException("uuidBytes cannot be null");
+    //}
+    //int length = uuidBytes.length;
+    //if (length != UUID_BYTES_16_BIT && length != UUID_BYTES_32_BIT &&
+    //        length != UUID_BYTES_128_BIT) {
+    //    throw new IllegalArgumentException("uuidBytes length invalid - " + length);
+    //}
+
+    //// Construct a 128 bit UUID.
+    //if (length == UUID_BYTES_128_BIT) {
+    //    ByteBuffer buf = ByteBuffer.wrap(uuidBytes).order(ByteOrder.LITTLE_ENDIAN);
+    //    long msb = buf.getLong(8);
+    //    long lsb = buf.getLong(0);
+    //    return new ParcelUuid(new UUID(msb, lsb));
+    //}
+
+    //// For 16 bit and 32 bit UUID we need to convert them to 128 bit value.
+    //// 128_bit_value = uuid * 2^96 + BASE_UUID
+    //long shortUuid;
+    //if (length == UUID_BYTES_16_BIT) {
+    //    shortUuid = uuidBytes[0] & 0xFF;
+    //    shortUuid += (uuidBytes[1] & 0xFF) << 8;
+    //} else {
+    //    shortUuid = uuidBytes[0] & 0xFF ;
+    //    shortUuid += (uuidBytes[1] & 0xFF) << 8;
+    //    shortUuid += (uuidBytes[2] & 0xFF) << 16;
+    //    shortUuid += (uuidBytes[3] & 0xFF) << 24;
+    //}
+    //long msb = BASE_UUID.getUuid().getMostSignificantBits() + (shortUuid << 32);
+    //long lsb = BASE_UUID.getUuid().getLeastSignificantBits();
+    //return new ParcelUuid(new UUID(msb, lsb));
+    assert(0);
+    return NULL;
 }
 
 } // Bluetooth

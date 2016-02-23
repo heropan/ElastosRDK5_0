@@ -4,6 +4,8 @@
 #include "Elastos.Droid.Os.h"
 #include "elastos/droid/bluetooth/le/CScanSettings.h"
 #include "elastos/droid/bluetooth/le/ScanFilter.h"
+#include "elastos/droid/bluetooth/le/BluetoothLeAdvertiser.h"
+#include "elastos/droid/bluetooth/le/BluetoothLeScanner.h"
 #include "elastos/droid/bluetooth/CBluetoothAdapter.h"
 #include "elastos/droid/bluetooth/CBluetoothDevice.h"
 #include "elastos/droid/bluetooth/BluetoothServerSocket.h"
@@ -25,7 +27,9 @@
 using Elastos::Droid::App::CActivityThread;
 using Elastos::Droid::Bluetooth::LE::CScanSettings;
 using Elastos::Droid::Bluetooth::LE::IBluetoothLeAdvertiser;
+using Elastos::Droid::Bluetooth::LE::BluetoothLeAdvertiser;
 using Elastos::Droid::Bluetooth::LE::IBluetoothLeScanner;
+using Elastos::Droid::Bluetooth::LE::BluetoothLeScanner;
 using Elastos::Droid::Bluetooth::LE::IScanCallback;
 using Elastos::Droid::Bluetooth::LE::IScanFilter;
 using Elastos::Droid::Bluetooth::LE::IScanRecord;
@@ -189,7 +193,9 @@ ECode CBluetoothAdapter::GetBluetoothLeAdvertiser(
     {
         AutoLock lock(mLock);
         if (sBluetoothLeAdvertiser == NULL) {
-            //TODO sBluetoothLeAdvertiser = new BluetoothLeAdvertiser(mManagerService);//TODO check if use Cxx + constructor
+            AutoPtr<BluetoothLeAdvertiser> bla = new BluetoothLeAdvertiser();//TODO check if use Cxx + constructor
+            bla->constructor(mManagerService);
+            sBluetoothLeAdvertiser = bla;
         }
     }
     *btAdvertiser = sBluetoothLeAdvertiser;
@@ -209,7 +215,9 @@ ECode CBluetoothAdapter::GetBluetoothLeScanner(
         AutoLock lock(mLock);
         if (sBluetoothLeScanner == NULL) {
             //TODO check if use Cxx + constructor
-            //TODO sBluetoothLeScanner = new BluetoothLeScanner(mManagerService);
+            AutoPtr<BluetoothLeScanner> bls = new BluetoothLeScanner();
+            bls->constructor(mManagerService);
+            sBluetoothLeScanner = bls;
         }
     }
     *btLeScanner = sBluetoothLeScanner;
@@ -863,7 +871,7 @@ ECode CBluetoothAdapter::CloseProfileProxy(
             ((IBluetoothA2dpSink*)proxy)->Close();
             break;
         case IBluetoothProfile::AVRCP_CONTROLLER:
-            //TODO ((IBluetoothAvrcpController*)proxy)->Close();
+            ((IBluetoothAvrcpController*)proxy)->Close();
             break;
         case IBluetoothProfile::INPUT_DEVICE:
             ((BluetoothInputDevice*)proxy)->Close();
@@ -884,7 +892,7 @@ ECode CBluetoothAdapter::CloseProfileProxy(
             ((IBluetoothMap*)proxy)->Close();
             break;
         case IBluetoothProfile::HEADSET_CLIENT:
-            //TODO ((IBluetoothHeadsetClient*)proxy)->Close();
+            ((IBluetoothHeadsetClient*)proxy)->Close();
             break;
     }
 

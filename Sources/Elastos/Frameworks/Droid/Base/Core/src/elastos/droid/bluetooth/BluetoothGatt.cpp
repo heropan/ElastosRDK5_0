@@ -150,7 +150,7 @@ ECode BluetoothGatt::InnerBluetoothGattCallbackWrapper::OnGetIncludedService(
     mOwner->GetService(mOwner->mDevice, iuuid, inclSrvcInstId, inclSrvcType, (IBluetoothGattService**)&includedService);
 
     if (service != NULL && includedService != NULL) {
-        //TODO service->AddIncludedService(includedService);
+        service->AddIncludedService(includedService);
     }
     return NOERROR;
 }
@@ -218,7 +218,7 @@ ECode BluetoothGatt::InnerBluetoothGattCallbackWrapper::OnGetDescriptor(
     AutoPtr<IUUID> cuuid;
     charUuid->GetUuid((IUUID**)&cuuid);
     AutoPtr<IBluetoothGattCharacteristic> characteristic;
-    //TODO service->GetCharacteristic(cuuid, charInstId, (IBluetoothGattCharacteristic**)&characteristic);
+    service->GetCharacteristic(cuuid, charInstId, (IBluetoothGattCharacteristic**)&characteristic);
     if (characteristic == NULL) return NOERROR;
 
     AutoPtr<IUUID> duuid;
@@ -297,7 +297,7 @@ ECode BluetoothGatt::InnerBluetoothGattCallbackWrapper::OnCharacteristicRead(
     AutoPtr<IUUID> cuuid;
     charUuid->GetUuid((IUUID**)&cuuid);
     AutoPtr<IBluetoothGattCharacteristic> characteristic;
-    //TODO service->GetCharacteristic(cuuid, charInstId, (IBluetoothGattCharacteristic**)&characteristic);
+    service->GetCharacteristic(cuuid, charInstId, (IBluetoothGattCharacteristic**)&characteristic);
     if (characteristic == NULL) return NOERROR;
 
     Boolean setok;
@@ -344,7 +344,7 @@ ECode BluetoothGatt::InnerBluetoothGattCallbackWrapper::OnCharacteristicWrite(
     AutoPtr<IUUID> cuuid;
     charUuid->GetUuid((IUUID**)&cuuid);
     AutoPtr<IBluetoothGattCharacteristic> characteristic;
-    //TODO service->GetCharacteristic(cuuid, charInstId, (IBluetoothGattCharacteristic**)&characteristic);
+    service->GetCharacteristic(cuuid, charInstId, (IBluetoothGattCharacteristic**)&characteristic);
     if (characteristic == NULL) return NOERROR;
 
     if ((status == GATT_INSUFFICIENT_AUTHENTICATION
@@ -402,7 +402,7 @@ ECode BluetoothGatt::InnerBluetoothGattCallbackWrapper::OnNotify(
     AutoPtr<IUUID> cuuid;
     charUuid->GetUuid((IUUID**)&cuuid);
     AutoPtr<IBluetoothGattCharacteristic> characteristic;
-    //TODO service->GetCharacteristic(cuuid, charInstId, (IBluetoothGattCharacteristic**)&characteristic);
+    service->GetCharacteristic(cuuid, charInstId, (IBluetoothGattCharacteristic**)&characteristic);
     if (characteristic == NULL) return NOERROR;
 
     Boolean setok;
@@ -450,13 +450,13 @@ ECode BluetoothGatt::InnerBluetoothGattCallbackWrapper::OnDescriptorRead(
     AutoPtr<IUUID> cuuid;
     charUuid->GetUuid((IUUID**)&cuuid);
     AutoPtr<IBluetoothGattCharacteristic> characteristic;
-    //TODO service->GetCharacteristic(cuuid, charInstId, (IBluetoothGattCharacteristic**)&characteristic);
+    service->GetCharacteristic(cuuid, charInstId, (IBluetoothGattCharacteristic**)&characteristic);
     if (characteristic == NULL) return NOERROR;
 
     AutoPtr<IUUID> duuid;
     descrUuid->GetUuid((IUUID**)&duuid);
     AutoPtr<IBluetoothGattDescriptor> descriptor;
-    //TODO characteristic->GetDescriptor(duuid, descrInstId, (IBluetoothGattDescriptor**)&descriptor);
+    characteristic->GetDescriptor(duuid, descrInstId, (IBluetoothGattDescriptor**)&descriptor);
     if (descriptor == NULL) return NOERROR;
 
     Boolean setok;
@@ -519,13 +519,13 @@ ECode BluetoothGatt::InnerBluetoothGattCallbackWrapper::OnDescriptorWrite(
     AutoPtr<IUUID> cuuid;
     charUuid->GetUuid((IUUID**)&cuuid);
     AutoPtr<IBluetoothGattCharacteristic> characteristic;
-    //TODO service->GetCharacteristic(cuuid, charInstId, (IBluetoothGattCharacteristic**)&characteristic);
+    service->GetCharacteristic(cuuid, charInstId, (IBluetoothGattCharacteristic**)&characteristic);
     if (characteristic == NULL) return NOERROR;
 
     AutoPtr<IUUID> duuid;
     descrUuid->GetUuid((IUUID**)&duuid);
     AutoPtr<IBluetoothGattDescriptor> descriptor;
-    //TODO characteristic->GetDescriptor(duuid, descrInstId, (IBluetoothGattDescriptor**)&descriptor);
+    characteristic->GetDescriptor(duuid, descrInstId, (IBluetoothGattDescriptor**)&descriptor);
     if (descriptor == NULL) return NOERROR;
 
     if ((status == GATT_INSUFFICIENT_AUTHENTICATION
@@ -681,7 +681,7 @@ ECode BluetoothGatt::GetService(
         mServices->Get(i, (IInterface**)&obj);
         IBluetoothGattService* svc = IBluetoothGattService::Probe(obj);
         AutoPtr<IBluetoothDevice> d;
-        //TODO svc->GetDevice((IBluetoothDevice**)&d);
+        svc->GetDevice((IBluetoothDevice**)&d);
         Int32 t;
         svc->GetType(&t);
         Int32 id;
@@ -690,7 +690,7 @@ ECode BluetoothGatt::GetService(
         svc->GetUuid((IUUID**)&u);
 
         Boolean de = FALSE, ue = FALSE;
-        if ((/*TODO d->Equals(TO_IINTERFACE(device), de),*/ de) &&
+        if ((d->Equals(TO_IINTERFACE(device), &de), de) &&
             t == type &&
             id == instanceId &&
             (u->Equals(uuid, &ue), ue)) {
@@ -817,9 +817,9 @@ ECode BluetoothGatt::GetServices(
         mServices->Get(i, (IInterface**)&obj);
         IBluetoothGattService* svc = IBluetoothGattService::Probe(obj);
         AutoPtr<IBluetoothDevice> d;
-        //TODO svc->GetDevice((IBluetoothDevice**)&d);
+        svc->GetDevice((IBluetoothDevice**)&d);
         Boolean eq = FALSE;
-        if (/*TODO d->Equals(TO_IINTERFACE(mDevice), &eq),*/ eq) {
+        if (d->Equals(TO_IINTERFACE(mDevice), &eq), eq) {
             (*result)->Add(TO_IINTERFACE(svc));
         }
     }
@@ -840,11 +840,11 @@ ECode BluetoothGatt::GetService(
         mServices->Get(i, (IInterface**)&obj);
         IBluetoothGattService* svc = IBluetoothGattService::Probe(obj);
         AutoPtr<IBluetoothDevice> d;
-        //TODO svc->GetDevice((IBluetoothDevice**)&d);
+        svc->GetDevice((IBluetoothDevice**)&d);
         AutoPtr<IUUID> u;
         svc->GetUuid((IUUID**)&u);
         Boolean de = FALSE, ue = FALSE;
-        if ((/*TODO d->Equals(TO_IINTERFACE(mDevice), &de),*/ de) &&
+        if ((d->Equals(TO_IINTERFACE(mDevice), &de), de) &&
             (u->Equals(TO_IINTERFACE(uuid), &ue), ue)) {
             *result = svc;
             REFCOUNT_ADD(*result);
@@ -869,11 +869,11 @@ ECode BluetoothGatt::ReadCharacteristic(
     if (mService == NULL || mClientIf == 0) return NOERROR;
 
     AutoPtr<IBluetoothGattService> service;
-    //TODO characteristic->GetService((IBluetoothGattService**)&service);
+    characteristic->GetService((IBluetoothGattService**)&service);
     if (service == NULL) return NOERROR;
 
     AutoPtr<IBluetoothDevice> device;
-    //TODO service->GetDevice((IBluetoothDevice**)&device);
+    service->GetDevice((IBluetoothDevice**)&device);
     if (device == NULL) return NOERROR;
 
     {
@@ -932,11 +932,11 @@ ECode BluetoothGatt::WriteCharacteristic(
     if (mService == NULL || mClientIf == 0) return NOERROR;
 
     AutoPtr<IBluetoothGattService> service;
-    //TODO characteristic->GetService((IBluetoothGattService**)&service);
+    characteristic->GetService((IBluetoothGattService**)&service);
     if (service == NULL) return NOERROR;
 
     AutoPtr<IBluetoothDevice> device;
-    //TODO service->GetDevice((IBluetoothDevice**)&device);
+    service->GetDevice((IBluetoothDevice**)&device);
     if (device == NULL) return NOERROR;
 
     {
@@ -1002,11 +1002,11 @@ ECode BluetoothGatt::ReadDescriptor(
     if (characteristic == NULL) return NOERROR;
 
     AutoPtr<IBluetoothGattService> service;
-    //TODO characteristic->GetService((IBluetoothGattService**)&service);
+    characteristic->GetService((IBluetoothGattService**)&service);
     if (service == NULL) return NOERROR;
 
     AutoPtr<IBluetoothDevice> device;
-    //TODO service->GetDevice((IBluetoothDevice**)&device);
+    service->GetDevice((IBluetoothDevice**)&device);
     if (device == NULL) return NOERROR;
 
     {
@@ -1073,11 +1073,11 @@ ECode BluetoothGatt::WriteDescriptor(
     if (characteristic == NULL) return NOERROR;
 
     AutoPtr<IBluetoothGattService> service;
-    //TODO characteristic->GetService((IBluetoothGattService**)&service);
+    characteristic->GetService((IBluetoothGattService**)&service);
     if (service == NULL) return NOERROR;
 
     AutoPtr<IBluetoothDevice> device;
-    //TODO service->GetDevice((IBluetoothDevice**)&device);
+    service->GetDevice((IBluetoothDevice**)&device);
     if (device == NULL) return NOERROR;
 
     {
@@ -1221,11 +1221,11 @@ ECode BluetoothGatt::SetCharacteristicNotification(
     if (mService == NULL || mClientIf == 0) return NOERROR;
 
     AutoPtr<IBluetoothGattService> service;
-    //TODO characteristic->GetService((IBluetoothGattService**)&service);
+    characteristic->GetService((IBluetoothGattService**)&service);
     if (service == NULL) return NOERROR;
 
     AutoPtr<IBluetoothDevice> device;
-    //TODO service->GetDevice((IBluetoothDevice**)&device);
+    service->GetDevice((IBluetoothDevice**)&device);
     if (device == NULL) return NOERROR;
 
     String address;
