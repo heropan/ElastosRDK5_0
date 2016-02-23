@@ -145,7 +145,7 @@ public:
     {
     public:
         // Lazy Holder pattern
-        static const String sInstance;
+        static String sInstance;
     };
 
     class ZoomSupportChangeListener

@@ -165,7 +165,7 @@ ECode AwSettings::SetVideoOverlayForEmbeddedVideoEnabledRunnable::Run()
 //===============================================================
 //              AwSettings::LazyDefaultUserAgent
 //===============================================================
-const String AwSettings::LazyDefaultUserAgent::sInstance = AwSettings::NativeGetDefaultUserAgent();
+String AwSettings::LazyDefaultUserAgent::sInstance;
 
 //===============================================================
 //             AwSettings::EventHandler::InnerHandler
@@ -377,7 +377,7 @@ AwSettings::AwSettings(
         }
 
         mDefaultTextEncoding = AwResource::GetDefaultTextEncoding();
-        mUserAgent = LazyDefaultUserAgent::sInstance;
+        mUserAgent = GetDefaultUserAgent();
 
         // Best-guess a sensible initial value based on the features supported on the device.
         AutoPtr<IPackageManager> pm;
@@ -722,6 +722,10 @@ Boolean AwSettings::GetSaveFormDataLocked()
  */
 String AwSettings::GetDefaultUserAgent()
 {
+    if (LazyDefaultUserAgent::sInstance == NULL) {
+        LazyDefaultUserAgent::sInstance = AwSettings::NativeGetDefaultUserAgent();
+    }
+
     return LazyDefaultUserAgent::sInstance;
 }
 
@@ -733,7 +737,7 @@ void AwSettings::SetUserAgentString(const String& ua)
     AutoLock lock(&mAwSettingsLock);
     const String oldUserAgent = mUserAgent;
     if (ua.IsNullOrEmpty()) {
-        mUserAgent = LazyDefaultUserAgent::sInstance;
+        mUserAgent = GetDefaultUserAgent();
     }
     else {
         mUserAgent = ua;

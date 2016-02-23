@@ -389,33 +389,23 @@ ECode AudioManagerElastos::InnerContentObserver::OnChange(
 //                    AudioManagerElastos
 //===============================================================
 
-template<typename T>
-static AutoPtr< ArrayOf<T> > ArrayOf_Init(T array[])
-{
-    Int32 size = sizeof(T)/sizeof(T[0]);
-    AutoPtr< ArrayOf<T> > retArray = ArrayOf<T>::Alloc(size);
-    for (Int32 i = 0; i < size; ++i) {
-        (*retArray)[i] = array[i];
-    }
-
-    return retArray;
-}
-
 const String AudioManagerElastos::TAG("AudioManagerElastos");
 const Boolean AudioManagerElastos::DEBUG = FALSE;
 
-static String models[] = {
-    String("GT-I9300"),  // Galaxy S3
-    String("GT-I9500"),  // Galaxy S4
-    String("GT-N7105"),  // Galaxy Note 2
-    String("Nexus 4"),   // Nexus 4
-    String("Nexus 5"),   // Nexus 5
-    String("Nexus 7"),   // Nexus 7
-    String("SM-N9005"),  // Galaxy Note 3
-    String("SM-T310"),   // Galaxy Tab 3 8.0 (WiFi)
-};
-//TODO
-const AutoPtr< ArrayOf<String> > AudioManagerElastos::SUPPORTED_AEC_MODELS;// = ArrayOf_Init(models);
+static AutoPtr< ArrayOf<String> > InitSUPPORTED_AEC_MODELS()
+{
+    AutoPtr< ArrayOf<String> > array = ArrayOf<String>::Alloc(8);
+    array->Set(0, String("GT-I9300"));  // Galaxy S3
+    array->Set(1, String("GT-I9500"));  // Galaxy S4
+    array->Set(2, String("GT-N7105"));  // Galaxy Note 2
+    array->Set(3, String("Nexus 4"));   // Nexus 4
+    array->Set(4, String("Nexus 5"));   // Nexus 5
+    array->Set(5, String("Nexus 7"));   // Nexus 7
+    array->Set(6, String("SM-N9005"));  // Galaxy Note 3
+    array->Set(7, String("SM-T310"));   // Galaxy Tab 3 8.0 (WiFi)
+    return array;
+}
+const AutoPtr< ArrayOf<String> > AudioManagerElastos::SUPPORTED_AEC_MODELS = InitSUPPORTED_AEC_MODELS();
 
 // Supported audio device types.
 const Int32 AudioManagerElastos::DEVICE_DEFAULT;
@@ -431,26 +421,30 @@ const Int32 AudioManagerElastos::DEVICE_COUNT;
 // TODO(henrika): add support for proper detection of device names and
 // localize the name strings by using resource strings.
 // See http://crbug.com/333208 for details.
-static String names[] = {
-    String("Speakerphone"),
-    String("Wired headset"),      // With or without microphone.
-    String("Headset earpiece"),   // Only available on mobile phones.
-    String("Bluetooth headset"),  // Requires BLUETOOTH permission.
-};
+static AutoPtr< ArrayOf<String> > InitDEVICE_NAMES()
+{
+    AutoPtr< ArrayOf<String> > array = ArrayOf<String>::Alloc(4);
+    array->Set(0, String("Speakerphone"));
+    array->Set(1, String("Wired headset"));      // With or without microphone.
+    array->Set(2, String("Headset earpiece"));   // Only available on mobile phones.
+    array->Set(3, String("Bluetooth headset"));  // Requires BLUETOOTH permission.
+    return array;
+}
+const AutoPtr< ArrayOf<String> > AudioManagerElastos::DEVICE_NAMES = InitDEVICE_NAMES();
 
-//TODO
-const AutoPtr< ArrayOf<String> > AudioManagerElastos::DEVICE_NAMES;// = ArrayOf_Init(names);
-
-Int32 AudioManagerElastos::devices[4] = {
-    AudioManagerElastos::DEVICE_SPEAKERPHONE,
-    AudioManagerElastos::DEVICE_WIRED_HEADSET,
-    AudioManagerElastos::DEVICE_EARPIECE,
-    AudioManagerElastos::DEVICE_BLUETOOTH_HEADSET,
-};
+static AutoPtr< ArrayOf<Int32> > InitVALID_DEVICES()
+{
+    AutoPtr< ArrayOf<Int32> > array = ArrayOf<Int32>::Alloc(4);
+    array->Set(0, 0 /* AudioManagerElastos::DEVICE_SPEAKERPHONE */);
+    array->Set(1, 1 /* AudioManagerElastos::DEVICE_WIRED_HEADSET */);
+    array->Set(2, 2 /* AudioManagerElastos::DEVICE_EARPIECE */);
+    array->Set(3, 3 /* AudioManagerElastos::DEVICE_BLUETOOTH_HEADSET */);
+    return array;
+}
 
 // List of valid device types.
 //TODO
-const AutoPtr< ArrayOf<Int32> > AudioManagerElastos::VALID_DEVICES = ArrayOf_Init(devices);
+const AutoPtr< ArrayOf<Int32> > AudioManagerElastos::VALID_DEVICES = InitVALID_DEVICES();
 
 // Bluetooth audio SCO states. Example of valid state sequence:
 // SCO_INVALID -> SCO_TURNING_ON -> SCO_ON -> SCO_TURNING_OFF -> SCO_OFF.
@@ -467,16 +461,6 @@ const Int32 AudioManagerElastos::DEFAULT_SAMPLING_RATE;
 // fails.
 const Int32 AudioManagerElastos::DEFAULT_FRAME_PER_BUFFER;
 
-AutoPtr< ArrayOf<Boolean> > AudioManagerElastos::mAudioDevices_Init()
-{
-    AutoPtr< ArrayOf<Boolean> > array = ArrayOf<Boolean>::Alloc(DEVICE_COUNT);
-    for (Int32 i = 0; i < DEVICE_COUNT; ++i) {
-        (*array)[i] = FALSE;
-    }
-
-    return array;
-}
-
 AudioManagerElastos::AudioManagerElastos(
     /* [in] */ IContext* context,
     /* [in] */ Int64 nativeAudioManagerElastos)
@@ -491,10 +475,12 @@ AudioManagerElastos::AudioManagerElastos(
     , mSavedIsSpeakerphoneOn(FALSE)
     , mSavedIsMicrophoneMute(FALSE)
     , mRequestedAudioDevice(DEVICE_INVALID)
-    , mAudioDevices(mAudioDevices_Init())
     , mCurrentVolume(0)
 {
-    mContext->GetSystemService(IContext::AUDIO_SERVICE, (IInterface**)&mAudioManager);
+    mAudioDevices = ArrayOf<Boolean>::Alloc(DEVICE_COUNT);
+    AutoPtr<IInterface> obj;
+    mContext->GetSystemService(IContext::AUDIO_SERVICE, (IInterface**)&obj);
+    mAudioManager = IAudioManager::Probe(obj);
     mContext->GetContentResolver((IContentResolver**)&mContentResolver);
 }
 
