@@ -193,10 +193,8 @@ ECode CConcurrentLinkedQueue::Peek(
     /* [out] */ IInterface** e)
 {
     VALIDATE_NOT_NULL(e);
-<<<<<<< HEAD
-=======
     *e = NULL;
->>>>>>> debug zygote.
+
     RESTARTFROMHEAD:
     for (;;) {
         for (AutoPtr<Node> h = mHead, p = h, q;;) {
