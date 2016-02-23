@@ -12,8 +12,8 @@
 #include "elastos/droid/media/CMediaDrm.h"
 //TODO: #include "elastos/droid/media/CMediaCryptoHelper.h"
 #include <elastos/utility/logging/Logger.h>
-#include <org/apache/http/utility/EntityUtils.h>
-#include <org/apache/http/impl/client/DefaultHttpClient.h>
+//TODO: #include <org/apache/http/utility/EntityUtils.h>
+//TODO: #include <org/apache/http/impl/client/DefaultHttpClient.h>
 
 using Elastos::Droid::Media::CMediaDrm;
 using Elastos::Droid::Media::IMediaDrmHelper;
@@ -52,8 +52,8 @@ using Org::Apache::Http::IStatusLine;
 using Org::Apache::Http::Client::IHttpClient;
 using Org::Apache::Http::Client::Methods::IHttpPost;
 using Org::Apache::Http::IHttpMessage;
-using Org::Apache::Http::Impl::Client::DefaultHttpClient;
-using Org::Apache::Http::Utility::EntityUtils;
+//TODO: using Org::Apache::Http::Impl::Client::DefaultHttpClient;
+//TODO: using Org::Apache::Http::Utility::EntityUtils;
 using Org::Apache::Http::Client::Methods::CHttpPost;
 using Org::Apache::Http::IHttpEntity;
 
@@ -235,7 +235,7 @@ AutoPtr<ArrayOf<Byte> > MediaDrmBridge::PostRequestTask::PostRequest(
     /* [in] */ const String& url,
     /* [in] */ ArrayOf<Byte>* drmRequest)
 {
-    AutoPtr<IHttpClient> httpClient = new DefaultHttpClient();
+    AutoPtr<IHttpClient> httpClient;//TODO:  = new DefaultHttpClient();
     String str(url);
     str += "&signedRequest=";
     //is this OK??
@@ -273,7 +273,7 @@ AutoPtr<ArrayOf<Byte> > MediaDrmBridge::PostRequestTask::PostRequest(
         if (responseCode == 200) {
             AutoPtr<IHttpEntity> httpEntity;
             response->GetEntity((IHttpEntity**)&httpEntity);
-            EntityUtils::ToByteArray(httpEntity, (ArrayOf<Byte>**)&responseBody);
+            //TODO: EntityUtils::ToByteArray(httpEntity, (ArrayOf<Byte>**)&responseBody);
         }
         else {
             Logger::E(MDB_PTAG, "Server returned HTTP error code,%d ", responseCode);
