@@ -270,7 +270,7 @@ void DroidRuntime::Exit(
     }
 }
 
-AutoPtr<DroidRuntime> DroidRuntime::GetRuntime()
+AutoPtr<Elastos::Droid::DroidRuntime> DroidRuntime::GetRuntime()
 {
     return sCurRuntime;
 }
