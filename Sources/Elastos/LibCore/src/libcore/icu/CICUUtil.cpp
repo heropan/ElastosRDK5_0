@@ -271,14 +271,16 @@ ECode CICUUtil::GetDateFormatOrder(
     /* [in] */ const String& pattern,
     /* [out, callee] */ ArrayOf<Char32>** locales)
 {
+<<<<<<< HEAD
     VALIDATE_NOT_NULL(locales);
+=======
+>>>>>>> debug zygote.
     return ICUUtil::GetDateFormatOrder(pattern, locales);
 }
 
 ECode CICUUtil::GetCldrVersion(
     /* [out] */ String* cldrVersion)
 {
-    VALIDATE_NOT_NULL(cldrVersion);
     return ICUUtil::GetCldrVersion(cldrVersion);
 }
 

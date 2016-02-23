@@ -114,7 +114,7 @@ void AppRuntime::OnExit(int code)
 
 void app_usage()
 {
-    // /system/bin/ElApp_process -Xzygote /system/bin --zygote --start-system-server
+    // /system/bin/ElApp_process /system/bin --zygote --start-system-server
     fprintf(stderr,
         "Usage: ElApp_process [java-options] cmd-dir start-class-name [options]\n");
 }
@@ -139,7 +139,6 @@ static size_t computeArgBlockSize(int argc, char* const argv[])
     end += strlen(argv[argc - 1]) + 1;
     return (end - start);
 }
-
 
 static void maybeCreateDalvikCache()
 {
@@ -191,6 +190,9 @@ static const char ZYGOTE_NICE_NAME[] = "elzygote";
 int main(int argc, char* argv[])
 {
     ALOGV("App_process main()\n");
+    for (Int32 i = 0; i < argc; ++i) {
+        ALOGV(" > raw arg %d : %s", i, argv[i]);
+    }
 
     if (prctl(PR_SET_NO_NEW_PRIVS, 1, 0, 0, 0) < 0) {
         // Older kernels don't understand PR_SET_NO_NEW_PRIVS and return
@@ -320,6 +322,7 @@ int main(int argc, char* argv[])
     AutoPtr<ArrayOf<String> > argArray = ArrayOf<String>::Alloc(numArgs);
     for (size_t i = 0; i < numArgs; i++) {
         argArray->Set(i, args[i]);
+        ALOGV(" > arg %d: %s", i, args[i].string());
     }
 
     if (zygote) {

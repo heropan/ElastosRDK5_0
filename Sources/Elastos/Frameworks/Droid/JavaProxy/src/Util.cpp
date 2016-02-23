@@ -11,7 +11,6 @@
 #include <Elastos.Droid.JavaProxy.h>
 #include <binder/Parcel.h>
 
-using Elastos::Core::CStringWrapper;
 using Elastos::Core::ECLSID_CString;
 using Elastos::Core::IByte;
 using Elastos::Core::IInteger16;

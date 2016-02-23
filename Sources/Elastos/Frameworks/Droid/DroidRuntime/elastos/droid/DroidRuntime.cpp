@@ -112,6 +112,9 @@ ECode DroidRuntime::CallMain(
     /* [in] */ ArrayOf<String>* args)
 {
     Logger::D(TAG, "Calling main entry \"%s/%s\"", moduleName.string(), className.string());
+    // for (Int32 i = 0; i < args->GetLength(); i++) {
+    //     Logger::I(TAG, "  >> arg %d: %s", i, (*args)[i].string());
+    // }
 
     AutoPtr<IModuleInfo> moduleInfo;
     AutoPtr<IClassInfo> classInfo;

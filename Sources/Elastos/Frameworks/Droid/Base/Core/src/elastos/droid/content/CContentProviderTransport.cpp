@@ -616,8 +616,8 @@ ECode CContentProviderTransport::EnforceReadPermission(
     /* [in] */ IUri* uri,
     /* [out] */ Int32* result)
 {
-    VALIDATE_NOT_NULL(*result)
-    Int32 op = -1;/* AppOpsManager::OP_NONE */;
+    VALIDATE_NOT_NULL(result)
+    Int32 op = IAppOpsManager::OP_NONE;
     *result = op;
 
     AutoPtr<IContentProvider> contentProvider;
@@ -641,8 +641,8 @@ ECode CContentProviderTransport::EnforceWritePermission(
     /* [in] */ IUri* uri,
         /* [out] */ Int32* result)
 {
-    VALIDATE_NOT_NULL(*result)
-    Int32 op = -1;/* AppOpsManager::OP_NONE */;
+    VALIDATE_NOT_NULL(result)
+    Int32 op = IAppOpsManager::OP_NONE;
     *result = op;
 
     AutoPtr<IContentProvider> contentProvider;

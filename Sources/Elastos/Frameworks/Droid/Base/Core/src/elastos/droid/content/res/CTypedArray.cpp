@@ -45,7 +45,7 @@ AutoPtr<ITypedArray> CTypedArray::Obtain(
     AutoPtr<ArrayOf<Int32> > a2 = ArrayOf<Int32>::Alloc(1 + len);
     AutoPtr<CTypedArray> ta;
     ASSERT_SUCCEEDED(CTypedArray::NewByFriend(res, a1, a2, len, (CTypedArray**)&ta));
-    Logger::I("CTypedArray", "CTypedArray::Obtain %s", TO_CSTR(ta));
+    //Logger::I("CTypedArray", "CTypedArray::Obtain %s", TO_CSTR(ta));
     return (ITypedArray*)ta.Get();
 }
 

@@ -232,7 +232,7 @@ ECode BluetoothInputDevice::GetDevicesMatchingConnectionStates(
     /* [in] */ ArrayOf<Int32>* states,
     /* [out] */ IList** devices)
 {
-    VALIDATE_NOT_NULL(*devices)
+    VALIDATE_NOT_NULL(devices)
     *devices = NULL;
     AutoPtr< ArrayOf<IBluetoothDevice*> > _devices = ArrayOf<IBluetoothDevice*>::Alloc(0);
 

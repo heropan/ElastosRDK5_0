@@ -160,6 +160,8 @@ ECode CConcurrentLinkedQueue::Poll(
     /* [out] */ IInterface** e)
 {
     VALIDATE_NOT_NULL(e);
+    *e = NULL;
+
     RESTARTFROMHEAD:
     for (;;) {
         for (AutoPtr<Node> h = mHead, p = h, q;;) {
@@ -176,7 +178,6 @@ ECode CConcurrentLinkedQueue::Poll(
             }
             else if ((q = p->mNext) == NULL) {
                 UpdateHead(h, p);
-                *e = NULL;
                 return NOERROR;
             }
             else if (p == q)
@@ -192,6 +193,10 @@ ECode CConcurrentLinkedQueue::Peek(
     /* [out] */ IInterface** e)
 {
     VALIDATE_NOT_NULL(e);
+<<<<<<< HEAD
+=======
+    *e = NULL;
+>>>>>>> debug zygote.
     RESTARTFROMHEAD:
     for (;;) {
         for (AutoPtr<Node> h = mHead, p = h, q;;) {

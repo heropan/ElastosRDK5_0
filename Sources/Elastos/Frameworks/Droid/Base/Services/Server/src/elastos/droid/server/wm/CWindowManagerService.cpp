@@ -13079,7 +13079,7 @@ void CWindowManagerService::HandleDisplayChangedLocked(
 ECode CWindowManagerService::GetWindowManagerLock(
     /* [out] */ IInterface** lock)
 {
-    VALIDATE_NOT_NULL(*lock)
+    VALIDATE_NOT_NULL(lock)
     *lock = (IObject*)&mWindowMapLock;
     REFCOUNT_ADD(*lock)
     return NOERROR;
@@ -13088,7 +13088,6 @@ ECode CWindowManagerService::GetWindowManagerLock(
 ECode CWindowManagerService::ToString(
     /* [ou] */ String* str)
 {
-    VALIDATE_NOT_NULL(str)
     return Object::ToString(str);
 }
 
