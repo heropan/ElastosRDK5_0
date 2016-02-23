@@ -537,7 +537,8 @@ ECode CWindowManagerGlobal::DoRemoveView(
         }
     }
 
-    if (HardwareRenderer::sTrimForeground && HardwareRenderer::IsAvailable()) {
+    Boolean available;
+    if (HardwareRenderer::sTrimForeground && (HardwareRenderer::IsAvailable(&available), available)) {
         DoTrimForeground();
     }
     return NOERROR;
@@ -578,8 +579,8 @@ Boolean CWindowManagerGlobal::ShouldDestroyEglContext(
 ECode CWindowManagerGlobal::TrimMemory(
     /* [in] */ Int32 level)
 {
-    assert(0);
-    if (HardwareRenderer::IsAvailable()) {
+    Boolean available;
+    if (HardwareRenderer::IsAvailable(&available), available) {
         if (ShouldDestroyEglContext(level)) {
             // Destroy all hardware surfaces and resources associated to
             // known windows
@@ -607,8 +608,8 @@ ECode CWindowManagerGlobal::TrimMemory(
 
 void CWindowManagerGlobal::TrimForeground()
 {
-    assert(0);
-    if (HardwareRenderer::sTrimForeground && HardwareRenderer::IsAvailable()) {
+    Boolean available;
+    if (HardwareRenderer::sTrimForeground && (HardwareRenderer::IsAvailable(&available), available)) {
         AutoPtr<IWindowManagerGlobal> wm = GetInstance();
         ((CWindowManagerGlobal*)wm.Get())->DoTrimForeground();
     }
