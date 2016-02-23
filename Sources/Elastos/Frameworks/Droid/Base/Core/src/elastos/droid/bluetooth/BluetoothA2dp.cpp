@@ -3,7 +3,7 @@
 #include "elastos/droid/content/CIntent.h"
 #include "elastos/droid/bluetooth/BluetoothA2dp.h"
 #include "elastos/droid/bluetooth/CBluetoothA2dpStateChangeCallback.h"
-//#include "elastos/droid/bluetooth/CBluetoothAdapter.h"
+#include "elastos/droid/bluetooth/CBluetoothAdapter.h"
 #include "elastos/droid/bluetooth/BluetoothUuid.h"
 #include "elastos/droid/os/Process.h"
 #include "elastos/core/AutoLock.h"
@@ -18,6 +18,7 @@ using Elastos::Droid::Os::IUserHandle;
 using Elastos::Droid::Os::Process;
 using Elastos::Core::AutoLock;
 using Elastos::Core::StringBuilder;
+using Elastos::Utility::CArrayList;
 using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
@@ -82,10 +83,10 @@ BluetoothA2dp::BluetoothA2dp(
     CBluetoothA2dpStateChangeCallback::New(TO_IINTERFACE(this), (IIBluetoothStateChangeCallback**)&mBluetoothStateChangeCallback);
     mConnection = new ServiceConnection(this);
 
-    //TODO mAdapter = CBluetoothAdapter::GetDefaultAdapter();
+    mAdapter = CBluetoothAdapter::GetDefaultAdapter();
     //if (mAdapter != NULL) {
     AutoPtr<IIBluetoothManager> mgr;
-    //TODO mgr = ((CBluetoothAdapter*)mAdapter.Get())->GetBluetoothManager();
+    mgr = ((CBluetoothAdapter*)mAdapter.Get())->GetBluetoothManager();
     if (mgr != NULL) {
         // try {
         ECode ec = mgr->RegisterStateChangeCallback(mBluetoothStateChangeCallback);
@@ -143,7 +144,7 @@ ECode BluetoothA2dp::Close()
     mServiceListener = NULL;
 
     AutoPtr<IIBluetoothManager> mgr;
-    //TODO mgr = ((CBluetoothAdapter*)mAdapter.Get())->GetBluetoothManager();
+    mgr = ((CBluetoothAdapter*)mAdapter.Get())->GetBluetoothManager();
     if (mgr != NULL) {
         // try {
         ECode ec = mgr->UnregisterStateChangeCallback(mBluetoothStateChangeCallback);
@@ -230,8 +231,7 @@ ECode BluetoothA2dp::GetConnectedDevices(
         // }
     }
     if (mService == NULL) Logger::W(TAG, "Proxy not attached to service");
-    //TODO *devices = ArrayOf<IBluetoothDevice*>::Alloc(0);
-    REFCOUNT_ADD(*devices);
+    CArrayList::New(devices);
     return NOERROR;
 }
 
@@ -250,8 +250,7 @@ ECode BluetoothA2dp::GetDevicesMatchingConnectionStates(
         // }
     }
     if (mService == NULL) Logger::W(TAG, "Proxy not attached to service");
-    //TODO *devices = ArrayOf<IBluetoothDevice*>::Alloc(0);
-    REFCOUNT_ADD(*devices);
+    CArrayList::New(devices);
     return NOERROR;
 }
 
@@ -475,7 +474,7 @@ Boolean BluetoothA2dp::IsValidDevice(
     if (device == NULL) return FALSE;
     String address;
     device->GetAddress(&address);
-    //TODO if (CBluetoothAdapter::CheckBluetoothAddress(address)) return TRUE;
+    if (CBluetoothAdapter::CheckBluetoothAddress(address)) return TRUE;
     return FALSE;
 }
 

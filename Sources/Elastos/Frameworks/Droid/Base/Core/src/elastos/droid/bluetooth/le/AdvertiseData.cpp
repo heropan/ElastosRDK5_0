@@ -2,6 +2,7 @@
 #include "Elastos.Droid.Os.h"
 #include "Elastos.Droid.Utility.h"
 #include "elastos/droid/bluetooth/le/AdvertiseData.h"
+#include "elastos/droid/bluetooth/le/CAdvertiseData.h"
 #include "elastos/droid/bluetooth/le/BluetoothLeUtils.h"
 #include "elastos/droid/utility/CArrayMap.h"
 #include "elastos/droid/utility/CSparseArray.h"
@@ -105,11 +106,7 @@ ECode AdvertiseData::Builder::Build(
 {
     VALIDATE_NOT_NULL(result);
     *result = NULL;
-    AutoPtr<IAdvertiseData> advertiseData;
-    //return new AdvertiseData(mServiceUuids, mManufacturerSpecificData, mServiceData, mIncludeTxPowerLevel, mIncludeDeviceName);
-    //TODO CAdvertiseData::New(mServiceUuids, mManufacturerSpecificData, mServiceData, mIncludeTxPowerLevel, mIncludeDeviceName);
-    *result = advertiseData;
-    REFCOUNT_ADD(*result);
+    CAdvertiseData::New(mServiceUuids, mManufacturerSpecificData, mServiceData, mIncludeTxPowerLevel, mIncludeDeviceName, result);
     return NOERROR;
 }
 
@@ -334,7 +331,7 @@ ECode AdvertiseData::ReadFromParcel(
             Int32 manufacturerDataLength;
             in->ReadInt32(&manufacturerDataLength);
             //byte[] manufacturerData = new byte[manufacturerDataLength];
-            AutoPtr<ArrayOf<Byte> > manufacturerData;//TODO = ArrayOf<Byte>::Alloc(manufacturerDataLength);
+            AutoPtr<ArrayOf<Byte> > manufacturerData = ArrayOf<Byte>::Alloc(manufacturerDataLength);
             in->ReadArrayOf((Handle32*)(&manufacturerData));
             builder->AddManufacturerData(manufacturerId, manufacturerData);
         }
@@ -352,7 +349,7 @@ ECode AdvertiseData::ReadFromParcel(
             Int32 serviceDataLength;
             in->ReadInt32(&serviceDataLength);
             //byte[] serviceData = new byte[serviceDataLength];
-            AutoPtr<ArrayOf<Byte> > serviceData;//TODO ArrayOf<Byte>::Alloc(serviceDataLength);
+            AutoPtr<ArrayOf<Byte> > serviceData = ArrayOf<Byte>::Alloc(serviceDataLength);
             //in->ReadByteArray((Handle32*)&serviceData);
             in->ReadArrayOf((Handle32*)&serviceData);
             builder->AddServiceData(serviceDataUuid, serviceData);

@@ -51,7 +51,7 @@ ECode BluetoothGattCharacteristic::AddDescriptor(
 {
     VALIDATE_NOT_NULL(result);
     mDescriptors->Add(descriptor);
-    //TODO descriptor->SetCharacteristic(this);
+    descriptor->SetCharacteristic(this);
     *result = TRUE;
     return NOERROR;
 }

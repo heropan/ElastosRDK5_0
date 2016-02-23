@@ -428,8 +428,8 @@ ECode BluetoothGattServer::GetService(
         Int32 sType;
         Int32 sInstanceId;
         AutoPtr<IUUID> sUuid;
-        svc->GetType(&type);
-        svc->GetInstanceId(&instanceId);
+        svc->GetType(&sType);
+        svc->GetInstanceId(&sInstanceId);
         svc->GetUuid((IUUID**)&sUuid);
         Boolean eq = FALSE;
         if (sType == type &&
@@ -593,7 +593,7 @@ ECode BluetoothGattServer::AddService(
     Boolean preferred;
     service->IsAdvertisePreferred(&preferred);
     Int32 handles = 0;
-    //TODO service->GetHandles(&handles);
+    service->GetHandles(&handles);
     //try {
         mService->BeginServiceDeclaration(mServerIf, type,
             instanceId, handles,
@@ -629,8 +629,8 @@ ECode BluetoothGattServer::AddService(
             AutoPtr<IInterface> obj;
             characteristics->Get(i, (IInterface**)&obj);
             IBluetoothGattCharacteristic* characteristic = IBluetoothGattCharacteristic::Probe(obj);
-            Int32 keySize, permissions;
-            //TODO characteristic->GetKeySize(&keySize);
+            Int32 keySize = 0, permissions = 0;
+            characteristic->GetKeySize(&keySize);
             characteristic->GetPermissions(&permissions);
             Int32 permission = ((keySize - 7) << 12)
                                 + permissions;
