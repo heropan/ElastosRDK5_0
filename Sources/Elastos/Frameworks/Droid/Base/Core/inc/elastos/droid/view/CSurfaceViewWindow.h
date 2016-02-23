@@ -17,8 +17,6 @@ namespace Elastos {
 namespace Droid {
 namespace View {
 
-class SurfaceView;
-
 CarClass(CSurfaceViewWindow)
     , public BaseIWindow
 {
