@@ -32,7 +32,7 @@ class BluetoothHeadsetClient
     , public IBluetoothHeadsetClient
     , public IBluetoothProfile
 {
-private:
+public:
     class BluetoothStateChangeCallbackStub
         : public Object
         , public IIBluetoothStateChangeCallback
@@ -43,7 +43,7 @@ private:
 
         BluetoothStateChangeCallbackStub();
 
-        BluetoothStateChangeCallbackStub(
+        CARAPI constructor(
             /* [in] */ IBluetoothHeadsetClient* owner);
 
         // @Override
@@ -60,6 +60,7 @@ private:
         BluetoothHeadsetClient* mOwner;
     };
 
+private:
     class InnerServiceConnection
         : public Object
         , public IServiceConnection

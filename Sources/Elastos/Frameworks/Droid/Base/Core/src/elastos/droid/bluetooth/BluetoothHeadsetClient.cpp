@@ -29,10 +29,11 @@ BluetoothHeadsetClient::BluetoothStateChangeCallbackStub::BluetoothStateChangeCa
 {
 }
 
-BluetoothHeadsetClient::BluetoothStateChangeCallbackStub::BluetoothStateChangeCallbackStub(
+ECode BluetoothHeadsetClient::BluetoothStateChangeCallbackStub::constructor(
     /* [in] */ IBluetoothHeadsetClient* owner)
 {
     mOwner = (BluetoothHeadsetClient*)owner;
+    return NOERROR;
 }
 
 ECode BluetoothHeadsetClient::BluetoothStateChangeCallbackStub::OnBluetoothStateChange(

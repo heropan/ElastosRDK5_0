@@ -18,7 +18,7 @@ BluetoothAudioConfig::BluetoothAudioConfig()
 {
 }
 
-BluetoothAudioConfig::BluetoothAudioConfig(
+ECode BluetoothAudioConfig::constructor(
     /* [in] */ Int32 sampleRate,
     /* [in] */ Int32 channelConfig,
     /* [in] */ Int32 audioFormat)
@@ -26,6 +26,7 @@ BluetoothAudioConfig::BluetoothAudioConfig(
     mSampleRate = sampleRate;
     mChannelConfig = channelConfig;
     mAudioFormat = audioFormat;
+    return NOERROR;
 }
 
 ECode BluetoothAudioConfig::Equals(

@@ -17,7 +17,7 @@ BluetoothGattService::BluetoothGattService()
 {
 }
 
-BluetoothGattService::BluetoothGattService(
+ECode BluetoothGattService::constructor(
     /* [in] */ IUUID* uuid,
     /* [in] */ Int32 serviceType)
 {
@@ -29,6 +29,7 @@ BluetoothGattService::BluetoothGattService(
     //mIncludedServices = new ArrayList<BluetoothGattService>();
     CArrayList::New((IList**)&mCharacteristics);
     CArrayList::New((IList**)&mIncludedServices);
+    return NOERROR;
 }
 
 BluetoothGattService::BluetoothGattService(

@@ -27,7 +27,7 @@ class BluetoothMap
     , public IBluetoothMap
     , public IBluetoothProfile
 {
-private:
+public:
     class BluetoothStateChangeCallbackStub
         : public Object
         , public IIBluetoothStateChangeCallback
@@ -38,7 +38,7 @@ private:
 
         BluetoothStateChangeCallbackStub();
 
-        BluetoothStateChangeCallbackStub(
+        CARAPI constructor(
             /* [in] */ IBluetoothMap* owner);
 
         CARAPI OnBluetoothStateChange(
@@ -54,6 +54,7 @@ private:
         BluetoothMap* mOwner;
     };
 
+private:
     class InnerServiceConnection
         : public Object
         , public IServiceConnection

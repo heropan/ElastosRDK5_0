@@ -33,7 +33,7 @@ class BluetoothAvrcpController
     , public IBluetoothAvrcpController
     , public IBluetoothProfile
 {
-private:
+public:
     class BluetoothStateChangeCallbackStub
         : public Object
         , public IIBluetoothStateChangeCallback
@@ -44,7 +44,7 @@ private:
 
         BluetoothStateChangeCallbackStub();
 
-        BluetoothStateChangeCallbackStub(
+        CARAPI constructor(
             /* [in] */ IBluetoothAvrcpController* owner);
 
         CARAPI OnBluetoothStateChange(
@@ -60,6 +60,7 @@ private:
         BluetoothAvrcpController* mOwner;
     };
 
+private:
     class InnerServiceConnection
         : public Object
         , public IServiceConnection

@@ -32,10 +32,11 @@ BluetoothA2dpSink::BluetoothStateChangeCallbackStub::BluetoothStateChangeCallbac
 {
 }
 
-BluetoothA2dpSink::BluetoothStateChangeCallbackStub::BluetoothStateChangeCallbackStub(
-    /* [in] */ IBluetoothA2dpSink* owner)
+ECode BluetoothA2dpSink::BluetoothStateChangeCallbackStub::constructor(
+    /* [in] */ IInterface* owner)
 {
-    mOwner = (BluetoothA2dpSink*)owner;
+    mOwner = (BluetoothA2dpSink*)(IBluetoothA2dpSink::Probe(owner));
+    return NOERROR;
 }
 
 ECode BluetoothA2dpSink::BluetoothStateChangeCallbackStub::OnBluetoothStateChange(

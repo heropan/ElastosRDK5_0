@@ -27,10 +27,11 @@ BluetoothGattServer::BluetoothGattServerCallbackStub::BluetoothGattServerCallbac
 {
 }
 
-BluetoothGattServer::BluetoothGattServerCallbackStub::BluetoothGattServerCallbackStub(
+ECode BluetoothGattServer::BluetoothGattServerCallbackStub::constructor(
     /* [in] */ IBluetoothGattServer* owner)
 {
     mOwner = (BluetoothGattServer*)owner;
+    return NOERROR;
 }
 
 ECode BluetoothGattServer::BluetoothGattServerCallbackStub::OnServerRegistered(
