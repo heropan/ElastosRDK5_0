@@ -31,6 +31,15 @@ module
     merge("display/OverlayDisplayWindow.car");
     merge("display/RampAnimator.car");
 
+    merge("hdmi/DeviceDiscoveryAction.car");
+    merge("hdmi/HdmiCecController.car");
+    merge("hdmi/HdmiCecFeatureAction.car");
+    merge("hdmi/HdmiCecLocalDevice.car");
+    merge("hdmi/HdmiCecMessage.car");
+    merge("hdmi/HdmiCecMessageValidator.car");
+    merge("hdmi/HdmiCecStandbyModeHandler.car");
+    merge("hdmi/HdmiControlService.car");
+
     merge("input/InputManagerService.car");
     merge("input/InputApplicationHandle.car");
     merge("input/InputWindowHandle.car");
@@ -124,6 +133,7 @@ module
     using interface Elastos.Droid.Hardware.IISerialManager;
     using interface Elastos.Droid.Hardware.IIConsumerIrService;
     using interface Elastos.Droid.Hardware.Display.IIDisplayManager;
+    using interface Elastos.Droid.Hardware.Hdmi.IIHdmiControlService;
     using interface Elastos.Droid.Hardware.Input.IIInputManager;
     using interface Elastos.Droid.Hardware.Location.IIFusedLocationHardware;
     using interface Elastos.Droid.Internal.App.IIProcessStats;
@@ -1650,7 +1660,7 @@ module
     namespace AppWidget {
 
     [local]
-     class CAppWidgetServiceImpl {
+    class CAppWidgetServiceImpl {
          constructor(
              [in] IContext* context);
 
@@ -1663,4 +1673,40 @@ module
     } // namespace Server
     } // namepsace Droid
     } // namespace Elastos
+
+    namespace Elastos {
+    namespace Droid {
+    namespace Server {
+    namespace Hdmi {
+
+//    class CHdmiCecLocalDevice {
+//        constructor(
+//            [in] IHdmiControlService* service,
+//            [in] Int32 deviceType);
+
+//        interface IHdmiCecLocalDevice;
+//    }
+
+//    [deprecated]
+//    class CHdmiCecMessage {
+//        constructor(
+//            [in] Int32 source,
+//            [in] Int32 destination,
+//            [in] Int32 opcode,
+//            [in] ArrayOf<Byte>* params);
+
+//        interface IHdmiCecMessage;
+//    }
+
+    class CHdmiControlServiceBinderService {
+        constructor();
+
+        interface IBinder;
+        interface IIHdmiControlService;
+    }
+
+    } // namespace Elastos
+    } // namespace Droid
+    } // namespace Server
+    } // namespace Hdmi
 }
