@@ -239,16 +239,11 @@ module
     merge("../../../../car/elastos/droid/recents/views/DebugOverlayView.car");
     merge("../../../../car/elastos/droid/recents/views/FakeShadowDrawable.car");
     merge("../../../../car/elastos/droid/recents/views/FixedSizeImageView.car");
-    merge("../../../../car/elastos/droid/recents/views/ViewAnimation.car");
     merge("../../../../car/elastos/droid/recents/views/RecentsView.car");
     merge("../../../../car/elastos/droid/recents/views/SwipeHelper.car");
-    merge("../../../../car/elastos/droid/recents/views/TaskViewTransform.car");
     merge("../../../../car/elastos/droid/recents/views/TaskView.car");
-    merge("../../../../car/elastos/droid/recents/views/TaskStackViewLayoutAlgorithm.car");
     merge("../../../../car/elastos/droid/recents/views/TaskStackViewScroller.car");
     merge("../../../../car/elastos/droid/recents/views/TaskStackView.car");
-    merge("../../../../car/elastos/droid/recents/views/TaskStackViewFilterAlgorithm.car");
-    merge("../../../../car/elastos/droid/recents/views/TaskStackViewTouchHandler.car");
     merge("../../../../car/elastos/droid/recents/views/TaskViewFooter.car");
     merge("../../../../car/elastos/droid/recents/views/TaskViewHeader.car");
     merge("../../../../car/elastos/droid/recents/views/TaskViewThumbnail.car");
@@ -734,6 +729,92 @@ module
 
             interface IFixedSizeImageView;
             interface IImageView;
+            interface IView;
+            interface IDrawableCallback;
+            interface IKeyEventCallback;
+            interface IAccessibilityEventSource;
+        }
+
+        class CTaskViewFooter {
+            constructor(
+                [in] IContext* ctx);
+
+            constructor(
+                [in] IContext* ctx,
+                [in] IAttributeSet* attrs);
+
+            constructor(
+                [in] IContext* ctx,
+                [in] IAttributeSet* attrs,
+                [in] Int32 defStyleAttr);
+
+            constructor(
+                [in] IContext* ctx,
+                [in] IAttributeSet* attrs,
+                [in] Int32 defStyleAttr,
+                [in] Int32 defStyleRes);
+
+            interface ITaskViewFooter;
+            interface IFrameLayout;
+            interface IViewGroup;
+            interface IView;
+            interface IViewParent;
+            interface IViewManager;
+            interface IDrawableCallback;
+            interface IKeyEventCallback;
+            interface IAccessibilityEventSource;
+        }
+
+        class CTaskViewHeader {
+            constructor(
+                [in] IContext* ctx);
+
+            constructor(
+                [in] IContext* ctx,
+                [in] IAttributeSet* attrs);
+
+            constructor(
+                [in] IContext* ctx,
+                [in] IAttributeSet* attrs,
+                [in] Int32 defStyleAttr);
+
+            constructor(
+                [in] IContext* ctx,
+                [in] IAttributeSet* attrs,
+                [in] Int32 defStyleAttr,
+                [in] Int32 defStyleRes);
+
+            interface ITaskViewHeader;
+            interface IFrameLayout;
+            interface IViewGroup;
+            interface IView;
+            interface IViewParent;
+            interface IViewManager;
+            interface IDrawableCallback;
+            interface IKeyEventCallback;
+            interface IAccessibilityEventSource;
+        }
+
+        class CTaskViewThumbnail {
+            constructor(
+                [in] IContext* ctx);
+
+            constructor(
+                [in] IContext* ctx,
+                [in] IAttributeSet* attrs);
+
+            constructor(
+                [in] IContext* ctx,
+                [in] IAttributeSet* attrs,
+                [in] Int32 defStyleAttr);
+
+            constructor(
+                [in] IContext* ctx,
+                [in] IAttributeSet* attrs,
+                [in] Int32 defStyleAttr,
+                [in] Int32 defStyleRes);
+
+            interface ITaskViewThumbnail;
             interface IView;
             interface IDrawableCallback;
             interface IKeyEventCallback;

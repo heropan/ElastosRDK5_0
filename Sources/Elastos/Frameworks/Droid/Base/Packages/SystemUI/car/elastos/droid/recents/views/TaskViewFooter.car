@@ -20,11 +20,6 @@ module
      * interface IFrameLayout
      */
     interface ITaskViewFooter {
-
-        /** Sets the callbacks for when the footer height changes. */
-        SetCallbacks(
-            [in] ITaskFooterViewCallbacks* cb);
-
         /** Sets the footer height. */
         SetFooterHeight(
             [in] Int32 footerHeight);
@@ -32,11 +27,6 @@ module
         /** Gets the footer height. */
         GetFooterHeight(
             [out] Int32* h);
-
-        /** Animates the footer into and out of view. */
-        AnimateFooterVisibility(
-            [in] Boolean visible,
-            [in] Int32 duration);
     }
 
     } // namespace Views

@@ -30,20 +30,6 @@ module
             [out] Boolean* result);
     }
 
-    /* A view pool to manage more views than we can visibly handle */
-    interface IViewPool {
-
-        /** Returns a view into the pool */
-        ReturnViewToPool(
-            [in] IInterface* v);
-
-        /** Gets a view from the pool and prepares it */
-        PickUpViewFromPool(
-            [in] IInterface* preferredData,
-            [in] IInterface* prepareData,
-            [out] IInterface** result);
-    }
-
     } // namespace Views
     } // namespace Recents
     } // namespace SystemUI
