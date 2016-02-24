@@ -894,7 +894,28 @@ ECode CAssetManager::SetConfiguration(
     config.uiMode = (uint8_t)uiMode;
     config.sdkVersion = (uint16_t)majorVersion;
     config.minorVersion = 0;
+
+    Logger::I(TAG, " >>>> SetConfiguration am %p, %s", am, locale.string());
+    Logger::I(TAG, "      config.mcc = %d", (uint16_t)mcc);
+    Logger::I(TAG, "      config.mnc = %d", (uint16_t)mnc);
+    Logger::I(TAG, "      config.orientation = %d", (uint8_t)orientation);
+    Logger::I(TAG, "      config.touchscreen = %d", (uint8_t)touchscreen);
+    Logger::I(TAG, "      config.density = %d", (uint16_t)density);
+    Logger::I(TAG, "      config.keyboard = %d", (uint8_t)keyboard);
+    Logger::I(TAG, "      config.inputFlags = %d", (uint8_t)keyboardHidden);
+    Logger::I(TAG, "      config.navigation = %d", (uint8_t)navigation);
+    Logger::I(TAG, "      config.screenWidth = %d", (uint16_t)screenWidth);
+    Logger::I(TAG, "      config.screenHeight = %d", (uint16_t)screenHeight);
+    Logger::I(TAG, "      config.smallestScreenWidthDp = %d", (uint16_t)smallestScreenWidthDp);
+    Logger::I(TAG, "      config.screenWidthDp = %d", (uint16_t)screenWidthDp);
+    Logger::I(TAG, "      config.screenHeightDp = %d", (uint16_t)screenHeightDp);
+    Logger::I(TAG, "      config.screenLayout = %d", (uint8_t)screenLayout);
+    Logger::I(TAG, "      config.uiMode = %d", (uint8_t)uiMode);
+    Logger::I(TAG, "      config.sdkVersion = %d", (uint16_t)majorVersion);
+    Logger::I(TAG, "      config.minorVersion = 0");
+
     am->setConfiguration(config, locale8);
+    Logger::I(TAG, " <<<< SetConfiguration");
     return NOERROR;
 }
 
@@ -1349,7 +1370,7 @@ ECode CAssetManager::LoadResourceValue(
     ssize_t block = res.getResource((uint32_t)ident, &value, false, density, &typeSpecFlags, &config);
 #if THROW_ON_BAD_ID
     if (block == android::BAD_INDEX) {
-        // jniThrowException(env, "java/lang/IllegalStateException", "Bad resource!");
+        Logger::E(TAG, "E_ILLEGAL_STATE_EXCEPTION. Bad resource! line: %d", __LINE__);
         return E_ILLEGAL_STATE_EXCEPTION;
     }
 #endif
@@ -1358,7 +1379,7 @@ ECode CAssetManager::LoadResourceValue(
         block = res.resolveReference(&value, block, &ref, &typeSpecFlags, &config);
 #if THROW_ON_BAD_ID
         if (block == android::BAD_INDEX) {
-            // jniThrowException(env, "java/lang/IllegalStateException", "Bad resource!");
+            Logger::E(TAG, "E_ILLEGAL_STATE_EXCEPTION. Bad resource! line: %d", __LINE__);
             return E_ILLEGAL_STATE_EXCEPTION;
         }
 #endif
@@ -1422,7 +1443,7 @@ ECode CAssetManager::LoadResourceBagValue(
         block = res.resolveReference(&value, block, &ref, &typeSpecFlags);
 #if THROW_ON_BAD_ID
         if (block == android::BAD_INDEX) {
-            // jniThrowException(env, "java/lang/IllegalStateException", "Bad resource!");
+            Logger::E(TAG, "E_ILLEGAL_STATE_EXCEPTION. Bad resource! line: %d", __LINE__);
             return E_ILLEGAL_STATE_EXCEPTION;
         }
 #endif
@@ -1835,7 +1856,7 @@ ECode CAssetManager::ResolveAttrs(
                         &typeSetFlags, &config);
 #if THROW_ON_BAD_ID
                 if (newBlock == android::BAD_INDEX) {
-                    // jniThrowException(env, "java/lang/IllegalStateException", "Bad resource!");
+                    Logger::E(TAG, "E_ILLEGAL_STATE_EXCEPTION. Bad resource! line: %d", __LINE__);
                     return E_ILLEGAL_STATE_EXCEPTION;
                 }
 #endif
@@ -2105,8 +2126,7 @@ ECode CAssetManager::RetrieveArray(
                     &typeSetFlags, &config);
 #if THROW_ON_BAD_ID
             if (newBlock == android::BAD_INDEX) {
-                // jniThrowException(env, "java/lang/IllegalStateException", "Bad resource!");
-                Logger::E(TAG, "E_ILLEGAL_STATE_EXCEPTION. Bad resource!");
+                Logger::E(TAG, "E_ILLEGAL_STATE_EXCEPTION. Bad resource! line: %d", __LINE__);
                 return E_ILLEGAL_STATE_EXCEPTION;
             }
 #endif
@@ -2327,7 +2347,7 @@ ECode CAssetManager::GetArrayStringResource(
         ssize_t block = res.resolveReference(&value, bag->stringBlock, NULL);
 #if THROW_ON_BAD_ID
         if (block == android::BAD_INDEX) {
-            // jniThrowException(env, "java/lang/IllegalStateException", "Bad resource!");
+            Logger::E(TAG, "E_ILLEGAL_STATE_EXCEPTION. Bad resource! line: %d", __LINE__);
             *result = array;
             REFCOUNT_ADD(*result);
             return E_ILLEGAL_STATE_EXCEPTION;
@@ -2396,7 +2416,7 @@ ECode CAssetManager::GetArrayStringInfo(
 
 #if THROW_ON_BAD_ID
         if (stringBlock == android::BAD_INDEX) {
-            // jniThrowException(env, "java/lang/IllegalStateException", "Bad resource!");
+            Logger::E(TAG, "E_ILLEGAL_STATE_EXCEPTION. Bad resource! line: %d", __LINE__);
             *result = array;
             REFCOUNT_ADD(*result);
             return E_ILLEGAL_STATE_EXCEPTION;
@@ -2480,7 +2500,7 @@ ECode CAssetManager::GetArrayIntResource(
         ssize_t block = res.resolveReference(&value, bag->stringBlock, NULL);
 #if THROW_ON_BAD_ID
         if (block == android::BAD_INDEX) {
-            // jniThrowException(env, "java/lang/IllegalStateException", "Bad resource!");
+            Logger::E(TAG, "E_ILLEGAL_STATE_EXCEPTION. Bad resource! line: %d", __LINE__);
             *result = array;
             REFCOUNT_ADD(*result);
             return E_ILLEGAL_STATE_EXCEPTION;

@@ -169,7 +169,7 @@ ECode CContextImpl::ApplicationContentResolver::constructor(
     /* [in] */ CActivityThread* mainThread,
     /* [in] */ IUserHandle* user)
 {
-    assert(mainThread != NULL && mUser != NULL);
+    assert(mainThread != NULL && user != NULL);
     ContentResolver::constructor(context);
     mMainThread = mainThread;
     mUser = user;
@@ -261,7 +261,6 @@ CContextImpl::CContextImpl()
     , mThemeResource(0)
 {
     mDisplayAdjustments = new DisplayAdjustments();
-    // CDisplayAdjustments::New((IDisplayAdjustments**)&mDisplayAdjustments);
 }
 
 CContextImpl::~CContextImpl()
@@ -3354,9 +3353,12 @@ ECode CContextImpl::CreateDisplayContext(
 
 Int32 CContextImpl::GetDisplayId()
 {
-    Int32 displayId;
-    mDisplay->GetDisplayId(&displayId);
-    return mDisplay != NULL ? displayId : IDisplay::DEFAULT_DISPLAY;
+    Int32 displayId = IDisplay::DEFAULT_DISPLAY;
+    if (mDisplay != NULL) {
+        mDisplay->GetDisplayId(&displayId);
+    }
+
+    return displayId;
 }
 
 ECode CContextImpl::IsRestricted(
@@ -3381,6 +3383,7 @@ ECode CContextImpl::GetDisplayAdjustments(
 AutoPtr<CContextImpl> CContextImpl::CreateSystemContext(
     /* [in] */ IActivityThread* mainThread)
 {
+    assert(mainThread != NULL);
     AutoPtr<LoadedPkg> packageInfo = new LoadedPkg();
     packageInfo->constructor(mainThread);
 
@@ -3392,7 +3395,9 @@ AutoPtr<CContextImpl> CContextImpl::CreateSystemContext(
     ci->mResourcesManager->GetConfiguration((IConfiguration**)&config);
     AutoPtr<IDisplayMetrics> dm;
     ci->mResourcesManager->GetDisplayMetricsLocked(IDisplay::DEFAULT_DISPLAY, (IDisplayMetrics**)&dm);
+    Logger::I(TAG, " === CreateSystemContext 1 ===");
     ci->mResources->UpdateConfiguration(config, dm);
+    Logger::I(TAG, " === CreateSystemContext 2 ===");
     return ci;
 }
 
@@ -3408,10 +3413,10 @@ ECode CContextImpl::CreateAppContext(
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
 
-    AutoPtr<CContextImpl> c;
-    CContextImpl::NewByFriend(NULL, mainThread,
-        packageInfo, NULL, NULL, FALSE, NULL, NULL, (CContextImpl**)&c);
-    *result = (IContextImpl*)c.Get();
+    AutoPtr<IContextImpl> c;
+    CContextImpl::New(NULL, mainThread,
+        packageInfo, NULL, NULL, FALSE, NULL, NULL, (IContextImpl**)&c);
+    *result = c;
     REFCOUNT_ADD(*result)
     return NOERROR;
 }
@@ -3429,10 +3434,10 @@ ECode CContextImpl::CreateActivityContext(
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
 
-    AutoPtr<CContextImpl> c;
-    CContextImpl::NewByFriend(NULL, mainThread,
-        packageInfo, activityToken, NULL, FALSE, NULL, NULL, (CContextImpl**)&c);
-    *result = (IContextImpl*)c.Get();
+    AutoPtr<IContextImpl> c;
+    CContextImpl::New(NULL, mainThread,
+        packageInfo, activityToken, NULL, FALSE, NULL, NULL, (IContextImpl**)&c);
+    *result = c;
     REFCOUNT_ADD(*result)
     return NOERROR;
 }
@@ -3447,6 +3452,8 @@ ECode CContextImpl::constructor(
     /* [in] */ IDisplay* display,
     /* [in] */ IConfiguration* overrideConfiguration)
 {
+    assert(mainThread != NULL);
+
     GetWeakReference((IWeakReference**)&mOuterContext);
 
     mMainThread = (CActivityThread*)mainThread;

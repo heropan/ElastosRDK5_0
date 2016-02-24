@@ -112,8 +112,6 @@ void RuntimeInit::nativeSetExitWithoutCleanup(
 
 ECode RuntimeInit::CommonInit()
 {
-    if (DEBUG) Slogger::D(TAG, "Entered RuntimeInit!");
-
     /* set default handler; this applies to all threads in the VM */
     // Thread::SetDefaultUncaughtExceptionHandler(new UncaughtHandler());
 
@@ -211,35 +209,44 @@ ECode RuntimeInit::InvokeStaticMain(
     VALIDATE_NOT_NULL(task);
     *task = NULL;
 
+    if (DEBUG) {
+        Slogger::I(TAG, "InvokeStaticMain: %s, %s", moduleName.string(), className.string());
+        if (argv) {
+            for (Int32 i = 0; i < argv->GetLength(); ++i) {
+                Slogger::I(TAG, "  >> arg %d: %s", i, (*argv)[i].string());
+            }
+        }
+    }
+
     AutoPtr<IModuleInfo> moduleInfo;
     AutoPtr<IClassInfo> classInfo;
     AutoPtr<IInterface> object;
     AutoPtr<IMethodInfo> methodInfo;
 
-    ECode ec = _CReflector_AcquireModuleInfo(
-            moduleName, (IModuleInfo**)&moduleInfo);
+    ECode ec = _CReflector_AcquireModuleInfo(moduleName, (IModuleInfo**)&moduleInfo);
     if (FAILED(ec)) {
-        Slogger::E("RuntimeInit::InvokeStaticMain", "Acquire \"%s\" module info failed!\n", moduleName.string());
+        Slogger::E("RuntimeInit::InvokeStaticMain", "Acquire %s module info failed!\n", moduleName.string());
         return ec;
     }
 
-    ec = moduleInfo->GetClassInfo(
-            className, (IClassInfo**)&classInfo);
+    ec = moduleInfo->GetClassInfo(className, (IClassInfo**)&classInfo);
     if (FAILED(ec)) {
-        Slogger::E("RuntimeInit::InvokeStaticMain", "Acquire \"%s\" class info failed!\n", className.string());
+        Slogger::E("RuntimeInit::InvokeStaticMain", "Acquire %s, %s class info failed!\n",
+            moduleName.string(), className.string());
         return ec;
     }
 
     ec = classInfo->CreateObject((IInterface**)&object);
     if (FAILED(ec)) {
-        Slogger::E("RuntimeInit::InvokeStaticMain", "Create object failed!\n");
+        Slogger::E("RuntimeInit::InvokeStaticMain: %s, %s", moduleName.string(), className.string());
         return ec;
     }
 
     ec = classInfo->GetMethodInfo(
-            String("Main"), String("[LElastos/String;)E"), (IMethodInfo**)&methodInfo);
+            String("Main"), String("([LElastos/String;)E"), (IMethodInfo**)&methodInfo);
     if (FAILED(ec)) {
-        Slogger::E("RuntimeInit::InvokeStaticMain", "Acquire \"Main\" method info failed!\n");
+        Slogger::E("RuntimeInit::InvokeStaticMain", "Acquire  %s, %s \"Main\" method info failed!",
+            moduleName.string(), className.string());
         return ec;
     }
 
@@ -259,7 +266,7 @@ ECode RuntimeInit::ZygoteInit(
     /* [in] */ ArrayOf<String>* argv,
     /* [out] */ IRunnable** task)
 {
-    if (DEBUG) Slogger::D(TAG, "RuntimeInit: Starting application from zygote");
+    VALIDATE_NOT_NULL(task)
 
     RedirectLogStreams();
 
@@ -289,7 +296,6 @@ ECode RuntimeInit::Main(
      */
     nativeFinishInit();
 
-    if (DEBUG) Slogger::D(TAG, "Leaving RuntimeInit!");
     return NOERROR;
 }
 
@@ -298,8 +304,6 @@ ECode RuntimeInit::WrapperInit(
     /* [in] */ ArrayOf<String>* argv,
     /* [out] */ IRunnable** task)
 {
-    if (DEBUG) Slogger::D(TAG, "RuntimeInit: Starting application from wrapper");
-
     return ApplicationInit(targetSdkVersion, argv, task);
 }
 
@@ -309,6 +313,8 @@ ECode RuntimeInit::ApplicationInit(
     /* [out] */ IRunnable** task)
 {
     VALIDATE_NOT_NULL(task)
+    *task = NULL;
+
     // If the application calls System.exit(), terminate the process
     // immediately without running any shutdown hooks.  It is not possible to
     // shutdown an Android application gracefully.  Among other things, the

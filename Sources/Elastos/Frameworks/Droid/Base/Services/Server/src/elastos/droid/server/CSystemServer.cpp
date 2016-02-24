@@ -80,7 +80,7 @@ namespace Elastos {
 namespace Droid {
 namespace Server {
 
-const String SystemServer::TAG("SystemServer");
+const String SystemServer::TAG("CSystemServer");
 
 const String SystemServer::ENCRYPTING_STATE("trigger_restart_min_framework");
 const String SystemServer::ENCRYPTED_STATE("1");
@@ -118,6 +118,10 @@ CAR_SINGLETON_IMPL(CSystemServer)
 ECode CSystemServer::Main(
     /* [in] */ const ArrayOf<String>& args)
 {
+    Slogger::I("CSystemServer", "CSystemServer::Main");
+    for (Int32 i = 0; i < args.GetLength(); ++i) {
+        Slogger::I("CSystemServer", " >> arg %d: %s", i, args[i].string());
+    }
     AutoPtr<SystemServer> systemServer = new SystemServer();
     return systemServer->Run();
 }
@@ -222,15 +226,18 @@ ECode SystemServer::Run()
     // This call may not return.
     PerformPendingShutdown();
 
+    Slogger::I(TAG, "Initialize the system context.");
     // Initialize the system context.
     CreateSystemContext();
 
-    // // Create the system service manager.
+    Slogger::I(TAG, "Create the system service manager.");
+    // Create the system service manager.
     mSystemServiceManager = (ISystemServiceManager*)new SystemServiceManager(mSystemContext);
     LocalServices::AddService(EIID_ISystemServiceManager, mSystemServiceManager.Get());
 
     // Start services.
     {
+        Slogger::I(TAG, "Start services.");
         ec = StartBootstrapServices();
         FAIL_GOTO(ec, _EXIT_)
 
@@ -246,6 +253,8 @@ ECode SystemServer::Run()
     //     Slogger::I(TAG, "Enabled StrictMode for system server main thread.");
     // }
 
+    Slogger::I(TAG, "Loop forever..");
+
     // Loop forever.
     Looper::Loop();
 
@@ -253,8 +262,8 @@ ECode SystemServer::Run()
     return E_RUNTIME_EXCEPTION;
 
 _EXIT_:
-    Slogger::E("System", "******************************************");
-    Slogger::E("System", "************ Failure starting system services, error ecode: %08x", ec);
+    Slogger::E(TAG, "******************************************");
+    Slogger::E(TAG, "************ Failure starting system services, error ecode: %08x", ec);
     return ec;
 }
 
@@ -280,7 +289,7 @@ ECode SystemServer::PerformPendingShutdown()
             reason = shutdownAction.Substring(1, shutdownAction.GetLength());
         }
 
-        // ShutdownThread::RebootOrShutdown(reboot, reason);
+        ShutdownThread::RebootOrShutdown(reboot, reason);
     }
     return NOERROR;
 }
@@ -290,9 +299,12 @@ ECode SystemServer::CreateSystemContext()
     AutoPtr<IActivityThread> activityThread;
     AutoPtr<IActivityThreadHelper> helper;
     CActivityThreadHelper::AcquireSingleton((IActivityThreadHelper**)&helper);
+    Slogger::I(TAG, " === 1 ===");
     helper->GetSystemMain((IActivityThread**)&activityThread);
+    Slogger::I(TAG, " === 2 ===");
     AutoPtr<IContextImpl> ctxImpl;
     activityThread->GetSystemContext((IContextImpl**)&ctxImpl);
+    Slogger::I(TAG, " === 3 ===");
     mSystemContext = IContext::Probe(ctxImpl);
     mSystemContext->SetTheme(R::style::Theme_DeviceDefault_Light_DarkActionBar);
     return NOERROR;
@@ -457,7 +469,7 @@ ECode SystemServer::StartOtherServices()
     systemProperties->GetBoolean(String("config.disable_network"), FALSE, &disableNetwork);
     String str;
     systemProperties->Get(String("ro.kernel.qemu"), &str);
-    Boolean isEmulator = str.Equals("1");
+    // Boolean isEmulator = str.Equals("1");
 
     // try {
     Slogger::I(TAG, "Reading configuration...");

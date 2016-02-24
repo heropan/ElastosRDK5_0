@@ -138,7 +138,7 @@ ECode CZygoteInit::RegisterZygoteSocket(
 
         // try {
         ec = CLocalServerSocket::New(CreateFileDescriptor(fileDesc), (ILocalServerSocket**)&sServerSocket);
-        if (FAILED(ec)) {
+        if (FAILED(ec) || sServerSocket == NULL) {
             Logger::E("CZygoteInit", "Error binding to local socket! %s, ec=%08x\n",
                 fullSocketName.string(), ec);
             return E_RUNTIME_EXCEPTION;
@@ -149,6 +149,7 @@ ECode CZygoteInit::RegisterZygoteSocket(
         // }
     }
 
+    Logger::I(TAG, " RegisterZygoteSocket %s: %p", socketName.string(), sServerSocket.Get());
     return NOERROR;
 }
 
@@ -516,9 +517,8 @@ ECode CZygoteInit::Main(
             //throw new RuntimeException("No ABI list supplied.");
         }
 
-        //TODO
-        // ec = RegisterZygoteSocket(socketName);
-        // if (FAILED(ec)) goto _RUNTIME_EXCEPTION_EXIT_;
+        ec = RegisterZygoteSocket(socketName);
+        if (FAILED(ec)) goto _RUNTIME_EXCEPTION_EXIT_;
 
         // EventLog.writeEvent(LOG_BOOT_PROGRESS_PRELOAD_START,
         //     SystemClock.uptimeMillis());
@@ -543,7 +543,7 @@ ECode CZygoteInit::Main(
 
         Logger::V(TAG, "Accepting command socket connections");
         task = NULL;
-        //TODO RunSelectLoop(abiList, (IRunnable**)&task);
+        RunSelectLoop(abiList, (IRunnable**)&task);
         if (task != NULL) goto _RUN_TASK_;
 
         CloseServerSocket();
@@ -582,17 +582,20 @@ Boolean CZygoteInit::HasSecondZygote(
 void CZygoteInit::WaitForSecondaryZygote(
     /* [in] */ const String& socketName)
 {
+    Logger::I(TAG, "WaitForSecondaryZygote %s", socketName.string());
     ECode ec = NOERROR;
     String otherZygoteName = Process::ZYGOTE_SOCKET_ELASTOS.Equals(socketName) ?
             Process::SECONDARY_ZYGOTE_SOCKET_ELASTOS : Process::ZYGOTE_SOCKET_ELASTOS;
     while (TRUE) {
         AutoPtr<Process::ZygoteState> zs;
         ec = Process::ZygoteState::Connect(otherZygoteName, (Process::ZygoteState**)&zs);
-        if (ec == (ECode)E_IO_EXCEPTION)
+        if (ec == (ECode)E_IO_EXCEPTION) {
             Logger::W(TAG, "Got error connecting to zygote, retrying. msg= " /*+ ioe.getMessage()*/);
-        else
+        }
+        else {
             zs->Close();
-        break;
+            break;
+        }
 
         Thread::Sleep(1000);
     }
@@ -610,6 +613,7 @@ ECode CZygoteInit::RunSelectLoop(
     AutoPtr< ArrayOf<IFileDescriptor*> > fdArray = ArrayOf<IFileDescriptor*>::Alloc(4);
 
     AutoPtr<IFileDescriptor> fd;
+    assert(sServerSocket != NULL);
     sServerSocket->GetFileDescriptor((IFileDescriptor**)&fd);
     fds.PushBack(fd);
     peers.PushBack(NULL);
@@ -631,10 +635,11 @@ ECode CZygoteInit::RunSelectLoop(
         }
 
         if (index < 0) {
-            // throw new RuntimeException("Error in select()");
+            Logger::E(TAG, "Error in select()");
             return E_RUNTIME_EXCEPTION;
         }
         else if (index == 0) {
+            // first connection
             AutoPtr<ZygoteConnection> newPeer;
             FAIL_RETURN(AcceptCommandPeer(abiList, (ZygoteConnection**)&newPeer));
             peers.PushBack(newPeer);
@@ -643,6 +648,7 @@ ECode CZygoteInit::RunSelectLoop(
             fds.PushBack(fd);
         }
         else {
+            // recieve data
             Boolean done = peers[index]->RunOnce(task);
             if (*task != NULL) return NOERROR;
 

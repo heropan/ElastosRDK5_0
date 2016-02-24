@@ -54,7 +54,7 @@ AutoPtr<IZygoteHooks> InitZygoteHooks()
 }
 
 const AutoPtr<IZygoteHooks> Zygote::VM_HOOKS = InitZygoteHooks();
-static const String TAG("Zygote");
+static const String TAG("CZygote");
 static const Boolean DEBUG = FALSE;
 
 Int32 Zygote::ForkAndSpecialize(
@@ -106,7 +106,6 @@ Int32 Zygote::ForkSystemServer(
     /* [in] */ Int64 permittedCapabilities,
     /* [in] */ Int64 effectiveCapabilities)
 {
-    Logger::I(TAG, "ForkSystemServer");
     VM_HOOKS->PreFork();
     Int32 pid = NativeForkSystemServer(
             uid, gid, gids, debugFlags, rlimits, permittedCapabilities, effectiveCapabilities);
@@ -699,7 +698,6 @@ Int32 Zygote::NativeForkSystemServer(
     /* [in] */ Int64 permittedCapabilities,
     /* [in] */ Int64 effectiveCapabilities)
 {
-    Logger::I(TAG, "NativeForkSystemServer");
     pid_t pid = ForkAndSpecializeCommon(
         uid, gid, gids, debugFlags, rlimits, permittedCapabilities, effectiveCapabilities,
         MOUNT_EXTERNAL_NONE, String(NULL), String(NULL), TRUE, NULL, String(NULL), String(NULL));
@@ -716,7 +714,6 @@ Int32 Zygote::NativeForkSystemServer(
             // RuntimeAbort(env);
         }
     }
-    Logger::I(TAG, "ForkAndSpecializeCommon pid : %d", pid);
     return pid;
 }
 

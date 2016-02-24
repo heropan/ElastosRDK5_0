@@ -532,10 +532,7 @@ ECode CResources::GetQuantityText(
     VALIDATE_NOT_NULL(csq);
     *csq = NULL;
 
-    AutoPtr<INativePluralRulesHelper> helper;
-    CNativePluralRulesHelper::AcquireSingleton((INativePluralRulesHelper **)&helper);
-    AutoPtr<INativePluralRules> rules;
-    helper->ForLocale(mConfiguration->mLocale , (INativePluralRules **)&rules);
+    AutoPtr<INativePluralRules> rules = GetPluralRule();
     Int32 value;
     rules->QuantityForInt(quantity, &value);
     AutoPtr<ICharSequence> temp = mAssets->GetResourceBagText(id, AttrForQuantityCode(value));
@@ -557,14 +554,19 @@ ECode CResources::GetQuantityText(
     return E_NOT_FOUND_EXCEPTION;
 }
 
-// AutoPtr<NativePluralRules> CResources::GetPluralRule()
-// {
-//     AutoLock lock(this);
-//     if (mPluralRule == NULL) {
-//         mPluralRule = NativePluralRules::ForLocale(mConfiguration->mLocale);
-//     }
-//     return mPluralRule;
-// }
+AutoPtr<INativePluralRules> CResources::GetPluralRule()
+{
+    AutoLock lock(this);
+
+    if (mPluralRule == NULL) {
+        AutoPtr<INativePluralRulesHelper> helper;
+        CNativePluralRulesHelper::AcquireSingleton((INativePluralRulesHelper**)&helper);
+        AutoPtr<ILocale> locale;
+        mConfiguration->GetLocale((ILocale**)&locale);
+        helper->ForLocale(locale, (INativePluralRules**)&mPluralRule);
+    }
+    return mPluralRule;
+}
 
 Int32 CResources::AttrForQuantityCode(
     /* [in] */ Int32 quantityCode)
@@ -1387,6 +1389,7 @@ ECode CResources::UpdateConfiguration(
     /* [in] */ IDisplayMetrics* metrics,
     /* [in] */ ICompatibilityInfo* compat)
 {
+    Logger::I(TAG, " >>>> UpdateConfiguration");
     {
         AutoLock lock(mAccessLock);
 
@@ -1470,6 +1473,7 @@ ECode CResources::UpdateConfiguration(
                         == IConfiguration::HARDKEYBOARDHIDDEN_YES) {
             keyboardHidden = IConfiguration::KEYBOARDHIDDEN_SOFT;
         }
+
         mAssets->SetConfiguration(mConfiguration->mMcc, mConfiguration->mMnc,
                 locale, mConfiguration->mOrientation,
                 mConfiguration->mTouchscreen, mConfiguration->mDensityDpi,
@@ -1492,13 +1496,18 @@ ECode CResources::UpdateConfiguration(
     }
 
     {
-        // AutoLock lock(this);
-        // if (mPluralRule != NULL) {
-        //     assert(config);
-        //     mPluralRule = NativePluralRules::ForLocale((CConfiguration*)config->mLocale);
-        // }
+        AutoLock lock(this);
+        if (mPluralRule != NULL) {
+            AutoPtr<INativePluralRulesHelper> helper;
+            CNativePluralRulesHelper::AcquireSingleton((INativePluralRulesHelper**)&helper);
+            AutoPtr<ILocale> locale;
+            assert(config != NULL);
+            config->GetLocale((ILocale**)&locale);
+            helper->ForLocale(locale, (INativePluralRules**)&mPluralRule);
+        }
     }
 
+    Logger::I(TAG, " <<<< UpdateConfiguration");
     return NOERROR;
 }
 

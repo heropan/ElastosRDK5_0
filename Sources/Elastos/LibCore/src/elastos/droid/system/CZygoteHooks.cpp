@@ -37,14 +37,15 @@ static void* SignalCatcherThreadStart(void* arg);
  *
  * Returns immediately.
  */
-Boolean SignalCatcherStartup()
+static Boolean SignalCatcherStartup()
 {
+    Logger::W(TAG, " == TODO SignalCatcherStartup");
     // // Create a raw pthread; its start routine will attach to the runtime.
     // CHECK_PTHREAD_CALL(pthread_create, (&pthread_, NULL, &Run, this), "signal catcher thread");
-    if (!Elastos::Core::NativeCreateInternalThread(&sSignalCatcherHandle,
-        "signal catcher thread", SignalCatcherThreadStart, NULL)) {
-        return FALSE;
-    }
+    // if (!Elastos::Core::NativeCreateInternalThread(&sSignalCatcherHandle,
+    //     "signal catcher thread", SignalCatcherThreadStart, NULL)) {
+    //     return FALSE;
+    // }
 
     return TRUE;
 }
