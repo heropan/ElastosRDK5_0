@@ -44,7 +44,7 @@ public:
     /**
       * @hide
       */
-    BluetoothManager(
+    CARAPI constructor(
         /* [in] */ IContext* context);
 
     /**

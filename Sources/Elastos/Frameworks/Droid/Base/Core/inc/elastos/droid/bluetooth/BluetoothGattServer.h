@@ -34,7 +34,7 @@ class BluetoothGattServer
     , public IBluetoothGattServer
     , public IBluetoothProfile
 {
-private:
+public:
     class BluetoothGattServerCallbackStub
         : public Object
         , public IIBluetoothGattServerCallback
@@ -45,7 +45,7 @@ private:
 
         BluetoothGattServerCallbackStub();
 
-        BluetoothGattServerCallbackStub(
+        CARAPI constructor(
             /* [in] */ IBluetoothGattServer* owner);
 
         /**

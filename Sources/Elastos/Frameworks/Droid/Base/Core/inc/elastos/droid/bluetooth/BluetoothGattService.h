@@ -6,8 +6,6 @@
 #include <elastos/core/Object.h>
 #include "elastos/droid/ext/frameworkext.h"
 
-// import java.util.ArrayList;
-
 using Elastos::Utility::IList;
 using Elastos::Utility::IUUID;
 
@@ -39,7 +37,7 @@ public:
       *        {@link BluetoothGattService#SERVICE_TYPE_PRIMARY} or
       *        {@link BluetoothGattService#SERVICE_TYPE_SECONDARY}
       */
-    BluetoothGattService(
+    CARAPI constructor(
         /* [in] */ IUUID* uuid,
         /* [in] */ Int32 serviceType);
 

@@ -30,10 +30,11 @@ BluetoothMap::BluetoothStateChangeCallbackStub::BluetoothStateChangeCallbackStub
 {
 }
 
-BluetoothMap::BluetoothStateChangeCallbackStub::BluetoothStateChangeCallbackStub(
+ECode BluetoothMap::BluetoothStateChangeCallbackStub::constructor(
     /* [in] */ IBluetoothMap* owner)
 {
     mOwner = (BluetoothMap*)owner;
+    return NOERROR;
 }
 
 ECode BluetoothMap::BluetoothStateChangeCallbackStub::OnBluetoothStateChange(

@@ -18,11 +18,12 @@ BluetoothGattDescriptor::BluetoothGattDescriptor()
 {
 }
 
-BluetoothGattDescriptor::BluetoothGattDescriptor(
+ECode BluetoothGattDescriptor::constructor(
     /* [in] */ IUUID* uuid,
     /* [in] */ Int32 permissions)
 {
     InitDescriptor(NULL, uuid, 0, permissions);
+    return NOERROR;
 }
 
 BluetoothGattDescriptor::BluetoothGattDescriptor(

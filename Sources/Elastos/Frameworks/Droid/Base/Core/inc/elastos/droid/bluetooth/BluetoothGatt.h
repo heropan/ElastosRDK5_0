@@ -31,13 +31,15 @@ class BluetoothGatt
     , public IBluetoothGatt
     , public IBluetoothProfile
 {
-private:
+public:
     class InnerBluetoothGattCallbackWrapper
         : public BluetoothGattCallbackWrapper
     {
     public:
-        InnerBluetoothGattCallbackWrapper(
-            /* [in] */ BluetoothGatt* owner);
+        InnerBluetoothGattCallbackWrapper();
+
+        CARAPI constructor(
+            /* [in] */ IBluetoothGatt* owner);
 
         /**
           * Application interface registered - app is ready to go

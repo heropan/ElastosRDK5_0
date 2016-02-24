@@ -23,10 +23,15 @@ namespace Bluetooth {
 //=====================================================================
 //           BluetoothGatt::InnerBluetoothGattCallbackWrapper
 //=====================================================================
-BluetoothGatt::InnerBluetoothGattCallbackWrapper::InnerBluetoothGattCallbackWrapper(
-    /* [in] */ BluetoothGatt* owner)
-    : mOwner(owner)
+BluetoothGatt::InnerBluetoothGattCallbackWrapper::InnerBluetoothGattCallbackWrapper()
 {
+}
+
+ECode BluetoothGatt::InnerBluetoothGattCallbackWrapper::constructor(
+    /* [in] */ IBluetoothGatt* owner)
+{
+    mOwner = (BluetoothGatt*)owner;
+    return NOERROR;
 }
 
 ECode BluetoothGatt::InnerBluetoothGattCallbackWrapper::OnClientRegistered(

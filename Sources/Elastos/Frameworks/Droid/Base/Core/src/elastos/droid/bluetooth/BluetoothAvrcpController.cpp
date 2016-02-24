@@ -30,10 +30,11 @@ BluetoothAvrcpController::BluetoothStateChangeCallbackStub::BluetoothStateChange
 {
 }
 
-BluetoothAvrcpController::BluetoothStateChangeCallbackStub::BluetoothStateChangeCallbackStub(
+ECode BluetoothAvrcpController::BluetoothStateChangeCallbackStub::constructor (
     /* [in] */ IBluetoothAvrcpController* owner)
 {
     mOwner = (BluetoothAvrcpController*)owner;
+    return NOERROR;
 }
 
 ECode BluetoothAvrcpController::BluetoothStateChangeCallbackStub::OnBluetoothStateChange(

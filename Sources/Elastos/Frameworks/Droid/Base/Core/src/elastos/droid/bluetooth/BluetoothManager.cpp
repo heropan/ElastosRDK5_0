@@ -25,7 +25,7 @@ BluetoothManager::BluetoothManager()
 {
 }
 
-BluetoothManager::BluetoothManager(
+ECode BluetoothManager::constructor(
     /* [in] */ IContext* context)
 {
     AutoPtr<IContext> appContext;
@@ -37,6 +37,7 @@ BluetoothManager::BluetoothManager(
     }
     // Legacy api - getDefaultAdapter does not take in the context
     mAdapter = CBluetoothAdapter::GetDefaultAdapter();
+    return NOERROR;
 }
 
 ECode BluetoothManager::GetAdapter(

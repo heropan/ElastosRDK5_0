@@ -13,7 +13,11 @@ namespace Bluetooth {
 //=====================================================================
 CAR_INTERFACE_IMPL_2(BluetoothMasInstance, Object, IBluetoothMasInstance, IParcelable);
 
-BluetoothMasInstance::BluetoothMasInstance(
+BluetoothMasInstance::BluetoothMasInstance()
+{
+}
+
+ECode BluetoothMasInstance::constructor(
     /* [in] */ Int32 id,
     /* [in] */ const String& name,
     /* [in] */ Int32 channel,
@@ -23,6 +27,7 @@ BluetoothMasInstance::BluetoothMasInstance(
     mName = name;
     mChannel = channel;
     mMsgTypes = msgTypes;
+    return NOERROR;
 }
 
 ECode BluetoothMasInstance::Equals(

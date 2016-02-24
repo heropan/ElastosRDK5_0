@@ -20,7 +20,7 @@ public:
 
     BluetoothMasInstance();
 
-    BluetoothMasInstance(
+    CARAPI constructor(
         /* [in] */ Int32 id,
         /* [in] */ const String& name,
         /* [in] */ Int32 channel,

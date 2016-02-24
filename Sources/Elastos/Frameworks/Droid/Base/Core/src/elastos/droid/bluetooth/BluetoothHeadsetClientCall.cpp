@@ -17,7 +17,7 @@ BluetoothHeadsetClientCall::BluetoothHeadsetClientCall()
 {
 }
 
-BluetoothHeadsetClientCall::BluetoothHeadsetClientCall(
+ECode BluetoothHeadsetClientCall::constructor(
     /* [in] */ Int32 id,
     /* [in] */ Int32 state,
     /* [in] */ const String& number,
@@ -29,6 +29,7 @@ BluetoothHeadsetClientCall::BluetoothHeadsetClientCall(
     mNumber = number;// != null ? number : "";
     mMultiParty = multiParty;
     mOutgoing = outgoing;
+    return NOERROR;
 }
 
 ECode BluetoothHeadsetClientCall::SetState(

@@ -18,7 +18,7 @@ BluetoothActivityEnergyInfo::BluetoothActivityEnergyInfo()
 {
 }
 
-BluetoothActivityEnergyInfo::BluetoothActivityEnergyInfo(
+ECode BluetoothActivityEnergyInfo::constructor(
     /* [in] */ Int32 stackState,
     /* [in] */ Int32 txTime,
     /* [in] */ Int32 rxTime,
@@ -34,6 +34,7 @@ BluetoothActivityEnergyInfo::BluetoothActivityEnergyInfo(
     AutoPtr<ISystem> system;
     Elastos::Core::CSystem::AcquireSingleton((ISystem**)&system);
     system->GetCurrentTimeMillis(&timestamp);
+    return NOERROR;
 }
 
 ECode BluetoothActivityEnergyInfo::ToString(

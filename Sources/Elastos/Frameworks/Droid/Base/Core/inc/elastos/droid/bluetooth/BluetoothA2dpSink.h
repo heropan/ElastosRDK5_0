@@ -32,7 +32,7 @@ class BluetoothA2dpSink
     , public IBluetoothA2dpSink
     , public IBluetoothProfile
 {
-private:
+public:
     class BluetoothStateChangeCallbackStub
         : public Object
         , public IIBluetoothStateChangeCallback
@@ -43,8 +43,8 @@ private:
 
         BluetoothStateChangeCallbackStub();
 
-        BluetoothStateChangeCallbackStub(
-            /* [in] */ IBluetoothA2dpSink* owner);
+        CARAPI constructor(
+            /* [in] */ IInterface* owner);
 
         CARAPI OnBluetoothStateChange(
             /* [in] */ Boolean up);
