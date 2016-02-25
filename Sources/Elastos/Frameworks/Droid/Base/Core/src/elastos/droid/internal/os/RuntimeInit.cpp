@@ -357,6 +357,22 @@ void RuntimeInit::RedirectLogStreams()
     system->SetErr(warmStream);
 }
 
+ECode RuntimeInit::SetApplicationObject(
+    /* [in] */ IBinder* app)
+{
+    mApplicationObject = app;
+    return NOERROR;
+}
+
+ECode RuntimeInit::GetApplicationObject(
+    /* [out] */ IBinder** app)
+{
+    VALIDATE_NOT_NULL(app)
+    *app = mApplicationObject;
+    REFCOUNT_ADD(*app)
+    return NOERROR;
+}
+
 } // namespace Os
 } // namespace Internal
 } // namespace Droid

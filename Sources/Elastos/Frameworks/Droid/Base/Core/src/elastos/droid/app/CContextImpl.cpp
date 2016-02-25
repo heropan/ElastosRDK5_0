@@ -3395,8 +3395,8 @@ AutoPtr<CContextImpl> CContextImpl::CreateSystemContext(
     ci->mResourcesManager->GetConfiguration((IConfiguration**)&config);
     AutoPtr<IDisplayMetrics> dm;
     ci->mResourcesManager->GetDisplayMetricsLocked(IDisplay::DEFAULT_DISPLAY, (IDisplayMetrics**)&dm);
-    Logger::I(TAG, " === CreateSystemContext 1 ===");
-    ci->mResources->UpdateConfiguration(config, dm);
+    Logger::I(TAG, " === TODO CContextImpl::CreateSystemContext UpdateConfiguration");
+    // ci->mResources->UpdateConfiguration(config, dm);
     Logger::I(TAG, " === CreateSystemContext 2 ===");
     return ci;
 }

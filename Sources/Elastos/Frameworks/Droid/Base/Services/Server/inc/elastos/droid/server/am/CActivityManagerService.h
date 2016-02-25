@@ -23,6 +23,7 @@
 #include "elastos/droid/server/am/LockToAppRequestDialog.h"
 #include "elastos/droid/server/am/UserStartedState.h"
 #include "elastos/droid/server/pm/CUserManagerService.h"
+#include "elastos/droid/server/CAppOpsService.h"
 #include "elastos/droid/server/ServiceThread.h"
 #include "elastos/droid/server/SystemService.h"
 #include "elastos/droid/server/SystemServiceManager.h"
@@ -108,6 +109,7 @@ using Elastos::Droid::Os::IUpdateLock;
 using Elastos::Droid::Os::Runnable;
 using Elastos::Droid::Server::ProcessMap;
 using Elastos::Droid::Server::IntentResolver;
+using Elastos::Droid::Server::CAppOpsService;
 using Elastos::Droid::Server::Pm::CUserManagerService;
 using Elastos::Droid::View::IWindowManager;
 using Elastos::Core::ICharSequence;
@@ -271,7 +273,7 @@ public:
     class Lifecycle : public SystemService
     {
     public:
-        Lifecycle(
+        CARAPI constructor(
             /* [in] */ IContext* context);
 
         // @Override
@@ -1145,7 +1147,7 @@ public:
 
     CARAPI StartObservingNativeCrashes();
 
-    CARAPI_(AutoPtr<IIAppOpsService>) GetAppOpsService();
+    CARAPI_(AutoPtr<CAppOpsService>) GetAppOpsService();
 
     CARAPI_(void) SetSystemServiceManager(
         /* [in] */ ISystemServiceManager* mgr);
@@ -4021,7 +4023,7 @@ public:
     /**
      * Information about and control over application operations
      */
-    AutoPtr<IIAppOpsService> mAppOpsService; //TODO CAppOpsService
+    AutoPtr<CAppOpsService> mAppOpsService;
 
     /**
      * Save recent tasks information across reboots.

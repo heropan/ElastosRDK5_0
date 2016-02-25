@@ -30,11 +30,12 @@
 #include "elastos/droid/server/am/NativeCrashListener.h"
 #include "elastos/droid/server/am/CAppTaskImpl.h"
 #include "elastos/droid/server/am/UserSwitchingDialog.h"
-#include "elastos/droid/server/AttributeCache.h"
-#include "elastos/droid/server/LocalServices.h"
-#include "elastos/droid/server/Watchdog.h"
 #include "elastos/droid/server/wm/AppTransition.h"
 #include "elastos/droid/server/wm/CWindowManagerService.h"
+#include "elastos/droid/server/AttributeCache.h"
+#include "elastos/droid/server/LocalServices.h"
+#include "elastos/droid/server/CAppOpsService.h"
+#include "elastos/droid/server/Watchdog.h"
 #include "Elastos.Droid.AppWidget.h"
 #include "Elastos.Droid.Os.h"
 #include "Elastos.Droid.Provider.h"
@@ -50,6 +51,7 @@
 #include <elastos/droid/os/Process.h>
 #include <elastos/droid/os/SELinux.h>
 #include <elastos/droid/os/SystemClock.h>
+#include <elastos/droid/view/LayoutInflater.h>
 #include <elastos/droid/utility/TimeUtils.h>
 #include <elastos/droid/utility/Xml.h>
 #include <elastos/droid/R.h>
@@ -179,7 +181,7 @@ using Elastos::Droid::Os::CServiceManager;
 using Elastos::Droid::Os::IServiceManager;
 using Elastos::Droid::Os::ISystemProperties;
 using Elastos::Droid::Os::CSystemProperties;
-// using Elastos::Droid::Os::CStrictMode;
+using Elastos::Droid::Os::CStrictMode;
 using Elastos::Droid::Os::IStrictMode;
 using Elastos::Droid::Os::IStrictModeThreadPolicy;
 using Elastos::Droid::Os::CUserHandle;
@@ -205,18 +207,18 @@ using Elastos::Droid::Provider::CSettingsGlobal;
 using Elastos::Droid::Provider::ISettingsSecure;
 using Elastos::Droid::Provider::CSettingsSecure;
 using Elastos::Droid::Server::AttributeCache;
+using Elastos::Droid::Server::CAppOpsService;
 using Elastos::Droid::Text::Format::IDateUtils;
 using Elastos::Droid::Text::Format::CTime;
 using Elastos::Droid::Text::Format::ITime;
 using Elastos::Droid::Utility::CAtomicFile;
 using Elastos::Droid::Utility::TimeUtils;
 using Elastos::Droid::Utility::Xml;
-// using Elastos::Droid::View::CLayoutInflaterHelper;
+using Elastos::Droid::View::LayoutInflater;
 using Elastos::Droid::View::CWindowManagerLayoutParams;
 using Elastos::Droid::View::IGravity;
 using Elastos::Droid::View::IViewManager;
 using Elastos::Droid::View::IViewGroupLayoutParams;
-using Elastos::Droid::View::ILayoutInflaterHelper;
 using Elastos::Droid::Server::Wm::AppTransition;
 using Elastos::Droid::R;
 using Elastos::Droid::Manifest;
@@ -1075,7 +1077,7 @@ ECode CActivityManagerService::BootCompletedReceiver::PerformReceive(
     /* [in] */ Boolean sticky,
     /* [in] */ Int32 sendingUser)
 {
-    synchronized (mHost) {
+    synchronized(mHost) {
         mHost->RequestPssAllProcsLocked(SystemClock::GetUptimeMillis(),
             TRUE, FALSE);
     }
@@ -1368,7 +1370,7 @@ ECode CActivityManagerService::ReportMemUsageThread::Run()
     */
     AutoPtr<IWriter> catSw;
     CStringWriter::New((IWriter**)&catSw);
-    synchronized (mHost) {
+    synchronized(mHost) {
         AutoPtr<IPrintWriter> catPw;
         CFastPrintWriter::New(catSw, FALSE, 256, (IPrintWriter**)&catPw);
         AutoPtr<ArrayOf<String> > emptyArgs = ArrayOf<String>::Alloc(0);
@@ -1388,7 +1390,7 @@ ECode CActivityManagerService::ReportMemUsageThread::Run()
         NULL, tag.ToString(), dropBuilder.ToString(), NULL, NULL);
     //Slogger::I(TAG, "Sent to dropbox:");
     //Slogger::I(TAG, dropBuilder.toString());
-    synchronized (mHost) {
+    synchronized(mHost) {
         Int64 now = SystemClock::GetUptimeMillis();
         if (mHost->mLastMemUsageReportTime < now) {
             mHost->mLastMemUsageReportTime = now;
@@ -1545,7 +1547,7 @@ CActivityManagerService::OnFinishCallback::OnFinishCallback(
 
 ECode CActivityManagerService::OnFinishCallback::Run()
 {
-    synchronized (mHost) {
+    synchronized(mHost) {
         mHost->mDidUpdate = TRUE;
     }
     mHost->WriteLastDonePreBootReceivers(mDoneReceivers);
@@ -1616,7 +1618,7 @@ CActivityManagerService::DropBoxTagThread::DropBoxTagThread(
 ECode CActivityManagerService::DropBoxTagThread::Run()
 {
     String report;
-    synchronized (mSb) {
+    synchronized(mSb) {
         report = mSb->ToString();
         mSb->Delete(0, mSb->GetLength());
         mSb->TrimToSize();
@@ -1775,7 +1777,7 @@ ECode CActivityManagerService::WorkerThread::Run()
 
 ECode CActivityManagerService::WriteStateRunnable::Run()
 {
-    synchronized (mHost) {
+    synchronized(mHost) {
         mHost->mProcessStats->WriteStateAsyncLocked();
     }
     return NOERROR;
@@ -2011,13 +2013,13 @@ ECode CActivityManagerService::MainHandler::HandleMessage(
         }
         break;
         case START_PROFILES_MSG: {
-            synchronized (mHost) {
+            synchronized(mHost) {
                 mHost->StartProfilesLocked();
             }
         }
         break;
         case UPDATE_TIME: {
-            synchronized (mHost) {
+            synchronized(mHost) {
                 List< AutoPtr<ProcessRecord> >::Iterator it = mHost->mLruProcesses.Begin();
                 for (; it != mHost->mLruProcesses.End(); ++it) {
                     AutoPtr<ProcessRecord> r = *it;
@@ -2050,7 +2052,7 @@ ECode CActivityManagerService::MainHandler::HandleMessage(
         }
         break;
         case ENTER_ANIMATION_COMPLETE_MSG: {
-            synchronized (mHost) {
+            synchronized(mHost) {
                 AutoPtr<ActivityRecord> r = ActivityRecord::ForToken(IBinder::Probe(obj));
                 if (r != NULL && r->mApp != NULL && r->mApp->mThread != NULL) {
                     r->mApp->mThread->ScheduleEnterAnimationComplete(IBinder::Probe(r->mAppToken));
@@ -2131,7 +2133,7 @@ ECode CActivityManagerService::MyPackageMonitor::OnPackageRemoved(
     // Remove all tasks with activities in the specified package from the list of recent tasks
     Int32 eventUserId;
     GetChangingUserId(&eventUserId);
-    synchronized (mHost) {
+    synchronized(mHost) {
         List<AutoPtr<TaskRecord> >::ReverseIterator rit = mHost->mRecentTasks->RBegin();
         while (rit != mHost->mRecentTasks->REnd()) {
             AutoPtr<TaskRecord> tr = *rit;
@@ -2179,7 +2181,7 @@ ECode CActivityManagerService::MyPackageMonitor::OnPackageModified(
     List<Int32> tasksToRemove;
     // Copy the list of recent tasks so that we don't hold onto the lock on
     // ActivityManagerService for long periods while checking if components exist.
-    synchronized (mHost) {
+    synchronized(mHost) {
         List<AutoPtr<TaskRecord> >::Iterator it = mHost->mRecentTasks->Begin();
         for (; it != mHost->mRecentTasks->End(); ++it) {
             AutoPtr<TaskRecord> tr = *it;
@@ -2218,7 +2220,7 @@ ECode CActivityManagerService::MyPackageMonitor::OnPackageModified(
         }
     }
     // Prune all the tasks with removed components from the list of recent tasks
-    synchronized (mHost) {
+    synchronized(mHost) {
         List<Int32>::ReverseIterator rit = tasksToRemove.RBegin();
         for (; rit != tasksToRemove.REnd(); ++rit) {
             // Remove the task but don't kill the process (since other components in that
@@ -2243,7 +2245,7 @@ ECode CActivityManagerService::MyPackageMonitor::OnHandleForceStop(
     if (packages != NULL) {
         for (Int32 i = 0; i < packages->GetLength(); i++) {
             String pkg = (*packages)[i];
-            synchronized (mHost) {
+            synchronized(mHost) {
                 if (mHost->ForceStopPackageLocked(pkg, -1, FALSE, FALSE, FALSE, FALSE, FALSE,
                         userId, String("finished booting"))) {
                     *result = TRUE;
@@ -2259,11 +2261,11 @@ ECode CActivityManagerService::MyPackageMonitor::OnHandleForceStop(
 //==============================================================================
 // CActivityManagerService::Lifecycle
 //==============================================================================
-CActivityManagerService::Lifecycle::Lifecycle(
+ECode CActivityManagerService::Lifecycle::constructor(
     /* [in] */ IContext* context)
 {
-    SystemService::constructor(context);
-    CActivityManagerService::NewByFriend(context, (CActivityManagerService**)&mService);
+    FAIL_RETURN(SystemService::constructor(context))
+    return CActivityManagerService::NewByFriend(context, (CActivityManagerService**)&mService);
 }
 
 // @Override
@@ -2430,7 +2432,7 @@ ECode CActivityManagerService::AppTaskImpl::FinishAndRemoveTask()
 {
     FAIL_RETURN(CheckCaller());
 
-    synchronized (mHost) {
+    synchronized(mHost) {
         Int64 origId = BinderClearCallingIdentity();
         AutoPtr<TaskRecord> tr = mHost->RecentTaskForIdLocked(mTaskId);
         if (tr == NULL) {
@@ -2457,7 +2459,7 @@ ECode CActivityManagerService::AppTaskImpl::GetTaskInfo(
     *info = NULL;
     FAIL_RETURN(CheckCaller());
 
-    synchronized (mHost) {
+    synchronized(mHost) {
         Int64 origId = BinderClearCallingIdentity();
         AutoPtr<TaskRecord> tr = mHost->RecentTaskForIdLocked(mTaskId);
         if (tr == NULL) {
@@ -2478,7 +2480,7 @@ ECode CActivityManagerService::AppTaskImpl::MoveToFront()
     FAIL_RETURN(CheckCaller());
 
     AutoPtr<TaskRecord> tr;
-    synchronized (mHost) {
+    synchronized(mHost) {
         tr = mHost->RecentTaskForIdLocked(mTaskId);
         if (tr == NULL) {
             Slogger::E(TAG, "Unable to find task ID %d", mTaskId);
@@ -2509,7 +2511,7 @@ ECode CActivityManagerService::AppTaskImpl::StartActivity(
     Int32 callingUser = UserHandleGetCallingUserId();
     AutoPtr<TaskRecord> tr;
     AutoPtr<IApplicationThread> appThread;
-    synchronized (mHost) {
+    synchronized(mHost) {
         tr = mHost->RecentTaskForIdLocked(mTaskId);
         if (tr == NULL) {
             Slogger::E(TAG, "Unable to find task ID %d", mTaskId);
@@ -2531,7 +2533,7 @@ ECode CActivityManagerService::AppTaskImpl::SetExcludeFromRecents(
 {
     FAIL_RETURN(CheckCaller());
 
-    synchronized (mHost) {
+    synchronized(mHost) {
         Int64 origId = BinderClearCallingIdentity();
         AutoPtr<TaskRecord> tr = mHost->RecentTaskForIdLocked(mTaskId);
         if (tr == NULL) {
@@ -2744,24 +2746,27 @@ ECode CActivityManagerService::constructor(
     Boolean mked;
     systemDir->Mkdirs(&mked);
 
-    CBatteryStatsService::NewByFriend(systemDir, mHandler,
-            (CBatteryStatsService**)&mBatteryStatsService);
-    mBatteryStatsService->GetActiveStatistics()->ReadLocked();
-    mBatteryStatsService->GetActiveStatistics()->WriteAsyncLocked();
-    if (DEBUG_POWER)
-        mOnBattery = TRUE;
-    else
-        mBatteryStatsService->GetActiveStatistics()->IsOnBattery(&mOnBattery);
-    mBatteryStatsService->GetActiveStatistics()->SetCallback(this);
+    Slogger::I(TAG, " GetDataDirectory:[%s]", dataDir.string());
+
+    CBatteryStatsService::NewByFriend(systemDir, mHandler, (CBatteryStatsService**)&mBatteryStatsService);
+    AutoPtr<IBatteryStatsImpl> bstats = mBatteryStatsService->GetActiveStatistics();
+    if (bstats != NULL) {
+        bstats->ReadLocked();
+        bstats->WriteAsyncLocked();
+        if (DEBUG_POWER)
+            mOnBattery = TRUE;
+        else
+            bstats->IsOnBattery(&mOnBattery);
+        bstats->SetCallback(this);
+    }
 
     AutoPtr<IFile> file;
     CFile::New(systemDir, String("procstats"), (IFile**)&file);
-    CProcessStatsService::NewByFriend((Handle32)this, file, (CProcessStatsService**)&mProcessStats);
+    CProcessStatsService::NewByFriend(this, file, (CProcessStatsService**)&mProcessStats);
 
     file = NULL;
     CFile::New(systemDir, String("appops.xml"), (IFile**)&file);
-    // TODO:
-    // CAppOpsService::NewByFriend(file, mHandler, (CAppOpsService**)&mAppOpsService);
+    CAppOpsService::NewByFriend(file, mHandler, (CAppOpsService**)&mAppOpsService);
 
     file = NULL;
     CFile::New(systemDir, String("urigrants.xml"), (IFile**)&file);
@@ -2914,7 +2919,7 @@ ECode CActivityManagerService::StartObservingNativeCrashes()
     return ncl->Start();
 }
 
-AutoPtr<IIAppOpsService> CActivityManagerService::GetAppOpsService()
+AutoPtr<CAppOpsService> CActivityManagerService::GetAppOpsService()
 {
     return mAppOpsService;
 }
@@ -2995,7 +3000,7 @@ AutoPtr<IIAppOpsService> CActivityManagerService::GetAppOpsService()
 //             return;
 //         }
 
-//         synchronized (mActivityManagerService.mProcessCpuTracker) {
+//         synchronized(mActivityManagerService.mProcessCpuTracker) {
 //             pw->Print(mActivityManagerService.mProcessCpuTracker.printCurrentLoad());
 //             pw->Print(mActivityManagerService.mProcessCpuTracker.printCurrentState(
 //                     SystemClock.uptimeMillis()));
@@ -3015,9 +3020,7 @@ void CActivityManagerService::Start()
     mProcessCpuThread->Start();
 
     mBatteryStatsService->Publish(mContext);
-    assert(0);
-    // mAppOpsService->Publish(mContext);
-    Slogger::D("AppOps", "AppOpsService published");
+    mAppOpsService->Publish(mContext);
     AutoPtr<LocalService> localService = new LocalService(this);
     LocalServices::AddService(EIID_IActivityManagerInternal, localService->Probe(EIID_IInterface));
 }
@@ -3093,7 +3096,9 @@ ECode CActivityManagerService::UpdateCpuStatsNow()
     AutoPtr<ArrayOf<Int64> > cpuSpeedTimes;
     mProcessCpuTracker->GetLastCpuSpeedTimes((ArrayOf<Int64>**)&cpuSpeedTimes);
     AutoPtr<IBatteryStatsImpl> bstats = mBatteryStatsService->GetActiveStatistics();
-    synchronized (bstats) {
+    if (bstats == NULL) return NOERROR;
+
+    synchronized(bstats) {
         {
             AutoLock lock(mPidsSelfLockedLock);
             if (haveNewCpuStats) {
@@ -3153,8 +3158,10 @@ ECode CActivityManagerService::UpdateCpuStatsNow()
                                     (IBatteryStatsImplUidProc**)&ps);
                                 st->SetBatteryStats(ps);
                             }
-                            ps->AddCpuTimeLocked(utime-otherUTime, stime-otherSTime);
-                            ps->AddSpeedStepTimes(cpuSpeedTimes);
+                            if (ps != NULL) {
+                                ps->AddCpuTimeLocked(utime-otherUTime, stime-otherSTime);
+                                ps->AddSpeedStepTimes(cpuSpeedTimes);
+                            }
                         }
                     }
                     bstats->FinishAddingCpuLocked(perc, totalUTime,
@@ -3165,8 +3172,7 @@ ECode CActivityManagerService::UpdateCpuStatsNow()
 
         if (mLastWriteTime < (now - BATTERY_STATS_TIME)) {
             mLastWriteTime = now;
-            AutoPtr<IBatteryStatsImpl> bsImpl = mBatteryStatsService->GetActiveStatistics();
-            bsImpl->WriteAsyncLocked();
+            bstats->WriteAsyncLocked();
         }
     }
     return NOERROR;
@@ -3252,7 +3258,7 @@ ECode CActivityManagerService::SetFocusedStack(
     /* [in] */ Int32 stackId)
 {
     if (DEBUG_FOCUS) Slogger::D(TAG, "setFocusedStack: stackId=%d", stackId);
-    synchronized (this) {
+    synchronized(this) {
         AutoPtr<ActivityStack> stack = mStackSupervisor->GetStack(stackId);
         if (stack != NULL) {
             AutoPtr<ActivityRecord> r = stack->TopRunningActivityLocked(NULL);
@@ -3269,7 +3275,7 @@ ECode CActivityManagerService::NotifyActivityDrawn(
     /* [in] */ IBinder* token)
 {
     if (DEBUG_VISBILITY) Slogger::D(TAG, "notifyActivityDrawn: token=%s", ToChars(token));
-    synchronized (this) {
+    synchronized(this) {
         AutoPtr<ActivityRecord> r = mStackSupervisor->IsInAnyStackLocked(token);
         if (r != NULL) {
             r->mTask->mStack->NotifyActivityDrawnLocked(r);
@@ -4186,24 +4192,27 @@ ECode CActivityManagerService::UpdateUsageStats(
     if (DEBUG_SWITCH)
         Slogger::D(TAG, "updateUsageStats: comp=%s res=%d", ToChars(component), resumed);
     AutoPtr<IBatteryStatsImpl> stats = mBatteryStatsService->GetActiveStatistics();
-    if (resumed) {
-        if (mUsageStatsService != NULL) {
-            mUsageStatsService->ReportEvent(component->mRealActivity, component->mUserId,
-                    IUsageEvent::MOVE_TO_FOREGROUND);
+    if (stats != NULL) {
+        if (resumed) {
+            if (mUsageStatsService != NULL) {
+                mUsageStatsService->ReportEvent(component->mRealActivity, component->mUserId,
+                        IUsageEvent::MOVE_TO_FOREGROUND);
+            }
+            synchronized(stats) {
+                stats->NoteActivityResumedLocked(component->mApp->mUid);
+            }
         }
-        synchronized (stats) {
-            stats->NoteActivityResumedLocked(component->mApp->mUid);
+        else {
+            if (mUsageStatsService != NULL) {
+                mUsageStatsService->ReportEvent(component->mRealActivity, component->mUserId,
+                        IUsageEvent::MOVE_TO_BACKGROUND);
+            }
+            synchronized(stats) {
+                stats->NoteActivityPausedLocked(component->mApp->mUid);
+            }
         }
     }
-    else {
-        if (mUsageStatsService != NULL) {
-            mUsageStatsService->ReportEvent(component->mRealActivity, component->mUserId,
-                    IUsageEvent::MOVE_TO_BACKGROUND);
-        }
-        synchronized (stats) {
-            stats->NoteActivityPausedLocked(component->mApp->mUid);
-        }
-    }
+
     return NOERROR;
 }
 
@@ -4652,7 +4661,7 @@ ECode CActivityManagerService::StartActivityAsCaller(
     AutoPtr<ActivityRecord> sourceRecord;
     Int32 targetUid = 0;
     String targetPackage;
-    synchronized (this) {
+    synchronized(this) {
         if (resultTo == NULL) {
             Slogger::E(TAG, "Must be called from an activity");
             return E_SECURITY_EXCEPTION;
@@ -5045,7 +5054,7 @@ ECode CActivityManagerService::StartActivityFromRecentsInner(
     String callingPackage;
     AutoPtr<IIntent> intent;
     Int32 userId = 0;
-    synchronized (this) {
+    synchronized(this) {
         task = RecentTaskForIdLocked(taskId);
         if (task == NULL) {
             Slogger::E(TAG, "Task %d not found.", taskId);
@@ -5729,7 +5738,7 @@ Int32 CActivityManagerService::TrimRecentsForTask(
 ECode CActivityManagerService::ReportActivityFullyDrawn(
     /* [in] */ IBinder* token)
 {
-    synchronized (this) {
+    synchronized(this) {
         AutoPtr<ActivityRecord> r = ActivityRecord::IsInStackLocked(token);
         if (r != NULL) {
             r->ReportFullyDrawnLocked();
@@ -6247,7 +6256,7 @@ ECode CActivityManagerService::AppDiedLocked(
     /* [in] */ IApplicationThread* thread)
 {
     // First check if this ProcessRecord is actually active for the pid.
-    synchronized (mPidsSelfLockedLock) {
+    synchronized(mPidsSelfLockedLock) {
         HashMap<Int32, AutoPtr<ProcessRecord> >::Iterator find = mPidsSelfLocked.Find(pid);
         AutoPtr<ProcessRecord> curProc = find != mPidsSelfLocked.End() ? find->mSecond : NULL;
         if (curProc.Get() != app) {
@@ -6260,8 +6269,10 @@ ECode CActivityManagerService::AppDiedLocked(
     Int32 uid;
     app->mInfo->GetUid(&uid);
     AutoPtr<IBatteryStatsImpl> stats = mBatteryStatsService->GetActiveStatistics();
-    synchronized (stats) {
-        stats->NoteProcessDiedLocked(uid, pid);
+    if (stats) {
+        synchronized(stats) {
+            stats->NoteProcessDiedLocked(uid, pid);
+        }
     }
 
     Process::KillProcessQuiet(pid);
@@ -6465,7 +6476,7 @@ ECode CActivityManagerService::LogAppTooSlow(
     }
 
     AutoPtr<IStrictMode> helper;
-    // CStrictMode::AcquireSingleton((IStrictMode**)&helper);
+    CStrictMode::AcquireSingleton((IStrictMode**)&helper);
     AutoPtr<IStrictModeThreadPolicy> oldPolicy, tmpPolicy;
     helper->AllowThreadDiskReads((IStrictModeThreadPolicy**)&oldPolicy);
     helper->AllowThreadDiskWrites((IStrictModeThreadPolicy**)&tmpPolicy);
@@ -6687,7 +6698,7 @@ ECode CActivityManagerService::AppNotResponding(
     String cpuInfo;
     if (MONITOR_CPU_USAGE) {
         UpdateCpuStatsNow();
-        synchronized (mProcessCpuTracker) {
+        synchronized(mProcessCpuTracker) {
             mProcessCpuTracker->PrintCurrentState(anrTime, &cpuInfo);
         }
         String loadStr;
@@ -6718,7 +6729,7 @@ ECode CActivityManagerService::AppNotResponding(
                     app->Kill(String("anr"), TRUE);
                 }
                 else {
-                    synchronized (this) {
+                    synchronized(this) {
                         mServices->ScheduleServiceTimeoutLocked(app);
                     }
                 }
@@ -7045,7 +7056,7 @@ ECode CActivityManagerService::ForceStopPackage(
 ECode CActivityManagerService::AddPackageDependency(
     /* [in] */ const String& packageName)
 {
-    synchronized (this) {
+    synchronized(this) {
         Int32 callingPid = BinderGetCallingPid();
         if (callingPid == Process::MyPid()) {
             //  Yeah, um, no.
@@ -7053,7 +7064,7 @@ ECode CActivityManagerService::AddPackageDependency(
             return NOERROR;
         }
         AutoPtr<ProcessRecord> proc;
-        synchronized (mPidsSelfLockedLock) {
+        synchronized(mPidsSelfLockedLock) {
             HashMap<Int32, AutoPtr<ProcessRecord> >::Iterator it =
                 mPidsSelfLocked.Find(BinderGetCallingPid());
             if (it != mPidsSelfLocked.End()) {
@@ -7178,8 +7189,8 @@ ECode CActivityManagerService::GetProcessMemoryInfo(
     for (Int32 i = length - 1; i >= 0; i--) {
         AutoPtr<ProcessRecord> proc;
         Int32 oomAdj = 0;
-        synchronized (this) {
-            synchronized (mPidsSelfLockedLock) {
+        synchronized(this) {
+            synchronized(mPidsSelfLockedLock) {
                 HashMap<Int32, AutoPtr<ProcessRecord> >::Iterator it =
                     mPidsSelfLocked.Find(BinderGetCallingPid());
                 if (it != mPidsSelfLocked.End()) {
@@ -7194,7 +7205,7 @@ ECode CActivityManagerService::GetProcessMemoryInfo(
         infos->Set(i, info);
         dbg->GetMemoryInfo((*pids)[i], (IDebugMemoryInfo**)&info);
         if (proc != NULL) {
-            synchronized (this) {
+            synchronized(this) {
                 if (proc->mThread != NULL && proc->mSetAdj == oomAdj) {
                     // Record this for posterity if the process has been stable.
                     Int32 pss, uss;
@@ -7225,8 +7236,8 @@ ECode CActivityManagerService::GetProcessPss(
     for (Int32 i = length - 1; i >= 0; i--) {
         AutoPtr<ProcessRecord> proc;
         Int32 oomAdj = 0;
-        synchronized (this) {
-            synchronized (mPidsSelfLockedLock) {
+        synchronized(this) {
+            synchronized(mPidsSelfLockedLock) {
                 HashMap<Int32, AutoPtr<ProcessRecord> >::Iterator it =
                     mPidsSelfLocked.Find((*pids)[i]);
                 if (it != mPidsSelfLocked.End()) {
@@ -7239,7 +7250,7 @@ ECode CActivityManagerService::GetProcessPss(
         assert(0);
         // dbg->GetPss((*pids)[i], tmpUss, &(*pss)[i]);
         if (proc != NULL) {
-            synchronized (this) {
+            synchronized(this) {
                 if (proc->mThread != NULL && proc->mSetAdj == oomAdj) {
                     // Record this for posterity if the process has been stable.
                     proc->mBaseProcessTracker->AddPss((*pss)[i], (*tmpUss)[0], FALSE, proc->mPkgList);
@@ -8100,7 +8111,7 @@ ECode CActivityManagerService::KeyguardWaitingForActivityDrawn()
 
 ECode CActivityManagerService::FinishBooting()
 {
-    synchronized (this) {
+    synchronized(this) {
         if (!mBootAnimationComplete) {
             mCallFinishBooting = TRUE;
             return NOERROR;
@@ -8179,7 +8190,7 @@ ECode CActivityManagerService::FinishBooting()
 ECode CActivityManagerService::BootAnimationComplete()
 {
     Boolean callFinishBooting = FALSE;
-    synchronized (this) {
+    synchronized(this) {
         callFinishBooting = mCallFinishBooting;
         mBootAnimationComplete = TRUE;
     }
@@ -10019,7 +10030,7 @@ void CActivityManagerService::WriteGrantedUriPermissions()
 
     // Snapshot permissions so we can persist without lock
     List<AutoPtr<UriPermission::Snapshot> > persist;
-    synchronized (this) {
+    synchronized(this) {
         GrantUriPermissionMapMap::Iterator mit = mGrantedUriPermissions.Begin();
         for (; mit != mGrantedUriPermissions.End(); ++mit) {
             AutoPtr<GrantUriPermissionMap> perms = mit->mSecond;
@@ -10229,7 +10240,7 @@ ECode CActivityManagerService::TakePersistableUriPermission(
     FAIL_RETURN(preconditions->CheckFlagsArgument(modeFlags,
         IIntent::FLAG_GRANT_READ_URI_PERMISSION | IIntent::FLAG_GRANT_WRITE_URI_PERMISSION));
 
-    synchronized (this) {
+    synchronized(this) {
         Int32 callingUid = BinderGetCallingUid();
         Boolean persistChanged = FALSE;
         AutoPtr<GrantUri> grantUri = new GrantUri(userId, uri, FALSE);
@@ -10276,7 +10287,7 @@ ECode CActivityManagerService::ReleasePersistableUriPermission(
     FAIL_RETURN(preconditions->CheckFlagsArgument(modeFlags,
         IIntent::FLAG_GRANT_READ_URI_PERMISSION | IIntent::FLAG_GRANT_WRITE_URI_PERMISSION));
 
-    synchronized (this) {
+    synchronized(this) {
         Int32 callingUid = BinderGetCallingUid();
         Boolean persistChanged = FALSE;
         AutoPtr<GrantUri> grantUri = new GrantUri(userId, uri, FALSE);
@@ -10377,7 +10388,7 @@ ECode CActivityManagerService::GetPersistedUriPermissions(
 
     AutoPtr<IList> result;
     CArrayList::New((IList**)&result);
-    synchronized (this) {
+    synchronized(this) {
         if (incoming) {
             GrantUriPermissionMapMap::Iterator find = mGrantedUriPermissions.Find(callingUid);
             AutoPtr<GrantUriPermissionMap> perms;
@@ -10737,7 +10748,7 @@ ECode CActivityManagerService::AddAppTask(
     Int32 callingUid = BinderGetCallingUid();
     Int64 callingIdent = BinderClearCallingIdentity();
 
-    synchronized (this) {
+    synchronized(this) {
         AutoPtr<ActivityRecord> r = ActivityRecord::IsInStackLocked(activityToken);
         if (r == NULL) {
             BinderRestoreCallingIdentity(callingIdent);
@@ -10837,7 +10848,7 @@ ECode CActivityManagerService::AddAppTask(
 ECode CActivityManagerService::GetAppTaskThumbnailSize(
     /* [out] */ IPoint** point)
 {
-    synchronized (this) {
+    synchronized(this) {
         return CPoint::New(mThumbnailWidth, mThumbnailHeight, point);
     }
     return NOERROR;
@@ -10847,7 +10858,7 @@ ECode CActivityManagerService::SetTaskDescription(
     /* [in] */ IBinder* token,
     /* [in] */ IActivityManagerTaskDescription* td)
 {
-    synchronized (this) {
+    synchronized(this) {
         AutoPtr<ActivityRecord> r = ActivityRecord::IsInStackLocked(token);
         if (r != NULL) {
             r->SetTaskDescription(td);
@@ -11125,7 +11136,7 @@ ECode CActivityManagerService::GetHomeActivityToken(
     VALIDATE_NOT_NULL(token);
     FAIL_RETURN(EnforceCallingPermission(Manifest::permission::MANAGE_ACTIVITY_STACKS,
             String("getHomeActivityToken()")));
-    synchronized (this) {
+    synchronized(this) {
         *token = mStackSupervisor->GetHomeActivityToken();
         REFCOUNT_ADD(*token);
     }
@@ -11141,7 +11152,7 @@ ECode CActivityManagerService::CreateActivityContainer(
     *container = NULL;
     FAIL_RETURN(EnforceCallingPermission(Manifest::permission::MANAGE_ACTIVITY_STACKS,
             String("createActivityContainer()")));
-    synchronized (this) {
+    synchronized(this) {
         if (parentActivityToken == NULL) {
             Slogger::E(TAG, "parent token must not be NULL");
             return E_ILLEGAL_ARGUMENT_EXCEPTION;
@@ -11166,7 +11177,7 @@ ECode CActivityManagerService::DeleteActivityContainer(
 {
     FAIL_RETURN(EnforceCallingPermission(Manifest::permission::MANAGE_ACTIVITY_STACKS,
             String("deleteActivityContainer()")));
-    synchronized (this) {
+    synchronized(this) {
         mStackSupervisor->DeleteActivityContainer(container);
     }
     return NOERROR;
@@ -11177,7 +11188,7 @@ ECode CActivityManagerService::GetEnclosingActivityContainer(
     /* [out] */ IIActivityContainer** container)
 {
     VALIDATE_NOT_NULL(container);
-    synchronized (this) {
+    synchronized(this) {
         AutoPtr<ActivityStack> stack = ActivityRecord::GetStackLocked(activityToken);
         if (stack != NULL) {
             *container = stack->mActivityContainer;
@@ -11200,7 +11211,7 @@ ECode CActivityManagerService::MoveTaskToStack(
         Slogger::E(TAG, "moveTaskToStack: Attempt to move task %d to home stack", taskId);
             // new RuntimeException("here").fillInStackTrace());
     }
-    synchronized (this) {
+    synchronized(this) {
         Int64 ident = BinderClearCallingIdentity();
         // try {
             if (DEBUG_STACK) Slogger::D(TAG, "moveTaskToStack: moving task=%d to stackId=%d toTop=%d",
@@ -11236,7 +11247,7 @@ ECode CActivityManagerService::GetAllStackInfos(
             String("getAllStackInfos()")));
     Int64 ident = BinderClearCallingIdentity();
     // try {
-        synchronized (this) {
+        synchronized(this) {
             AutoPtr<IList> temp = IList::Probe(mStackSupervisor->GetAllStackInfosLocked());
             *list = temp;
             REFCOUNT_ADD(*list);
@@ -11256,7 +11267,7 @@ ECode CActivityManagerService::GetStackInfo(
             String("getStackInfo()")));
     Int64 ident = BinderClearCallingIdentity();
     // try {
-        synchronized (this) {
+        synchronized(this) {
             AutoPtr<IActivityManagerStackInfo> temp = mStackSupervisor->GetStackInfoLocked(stackId);
             *info = temp;
             REFCOUNT_ADD(*info);
@@ -11276,7 +11287,7 @@ ECode CActivityManagerService::IsInHomeStack(
             String("getStackInfo()")));
     Int64 ident = BinderClearCallingIdentity();
     // try {
-        synchronized (this) {
+        synchronized(this) {
             AutoPtr<TaskRecord> tr = RecentTaskForIdLocked(taskId);
             *result = tr != NULL && tr->mStack != NULL && tr->mStack->IsHomeStack();
         }
@@ -11325,7 +11336,7 @@ ECode CActivityManagerService::StartLockTaskMode(
     /* [in] */ TaskRecord* task)
 {
     String pkg;
-    synchronized (this) {
+    synchronized(this) {
         AutoPtr<IComponentName> component;
         task->mIntent->GetComponent((IComponentName**)&component);
         component->GetPackageName(&pkg);
@@ -11339,7 +11350,7 @@ ECode CActivityManagerService::StartLockTaskMode(
     }
     Int64 ident = BinderClearCallingIdentity();
     // try {
-        synchronized (this) {
+        synchronized(this) {
             // Since we lost lock on task, make sure it is still there.
             task = mStackSupervisor->AnyTaskForIdLocked(task->mTaskId);
             if (task != NULL) {
@@ -11365,7 +11376,7 @@ ECode CActivityManagerService::StartLockTaskMode(
     AutoPtr<TaskRecord> task;
     Int64 ident = BinderClearCallingIdentity();
     // try {
-        synchronized (this) {
+        synchronized(this) {
             task = mStackSupervisor->AnyTaskForIdLocked(taskId);
         }
     // } finally {
@@ -11383,7 +11394,7 @@ ECode CActivityManagerService::StartLockTaskMode(
     AutoPtr<TaskRecord> task;
     Int64 ident = BinderClearCallingIdentity();
     // try {
-        synchronized (this) {
+        synchronized(this) {
             AutoPtr<ActivityRecord> r = ActivityRecord::ForToken(token);
             if (r == NULL) {
                 BinderRestoreCallingIdentity(ident);
@@ -11405,7 +11416,7 @@ ECode CActivityManagerService::StartLockTaskModeOnCurrent()
     FAIL_RETURN(EnforceCallingPermission(Manifest::permission::MANAGE_ACTIVITY_STACKS,
             String("startLockTaskModeOnCurrent")));
     AutoPtr<ActivityRecord> r;
-    synchronized (this) {
+    synchronized(this) {
         r = mStackSupervisor->TopRunningActivityLocked();
     }
     StartLockTaskMode(r->mTask);
@@ -11446,7 +11457,7 @@ ECode CActivityManagerService::StopLockTaskMode()
     // try {
         Logger::D(TAG, "stopLockTaskMode");
         // Stop lock task
-        synchronized (this) {
+        synchronized(this) {
             mStackSupervisor->SetLockTaskModeLocked(NULL, FALSE);
         }
     // } finally {
@@ -11471,7 +11482,7 @@ ECode CActivityManagerService::StopLockTaskModeOnCurrent()
 ECode CActivityManagerService::IsInLockTaskMode(
     /* [out] */ Boolean* result)
 {
-    synchronized (this) {
+    synchronized(this) {
         return mStackSupervisor->IsInLockTaskMode();
     }
     return NOERROR;
@@ -12708,7 +12719,6 @@ AutoPtr<ProcessRecord> CActivityManagerService::NewProcessRecordLocked(
     AutoPtr<ProcessRecord> result;
 
     AutoPtr<IBatteryStatsImplUidProc> ps;
-    AutoPtr<IBatteryStatsImpl> stats = mBatteryStatsService->GetActiveStatistics();
     Int32 uid;
     info->GetUid(&uid);
     if (isolated) {
@@ -12744,6 +12754,7 @@ AutoPtr<ProcessRecord> CActivityManagerService::NewProcessRecordLocked(
         }
     }
 
+    AutoPtr<IBatteryStatsImpl> stats = mBatteryStatsService->GetActiveStatistics();
     result = new ProcessRecord(stats, info, proc, uid);
     return result;
 }
@@ -12956,13 +12967,12 @@ ECode CActivityManagerService::Shutdown(
         timedout = mStackSupervisor->ShutdownLocked(timeout);
     }
 
-    assert(0);
-    // mAppOpsService->Shutdown();
+    mAppOpsService->Shutdown();
     if (mUsageStatsService != NULL) {
         mUsageStatsService->PrepareShutdown();
     }
     mBatteryStatsService->Shutdown();
-    synchronized (this) {
+    synchronized(this) {
         mProcessStats->ShutdownLocked();
     }
     NotifyTaskPersisterLocked(NULL, TRUE);
@@ -13270,8 +13280,8 @@ ECode CActivityManagerService::SetActivityController(
 ECode CActivityManagerService::SetUserIsMonkey(
     /* [in] */ Boolean userIsMonkey)
 {
-    synchronized (this) {
-        synchronized (mPidsSelfLockedLock) {
+    synchronized(this) {
+        synchronized(mPidsSelfLockedLock) {
             Int32 callingPid = BinderGetCallingPid();
             AutoPtr<ProcessRecord> precessRecord;
             HashMap<Int32, AutoPtr<ProcessRecord> >::Iterator it = mPidsSelfLocked.Find(callingPid);
@@ -13386,7 +13396,7 @@ ECode CActivityManagerService::InputDispatchingTimedOut(
     }
 
     if (proc != NULL) {
-        synchronized (this) {
+        synchronized(this) {
             if (proc->mDebugging) {
                 return FALSE;
             }
@@ -13427,7 +13437,7 @@ ECode CActivityManagerService::GetAssistContextExtras(
         *bundle = NULL;
         return NOERROR;
     }
-    synchronized (pae) {
+    synchronized(pae) {
         while (!pae->mHaveResult) {
             pae->Wait();
         }
@@ -13435,7 +13445,7 @@ ECode CActivityManagerService::GetAssistContextExtras(
             pae->mExtras->PutBundle(IIntent::EXTRA_ASSIST_CONTEXT, pae->mResult);
         }
     }
-    synchronized (this) {
+    synchronized(this) {
         mPendingAssistExtras.Remove(pae);
         mHandler->RemoveCallbacks(pae);
     }
@@ -13458,7 +13468,7 @@ ECode CActivityManagerService::EnqueueAssistContext(
     AutoPtr<CPendingAssistExtras> pae;
     AutoPtr<IBundle> extras;
     CBundle::New((IBundle**)&extras);
-    synchronized (this) {
+    synchronized(this) {
         AutoPtr<ActivityRecord> activity = GetFocusedStack()->mResumedActivity;
         if (activity == NULL) {
             Slogger::W(TAG, "getAssistContextExtras failed: no resumed activity");
@@ -13494,7 +13504,7 @@ ECode CActivityManagerService::ReportAssistContextExtras(
     /* [in] */ IBundle* extras)
 {
     CPendingAssistExtras* pae = (CPendingAssistExtras*)token;
-    synchronized (pae) {
+    synchronized(pae) {
         pae->mResult = extras;
         pae->mHaveResult = TRUE;
         pae->NotifyAll();
@@ -13505,7 +13515,7 @@ ECode CActivityManagerService::ReportAssistContextExtras(
     }
 
     // We are now ready to launch the assist activity.
-    synchronized (this) {
+    synchronized(this) {
         List<AutoPtr<CPendingAssistExtras> >::Iterator it = Find(
             mPendingAssistExtras.Begin(), mPendingAssistExtras.End(), AutoPtr<CPendingAssistExtras>(pae));
         Boolean exists = it != mPendingAssistExtras.End();
@@ -13574,7 +13584,7 @@ ECode CActivityManagerService::ConvertFromTranslucent(
 {
     VALIDATE_NOT_NULL(result);
     Int64 origId = BinderClearCallingIdentity();
-    synchronized (this) {
+    synchronized(this) {
         AutoPtr<ActivityRecord> r = ActivityRecord::IsInStackLocked(token);
         if (r == NULL) {
             *result = FALSE;
@@ -13600,7 +13610,7 @@ ECode CActivityManagerService::ConvertToTranslucent(
 {
     VALIDATE_NOT_NULL(result);
     Int64 origId = BinderClearCallingIdentity();
-    synchronized (this) {
+    synchronized(this) {
         AutoPtr<ActivityRecord> r = ActivityRecord::IsInStackLocked(token);
         if (r == NULL) {
             *result = FALSE;
@@ -13636,7 +13646,7 @@ ECode CActivityManagerService::RequestVisibleBehind(
 {
     VALIDATE_NOT_NULL(result);
     Int64 origId = BinderClearCallingIdentity();
-    synchronized (this) {
+    synchronized(this) {
         AutoPtr<ActivityRecord> r = ActivityRecord::IsInStackLocked(token);
         if (r != NULL) {
             *result = mStackSupervisor->RequestVisibleBehindLocked(r, visible);
@@ -13655,7 +13665,7 @@ ECode CActivityManagerService::IsBackgroundVisibleBehind(
 {
     VALIDATE_NOT_NULL(result);
     Int64 origId = BinderClearCallingIdentity();
-    synchronized (this) {
+    synchronized(this) {
         AutoPtr<ActivityStack> stack = ActivityRecord::GetStackLocked(token);
         Boolean visible = stack == NULL ? FALSE : stack->HasVisibleBehindActivity();
         if (ActivityStackSupervisor::DEBUG_VISIBLE_BEHIND)
@@ -13673,7 +13683,7 @@ ECode CActivityManagerService::GetActivityOptions(
 {
     VALIDATE_NOT_NULL(options);
     Int64 origId = BinderClearCallingIdentity();
-    synchronized (this) {
+    synchronized(this) {
         AutoPtr<ActivityRecord> r = ActivityRecord::IsInStackLocked(token);
         if (r != NULL) {
             *options = r->mPendingOptions;
@@ -13744,7 +13754,7 @@ ECode CActivityManagerService::IsTopOfTask(
 {
     VALIDATE_NOT_NULL(result);
     *result = FALSE;
-    synchronized (this) {
+    synchronized(this) {
         AutoPtr<ActivityRecord> r = ActivityRecord::IsInStackLocked(token);
         if (r == NULL) {
             return E_ILLEGAL_ARGUMENT_EXCEPTION;
@@ -13771,12 +13781,8 @@ ECode CActivityManagerService::EnterSafeMode()
 
 ECode CActivityManagerService::ShowSafeModeOverlay()
 {
-    AutoPtr<ILayoutInflaterHelper> helper;
-    assert(0);
-    // TODO
-    // CLayoutInflaterHelper::AcquireSingleton((ILayoutInflaterHelper**)&helper);
     AutoPtr<ILayoutInflater> lInflater;
-    helper->From(mContext, (ILayoutInflater**)&lInflater);
+    LayoutInflater::From(mContext, (ILayoutInflater**)&lInflater);
     AutoPtr<IView> v;
     lInflater->Inflate(
             R::layout::safe_mode, NULL, (IView**)&v);
@@ -13814,7 +13820,9 @@ ECode CActivityManagerService::NoteWakeupAlarm(
     }
 
     AutoPtr<IBatteryStatsImpl> stats = mBatteryStatsService->GetActiveStatistics();
-    synchronized (stats) {
+    if (stats == NULL) return NOERROR;
+
+    synchronized(stats) {
         if (mBatteryStatsService->IsOnBattery()) {
             mBatteryStatsService->EnforceCallingPermission();
             AutoPtr<CPendingIntentRecord> rec = (CPendingIntentRecord*)sender;
@@ -13909,7 +13917,7 @@ ECode CActivityManagerService::KillUid(
         Slogger::E(TAG, "killUid only available to the system");
         return E_SECURITY_EXCEPTION;
     }
-    synchronized (this) {
+    synchronized(this) {
         KillPackageProcessesLocked(String(NULL), UserHandleGetAppId(uid), UserHandleGetUserId(uid),
             ProcessList::FOREGROUND_APP_ADJ - 1, FALSE, TRUE, TRUE, FALSE,
             reason != NULL ? reason : String("kill uid"));
@@ -13978,10 +13986,10 @@ ECode CActivityManagerService::Hang(
         return NOERROR;
     }
 
-    synchronized (this) {
+    synchronized(this) {
         Watchdog::GetInstance()->SetAllowRestart(allowRestart);
         Slogger::I(TAG, "Hanging system process at request of pid %s", BinderGetCallingPid());
-        synchronized (death) {
+        synchronized(death) {
             Boolean alive;
             while (proxy->IsStubAlive(&alive), alive) {
                 death->Wait();
@@ -14031,7 +14039,7 @@ ECode CActivityManagerService::PerformIdleMaintenance()
         return E_SECURITY_EXCEPTION;
     }
 
-    synchronized (this) {
+    synchronized(this) {
         const Int64 now = SystemClock::GetUptimeMillis();
         const Int64 timeSinceLastIdle = now - mLastIdleTime;
         const Int64 lowRamSinceLastIdle = GetLowRamTimeSinceIdle(now);
@@ -14399,8 +14407,7 @@ ECode CActivityManagerService::SystemReady(
             mDidUpdate = TRUE;
         }
 
-        assert(0);
-        // mAppOpsService->SystemReady();
+        mAppOpsService->SystemReady();
         mSystemReady = TRUE;
     }
 
@@ -14506,7 +14513,7 @@ ECode CActivityManagerService::SystemReady(
     RetrieveSettings();
     LoadResourcesOnSystemReady();
 
-    synchronized (this) {
+    synchronized(this) {
         ReadGrantedUriPermissionsLocked();
     }
 
@@ -14955,7 +14962,7 @@ ECode CActivityManagerService::LogStrictModeViolationToDropBox(
         sb = mStrictModeBuffer;
     else
         sb = new StringBuilder(1024);
-    synchronized (sb) {
+    synchronized(sb) {
         bufferWasEmpty = sb->GetLength() == 0;
         AppendDropBoxProcessHeaders(process, processName, *sb);
         sb->Append("Build: ");
@@ -15814,7 +15821,7 @@ ECode CActivityManagerService::Dump(
             DumpActivitiesLocked(fd, pw, args, opti, TRUE, dumpClient, String(NULL));
         }
          else if (cmd.Equals("recents") || cmd.Equals("r")) {
-            synchronized (this) {
+            synchronized(this) {
                 DumpRecentsLocked(fd, pw, args, opti, TRUE, String(NULL));
             }
         }
@@ -16380,7 +16387,7 @@ void CActivityManagerService::DumpProcessesLocked(
             pw->Println(sb.ToString());
         }
 
-        synchronized (mUserProfileGroupIdsSelfLockedLock) {
+        synchronized(mUserProfileGroupIdsSelfLockedLock) {
             if (mUserProfileGroupIdsSelfLocked.GetSize() > 0) {
                 pw->Println(String("  mUserProfileGroupIds:"));
                 HashMap<Int32, Int32>::Iterator it = mUserProfileGroupIdsSelfLocked.Begin();
@@ -16739,7 +16746,7 @@ Boolean CActivityManagerService::DumpActivity(
     /* [in] */ Boolean dumpAll)
 {
     AutoPtr<IArrayList> activities;
-    synchronized (this) {
+    synchronized(this) {
         activities = mStackSupervisor->GetDumpActivitiesLocked(name);
     }
 
@@ -17254,7 +17261,7 @@ Boolean CActivityManagerService::DumpProcessOomList(
     //             if (r.lastWakeTime != 0) {
     //                 long wtime;
     //                 BatteryStatsImpl stats = service.mBatteryStatsService.getActiveStatistics();
-    //                 synchronized (stats) {
+    //                 synchronized(stats) {
     //                     wtime = stats.getProcessWakeTime(r.info.uid,
     //                             r.pid, curRealtime);
     //                 }
@@ -17617,7 +17624,7 @@ ECode CActivityManagerService::DumpApplicationMemoryUsage(
             List<AutoPtr<IProcessCpuTrackerStats> > nativeProcs;
             UpdateCpuStatsNow();
             Int32 findPid = StringUtils::ParseInt32((*args)[opti], 10, -1);
-            synchronized (mProcessCpuTracker) {
+            synchronized(mProcessCpuTracker) {
                 Int32 N;
                 mProcessCpuTracker->CountStats(&N);
                 for (Int32 i = 0; i < N; i++) {
@@ -17716,7 +17723,7 @@ ECode CActivityManagerService::DumpApplicationMemoryUsage(
         Int32 pid = 0;
         Int32 oomAdj = 0;
         Boolean hasActivities = FALSE;
-        synchronized (this) {
+        synchronized(this) {
             thread = r->mThread;
             pid = r->mPid;
             oomAdj = r->GetSetAdjWithServices();
@@ -17770,7 +17777,7 @@ ECode CActivityManagerService::DumpApplicationMemoryUsage(
             Int32 myTotalUss;
             mi->GetTotalUss(&myTotalUss);
 
-            synchronized (this) {
+            synchronized(this) {
                 if (r->mThread != NULL && oomAdj == r->GetSetAdjWithServices()) {
                     // Record this for posterity if the process has been stable.
                     r->mBaseProcessTracker->AddPss(myTotalPss, myTotalUss, TRUE, r->mPkgList);
@@ -17829,7 +17836,7 @@ ECode CActivityManagerService::DumpApplicationMemoryUsage(
         // If we are showing aggregations, also look for native processes to
         // include so that our aggregations are more accurate.
         UpdateCpuStatsNow();
-        synchronized (mProcessCpuTracker) {
+        synchronized(mProcessCpuTracker) {
             Int32 N;
             mProcessCpuTracker->CountStats(&N);
             for (Int32 i = 0; i < N; i++) {
@@ -17958,7 +17965,7 @@ ECode CActivityManagerService::DumpApplicationMemoryUsage(
         memInfo->GetShmemSizeKb(&shmemSizeKb);
         memInfo->GetSlabSizeKb(&slabSizeKb);
         if (nativeProcTotalPss > 0) {
-            synchronized (this) {
+            synchronized(this) {
                 mProcessStats->AddSysMemUsageLocked(cachedSizeKb, freeSizeKb, zramTotalSizeKb,
                     buffersSizeKb + shmemSizeKb + slabSizeKb, nativeProcTotalPss);
             }
@@ -18719,7 +18726,7 @@ ECode CActivityManagerService::HandleIncomingUser(
         else if (allowMode == ALLOW_NON_FULL_IN_PROFILE) {
             // We may or may not allow this depending on whether the two users are
             // in the same profile.
-            synchronized (mUserProfileGroupIdsSelfLockedLock) {
+            synchronized(mUserProfileGroupIdsSelfLockedLock) {
                 HashMap<Int32, Int32>::Iterator it = mUserProfileGroupIdsSelfLocked.Find(callingUserId);
                 Int32 callingProfile = it != mUserProfileGroupIdsSelfLocked.End() ?
                         it->mSecond : IUserInfo::NO_PROFILE_GROUP_ID;
@@ -19005,15 +19012,17 @@ ECode CActivityManagerService::BindBackupAgent(
         AutoLock lock(this);
         // !!! TODO: currently no check here that we're already bound
         AutoPtr<IBatteryStatsImplUidPkgServ> ss;
-        AutoPtr<IBatteryStatsImpl> stats = mBatteryStatsService->GetActiveStatistics();
         Int32 uid;
         app->GetUid(&uid);
         String pkgName,name;
         IPackageItemInfo::Probe(app)->GetPackageName(&pkgName);
         IPackageItemInfo::Probe(app)->GetName(&name);
-        synchronized (stats) {
-            stats->GetServiceStatsLocked(uid, pkgName, name,
-                (IBatteryStatsImplUidPkgServ**)&ss);
+        AutoPtr<IBatteryStatsImpl> stats = mBatteryStatsService->GetActiveStatistics();
+        if (stats != NULL) {
+            synchronized(stats) {
+                stats->GetServiceStatsLocked(uid, pkgName, name,
+                    (IBatteryStatsImplUidPkgServ**)&ss);
+            }
         }
 
         // Backup agent is now in use, its package can't be stopped.
@@ -19750,13 +19759,13 @@ ECode CActivityManagerService::BroadcastIntentLocked(
                     intentExtras->GetInt32(IIntent::EXTRA_UID, &uid);
                 }
                 if (uid >= 0) {
-                   AutoPtr<IBatteryStatsImpl> bs = mBatteryStatsService->GetActiveStatistics();
-                    {
+                    AutoPtr<IBatteryStatsImpl> bs = mBatteryStatsService->GetActiveStatistics();
+                    if (bs != NULL) {
                        AutoLock lock(bs);
                        bs->RemoveUidStatsLocked(uid);
                     }
-                    assert(0);
-                    // mAppOpsService->UidRemoved(uid);
+
+                    mAppOpsService->UidRemoved(uid);
                 }
             }
             else {
@@ -19803,8 +19812,7 @@ ECode CActivityManagerService::BroadcastIntentLocked(
                             if (!extraReplacing) {
                                 Int32 uid = -1;
                                 intent->GetInt32Extra(IIntent::EXTRA_UID, -1, &uid);
-                                assert(0);
-                                // mAppOpsService->PackageRemoved(uid, ssp);
+                                mAppOpsService->PackageRemoved(uid, ssp);
 
                                 // Remove all permissions granted from/to this package
                                 RemoveUriPermissionsForPackageLocked(ssp, userId, TRUE);
@@ -19859,8 +19867,10 @@ ECode CActivityManagerService::BroadcastIntentLocked(
         mHandler->ObtainMessage(UPDATE_TIME, is24Hour, 0, (IMessage**)&msg);
         mHandler->SendMessage(msg, &bval);
         AutoPtr<IBatteryStatsImpl> stats = mBatteryStatsService->GetActiveStatistics();
-        synchronized (stats) {
-            stats->NoteCurrentTimeChangedLocked();
+        if (stats != NULL) {
+            synchronized(stats) {
+                stats->NoteCurrentTimeChangedLocked();
+            }
         }
     }
 
@@ -20917,7 +20927,7 @@ ECode CActivityManagerService::ShouldUpRecreateTask(
 {
     VALIDATE_NOT_NULL(result);
 
-    synchronized (this) {
+    synchronized(this) {
         AutoPtr<ActivityRecord> srec = ActivityRecord::ForToken(token);
         if (srec->mTask != NULL && srec->mTask->mStack != NULL) {
             *result = srec->mTask->mStack->ShouldUpRecreateTaskLocked(srec, destAffinity);
@@ -20936,7 +20946,7 @@ ECode CActivityManagerService::NavigateUpTo(
     /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result);
-    synchronized (this) {
+    synchronized(this) {
         AutoPtr<ActivityStack> stack = ActivityRecord::GetStackLocked(token);
         if (stack != NULL) {
             *result = stack->NavigateUpToLocked(token, destIntent, resultCode, resultData);
@@ -21888,6 +21898,10 @@ ECode CActivityManagerService::CheckExcessivePowerUsageLocked(
     UpdateCpuStatsNow();
 
     AutoPtr<IBatteryStatsImpl> stats = mBatteryStatsService->GetActiveStatistics();
+    if (stats == NULL) {
+        return NOERROR;
+    }
+
     Boolean doWakeKills = doKills;
     Boolean doCpuKills = doKills;
     if (mLastPowerCheckRealtime == 0) {
@@ -21919,7 +21933,7 @@ ECode CActivityManagerService::CheckExcessivePowerUsageLocked(
         AutoPtr<ProcessRecord> app = *rit;
         if (app->mSetProcState >= IActivityManager::PROCESS_STATE_HOME) {
             Int64 wtime;
-            synchronized (stats) {
+            synchronized(stats) {
                 Int32 uid;
                 app->mInfo->GetUid(&uid);
                 stats->GetProcessWakeTime(uid, app->mPid, curRealtime, &wtime);
@@ -21955,7 +21969,7 @@ ECode CActivityManagerService::CheckExcessivePowerUsageLocked(
             // that sounds bad.  Kill!
             if (doWakeKills && realtimeSince > 0
                     && ((wtimeUsed*100)/realtimeSince) >= 50) {
-                synchronized (stats) {
+                synchronized(stats) {
                     Int32 uid;
                     app->mInfo->GetUid(&uid);
                     stats->ReportExcessiveWakeLocked(uid, app->mProcessName,
@@ -21970,7 +21984,7 @@ ECode CActivityManagerService::CheckExcessivePowerUsageLocked(
             }
             else if (doCpuKills && uptimeSince > 0
                     && ((cputimeUsed*100)/uptimeSince) >= 50) {
-                synchronized (stats) {
+                synchronized(stats) {
                     Int32 uid;
                     app->mInfo->GetUid(&uid);
                     stats->ReportExcessiveCpuLocked(uid, app->mProcessName,
@@ -22099,10 +22113,13 @@ Boolean CActivityManagerService::ApplyOomAdjLocked(
             // its current wake lock time to later know to kill it if
             // it is not behaving well.
             AutoPtr<IBatteryStatsImpl> stats = mBatteryStatsService->GetActiveStatistics();
-            synchronized (stats) {
-                stats->GetProcessWakeTime(uid,
-                    app->mPid, SystemClock::GetElapsedRealtime(), &app->mLastWakeTime);
+            if (stats) {
+                synchronized(stats) {
+                    stats->GetProcessWakeTime(uid,
+                        app->mPid, SystemClock::GetElapsedRealtime(), &app->mLastWakeTime);
+                }
             }
+
             app->mLastCpuTime = app->mCurCpuTime;
 
         }
@@ -23085,7 +23102,7 @@ ECode CActivityManagerService::UpdateCurrentProfileIdsLocked()
     }
     mCurrentProfileIds = currentProfileIds;
 
-    synchronized (mUserProfileGroupIdsSelfLockedLock) {
+    synchronized(mUserProfileGroupIdsSelfLockedLock) {
         mUserProfileGroupIdsSelfLocked.Clear();
         AutoPtr<IList> users;
         GetUserManagerLocked()->GetUsers(FALSE, (IList**)&users);
@@ -23132,7 +23149,7 @@ ECode CActivityManagerService::SwitchUser(
     *result = FALSE;
     FAIL_RETURN(EnforceShellRestriction(IUserManager::DISALLOW_DEBUGGING_FEATURES, userId));
     String userName;
-    synchronized (this) {
+    synchronized(this) {
         AutoPtr<IUserInfo> userInfo;
         GetUserManagerLocked()->GetUserInfo(userId, (IUserInfo**)&userInfo);
         if (userInfo == NULL) {
@@ -23501,7 +23518,7 @@ ECode CActivityManagerService::OnUserInitialized(
     /* [in] */ Int32 oldUserId,
     /* [in] */ Int32 newUserId)
 {
-    synchronized (this) {
+    synchronized(this) {
         if (foreground) {
             MoveUserToForeground(uss, oldUserId, newUserId);
         }
@@ -23843,7 +23860,7 @@ ECode CActivityManagerService::FinishUserStop(
 
     if (stopped) {
         mSystemServiceManager->CleanupUser(userId);
-        synchronized (this) {
+        synchronized(this) {
             mStackSupervisor->RemoveUserLocked(userId);
         }
     }
@@ -24604,7 +24621,7 @@ void CActivityManagerService::HandleCollectPssBgMsg()
 {
     Int64 start = SystemClock::GetUptimeMillis();
     AutoPtr<IMemInfoReader> memInfo;
-    synchronized (this) {
+    synchronized(this) {
         if (mFullPssPending) {
             mFullPssPending = FALSE;
             CMemInfoReader::New((IMemInfoReader**)&memInfo);
@@ -24616,7 +24633,7 @@ void CActivityManagerService::HandleCollectPssBgMsg()
     if (memInfo != NULL) {
         UpdateCpuStatsNow();
         Int64 nativeTotalPss = 0;
-        synchronized (mProcessCpuTracker) {
+        synchronized(mProcessCpuTracker) {
             Int32 N;
             mProcessCpuTracker->CountStats(&N);
             for (Int32 j = 0; j < N; j++) {
@@ -24629,7 +24646,7 @@ void CActivityManagerService::HandleCollectPssBgMsg()
                     // This is definitely an application process; skip it.
                     continue;
                 }
-                synchronized (mPidsSelfLockedLock) {
+                synchronized(mPidsSelfLockedLock) {
                     Int32 pid;
                     st->GetPid(&pid);
                     if (mPidsSelfLocked.Find(pid) != mPidsSelfLocked.End()) {
@@ -24644,7 +24661,7 @@ void CActivityManagerService::HandleCollectPssBgMsg()
             }
         }
         memInfo->ReadMemInfo();
-        synchronized (this) {
+        synchronized(this) {
             if (DEBUG_PSS) Slogger::D(TAG, "Collected native and kernel memory in %lldms",
                 SystemClock::GetUptimeMillis() - start);
             Int64 cachedSizeKb, freeSizeKb, zramTotalSizeKb, buffersSizeKb, shmemSizeKb, slabSizeKb;
@@ -24666,7 +24683,7 @@ void CActivityManagerService::HandleCollectPssBgMsg()
         AutoPtr<ProcessRecord> proc;
         Int32 procState = 0;
         Int32 pid = 0;
-        synchronized (this) {
+        synchronized(this) {
             if (it == mPendingPssProcesses.End()) {
                 if (DEBUG_PSS) Slogger::D(TAG, "Collected PSS of %d of %d processes in %lldms",
                         num, i, SystemClock::GetUptimeMillis()-start);
@@ -24689,7 +24706,7 @@ void CActivityManagerService::HandleCollectPssBgMsg()
             Int64 pss = 0;
             assert(0);
             // dbg->GetPss(pid, tmp, &pss);
-            synchronized (this) {
+            synchronized(this) {
                 if (proc->mThread != NULL && proc->mSetProcState == procState
                     && proc->mPid == pid) {
                     num++;

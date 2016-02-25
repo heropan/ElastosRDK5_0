@@ -430,9 +430,12 @@ AutoPtr<IComponentName> ActiveServices::StartServiceInnerLocked(
     r->mCallStart = FALSE;
     AutoPtr<IBatteryStatsImpl> stats;
     r->mStats->GetBatteryStats((IBatteryStatsImpl**)&stats);
-    synchronized (stats) {
-        r->mStats->StartRunningLocked();
+    if (stats) {
+        synchronized (stats) {
+            r->mStats->StartRunningLocked();
+        }
     }
+
     Int32 flags;
     service->GetFlags(&flags);
     String error = BringUpServiceLocked(r, flags, callerFg, FALSE);
@@ -479,9 +482,12 @@ ECode ActiveServices::StopServiceLocked(
     }
     AutoPtr<IBatteryStatsImpl> stats;
     service->mStats->GetBatteryStats((IBatteryStatsImpl**)&stats);
-    synchronized (stats) {
-        service->mStats->StopRunningLocked();
+    if (stats) {
+        synchronized (stats) {
+            service->mStats->StopRunningLocked();
+        }
     }
+
     service->mStartRequested = FALSE;
     if (service->mTracker != NULL) {
         service->mTracker->SetStarted(FALSE, mAm->mProcessStats->GetMemFactorLocked(),
@@ -620,12 +626,14 @@ ECode ActiveServices::StopServiceTokenLocked(
             }
         }
 
-        Slogger::E(TAG, "// TODO: r->mStats->GetBatteryStats() is NULL Line: %d", __LINE__);
         AutoPtr<IBatteryStatsImpl> stats;
         r->mStats->GetBatteryStats((IBatteryStatsImpl**)&stats);
-        synchronized (stats) {
-            r->mStats->StopRunningLocked();
+        if (stats) {
+            synchronized(stats) {
+                r->mStats->StopRunningLocked();
+            }
         }
+
         r->mStartRequested = FALSE;
         if (r->mTracker != NULL) {
             r->mTracker->SetStarted(FALSE, mAm->mProcessStats->GetMemFactorLocked(),
@@ -1780,9 +1788,12 @@ ECode ActiveServices::RealStartServiceLocked(
     // }
     AutoPtr<IBatteryStatsImpl> stats;
     r->mStats->GetBatteryStats((IBatteryStatsImpl**)&stats);
-    synchronized (stats) {
-        r->mStats->StartLaunchedLocked();
+    if (stats) {
+        synchronized(stats) {
+            r->mStats->StartLaunchedLocked();
+        }
     }
+
     String pkgName;
     IPackageItemInfo::Probe(r->mServiceInfo)->GetPackageName(&pkgName);
     mAm->EnsurePackageDexOpt(pkgName);
@@ -2023,9 +2034,12 @@ ECode ActiveServices::BringDownServiceLocked(
     if (r->mApp != NULL) {
         AutoPtr<IBatteryStatsImpl> stats;
         r->mStats->GetBatteryStats((IBatteryStatsImpl**)&stats);
-        synchronized (stats) {
-            r->mStats->StopLaunchedLocked();
+        if (stats) {
+            synchronized (stats) {
+                r->mStats->StopLaunchedLocked();
+            }
         }
+
         r->mApp->mServices.Erase(r);
         if (r->mApp->mThread != NULL) {
             UpdateServiceForegroundLocked(r->mApp, FALSE);
@@ -2561,8 +2575,10 @@ ECode ActiveServices::KillServicesLocked(
         AutoPtr<CServiceRecord> sr = *it;
         AutoPtr<IBatteryStatsImpl> stats;
         sr->mStats->GetBatteryStats((IBatteryStatsImpl**)&stats);
-        synchronized (stats) {
-            sr->mStats->StopLaunchedLocked();
+        if (stats) {
+            synchronized (stats) {
+                sr->mStats->StopLaunchedLocked();
+            }
         }
         if (sr->mApp.Get() != app && sr->mApp != NULL && !sr->mApp->mPersistent) {
             sr->mApp->mServices.Erase(sr);

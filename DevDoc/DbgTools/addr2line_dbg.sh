@@ -1,6 +1,6 @@
 #!/bin/bash
 
-cut $1 -d : -f 2 | cut -d ' ' -f 8-11 > tempx8x9
+cut $1 -d : -f 2 | cut -d ' ' -f 8-10 > tempx8x9
 
 while read line
 do

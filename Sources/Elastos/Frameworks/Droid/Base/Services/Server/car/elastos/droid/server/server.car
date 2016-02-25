@@ -1333,8 +1333,9 @@ module
         constructor(
             [in] IFile* systemDir,
             [in] IHandler* handler);
-        interface IBinder;
+
         interface IIBatteryStats;
+        interface IBinder;
         interface ILowPowerModeListener;
     }
 
@@ -1342,8 +1343,9 @@ module
         constructor(
             [in] Int32 stackId,
             [in] IInterface* owner);
-        interface IBinder;
+
         interface IIActivityContainer;
+        interface IBinder;
     }
 
     [local]
@@ -1397,7 +1399,7 @@ module
 
     class CProcessStatsService {
         constructor(
-            [in] Handle32 am, //CActivityManagerService*
+            [in] IIActivityManager* am,
             [in] IFile* file);
 
         interface IIProcessStats;

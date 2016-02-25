@@ -1,7 +1,8 @@
 
 #include "elastos/droid/ext/frameworkext.h"
 #include <Elastos.CoreLibrary.Text.h>
-#include "Elastos.Droid.Provider.h"
+#include <Elastos.Droid.Provider.h>
+#include <Elastos.Droid.Internal.h>
 #include "elastos/droid/app/CActivityThread.h"
 #include "elastos/droid/app/CApplicationThread.h"
 #include "elastos/droid/app/CContextImpl.h"
@@ -22,7 +23,8 @@
 #include "elastos/droid/graphics/CBitmap.h"
 #include "elastos/droid/view/View.h"
 #include "elastos/droid/view/HardwareRenderer.h"
-#include "elastos/droid/hardware/display/DisplayManagerGlobal.h"
+#include "elastos/droid/view/ViewRootImpl.h"
+#include "elastos/droid/view/CWindowManagerGlobal.h"
 #include "elastos/droid/os/UserHandle.h"
 #include "elastos/droid/os/ServiceManager.h"
 #include "elastos/droid/os/SystemClock.h"
@@ -34,9 +36,9 @@
 #include "elastos/droid/os/SystemProperties.h"
 #include "elastos/droid/os/CPersistableBundle.h"
 #include "elastos/droid/os/CMessage.h"
-#include "elastos/droid/view/ViewRootImpl.h"
-#include "elastos/droid/view/CWindowManagerGlobal.h"
+#include "elastos/droid/internal/os/CRuntimeInit.h"
 #include "elastos/droid/database/sqlite/CSQLiteDatabaseHelper.h"
+#include "elastos/droid/hardware/display/DisplayManagerGlobal.h"
 #include "elastos/droid/R.h"
 #include <elastos/core/Thread.h>
 #include <elastos/core/StringBuilder.h>
@@ -102,6 +104,8 @@ using Elastos::Droid::Os::ServiceManager;
 using Elastos::Droid::Os::CPersistableBundle;
 using Elastos::Droid::Os::CMessage;
 using Elastos::Droid::Utility::IPair;
+using Elastos::Droid::Internal::Os::IRuntimeInit;
+using Elastos::Droid::Internal::Os::CRuntimeInit;
 
 using Elastos::Core::ISystem;
 using Elastos::Core::IClassLoader;
@@ -1641,6 +1645,7 @@ ECode CActivityThread::InstallSystemApplicationInfo(
     Slogger::D(TAG, " > TODO: CActivityThread::InstallSystemApplicationInfo");
 
     synchronized(this) {
+#if 1
         AutoPtr<IContextImpl> ctx;
         GetSystemContext((IContextImpl**)&ctx);
         CContextImpl* cctx = (CContextImpl*)ctx.Get();
@@ -1652,7 +1657,7 @@ ECode CActivityThread::InstallSystemApplicationInfo(
         AutoPtr<IWeakReference> wr;
         wrs->GetWeakReference((IWeakReference**)&wr);
         mPackages[String("android")] = wr;
-
+#endif
         // give ourselves a default profiler
         mProfiler = new Profiler();
     }
@@ -6283,7 +6288,9 @@ ECode CActivityThread::Attach(
 //         });
 //         android.ddm.DdmHandleAppName.setAppName("<pre-initialized>",
 //                                                 UserHandle.myUserId());
-//         RuntimeInit.setApplicationObject(mAppThread.asBinder());
+        AutoPtr<IRuntimeInit> runtimeInit;
+        CRuntimeInit::AcquireSingleton((IRuntimeInit**)&runtimeInit);
+        runtimeInit->SetApplicationObject(IBinder::Probe(mAppThread));
         AutoPtr<IIActivityManager> mgr = ActivityManagerNative::GetDefault();
 //         try {
         mgr->AttachApplication(mAppThread);

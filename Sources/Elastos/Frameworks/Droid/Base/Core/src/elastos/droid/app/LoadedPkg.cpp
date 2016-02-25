@@ -604,6 +604,7 @@ ECode LoadedPkg::constructor(
     mIncludeCode = TRUE;
     mRegisterPackage = FALSE;
     //mClassLoader = ClassLoader.getSystemClassLoader();
+    GetSystemClassLoader((IClassLoader**)&mClassLoader);
     mResources = CResources::GetSystem();
     return NOERROR;
 }
@@ -686,7 +687,6 @@ ECode LoadedPkg::SetCompatibilityInfo(
 {
     return mDisplayAdjustments->SetCompatibilityInfo(compatInfo);
 }
-
 
 ECode LoadedPkg::GetClassLoader(
     /* [out] */ IClassLoader** loader)
@@ -815,10 +815,23 @@ ECode LoadedPkg::GetClassLoader(
     //     }
     // }
     // return mClassLoader;
-//TODO:
-    ASSERT_SUCCEEDED(CPathClassLoader::New(
-        String("Elastos.Droid.Core.eco"), (IClassLoader**)&mClassLoader));
-    *loader = mClassLoader;
+
+    GetSystemClassLoader(loader);
+    mClassLoader = *loader;
+    return NOERROR;
+}
+
+ECode LoadedPkg::GetSystemClassLoader(
+    /* [out] */ IClassLoader** loader)
+{
+    VALIDATE_NOT_NULL(loader)
+    *loader = NULL;
+
+    String systemModule("/system/lib/Elastos.Droid.Core.eco");
+    AutoPtr<IClassLoader> cl;
+    ECode ec = CPathClassLoader::New(systemModule, (IClassLoader**)&cl);
+    if (FAILED(ec)) Slogger::E(TAG, "failed to load system class loaded %s", systemModule.string());
+    *loader = cl;
     REFCOUNT_ADD(*loader);
     return NOERROR;
 }
@@ -976,7 +989,10 @@ ECode LoadedPkg::MakeApplication(
     String appClass;
     FAIL_RETURN(mApplicationInfo->GetClassName(&appClass));
     if (forceDefaultAppClass || (appClass.IsNull())) {
-        appClass = String("Application");/* "android.app.Application" */;
+        appClass = String("LElastos/Droid/App/CApplication;");/* "android.app.Application" */;
+
+        Slogger::I(TAG, " >> MakeApplication: mPackageName %s, appClass %s",
+            mPackageName.string(), appClass.string());
 
         //    try {
         AutoPtr<IClassLoader> cl;
@@ -1021,13 +1037,18 @@ ECode LoadedPkg::MakeApplication(
             sb.Append(".eco");
         }
         String path = sb.ToString();
+        Int32 index = appClass.LastIndexOf('.');
+        String shortClassName = index > 0 ? appClass.Substring(index + 1) : appClass;
+
+        Slogger::I(TAG, " >> MakeApplication: path %s, appClass %s, shortClassName %s",
+            path.string(), appClass.string(), shortClassName.string());
+
         AutoPtr<IModuleInfo> moduleInfo;
         if (FAILED(CReflector::AcquireModuleInfo(path, (IModuleInfo**)&moduleInfo))) {
             Slogger::E(TAG, "HandleBindApplication: Cann't Find the Instrumentation path is %s", path.string());
             return E_RUNTIME_EXCEPTION;
         }
-        Int32 index = appClass.LastIndexOf('.');
-        String shortClassName = index > 0 ? appClass.Substring(index + 1) : appClass;
+
         AutoPtr<IClassInfo> classInfo;
         if (FAILED(moduleInfo->GetClassInfo(shortClassName, (IClassInfo**)&classInfo))) {
             Slogger::E(TAG, "HandleBindApplication: Get class info of %s failed.", shortClassName.string());

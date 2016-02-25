@@ -6,9 +6,11 @@
 #include "elastos/droid/server/AttributeCache.h"
 #include "elastos/droid/server/EntropyMixer.h"
 #include "elastos/droid/server/Watchdog.h"
+#include "elastos/droid/server/SystemConfig.h"
 #include "elastos/droid/server/CVibratorService.h"
 #include "elastos/droid/server/CConsumerIrService.h"
 #include "elastos/droid/server/CInputMethodManagerService.h"
+#include "elastos/droid/server/CTelephonyRegistry.h"
 
 #include "elastos/droid/server/content/CContentService.h"
 #include "elastos/droid/server/lights/LightsService.h"
@@ -29,6 +31,8 @@
 #include <elastos/droid/os/UserHandle.h>
 #include <elastos/droid/os/Looper.h>
 #include <elastos/droid/os/Build.h>
+#include <elastos/droid/os/Process.h>
+#include <elastos/droid/internal/os/BinderInternal.h>
 #include <elastos/droid/app/ActivityManagerNative.h>
 #include <elastos/utility/logging/Slogger.h>
 
@@ -39,6 +43,7 @@
 
 using Elastos::Droid::R;
 using Elastos::Droid::Os::Build;
+using Elastos::Droid::Os::Process;
 using Elastos::Droid::Os::FactoryTest;
 using Elastos::Droid::Os::SystemClock;
 using Elastos::Droid::Os::ILooper;
@@ -50,6 +55,8 @@ using Elastos::Droid::Os::ISystemProperties;
 using Elastos::Droid::Os::CSystemProperties;
 using Elastos::Droid::Os::ServiceManager;
 using Elastos::Droid::Os::IISchedulingPolicyService;
+using Elastos::Droid::Internal::Os::BinderInternal;
+using Elastos::Droid::Internal::Telephony::IITelephonyRegistry;
 using Elastos::Droid::App::IContextImpl;
 using Elastos::Droid::App::IIAlarmManager;
 using Elastos::Droid::App::IActivityThread;
@@ -210,12 +217,11 @@ ECode SystemServer::Run()
     Environment::SetUserRequired(TRUE);
 
     // Ensure binder calls into the system always run at foreground priority.
-    // BinderInternal.disableBackgroundScheduling(true);
+    BinderInternal::DisableBackgroundScheduling(TRUE);
 
     // Prepare the main looper thread (this thread).
-    // android.os.Process.setThreadPriority(
-    //         android.os.Process.THREAD_PRIORITY_FOREGROUND);
-    // android.os.Process.setCanSelfBackground(false);
+    Process::SetThreadPriority(IProcess::THREAD_PRIORITY_FOREGROUND);
+    Process::SetCanSelfBackground(false);
     Looper::PrepareMainLooper();
 
     // Initialize native services.
@@ -304,7 +310,6 @@ ECode SystemServer::CreateSystemContext()
     Slogger::I(TAG, " === 2 ===");
     AutoPtr<IContextImpl> ctxImpl;
     activityThread->GetSystemContext((IContextImpl**)&ctxImpl);
-    Slogger::I(TAG, " === 3 ===");
     mSystemContext = IContext::Probe(ctxImpl);
     mSystemContext->SetTheme(R::style::Theme_DeviceDefault_Light_DarkActionBar);
     return NOERROR;
@@ -315,14 +320,16 @@ ECode SystemServer::StartBootstrapServices()
     Slogger::I(TAG, " === StartBootstrapServices ===");
     AutoPtr<ISystemService> service;
 
-    // // Wait for installd to finish starting up so that it has a chance to
-    // // create critical directories such as /data/user with the appropriate
-    // // permissions.  We need this to complete before we initialize other services.
+    // Wait for installd to finish starting up so that it has a chance to
+    // create critical directories such as /data/user with the appropriate
+    // permissions.  We need this to complete before we initialize other services.
     mInstaller = new Installer(mSystemContext);
     mSystemServiceManager->StartService(mInstaller.Get());
 
     // Activity manager runs the show.
-    AutoPtr<CActivityManagerService::Lifecycle> am = new CActivityManagerService::Lifecycle(mSystemContext);
+    AutoPtr<CActivityManagerService::Lifecycle> am = new CActivityManagerService::Lifecycle();
+    ECode ec = am->constructor(mSystemContext);
+    if (FAILED(ec)) Slogger::E(TAG, "Failed to start Activity manager service.");
     mSystemServiceManager->StartService(am.Get());
     mActivityManagerService = am->GetService();
     mActivityManagerService->SetSystemServiceManager(mSystemServiceManager);
@@ -333,7 +340,8 @@ ECode SystemServer::StartBootstrapServices()
     // the permissions for those calls).
     service = NULL;
     mPowerManagerService = new PowerManagerService();
-    mPowerManagerService->constructor(mSystemContext);
+    ec = mPowerManagerService->constructor(mSystemContext);
+    if (FAILED(ec)) Slogger::E(TAG, "Failed to start Power manager service.");
     mSystemServiceManager->StartService(service.Get());
 
     // Now that the power manager has been started, let the activity manager
@@ -343,7 +351,8 @@ ECode SystemServer::StartBootstrapServices()
     // Display manager is needed to provide display metrics before package manager
     // starts up.
     service = NULL;
-    CDisplayManagerService::New(mSystemContext, (ISystemService**)&service);
+    ec = CDisplayManagerService::New(mSystemContext, (ISystemService**)&service);
+    if (FAILED(ec)) Slogger::E(TAG, "Failed to start Display manager service.");
     mSystemServiceManager->StartService(service);
     mDisplayManagerService = (CDisplayManagerService*)service.Get();
 
@@ -380,8 +389,9 @@ ECode SystemServer::StartBootstrapServices()
     AttributeCache::Init(mSystemContext);
 
     // Set up the Application instance for the system process and get started.
-    mActivityManagerService->SetSystemProcess();
-    return NOERROR;
+    ec = mActivityManagerService->SetSystemProcess();
+    if (FAILED(ec)) Slogger::E(TAG, "Failed to start the Application instance for the system process.");
+    return ec;
 }
 
 ECode SystemServer::StartCoreServices()
@@ -473,16 +483,19 @@ ECode SystemServer::StartOtherServices()
 
     // try {
     Slogger::I(TAG, "Reading configuration...");
-//     SystemConfig.getInstance();
+    SystemConfig::GetInstance();
 
     Slogger::I(TAG, "Scheduling Policy");
     AutoPtr<IISchedulingPolicyService> sps;
-    CSchedulingPolicyService::New((IISchedulingPolicyService**)&sps);
+    ec = CSchedulingPolicyService::New((IISchedulingPolicyService**)&sps);
+    if (FAILED(ec)) Slogger::E(TAG, "failed to start Scheduling Policy service");
     ServiceManager::AddService(String("scheduling_policy"), sps.Get());
 
-//     Slogger::I(TAG, "Telephony Registry");
-//     telephonyRegistry = new TelephonyRegistry(context);
-//     ServiceManager::AddService("telephony.registry", telephonyRegistry);
+    Slogger::I(TAG, "Telephony Registry");
+    AutoPtr<IITelephonyRegistry> telephonyRegistry;
+    ec = CTelephonyRegistry::New(context, (IITelephonyRegistry**)&telephonyRegistry);
+    if (FAILED(ec)) Slogger::E(TAG, "failed to start Telephony Registry");
+    ServiceManager::AddService(String("telephony.registry"), telephonyRegistry.Get());
 
     Slogger::I(TAG, "Entropy Mixer");
     AutoPtr<EntropyMixer> em = new EntropyMixer(context);
@@ -490,15 +503,13 @@ ECode SystemServer::StartOtherServices()
 
     context->GetContentResolver((IContentResolver**)&mContentResolver);
 
-//     // The AccountManager must come before the ContentService
-//     try {
-//         // TODO: seems like this should be disable-able, but req'd by ContentService
-        Slogger::I(TAG, "Account Manager todo");
-//         accountManager = new AccountManagerService(context);
-//         ServiceManager::AddService(Context.ACCOUNT_SERVICE, accountManager);
-//     } catch (Throwable e) {
-//         Slog.e(TAG, "Failure starting Account Manager", ec);
-//     }
+    // The AccountManager must come before the ContentService
+    // TODO: seems like this should be disable-able, but req'd by ContentService
+    Slogger::I(TAG, "Account Manager");
+    // AutoPtr<IIAccountManager> accountManager;
+    // ec = CAccountManagerService::New(context, (IIAccountManager**)&accountManager);
+    // if (FAILED(ec)) Slogger::E(TAG, "failed to start Account Manager service");
+    // ServiceManager::AddService(IContext::ACCOUNT_SERVICE, accountManager.Get());
 
     Slogger::I(TAG, "Content Manager");
     AutoPtr<IIContentService> cs = CContentService::Main(context,
@@ -506,22 +517,27 @@ ECode SystemServer::StartOtherServices()
     contentService = (CContentService*)cs.Get();
 
     Slogger::I(TAG, "System Content Providers");
-    mActivityManagerService->InstallSystemProviders();
+    ec = mActivityManagerService->InstallSystemProviders();
+    if (FAILED(ec)) Slogger::E(TAG, "failed to isntall System Content Providers");
 
     Slogger::I(TAG, "Vibrator Service");
     AutoPtr<IIVibratorService> vs;
-    CVibratorService::New(context, (IIVibratorService**)&vs);
+    ec = CVibratorService::New(context, (IIVibratorService**)&vs);
+    if (FAILED(ec)) Slogger::E(TAG, "failed to start Vibrator service");
     ServiceManager::AddService(String("vibrator"), vs.Get());
     vibrator = (CVibratorService*)vs.Get();
 
     Slogger::I(TAG, "Consumer IR Service");
     AutoPtr<IIConsumerIrService> cirs;
-    CConsumerIrService::New(context, (IIConsumerIrService**)&cirs);
+    ec = CConsumerIrService::New(context, (IIConsumerIrService**)&cirs);
+    if (FAILED(ec)) Slogger::E(TAG, "failed to start Consumer IR service");
     ServiceManager::AddService(IContext::CONSUMER_IR_SERVICE, cirs.Get());
     consumerIr = (CConsumerIrService*)cirs.Get();
 
+    Slogger::I(TAG, "Alarm Manager Service");
     AutoPtr<AlarmManagerService> alarmMgr = new AlarmManagerService();
-    alarmMgr->constructor(context);
+    ec = alarmMgr->constructor(context);
+    if (FAILED(ec)) Slogger::E(TAG, "failed to start Alarm Manager service");
     mSystemServiceManager->StartService(alarmMgr.Get());
     AutoPtr<IInterface> alarmMgrObj = ServiceManager::GetService(IContext::ALARM_SERVICE);
     alarm = IIAlarmManager::Probe(alarmMgrObj);
@@ -531,7 +547,8 @@ ECode SystemServer::StartOtherServices()
 
     Slogger::I(TAG, "Input Manager");
     AutoPtr<IIInputManager> inputMgr;
-    CInputManagerService::New(context, (IIInputManager**)&inputMgr);
+    ec = CInputManagerService::New(context, (IIInputManager**)&inputMgr);
+    if (FAILED(ec)) Slogger::E(TAG, "failed to start Input Manager service");
     inputManager = (CInputManagerService*)inputMgr.Get();
 
     Slogger::I(TAG, "Window Manager");

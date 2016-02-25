@@ -6,7 +6,6 @@ module
     merge("os/BatterySipper.car");
     merge("os/BatteryStatsHelper.car");
     merge("os/BatteryStatsImpl.car");
-    merge("os/BinderInternal.car");
     merge("os/HandlerCaller.car");
     merge("os/IDropBoxManagerService.car");
     merge("os/InstallerConnection.car");
