@@ -168,7 +168,7 @@ ECode DateFormat::Equals(
     AutoPtr<ITimeZone> ltz, rtz;
     mCalendar->GetTimeZone((ITimeZone**)&ltz);
     other->mCalendar->GetTimeZone((ITimeZone**)&rtz);
-    value = Object::Equals(ltz, other->mNumberFormat);
+    value = Object::Equals(ltz, rtz);
     if (!value) return NOERROR;
 
     Int32 li, ri;
@@ -185,7 +185,8 @@ ECode DateFormat::Equals(
     Boolean lb, rb;
     mCalendar->IsLenient(&lb);
     other->mCalendar->IsLenient(&rb);
-    return lb == rb;
+    *result = (lb == rb);
+    return NOERROR;
 }
 
 ECode DateFormat::Format(
