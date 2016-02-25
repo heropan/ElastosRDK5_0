@@ -12,11 +12,15 @@
 #include <sys/types.h>
 #include <android/dlext.h>
 
+#include "elastos/droid/app/AppGlobals.h"
 #include "elastos/droid/os/Build.h"
 #include "elastos/droid/os/SystemProperties.h"
+#include "elastos/droid/R.h"
 #include "elastos/droid/webkit/WebViewFactory.h"
 #include <elastos/utility/logging/Logger.h>
 
+using Elastos::Droid::App::AppGlobals;
+using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Os::Build;
 using Elastos::Droid::Os::SystemProperties;
 using Elastos::Utility::Logging::Logger;
@@ -72,11 +76,10 @@ AutoPtr<IPackageInfo> WebViewFactory::sPackageInfo;
 
 String WebViewFactory::GetWebViewPackageName()
 {
-    assert(0);
-    // TODO
-    // return AppGlobals.getInitialApplication().getString(
-    //         com.android.internal.R.string.config_webViewPackageName);
-    return String(NULL);
+    AutoPtr<IApplication> application = AppGlobals::GetInitialApplication();
+    String result;
+    IContext::Probe(application)->GetString(R::string::config_webViewPackageName, &result);
+    return result;
 }
 
 AutoPtr<IPackageInfo> WebViewFactory::GetLoadedPackageInfo()

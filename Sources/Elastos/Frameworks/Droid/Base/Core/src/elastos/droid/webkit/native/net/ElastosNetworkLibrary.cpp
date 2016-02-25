@@ -5,19 +5,19 @@
 #include "_Elastos.Droid.Core.h"
 #include "_Elastos.Droid.Telephony.h"
 #include "elastos/droid/content/CIntent.h"
-//#include "elastos/droid/telephony/CTelephonyManager.h"
+//TODO: #include "elastos/droid/telephony/CTelephonyManager.h"
 #include "elastos/droid/webkit/native/net/ElastosNetworkLibrary.h"
 #include "elastos/droid/webkit/native/net/CertificateMimeType.h"
 #include "elastos/droid/webkit/native/net/api/ElastosNetworkLibrary_dec.h"
 #include "elastos/droid/webkit/native/net/X509Util.h"
 #include "elastos/core/IntegralToString.h"
-//#include "elastos/net/URLConnection.h"
+//TODO: #include "elastos/net/URLConnection.h"
 #include <elastos/utility/logging/Logger.h>
 
 using Elastos::Droid::Content::CIntent;
 using Elastos::Droid::Content::IIntent;
 using Elastos::Droid::KeyStore::Security::IKeyChain;
-//using Elastos::Droid::Telephony::CTelephonyManager;
+//TODO: using Elastos::Droid::Telephony::CTelephonyManager;
 using Elastos::Droid::Telephony::ITelephonyManager;
 using Elastos::Droid::Webkit::Net::CertificateMimeType;
 using Elastos::Droid::Webkit::Net::X509Util;
@@ -152,7 +152,7 @@ String ElastosNetworkLibrary::GetMimeTypeFromExtension(
     // return URLConnection.guessContentTypeFromName("foo." + extension);
 
     assert(0);
-    String result("");// = URLConnection::GuessContentTypeFromName(String("foo.") + extension);
+    String result("");//TODO = URLConnection::GuessContentTypeFromName(String("foo.") + extension);
     return result;
 }
 
@@ -409,7 +409,7 @@ String ElastosNetworkLibrary::GetNetworkCountryIso(
     ITelephonyManager* telephonyManager = ITelephonyManager::Probe(telephonyManagerTmp);
     String result("");
     if (telephonyManager != NULL) {
-        //--: telephonyManager->GetNetworkCountryIso(&result);
+        telephonyManager->GetNetworkCountryIso(&result);
         return result;
     }
     return result;
@@ -432,7 +432,7 @@ String ElastosNetworkLibrary::GetNetworkOperator(
     ITelephonyManager* telephonyManager = ITelephonyManager::Probe(telephonyManagerTmp);
     String result("");
     if (telephonyManager != NULL) {
-        //--: telephonyManager->GetNetworkOperator(&result);
+        telephonyManager->GetNetworkOperator(&result);
         return result;
     }
     return result;

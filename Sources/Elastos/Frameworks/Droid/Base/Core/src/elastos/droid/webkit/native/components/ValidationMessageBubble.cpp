@@ -7,6 +7,7 @@
 #include "elastos/droid/webkit/native/components/ValidationMessageBubble.h"
 #include "elastos/droid/webkit/native/components/api/ValidationMessageBubble_dec.h"
 #include "elastos/droid/webkit/native/content/browser/RenderCoordinates.h"
+#include "elastos/droid/webkit/native/content/R_Content.h"
 #include "elastos/droid/widget/CPopupWindow.h"
 //#include "elastos/droid/widget/CRelativeLayoutLayoutParams.h"
 #include <elastos/utility/logging/Logger.h>
@@ -26,6 +27,7 @@ using Elastos::Droid::View::IViewParent;
 using Elastos::Droid::View::View;
 using Elastos::Droid::Webkit::Base::ApiCompatibilityUtils;
 using Elastos::Droid::Webkit::Content::Browser::RenderCoordinates;
+using Elastos::Droid::Webkit::Content::R;
 using Elastos::Droid::Widget::CPopupWindow;
 //using Elastos::Droid::Widget::CRelativeLayoutLayoutParams;
 using Elastos::Droid::Widget::IRelativeLayoutLayoutParams;
@@ -61,7 +63,7 @@ ValidationMessageBubble::ValidationMessageBubble(
 
     assert(0);
     AutoPtr<IView> view;
-    Elastos::Droid::View::View::Inflate(contentViewCore->GetContext(), -1/*R::layout::validation_message_bubble*/, NULL, (IView**)&view);
+    Elastos::Droid::View::View::Inflate(contentViewCore->GetContext(), R::layout::validation_message_bubble, NULL, (IView**)&view);
     IViewGroup* root = IViewGroup::Probe(view);
 
     CPopupWindow::New(IView::Probe(root), (IPopupWindow**)&mPopup);
@@ -214,7 +216,7 @@ ECode ValidationMessageBubble::UpdateTextViews(
 
     IView* rootView = IView::Probe(root);
     AutoPtr<IView> viewTmp;
-    FAIL_RETURN(rootView->FindViewById(/*R::id::main_text*/-1, (IView**)&viewTmp));
+    FAIL_RETURN(rootView->FindViewById(R::id::main_text, (IView**)&viewTmp));
     ITextView* textView = ITextView::Probe(viewTmp);
 
     AutoPtr<ICharSequence> charSequence;
@@ -222,7 +224,7 @@ ECode ValidationMessageBubble::UpdateTextViews(
     textView->SetText(charSequence);
 
     AutoPtr<IView> viewTmp1;
-    FAIL_RETURN(rootView->FindViewById(/*R::id::sub_text*/-1, (IView**)&viewTmp1));
+    FAIL_RETURN(rootView->FindViewById(R::id::sub_text, (IView**)&viewTmp1));
     ITextView* subTextView = ITextView::Probe(viewTmp1);
 
     AutoPtr<ICharSequence> charSequence1;
@@ -294,7 +296,7 @@ Float ValidationMessageBubble::GetAnchorOffset()
     root->GetMeasuredWidth(&width);
 
     AutoPtr<IView> viewTmp;
-    FAIL_RETURN(root->FindViewById(/*R::id::arrow_image*/-1, (IView**)&viewTmp));
+    FAIL_RETURN(root->FindViewById(R::id::arrow_image, (IView**)&viewTmp));
 
     Int32 arrowWidth = 0;
     viewTmp->GetMeasuredWidth(&arrowWidth);

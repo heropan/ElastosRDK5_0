@@ -2,9 +2,11 @@
 #include "Elastos.Droid.Content.h"
 #include "elastos/droid/webkit/native/content/browser/ContentVideoView.h"
 #include "elastos/droid/webkit/native/content/api/ContentVideoView_dec.h"
+#include "elastos/droid/webkit/native/content/R_Content.h"
 #include <elastos/utility/logging/Logger.h>
 
 using Elastos::Droid::View::EIID_ISurfaceView;
+using Elastos::Droid::Webkit::Content::R;
 using Elastos::Droid::Widget::EIID_ILinearLayout;
 using Elastos::Core::EIID_IRunnable;
 using Elastos::Utility::Logging::Logger;

@@ -1,9 +1,11 @@
 
 #include "Elastos.Droid.Content.h"
 #include "elastos/droid/webkit/native/content/browser/SelectActionModeCallback.h"
+#include "elastos/droid/webkit/native/content/R_Content.h"
 
 using Elastos::Core::ICharSequence;
 using Elastos::Droid::View::IMenuInflater;
+using Elastos::Droid::Webkit::Content::R;
 
 namespace Elastos {
 namespace Droid {
@@ -73,32 +75,30 @@ ECode SelectActionModeCallback::OnActionItemClicked(
     Int32 id;
     item->GetItemId(&id);
 
-    assert(0);
-    // TODO
-    // if (id == R::id::select_action_menu_select_all) {
-    //     mActionHandler->SelectAll();
-    // }
-    // else if (id == R::id::select_action_menu_cut) {
-    //     mActionHandler->Cut();
-    // }
-    // else if (id == R::id::select_action_menu_copy) {
-    //     mActionHandler->Copy();
-    //     mode->Finish();
-    // }
-    // else if (id == R::id::select_action_menu_paste) {
-    //     mActionHandler->Paste();
-    // }
-    // else if (id == R::id::select_action_menu_share) {
-    //     mActionHandler->Share();
-    //     mode->Finish();
-    // }
-    // else if (id == R::id::select_action_menu_web_search) {
-    //     mActionHandler->Search();
-    //     mode->Finish();
-    // }
-    // else {
-    //     return FALSE;
-    // }
+    if (id == R::id::select_action_menu_select_all) {
+        mActionHandler->SelectAll();
+    }
+    else if (id == R::id::select_action_menu_cut) {
+        mActionHandler->Cut();
+    }
+    else if (id == R::id::select_action_menu_copy) {
+        mActionHandler->Copy();
+        mode->Finish();
+    }
+    else if (id == R::id::select_action_menu_paste) {
+        mActionHandler->Paste();
+    }
+    else if (id == R::id::select_action_menu_share) {
+        mActionHandler->Share();
+        mode->Finish();
+    }
+    else if (id == R::id::select_action_menu_web_search) {
+        mActionHandler->Search();
+        mode->Finish();
+    }
+    else {
+        return FALSE;
+    }
 
     *result = TRUE;
 

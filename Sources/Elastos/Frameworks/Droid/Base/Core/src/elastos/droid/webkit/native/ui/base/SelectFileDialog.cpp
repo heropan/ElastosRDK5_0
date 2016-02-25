@@ -9,6 +9,7 @@
 #include "elastos/droid/webkit/native/base/ContentUriUtils.h"
 #include "elastos/droid/webkit/native/ui/base/SelectFileDialog.h"
 #include "elastos/droid/webkit/native/ui/api/SelectFileDialog_dec.h"
+#include "elastos/droid/webkit/native/ui/R_Ui.h"
 #include "elastos/core/IntegralToString.h"
 #include "elastos/utility/Arrays.h"
 #include <elastos/utility/logging/Logger.h>
@@ -22,6 +23,7 @@ using Elastos::Droid::Provider::IMediaStoreAudioMedia;
 using Elastos::Droid::Provider::IMediaStoreMediaColumns;
 using Elastos::Droid::Text::TextUtils;
 using Elastos::Droid::Webkit::Base::ContentUriUtils;
+using Elastos::Droid::Webkit::Ui::R;
 using Elastos::Core::CString;
 using Elastos::Core::CSystem;
 using Elastos::Core::ICharSequence;
@@ -216,7 +218,7 @@ ECode SelectFileDialog::OnIntentCompleted(
     }
 
     OnFileNotSelected();
-    window->ShowError(String("")/*R::string::opening_file_error*/);
+    window->ShowError(R::string::opening_file_error);
     return NOERROR;
 }
 
@@ -317,15 +319,15 @@ ECode SelectFileDialog::SelectFile(
     // type, we should just launch the appropriate intent. Otherwise build up a chooser based on
     // the accept type and then display that to the user.
     if (CaptureCamera()) {
-        if (window->ShowIntent(camera, this, -1/*R::string::low_memory_error*/))
+        if (window->ShowIntent(camera, this, R::string::low_memory_error))
             return NOERROR;
     }
     else if (CaptureCamcorder()) {
-        if (window->ShowIntent(camcorder, this, -1/*R::string::low_memory_error*/))
+        if (window->ShowIntent(camcorder, this, R::string::low_memory_error))
             return NOERROR;
     }
     else if (CaptureMicrophone()) {
-        if (window->ShowIntent(soundRecorder, this, -1/*R::string::low_memory_error*/))
+        if (window->ShowIntent(soundRecorder, this, R::string::low_memory_error))
             return NOERROR;
     }
 
@@ -375,7 +377,7 @@ ECode SelectFileDialog::SelectFile(
     chooser->PutExtra(IIntent::EXTRA_INITIAL_INTENTS, parcelableArrayTmp);
     chooser->PutExtra(IIntent::EXTRA_INTENT, IParcelable::Probe(getContentIntent));
 
-    if (!window->ShowIntent(chooser, this, -1/*R::string::low_memory_error*/)) {
+    if (!window->ShowIntent(chooser, this, R::string::low_memory_error)) {
         OnFileNotSelected();
     }
     return NOERROR;

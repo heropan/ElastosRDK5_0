@@ -33,3 +33,4 @@ SOURCES += WebViewContentsClientAdapter.cpp
 SOURCES += WebViewDatabaseAdapter.cpp
 SOURCES += GraphicBufferImpl.cpp
 SOURCES += PixelInfo.cpp
+SOURCES += R_Chromium.cpp

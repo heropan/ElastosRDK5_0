@@ -9,6 +9,7 @@
 //TODO #include ""elastos/droid/graphics/CPorterDuffXfermode.h"
 //TODO #include ""elastos/droid/view/CMotionEventHelper.h"
 //TODO #include ""elastos/droid/view/CGestureDetector.h"
+#include "elastos/droid/webkit/native/content/R_Content.h"
 
 //TODO using Elastos::Droid::Graphics::CCanvas;
 //TODO using Elastos::Droid::Graphics::CPaint;
@@ -20,6 +21,7 @@ using Elastos::Droid::Graphics::EIID_IXfermode;
 //TODO using Elastos::Droid::View::CMotionEventHelper;
 //TODO using Elastos::Droid::View::CGestureDetector;
 using Elastos::Droid::View::IMotionEventHelper;
+using Elastos::Droid::Webkit::Content::R;
 
 namespace Elastos {
 namespace Droid {

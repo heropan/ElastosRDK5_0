@@ -6,6 +6,7 @@
 #include "Elastos.Droid.Widget.h"
 #include "elastos/droid/webkit/native/content/browser/TracingControllerElastos.h"
 #include "elastos/droid/webkit/native/content/api/TracingControllerElastos_dec.h"
+#include "elastos/droid/webkit/native/content/R_Content.h"
 #include "elastos/droid/text/TextUtils.h"
 // TODO #include "elastos/droid/os/CEnvironment.h"
 // TODO #include "elastos/droid/widget/CToastHelper.h"
@@ -14,8 +15,10 @@
 using Elastos::Droid::Content::EIID_IBroadcastReceiver;
 // TODO using Elastos::Droid::Os::CEnvironment;
 using Elastos::Droid::Text::TextUtils;
+using Elastos::Droid::Webkit::Content::R;
 // TODO using Elastos::Droid::Widget::CToastHelper;
 using Elastos::Droid::Widget::IToastHelper;
+using Elastos::Core::CString;
 // TODO using Elastos::IO::CFile;
 // TODO using Elastos::Text::CSimpleDateFormat
 using Elastos::Text::ISimpleDateFormat;
@@ -172,9 +175,7 @@ Boolean TracingControllerElastos::StartTracing(
     String filePath = GenerateTracingFilePath();
     if (filePath == NULL) {
         String str;
-        assert(0);
-        // TODO
-        // mContext->GetString(R::string::profiler_no_storage_toast, &str);
+        mContext->GetString(R::string::profiler_no_storage_toast, &str);
         LogAndToastError(str);
     }
 
@@ -198,9 +199,7 @@ Boolean TracingControllerElastos::StartTracing(
     if (!NativeStartTracing(mNativeTracingControllerElastos, categories,
             recordContinuously)) {
         String str;
-        assert(0);
-        // TODO
-        // mContext->GetString(R::string::profiler_error_toast, &str);
+        mContext->GetString(R::string::profiler_error_toast, &str);
         LogAndToastError(str);
         return FALSE;
     }
@@ -209,9 +208,7 @@ Boolean TracingControllerElastos::StartTracing(
     // TODO
     // LogForProfiler(String.format(PROFILER_STARTED_FMT, categories));
     String toast;
-    assert(0);
-    // TODO
-    // mContext->GetString(R::string::profiler_started_toast, &toast);
+    mContext->GetString(R::string::profiler_started_toast, &toast);
     toast += ": ";
     toast += categories;
     ShowToast(toast);
@@ -252,10 +249,12 @@ ECode TracingControllerElastos::OnTracingStopped()
     assert(0);
     // TODO
     // LogForProfiler(String.format(PROFILER_FINISHED_FMT, mFilename));
+    AutoPtr< ArrayOf<IInterface*> > formatArgs = ArrayOf<IInterface*>::Alloc(1);
+    AutoPtr<ICharSequence> charSequenceTmp;
+    CString::New(mFilename, (ICharSequence**)&charSequenceTmp);
+    formatArgs->Set(0, TO_IINTERFACE(charSequenceTmp));
     String str;
-    assert(0);
-    // TODO
-    // mContext->GetString(R::string::profiler_stopped_toast, mFilename, &str);
+    mContext->GetString(R::string::profiler_stopped_toast, formatArgs, &str);
     ShowToast(str);
     mIsTracing = FALSE;
     mFilename = NULL;

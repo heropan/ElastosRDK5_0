@@ -3,11 +3,13 @@
 #include "Elastos.Droid.View.h"
 #include "elastos/droid/graphics/CColor.h"
 #include "elastos/droid/webkit/native/ui/ColorPickerAdvanced.h"
+#include "elastos/droid/webkit/native/ui/R_Ui.h"
 #include "elastos/core/Math.h"
 
 using Elastos::Droid::Graphics::CColor;
 using Elastos::Droid::Graphics::IColor;
 using Elastos::Droid::View::ILayoutInflater;
+using Elastos::Droid::Webkit::Ui::R;
 using Elastos::Droid::Widget::EIID_ISeekBarOnSeekBarChangeListener;
 using Elastos::Droid::Widget::ILinearLayout;
 
@@ -104,7 +106,7 @@ AutoPtr<ColorPickerAdvancedComponent> ColorPickerAdvanced::CreateAndAddNewGradie
     ILayoutInflater* inflater = ILayoutInflater::Probe(interfaceTmp);
 
     AutoPtr<IView> newComponent;
-    inflater->Inflate(-1/*R::Layout::color_picker_advanced_component*/, NULL, (IView**)&newComponent);
+    inflater->Inflate(R::layout::color_picker_advanced_component, NULL, (IView**)&newComponent);
     AddView(newComponent);
     AutoPtr<ColorPickerAdvancedComponent> result = new ColorPickerAdvancedComponent(newComponent, textResourceId, seekBarMax, seekBarListener);
     return result;
@@ -230,11 +232,11 @@ ECode ColorPickerAdvanced::Init()
     assert(0);
     SetOrientation(ILinearLayout::VERTICAL);
 
-    mHueDetails = CreateAndAddNewGradient(-1/*R::string::color_picker_hue*/,
+    mHueDetails = CreateAndAddNewGradient(R::string::color_picker_hue,
             HUE_SEEK_BAR_MAX, this);
-    mSaturationDetails = CreateAndAddNewGradient(-1/*R::string::color_picker_saturation*/,
+    mSaturationDetails = CreateAndAddNewGradient(R::string::color_picker_saturation,
             SATURATION_SEEK_BAR_MAX, this);
-    mValueDetails = CreateAndAddNewGradient(-1/*R::string::color_picker_value*/,
+    mValueDetails = CreateAndAddNewGradient(R::string::color_picker_value,
             VALUE_SEEK_BAR_MAX, this);
     RefreshGradientComponents();
 

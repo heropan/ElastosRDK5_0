@@ -7,6 +7,7 @@
 #include "elastos/droid/webkit/native/base/ApiCompatibilityUtils.h"
 #include "elastos/droid/webkit/native/ui/ColorSuggestion.h"
 #include "elastos/droid/webkit/native/ui/ColorSuggestionListAdapter.h"
+#include "elastos/droid/webkit/native/ui/R_Ui.h"
 #include "elastos/droid/widget/CLinearLayout.h"
 #include "elastos/droid/widget/CLinearLayoutLayoutParams.h"
 
@@ -23,6 +24,7 @@ using Elastos::Droid::View::IViewGroupLayoutParams;
 using Elastos::Droid::View::IViewGroupMarginLayoutParams;
 using Elastos::Droid::View::IViewManager;
 using Elastos::Droid::Webkit::Base::ApiCompatibilityUtils;
+using Elastos::Droid::Webkit::Ui::R;
 using Elastos::Droid::Webkit::Ui::ColorSuggestion;
 using Elastos::Droid::Widget::CLinearLayout;
 using Elastos::Droid::Widget::CLinearLayoutLayoutParams;
@@ -149,7 +151,7 @@ ECode ColorSuggestionListAdapter::GetView(
         Int32 buttonHeight = 0;
         AutoPtr<IResources> resource;
         mContext->GetResources((IResources**)&resource);
-        resource->GetDimensionPixelOffset(-1/*R::dimen::color_button_height*/, &buttonHeight);
+        resource->GetDimensionPixelOffset(R::dimen::color_button_height, &buttonHeight);
         for (Int32 i = 0; i < COLORS_PER_ROW; ++i) {
             AutoPtr<IView> button;
             CView::New(mContext, (IView**)&button);
@@ -164,7 +166,7 @@ ECode ColorSuggestionListAdapter::GetView(
             }
             IViewGroupLayoutParams* viewGroupLayoutParams = IViewGroupLayoutParams::Probe(layoutParams);
             button->SetLayoutParams(viewGroupLayoutParams);
-            button->SetBackgroundResource(-1/*R::drawable::color_button_background*/);
+            button->SetBackgroundResource(R::drawable::color_button_background);
             IViewGroup::Probe(layout)->AddView(button);
         }
     }
@@ -261,7 +263,7 @@ ECode ColorSuggestionListAdapter::SetUpColorButton(
     ILayerDrawable* layers = ILayerDrawable::Probe(layersTmp);
 
     AutoPtr<IDrawable> swatchTmp;
-    layers->FindDrawableByLayerId(-1/*R::id::color_button_swatch*/, (IDrawable**)&swatchTmp);
+    layers->FindDrawableByLayerId(R::id::color_button_swatch, (IDrawable**)&swatchTmp);
     IGradientDrawable* swatch = IGradientDrawable::Probe(swatchTmp);
 
     swatch->SetColor(suggestion->mColor);

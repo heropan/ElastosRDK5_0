@@ -2,6 +2,7 @@
 #include "Elastos.Droid.Graphics.h"
 #include "elastos/droid/os/Build.h"
 #include "elastos/droid/os/Looper.h"
+#include "elastos/droid/webkit/webview/chromium/R_Chromium.h"
 #include "elastos/droid/text/TextUtils.h"
 #include "elastos/droid/utility/CBase64.h"
 #include "elastos/droid/view/CView.h"
@@ -3156,7 +3157,7 @@ ECode WebViewChromium::Init(
             CTextView::New(context, (ITextView**)&warningLabel);
 
             String warning;
-            context->GetString(-1/*R::string::webviewchromium_private_browsing_warning*/, &warning);
+            context->GetString(R::string::webviewchromium_private_browsing_warning, &warning);
             AutoPtr<ICharSequence> charSequence;
             CString::New(warning, (ICharSequence**)&charSequence);
             warningLabel->SetText(charSequence);
