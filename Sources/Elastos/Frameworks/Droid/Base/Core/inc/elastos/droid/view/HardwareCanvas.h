@@ -50,7 +50,6 @@ public:
     static CARAPI SetProperty(
         /* [in] */ const String& name,
         /* [in] */ const String& value);
-
 };
 
 } // namespace Elastos

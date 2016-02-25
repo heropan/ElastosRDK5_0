@@ -320,7 +320,7 @@ public:
     CARAPI Recycle();
 
     CARAPI GetNativeRegion(
-        /* [out] */ Handle32* region);
+        /* [out] */ Handle64* region);
 
     CARAPI ReadFromParcel(
         /* [in] */ IParcel* source);

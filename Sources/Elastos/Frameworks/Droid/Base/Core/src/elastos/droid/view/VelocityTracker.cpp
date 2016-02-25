@@ -1,6 +1,7 @@
 
 #include "elastos/droid/view/VelocityTracker.h"
-//#include "elastos/droid/view/VelocityTrackerState.h"
+#include "elastos/droid/view/GLES20Canvas.h"
+#include "elastos/droid/view/VelocityTrackerState.h"
 #include "elastos/droid/utility/Pools.h"
 
 #include <elastos/core/Math.h>
@@ -82,72 +83,82 @@ Float VelocityTracker::Estimator::Estimate(
 //========================================================================================
 //              VelocityTracker::
 //========================================================================================
-// Zhangyu JNI TODO
-// AutoPtr<VelocityTrackerState> VelocityTracker::NativeInitialize(
-//     /* [in] */ const String& strategy)
-// {
-//     AutoPtr<VelocityTrackerState> temp = new VelocityTrackerState(strategy.string());
-//     return temp;
-// }
+AutoPtr<VelocityTrackerState> VelocityTracker::NativeInitialize(
+    /* [in] */ const String& strategy)
+{
+    AutoPtr<VelocityTrackerState> temp = new VelocityTrackerState(strategy.string());
+    return temp;
+}
 
-// void VelocityTracker::NativeClear(
-//     /* [in] */ VelocityTrackerState* state)
-// {
-//     if (state)
-//         state->Clear();
-// }
+void VelocityTracker::NativeClear(
+    /* [in] */ VelocityTrackerState* state)
+{
+    if (state)
+        state->Clear();
+}
 
-// void VelocityTracker::NativeAddMovement(
-//     /* [in] */ VelocityTrackerState* state,
-//     /* [in] */ IMotionEvent* event)
-// {
-//     state->AddMovement(event);
-// }
+void VelocityTracker::NativeAddMovement(
+    /* [in] */ VelocityTrackerState* state,
+    /* [in] */ IMotionEvent* event)
+{
+    if (!event) {
+        return;
+    }
+    Handle64 handle;
+    event->GetNative((Handle64*)&handle);
+    const android::MotionEvent* nativeEvent = reinterpret_cast<android::MotionEvent*>(handle);
+    if (!nativeEvent) {
+        ALOGW("nativeAddMovement failed because MotionEvent was finalized.");
+        return;
+    }
 
-// void VelocityTracker::NativeComputeCurrentVelocity(
-//     /* [in] */ VelocityTrackerState* state,
-//     /* [in] */ Int32 units,
-//     /* [in] */ Float maxVelocity)
-// {
-//     state->ComputeCurrentVelocity(units, maxVelocity);
-// }
+    state->AddMovement(nativeEvent);
+}
 
-// Float VelocityTracker::NativeGetXVelocity(
-//     /* [in] */ VelocityTrackerState* state,
-//     /* [in] */ Int32 id)
-// {
-//     Float vx;
-//     state->GetVelocity(id, &vx, NULL);
-//     return vx;
-// }
+void VelocityTracker::NativeComputeCurrentVelocity(
+    /* [in] */ VelocityTrackerState* state,
+    /* [in] */ Int32 units,
+    /* [in] */ Float maxVelocity)
+{
+    state->ComputeCurrentVelocity(units, maxVelocity);
+}
 
-// Float VelocityTracker::NativeGetYVelocity(
-//     /* [in] */ VelocityTrackerState* state,
-//     /* [in] */ Int32 id)
-// {
-//     Float vy;
-//     state->GetVelocity(id, NULL, &vy);
-//     return vy;
-// }
+Float VelocityTracker::NativeGetXVelocity(
+    /* [in] */ VelocityTrackerState* state,
+    /* [in] */ Int32 id)
+{
+    Float vx;
+    state->GetVelocity(id, &vx, NULL);
+    return vx;
+}
 
-// Boolean VelocityTracker::NativeGetEstimator(
-//     /* [in] */ VelocityTrackerState* state,
-//     /* [in] */ Int32 id,
-//     /* [in] */ Estimator* outEstimator)
-// {
-//     android::VelocityTracker::Estimator estimator;
-//     Boolean result = state->GetEstimator(id, &estimator);
+Float VelocityTracker::NativeGetYVelocity(
+    /* [in] */ VelocityTrackerState* state,
+    /* [in] */ Int32 id)
+{
+    Float vy;
+    state->GetVelocity(id, NULL, &vy);
+    return vy;
+}
 
-//     for(Int32 i=0; i < VelocityTracker::Estimator::MAX_DEGREE + 1; i++) {
-//         (*(outEstimator->mXCoeff))[i] = estimator.xCoeff[i];
-//         (*(outEstimator->mYCoeff))[i] = estimator.yCoeff[i];
-//     }
+Boolean VelocityTracker::NativeGetEstimator(
+    /* [in] */ VelocityTrackerState* state,
+    /* [in] */ Int32 id,
+    /* [in] */ Estimator* outEstimator)
+{
+    android::VelocityTracker::Estimator estimator;
+    Boolean result = state->GetEstimator(id, &estimator);
 
-//     outEstimator->mDegree = estimator.degree;
-//     outEstimator->mConfidence = estimator.confidence;
+    for(Int32 i=0; i < VelocityTracker::Estimator::MAX_DEGREE + 1; i++) {
+        (*(outEstimator->mXCoeff))[i] = estimator.xCoeff[i];
+        (*(outEstimator->mYCoeff))[i] = estimator.yCoeff[i];
+    }
 
-//     return result;
-// }
+    outEstimator->mDegree = estimator.degree;
+    outEstimator->mConfidence = estimator.confidence;
+
+    return result;
+}
 
 CAR_INTERFACE_IMPL(VelocityTracker, Object, IVelocityTracker)
 

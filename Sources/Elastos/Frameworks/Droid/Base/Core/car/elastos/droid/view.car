@@ -22,6 +22,7 @@ module
     merge("view/GestureDetector.car");
 
     merge("view/Gravity.car");
+    merge("view/GLES20Canvas.car");
     merge("view/HapticFeedbackConstants.car");
     merge("view/HardwareCanvas.car");
     merge("view/HardwareLayer.car");

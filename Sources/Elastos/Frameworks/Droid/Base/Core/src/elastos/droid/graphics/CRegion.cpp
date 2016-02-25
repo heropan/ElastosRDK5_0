@@ -481,11 +481,11 @@ ECode CRegion::Recycle()
 }
 
 ECode CRegion::GetNativeRegion(
-    /* [out] */ Handle32* region)
+    /* [out] */ Handle64* region)
 {
     VALIDATE_NOT_NULL(region);
 
-    *region = (Handle32)mNativeRegion;
+    *region = (Handle64)mNativeRegion;
      return NOERROR;
 }
 

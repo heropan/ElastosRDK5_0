@@ -131,6 +131,7 @@ SOURCES += CPointerIcon.cpp
 SOURCES += CPointerIconHelper.cpp
 SOURCES += ContextThemeWrapper.cpp
 SOURCES += VelocityTracker.cpp
+SOURCES += VelocityTrackerState.cpp
 SOURCES += CVelocityTrackerHelper.cpp
 SOURCES += SoundEffectConstants.cpp
 SOURCES += CSoundEffectConstantsHelper.cpp
@@ -159,6 +160,7 @@ SOURCES += CViewAnimationUtilsHelper.cpp
 SOURCES += InputEventSender.cpp
 SOURCES += AccessibilityIterators.cpp
 SOURCES += HardwareLayer.cpp
+SOURCES += GLES20Canvas.cpp
 
 ELASTOS_LIBS += inputmethod/inputmethod.lib
 ELASTOS_LIBS += accessibility/accessibility.lib
