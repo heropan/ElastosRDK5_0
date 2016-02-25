@@ -1,6 +1,6 @@
 #include "elastos/droid/media/CAmrInputStream.h"
 
-#include "media/libstagefright/codecs/amrnb/gsmamr_enc.h"
+#include <media/stagefright/codecs/amrnb/gsmamr_enc.h>
 
 namespace Elastos {
 namespace Droid {

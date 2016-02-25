@@ -1,4 +1,5 @@
 #include "elastos/droid/app/CActivityThread.h"
+#include "elastos/droid/media/_AudioErrors.h"
 #include "elastos/droid/media/CAudioAttributes.h"
 #include "elastos/droid/media/CAudioAttributesBuilder.h"
 #include "elastos/droid/media/CAudioFormat.h"
@@ -19,7 +20,6 @@
 #include <media/AudioTrack.h>
 //TODO: Need audio_utils/primitives.h
 // #include <media/audio_utils/primitives.h>
-#include "media/android_media_AudioErrors.h"
 #include <system/audio.h>
 
 using Elastos::Droid::App::CActivityThread;
@@ -1340,7 +1340,7 @@ Int32 CAudioTrack::NativeSetup(
 
     if (attributes == 0) {
         ALOGE("Error creating AudioTrack: invalid audio attributes");
-        return android::AUDIO_JAVA_ERROR;
+        return IAudioSystem::ERROR;
     }
 
     // Java channel masks don't map directly to the native definition, but it's a simple shift
@@ -1393,7 +1393,7 @@ Int32 CAudioTrack::NativeSetup(
 
     if (jSession == NULL) {
         ALOGE("Error creating AudioTrack: invalid session ID pointer");
-        return android::AUDIO_JAVA_ERROR;
+        return IAudioSystem::ERROR;
     }
 
     Int32 sessionId = jSession[0];
@@ -1504,7 +1504,7 @@ Int32 CAudioTrack::NativeSetup(
     free(paa);
     paa = NULL;
 
-    return android::AUDIO_JAVA_SUCCESS;
+    return IAudioSystem::SUCCESS;
 
     // failures:
 native_init_failure:
@@ -1777,7 +1777,7 @@ Int32 CAudioTrack::NativeWriteNativeBytes(
     ScopedBytesRO bytes(audioData);
     if (bytes.get() == NULL) {
         // ALOGE("Error retrieving source of audio data to play, can't play");
-        return android::AUDIO_JAVA_BAD_VALUE;
+        return IAudioSystem::BAD_VALUE;
     }
 
     Int32 written = WriteToTrack(lpTrack, format, bytes.get(), byteOffset,
@@ -1790,7 +1790,7 @@ Int32 CAudioTrack::NativeGetNativeFrameCount()
 {
     android::AudioTrack* lpTrack = (android::AudioTrack *)mNativeTrack;
     if (lpTrack == NULL) {
-        return android::AUDIO_JAVA_ERROR;
+        return IAudioSystem::ERROR;
     }
 
     return lpTrack->frameCount();
@@ -1813,17 +1813,17 @@ Int32 CAudioTrack::NativeSetPlaybackRate(
 {
     android::AudioTrack* lpTrack = (android::AudioTrack *)mNativeTrack;
     if (lpTrack == NULL) {
-        return android::AUDIO_JAVA_ERROR;
+        return IAudioSystem::ERROR;
     }
 
-    return android::nativeToJavaStatus(lpTrack->setSampleRate(sampleRateInHz));
+    return NativeToElastosStatus(lpTrack->setSampleRate(sampleRateInHz));
 }
 
 Int32 CAudioTrack::NativeGetPlaybackRate()
 {
     android::AudioTrack* lpTrack = (android::AudioTrack *)mNativeTrack;
     if (lpTrack == NULL) {
-        return android::AUDIO_JAVA_ERROR;
+        return IAudioSystem::ERROR;
     }
 
     return (Int32)lpTrack->getSampleRate();
@@ -1834,10 +1834,10 @@ Int32 CAudioTrack::NativeSetMarkerPos(
 {
     android::AudioTrack* lpTrack = (android::AudioTrack *)mNativeTrack;
     if (lpTrack == NULL) {
-        return android::AUDIO_JAVA_ERROR;
+        return IAudioSystem::ERROR;
     }
 
-    return android::nativeToJavaStatus(lpTrack->setMarkerPosition(markerPos));
+    return NativeToElastosStatus(lpTrack->setMarkerPosition(markerPos));
 }
 
 Int32 CAudioTrack::NativeGetMarkerPos()
@@ -1846,7 +1846,7 @@ Int32 CAudioTrack::NativeGetMarkerPos()
 
     android::AudioTrack* lpTrack = (android::AudioTrack *)mNativeTrack;
     if (lpTrack == NULL) {
-        return android::AUDIO_JAVA_ERROR;
+        return IAudioSystem::ERROR;
     }
 
     lpTrack->getMarkerPosition(&position);
@@ -1858,10 +1858,10 @@ Int32 CAudioTrack::NativeSetPosUpdatePeriod(
 {
     android::AudioTrack* lpTrack = (android::AudioTrack *)mNativeTrack;
     if (lpTrack == NULL) {
-        return android::AUDIO_JAVA_ERROR;
+        return IAudioSystem::ERROR;
     }
 
-    return android::nativeToJavaStatus(lpTrack->setPositionUpdatePeriod(periodInFrames));
+    return NativeToElastosStatus(lpTrack->setPositionUpdatePeriod(periodInFrames));
 }
 
 Int32 CAudioTrack::NativeGetPosUpdatePeriod()
@@ -1870,7 +1870,7 @@ Int32 CAudioTrack::NativeGetPosUpdatePeriod()
 
     android::AudioTrack* lpTrack = (android::AudioTrack *)mNativeTrack;
     if (lpTrack == NULL) {
-        return android::AUDIO_JAVA_ERROR;
+        return IAudioSystem::ERROR;
     }
 
     lpTrack->getPositionUpdatePeriod(&period);
@@ -1882,10 +1882,10 @@ Int32 CAudioTrack::NativeSetPosition(
 {
     android::AudioTrack* lpTrack = (android::AudioTrack *)mNativeTrack;
     if (lpTrack == NULL) {
-        return android::AUDIO_JAVA_ERROR;
+        return IAudioSystem::ERROR;
     }
 
-    return android::nativeToJavaStatus(lpTrack->setPosition(position));
+    return NativeToElastosStatus(lpTrack->setPosition(position));
 }
 
 Int32 CAudioTrack::NativeGetPosition()
@@ -1894,7 +1894,7 @@ Int32 CAudioTrack::NativeGetPosition()
 
     android::AudioTrack* lpTrack = (android::AudioTrack *)mNativeTrack;
     if (lpTrack == NULL) {
-        return android::AUDIO_JAVA_ERROR;
+        return IAudioSystem::ERROR;
     }
 
     lpTrack->getPosition(&position);
@@ -1908,7 +1908,7 @@ Int32 CAudioTrack::NativeGetLatency()
     if (lpTrack == NULL) {
         // jniThrowException(env, "java/lang/IllegalStateException",
         //     "Unable to retrieve AudioTrack pointer for latency()");
-        return android::AUDIO_JAVA_ERROR;
+        return IAudioSystem::ERROR;
     }
     return (Int32)lpTrack->latency();
 }
@@ -1920,7 +1920,7 @@ Int32 CAudioTrack::NativeGetTimestamp(
 
     if (lpTrack == NULL) {
         // ALOGE("Unable to retrieve AudioTrack pointer for getTimestamp()");
-        return android::AUDIO_JAVA_ERROR;
+        return IAudioSystem::ERROR;
     }
     android::AudioTimestamp timestamp;
     android::status_t status = lpTrack->getTimestamp(timestamp);
@@ -1929,12 +1929,12 @@ Int32 CAudioTrack::NativeGetTimestamp(
         Int64* nTimestamp = jTimestamp->GetPayload();
         if (nTimestamp == NULL) {
             ALOGE("Unable to get array for getTimestamp()");
-            return android::AUDIO_JAVA_ERROR;
+            return IAudioSystem::ERROR;
         }
         nTimestamp[0] = (Int64) timestamp.mPosition;
         nTimestamp[1] = (Int64) ((timestamp.mTime.tv_sec * 1000000000LL) + timestamp.mTime.tv_nsec);
     }
-    return android::nativeToJavaStatus(status);
+    return NativeToElastosStatus(status);
 }
 
 Int32 CAudioTrack::NativeSetLoop(
@@ -1944,20 +1944,20 @@ Int32 CAudioTrack::NativeSetLoop(
 {
     android::AudioTrack* lpTrack = (android::AudioTrack *)mNativeTrack;
     if (lpTrack == NULL) {
-        return android::AUDIO_JAVA_ERROR;
+        return IAudioSystem::ERROR;
     }
 
-    return android::nativeToJavaStatus(lpTrack->setLoop(loopStart, loopEnd, loopCount));
+    return NativeToElastosStatus(lpTrack->setLoop(loopStart, loopEnd, loopCount));
 }
 
 Int32 CAudioTrack::NativeReload()
 {
     android::AudioTrack* lpTrack = (android::AudioTrack *)mNativeTrack;
     if (lpTrack == NULL) {
-        return android::AUDIO_JAVA_ERROR;
+        return IAudioSystem::ERROR;
     }
 
-    return android::nativeToJavaStatus(lpTrack->reload());
+    return NativeToElastosStatus(lpTrack->reload());
 }
 
 Int32 CAudioTrack::NativeGetOutputSampleRate(
@@ -2040,10 +2040,10 @@ Int32 CAudioTrack::NativeAttachAuxEffect(
 {
     android::AudioTrack* lpTrack = (android::AudioTrack *)mNativeTrack;
     if (lpTrack == NULL) {
-        return android::AUDIO_JAVA_ERROR;
+        return IAudioSystem::ERROR;
     }
 
-    return android::nativeToJavaStatus(lpTrack->attachAuxEffect(effectId));
+    return NativeToElastosStatus(lpTrack->attachAuxEffect(effectId));
 }
 
 } // namespace Media

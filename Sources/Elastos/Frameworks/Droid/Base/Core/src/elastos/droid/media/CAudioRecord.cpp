@@ -1,3 +1,4 @@
+#include "elastos/droid/media/_AudioErrors.h"
 #include "elastos/droid/media/CAudioAttributes.h"
 #include "elastos/droid/media/CAudioAttributesBuilder.h"
 #include "elastos/droid/media/CAudioFormat.h"
@@ -15,7 +16,6 @@
 #include <elastos/utility/logging/Logger.h>
 
 #include <media/AudioRecord.h>
-#include "media/android_media_AudioErrors.h"
 #include <system/audio.h>
 
 using Elastos::Droid::Media::CAudioAttributesBuilder;
@@ -838,7 +838,7 @@ Int32 CAudioRecord::NativeSetup(
 
     if (attributes == 0) {
         ALOGE("Error creating AudioRecord: invalid audio attributes");
-        return (Int32) android::AUDIO_JAVA_ERROR;
+        return IAudioSystem::ERROR;
     }
 
     if (!audio_is_input_channel(channelMask)) {
@@ -865,7 +865,7 @@ Int32 CAudioRecord::NativeSetup(
 
     if (session == NULL) {
         ALOGE("Error creating AudioRecord: invalid session ID pointer");
-        return (Int32) android::AUDIO_JAVA_ERROR;
+        return IAudioSystem::ERROR;
     }
 
     Int32 sessionId = (*session)[0];
@@ -930,7 +930,7 @@ Int32 CAudioRecord::NativeSetup(
     // of the Java object (in mNativeCallbackCookie) so we can free the memory in finalize()
     mNativeCallbackCookie = (Int64)lpCallbackData;
 
-    return (Int32) android::AUDIO_JAVA_SUCCESS;
+    return IAudioSystem::SUCCESS;
 
     // failure:
 native_init_failure:
@@ -981,11 +981,11 @@ ECode CAudioRecord::NativeStart(
     android::AudioRecord *lpRecorder = (android::AudioRecord *)mNativeRecorderInJavaObj;
     if (lpRecorder == NULL) {
         //jniThrowException(env, "java/lang/IllegalStateException", NULL);
-        *result = (Int32) android::AUDIO_JAVA_ERROR;
+        *result = IAudioSystem::ERROR;
         return E_ILLEGAL_STATE_EXCEPTION;
     }
 
-    *result = android::nativeToJavaStatus(
+    *result = NativeToElastosStatus(
             lpRecorder->start((android::AudioSystem::sync_event_t)syncEvent, sessionId));
     return NOERROR;
 }
@@ -1038,7 +1038,7 @@ Int32 CAudioRecord::Native_read_in_byte_array(
                             (Int32)recorderBuffSize : sizeInBytes );
 
     if (readSize < 0) {
-        readSize = (Int32) android::AUDIO_JAVA_INVALID_OPERATION;
+        readSize = IAudioSystem::INVALID_OPERATION;
     }
 
     return (Int32)readSize;
@@ -1082,7 +1082,7 @@ Int32 CAudioRecord::Native_read_in_short_array(
                                             recorderBuffSize : sizeInBytes);
 
     if (readSize < 0) {
-        readSize = (Int32)android::AUDIO_JAVA_INVALID_OPERATION;
+        readSize = IAudioSystem::INVALID_OPERATION;
     }
     else {
         readSize /= sizeof(short);
@@ -1124,7 +1124,7 @@ Int32 CAudioRecord::Native_read_in_direct_buffer(
                                    capacity < sizeInBytes ? capacity : sizeInBytes);
 
     if (readSize < 0) {
-        readSize = (Int32) android::AUDIO_JAVA_INVALID_OPERATION;
+        readSize = IAudioSystem::INVALID_OPERATION;
     }
     return (Int32)readSize;
 }
@@ -1139,11 +1139,11 @@ ECode CAudioRecord::Native_set_marker_pos(
     if (lpRecorder == NULL) {
         // jniThrowException(env, "java/lang/IllegalStateException",
         //     "Unable to retrieve AudioRecord pointer for setMarkerPosition()");
-        *result = (Int32) android::AUDIO_JAVA_ERROR;
+        *result = IAudioSystem::ERROR;
         return E_ILLEGAL_STATE_EXCEPTION;
     }
 
-    *result = android::nativeToJavaStatus(
+    *result = NativeToElastosStatus(
             lpRecorder->setMarkerPosition(marker));
     return NOERROR;
 }
@@ -1158,7 +1158,7 @@ ECode CAudioRecord::Native_get_marker_pos(
     if (lpRecorder == NULL) {
         // jniThrowException(env, "java/lang/IllegalStateException",
         //     "Unable to retrieve AudioRecord pointer for getMarkerPosition()");
-        *result = (Int32) android::AUDIO_JAVA_ERROR;
+        *result = IAudioSystem::ERROR;
         return E_ILLEGAL_STATE_EXCEPTION;
     }
 
@@ -1177,11 +1177,11 @@ ECode CAudioRecord::Native_set_pos_update_period(
     if (lpRecorder == NULL) {
         // jniThrowException(env, "java/lang/IllegalStateException",
         //     "Unable to retrieve AudioRecord pointer for setPositionUpdatePeriod()");
-        *result = (Int32) android::AUDIO_JAVA_ERROR;
+        *result = IAudioSystem::ERROR;
         return E_ILLEGAL_STATE_EXCEPTION;
     }
 
-    *result = android::nativeToJavaStatus(
+    *result = NativeToElastosStatus(
             lpRecorder->setPositionUpdatePeriod(updatePeriod));
     return NOERROR;
 }
@@ -1196,7 +1196,7 @@ ECode CAudioRecord::Native_get_pos_update_period(
     if (lpRecorder == NULL) {
         // jniThrowException(env, "java/lang/IllegalStateException",
         //     "Unable to retrieve AudioRecord pointer for getPositionUpdatePeriod()");
-        *result = (Int32) android::AUDIO_JAVA_ERROR;
+        *result = IAudioSystem::ERROR;
         return E_ILLEGAL_STATE_EXCEPTION;
     }
 
