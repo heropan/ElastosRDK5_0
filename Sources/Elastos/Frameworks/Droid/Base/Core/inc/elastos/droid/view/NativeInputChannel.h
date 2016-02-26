@@ -18,7 +18,7 @@ typedef void (*InputChannelObjDisposeCallback)(
     /* [in] */ const android::sp<android::InputChannel>& inputChannel,
     /* [in] */ void* data);
 
-class NativeInputChannel
+class ECO_PUBLIC NativeInputChannel : Object
 {
 public:
     NativeInputChannel(
