@@ -1323,7 +1323,7 @@ module
         constructor(
             [in] Int32 taskId,
             [in] Int32 callingUid,
-            [in] Handle32 host);
+            [in] IIActivityManager* host);
 
         interface IIAppTask;
         interface IBinder;
@@ -1380,7 +1380,7 @@ module
 
     class CPendingIntentRecord {
         constructor(
-            [in] Handle32 owner,
+            [in] IIActivityManager* am,
             [in] Handle32 k,
             [in] Int32 u);
 
@@ -1391,7 +1391,7 @@ module
 
     class CPermissionController {
         constructor(
-            [in] Handle32 host);
+            [in] IIActivityManager* am);
 
         interface IPermissionController;
         interface IBinder;
@@ -1412,7 +1412,7 @@ module
 
     class CUriPermissionOwnerExternalToken {
         constructor(
-            [in] Handle32 owner);
+            [in] IObject* uriPermissionOwner);
 
         interface IUriPermissionOwnerExternalToken;
         interface IBinder;

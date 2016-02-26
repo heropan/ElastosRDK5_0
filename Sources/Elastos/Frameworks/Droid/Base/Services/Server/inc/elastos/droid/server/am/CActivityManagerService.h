@@ -430,7 +430,7 @@ public:
         CARAPI constructor(
             /* [in] */ Int32 taskId,
             /* [in] */ Int32 callingUid,
-            /* [in] */ Handle32 host);
+            /* [in] */ IIActivityManager* host);
 
         CARAPI FinishAndRemoveTask();
 

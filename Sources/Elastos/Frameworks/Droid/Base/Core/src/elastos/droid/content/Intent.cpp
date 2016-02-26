@@ -3259,6 +3259,13 @@ ECode Intent::IsDocument(
     return NOERROR;
 }
 
+Boolean Intent::IsAccessUriMode(
+    /* [in] */ Int32 modeFlags)
+{
+    return (modeFlags & (IIntent::FLAG_GRANT_READ_URI_PERMISSION
+            | IIntent::FLAG_GRANT_WRITE_URI_PERMISSION)) != 0;
+}
+
 } // namespace Content
 } // namespace Droid
 } // namespace Elastos

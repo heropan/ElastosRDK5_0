@@ -10,12 +10,14 @@
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/utility/CAtomicFile.h"
 #include "elastos/droid/os/FileUtils.h"
+#include <elastos/utility/logging/Logger.h>
 
+using Elastos::Droid::Os::FileUtils;
+using Elastos::Utility::Logging::Logger;
 using Elastos::IO::CFile;
 using Elastos::IO::CFileInputStream;
 using Elastos::IO::CFileOutputStream;
 using Elastos::IO::ICloseable;
-using Elastos::Droid::Os::FileUtils;
 
 namespace Elastos {
 namespace Droid {
@@ -40,8 +42,13 @@ ECode CAtomicFile::constructor(
 
     mBaseName = baseName;
     String name;
-    FAIL_RETURN(baseName->GetPath(&name));
+    ECode ec = baseName->GetPath(&name);
+    if (FAILED(ec)) {
+        Logger::E("CAtomicFile", "failed to GetPath of file %s, ec=%08x", TO_CSTR(baseName), ec);
+        return ec;
+    }
     name += ".bak";
+    Logger::I("CAtomicFile", "create CAtomicFile with path %s", name.string());
     return CFile::New(name, (IFile**)&mBackupName);
 }
 
