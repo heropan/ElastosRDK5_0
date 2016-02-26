@@ -475,8 +475,8 @@ static pthread_key_t InitSCallerIdentity()
 }
 
 const String CActivityManagerService::CALLED_PRE_BOOTS_FILENAME("called_pre_boots.dat");
-const String CActivityManagerService::TAG("ActivityManager");
-const String CActivityManagerService::TAG_MU("ActivityManagerServiceMU");
+const String CActivityManagerService::TAG("CActivityManagerService");
+const String CActivityManagerService::TAG_MU("CActivityManagerServiceMU");
 const Boolean CActivityManagerService::DEBUG = FALSE;
 const Boolean CActivityManagerService::localLOGV = DEBUG;
 const Boolean CActivityManagerService::DEBUG_BACKUP = localLOGV || FALSE;
@@ -2674,16 +2674,19 @@ ECode CActivityManagerService::constructor(
         bstats->SetCallback(this);
     }
 
+    Slogger::I(TAG, " create file procstats");
     AutoPtr<IFile> file;
     ec = CFile::New(systemDir, String("procstats"), (IFile**)&file);
     if (FAILED(ec)) Slogger::E(TAG, "failed to create file %s/procstats, ec=%08x", TO_CSTR(systemDir), ec);
     CProcessStatsService::NewByFriend(this, file, (CProcessStatsService**)&mProcessStats);
 
+    Slogger::I(TAG, " create file appops.xml");
     file = NULL;
     ec = CFile::New(systemDir, String("appops.xml"), (IFile**)&file);
     if (FAILED(ec)) Slogger::E(TAG, "failed to create file %s/appops.xml, ec=%08x", TO_CSTR(systemDir), ec);
     CAppOpsService::NewByFriend(file, mHandler, (CAppOpsService**)&mAppOpsService);
 
+    Slogger::I(TAG, " create file urigrants.xml");
     file = NULL;
     ec = CFile::New(systemDir, String("urigrants.xml"), (IFile**)&file);
     if (FAILED(ec)) Slogger::E(TAG, "failed to create file %s/urigrants.xml, ec=%08x", TO_CSTR(systemDir), ec);

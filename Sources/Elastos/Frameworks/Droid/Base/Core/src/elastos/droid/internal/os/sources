@@ -15,7 +15,6 @@ SOURCES += AndroidPrintStream.cpp
 SOURCES += BackgroundThread.cpp
 SOURCES += BaseCommand.cpp
 SOURCES += BinderInternal.cpp
-SOURCES += CAtomicFile.cpp
 SOURCES += CBackgroundThreadHelper.cpp
 SOURCES += CBatterySipper.cpp
 SOURCES += CBatteryStatsHelper.cpp

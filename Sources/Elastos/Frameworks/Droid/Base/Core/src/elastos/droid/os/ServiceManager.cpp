@@ -2,6 +2,9 @@
 #include "Elastos.Droid.Content.h"
 #include "elastos/droid/os/ServiceManager.h"
 #include "elastos/droid/os/CServiceManager.h"
+#include <elastos/utility/logging/Logger.h>
+
+using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
 namespace Droid {
@@ -26,11 +29,8 @@ AutoPtr<IInterface> ServiceManager::GetService(
 {
 //    try {
     AutoPtr<IInterface> obj;
-    ECode ec = GetIServiceManager()->GetService(name, (IInterface**)&obj);
-    if (SUCCEEDED(ec)) {
-        return obj;
-    }
-    else return NULL;
+    GetIServiceManager()->GetService(name, (IInterface**)&obj);
+    return obj;
 //    } catch (RemoteException e) {
 //        Log.e(TAG, "error in getService", e);
 //    }

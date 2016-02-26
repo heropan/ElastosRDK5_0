@@ -2,7 +2,6 @@
 #include "Elastos.Droid.App.h"
 #include "Elastos.Droid.Content.h"
 #include "elastos/droid/app/ActivityManagerNative.h"
-// #include "elastos/droid/app/CAppOpsManager.h"
 #include "elastos/droid/os/ServiceManager.h"
 
 using Elastos::Droid::Os::IServiceManager;
@@ -38,9 +37,10 @@ void ActivityManagerNative::BroadcastStickyIntent(
     /* [in] */ Int32 userId)
 {
     Int32 res;
+    String nullStr;
     GetDefault()->BroadcastIntent(
-        NULL, intent, String(NULL), NULL, IActivity::RESULT_OK, String(NULL), NULL,
-        String(NULL) /*permission*/, IAppOpsManager::OP_NONE, FALSE, TRUE, userId, &res);
+        NULL, intent, nullStr, NULL, IActivity::RESULT_OK, nullStr, NULL,
+        nullStr /*permission*/, IAppOpsManager::OP_NONE, FALSE, TRUE, userId, &res);
 }
 
 void ActivityManagerNative::NoteWakeupAlarm(

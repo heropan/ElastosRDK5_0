@@ -437,9 +437,10 @@ ECode EasyEditPopupWindow::InitContentView()
     mContentView = IViewGroup::Probe(linearLayout);
     IView::Probe(mContentView)->SetBackgroundResource(R::drawable::text_edit_side_paste_window);
 
-    AutoPtr<ILayoutInflater> inflater;
+    AutoPtr<IInterface> obj;
     context->GetSystemService(
-        IContext::LAYOUT_INFLATER_SERVICE, (IInterface**)&inflater);
+        IContext::LAYOUT_INFLATER_SERVICE, (IInterface**)&obj);
+    AutoPtr<ILayoutInflater> inflater = ILayoutInflater::Probe(obj);
 
     AutoPtr<IViewGroupLayoutParams> wrapContent;
     CViewGroupLayoutParams::New(
@@ -544,7 +545,9 @@ SuggestionAdapter::SuggestionAdapter(
 {
     AutoPtr<IContext> context;
     mEditor->mTextView->GetContext((IContext**)&context);
-    context->GetSystemService(IContext::LAYOUT_INFLATER_SERVICE, (IInterface**)&mInflater);
+    AutoPtr<IInterface> obj;
+    context->GetSystemService(IContext::LAYOUT_INFLATER_SERVICE, (IInterface**)&obj);
+    mInflater = ILayoutInflater::Probe(obj);
 }
 
 ECode SuggestionAdapter::GetCount(
@@ -1466,9 +1469,10 @@ ECode ActionPopupWindow::InitContentView()
     mContentView = IViewGroup::Probe(linearLayout);
     IView::Probe(mContentView)->SetBackgroundResource(R::drawable::text_edit_paste_window);
 
-    AutoPtr<ILayoutInflater> inflater;
+    AutoPtr<IInterface> obj;
     context->GetSystemService(
-        IContext::LAYOUT_INFLATER_SERVICE, (IInterface**)&inflater);
+        IContext::LAYOUT_INFLATER_SERVICE, (IInterface**)&obj);
+    AutoPtr<ILayoutInflater> inflater = ILayoutInflater::Probe(obj);
 
     AutoPtr<IViewGroupLayoutParams> wrapContent;
     CViewGroupLayoutParams::New(

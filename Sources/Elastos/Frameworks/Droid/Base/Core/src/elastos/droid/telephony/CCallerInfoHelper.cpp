@@ -269,8 +269,9 @@ ECode CCallerInfoHelper::GettCurrentCountryIso(
     /* [out] */ String* res)
 {
     String countryIso;
-    AutoPtr<IICountryDetector> detector;
-    context->GetSystemService(IContext::COUNTRY_DETECTOR, (IInterface**)&detector);
+    AutoPtr<IInterface> obj;
+    context->GetSystemService(IContext::COUNTRY_DETECTOR, (IInterface**)&obj);
+    AutoPtr<IICountryDetector> detector = IICountryDetector::Probe(obj);
     if (detector != NULL) {
         AutoPtr<ICountry> country;
         detector->DetectCountry((ICountry**)&country);

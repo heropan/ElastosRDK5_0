@@ -2065,9 +2065,11 @@ Int32 CMtpDatabase::GetDeviceProperty(
             outStringValue->Set(length, 0);
             return IMtpConstants::RESPONSE_OK;
 
-        case IMtpConstants::DEVICE_PROPERTY_IMAGE_SIZE:
+        case IMtpConstants::DEVICE_PROPERTY_IMAGE_SIZE: {
             // use screen size as max image size
-            mContext->GetSystemService(IContext::WINDOW_SERVICE, (IInterface**)&wm);
+            AutoPtr<IInterface> obj;
+            mContext->GetSystemService(IContext::WINDOW_SERVICE, (IInterface**)&obj);
+            wm = IWindowManager::Probe(obj);
             wm->GetDefaultDisplay((IDisplay**)&display);
             display->GetMaximumSizeDimension(&width);
             display->GetMaximumSizeDimension(&height);
@@ -2077,6 +2079,7 @@ Int32 CMtpDatabase::GetDeviceProperty(
             // TextUtils::GetChars(csq, 0, imageSize.GetLength(), outStringValue, 0);
             outStringValue->Set(imageSize.GetLength(), 0);
             return IMtpConstants::RESPONSE_OK;
+        }
 
             // DEVICE_PROPERTY_BATTERY_LEVEL is implemented in the JNI code
 

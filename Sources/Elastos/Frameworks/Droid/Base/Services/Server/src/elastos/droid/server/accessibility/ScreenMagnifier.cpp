@@ -1501,8 +1501,9 @@ DisplayProvider::DisplayProvider(
     CDisplayInfo::New((IDisplayInfo**)&mDefaultDisplayInfo);
 
     mWindowManager = windowManager;
-    ASSERT_SUCCEEDED(context->GetSystemService(IContext::DISPLAY_SERVICE,
-        (IInterface**)&mDisplayManager));
+    AutoPtr<IInterface> obj;
+    ASSERT_SUCCEEDED(context->GetSystemService(IContext::DISPLAY_SERVICE, (IInterface**)&obj));
+    mDisplayManager = IDisplayManager::Probe(obj);
     ASSERT_SUCCEEDED(mWindowManager->GetDefaultDisplay((IDisplay**)&mDefaultDisplay));
     mDisplayManager->RegisterDisplayListener((IDisplayListener*)this, NULL);
     UpdateDisplayInfo();
@@ -1824,8 +1825,9 @@ ScreenMagnifier::ScreenMagnifier(
     mMultiTapTimeSlop = timeout - MULTI_TAP_TIME_SLOP_ADJUSTMENT;
 
     mContext = context;
-    ASSERT_SUCCEEDED(context->GetSystemService(IContext::WINDOW_SERVICE,
-        (IInterface**)&mWindowManager));
+    AutoPtr<IInterface> obj;
+    ASSERT_SUCCEEDED(context->GetSystemService(IContext::WINDOW_SERVICE, (IInterface**)&obj));
+    mWindowManager = IWindowManager::Probe(obj);
 
     AutoPtr<IResources> r;
     ASSERT_SUCCEEDED(context->GetResources((IResources**)&r));

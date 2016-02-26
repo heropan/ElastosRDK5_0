@@ -72,8 +72,9 @@ ECode CPhoneStateListener::CPhoneStateListenerCallback::OnCellLocationChanged(
     //Message.obtain(mHandler, LISTEN_CELL_LOCATION, 0, 0, location).sendToTarget();
     // BEGIN privacy-modified
     if (mHost->mContext != NULL) {
-        AutoPtr<IPrivacySettingsManager> pSetMan;
-        mHost->mContext->GetSystemService(String("privacy"), (IInterface**)&pSetMan);
+        AutoPtr<IInterface> obj;
+        mHost->mContext->GetSystemService(String("privacy"), (IInterface**)&obj);
+        AutoPtr<IPrivacySettingsManager> pSetMan = IPrivacySettingsManager::Probe(obj);
         AutoPtr<IPrivacySettings> pSet;
         pSetMan->GetSettings(mHost->mPackageName, (IPrivacySettings**)&pSet);
     //                String output;
@@ -108,8 +109,9 @@ ECode CPhoneStateListener::CPhoneStateListenerCallback::OnCallStateChanged(
     //            Log.d(TAG, "onCallStateChanged - state:" + state + " incoming number:" + incomingNumber);
     // only take action if an incoming phone number is actually transmitted
     if (mHost->mContext != NULL && !incomingNumber.IsNull() && !incomingNumber.IsEmpty()) {
-        AutoPtr<IPrivacySettingsManager> pSetMan;
-        mHost->mContext->GetSystemService(String("privacy"), (IInterface**)&pSetMan);
+        AutoPtr<IInterface> obj;
+        mHost->mContext->GetSystemService(String("privacy"), (IInterface**)&obj);
+        AutoPtr<IPrivacySettingsManager> pSetMan = IPrivacySettingsManager::Probe(obj);
         AutoPtr<IPrivacySettings> pSet;
         pSetMan->GetSettings(mHost->mPackageName, (IPrivacySettings**)&pSet);
         String output;

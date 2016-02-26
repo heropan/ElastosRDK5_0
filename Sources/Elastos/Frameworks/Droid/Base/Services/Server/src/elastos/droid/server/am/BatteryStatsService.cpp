@@ -7,6 +7,7 @@
 #include "elastos/droid/Manifest.h"
 #include "Elastos.Droid.Content.h"
 #include "Elastos.Droid.Internal.h"
+#include "Elastos.Droid.Utility.h"
 #include "Elastos.Droid.Telephony.h"
 #include "Elastos.CoreLibrary.IO.h"
 #include "Elastos.CoreLibrary.Utility.h"
@@ -27,9 +28,9 @@ using Elastos::Droid::Content::Res::IResources;
 using Elastos::Droid::Internal::App::EIID_IIBatteryStats;
 using Elastos::Droid::Internal::Os::CBatteryStatsHelperHelper;
 using Elastos::Droid::Internal::Os::CPowerProfile;
-using Elastos::Droid::Internal::Os::IAtomicFile;
 using Elastos::Droid::Internal::Os::IBatteryStatsHelperHelper;
 using Elastos::Droid::Internal::Os::IPowerProfile;
+using Elastos::Droid::Utility::IAtomicFile;
 using Elastos::Droid::Os::Binder;
 using Elastos::Droid::Os::CParcelFileDescriptorHelper;
 using Elastos::Droid::Os::CServiceManager;

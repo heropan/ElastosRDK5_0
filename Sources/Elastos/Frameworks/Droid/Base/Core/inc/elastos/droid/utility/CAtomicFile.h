@@ -117,6 +117,9 @@ public:
     CARAPI ReadFully(
         /* [out] */ ArrayOf<Byte>** data);
 
+    CARAPI Exists(
+        /* [out] */ Boolean* result);
+
 public:
     AutoPtr<IFile> mBaseName;
     AutoPtr<IFile> mBackupName;

@@ -1408,8 +1408,9 @@ void CAccessibilityManagerService::SwitchUser(
     // Announce user changes only if more that one exist.
     Int32 size = 0;
 
-    AutoPtr<IUserManager> userManager;
-    ASSERT_SUCCEEDED(mContext->GetSystemService(IContext::USER_SERVICE, (IInterface**)&userManager));
+    AutoPtr<IInterface> obj;
+    ASSERT_SUCCEEDED(mContext->GetSystemService(IContext::USER_SERVICE, (IInterface**)&obj));
+    AutoPtr<IUserManager> userManager = IUserManager::Probe(obj);
     if (userManager != NULL) {
         AutoPtr<IObjectContainer> users;
         ASSERT_SUCCEEDED(userManager->GetUsers((IObjectContainer**)&users));
@@ -2214,8 +2215,9 @@ void CAccessibilityManagerService::AnnounceNewUserIfNeeded()
     AutoLock lock(mLock);
     AutoPtr<UserState> userState = GetCurrentUserStateLocked();
     if (userState->mIsAccessibilityEnabled) {
-        AutoPtr<IUserManager> userManager;
-        ASSERT_SUCCEEDED(mContext->GetSystemService(IContext::USER_SERVICE, (IInterface**)&userManager));
+        AutoPtr<IInterface> obj;
+        ASSERT_SUCCEEDED(mContext->GetSystemService(IContext::USER_SERVICE, (IInterface**)&obj));
+        AutoPtr<IUserManager> userManager = IUserManager::Probe(obj);
         AutoPtr<IUserInfo> userInfo;
         userManager->GetUserInfo(mCurrentUserId, (IUserInfo**)&userInfo);
         String name;

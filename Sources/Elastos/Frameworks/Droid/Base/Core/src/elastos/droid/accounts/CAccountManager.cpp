@@ -733,13 +733,20 @@ ECode CAccountManager::Get(
     /* [out] */ IAccountManager** accountManager)
 {
     VALIDATE_NOT_NULL(accountManager);
+    *accountManager = NULL;
+
     if (context == NULL) {
         Slogger::E(TAG, "context is null");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
         //throw new IllegalArgumentException("context is null");
     }
-    return context->GetSystemService(IContext::ACCOUNT_SERVICE,
-            (IInterface**)accountManager);
+
+    AutoPtr<IInterface> service;
+    FAIL_RETURN(context->GetSystemService(IContext::ACCOUNT_SERVICE, (IInterface**)&service))
+
+    *accountManager = IAccountManager::Probe(service);
+    REFCOUNT_ADD(*accountManager)
+    return NOERROR
 }
 
 ECode CAccountManager::GetPassword(

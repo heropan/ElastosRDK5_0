@@ -26,9 +26,11 @@ ECode CDeviceAdminReceiver::GetManager(
         REFCOUNT_ADD(*manager);
         return NOERROR;
     }
-
-    return context->GetSystemService(IContext::DEVICE_POLICY_SERVICE,
-            (IInterface**)manager);
+    AutoPtr<IInterface> service;
+    FAIL_RETURN(context->GetSystemService(IContext::DEVICE_POLICY_SERVICE, (IInterface**)&service))
+    *manager = IDevicePolicyManager::Probe(service)
+    REFCOUNT_ADD(*manager)
+    return NOERROR;
 }
 
 ECode CDeviceAdminReceiver::GetWho(

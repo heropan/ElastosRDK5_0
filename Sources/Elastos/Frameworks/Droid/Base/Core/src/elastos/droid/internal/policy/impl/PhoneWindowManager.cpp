@@ -1962,7 +1962,9 @@ ECode PhoneWindowManager::Init(
     mDeskDockIntent->AddFlags(IIntent::FLAG_ACTIVITY_NEW_TASK
         | IIntent::FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
 
-    context->GetSystemService(IContext::POWER_SERVICE, (IInterface**)&mPowerManager);
+    AutoPtr<IInterface> service;
+    context->GetSystemService(IContext::POWER_SERVICE, (IInterface**)&service);
+    mPowerManager = IPowerManager::Probe(service);
     mPowerManager->NewWakeLock(IPowerManager::PARTIAL_WAKE_LOCK,
             String("PhoneWindowManager.mBroadcastWakeLock"), (IPowerManagerWakeLock**)&mBroadcastWakeLock);
     String equalsStr2;
@@ -2030,7 +2032,10 @@ ECode PhoneWindowManager::Init(
             , (ISystemGesturesPointerEventListener**)&mSystemGestures);
     CImmersiveModeConfirmation::New(mContext, (IImmersiveModeConfirmation**)&mImmersiveModeConfirmation);
     mWindowManagerFuncs->RegisterPointerEventListener(IPointerEventListener::Probe(mSystemGestures));
-    context->GetSystemService(IContext::VIBRATOR_SERVICE, (IInterface**)&mVibrator);
+
+    service = NULL;
+    context->GetSystemService(IContext::VIBRATOR_SERVICE, (IInterface**)&service);
+    mVibrator = IVibrator::Probe(service);
 
     mLongPressVibePattern = GetLongIntArray(resources,
             R::array::config_longPressVibePattern);
@@ -2314,13 +2319,14 @@ void PhoneWindowManager::EnablePointerLocation()
         AutoPtr<ICharSequence> title;
         CString::New(String("PointerLocation"), (ICharSequence**)&title);
         lp->SetTitle(title);
-        AutoPtr<IWindowManager> wm;
-        mContext->GetSystemService(IContext::WINDOW_SERVICE, (IInterface**)&wm);
+
+        AutoPtr<IInterface> service;
+        mContext->GetSystemService(IContext::WINDOW_SERVICE, (IInterface**)&service);
+        AutoPtr<IViewManager> vm = IViewManager::Probe(service);
 
         Int32 inputFeatures = 0;
         lp->GetInputFeatures(&inputFeatures);
         lp->SetInputFeatures(inputFeatures | IWindowManagerLayoutParams::INPUT_FEATURE_NO_INPUT_CHANNEL);
-        AutoPtr<IViewManager> vm = IViewManager::Probe(wm);
         vm->AddView(IView::Probe(mPointerLocationView), IViewGroupLayoutParams::Probe(lp));
 
         mWindowManagerFuncs->RegisterPointerEventListener(IPointerEventListener::Probe(mPointerLocationView));
@@ -2331,10 +2337,12 @@ void PhoneWindowManager::DisablePointerLocation()
 {
     if (mPointerLocationView != NULL) {
         mWindowManagerFuncs->UnregisterPointerEventListener(IPointerEventListener::Probe(mPointerLocationView));
-        AutoPtr<IWindowManager> wm;
-        mContext->GetSystemService(IContext::WINDOW_SERVICE, (IInterface**)&wm);
 
-        IViewManager::Probe(wm)->RemoveView(IView::Probe(mPointerLocationView));
+        AutoPtr<IInterface> service;
+        mContext->GetSystemService(IContext::WINDOW_SERVICE, (IInterface**)&service);
+        AutoPtr<IViewManager> vm = IViewManager::Probe(service);
+
+        vm->RemoveView(IView::Probe(mPointerLocationView));
         mPointerLocationView = NULL;
     }
 }
@@ -3017,8 +3025,10 @@ ECode PhoneWindowManager::AddStartingWindow(
         CString::New(String("Starting ") + packageName, (ICharSequence**)&tl);
         lp->SetTitle(tl);
 
-        AutoPtr<IWindowManager> wm;
-        context->GetSystemService(IContext::WINDOW_SERVICE, (IInterface**)&wm);
+        AutoPtr<IInterface> service;
+        mContext->GetSystemService(IContext::WINDOW_SERVICE, (IInterface**)&service);
+        AutoPtr<IViewManager> vm = IViewManager::Probe(service);
+        AutoPtr<IWindowManager> wm = IWindowManager::Probe(service);
 
         AutoPtr<IView> view;
         win->GetDecorView((IView**)&view);
@@ -3035,7 +3045,7 @@ ECode PhoneWindowManager::AddStartingWindow(
            return NOERROR;
         }
 
-        ec = IViewManager::Probe(wm)->AddView(view, IViewGroupLayoutParams::Probe(lp));
+        ec = vm->AddView(view, IViewGroupLayoutParams::Probe(lp));
         if (FAILED(ec)) {
             return ec;
         }
@@ -3081,9 +3091,9 @@ ECode PhoneWindowManager::RemoveStartingWindow(
     }
 
     if (window != NULL) {
-        AutoPtr<IWindowManager> wm;
-        mContext->GetSystemService(IContext::WINDOW_SERVICE, (IInterface**)&wm);
-        IViewManager::Probe(wm)->RemoveView(window);
+        AutoPtr<IInterface> service;
+        mContext->GetSystemService(IContext::WINDOW_SERVICE, (IInterface**)&service);
+        IViewManager::Probe(service)->RemoveView(window);
     }
 
     return NOERROR;
@@ -4023,8 +4033,9 @@ void PhoneWindowManager::LaunchAssistAction(
     /* [in] */ const String& hint)
 {
     SendCloseSystemWindows(SYSTEM_DIALOG_REASON_ASSIST);
-    AutoPtr<ISearchManager> searchManager;
-    mContext->GetSystemService(IContext::SEARCH_SERVICE, (IInterface**)&searchManager);
+    AutoPtr<IInterface> service;
+    mContext->GetSystemService(IContext::SEARCH_SERVICE, (IInterface**)&service);
+    AutoPtr<ISearchManager> searchManager = ISearchManager::Probe(service);
     AutoPtr<IIntent> intent;
     searchManager->GetAssistIntent(mContext, TRUE, IUserHandle::USER_CURRENT, (IIntent**)&intent);
 
@@ -7201,10 +7212,9 @@ Boolean PhoneWindowManager::GoHome()
 //TODO start TelecomManager is not implemented
 //AutoPtr<ITelecomManager> PhoneWindowManager::GetTelecommService()
 //{
-//    AutoPtr<IInterface> service;
-//    mContext->GetSystemService(IContext::TELECOM_SERVICE, (IInterface**)&service);
-//    AutoPtr<ITelecomManager> telecomManager = ITelecomManager::Probe(service);
-//    return telecomManager;
+    // AutoPtr<IInterface> service;
+    // mContext->GetSystemService(IContext::TELECOM_SERVICE, (IInterface**)&service);
+//    return ITelecomManager::Probe(service);
 //}
 //TODO end
 

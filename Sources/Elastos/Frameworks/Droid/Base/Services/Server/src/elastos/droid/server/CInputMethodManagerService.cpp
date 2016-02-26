@@ -669,7 +669,9 @@ ECode CInputMethodManagerService::ImeSubtypeListAdapter::constructor(
     mTextViewResourceId = textViewResourceId;
     ArrayAdapter::constructor(context, textViewResourceId, itemsList);
     mItemsList = itemsList;
-    context->GetSystemService(IContext::LAYOUT_INFLATER_SERVICE, (IInterface**)&mInflater);
+    AutoPtr<IInterface> obj;
+    context->GetSystemService(IContext::LAYOUT_INFLATER_SERVICE, (IInterface**)&obj);
+    mInflater = ILayoutInflater::Probe(obj);
     return NOERROR;
 }
 

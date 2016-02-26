@@ -88,8 +88,10 @@ ChooseAccountActivity::AccountArrayAdapter::AccountArrayAdapter(
         container->Add((IInterface*)(*it));
     }
     ArrayAdapter(context, textViewResourceId, container);
-    context->GetSystemService(IContext::LAYOUT_INFLATER_SERVICE,
-            (IInterface**)&mLayoutInflater);
+
+    AutoPtr<IInterface> service;
+    FAIL_RETURN(context->GetSystemService(IContext::LAYOUT_INFLATER_SERVICE, (IInterface**)&service))
+    mLayoutInflater = ILayoutInflater::Probe(service);
 }
 
 ChooseAccountActivity::AccountArrayAdapter::~AccountArrayAdapter()

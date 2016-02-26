@@ -950,39 +950,44 @@ ECode CWindowManagerService::constructor(
     mHaveInputMethods = haveInputMethods;
     mAllowBootMessages = showBootMsgs;
     mOnlyCore = onlyCore;
+
+    AutoPtr<IInterface> service;
     AutoPtr<IResources> resources;
     ASSERT_SUCCEEDED(mContext->GetResources((IResources**)&resources))
     resources->GetBoolean(Elastos::Droid::R::bool_::config_sf_limitedAlpha, &mLimitedAlphaCompositing);
     resources->GetBoolean(Elastos::Droid::R::bool_::config_hasPermanentDpad, &mHasPermanentDpad);
     mInputManager = (CInputManagerService*)inputManager; // Must be before createDisplayContentLocked.
-    mDisplayManagerInternal = (IDisplayManagerInternal*)LocalServices::GetService(EIID_IDisplayManagerInternal).Get();
+    service = LocalServices::GetService(EIID_IDisplayManagerInternal);
+    mDisplayManagerInternal = IDisplayManagerInternal::Probe(service);
     mDisplaySettings = new DisplaySettings(context);
     mDisplaySettings->ReadSettingsLocked();
 
     LocalServices::AddService(EIID_IWindowManagerPolicy, mPolicy);
+
 
     AutoPtr<IInputChannel> inputChannel;
     mInputManager->MonitorInput(TAG, (IInputChannel**)&inputChannel);
     mPointerEventDispatcher = new PointerEventDispatcher(inputChannel);
 
     ASSERT_SUCCEEDED(CSurfaceSession::New((ISurfaceSession**)&mFxSession))
-    ASSERT_SUCCEEDED(context->GetSystemService(IContext::DISPLAY_SERVICE, (IInterface**)&mDisplayManager))
+    service = NULL;
+    context->GetSystemService(IContext::DISPLAY_SERVICE, (IInterface**)&service);
+    mDisplayManager = IDisplayManager::Probe(service);
     AutoPtr< ArrayOf<IDisplay*> > displays;
     mDisplayManager->GetDisplays((ArrayOf<IDisplay*>**)&displays);
     for (Int32 i = 0; i < displays->GetLength(); ++i) {
         AutoPtr<IDisplay> display = (*displays)[i];
         CreateDisplayContentLocked(display);
     }
-    //ActionsCode(wh, NEW_FEATURE : support deviece default rotation)
-    // if(IActionsConfig::ACTIONS_FEATURE_SET_USER_DEFAULT_ROTATION_DEFAULT_ON >= 1){
-    //     AutoPtr<ISystemProperties> sysProp;
-    //     CSystemProperties::AcquireSingleton((ISystemProperties**)&sysProp);
-    //     sysProp->GetInt32(SYSTEM_DEFAULT_ROTATION, 0, &mRotation);
-    // }
+
     mKeyguardDisableHandler = new KeyguardDisableHandler(mContext, mPolicy);
 
-    ASSERT_SUCCEEDED(context->GetSystemService(IContext::POWER_SERVICE, (IInterface**)&mPowerManager))
-    mPowerManagerInternal = (IPowerManagerInternal*)LocalServices::GetService(EIID_IPowerManagerInternal).Get();
+    service = NULL;
+    ASSERT_SUCCEEDED(context->GetSystemService(IContext::POWER_SERVICE, (IInterface**)&service))
+    mPowerManager = IPowerManager::Probe(service);
+
+    service = LocalServices::GetService(EIID_IPowerManagerInternal);
+    mPowerManagerInternal = IPowerManagerInternal::Probe(service);
     AutoPtr<ILowPowerModeListener> powerListener = new MyLowPowerModeListener(this);
     mPowerManagerInternal->RegisterLowPowerModeObserver(powerListener);
     mPowerManagerInternal->GetLowPowerModeEnabled(&mAnimationsDisabled);
@@ -994,7 +999,9 @@ ECode CWindowManagerService::constructor(
 
     mActivityManager = ActivityManagerNative::GetDefault();
     mBatteryStats = CBatteryStatsService::GetService();
-    ASSERT_SUCCEEDED(context->GetSystemService(IContext::APP_OPS_SERVICE, (IInterface**)&mAppOps))
+    service = NULL;
+    context->GetSystemService(IContext::APP_OPS_SERVICE, (IInterface**)&service);
+    mAppOps = IAppOpsManager::Probe(service);
     AutoPtr<IAppOpsManagerOnOpChangedListener> opListener = new MyAppOpsManagerOnOpChangedListener(this);
     mAppOps->StartWatchingMode(IAppOpsManager::OP_SYSTEM_ALERT_WINDOW, String(NULL), opListener);
     mAppOps->StartWatchingMode(IAppOpsManager::OP_TOAST_WINDOW, String(NULL), opListener);

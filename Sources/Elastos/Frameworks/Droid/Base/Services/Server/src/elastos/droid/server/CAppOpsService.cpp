@@ -304,7 +304,7 @@ ECode CAppOpsService::constructor(
 
     ECode ec = CAtomicFile::New(storagePath, (IAtomicFile**)&mFile);
     if (FAILED(ec)) {
-        Slogger::E(TAG, "constructor: failed to create CAtomicFile with path [%s]", TO_CSTR(storagePath));
+        Slogger::E(TAG, "constructor: failed to create CAtomicFile with path [%s], ec = %08x", TO_CSTR(storagePath), ec);
         assert(mFile != NULL);
         return ec;
     }

@@ -78,7 +78,9 @@ ECode BaseInputConnection::constructor(
     AutoPtr<IContext> context;
     targetView->GetContext((IContext**)&context);
     assert(context != NULL);
-    context->GetSystemService(IContext::INPUT_METHOD_SERVICE, (IInterface**)&mIMM);
+    AutoPtr<IInterface> obj;
+    context->GetSystemService(IContext::INPUT_METHOD_SERVICE, (IInterface**)&obj);
+    mIMM = IInputMethodManager::Probe(obj);
     assert(mIMM != NULL);
     mTargetView = targetView;
     mDummyMode = !fullEditor;

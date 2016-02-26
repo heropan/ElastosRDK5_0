@@ -131,17 +131,25 @@ ECode CServiceManager::GetService(
     data.writeCString(name.string());
     android::status_t ret = get_service_manager()->transact(GET_SERVICE, data, &reply);
     if (ret != android::NO_ERROR) {
+        Slogger::E("CServiceManager", "Failed to transact GET_SERVICE %s", name.string());
         return E_REMOTE_EXCEPTION;
     }
 
     ec = (ECode)reply.readInt32();
-    if (FAILED(ec)) return ec;
+    if (FAILED(ec)) {
+        Slogger::E("CServiceManager", "Failed to get service %s, ec=%08x", name.string(), ec);
+        return ec;
+    }
 
     size = reply.readInt32();
     binder = reply.readStrongBinder();
-    // TODO: release buf.
     buf = malloc(size);
-    if (!buf) return E_OUT_OF_MEMORY;
+    if (!buf) {
+        Slogger::E("CServiceManager", "Failed to get service %s, no enough memory, needs %d",
+            name.string(), size);
+        return E_OUT_OF_MEMORY;
+    }
+
     reply.read(buf, (size_t)size);
     ((InterfacePack*)buf)->m_pBinder = binder;
     ec = _CObject_UnmarshalInterface(
@@ -149,10 +157,10 @@ ECode CServiceManager::GetService(
     free(buf);
     if (SUCCEEDED(ec)) {
         mServiceCache[name] = *service;
+        return NOERROR;
     }
-    else {
-        Slogger::E("CServiceManager", "Failed to get service %s", name.string());
-    }
+
+    Slogger::E("CServiceManager", "Failed to get service %s, ec=%08x", name.string(), ec);
     return ec;
 }
 

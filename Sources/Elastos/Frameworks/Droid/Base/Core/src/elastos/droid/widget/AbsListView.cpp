@@ -2336,8 +2336,9 @@ ECode AbsListView::InputConnectionWrapper::PerformEditorAction(
     if (editorAction == IEditorInfo::IME_ACTION_DONE) {
         AutoPtr<IContext> context;
         mHost->GetContext((IContext**)&context);
-        AutoPtr<IInputMethodManager> imm;
-        context->GetSystemService(IContext::INPUT_METHOD_SERVICE, (IInterface**)&imm);
+        AutoPtr<IInterface> obj;
+        context->GetSystemService(IContext::INPUT_METHOD_SERVICE, (IInterface**)&obj);
+        AutoPtr<IInputMethodManager> imm = IInputMethodManager::Probe(obj);
         if (imm != NULL) {
             AutoPtr<IBinder> token;
             mHost->GetWindowToken((IBinder**)&token);

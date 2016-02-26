@@ -4449,7 +4449,9 @@ AutoPtr<IKeyguardManager> PhoneWindow::GetKeyguardManager()
     if (mKeyguardManager == NULL) {
         AutoPtr<IContext> context;
         GetContext((IContext**)&context);
-        context->GetSystemService(IContext::KEYGUARD_SERVICE, (IInterface**)&mKeyguardManager);
+        AutoPtr<IInterface> service;
+        context->GetSystemService(IContext::KEYGUARD_SERVICE, (IInterface**)&service);
+        mKeyguardManager = IKeyguardManager::Probe(service);
     }
 
     return mKeyguardManager;

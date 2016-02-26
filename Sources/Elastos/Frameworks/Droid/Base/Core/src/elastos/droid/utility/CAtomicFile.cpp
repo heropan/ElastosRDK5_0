@@ -108,8 +108,8 @@ ECode CAtomicFile::StartWrite(
         if (!b) {
             mBaseName->RenameTo(mBackupName, &b);
             if (!b) {
-                //Log.w("AtomicFile", "Couldn't rename file " + mBaseName
-                //        + " to backup file " + mBackupName);
+                Logger::W("AtomicFile", "Couldn't rename file %s to backup file %s",
+                    TO_CSTR(mBaseName), TO_CSTR(mBackupName));
             }
         } else {
             Boolean result;
@@ -123,7 +123,7 @@ ECode CAtomicFile::StartWrite(
         Boolean res;
         parent->Mkdir(&res);
         if (!res) {
-            // throw new IOException("Couldn't create directory " + mBaseName);
+            Logger::W("AtomicFile", "Couldn't create directory %s", TO_CSTR(mBaseName));
             return E_IO_EXCEPTION;
         }
         String path;
@@ -131,7 +131,7 @@ ECode CAtomicFile::StartWrite(
         FileUtils::SetPermissions(
             path, FileUtils::sS_IRWXU | FileUtils::sS_IRWXG | FileUtils::sS_IXOTH, -1, -1);
         if (CFileOutputStream::New(mBaseName, stream) == (ECode)E_FILE_NOT_FOUND_EXCEPTION) {
-            // throw new IOException("Couldn't create " + mBaseName);
+            Logger::W("AtomicFile", "Couldn't create %s", TO_CSTR(mBaseName));
             return E_IO_EXCEPTION;
         }
     }
@@ -147,17 +147,21 @@ ECode CAtomicFile::StartWrite(
 ECode CAtomicFile::FinishWrite(
     /* [in] */ IFileOutputStream* str)
 {
+    ECode ec = NOERROR;
     if (str != NULL) {
         Boolean result;
         FileUtils::Sync(str);
         //try {
             ICloseable::Probe(str)->Close();
-            return mBackupName->Delete(&result);
+            ec = mBackupName->Delete(&result);
+            if (ec == (ECode)E_IO_EXCEPTION) {
+                Logger::W("CAtomicFile", "finishWrite: Got E_IO_EXCEPTION");
+            }
         //} catch (IOException e) {
         //    Log.w("AtomicFile", "finishWrite: Got exception:", e);
         //}
     }
-    return NOERROR;
+    return ec;
 }
 
 /**
@@ -168,18 +172,26 @@ ECode CAtomicFile::FinishWrite(
 ECode CAtomicFile::FailWrite(
     /* [in] */ IFileOutputStream* str)
 {
+    ECode ec = NOERROR;
     if (str != NULL) {
         Boolean result;
         FileUtils::Sync(str);
         //try {
             ICloseable::Probe(str)->Close();
-            mBaseName->Delete(&result);
-            mBackupName->RenameTo(mBaseName, &result);
+            ec = mBaseName->Delete(&result);
+            FAIL_GOTO(ec, _EXIT_)
+            ec = mBackupName->RenameTo(mBaseName, &result);
+            FAIL_GOTO(ec, _EXIT_)
         //} catch (IOException e) {
         //    Log.w("AtomicFile", "failWrite: Got exception:", e);
         //}
     }
-    return NOERROR;
+
+_EXIT_:
+    if (ec == (ECode)E_IO_EXCEPTION) {
+        Logger::W("CAtomicFile", "failWrite: Got E_IO_EXCEPTION");
+    }
+    return ec;
 }
 
 /** @hide
@@ -187,15 +199,23 @@ ECode CAtomicFile::FailWrite(
  */
 ECode CAtomicFile::Truncate()
 {
+    ECode ec = NOERROR;
     //try {
-        AutoPtr<IFileOutputStream> fos;
-        FAIL_RETURN(CFileOutputStream::New(mBaseName, (IFileOutputStream**)&fos));
-        FileUtils::Sync(fos);
-        ICloseable::Probe(fos)->Close();
+    AutoPtr<IFileOutputStream> fos;
+    ec = CFileOutputStream::New(mBaseName, (IFileOutputStream**)&fos);
+    FAIL_GOTO(ec, _EXIT_)
+
+    FileUtils::Sync(fos);
+    ICloseable::Probe(fos)->Close();
     //} catch (FileNotFoundException e) {
     //    throw new IOException("Couldn't append " + mBaseName);
     //} catch (IOException e) {
     //}
+_EXIT_:
+    if (ec == (ECode)E_FILE_NOT_FOUND_EXCEPTION) {
+        Logger::E("CAtomicFile", "Couldn't append %s", TO_CSTR(mBaseName));
+        return E_IO_EXCEPTION;
+    }
     return NOERROR;
 }
 
@@ -207,7 +227,12 @@ ECode CAtomicFile::OpenAppend(
 {
     VALIDATE_NOT_NULL(stream);
     //try {
-    return CFileOutputStream::New(mBaseName, TRUE, stream);
+    ECode ec = CFileOutputStream::New(mBaseName, TRUE, stream);
+    if (ec == (ECode)E_FILE_NOT_FOUND_EXCEPTION) {
+        Logger::E("CAtomicFile", "Couldn't append %s", TO_CSTR(mBaseName));
+        return E_IO_EXCEPTION;
+    }
+    return ec;
     //} catch (FileNotFoundException e) {
     //    throw new IOException("Couldn't append " + mBaseName);
     //}
@@ -298,6 +323,19 @@ ECode CAtomicFile::ReadFully(
         }
     }
 
+    return NOERROR;
+}
+
+ECode CAtomicFile::Exists(
+    /* [out] */ Boolean* result)
+{
+    VALIDATE_NOT_NULL(result)
+    Boolean bval;
+    mBaseName->Exists(&bval);
+    if (!bval) {
+        mBackupName->Exists(&bval);
+    }
+    *result = bval;
     return NOERROR;
 }
 

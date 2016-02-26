@@ -2233,6 +2233,7 @@ ECode CContextImpl::GetSystemService(
         return NOERROR;
     }
 
+    Slogger::I(TAG, " ======= CContextImpl::GetSystemService: %s", name.string());
     // if (IContext::PRIVACY_SERVICE.Equals(name)) {
     //     AutoLock lock(mCacheLock);
     //     // BEGIN privacy-added

@@ -770,8 +770,9 @@ ECode UiModeManagerService::AdjustStatusBarCarModeLocked()
     AutoPtr<IContext> context;
     GetContext((IContext**)&context);
     if (mStatusBarManager == NULL) {
-        context->GetSystemService(IContext::STATUS_BAR_SERVICE,
-            (IInterface **)&mStatusBarManager);
+        AutoPtr<IInterface> obj;
+        context->GetSystemService(IContext::STATUS_BAR_SERVICE, (IInterface **)&obj);
+        mStatusBarManager = IStatusBarManager::Probe(obj);
     }
 
     // Fear not: StatusBarManagerService manages a list of requests to disable
@@ -786,9 +787,9 @@ ECode UiModeManagerService::AdjustStatusBarCarModeLocked()
     }
 
     if (mNotificationManager == NULL) {
-        context->GetSystemService(IContext::NOTIFICATION_SERVICE,
-            (IInterface **)&mNotificationManager);
-
+        AutoPtr<IInterface> obj;
+        context->GetSystemService(IContext::NOTIFICATION_SERVICE, (IInterface**)&obj);
+        mNotificationManager = INotificationManager::Probe(obj);
     }
 
     String nullStr;

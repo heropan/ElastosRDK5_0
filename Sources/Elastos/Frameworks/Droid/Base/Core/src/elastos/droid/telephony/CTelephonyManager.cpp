@@ -1094,8 +1094,13 @@ ECode CTelephonyManager::From(
     /* [in] */ IContext* context,
     /* [out] */ ITelephonyManager** tm)
 {
-    VALIDATE_NOT_NULL(tm);
-    return context->GetSystemService(IContext::TELEPHONY_SERVICE, (IInterface**)tm);
+    VALIDATE_NOT_NULL(tm)
+
+    AutoPtr<IInterface> obj;
+    context->GetSystemService(IContext::TELEPHONY_SERVICE, (IInterface**)&obj);
+    *tm = ITelephonyManager::Probe(obj);
+    REFCOUNT_ADD(*tm);
+    return NOERROR;
 }
 
 }

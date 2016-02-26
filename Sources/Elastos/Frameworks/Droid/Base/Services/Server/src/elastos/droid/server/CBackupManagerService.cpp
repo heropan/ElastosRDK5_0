@@ -4591,8 +4591,12 @@ ECode CBackupManagerService::constructor(
 
     mActivityManager = ActivityManagerNative::GetDefault();
 
-    mContext->GetSystemService(IContext::ALARM_SERVICE, (IInterface**)&mAlarmManager);
-    mContext->GetSystemService(IContext::POWER_SERVICE, (IInterface**)&mPowerManager);
+    AutoPtr<IInterface> obj;
+    mContext->GetSystemService(IContext::ALARM_SERVICE, (IInterface**)&obj);
+    mAlarmManager = IAlarmManager::Probe(obj);
+    obj = NULL;
+    mContext->GetSystemService(IContext::POWER_SERVICE, (IInterface**)&obj);
+    mPowerManager = IPowerManager::Probe(obj);
     AutoPtr<IInterface> mountService = ServiceManager::GetService(String("mount"));
     mMountService = IIMountService::Probe(mountService);
 
