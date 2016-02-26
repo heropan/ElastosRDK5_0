@@ -2746,7 +2746,7 @@ ECode CActivityManagerService::constructor(
     Boolean mked;
     systemDir->Mkdirs(&mked);
 
-    Slogger::I(TAG, " GetDataDirectory:[%s]", dataDir.string());
+    Slogger::I(TAG, " GetDataDirectory:[%s]",TO_CSTR(dataDir));
 
     CBatteryStatsService::NewByFriend(systemDir, mHandler, (CBatteryStatsService**)&mBatteryStatsService);
     AutoPtr<IBatteryStatsImpl> bstats = mBatteryStatsService->GetActiveStatistics();

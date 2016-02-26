@@ -314,6 +314,7 @@ module
     using interface Elastos.Core.ICharSequence;
     interface Elastos.Droid.SystemUI.IDemoMode;
     interface Elastos.Droid.SystemUI.ISystemUI;
+    interface Elastos.Droid.SystemUI.Recents.Model.ITaskStack;
     interface Elastos.Droid.SystemUI.StatusBar.INotificationOverflowIconsView;
     interface Elastos.Droid.SystemUI.StatusBar.IStatusBarPanel;
     interface Elastos.Droid.SystemUI.StatusBar.Policy.IBatteryStateChangeCallback;
@@ -730,6 +731,82 @@ module
             interface IFixedSizeImageView;
             interface IImageView;
             interface IView;
+            interface IDrawableCallback;
+            interface IKeyEventCallback;
+            interface IAccessibilityEventSource;
+        }
+
+        class CRecentsView {
+            constructor(
+                [in] IContext* ctx);
+
+            constructor(
+                [in] IContext* ctx,
+                [in] IAttributeSet* attrs);
+
+            constructor(
+                [in] IContext* ctx,
+                [in] IAttributeSet* attrs,
+                [in] Int32 defStyleAttr);
+
+            constructor(
+                [in] IContext* ctx,
+                [in] IAttributeSet* attrs,
+                [in] Int32 defStyleAttr,
+                [in] Int32 defStyleRes);
+
+            interface IRecentsView;
+            interface IFrameLayout;
+            interface IViewGroup;
+            interface IView;
+            interface IViewParent;
+            interface IViewManager;
+            interface IDrawableCallback;
+            interface IKeyEventCallback;
+            interface IAccessibilityEventSource;
+        }
+
+        class CTaskStackView {
+            constructor(
+                [in] IContext* context,
+                [in] ITaskStack* stack);
+
+            interface ITaskStackView;
+            interface IFrameLayout;
+            interface IViewGroup;
+            interface IView;
+            interface IViewParent;
+            interface IViewManager;
+            interface IDrawableCallback;
+            interface IKeyEventCallback;
+            interface IAccessibilityEventSource;
+        }
+
+        class CTaskView {
+            constructor(
+                [in] IContext* ctx);
+
+            constructor(
+                [in] IContext* ctx,
+                [in] IAttributeSet* attrs);
+
+            constructor(
+                [in] IContext* ctx,
+                [in] IAttributeSet* attrs,
+                [in] Int32 defStyleAttr);
+
+            constructor(
+                [in] IContext* ctx,
+                [in] IAttributeSet* attrs,
+                [in] Int32 defStyleAttr,
+                [in] Int32 defStyleRes);
+
+            interface ITaskView;
+            interface IFrameLayout;
+            interface IViewGroup;
+            interface IView;
+            interface IViewParent;
+            interface IViewManager;
             interface IDrawableCallback;
             interface IKeyEventCallback;
             interface IAccessibilityEventSource;
