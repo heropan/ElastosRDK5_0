@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_VIEW_NATIVEINPUTCHANNEL_H__
 
 #include <input/InputTransport.h>
-#include <elastos.h>
+#include <elastos/core/Object.h>
 
 using namespace Elastos;
 
