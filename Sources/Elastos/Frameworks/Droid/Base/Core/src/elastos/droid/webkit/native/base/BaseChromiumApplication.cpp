@@ -73,12 +73,12 @@ ECode BaseChromiumApplication::InnerActivityLifecycleCallbacks::OnActivityCreate
 ECode BaseChromiumApplication::InnerActivityLifecycleCallbacks::OnActivityDestroyed(
     /* [in] */ IActivity* activity)
 {
-    AutoPtr<IWindow> window;
-    activity->GetWindow((IWindow**)&window);
-    AutoPtr<IWindowCallback> callback;
-    window->GetCallback((IWindowCallback**)&callback);
-    assert(0);
-//    assert(callback->Probe(EIID_WindowCallbackWrapper));
+    //AutoPtr<IWindow> window;
+    //activity->GetWindow((IWindow**)&window);
+    //AutoPtr<IWindowCallback> callback;
+    //window->GetCallback((IWindowCallback**)&callback);
+    //TODO
+    //assert(callback->Probe(EIID_WindowCallbackWrapper));
 
     return NOERROR;
 }
@@ -86,12 +86,12 @@ ECode BaseChromiumApplication::InnerActivityLifecycleCallbacks::OnActivityDestro
 ECode BaseChromiumApplication::InnerActivityLifecycleCallbacks::OnActivityPaused(
     /* [in] */ IActivity* activity)
 {
-    AutoPtr<IWindow> window;
-    activity->GetWindow((IWindow**)&window);
-    AutoPtr<IWindowCallback> callback;
-    window->GetCallback((IWindowCallback**)&callback);
-    assert(0);
-//    assert(callback->Probe(EIID_WindowCallbackWrapper));
+    //AutoPtr<IWindow> window;
+    //activity->GetWindow((IWindow**)&window);
+    //AutoPtr<IWindowCallback> callback;
+    //window->GetCallback((IWindowCallback**)&callback);
+    //TODO
+    //assert(callback->Probe(EIID_WindowCallbackWrapper));
 
     return NOERROR;
 }
@@ -99,12 +99,12 @@ ECode BaseChromiumApplication::InnerActivityLifecycleCallbacks::OnActivityPaused
 ECode BaseChromiumApplication::InnerActivityLifecycleCallbacks::OnActivityResumed(
     /* [in] */ IActivity* activity)
 {
-    AutoPtr<IWindow> window;
-    activity->GetWindow((IWindow**)&window);
-    AutoPtr<IWindowCallback> callback;
-    window->GetCallback((IWindowCallback**)&callback);
-    assert(0);
-//    assert(callback->Probe(EIID_WindowCallbackWrapper));
+    //AutoPtr<IWindow> window;
+    //activity->GetWindow((IWindow**)&window);
+    //AutoPtr<IWindowCallback> callback;
+    //window->GetCallback((IWindowCallback**)&callback);
+    //TODO
+    //assert(callback->Probe(EIID_WindowCallbackWrapper));
 
     return NOERROR;
 }
@@ -113,12 +113,12 @@ ECode BaseChromiumApplication::InnerActivityLifecycleCallbacks::OnActivitySaveIn
     /* [in] */ IActivity* activity,
     /* [in] */ IBundle* outState)
 {
-    AutoPtr<IWindow> window;
-    activity->GetWindow((IWindow**)&window);
-    AutoPtr<IWindowCallback> callback;
-    window->GetCallback((IWindowCallback**)&callback);
-    assert(0);
-//    assert(callback->Probe(EIID_WindowCallbackWrapper));
+    //AutoPtr<IWindow> window;
+    //activity->GetWindow((IWindow**)&window);
+    //AutoPtr<IWindowCallback> callback;
+    //window->GetCallback((IWindowCallback**)&callback);
+    //TODO
+    //assert(callback->Probe(EIID_WindowCallbackWrapper));
 
     return NOERROR;
 }
@@ -127,12 +127,12 @@ ECode BaseChromiumApplication::InnerActivityLifecycleCallbacks::OnActivitySaveIn
 ECode BaseChromiumApplication::InnerActivityLifecycleCallbacks::OnActivityStarted(
     /* [in] */ IActivity* activity)
 {
-    AutoPtr<IWindow> window;
-    activity->GetWindow((IWindow**)&window);
-    AutoPtr<IWindowCallback> callback;
-    window->GetCallback((IWindowCallback**)&callback);
-    assert(0);
-//    assert(callback->Probe(EIID_WindowCallbackWrapper));
+    //AutoPtr<IWindow> window;
+    //activity->GetWindow((IWindow**)&window);
+    //AutoPtr<IWindowCallback> callback;
+    //window->GetCallback((IWindowCallback**)&callback);
+    //TODO
+    //assert(callback->Probe(EIID_WindowCallbackWrapper));
 
     return NOERROR;
 }
@@ -141,12 +141,12 @@ ECode BaseChromiumApplication::InnerActivityLifecycleCallbacks::OnActivityStarte
 ECode BaseChromiumApplication::InnerActivityLifecycleCallbacks::OnActivityStopped(
     /* [in] */ IActivity* activity)
 {
-    AutoPtr<IWindow> window;
-    activity->GetWindow((IWindow**)&window);
-    AutoPtr<IWindowCallback> callback;
-    window->GetCallback((IWindowCallback**)&callback);
-    assert(0);
-//    assert(callback->Probe(EIID_WindowCallbackWrapper));
+    //AutoPtr<IWindow> window;
+    //activity->GetWindow((IWindow**)&window);
+    //AutoPtr<IWindowCallback> callback;
+    //window->GetCallback((IWindowCallback**)&callback);
+    //TODO
+    //assert(callback->Probe(EIID_WindowCallbackWrapper));
 
     return NOERROR;
 }

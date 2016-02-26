@@ -7,6 +7,7 @@
 #include "elastos/droid/os/SystemClock.h"
 #include "elastos/droid/os/CLooperHelper.h"
 #include <elastos/core/StringUtils.h>
+#include <elastos/utility/logging/Logger.h>
 
 using Elastos::Droid::Os::CLooperHelper;
 using Elastos::Droid::Os::ILooperHelper;
@@ -14,6 +15,7 @@ using Elastos::Droid::Os::SystemClock;
 using Elastos::Droid::Os::EIID_IIdleHandler;
 using Elastos::Droid::Utility::EIID_IPrinter;
 using Elastos::Core::StringUtils;
+using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
 namespace Droid {
@@ -90,7 +92,7 @@ void TraceEvent::IdleTracingLooperMonitor::SyncIdleMonitoring()
         looperHelper->GetMyQueue((IMessageQueue**)&queue);
         queue->AddIdleHandler(this);
         mIdleMonitorAttached = TRUE;
-//        Log.v(TAG, "attached idle handler");
+        Logger::V(TAG, "attached idle handler");
     }
     else if (mIdleMonitorAttached && !sEnabled) {
         AutoPtr<ILooperHelper> looperHelper;
@@ -99,7 +101,7 @@ void TraceEvent::IdleTracingLooperMonitor::SyncIdleMonitoring()
         looperHelper->GetMyQueue((IMessageQueue**)&queue);
         queue->RemoveIdleHandler(this);
         mIdleMonitorAttached = FALSE;
-//        Log.v(TAG, "detached idle handler");
+        Logger::V(TAG, "detached idle handler");
     }
 }
 
@@ -405,10 +407,8 @@ void TraceEvent::End(
 
 String TraceEvent::GetCallerName()
 {
-    assert(0);
-#if 0
     // This was measured to take about 1ms on Trygon device.
-    StackTraceElement[] stack = java.lang.Thread.currentThread().getStackTrace();
+    //TODO StackTraceElement[] stack = java.lang.Thread.currentThread().getStackTrace();
 
     // Commented out to avoid excess call overhead, but these lines can be useful to debug
     // exactly where the TraceEvent's client is on the callstack.
@@ -418,9 +418,8 @@ String TraceEvent::GetCallerName()
     //  System.logW("TraceEvent caller is at stack index " + index);
 
     // '4' Was derived using the above commented out code snippet.
-    return stack[4].getClassName() + "." + stack[4].getMethodName();
-#endif
-    return String(NULL);
+    //TODO return stack[4].getClassName() + "." + stack[4].getMethodName();
+    return String("not implemented");
 }
 
 void TraceEvent::NativeRegisterEnabledObserver()

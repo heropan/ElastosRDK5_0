@@ -9,7 +9,6 @@ using Elastos::Droid::Content::Res::IConfiguration;
 using Elastos::Droid::Graphics::Drawable::IDrawable;
 using Elastos::Droid::View::IView;
 using Elastos::Droid::View::IViewGroupMarginLayoutParams;
-// import android.view.ViewTreeObserver;
 using Elastos::Droid::View::IOnGlobalLayoutListener;
 using Elastos::Droid::Widget::IImageView;
 using Elastos::Droid::Widget::IRemoteViews;

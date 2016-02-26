@@ -2,12 +2,16 @@
 #ifndef __ELASTOS_DROID_WEBKIT_BASE_THREADUTILS_H__
 #define __ELASTOS_DROID_WEBKIT_BASE_THREADUTILS_H__
 
+#include "Elastos.CoreLibrary.Utility.Concurrent.h"
+#include "elastos/utility/concurrent/FutureTask.h"
 #include "elastos/droid/ext/frameworkext.h"
 #include <elastos/core/Object.h>
 
 using Elastos::Core::IRunnable;
 using Elastos::Droid::Os::IHandler;
 using Elastos::Droid::Os::ILooper;
+using Elastos::Utility::Concurrent::FutureTask;
+using Elastos::Utility::Concurrent::ICallable;
 
 using Elastos::Utility::Concurrent::ICallable;
 // import java.util.concurrent.ExecutionException;
@@ -37,7 +41,7 @@ public:
      * @param r The Runnable to run.
      */
     static CARAPI_(void) RunOnUiThreadBlocking(
-        /* [in] */ const IRunnable* r);
+        /* [in] */ IRunnable* r);
 
     /**
      * Run the supplied Callable on the main thread, wrapping any exceptions in a RuntimeException.
@@ -67,8 +71,8 @@ public:
      * @param task The FutureTask to run
      * @return The queried task (to aid inline construction)
      */
-    // static CARAPI_(AutoPtr<IFutureTask>) RunOnUiThread(
-    //     /* [in] */ IFutureTask* task);
+    static CARAPI_(AutoPtr<FutureTask>) RunOnUiThread(
+         /* [in] */ FutureTask* task);
 
     /**
      * Run the supplied Callable on the main thread. The method will block only if the current
@@ -77,8 +81,8 @@ public:
      * @param c The Callable to run
      * @return A FutureTask wrapping the callable to retrieve results
      */
-    // static CARAPI_(AutoPtr<IFutureTask>) RunOnUiThread(
-    //     /* [in] */ ICallable* c);
+    static CARAPI_(AutoPtr<FutureTask>) RunOnUiThread(
+         /* [in] */ ICallable* c);
 
     /**
      * Run the supplied Runnable on the main thread. The method will block only if the current
@@ -96,8 +100,8 @@ public:
      * @param task The FutureTask to run
      * @return The queried task (to aid inline construction)
      */
-    // static CARAPI_(AutoPtr<IFutureTask>) PostOnUiThread(
-    //     /* [in] */ IFutureTask* task);
+    static CARAPI_(AutoPtr<FutureTask>) PostOnUiThread(
+         /* [in] */ FutureTask* task);
 
     /**
      * Post the supplied Runnable to run on the main thread. The method will not block, even if
@@ -143,7 +147,7 @@ public:
 private:
     static CARAPI_(AutoPtr<IHandler>) GetUiThreadHandler();
 
-//    static const Object sLock;
+    static Object sLock;
 
     static Boolean sWillOverride;
 

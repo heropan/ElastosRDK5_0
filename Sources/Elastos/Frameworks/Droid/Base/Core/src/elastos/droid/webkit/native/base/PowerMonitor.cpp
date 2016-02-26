@@ -1,13 +1,18 @@
-
+#include "Elastos.Droid.Os.h"
+#include "Elastos.Droid.Content.h"
 #include "elastos/droid/webkit/native/base/PowerMonitor.h"
 #include "elastos/droid/webkit/native/base/api/PowerMonitor_dec.h"
 #include "elastos/droid/webkit/native/base/ApplicationState.h"
-//#include "elastos/droid/os/CLooper.h"
+#include "elastos/droid/content/CIntentFilter.h"
+#include "elastos/droid/os/CHandler.h"
 #include "elastos/droid/os/CLooperHelper.h"
+#include "elastos/core/AutoLock.h"
 
-//using Elastos::Droid::Os::CLooper;
+using Elastos::Droid::Content::CIntentFilter;
+using Elastos::Droid::Os::CHandler;
 using Elastos::Droid::Os::CLooperHelper;
 using Elastos::Droid::Os::ILooperHelper;
+using Elastos::Core::AutoLock;
 
 namespace Elastos {
 namespace Droid {
@@ -18,7 +23,15 @@ namespace Base {
 //                  PowerMonitor::LazyHolder
 //===============================================================
 
-//const AutoPtr<PowerMonitor> PowerMonitor::LazyHolder::INSTANCE = new PowerMonitor();
+AutoPtr<PowerMonitor> PowerMonitor::LazyHolder::INSTANCE()
+{
+    if (instance == NULL) {
+        AutoLock lock(sLock);
+        if (instance == NULL)
+            instance = new PowerMonitor();
+    }
+    return instance;
+}
 
 //===============================================================
 //                 PowerMonitor::InnerRunnable
@@ -40,7 +53,7 @@ ECode PowerMonitor::InnerRunnable::Run()
 //===============================================================
 
 const Int64 PowerMonitor::SUSPEND_DELAY_MS;
-//AutoPtr<PowerMonitor> PowerMonitor::sInstance;
+AutoPtr<PowerMonitor> PowerMonitor::sInstance;
 
 AutoPtr<IRunnable> PowerMonitor::Runnable_Create()
 {
@@ -58,8 +71,7 @@ static AutoPtr<IHandler> Handler_Create()
     AutoPtr<ILooper> looper;
     helper->GetMainLooper((ILooper**)&looper);
     AutoPtr<IHandler> handler;
-    assert(0);
-//    CLooper::New(looper, (IHandler**)&handler);
+    CHandler::New(looper, (IHandler**)&handler);
     return handler;
 }
 
@@ -76,8 +88,7 @@ void PowerMonitor::CreateForTests(
     // Applications will create this once the JNI side has been fully wired up both sides. For
     // tests, we just need native -> java, that is, we don't need to notify java -> native on
     // creation.
-    assert(0);
-//    sInstance = LazyHolder::INSTANCE;
+    sInstance = LazyHolder::INSTANCE();
 }
 
 /**
@@ -88,38 +99,32 @@ void PowerMonitor::CreateForTests(
 void PowerMonitor::Create(
     /* [in] */ IContext* context)
 {
-    assert(0);
-#if 0
     context->GetApplicationContext((IContext**)&context);
     if (sInstance == NULL) {
-        sInstance = LazyHolder::INSTANCE;
+        sInstance = LazyHolder::INSTANCE();
         ApplicationStatus::RegisterApplicationStateListener(sInstance);
         AutoPtr<IIntentFilter> ifilter;
-        CIntentFilter(IIntent::ACTION_BATTERY_CHANGED, (IIntentFilter**)&ifilter);
+        CIntentFilter::New(IIntent::ACTION_BATTERY_CHANGED, (IIntentFilter**)&ifilter);
         AutoPtr<IIntent> batteryStatusIntent;
         context->RegisterReceiver(NULL, ifilter, (IIntent**)&batteryStatusIntent);
         OnBatteryChargingChanged(batteryStatusIntent);
     }
-#endif
 }
 
 void PowerMonitor::OnBatteryChargingChanged(
     /* [in] */ IIntent* intent)
 {
-    assert(0);
-#if 0
     if (sInstance == NULL) {
         // We may be called by the framework intent-filter before being fully initialized. This
         // is not a problem, since our constructor will check for the state later on.
         return;
     }
     Int32 chargePlug;
-    intent->GetIntExtra(IBatteryManager::EXTRA_PLUGGED, -1, &chargePlug);
+    intent->GetInt32Extra(IBatteryManager::EXTRA_PLUGGED, -1, &chargePlug);
     // If we're not plugged, assume we're running on battery power.
     sInstance->mIsBatteryPower = chargePlug != IBatteryManager::BATTERY_PLUGGED_USB &&
                                 chargePlug != IBatteryManager::BATTERY_PLUGGED_AC;
-    nativeOnBatteryChargingChanged();
-#endif
+    NativeOnBatteryChargingChanged();
 }
 
 void PowerMonitor::OnApplicationStateChange(
@@ -139,9 +144,7 @@ void PowerMonitor::OnApplicationStateChange(
 //@CalledByNative
 Boolean PowerMonitor::IsBatteryPower()
 {
-    assert(0);
-//    return sInstance->mIsBatteryPower;
-    return FALSE;
+    return sInstance->mIsBatteryPower;
 }
 
 void PowerMonitor::NativeOnBatteryChargingChanged()

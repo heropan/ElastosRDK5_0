@@ -2,10 +2,9 @@
 #ifndef __ELASTOS_DROID_WEBKIT_BASE_COMMANDLINE_H__
 #define __ELASTOS_DROID_WEBKIT_BASE_COMMANDLINE_H__
 
+#include "Elastos.CoreLibrary.Utility.h"
 #include "elastos/droid/ext/frameworkext.h"
 #include <elastos/core/Object.h>
-
-// import android.util.Log;
 
 using Elastos::IO::IFile;
 using Elastos::IO::IFileInputStream;
@@ -13,10 +12,9 @@ using Elastos::IO::IFileInputStream;
 // import java.io.IOException;
 using Elastos::IO::IInputStreamReader;
 using Elastos::IO::IReader;
-// import java.util.ArrayList;
-// import java.util.Arrays;
-// import java.util.HashMap;
-// import java.util.concurrent.atomic.AtomicReference;
+using Elastos::Utility::Concurrent::Atomic::IAtomicReference;
+using Elastos::Utility::IArrayList;
+using Elastos::Utility::IHashMap;
 
 namespace Elastos {
 namespace Droid {
@@ -140,12 +138,13 @@ public:
      * @return the tokenized arguments, suitable for passing to init().
      */
     static CARAPI_(AutoPtr< ArrayOf<String> >) TokenizeQuotedAruments(
-        /* [in] */ ArrayOf<Int8>* buffer);
+        /* [in] */ ArrayOf<Char32>* buffer);
 
     static CARAPI_(void) EnableNativeProxy();
 
     static CARAPI_(AutoPtr< ArrayOf<String> >) GetJavaSwitchesOrNull();
 
+    static CARAPI_(Int32) CommandLineInit();
 private:
     CommandLine();
 
@@ -158,7 +157,7 @@ private:
      * @return Array of chars read from the file, or null if the file cannot be read
      *         or if its length exceeds |sizeLimit|.
      */
-    static CARAPI_(AutoPtr< ArrayOf<Int8> >) ReadUtf8FileFully(
+    static CARAPI_(AutoPtr< ArrayOf<Char32> >) ReadUtf8FileFully(
         /* [in] */ const String& fileName,
         /* [in] */ Int32 sizeLimit);
 
@@ -181,8 +180,8 @@ private:
         /* [in] */ ArrayOf<String>* array);
 
 private:
-    // static final AtomicReference<CommandLine> sCommandLine =
-    //     new AtomicReference<CommandLine>();
+    static AutoPtr<IAtomicReference> sCommandLine;
+    //     new AtomicReference<CommandLine>(); <CommandLine>
 
     static const String TAG;
     static const String SWITCH_PREFIX;
@@ -192,6 +191,7 @@ private:
 
 class JavaCommandLine : public CommandLine
 {
+    friend class CommandLine;
 public:
     JavaCommandLine(
         /* [in] */ ArrayOf<String>* args);
@@ -235,8 +235,8 @@ private:
         /* [in] */ Int32 skipCount);
 
 private:
-//        HashMap<String, String> mSwitches;
-//        ArrayList<String> mArgs;
+    AutoPtr<IHashMap> mSwitches;// <String, String>
+    AutoPtr<IArrayList> mArgs;// <String>
 
     // The arguments begin at index 1, since index 0 contains the executable name.
     Int32 mArgsBegin;

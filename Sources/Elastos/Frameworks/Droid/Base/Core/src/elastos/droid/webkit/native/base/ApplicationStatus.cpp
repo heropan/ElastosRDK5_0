@@ -5,18 +5,21 @@
 #include "elastos/droid/webkit/native/base/ApplicationState.h"
 #include "elastos/droid/webkit/native/base/ActivityState.h"
 #include "elastos/droid/webkit/native/base/ThreadUtils.h"
-// TODO #include "elastos/droid/content/pm/CActivityInfo.h"
-
+#include "elastos/droid/content/pm/CActivityInfo.h"
 #include <elastos/core/AutoLock.h>
+#include <elastos/utility/logging/Logger.h>
 
-using Elastos::Core::AutoLock;
 using Elastos::Droid::App::EIID_IActivityLifecycleCallbacks;
 using Elastos::Droid::Content::EIID_IContext;
-// TODO using Elastos::Droid::Content::Pm::CActivityInfo;
+using Elastos::Droid::Content::Pm::CActivityInfo;
 using Elastos::Droid::Content::Pm::IActivityInfo;
+using Elastos::Core::AutoLock;
+using Elastos::Core::CInteger32;
+using Elastos::Utility::CArrayList;
 using Elastos::Utility::ICollection;
 using Elastos::Utility::IIterator;
-using Elastos::Utility::EIID_IIterator;
+using Elastos::Utility::ISet;
+using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
 namespace Droid {
@@ -218,6 +221,7 @@ void ApplicationStatus::OnStateChange(
     /* [in] */ Int32 newState)
 {
     if (activity == NULL) {
+        Logger::E("ApplicationStatus::OnStateChange", "null activity is not supported");
         assert(0);
 //        throw new IllegalArgumentException("null activity is not supported");
     }
@@ -236,9 +240,7 @@ void ApplicationStatus::OnStateChange(
         sActivityInfo->ContainsKey(activity, &result);
         assert(!result);
         AutoPtr<IActivityInfo> activityInfo;
-        assert(0);
-        // TODO
-        // CActivityInfo::New((IActivityInfo**)&activityInfo);
+        CActivityInfo::New((IActivityInfo**)&activityInfo);
         sActivityInfo->Put(activity, activityInfo);
     }
 
@@ -312,14 +314,30 @@ AutoPtr<IActivity> ApplicationStatus::GetLastTrackedFocusedActivity()
 /**
  * @return A {@link List} of all non-destroyed {@link Activity}s.
  */
-// List<WeakReference<Activity>> ApplicationStatus::GetRunningActivities()
-// {
-//     List<WeakReference<Activity>> activities = new ArrayList<WeakReference<Activity>>();
-//     for (Activity activity : sActivityInfo.keySet()) {
-//         activities.add(new WeakReference<Activity>(activity));
-//     }
-//     return activities;
-// }
+//List<WeakReference<Activity>> ApplicationStatus::GetRunningActivities()
+AutoPtr<IList> ApplicationStatus::GetRunningActivities()
+{
+    //List<WeakReference<Activity>> activities = new ArrayList<WeakReference<Activity>>();
+    AutoPtr<IList> activities;
+    CArrayList::New((IList**)&activities);
+    AutoPtr<ISet> keySet;
+    sActivityInfo->GetKeySet((ISet**)&keySet);
+    AutoPtr<IIterator> iter;
+    keySet->GetIterator((IIterator**)&iter);
+    Boolean next;
+    while(iter->HasNext(&next), next) {
+        AutoPtr<IInterface> obj;
+        iter->GetNext((IInterface**)&obj);
+        IWeakReferenceSource* wrs = IWeakReferenceSource::Probe(obj);
+        AutoPtr<IWeakReference> wr;
+        wrs->GetWeakReference((IWeakReference**)&wr);
+        activities->Add(TO_IINTERFACE(wr));
+    }
+    //for (Activity activity : sActivityInfo.keySet()) {
+    //    activities.add(new WeakReference<Activity>(activity));
+    //}
+    return activities;
+}
 
 /**
  * @return The {@link Context} for the {@link Application}.
@@ -393,9 +411,7 @@ Int32 ApplicationStatus::GetStateForApplication()
 {
     synchronized(sCachedApplicationStateLock) {
         if (sCachedApplicationState == NULL) {
-            assert(0);
-            // TODO
-            // CInteger32::New(DetermineApplicationState(), (IInteger32**)&sCachedApplicationState);
+            CInteger32::New(DetermineApplicationState(), (IInteger32**)&sCachedApplicationState);
         }
     }
 

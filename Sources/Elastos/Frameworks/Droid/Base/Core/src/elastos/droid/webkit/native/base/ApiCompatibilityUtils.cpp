@@ -7,7 +7,6 @@
 #include "elastos/droid/os/Build.h"
 
 using Elastos::Droid::Os::Build;
-using Elastos::Droid::View::EIID_IView;
 using Elastos::Droid::View::IViewTreeObserver;
 
 namespace Elastos {

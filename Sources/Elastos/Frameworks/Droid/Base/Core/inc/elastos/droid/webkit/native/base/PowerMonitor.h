@@ -30,8 +30,11 @@ private:
 public:
     class LazyHolder
     {
+    public:
+        static AutoPtr<PowerMonitor> INSTANCE();
     private:
-//        static const AutoPr<PowerMonitor> INSTANCE;
+        static Object sLock;
+        static AutoPtr<PowerMonitor> instance;
     };
 
     class InnerRunnable
@@ -80,7 +83,7 @@ private:
 private:
     static const Int64 SUSPEND_DELAY_MS = 1 * 60 * 1000;  // 1 minute.
 
-//    static AutoPr<PowerMonitor> sInstance;
+    static AutoPtr<PowerMonitor> sInstance;
 
     Boolean mIsBatteryPower;
     const AutoPtr<IHandler> mHandler;

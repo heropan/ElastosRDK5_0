@@ -10,7 +10,6 @@ using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Database::ICursor;
 using Elastos::Droid::Net::IUri;
 using Elastos::Droid::Os::IParcelFileDescriptor;
-// import android.util.Log;
 
 namespace Elastos {
 namespace Droid {

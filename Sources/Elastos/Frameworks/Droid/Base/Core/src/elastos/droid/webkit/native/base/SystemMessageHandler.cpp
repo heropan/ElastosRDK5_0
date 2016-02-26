@@ -38,8 +38,8 @@ ECode SystemMessageHandler::HandleMessage(
 //@CalledByNative
 void SystemMessageHandler::ScheduleWork()
 {
-    assert(0);
-//    SendEmptyMessage(SCHEDULED_WORK);
+    Boolean res;
+    SendEmptyMessage(SCHEDULED_WORK, &res);
 }
 
 //@SuppressWarnings("unused")
@@ -48,25 +48,20 @@ void SystemMessageHandler::ScheduleDelayedWork(
     /* [in] */ Int64 delayedTimeTicks,
     /* [in] */ Int64 millis)
 {
-    assert(0);
-#if 0
     if (mDelayedScheduledTimeTicks != 0) {
         RemoveMessages(DELAYED_SCHEDULED_WORK);
     }
     mDelayedScheduledTimeTicks = delayedTimeTicks;
-    SendEmptyMessageDelayed(DELAYED_SCHEDULED_WORK, millis);
-#endif
+    Boolean res;
+    SendEmptyMessageDelayed(DELAYED_SCHEDULED_WORK, millis, &res);
 }
 
 //@SuppressWarnings("unused")
 //@CalledByNative
 void SystemMessageHandler::RemoveAllPendingMessages()
 {
-    assert(0);
-#if 0
     RemoveMessages(SCHEDULED_WORK);
     RemoveMessages(DELAYED_SCHEDULED_WORK);
-#endif
 }
 
 //@CalledByNative

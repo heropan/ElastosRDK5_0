@@ -1,9 +1,32 @@
-
+#include "Elastos.CoreLibrary.Utility.Concurrent.h"
+#include "Elastos.CoreLibrary.IO.h"
 #include "elastos/droid/webkit/native/base/CommandLine.h"
 #include "elastos/droid/webkit/native/base/api/CommandLine_dec.h"
-//#include "elastos/droid/text/TextUtils.h"
+#include "elastos/droid/text/TextUtils.h"
+#include "elastos/core/Character.h"
+#include "elastos/core/StringBuilder.h"
+#include "elastos/core/StringUtils.h"
+#include "elastos/utility/Arrays.h"
+#include <elastos/utility/logging/Logger.h>
 
-//using Elastos::Droid::Text::TextUtils;
+using Elastos::Droid::Text::TextUtils;
+using Elastos::Core::Character;
+using Elastos::Core::CString;
+using Elastos::Core::ICharSequence;
+using Elastos::Core::StringBuilder;
+using Elastos::Core::StringUtils;
+using Elastos::IO::ICloseable;
+using Elastos::IO::IFile;
+using Elastos::IO::CFile;
+using Elastos::IO::IReader;
+using Elastos::IO::IInputStream;
+using Elastos::IO::CFileInputStream;
+using Elastos::IO::CInputStreamReader;
+using Elastos::Utility::Concurrent::Atomic::CAtomicReference;
+using Elastos::Utility::CArrayList;
+using Elastos::Utility::CHashMap;
+using Elastos::Utility::Arrays;
+using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
 namespace Droid {
@@ -18,18 +41,24 @@ JavaCommandLine::JavaCommandLine(
     /* [in] */ ArrayOf<String>* args)
     : mArgsBegin(1)
 {
-    assert(0);
-#if 0
-    if (args == NULL || args->GetLength() == 0 || (*args)[0] == NULL) {
-        mArgs.add("");
+    CHashMap::New((IHashMap**)&mSwitches);
+    CArrayList::New((IArrayList**)&mArgs);
+
+    if (args == NULL || args->GetLength() == 0 || (*args)[0].IsNull()) {
+        //mArgs.add("");
+        AutoPtr<ICharSequence> arg;
+        CString::New(String(""), (ICharSequence**)&arg);
+        mArgs->Add(TO_IINTERFACE(arg));
     }
     else {
-        mArgs.add(args[0]);
+        //mArgs.add(args[0]);
+        AutoPtr<ICharSequence> arg;
+        CString::New((*args)[0], (ICharSequence**)&arg);
+        mArgs->Add(TO_IINTERFACE(arg));
         AppendSwitchesInternal(args, 1);
     }
     // Invariant: we always have the argv[0] program name element.
-    assert mArgs.size() > 0;
-#endif
+    //assert mArgs.size() > 0;
 }
 
 /**
@@ -38,32 +67,53 @@ JavaCommandLine::JavaCommandLine(
  */
 AutoPtr< ArrayOf<String> > JavaCommandLine::GetCommandLineArguments()
 {
-//    return mArgs.toArray(new String[mArgs.size()]);
-    assert(0);
-    return NULL;
+    //return mArgs.toArray(new String[mArgs.size()]);
+    Int32 size;
+    mArgs->GetSize(&size);
+    AutoPtr<ArrayOf<IInterface*> > inArray = ArrayOf<IInterface*>::Alloc(size);
+    AutoPtr<ArrayOf<IInterface*> > outArray;
+    mArgs->ToArray(inArray, (ArrayOf<IInterface*>**)&outArray);
+    Int32 outSize = outArray->GetLength();
+    AutoPtr<ArrayOf<String> > result = ArrayOf<String>::Alloc(outSize);
+    for(Int32 i = 0; i < outSize; ++i) {
+        AutoPtr<IInterface> obj = (*outArray)[i];
+        ICharSequence* cs = ICharSequence::Probe(obj);
+        String str;
+        cs->ToString(&str);
+        result->Set(i, str);
+    }
+    return result;
 }
 
 //@Override
 Boolean JavaCommandLine::HasSwitch(
     /* [in] */ const String& switchString)
 {
-    assert(0);
-//    return mSwitches.ContainsKey(switchString);
-    return FALSE;
+    Boolean result;
+    AutoPtr<ICharSequence> cs;
+    CString::New(switchString, (ICharSequence**)&cs);
+
+    mSwitches->ContainsKey(TO_IINTERFACE(cs), &result);
+    return result;
 }
 
 //@Override
 String JavaCommandLine::GetSwitchValue(
     /* [in] */ const String& switchString)
 {
-    assert(0);
-#if 0
     // This is slightly round about, but needed for consistency with the NativeCommandLine
     // version which does not distinguish empty values from key not present.
-    String value = mSwitches.get(switchString);
-    return value == NULL || value.IsEmpty() ? NULL : value;
-#endif
-    return String(NULL);
+    //String value = mSwitches.get(switchString);
+    AutoPtr<ICharSequence> cs;
+    CString::New(switchString, (ICharSequence**)&cs);
+
+    AutoPtr<IInterface> obj;
+    mSwitches->Get(TO_IINTERFACE(cs), (IInterface**)&obj);
+    String result;
+    ICharSequence* csq = ICharSequence::Probe(obj);
+    csq->ToString(&result);
+
+    return result;
 }
 
 //@Override
@@ -83,17 +133,22 @@ void JavaCommandLine::AppendSwitchWithValue(
     /* [in] */ const String& switchString,
     /* [in] */ const String& value)
 {
-    assert(0);
-#if 0
-    mSwitches.put(switchString, value == null ? "" : value);
+    AutoPtr<ICharSequence> key;
+    CString::New(switchString, (ICharSequence**)&key);
+    AutoPtr<ICharSequence> csvalue;
+    CString::New(value, (ICharSequence**)&csvalue);
+
+    mSwitches->Put(TO_IINTERFACE(key), TO_IINTERFACE(csvalue));
 
     // Append the switch and update the switches/arguments divider mArgsBegin.
     String combinedSwitchString = SWITCH_PREFIX + switchString;
-    if (value != null && !value.isEmpty())
+    if (!value.IsNullOrEmpty())
         combinedSwitchString += SWITCH_VALUE_SEPARATOR + value;
 
-    mArgs.add(mArgsBegin++, combinedSwitchString);
-#endif
+    //mArgs.add(mArgsBegin++, combinedSwitchString);
+    AutoPtr<ICharSequence> cs;
+    CString::New(combinedSwitchString, (ICharSequence**)&cs);
+    mArgs->Add(mArgsBegin++, TO_IINTERFACE(cs));
 }
 
 //@Override
@@ -108,31 +163,34 @@ void JavaCommandLine::AppendSwitchesInternal(
     /* [in] */ ArrayOf<String>* array,
     /* [in] */ Int32 skipCount)
 {
-    assert(0);
-#if 0
     Boolean parseSwitches = TRUE;
     Int32 length = array->GetLength();
     for (Int32 i = 0; i < length; ++i) {
-        arg String = (*array)[i];
+        String arg = (*array)[i];
         if (skipCount > 0) {
             --skipCount;
             continue;
         }
 
         if (arg.Equals(SWITCH_TERMINATOR)) {
-            parseSwitches = false;
+            parseSwitches = FALSE;
         }
 
-        if (parseSwitches && arg.StartsWith(SWITCH_PREFIX)) {
-            String[] parts = arg.Split(SWITCH_VALUE_SEPARATOR, 2);
-            String value = parts.length > 1 ? parts[1] : null;
-            AppendSwitchWithValue(parts[0].Substring(SWITCH_PREFIX.GetLength()), value);
+        if (parseSwitches && arg.StartWith(SWITCH_PREFIX)) {
+            //String[] parts = arg.Split(SWITCH_VALUE_SEPARATOR, 2);
+            AutoPtr<ArrayOf<String> > parts;
+            StringUtils::Split(arg, SWITCH_VALUE_SEPARATOR, 2, (ArrayOf<String>**)&parts);
+
+            String value = parts->GetLength() > 1 ? (*parts)[1] : String(NULL);
+            AppendSwitchWithValue((*parts)[0].Substring(SWITCH_PREFIX.GetLength()), value);
         }
         else {
-            mArgs.add(arg);
+            //mArgs.add(arg);
+            AutoPtr<ICharSequence> cs;
+            CString::New(arg, (ICharSequence**)&cs);
+            mArgs->Add(TO_IINTERFACE(cs));
         }
     }
-#endif
 }
 
 //===============================================================
@@ -189,6 +247,16 @@ const String CommandLine::TAG("CommandLine");
 const String CommandLine::SWITCH_PREFIX("--");
 const String CommandLine::SWITCH_TERMINATOR(SWITCH_PREFIX);
 const String CommandLine::SWITCH_VALUE_SEPARATOR("=");
+AutoPtr<IAtomicReference>  CommandLine::sCommandLine;
+
+Int32 CommandLine::CommandLineInit()
+{
+    CAtomicReference::New((IAtomicReference**)&CommandLine::sCommandLine);
+    return 0;
+}
+
+static Int32 initValue = CommandLine::CommandLineInit();
+
 
 CommandLine::CommandLine()
 {
@@ -206,9 +274,7 @@ String CommandLine::GetSwitchValue(
     /* [in] */ const String& defaultValue)
 {
     String value = GetSwitchValue(switchString);
-    assert(0);
-//    return TextUtils::IsEmpty(value) ? defaultValue : value;
-    return String(NULL);
+    return TextUtils::IsEmpty(value) ? defaultValue : value;
 }
 
 /**
@@ -225,21 +291,20 @@ Boolean CommandLine::IsNativeImplementation()
  */
 Boolean CommandLine::IsInitialized()
 {
-//    return sCommandLine.get() != null;
-    assert(0);
-    return FALSE;
+    AutoPtr<IInterface> obj;
+    sCommandLine->Get((IInterface**)&obj);
+    return obj != NULL;
 }
 
 // Equivalent to CommandLine::ForCurrentProcess in C++.
 AutoPtr<CommandLine> CommandLine::GetInstance()
 {
-    assert(0);
-#if 0
-    CommandLine commandLine = sCommandLine.get();
-    assert commandLine != null;
+    AutoPtr<IInterface> obj;
+    sCommandLine->Get((IInterface**)&obj);
+    //CommandLine commandLine = sCommandLine.get();
+    assert(obj != NULL);
+    AutoPtr<CommandLine> commandLine = (CommandLine*)(IObject::Probe(obj));
     return commandLine;
-#endif
-    return NULL;
 }
 
 /**
@@ -250,9 +315,8 @@ AutoPtr<CommandLine> CommandLine::GetInstance()
 void CommandLine::Init(
     /* [in] */ ArrayOf<String>* args)
 {
-    assert(0);
-//    AutoPtr<CommandLine> instance = new JavaCommandLine(args);
-//    SetInstance(instance);
+    AutoPtr<CommandLine> instance = new JavaCommandLine(args);
+    SetInstance(instance);
 }
 
 /**
@@ -264,7 +328,7 @@ void CommandLine::InitFromFile(
     /* [in] */ const String& file)
 {
     // Arbitrary clamp of 8k on the amount of file we read in.
-    AutoPtr< ArrayOf<Int8> > buffer = ReadUtf8FileFully(file, 8 * 1024);
+    AutoPtr< ArrayOf<Char32> > buffer = ReadUtf8FileFully(file, 8 * 1024);
     Init(buffer == NULL ? NULL : TokenizeQuotedAruments(buffer));
 }
 
@@ -287,45 +351,69 @@ void CommandLine::Reset()
  * @return the tokenized arguments, suitable for passing to init().
  */
 AutoPtr< ArrayOf<String> > CommandLine::TokenizeQuotedAruments(
-    /* [in] */ ArrayOf<Int8>* buffer)
+    /* [in] */ ArrayOf<Char32>* buffer)
 {
-    assert(0);
-#if 0
-    ArrayList<String> args = new ArrayList<String>();
-    StringBuilder arg = null;
-    final char noQuote = '\0';
-    final char singleQuote = '\'';
-    final char doubleQuote = '"';
-    char currentQuote = noQuote;
-    for (char c : buffer) {
+    //ArrayList<String> args = new ArrayList<String>();
+    AutoPtr<IArrayList> args;
+    CArrayList::New((IArrayList**)&args);
+    AutoPtr<StringBuilder> arg;
+    Int8 noQuote = '\0';
+    Int8 singleQuote = '\'';
+    Int8 doubleQuote = '"';
+    Int8 currentQuote = noQuote;
+    Int32 bsize = buffer->GetLength();
+    for (Int32 i = 0; i < bsize; ++i) {
+        Int8 c = (*buffer)[i];
         // Detect start or end of quote block.
         if ((currentQuote == noQuote && (c == singleQuote || c == doubleQuote)) ||
             c == currentQuote) {
-            if (arg != null && arg.length() > 0 && arg.charAt(arg.length() - 1) == '\\') {
+            Int32 length;
+            if (arg != NULL && (arg->GetLength(&length), length) > 0 && arg->GetCharAt(length - 1) == '\\') {
                 // Last char was a backslash; pop it, and treat c as a literal.
-                arg.setCharAt(arg.length() - 1, c);
+                arg->SetCharAt(length - 1, c);
             } else {
                 currentQuote = currentQuote == noQuote ? c : noQuote;
             }
-        } else if (currentQuote == noQuote && Character.isWhitespace(c)) {
-            if (arg != null) {
-                args.add(arg.toString());
-                arg = null;
+        } else if (currentQuote == noQuote && Character::IsWhitespace(c)) {
+            if (arg != NULL) {
+                String argString = arg->ToString();
+
+                AutoPtr<ICharSequence> cs;
+                CString::New(argString, (ICharSequence**)&cs);
+                args->Add(TO_IINTERFACE(cs));
+                arg = NULL;
             }
         } else {
-            if (arg == null) arg = new StringBuilder();
-            arg.append(c);
+            if (arg == NULL) arg = new StringBuilder();
+            arg->Append(c);
         }
     }
-    if (arg != null) {
+    if (arg != NULL) {
         if (currentQuote != noQuote) {
-            Log.w(TAG, "Unterminated quoted string: " + arg);
+            Logger::W(TAG, "Unterminated quoted string: ");// + arg);
         }
-        args.add(arg.toString());
+        //args.add(arg.toString());
+        String argString = arg->ToString();
+        AutoPtr<ICharSequence> cs;
+        CString::New(argString, (ICharSequence**)&cs);
+        args->Add(TO_IINTERFACE(cs));
     }
-    return args.toArray(new String[args.size()]);
-#endif
-    return NULL;
+    //return args.toArray(new String[args.size()]);
+    Int32 size;
+    args->GetSize(&size);
+    AutoPtr<ArrayOf<IInterface*> > inArray = ArrayOf<IInterface*>::Alloc(size);
+    AutoPtr<ArrayOf<IInterface*> > outArray;
+    args->ToArray(inArray, (ArrayOf<IInterface*>**)&outArray);
+    Int32 outSize = outArray->GetLength();
+    AutoPtr<ArrayOf<String> > result = ArrayOf<String>::Alloc(outSize);
+    for(Int32 i = 0; i < outSize; ++i) {
+        AutoPtr<IInterface> obj = (*outArray)[i];
+        ICharSequence* cs = ICharSequence::Probe(obj);
+        String str;
+        cs->ToString(&str);
+        result->Set(i, str);
+    }
+    return result;
 }
 
 void CommandLine::EnableNativeProxy()
@@ -333,34 +421,32 @@ void CommandLine::EnableNativeProxy()
     // Make a best-effort to ensure we make a clean (atomic) switch over from the old to
     // the new command line implementation. If another thread is modifying the command line
     // when this happens, all bets are off. (As per the native CommandLine).
-    assert(0);
-//    sCommandLine.set(new NativeCommandLine());
+    sCommandLine->Set(TO_IINTERFACE(new NativeCommandLine()));
 }
 
 AutoPtr< ArrayOf<String> > CommandLine::GetJavaSwitchesOrNull()
 {
-    assert(0);
-#if 0
-    CommandLine commandLine = sCommandLine.get();
-    if (commandLine != null) {
-        assert !commandLine.isNativeImplementation();
-        return ((JavaCommandLine) commandLine).getCommandLineArguments();
+    //CommandLine commandLine = sCommandLine.get();
+    AutoPtr<IInterface> obj;
+    sCommandLine->Get((IInterface**)&obj);
+    if (obj != NULL) {
+        CommandLine* commandLine = (CommandLine*)(IObject::Probe(obj));
+        assert(!commandLine->IsNativeImplementation());
+        return ((JavaCommandLine*)commandLine)->GetCommandLineArguments();
     }
-    return null;
-#endif
     return NULL;
 }
 
 void CommandLine::SetInstance(
     /* [in] */ CommandLine* commandLine)
 {
-    assert(0);
-#if 0
-    CommandLine oldCommandLine = sCommandLine.getAndSet(commandLine);
-    if (oldCommandLine != null && oldCommandLine.isNativeImplementation()) {
-        nativeReset();
+    AutoPtr<IInterface> obj;
+    sCommandLine->GetAndSet(TO_IINTERFACE(commandLine), (IInterface**)&obj);
+    //CommandLine oldCommandLine = sCommandLine.getAndSet(commandLine);
+    CommandLine* oldCommandLine = (CommandLine*)(IObject::Probe(obj));
+    if (oldCommandLine != NULL && oldCommandLine->IsNativeImplementation()) {
+        NativeReset();
     }
-#endif
 }
 
 /**
@@ -369,47 +455,52 @@ void CommandLine::SetInstance(
  * @return Array of chars read from the file, or null if the file cannot be read
  *         or if its length exceeds |sizeLimit|.
  */
-AutoPtr< ArrayOf<Int8> > CommandLine::ReadUtf8FileFully(
+AutoPtr< ArrayOf<Char32> > CommandLine::ReadUtf8FileFully(
     /* [in] */ const String& fileName,
     /* [in] */ Int32 sizeLimit)
 {
-    assert(0);
-#if 0
-    Reader reader = null;
-    File f = new File(fileName);
-    long fileLength = f.length();
+    AutoPtr<IReader> reader = NULL;
+    AutoPtr<IFile> f;
+    CFile::New(fileName, (IFile**)&f);
+    Int64 fileLength;
+    f->GetLength(&fileLength);
 
     if (fileLength == 0) {
-        return null;
+        return NULL;
     }
 
     if (fileLength > sizeLimit) {
-        Log.w(TAG, "File " + fileName + " length " + fileLength + " exceeds limit "
-                + sizeLimit);
-        return null;
+        Logger::W(TAG, "File %s length %ld exceeds limit %d", fileName.string(), fileLength, sizeLimit);
+        return NULL;
     }
 
-    try {
-        char[] buffer = new char[(int) fileLength];
-        reader = new InputStreamReader(new FileInputStream(f), "UTF-8");
-        int charsRead = reader.read(buffer);
+    //try {
+        //char[] buffer = new char[(int) fileLength];
+        AutoPtr<ArrayOf<Char32> > buffer = ArrayOf<Char32>::Alloc((Int32)fileLength);
+        AutoPtr<IFileInputStream> fis;
+        CFileInputStream::New(f, (IFileInputStream**)&fis);
+        //reader = new InputStreamReader(new FileInputStream(f), "UTF-8");
+        CInputStreamReader::New(IInputStream::Probe(fis), String("UTF-8"), (IInputStreamReader**)&reader);
+        Int32 charsRead;
+        ECode ec = reader->Read(buffer, &charsRead);
         // Debug check that we've exhausted the input stream (will fail e.g. if the
         // file grew after we inspected its length).
-        assert !reader.ready();
-        return charsRead < buffer.length ? Arrays.copyOfRange(buffer, 0, charsRead) : buffer;
-    } catch (FileNotFoundException e) {
-        return null;
-    } catch (IOException e) {
-        return null;
-    } finally {
-        try {
-            if (reader != null) reader.close();
-        } catch (IOException e) {
-            Log.e(TAG, "Unable to close file reader.", e);
-        }
-    }
-#endif
-    return NULL;
+        //assert(!(reader->IsReady());
+        if (reader != NULL) ICloseable::Probe(reader)->Close();
+        if (FAILED(ec))
+            return NULL;
+        AutoPtr<ArrayOf<Char32> > result;
+        return charsRead < buffer->GetLength() ? (Arrays::CopyOfRange(buffer, 0, charsRead, (ArrayOf<Char32>**)&result), result) : buffer;
+    //} catch (FileNotFoundException e) {
+    //    return null;
+    //} catch (IOException e) {
+    //    return null;
+    //} finally {
+        //try {
+        //} catch (IOException e) {
+        //    Log.e(TAG, "Unable to close file reader.", e);
+        //}
+    //}
 }
 
 void CommandLine::NativeReset()

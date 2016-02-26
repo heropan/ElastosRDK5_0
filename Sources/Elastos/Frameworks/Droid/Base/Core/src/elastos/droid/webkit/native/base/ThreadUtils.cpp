@@ -2,58 +2,72 @@
 #include "Elastos.Droid.Os.h"
 #include "elastos/droid/webkit/native/base/ThreadUtils.h"
 #include "elastos/droid/webkit/native/base/api/ThreadUtils_dec.h"
+#include "elastos/droid/os/CHandler.h"
+#include "elastos/droid/os/Looper.h"
+#include "elastos/droid/os/Process.h"
+#include "elastos/core/AutoLock.h"
+#include <elastos/utility/logging/Logger.h>
+
+using Elastos::Droid::Os::CHandler;
+using Elastos::Droid::Os::Looper;
+using Elastos::Droid::Os::Process;
+using Elastos::Droid::Os::IProcess;
+using Elastos::Core::AutoLock;
+using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
 namespace Droid {
 namespace Webkit {
 namespace Base {
 
-//const Object ThreadUtils::sLock;
+Object ThreadUtils::sLock;
 Boolean ThreadUtils::sWillOverride = FALSE;
 AutoPtr<IHandler> ThreadUtils::sUiThreadHandler;
 
 void ThreadUtils::SetWillOverrideUiThread()
 {
-    assert(0);
-#if 0
-    synchronized(sLock) {
-        sWillOverride = true;
+    {
+        AutoLock lock(sLock);
+        sWillOverride = TRUE;
     }
-#endif
 }
 
 void ThreadUtils::SetUiThread(
     /* [in] */ ILooper* looper)
 {
-    assert(0);
-#if 0
-    synchronized(sLock) {
-        if (sUiThreadHandler != null && sUiThreadHandler.getLooper() != looper) {
-            throw new RuntimeException("UI thread looper is already set to " +
-                    sUiThreadHandler.getLooper() + " (Main thread looper is " +
-                    Looper.getMainLooper() + "), cannot set to new looper " + looper);
+    {
+        AutoLock lock(sLock);
+        AutoPtr<ILooper> tlooper;
+        sUiThreadHandler->GetLooper((ILooper**)&tlooper);
+        if (sUiThreadHandler != NULL && tlooper.Get() != looper) {
+            //throw new RuntimeException("UI thread looper is already set to " +
+            //        sUiThreadHandler.getLooper() + " (Main thread looper is " +
+            //        Looper.getMainLooper() + "), cannot set to new looper " + looper);
+            Logger::E("ThreadUtils::SetUiThread", "UI thread looper is already set");
+            assert(0);
         } else {
-            sUiThreadHandler = new Handler(looper);
+            //sUiThreadHandler = new Handler(looper);
+            CHandler::New(looper, (IHandler**)&sUiThreadHandler);
         }
     }
-#endif
 }
 
 AutoPtr<IHandler> ThreadUtils::GetUiThreadHandler()
 {
-    assert(0);
-#if 0
-    synchronized(sLock) {
-        if (sUiThreadHandler == null) {
+    {
+        AutoLock lock(sLock);
+        if (sUiThreadHandler == NULL) {
             if (sWillOverride) {
-                throw new RuntimeException("Did not yet override the UI thread");
+                //throw new RuntimeException("Did not yet override the UI thread");
+                Logger::E("ThreadUtils::GetUiThreadHandler", "Did not yet override the UI thread");
+                assert(0);
             }
-            sUiThreadHandler = new Handler(Looper.getMainLooper());
+            //sUiThreadHandler = new Handler(Looper.getMainLooper());
+            AutoPtr<ILooper> looper = Looper::GetMainLooper();
+            CHandler::New(looper, (IHandler**)&sUiThreadHandler);
         }
         return sUiThreadHandler;
     }
-#endif
-    return NULL;
 }
 
 /**
@@ -63,22 +77,21 @@ AutoPtr<IHandler> ThreadUtils::GetUiThreadHandler()
  * @param r The Runnable to run.
  */
 void ThreadUtils::RunOnUiThreadBlocking(
-    /* [in] */ const IRunnable* r)
+    /* [in] */ IRunnable* r)
 {
-    assert(0);
-#if 0
-    if (runningOnUiThread()) {
-        r.run();
+    if (RunningOnUiThread()) {
+        r->Run();
     } else {
-        FutureTask<Void> task = new FutureTask<Void>(r, null);
-        postOnUiThread(task);
-        try {
-            task.get();
-        } catch (Exception e) {
-            throw new RuntimeException("Exception occured while waiting for runnable", e);
-        }
+        //FutureTask<Void> task = new FutureTask<Void>(r, null);
+        AutoPtr<FutureTask> task = new FutureTask(r, NULL);
+        PostOnUiThread(task);
+        //try {
+        AutoPtr<IInterface> obj;
+        task->Get((IInterface**)&obj);
+        //} catch (Exception e) {
+        //    throw new RuntimeException("Exception occured while waiting for runnable", e);
+        //}
     }
-#endif
 }
 
 /**
@@ -91,15 +104,11 @@ void ThreadUtils::RunOnUiThreadBlocking(
 AutoPtr<IInterface> ThreadUtils::RunOnUiThreadBlockingNoException(
     /* [in] */ ICallable* c)
 {
-    assert(0);
-#if 0
-    try {
-        return runOnUiThreadBlocking(c);
-    } catch (ExecutionException e) {
-        throw new RuntimeException("Error occured waiting for callable", e);
-    }
-#endif
-    return NULL;
+    //try {
+    return RunOnUiThreadBlocking(c);
+    //} catch (ExecutionException e) {
+    //    throw new RuntimeException("Error occured waiting for callable", e);
+    //}
 }
 
 /**
@@ -113,17 +122,15 @@ AutoPtr<IInterface> ThreadUtils::RunOnUiThreadBlockingNoException(
 AutoPtr<IInterface> ThreadUtils::RunOnUiThreadBlocking(
     /* [in] */ ICallable* c)
 {
-    assert(0);
-#if 0
-    FutureTask<T> task = new FutureTask<T>(c);
-    runOnUiThread(task);
-    try {
-        return task.get();
-    } catch (InterruptedException e) {
-        throw new RuntimeException("Interrupted waiting for callable", e);
-    }
-#endif
-    return NULL;
+    AutoPtr<FutureTask> task = new FutureTask(c);
+    RunOnUiThread(task);
+    //try {
+    AutoPtr<IInterface> obj;
+    task->Get((IInterface**)&obj);
+    return obj;
+    //} catch (InterruptedException e) {
+    //    throw new RuntimeException("Interrupted waiting for callable", e);
+    //}
 }
 
 /**
@@ -133,20 +140,16 @@ AutoPtr<IInterface> ThreadUtils::RunOnUiThreadBlocking(
  * @param task The FutureTask to run
  * @return The queried task (to aid inline construction)
  */
-// AutoPtr<IFutureTask> ThreadUtils::RunOnUiThread(
-//     /* [in] */ IFutureTask* task)
-// {
-//     assert(0);
-// #if 0
-//     if (runningOnUiThread()) {
-//         task.run();
-//     } else {
-//         postOnUiThread(task);
-//     }
-//     return task;
-// #endif
-//     return NULL;
-// }
+ AutoPtr<FutureTask> ThreadUtils::RunOnUiThread(
+    /* [in] */ FutureTask* task)
+{
+    if (RunningOnUiThread()) {
+        task->Run();
+    } else {
+        PostOnUiThread(task);
+    }
+    return task;
+}
 
 /**
  * Run the supplied Callable on the main thread. The method will block only if the current
@@ -155,13 +158,11 @@ AutoPtr<IInterface> ThreadUtils::RunOnUiThreadBlocking(
  * @param c The Callable to run
  * @return A FutureTask wrapping the callable to retrieve results
  */
-// AutoPtr<IFutureTask> ThreadUtils::RunOnUiThread(
-//     /* [in] */ ICallable* c)
-// {
-//     assert(0);
-// //    return runOnUiThread(new FutureTask<T>(c));
-//     return NULL;
-// }
+AutoPtr<FutureTask> ThreadUtils::RunOnUiThread(
+    /* [in] */ ICallable* c)
+{
+    return RunOnUiThread(new FutureTask(c));
+}
 
 /**
  * Run the supplied Runnable on the main thread. The method will block only if the current
@@ -172,14 +173,12 @@ AutoPtr<IInterface> ThreadUtils::RunOnUiThreadBlocking(
 void ThreadUtils::RunOnUiThread(
     /* [in] */ IRunnable* r)
 {
-    assert(0);
-#if 0
-    if (runningOnUiThread()) {
-        r.run();
+    if (RunningOnUiThread()) {
+        r->Run();
     } else {
-        getUiThreadHandler().post(r);
+        Boolean res;
+        GetUiThreadHandler()->Post(r, &res);
     }
-#endif
 }
 
 /**
@@ -189,16 +188,13 @@ void ThreadUtils::RunOnUiThread(
  * @param task The FutureTask to run
  * @return The queried task (to aid inline construction)
  */
-// AutoPtr<IFutureTask> ThreadUtils::PostOnUiThread(
-//     /* [in] */ IFutureTask* task)
-// {
-//     assert(0);
-// #if 0
-//     getUiThreadHandler().post(task);
-//     return task;
-// #endif
-//     return NULL;
-// }
+AutoPtr<FutureTask> ThreadUtils::PostOnUiThread(
+    /* [in] */ FutureTask* task)
+{
+    Boolean res;
+    GetUiThreadHandler()->Post(IRunnable::Probe(task), &res);
+    return task;
+}
 
 /**
  * Post the supplied Runnable to run on the main thread. The method will not block, even if
@@ -209,10 +205,8 @@ void ThreadUtils::RunOnUiThread(
 void ThreadUtils::PostOnUiThread(
     /* [in] */ IRunnable* task)
 {
-    assert(0);
-#if 0
-    getUiThreadHandler().post(task);
-#endif
+    Boolean res;
+    GetUiThreadHandler()->Post(task, &res);
 }
 
 /**
@@ -226,10 +220,8 @@ void ThreadUtils::PostOnUiThreadDelayed(
     /* [in] */ IRunnable* task,
     /* [in] */ Int64 delayMillis)
 {
-    assert(0);
-#if 0
-    getUiThreadHandler().postDelayed(task, delayMillis);
-#endif
+    Boolean res;
+    GetUiThreadHandler()->PostDelayed(task, delayMillis, &res);
 }
 
 /**
@@ -245,20 +237,16 @@ void ThreadUtils::AssertOnUiThread()
  */
 Boolean ThreadUtils::RunningOnUiThread()
 {
-    assert(0);
-#if 0
-    return getUiThreadHandler().getLooper() == Looper.myLooper();
-#endif
-    return FALSE;
+    AutoPtr<ILooper> hlooper;
+    GetUiThreadHandler()->GetLooper((ILooper**)&hlooper);
+    return hlooper == Looper::GetMyLooper();
 }
 
 AutoPtr<ILooper> ThreadUtils::GetUiThreadLooper()
 {
-    assert(0);
-#if 0
-    return getUiThreadHandler().getLooper();
-#endif
-    return NULL;
+    AutoPtr<ILooper> hlooper;
+    GetUiThreadHandler()->GetLooper((ILooper**)&hlooper);
+    return hlooper;
 }
 
 /**
@@ -268,10 +256,7 @@ AutoPtr<ILooper> ThreadUtils::GetUiThreadLooper()
 void ThreadUtils::SetThreadPriorityAudio(
     /* [in] */ Int32 tid)
 {
-    assert(0);
-#if 0
-    Process.setThreadPriority(tid, Process.THREAD_PRIORITY_AUDIO);
-#endif
+    Process::SetThreadPriority(tid, IProcess::THREAD_PRIORITY_AUDIO);
 }
 
 } // namespace Base

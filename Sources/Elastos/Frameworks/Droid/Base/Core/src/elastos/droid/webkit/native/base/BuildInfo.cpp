@@ -5,14 +5,16 @@
 #include "elastos/droid/os/Build.h"
 
 #include <elastos/core/Math.h>
+#include <elastos/core/StringUtils.h>
 #include <elastos/utility/logging/Logger.h>
 
-using Elastos::Core::ICharSequence;
-using Elastos::Core::Math;
 using Elastos::Droid::Os::Build;
 using Elastos::Droid::Content::Pm::IApplicationInfo;
 using Elastos::Droid::Content::Pm::IPackageInfo;
 using Elastos::Droid::Content::Pm::IPackageManager;
+using Elastos::Core::ICharSequence;
+using Elastos::Core::Math;
+using Elastos::Core::StringUtils;
 using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
@@ -85,8 +87,7 @@ String BuildInfo::GetPackageVersionCode(
         Int32 versionCode;
         pi->GetVersionCode(&versionCode);
         if (versionCode > 0) {
-            assert(0);
-//            msg = Integer.toString(pi.versionCode);
+            msg = StringUtils::ToString(versionCode);
         }
     //} catch (NameNotFoundException e) {
     //    Log.d(TAG, msg);

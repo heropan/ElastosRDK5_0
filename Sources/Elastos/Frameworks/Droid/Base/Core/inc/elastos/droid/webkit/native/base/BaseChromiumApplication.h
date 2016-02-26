@@ -6,11 +6,11 @@
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/webkit/native/base/ObserverList.h"
 #include "elastos/droid/webkit/native/base/WindowCallbackWrapper.h"
-// TODO #include "elastos/droid/app/Application.h"
+#include "elastos/droid/app/Application.h"
 #include <elastos/core/Object.h>
 
 using Elastos::Droid::App::IActivity;
-// TODO using Elastos::Droid::App::Application;
+using Elastos::Droid::App::Application;
 using Elastos::Droid::App::IApplication;
 using Elastos::Droid::App::IActivityLifecycleCallbacks;
 using Elastos::Droid::Os::IBundle;
@@ -24,9 +24,7 @@ namespace Base {
  * Basic application functionality that should be shared among all browser applications.
  */
 class BaseChromiumApplication
-    //: public Object
-    // TODO : public Application
-    : public IApplication
+    :public Application
 {
 public:
     /**

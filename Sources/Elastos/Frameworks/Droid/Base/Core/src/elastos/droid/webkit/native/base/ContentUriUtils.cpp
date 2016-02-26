@@ -3,12 +3,14 @@
 #include "Elastos.Droid.Database.h"
 #include "Elastos.Droid.Net.h"
 #include "Elastos.Droid.Os.h"
+#include "Elastos.CoreLibrary.IO.h"
 #include "elastos/droid/webkit/native/base/ContentUriUtils.h"
 #include "elastos/droid/webkit/native/base/api/ContentUriUtils_dec.h"
-//#include "elastos/droid/net/CUriHelper.h"
+#include "elastos/droid/net/CUriHelper.h"
 
-//using Elastos::Droid::Net::CUriHelper;
+using Elastos::Droid::Net::CUriHelper;
 using Elastos::Droid::Net::IUriHelper;
+using Elastos::IO::ICloseable;
 
 namespace Elastos {
 namespace Droid {
@@ -77,8 +79,7 @@ AutoPtr<IParcelFileDescriptor> ContentUriUtils::GetParcelFileDescriptor(
     AutoPtr<IContentResolver> resolver;
     context->GetContentResolver((IContentResolver**)&resolver);
     AutoPtr<IUriHelper> helper;
-    assert(0);
-//    CUriHelper::AcquireSingleton((IUriHelper**)&helper);
+    CUriHelper::AcquireSingleton((IUriHelper**)&helper);
     AutoPtr<IUri> uri;
     helper->Parse(uriString, (IUri**)&uri);
 
@@ -122,6 +123,7 @@ String ContentUriUtils::GetDisplayName(
             if (index > -1) {
                 String strRet;
                 cursor->GetString(index, &strRet);
+                if (cursor != NULL) ICloseable::Probe(cursor)->Close();
                 return strRet;
             }
         }
@@ -130,7 +132,7 @@ String ContentUriUtils::GetDisplayName(
         // see crbug.com/345393
     //    return "";
     //} finally {
-    //    if (cursor != null) cursor.close();
+    if (cursor != NULL) ICloseable::Probe(cursor)->Close();
     //}
     return String("");
 }

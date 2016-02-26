@@ -11,13 +11,6 @@ using Elastos::Utility::IIterable;
 using Elastos::Utility::IIterator;
 using Elastos::Utility::IList;
 
-// import java.util.ArrayList;
-// import java.util.Iterator;
-// import java.util.List;
-// import java.util.NoSuchElementException;
-
-// import javax.annotation.concurrent.NotThreadSafe;
-
 namespace Elastos {
 namespace Droid {
 namespace Webkit {

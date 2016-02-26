@@ -3,6 +3,7 @@
 #define __ELASTOS_DROID_WEBKIT_BASE_PERFTRACEEVENT_H__
 
 #include "elastos/droid/ext/frameworkext.h"
+#include <elastos/core/Object.h>
 
 // import android.os.Debug;
 // import android.os.Debug.MemoryInfo;
@@ -11,8 +12,10 @@
 // import org.json.JSONArray;
 // import org.json.JSONException;
 // import org.json.JSONObject;
-
+using Elastos::Droid::Os::IDebugMemoryInfo;
 using Elastos::IO::IFile;
+using Elastos::Utility::IList;
+using Org::Json::IJSONArray;
 // import java.io.FileNotFoundException;
 // import java.io.FileOutputStream;
 // import java.io.PrintStream;
@@ -41,11 +44,12 @@ namespace Base {
  * the @TracePerf annotation.  Thus, unlike TraceEvent, we do not
  * support an implicit trace name based on the callstack.
  */
-class PerfTraceEvent// : public Object
+class PerfTraceEvent : public Object
 {
 private:
     /** The event types understood by the perf trace scripts. */
     class EventType
+        : public Object
     {
     public:
         EventType(
@@ -70,8 +74,8 @@ public:
      * @param strings Event names we will record.
      */
     //synchronized
-//    static CARAPI_(void) SetFilter(
-//        /* [in] */ List<String>* strings);
+    static CARAPI_(void) SetFilter(
+        /* [in] */ IList* strings);// <String>
 
     /**
      * Enable or disable perf tracing.
@@ -151,9 +155,9 @@ public:
      * Begin trace events should have a matching end event.
      */
     //synchronized
-//    static CARAPI_(void) Begin(
-//        /* [in] */ const String& name,
-//        /* [in] */ IMemoryInfo* memoryInfo);
+    static CARAPI_(void) Begin(
+        /* [in] */ const String& name,
+        /* [in] */ IDebugMemoryInfo* memoryInfo);
 
     /**
      * Record an "end" memory trace event, to match a begin event.  The
@@ -161,9 +165,9 @@ public:
      * graph code.
      */
     //synchronized
-//    static CARAPI_(void) End(
-//        /* [in] */ const String& name,
-//        /* [in] */ IMemoryInfo* memoryInfo);
+    static CARAPI_(void) End(
+        /* [in] */ const String& name,
+        /* [in] */ IDebugMemoryInfo* memoryInfo);
 
     /**
      * Generating a trace name for tracking memory based on the timing name passed in.
@@ -201,28 +205,6 @@ public:
         /* [in] */ IFile* file);
 
 private:
-    static const Int32 MAX_NAME_LENGTH = 40;
-    static const String MEMORY_TRACE_NAME_SUFFIX;
-    static AutoPtr<IFile> sOutputFile;
-
-    static Boolean sEnabled;
-    static Boolean sTrackTiming;
-    static Boolean sTrackMemory;
-
-    // A list of performance trace event strings.
-    // Events are stored as a JSON dict much like TraceEvent.
-    // E.g. timestamp is in microseconds.
-//    static AutoPtr<IJSONArray> sPerfTraceStrings;
-
-    // A filter for performance tracing.  Only events that match a
-    // string in the list are saved.  Presence of a filter does not
-    // necessarily mean perf tracing is enabled.
-//    static List<String> sFilter;
-
-    // Nanosecond start time of performance tracing.
-    static Int64 sBeginNanoTime;
-
-private:
     /**
      * Determine if we are interested in this trace event.
      * @return True if the name matches the allowed filter; else false.
@@ -254,18 +236,42 @@ private:
      * @param memoryInfo Memory details to be included in this perf string, null if
      *                   no memory details are to be included.
      */
-//    static CARAPI_(void) SavePerfString(
-//        /* [in] */ const String& name,
-//        /* [in] */ Int64 id,
-//        /* [in] */ const String& type,
-//        /* [in] */ Int64 timestampUs,
-//        /* [in] */ IMemoryInfo* memoryInfo);
+    static CARAPI_(void) SavePerfString(
+        /* [in] */ const String& name,
+        /* [in] */ Int64 id,
+        /* [in] */ const String& type,
+        /* [in] */ Int64 timestampUs,
+        /* [in] */ IDebugMemoryInfo* memoryInfo);
 
     /**
      * Dump all performance data we have saved up to the log.
      * Output as JSON for parsing convenience.
      */
     static CARAPI_(void) DumpPerf();
+
+private:
+    static const Int32 MAX_NAME_LENGTH = 40;
+    static const String MEMORY_TRACE_NAME_SUFFIX;
+    static AutoPtr<IFile> sOutputFile;
+
+    static Boolean sEnabled;
+    static Boolean sTrackTiming;
+    static Boolean sTrackMemory;
+
+    // A list of performance trace event strings.
+    // Events are stored as a JSON dict much like TraceEvent.
+    // E.g. timestamp is in microseconds.
+    static AutoPtr</*TODO IJSONArray*/IInterface> sPerfTraceStrings;
+
+    // A filter for performance tracing.  Only events that match a
+    // string in the list are saved.  Presence of a filter does not
+    // necessarily mean perf tracing is enabled.
+    static AutoPtr<IList> sFilter;//String
+
+    // Nanosecond start time of performance tracing.
+    static Int64 sBeginNanoTime;
+
+    static Object sLock;
 };
 
 } // namespace Base

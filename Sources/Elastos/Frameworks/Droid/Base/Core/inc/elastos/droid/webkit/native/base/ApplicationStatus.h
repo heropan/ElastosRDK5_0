@@ -7,10 +7,6 @@
 #include "elastos/droid/webkit/native/base/ObserverList.h"
 #include "elastos/droid/os/Runnable.h"
 
-using Elastos::Core::IInteger32;
-using Elastos::Core::IRunnable;
-using Elastos::Utility::IMap;
-
 using Elastos::Droid::App::IActivity;
 using Elastos::Droid::App::IApplication;
 using Elastos::Droid::App::IActivityLifecycleCallbacks;
@@ -18,11 +14,10 @@ using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Os::IBundle;
 using Elastos::Droid::Os::Runnable;
 
-// import java.lang.ref.WeakReference;
-// import java.util.ArrayList;
-// import java.util.List;
-// import java.util.Map;
-// import java.util.concurrent.ConcurrentHashMap;
+using Elastos::Core::IInteger32;
+using Elastos::Core::IRunnable;
+using Elastos::Utility::IMap;
+using Elastos::Utility::IList;
 
 /**
  * Provides information about the current activity's status, and a way
@@ -187,7 +182,7 @@ public:
     /**
      * @return A {@link List} of all non-destroyed {@link Activity}s.
      */
-//    static CARAPI_(List<WeakReference<Activity>>) GetRunningActivities();
+    static CARAPI_(AutoPtr<IList>) GetRunningActivities();// WeakReference<Activity>
 
     /**
      * @return The {@link Context} for the {@link Application}.

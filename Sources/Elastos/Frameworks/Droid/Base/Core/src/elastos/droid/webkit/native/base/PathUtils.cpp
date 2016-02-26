@@ -1,11 +1,14 @@
 
 #include <Elastos.CoreLibrary.IO.h>
 #include "Elastos.Droid.Content.h"
+#include "Elastos.Droid.Os.h"
 #include "elastos/droid/webkit/native/base/PathUtils.h"
 #include "elastos/droid/webkit/native/base/api/PathUtils_dec.h"
 #include "elastos/droid/os/Environment.h"
+#include <elastos/utility/logging/Logger.h>
 
 using Elastos::Droid::Os::Environment;
+using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
 namespace Droid {
@@ -39,6 +42,7 @@ String PathUtils::GetDataDirectory(
     /* [in] */ IContext* appContext)
 {
     if (sDataDirectorySuffix == NULL) {
+        Logger::E("PathUtils::GetDataDirectory", "sDataDirectorySuffix is null");
         assert(0);
 //        throw new IllegalStateException(
 //                "setDataDirectorySuffix must be called before getDataDirectory");
@@ -90,16 +94,11 @@ String PathUtils::GetCacheDirectory(
 String PathUtils::GetDownloadsDirectory(
     /* [in] */ IContext* appContext)
 {
-    assert(0);
-    // AutoPtr<IUserEnvironment> env;
-    // CUserEnvironment::AcquireSingleton((IUserEnvironment**)&env);
-    // AutoPtr<IFile> file;
-    // env->GetExternalStoragePublicDirectory(
-    //         Environment::DIRECTORY_DOWNLOADS, (IFile**)&file);
-    // String path;
-    // file->GetPath(&path);
-    // return path;
-    return String(NULL);
+    AutoPtr<IFile> file = Environment::GetExternalStoragePublicDirectory(
+            Environment::DIRECTORY_DOWNLOADS);
+    String path;
+    file->GetPath(&path);
+    return path;
 }
 
 /**
@@ -132,15 +131,10 @@ String PathUtils::GetNativeLibraryDirectory(
 //@CalledByNative
 String PathUtils::GetExternalStorageDirectory()
 {
-    assert(0);
-    // AutoPtr<IUserEnvironment> env;
-    // CUserEnvironment::AcquireSingleton((IUserEnvironment**)&env);
-    // AutoPtr<IFile> file;
-    // env->GetExternalStorageDirectory((IFile**)&file);
-    // String path;
-    // file->GetAbsolutePath(&path);
-    // return path;
-    return String(NULL);
+    AutoPtr<IFile> file = Environment::GetExternalStorageDirectory();
+    String path;
+    file->GetAbsolutePath(&path);
+    return path;
 }
 
 String PathUtils::GetDataDirectory(
