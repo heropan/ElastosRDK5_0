@@ -72,7 +72,7 @@ bool NativeInputWindowHandle::updateInfo()
     IRegion* regionObj = mObject->mTouchableRegion;
     if (regionObj) {
         android::Rect *region;
-        regionObj->GetNativeRegion((Handle32*)&region);
+        regionObj->GetNativeRegion((Handle64*)&region);
         mInfo->touchableRegion.set(*region);
     }
     else {
