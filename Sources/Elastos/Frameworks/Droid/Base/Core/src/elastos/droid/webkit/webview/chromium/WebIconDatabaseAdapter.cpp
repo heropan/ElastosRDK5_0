@@ -1,8 +1,8 @@
 
-#include "elastos/droid/webkit/native/android_webview/AwContents.h"
+#include "elastos/droid/webkit/webview/chromium/native/android_webview/AwContents.h"
 #include "elastos/droid/webkit/webview/chromium/WebIconDatabaseAdapter.h"
 
-using Elastos::Droid::Webkit::AndroidWebview::AwContents;
+using Elastos::Droid::Webkit::Webview::Chromium::AndroidWebview::AwContents;
 
 namespace Elastos {
 namespace Droid {

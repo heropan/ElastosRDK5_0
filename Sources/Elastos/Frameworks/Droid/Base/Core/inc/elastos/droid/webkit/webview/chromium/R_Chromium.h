@@ -5,8 +5,8 @@
  * should not be modified by hand.
  */
 
-#ifndef __Elastos_Droid_Webkit_Webview_Chromium_R_H__
-#define __Elastos_Droid_Webkit_Webview_Chromium_R_H__
+#ifndef __ELASTOS_DROID_WEBKIT_WEBVIEW_CHROMIUM_R_H__
+#define __ELASTOS_DROID_WEBKIT_WEBVIEW_CHROMIUM_R_H__
 #include <elatypes.h>
 namespace Elastos {
 namespace Droid {
@@ -334,4 +334,4 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
 }
 }
 }
-#endif // __Elastos_Droid_Webkit_Webview_Chromium_R_H__
+#endif // __ELASTOS_DROID_WEBKIT_WEBVIEW_CHROMIUM_R_H__

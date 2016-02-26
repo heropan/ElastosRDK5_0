@@ -3,8 +3,8 @@
 #define _ELASTOS_DROID_WEBKIT_WEBVIEW_CHROMIUM_WEBVIEWCHROMIUMFACTORYPROVIDER_H_
 
 #include "elastos/droid/ext/frameworkext.h"
-#include "elastos/droid/webkit/native/android_webview/AwBrowserContext.h"
-#include "elastos/droid/webkit/native/android_webview/AwDevToolsServer.h"
+#include "elastos/droid/webkit/webview/chromium/native/android_webview/AwBrowserContext.h"
+#include "elastos/droid/webkit/webview/chromium/native/android_webview/AwDevToolsServer.h"
 #include "elastos/droid/webkit/webview/chromium/CookieManagerAdapter.h"
 #include "elastos/droid/webkit/webview/chromium/GeolocationPermissionsAdapter.h"
 #include "elastos/droid/webkit/webview/chromium/WebIconDatabaseAdapter.h"
@@ -15,8 +15,8 @@ using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Content::IIntent;
 using Elastos::Droid::Content::ISharedPreferences;
 using Elastos::Droid::Net::IUri;
-using Elastos::Droid::Webkit::AndroidWebview::AwBrowserContext;
-using Elastos::Droid::Webkit::AndroidWebview::AwDevToolsServer;
+using Elastos::Droid::Webkit::Webview::Chromium::AndroidWebview::AwBrowserContext;
+using Elastos::Droid::Webkit::Webview::Chromium::AndroidWebview::AwDevToolsServer;
 using Elastos::Droid::Webkit::ICookieManager;
 using Elastos::Droid::Webkit::IWebIconDatabase;
 using Elastos::Droid::Webkit::IWebStorage;

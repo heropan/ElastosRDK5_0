@@ -9,9 +9,9 @@
 #include "elastos/droid/net/http/CErrorStrings.h"
 #include "elastos/droid/webkit/CJsDialogHelper.h"
 #include "elastos/droid/webkit/DebugFlags.h"
-#include "elastos/droid/webkit/native/base/ThreadUtils.h"
-#include "elastos/droid/webkit/native/base/TraceEvent.h"
-#include "elastos/droid/webkit/native/content/browser/ContentViewClient.h"
+#include "elastos/droid/webkit/webview/chromium/native/base/ThreadUtils.h"
+#include "elastos/droid/webkit/webview/chromium/native/base/TraceEvent.h"
+#include "elastos/droid/webkit/webview/chromium/native/content/browser/ContentViewClient.h"
 #include "elastos/droid/webkit/webview/chromium/FileChooserParamsAdapter.h"
 #include "elastos/droid/webkit/webview/chromium/UnimplementedWebViewApi.h"
 #include "elastos/droid/webkit/webview/chromium/WebViewChromium.h"
@@ -37,9 +37,9 @@ using Elastos::Droid::Net::IUriHelper;
 using Elastos::Droid::Provider::IBrowser;
 using Elastos::Droid::Webkit::CJsDialogHelper;
 using Elastos::Droid::Webkit::DebugFlags;
-using Elastos::Droid::Webkit::Base::ThreadUtils;
-using Elastos::Droid::Webkit::Base::TraceEvent;
-using Elastos::Droid::Webkit::Content::Browser::ContentViewClient;
+using Elastos::Droid::Webkit::Webview::Chromium::Base::ThreadUtils;
+using Elastos::Droid::Webkit::Webview::Chromium::Base::TraceEvent;
+using Elastos::Droid::Webkit::Webview::Chromium::Content::Browser::ContentViewClient;
 using Elastos::Droid::Webkit::IJsDialogHelper;
 using Elastos::Droid::Webkit::IWebBackForwardList;
 using Elastos::Droid::Webkit::IWebResourceResponse;
