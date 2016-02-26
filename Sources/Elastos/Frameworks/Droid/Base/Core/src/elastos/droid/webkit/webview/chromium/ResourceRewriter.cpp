@@ -2,8 +2,8 @@
 #include "Elastos.Droid.Content.h"
 #include "Elastos.Droid.Utility.h"
 #include "elastos/droid/webkit/webview/chromium/ResourceRewriter.h"
-#include "elastos/droid/webkit/native/content/R_Content.h"
-#include "elastos/droid/webkit/native/ui/R_Ui.h"
+#include "elastos/droid/webkit/webview/chromium/native/content/R_Content.h"
+#include "elastos/droid/webkit/webview/chromium/native/ui/R_Ui.h"
 #include "elastos/droid/webkit/webview/chromium/R_Chromium.h"
 
 using Elastos::Droid::Content::Res::IAssetManager;
@@ -80,8 +80,8 @@ ECode ResourceRewriter::RewriteRValues(
             // See b/15684775.
 
             Elastos::Droid::Webkit::Webview::Chromium::R::OnResourcesLoaded(id);
-            Elastos::Droid::Webkit::Ui::R::OnResourcesLoaded(id);
-            Elastos::Droid::Webkit::Content::R::OnResourcesLoaded(id);
+            Elastos::Droid::Webkit::Webview::Chromium::Ui::R::OnResourcesLoaded(id);
+            Elastos::Droid::Webkit::Webview::Chromium::Content::R::OnResourcesLoaded(id);
             break;
         }
     }

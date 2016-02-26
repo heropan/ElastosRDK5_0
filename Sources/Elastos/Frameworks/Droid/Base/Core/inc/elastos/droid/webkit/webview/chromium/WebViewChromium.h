@@ -3,9 +3,9 @@
 #define _ELASTOS_DROID_WEBKIT_WEBVIEW_CHROMIUM_WEBVIEWCHROMIUM_H_
 
 #include "elastos/droid/ext/frameworkext.h"
-#include "elastos/droid/webkit/native/android_webview/AwContents.h"
-#include "elastos/droid/webkit/native/content/browser/LoadUrlParams.h"
-#include "elastos/droid/webkit/native/content/browser/SmartClipProvider.h"
+#include "elastos/droid/webkit/webview/chromium/native/android_webview/AwContents.h"
+#include "elastos/droid/webkit/webview/chromium/native/content/browser/LoadUrlParams.h"
+#include "elastos/droid/webkit/webview/chromium/native/content/browser/SmartClipProvider.h"
 #include "elastos/droid/webkit/webview/chromium/ContentSettingsAdapter.h"
 #include "elastos/droid/webkit/webview/chromium/DrawGLFunctor.h"
 #include "elastos/droid/webkit/webview/chromium/WebViewContentsClientAdapter.h"
@@ -32,9 +32,9 @@ using Elastos::Droid::View::InputMethod::IEditorInfo;
 using Elastos::Droid::View::InputMethod::IInputConnection;
 using Elastos::Droid::View::IView;
 using Elastos::Droid::View::IViewGroupLayoutParams;
-using Elastos::Droid::Webkit::AndroidWebview::AwContents;
-using Elastos::Droid::Webkit::Content::Browser::LoadUrlParams;
-using Elastos::Droid::Webkit::Content::Browser::SmartClipProvider;
+using Elastos::Droid::Webkit::Webview::Chromium::AndroidWebview::AwContents;
+using Elastos::Droid::Webkit::Webview::Chromium::Content::Browser::LoadUrlParams;
+using Elastos::Droid::Webkit::Webview::Chromium::Content::Browser::SmartClipProvider;
 using Elastos::Droid::Webkit::IDownloadListener;
 using Elastos::Droid::Webkit::IWebBackForwardList;
 using Elastos::Droid::Webkit::IWebChromeClient;
