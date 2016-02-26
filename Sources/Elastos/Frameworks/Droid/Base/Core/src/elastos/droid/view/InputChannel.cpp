@@ -9,6 +9,7 @@
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/view/InputChannel.h"
 #include "elastos/droid/view/CInputChannel.h"
+#include "elastos/droid/view/NativeInputChannel.h"
 #include <elastos/utility/logging/Slogger.h>
 #include <input/InputTransport.h>
 
@@ -28,6 +29,7 @@ typedef void (*InputChannelObjDisposeCallback)(
     /* [in] */ const android::sp<android::InputChannel>& inputChannel,
     /* [in] */ void* data);
 
+#if 0
 class NativeInputChannel
 {
 public:
@@ -79,6 +81,7 @@ void NativeInputChannel::invokeAndRemoveDisposeCallback(
         mDisposeData = NULL;
     }
 }
+#endif
 
 // ----------------------------------------------------------------------------
 

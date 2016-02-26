@@ -1,5 +1,7 @@
-
 #include "elastos/droid/server/input/InputApplicationHandle.h"
+#include <utils/threads.h>
+
+static android::Mutex gHandleMutex;
 
 namespace Elastos {
 namespace Droid {
@@ -10,9 +12,9 @@ CAR_INTERFACE_IMPL(InputApplicationHandle, Object, IInputApplicationHandle);
 
 InputApplicationHandle::InputApplicationHandle(
     /* [in] */ IObject* appWindowToken)
-    : mPtr(0)
-    , mAppWindowToken(appWindowToken)
+    : mAppWindowToken(appWindowToken)
     , mDispatchingTimeoutNanos(0)
+    , mNative(0)
 {}
 
 InputApplicationHandle::~InputApplicationHandle()
@@ -44,6 +46,29 @@ static void android_server_InputApplicationHandle_nativeDispose(JNIEnv* env, job
         ptr = NULL;
     }
 */
+    android::AutoMutex _l(gHandleMutex);
+
+    if (mNative != (Int64)NULL) {
+        mNative->decStrong(this);
+    }
+}
+
+android::sp<android::InputApplicationHandle> InputApplicationHandle::GetHandle(
+    /* [in] */ InputApplicationHandle* inputApplicationHandleObj)
+{
+    if (inputApplicationHandleObj == NULL) {
+        return NULL;
+    }
+
+    android::AutoMutex _l(gHandleMutex);
+
+    NativeInputApplicationHandle* handle = inputApplicationHandleObj->mNative;
+    if (handle == NULL) {
+        handle = new NativeInputApplicationHandle(inputApplicationHandleObj);
+        handle->incStrong(inputApplicationHandleObj);
+        inputApplicationHandleObj->mNative = handle;
+    }
+    return handle;
 }
 
 } // Input
