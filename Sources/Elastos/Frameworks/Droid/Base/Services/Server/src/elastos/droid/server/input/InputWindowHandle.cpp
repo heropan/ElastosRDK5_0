@@ -48,6 +48,32 @@ InputWindowHandle::~InputWindowHandle()
     //}
 }
 
+android::sp<android::InputWindowHandle> InputWindowHandle::GetHandle(
+    /* [in] */ InputWindowHandle* inputWindowHandleObj)
+{
+    if (inputWindowHandleObj == NULL) {
+        return NULL;
+    }
+
+//TODO
+return NULL;
+/*
+    android::AutoMutex _l(gHandleMutex);
+
+    NativeInputWindowHandle* handle = inputWindowHandleObj->mNative;
+    if (handle == NULL) {
+        InputApplicationHandle* inputApplicationHandleObj = inputWindowHandleObj->mInputApplicationHandle;
+        android::sp<android::InputApplicationHandle> inputApplicationHandle =
+                InputApplicationHandle::GetHandle(inputApplicationHandleObj);
+
+        handle = new NativeInputWindowHandle(inputApplicationHandle, inputWindowHandleObj);
+        handle->incStrong(inputWindowHandleObj);
+        inputWindowHandleObj->mNative = handle;
+    }
+    return handle;
+*/
+}
+
 void InputWindowHandle::NativeDispose()
 {
 /*

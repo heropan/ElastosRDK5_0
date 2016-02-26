@@ -74,7 +74,7 @@ SOURCES += CRenderNodeAnimator.cpp
 SOURCES += NativeDisplayEventReceiver.cpp
 SOURCES += DisplayEventReceiver.cpp
 
-#SOURCES += NativeInputChannel.cpp
+SOURCES += NativeInputChannel.cpp
 
 #SOURCES += CInputDeviceHelper.cpp
 SOURCES += InputEventConsistencyVerifier.cpp
