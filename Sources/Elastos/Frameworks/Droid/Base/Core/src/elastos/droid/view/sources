@@ -5,8 +5,11 @@ include $(MAKEDIR)/../../../../../../sources.inc
 
 INCLUDES += ../
 INCLUDES += $(MAKEDIR)/../../../../inc
+INCLUDES += $(PREBUILD_INC)/freetype
+INCLUDES += $(PREBUILD_INC)/harfbuzz_ng
 INCLUDES += $(PREBUILD_INC)/skia/utils
 INCLUDES += $(PREBUILD_INC)/skia/core
+INCLUDES += $(PREBUILD_INC)/skia/effects
 INCLUDES += $(PREBUILD_INC)/androidfw
 INCLUDES += $(PREBUILD_INC)/input
 INCLUDES += $(PREBUILD_INC)/utils

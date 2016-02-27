@@ -1,26 +1,60 @@
 #include "elastos/droid/view/GLES20Canvas.h"
 #include "elastos/droid/graphics/CBitmap.h"
+#include "elastos/droid/graphics/GraphicsNative.h"
+
+#include "elastos/droid/graphics/Matrix.h"
+#include "elastos/droid/graphics/MinikinUtils.h"
+#include "elastos/droid/graphics/NativePaint.h"
+#include "elastos/droid/graphics/NinePatch.h"
 #include "elastos/droid/graphics/CPath.h"
 #include "elastos/droid/graphics/CPaintFlagsDrawFilter.h"
-#include "elastos/droid/graphics/Matrix.h"
-#include "elastos/droid/graphics/NinePatch.h"
+#include "elastos/droid/graphics/CRect.h"
+#include "elastos/droid/graphics/CRectF.h"
 #include "elastos/droid/graphics/TemporaryBuffer.h"
+#include "elastos/droid/graphics/TypefaceImpl.h"
 #include "elastos/droid/graphics/Paint.h"
 #include "elastos/droid/text/TextUtils.h"
 
 #include <elastos/core/Math.h>
 #include <elastos/utility/logging/Slogger.h>
 
+#include <androidfw/ResourceTypes.h>
+#include <private/hwui/DrawGlInfo.h>
+#include <cutils/properties.h>
+#include <SkBitmap.h>
+#include <SkCanvas.h>
+#include <SkImageInfo.h>
+#include <SkMatrix.h>
+#include <SkPorterDuff.h>
+#include <SkRegion.h>
+#include <SkScalerContext.h>
+#include <SkTemplates.h>
+#include <SkXfermode.h>
+#include <DisplayListRenderer.h>
+#include <Rect.h>
+#include <RenderNode.h>
+#include <CanvasProperty.h>
+
+
 using Elastos::Droid::Graphics::CBitmap;
 using Elastos::Droid::Graphics::CPath;
 using Elastos::Droid::Graphics::CPaintFlagsDrawFilter;
+using Elastos::Droid::Graphics::CRect;
+using Elastos::Droid::Graphics::CRectF;
+using Elastos::Droid::Graphics::GraphicsNative;
 using Elastos::Droid::Graphics::IPaintFlagsDrawFilter;
 using Elastos::Droid::Graphics::Matrix;
+using Elastos::Droid::Graphics::MinikinUtils;
+using Elastos::Droid::Graphics::NativePaint;
 using Elastos::Droid::Graphics::NinePatch;
 using Elastos::Droid::Graphics::TemporaryBuffer;
+using Elastos::Droid::Graphics::TypefaceImpl;
 using Elastos::Droid::Graphics::Paint;
 using Elastos::Droid::Graphics::PorterDuffMode_SRC_OVER;
 using Elastos::Droid::Graphics::RegionOp_INTERSECT;
+using Elastos::Droid::Graphics::kBidi_Force_LTR;
+using Elastos::Droid::Graphics::kBidi_Force_RTL;
+
 using Elastos::Droid::Text::TextUtils;
 using Elastos::Droid::Text::ISpannedString;
 using Elastos::Droid::Text::ISpannableString;
@@ -28,12 +62,15 @@ using Elastos::Droid::Text::IGraphicsOperations;
 
 using Elastos::Core::IString;
 
+using namespace android;
+using namespace android::uirenderer;
+
 namespace Elastos {
 namespace Droid {
 namespace View {
 
 GLES20Canvas::CanvasFinalizer::CanvasFinalizer(
-/* [in] */ Int64 renderer)
+/* [in] */ Int64 rendererPtr)
 {}
 
 GLES20Canvas::CanvasFinalizer::~CanvasFinalizer()
@@ -1240,270 +1277,512 @@ ECode GLES20Canvas::SetProperty(
 }
 
 GLES20Canvas::GLES20Canvas()
-    : mFinalizer(0)
+    : mFinalizer(NULL)
 {}
+
+//.......................Native......................
+
+
+// ----------------------------------------------------------------------------
+// Text
+// ----------------------------------------------------------------------------
+
+class RenderTextFunctor {
+public:
+    RenderTextFunctor(const Layout& layout, DisplayListRenderer* renderer, float x, float y,
+                NativePaint* paint, uint16_t* glyphs, float* pos, float totalAdvance,
+                android::uirenderer::Rect& bounds)
+            : layout(layout), renderer(renderer), x(x), y(y), paint(paint), glyphs(glyphs),
+            pos(pos), totalAdvance(totalAdvance), bounds(bounds) { }
+    void operator()(size_t start, size_t end) {
+        for (size_t i = start; i < end; i++) {
+            glyphs[i] = layout.getGlyphId(i);
+            pos[2 * i] = layout.getX(i);
+            pos[2 * i + 1] = layout.getY(i);
+        }
+        size_t glyphsCount = end - start;
+        int bytesCount = glyphsCount * sizeof(char);
+        renderer->drawText((const char*) (glyphs + start), bytesCount, glyphsCount,
+            x, y, pos + 2 * start, paint, totalAdvance, bounds);
+    }
+private:
+    const Layout& layout;
+    DisplayListRenderer* renderer;
+    float x;
+    float y;
+    NativePaint* paint;
+    uint16_t* glyphs;
+    float* pos;
+    float totalAdvance;
+    android::uirenderer::Rect& bounds;
+};
+
+static void renderTextLayout(DisplayListRenderer* renderer, Layout* layout,
+    float x, float y, NativePaint* paint) {
+    size_t nGlyphs = layout->nGlyphs();
+    float* pos = new float[nGlyphs * 2];
+    uint16_t* glyphs = new uint16_t[nGlyphs];
+    MinikinRect b;
+    layout->getBounds(&b);
+    android::uirenderer::Rect bounds(b.mLeft, b.mTop, b.mRight, b.mBottom);
+    bounds.translate(x, y);
+    float totalAdvance = layout->getAdvance();
+
+    RenderTextFunctor f(*layout, renderer, x, y, paint, glyphs, pos, totalAdvance, bounds);
+    MinikinUtils::forFontRun(*layout, paint, f);
+    delete[] glyphs;
+    delete[] pos;
+}
+
+static void renderText(DisplayListRenderer* renderer, const Char16* text, int count,
+        float x, float y, int bidiFlags, NativePaint* paint, TypefaceImpl* typeface) {
+    Layout layout;
+    MinikinUtils::doLayout(&layout, paint, bidiFlags, typeface, text, 0, count, count);
+    x += MinikinUtils::xOffsetForTextAlign(paint, layout);
+    renderTextLayout(renderer, &layout, x, y, paint);
+}
+
+class RenderTextOnPathFunctor {
+public:
+    RenderTextOnPathFunctor(const Layout& layout, DisplayListRenderer* renderer, float hOffset,
+                float vOffset, NativePaint* paint, SkPath* path)
+            : layout(layout), renderer(renderer), hOffset(hOffset), vOffset(vOffset),
+                paint(paint), path(path) {
+    }
+    void operator()(size_t start, size_t end) {
+        uint16_t glyphs[1];
+        for (size_t i = start; i < end; i++) {
+            glyphs[0] = layout.getGlyphId(i);
+            float x = hOffset + layout.getX(i);
+            float y = vOffset + layout.getY(i);
+            renderer->drawTextOnPath((const char*) glyphs, sizeof(glyphs), 1, path, x, y, paint);
+        }
+    }
+private:
+    const Layout& layout;
+    DisplayListRenderer* renderer;
+    float hOffset;
+    float vOffset;
+    NativePaint* paint;
+    SkPath* path;
+};
+
+static void renderTextOnPath(DisplayListRenderer* renderer, const Char16* text, int count,
+        SkPath* path, float hOffset, float vOffset, int bidiFlags, NativePaint* paint,
+        TypefaceImpl* typeface) {
+    Layout layout;
+    MinikinUtils::doLayout(&layout, paint, bidiFlags, typeface, text, 0, count, count);
+    hOffset += MinikinUtils::hOffsetForTextAlign(paint, layout, *path);
+    NativePaint::Align align = paint->getTextAlign();
+    paint->setTextAlign(NativePaint::kLeft_Align);
+
+    RenderTextOnPathFunctor f(layout, renderer, hOffset, vOffset, paint, path);
+    MinikinUtils::forFontRun(layout, paint, f);
+    paint->setTextAlign(align);
+}
+
+static void renderTextRun(DisplayListRenderer* renderer, const Char16* text,
+        int start, int count, int contextCount, float x, float y,
+        int bidiFlags, NativePaint* paint, TypefaceImpl* typeface) {
+    Layout layout;
+    MinikinUtils::doLayout(&layout, paint, bidiFlags, typeface, text, start, count, contextCount);
+    x += MinikinUtils::xOffsetForTextAlign(paint, layout);
+    renderTextLayout(renderer, &layout, x, y, paint);
+}
 
 void GLES20Canvas::nSetProperty(
     /* [in] */ const String& name,
     /* [in] */ const String& value)
-{}
+{
+    if (!Caches::hasInstance()) {
+        ALOGW("can't set property, no Caches instance");
+        return;
+    }
+
+    if (name == NULL || value == NULL) {
+        ALOGW("can't set prop, null passed");
+    }
+
+    Caches::getInstance().setTempProperty(name.string(), value.string());
+}
 
 ECode GLES20Canvas::nFinishRecording(
-    /* [in] */ Int64 renderer,
+    /* [in] */ Int64 rendererPtr,
     /* [out] */ Int64* res)
 {
+    DisplayListRenderer* renderer = reinterpret_cast<DisplayListRenderer*>(rendererPtr);
+    *res = reinterpret_cast<Int64>(renderer->finishRecording());
     return NOERROR;
 }
 
-AutoPtr<IRect> GetInternalClipBounds()
+AutoPtr<IRect> GLES20Canvas::GetInternalClipBounds()
 {
-    return NULL;
+    if (mClipBounds == NULL)
+        CRect::New((IRect**)&mClipBounds);
+    return mClipBounds;
 }
 
-AutoPtr<IRectF> GetPathBounds()
+AutoPtr<IRectF> GLES20Canvas::GetPathBounds()
 {
-    return NULL;
+    if (mPathBounds == NULL)
+        CRectF::New((IRectF**)&mPathBounds);
+    return mPathBounds;
 }
 
-void SetupFinalizer()
+void GLES20Canvas::SetupFinalizer()
 {
+    if (mRenderer == 0) {
+        SLOGGERE("GLES20Canvas", "Could not create GLES20Canvas renderer")
+    } else {
+        if (mFinalizer != NULL)
+            delete mFinalizer;
+        mFinalizer = new CanvasFinalizer(mRenderer);
+    }
 }
 
-AutoPtr<ArrayOf<Float> > GetPointStorage()
+AutoPtr<ArrayOf<Float> > GLES20Canvas::GetPointStorage()
 {
-    return NULL;
+    if (mPoint == NULL) mPoint = ArrayOf<Float>::Alloc(2);
+    return mPoint;
 }
 
-AutoPtr<ArrayOf<Float> > GetLineStorage()
+AutoPtr<ArrayOf<Float> > GLES20Canvas::GetLineStorage()
 {
-    return NULL;
+    if (mLine == NULL) mLine = ArrayOf<Float>::Alloc(4);
+    return mLine;
 }
 
 Boolean GLES20Canvas::nIsAvailable()
 {
+#ifdef USE_OPENGL_RENDERER
+    char prop[PROPERTY_VALUE_MAX];
+    if (property_get("ro.kernel.qemu", prop, NULL) == 0) {
+        // not in the emulator
+        return TRUE;
+    }
+    // In the emulator this property will be set to 1 when hardware GLES is
+    // enabled, 0 otherwise. On old emulator versions it will be undefined.
+    property_get("ro.kernel.qemu.gles", prop, "0");
+    return atoi(prop) == 1 ? TRUE : FALSE;
+#else
     return FALSE;
+#endif
+}
+
+GLES20Canvas::~GLES20Canvas()
+{
+    if (mFinalizer != NULL) {
+        delete mFinalizer;
+    }
 }
 
 Boolean GLES20Canvas::IsAvailable()
 {
-    return FALSE;
+    return sIsAvailable;
 }
 
 Int64 GLES20Canvas::nCreateDisplayListRenderer()
 {
-    return 0;
+    return reinterpret_cast<Int64>(new DisplayListRenderer);
 }
 
 void GLES20Canvas::nResetDisplayListRenderer(
-    /* [in] */ Int64 renderer)
-{}
+    /* [in] */ Int64 rendererPtr)
+{
+    // TODO implements
+}
 
 void GLES20Canvas::nDestroyRenderer(
-    /* [in] */ Int64 renderer)
-{}
+    /* [in] */ Int64 rendererPtr)
+{
+    DisplayListRenderer* renderer = reinterpret_cast<DisplayListRenderer*>(rendererPtr);
+    SLOGGERE("GLES20Canvas", "Destroy DisplayListRenderer");
+    delete renderer;
+}
 
 Int32 GLES20Canvas::nGetMaximumTextureWidth()
 {
-    return 0;
+    return Caches::getInstance().maxTextureSize;
 }
 
 Int32 GLES20Canvas::nGetMaximumTextureHeight()
 {
-    return 0;
+    return Caches::getInstance().maxTextureSize;
 }
 
 void GLES20Canvas::nSetViewport(
-    /* [in] */ Int64 renderer,
+    /* [in] */ Int64 rendererPtr,
     /* [in] */ Int32 width,
     /* [in] */ Int32 height)
-{}
+{
+    DisplayListRenderer* renderer = reinterpret_cast<DisplayListRenderer*>(rendererPtr);
+    renderer->setViewport(width, height);
+}
 
 void GLES20Canvas::nSetHighContrastText(
-    /* [in] */ Int64 renderer,
+    /* [in] */ Int64 rendererPtr,
     /* [in] */ Boolean highContrastText)
-{}
+{
+    DisplayListRenderer* renderer = reinterpret_cast<DisplayListRenderer*>(rendererPtr);
+    renderer->setHighContrastText(highContrastText);
+}
 
 void GLES20Canvas::nInsertReorderBarrier(
-    /* [in] */ Int64 renderer,
-    /* [in] */ Boolean enableReorder)
-{}
+    /* [in] */ Int64 rendererPtr,
+    /* [in] */ Boolean reorderEnable)
+{
+    DisplayListRenderer* renderer = reinterpret_cast<DisplayListRenderer*>(rendererPtr);
+    renderer->insertReorderBarrier(reorderEnable);
+}
 
 Int32 GLES20Canvas::nPrepare(
-    /* [in] */ Int64 renderer,
+    /* [in] */ Int64 rendererPtr,
     /* [in] */ Boolean opaque)
 {
-    return 0;
+    DisplayListRenderer* renderer = reinterpret_cast<DisplayListRenderer*>(rendererPtr);
+    return renderer->prepare(opaque);
 }
 
 Int32 GLES20Canvas::nPrepareDirty(
-    /* [in] */ Int64 renderer,
+    /* [in] */ Int64 rendererPtr,
     /* [in] */ Int32 left,
     /* [in] */ Int32 top,
     /* [in] */ Int32 right,
     /* [in] */ Int32 bottom,
     /* [in] */ Boolean opaque)
 {
-    return 0;
+    DisplayListRenderer* renderer = reinterpret_cast<DisplayListRenderer*>(rendererPtr);
+    return renderer->prepareDirty(left, top, right, bottom, opaque);
 }
 
 void GLES20Canvas::nFinish(
-    /* [in] */ Int64 renderer)
-{}
+    /* [in] */ Int64 rendererPtr)
+{
+    DisplayListRenderer* renderer = reinterpret_cast<DisplayListRenderer*>(rendererPtr);
+    renderer->finish();
+}
 
 Int32 GLES20Canvas::nCallDrawGLFunction(
-    /* [in] */ Int64 renderer,
+    /* [in] */ Int64 rendererPtr,
     /* [in] */ Int64 drawGLFunction)
 {
-    return 0;
+    DisplayListRenderer* renderer = reinterpret_cast<DisplayListRenderer*>(rendererPtr);
+    Functor* functor = reinterpret_cast<Functor*>(drawGLFunction);
+    android::uirenderer::Rect dirty;
+    return renderer->callDrawGLFunction(functor, dirty);
 }
 
 Int32 GLES20Canvas::nDrawRenderNode(
-    /* [in] */ Int64 renderer,
-    /* [in] */ Int64 renderNode,
+    /* [in] */ Int64 rendererPtr,
+    /* [in] */ Int64 renderNodePtr,
     /* [in] */ IRect* dirty,
     /* [in] */ Int32 flags)
 {
-    return 0;
+    DisplayListRenderer* renderer = reinterpret_cast<DisplayListRenderer*>(rendererPtr);
+    RenderNode* renderNode = reinterpret_cast<RenderNode*>(renderNodePtr);
+    android::uirenderer::Rect bounds;
+    status_t status = renderer->drawRenderNode(renderNode, bounds, flags);
+    if (status != DrawGlInfo::kStatusDone && dirty != NULL) {
+        dirty->Set(int(bounds.left), int(bounds.top), int(bounds.right), int(bounds.bottom));
+    }
+    return status;
 }
 
 void GLES20Canvas::nDrawLayer(
-    /* [in] */ Int64 renderer,
-    /* [in] */ Int64 layer,
+    /* [in] */ Int64 rendererPtr,
+    /* [in] */ Int64 layerPtr,
     /* [in] */ Float x,
     /* [in] */ Float y)
-{}
+{
+    DisplayListRenderer* renderer = reinterpret_cast<DisplayListRenderer*>(rendererPtr);
+    Layer* layer = reinterpret_cast<Layer*>(layerPtr);
+    renderer->drawLayer(layer, x, y);
+}
 
 Boolean GLES20Canvas::nClipPath(
-    /* [in] */ Int64 renderer,
-    /* [in] */ Int64 path,
+    /* [in] */ Int64 rendererPtr,
+    /* [in] */ Int64 pathPtr,
     /* [in] */ Int32 op)
 {
-    return FALSE;
+    DisplayListRenderer* renderer = reinterpret_cast<DisplayListRenderer*>(rendererPtr);
+    SkPath* path = reinterpret_cast<SkPath*>(pathPtr);
+    const bool result = renderer->clipPath(path, static_cast<SkRegion::Op>(op));
+    return result ? TRUE : FALSE;
 }
 
 Boolean GLES20Canvas::nClipRect(
-    /* [in] */ Int64 renderer,
+    /* [in] */ Int64 rendererPtr,
     /* [in] */ Float left,
     /* [in] */ Float top,
     /* [in] */ Float right,
     /* [in] */ Float bottom,
     /* [in] */ Int32 op)
 {
-    return FALSE;
+    DisplayListRenderer* renderer = reinterpret_cast<DisplayListRenderer*>(rendererPtr);
+    const bool result = renderer->clipRect(left, top, right, bottom,
+                                           static_cast<SkRegion::Op>(op));
+    return result ? TRUE : FALSE;
 }
 
 Boolean GLES20Canvas::nClipRect(
-    /* [in] */ Int64 renderer,
+    /* [in] */ Int64 rendererPtr,
     /* [in] */ Int32 left,
     /* [in] */ Int32 top,
     /* [in] */ Int32 right,
     /* [in] */ Int32 bottom,
     /* [in] */ Int32 op)
 {
-    return FALSE;
+    DisplayListRenderer* renderer = reinterpret_cast<DisplayListRenderer*>(rendererPtr);
+    const bool result = renderer->clipRect(float(left), float(top), float(right),
+                                           float(bottom),
+                                           static_cast<SkRegion::Op>(op));
+    return result ? TRUE : FALSE;
 }
 
 Boolean GLES20Canvas::nClipRegion(
-    /* [in] */ Int64 renderer,
-    /* [in] */ Int64 region,
+    /* [in] */ Int64 rendererPtr,
+    /* [in] */ Int64 regionPtr,
     /* [in] */ Int32 op)
 {
-    return FALSE;
+    DisplayListRenderer* renderer = reinterpret_cast<DisplayListRenderer*>(rendererPtr);
+    SkRegion* region = reinterpret_cast<SkRegion*>(regionPtr);
+    const bool result = renderer->clipRegion(region, static_cast<SkRegion::Op>(op));
+    return result ? TRUE : FALSE;
 }
 
 Boolean GLES20Canvas::nGetClipBounds(
-    /* [in] */ Int64 renderer,
-    /* [in] */ IRect* bounds)
+    /* [in] */ Int64 rendererPtr,
+    /* [in] */ IRect* rect)
 {
-    return FALSE;
+    DisplayListRenderer* renderer = reinterpret_cast<DisplayListRenderer*>(rendererPtr);
+    const android::uirenderer::Rect& bounds(renderer->getLocalClipBounds());
+
+    rect->Set(int(bounds.left), int(bounds.top), int(bounds.right), int(bounds.bottom));
+    return !bounds.isEmpty() ? TRUE : FALSE;
 }
 
 Boolean GLES20Canvas::nQuickReject(
-    /* [in] */ Int64 renderer,
+    /* [in] */ Int64 rendererPtr,
     /* [in] */ Float left,
     /* [in] */ Float top,
     /* [in] */ Float right,
     /* [in] */ Float bottom)
 {
-    return FALSE;
+    DisplayListRenderer* renderer = reinterpret_cast<DisplayListRenderer*>(rendererPtr);
+    const bool result = renderer->quickRejectConservative(left, top, right, bottom);
+    return result ? TRUE : FALSE;
 }
 
 void GLES20Canvas::nTranslate(
-    /* [in] */ Int64 renderer,
+    /* [in] */ Int64 rendererPtr,
     /* [in] */ Float dx,
     /* [in] */ Float dy)
-{}
+{
+    DisplayListRenderer* renderer = reinterpret_cast<DisplayListRenderer*>(rendererPtr);
+    renderer->translate(dx, dy);
+}
 
 void GLES20Canvas::nSkew(
-    /* [in] */ Int64 renderer,
+    /* [in] */ Int64 rendererPtr,
     /* [in] */ Float sx,
     /* [in] */ Float sy)
-{}
+{
+    DisplayListRenderer* renderer = reinterpret_cast<DisplayListRenderer*>(rendererPtr);
+    renderer->skew(sx, sy);
+}
 
 void GLES20Canvas::nRotate(
-    /* [in] */ Int64 renderer,
+    /* [in] */ Int64 rendererPtr,
     /* [in] */ Float degrees)
-{}
+{
+    DisplayListRenderer* renderer = reinterpret_cast<DisplayListRenderer*>(rendererPtr);
+    renderer->rotate(degrees);
+}
 
 
 void GLES20Canvas::nScale(
-    /* [in] */ Int64 renderer,
+    /* [in] */ Int64 rendererPtr,
     /* [in] */ Float sx,
     /* [in] */ Float sy)
-{}
+{
+    DisplayListRenderer* renderer = reinterpret_cast<DisplayListRenderer*>(rendererPtr);
+    renderer->scale(sx, sy);
+}
 
 void GLES20Canvas::nSetMatrix(
-    /* [in] */ Int64 renderer,
-    /* [in] */ Int64 matrix)
-{}
+    /* [in] */ Int64 rendererPtr,
+    /* [in] */ Int64 matrixPtr)
+{
+    DisplayListRenderer* renderer = reinterpret_cast<DisplayListRenderer*>(rendererPtr);
+    SkMatrix* matrix = reinterpret_cast<SkMatrix*>(matrixPtr);
+    renderer->setMatrix(matrix ? *matrix : SkMatrix::I());
+}
 
 void GLES20Canvas::nGetMatrix(
-    /* [in] */ Int64 renderer,
-    /* [in] */ Int64 matrix)
-{}
+    /* [in] */ Int64 rendererPtr,
+    /* [in] */ Int64 matrixPtr)
+{
+    DisplayListRenderer* renderer = reinterpret_cast<DisplayListRenderer*>(rendererPtr);
+    SkMatrix* matrix = reinterpret_cast<SkMatrix*>(matrixPtr);
+    renderer->getMatrix(matrix);
+}
 
 void GLES20Canvas::nConcatMatrix(
-    /* [in] */ Int64 renderer,
-    /* [in] */ Int64 matrix)
-{}
+    /* [in] */ Int64 rendererPtr,
+    /* [in] */ Int64 matrixPtr)
+{
+    DisplayListRenderer* renderer = reinterpret_cast<DisplayListRenderer*>(rendererPtr);
+    SkMatrix* matrix = reinterpret_cast<SkMatrix*>(matrixPtr);
+    renderer->concatMatrix(*matrix);
+}
 
 Int32 GLES20Canvas::nSave(
-    /* [in] */ Int64 renderer,
+    /* [in] */ Int64 rendererPtr,
     /* [in] */ Int32 flags)
 {
-    return 0;
+    DisplayListRenderer* renderer = reinterpret_cast<DisplayListRenderer*>(rendererPtr);
+    return renderer->save(flags);
 }
 
 Int32 GLES20Canvas::nSaveLayer(
-    /* [in] */ Int64 renderer,
-    /* [in] */ Int64 paint,
+    /* [in] */ Int64 rendererPtr,
+    /* [in] */ Int64 paintPtr,
     /* [in] */ Int32 saveFlags)
 {
-    return 0;
+    DisplayListRenderer* renderer = reinterpret_cast<DisplayListRenderer*>(rendererPtr);
+    NativePaint* paint = reinterpret_cast<NativePaint*>(paintPtr);
+    const android::uirenderer::Rect& bounds(renderer->getLocalClipBounds());
+    return renderer->saveLayer(bounds.left, bounds.top, bounds.right, bounds.bottom,
+            paint, saveFlags);
 }
 
 Int32 GLES20Canvas::nSaveLayer(
-    /* [in] */ Int64 renderer,
+    /* [in] */ Int64 rendererPtr,
     /* [in] */ Float left,
     /* [in] */ Float top,
     /* [in] */ Float right,
     /* [in] */ Float bottom,
-    /* [in] */ Int64 paint,
+    /* [in] */ Int64 paintPtr,
     /* [in] */ Int32 saveFlags)
 {
-    return 0;
+    DisplayListRenderer* renderer = reinterpret_cast<DisplayListRenderer*>(rendererPtr);
+    NativePaint* paint = reinterpret_cast<NativePaint*>(paintPtr);
+    return renderer->saveLayer(left, top, right, bottom, paint, saveFlags);
 }
 
 Int32 GLES20Canvas::nSaveLayerAlpha(
-    /* [in] */ Int64 renderer,
+    /* [in] */ Int64 rendererPtr,
     /* [in] */ Int32 alpha,
     /* [in] */ Int32 saveFlags)
 {
-    return 0;
+    DisplayListRenderer* renderer = reinterpret_cast<DisplayListRenderer*>(rendererPtr);
+    const android::uirenderer::Rect& bounds(renderer->getLocalClipBounds());
+    return renderer->saveLayerAlpha(bounds.left, bounds.top, bounds.right, bounds.bottom,
+            alpha, saveFlags);
 }
 
 Int32 GLES20Canvas::nSaveLayerAlpha(
-    /* [in] */ Int64 renderer,
+    /* [in] */ Int64 rendererPtr,
     /* [in] */ Float left,
     /* [in] */ Float top,
     /* [in] */ Float right,
@@ -1511,36 +1790,50 @@ Int32 GLES20Canvas::nSaveLayerAlpha(
     /* [in] */ Int32 alpha,
     /* [in] */ Int32 saveFlags)
 {
-    return 0;
+    DisplayListRenderer* renderer = reinterpret_cast<DisplayListRenderer*>(rendererPtr);
+    return renderer->saveLayerAlpha(left, top, right, bottom, alpha, saveFlags);
 }
 
 void GLES20Canvas::nRestore(
-    /* [in] */ Int64 renderer)
-{}
+    /* [in] */ Int64 rendererPtr)
+{
+    DisplayListRenderer* renderer = reinterpret_cast<DisplayListRenderer*>(rendererPtr);
+    renderer->restore();
+}
 
 void GLES20Canvas::nRestoreToCount(
-    /* [in] */ Int64 renderer,
+    /* [in] */ Int64 rendererPtr,
     /* [in] */ Int32 saveCount)
-{}
+{
+    DisplayListRenderer* renderer = reinterpret_cast<DisplayListRenderer*>(rendererPtr);
+    renderer->restoreToCount(saveCount);
+}
 
 Int32 GLES20Canvas::nGetSaveCount(
-    /* [in] */ Int64 renderer)
+    /* [in] */ Int64 rendererPtr)
 {
-    return 0;
+    DisplayListRenderer* renderer = reinterpret_cast<DisplayListRenderer*>(rendererPtr);
+    return renderer->getSaveCount();
 }
 
 void GLES20Canvas::nResetPaintFilter(
-    /* [in] */ Int64 renderer)
-{}
+    /* [in] */ Int64 rendererPtr)
+{
+    DisplayListRenderer* renderer = reinterpret_cast<DisplayListRenderer*>(rendererPtr);
+    renderer->resetPaintFilter();
+}
 
 void GLES20Canvas::nSetupPaintFilter(
-    /* [in] */ Int64 renderer,
+    /* [in] */ Int64 rendererPtr,
     /* [in] */ Int32 clearBits,
     /* [in] */ Int32 setBits)
-{}
+{
+    DisplayListRenderer* renderer = reinterpret_cast<DisplayListRenderer*>(rendererPtr);
+    renderer->setupPaintFilter(clearBits, setBits);
+}
 
 void GLES20Canvas::nDrawArc(
-    /* [in] */ Int64 renderer,
+    /* [in] */ Int64 rendererPtr,
     /* [in] */ Float left,
     /* [in] */ Float top,
     /* [in] */ Float right,
@@ -1548,222 +1841,408 @@ void GLES20Canvas::nDrawArc(
     /* [in] */ Float startAngle,
     /* [in] */ Float sweepAngle,
     /* [in] */ Boolean useCenter,
-    /* [in] */ Int64 paint)
-{}
+    /* [in] */ Int64 paintPtr)
+{
+    DisplayListRenderer* renderer = reinterpret_cast<DisplayListRenderer*>(rendererPtr);
+    NativePaint* paint = reinterpret_cast<NativePaint*>(paintPtr);
+    renderer->drawArc(left, top, right, bottom, startAngle, sweepAngle, useCenter, paint);
+}
 
 void GLES20Canvas::nDrawPatch(
-    /* [in] */ Int64 renderer,
-    /* [in] */ Int64 bitmap,
+    /* [in] */ Int64 rendererPtr,
+    /* [in] */ Int64 bitmapPtr,
     /* [in] */ ArrayOf<Byte>* buffer,
-    /* [in] */ Int64 chunk,
+    /* [in] */ Int64 patchPtr,
     /* [in] */ Float left,
     /* [in] */ Float top,
     /* [in] */ Float right,
     /* [in] */ Float bottom,
-    /* [in] */ Int64 paint)
-{}
+    /* [in] */ Int64 paintPtr)
+{
+    SkBitmap* bitmap = reinterpret_cast<SkBitmap*>(bitmapPtr);
+
+    DisplayListRenderer* renderer = reinterpret_cast<DisplayListRenderer*>(rendererPtr);
+    Res_png_9patch* patch = reinterpret_cast<Res_png_9patch*>(patchPtr);
+    NativePaint* paint = reinterpret_cast<NativePaint*>(paintPtr);
+    renderer->drawPatch(bitmap, patch, left, top, right, bottom, paint);
+}
 
 void GLES20Canvas::nDrawBitmap(
-    /* [in] */ Int64 renderer,
-    /* [in] */ Int64 bitmap,
+    /* [in] */ Int64 rendererPtr,
+    /* [in] */ Int64 bitmapPtr,
     /* [in] */ ArrayOf<Byte>* buffer,
     /* [in] */ Float left,
     /* [in] */ Float top,
-    /* [in] */ Int64 paint)
-{}
+    /* [in] */ Int64 paintPtr)
+{
+    SkBitmap* bitmap = reinterpret_cast<SkBitmap*>(bitmapPtr);
+    DisplayListRenderer* renderer = reinterpret_cast<DisplayListRenderer*>(rendererPtr);
+    NativePaint* paint = reinterpret_cast<NativePaint*>(paintPtr);
+
+    // apply transform directly to canvas, so it affects shaders correctly
+    renderer->save(SkCanvas::kMatrix_SaveFlag);
+    renderer->translate(left, top);
+    renderer->drawBitmap(bitmap, paint);
+    renderer->restore();
+}
 
 void GLES20Canvas::nDrawBitmap(
-    /* [in] */ Int64 renderer,
-    /* [in] */ Int64 bitmap,
+    /* [in] */ Int64 rendererPtr,
+    /* [in] */ Int64 bitmapPtr,
     /* [in] */ ArrayOf<Byte>* buffer,
-    /* [in] */ Int64 matrix,
-    /* [in] */ Int64 paint)
-{}
+    /* [in] */ Int64 matrixPtr,
+    /* [in] */ Int64 paintPtr)
+{
+    SkBitmap* bitmap = reinterpret_cast<SkBitmap*>(bitmapPtr);
+
+    DisplayListRenderer* renderer = reinterpret_cast<DisplayListRenderer*>(rendererPtr);
+    SkMatrix* matrix = reinterpret_cast<SkMatrix*>(matrixPtr);
+    NativePaint* paint = reinterpret_cast<NativePaint*>(paintPtr);
+
+    // apply transform directly to canvas, so it affects shaders correctly
+    renderer->save(SkCanvas::kMatrix_SaveFlag);
+    renderer->concatMatrix(*matrix);
+    renderer->drawBitmap(bitmap, paint);
+    renderer->restore();
+}
 
 void GLES20Canvas::nDrawBitmap(
-    /* [in] */ Int64 renderer,
-    /* [in] */ Int64 bitmap,
+    /* [in] */ Int64 rendererPtr,
+    /* [in] */ Int64 bitmapPtr,
     /* [in] */ ArrayOf<Byte>* buffer,
     /* [in] */ Float srcLeft,
     /* [in] */ Float srcTop,
     /* [in] */ Float srcRight,
     /* [in] */ Float srcBottom,
-    /* [in] */ Float left,
-    /* [in] */ Float top,
-    /* [in] */ Float right,
-    /* [in] */ Float bottom,
-    /* [in] */ Int64 paint)
-{}
+    /* [in] */ Float dstLeft,
+    /* [in] */ Float dstTop,
+    /* [in] */ Float dstRight,
+    /* [in] */ Float dstBottom,
+    /* [in] */ Int64 paintPtr)
+{
+    SkBitmap* bitmap = reinterpret_cast<SkBitmap*>(bitmapPtr);
+
+    DisplayListRenderer* renderer = reinterpret_cast<DisplayListRenderer*>(rendererPtr);
+    NativePaint* paint = reinterpret_cast<NativePaint*>(paintPtr);
+    renderer->drawBitmap(bitmap, srcLeft, srcTop, srcRight, srcBottom,
+            dstLeft, dstTop, dstRight, dstBottom, paint);
+}
 
 
 void GLES20Canvas::nDrawBitmap(
-    /* [in] */ Int64 renderer,
+    /* [in] */ Int64 rendererPtr,
     /* [in] */ ArrayOf<Int32>* colors,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 stride,
-    /* [in] */ Float x,
-    /* [in] */ Float y,
+    /* [in] */ Float left,
+    /* [in] */ Float top,
     /* [in] */ Int32 width,
     /* [in] */ Int32 height,
     /* [in] */ Boolean hasAlpha,
-    /* [in] */ Int64 nativePaint)
-{}
+    /* [in] */ Int64 paintPtr)
+{
+    // Note: If hasAlpha is false, kRGB_565_SkColorType will be used, which will
+    // correct the alphaType to kOpaque_SkAlphaType.
+    const SkImageInfo info = SkImageInfo::Make(width, height,
+                               hasAlpha ? kN32_SkColorType : kRGB_565_SkColorType,
+                               kPremul_SkAlphaType);
+    SkBitmap* bitmap = new SkBitmap;
+    if (!bitmap->allocPixels(info)) {
+        delete bitmap;
+        return;
+    }
+
+    if (!GraphicsNative::SetPixels(colors, offset, stride, 0, 0, width, height, *bitmap)) {
+        delete bitmap;
+        return;
+    }
+
+    DisplayListRenderer* renderer = reinterpret_cast<DisplayListRenderer*>(rendererPtr);
+    NativePaint* paint = reinterpret_cast<NativePaint*>(paintPtr);
+
+    // apply transform directly to canvas, so it affects shaders correctly
+    renderer->save(SkCanvas::kMatrix_SaveFlag);
+    renderer->translate(left, top);
+    renderer->drawBitmapData(bitmap, paint);
+    renderer->restore();
+
+    // Note - bitmap isn't deleted as DisplayListRenderer owns it now
+}
 
 void GLES20Canvas::nDrawBitmapMesh(
-    /* [in] */ Int64 renderer,
-    /* [in] */ Int64 bitmap,
+    /* [in] */ Int64 rendererPtr,
+    /* [in] */ Int64 bitmapPtr,
     /* [in] */ ArrayOf<Byte>* buffer,
     /* [in] */ Int32 meshWidth,
     /* [in] */ Int32 meshHeight,
-    /* [in] */ ArrayOf<Float>* verts,
-    /* [in] */ Int32 vertOffset,
+    /* [in] */ ArrayOf<Float>* vertices,
+    /* [in] */ Int32 offset,
     /* [in] */ ArrayOf<Int32>* colors,
     /* [in] */ Int32 colorOffset,
-    /* [in] */ Int64 paint)
-{}
+    /* [in] */ Int64 paintPtr)
+{
+    SkBitmap* bitmap = reinterpret_cast<SkBitmap*>(bitmapPtr);
+    // This object allows the renderer to allocate a global JNI ref to the buffer object.
+
+    Float* verticesArray = vertices ? vertices->GetPayload() + offset : NULL;
+    Int32* colorsArray = colors ? colors->GetPayload() + colorOffset : NULL;
+
+    DisplayListRenderer* renderer = reinterpret_cast<DisplayListRenderer*>(rendererPtr);
+    NativePaint* paint = reinterpret_cast<NativePaint*>(paintPtr);
+    renderer->drawBitmapMesh(bitmap, meshWidth, meshHeight, verticesArray, colorsArray, paint);
+}
 
 void GLES20Canvas::nDrawCircle(
-    /* [in] */ Int64 renderer,
-    /* [in] */ Float cx,
-    /* [in] */ Float cy,
+    /* [in] */ Int64 rendererPtr,
+    /* [in] */ Float x,
+    /* [in] */ Float y,
     /* [in] */ Float radius,
-    /* [in] */ Int64 paint)
-{}
+    /* [in] */ Int64 paintPtr)
+{
+    DisplayListRenderer* renderer = reinterpret_cast<DisplayListRenderer*>(rendererPtr);
+    NativePaint* paint = reinterpret_cast<NativePaint*>(paintPtr);
+    renderer->drawCircle(x, y, radius, paint);
+}
 
 void GLES20Canvas::nDrawCircle(
-    /* [in] */ Int64 renderer,
-    /* [in] */ Int64 propCx,
-    /* [in] */ Int64 propCy,
-    /* [in] */ Int64 propRadius,
-    /* [in] */ Int64 propPaint)
-{}
+    /* [in] */ Int64 rendererPtr,
+    /* [in] */ Int64 xPropPtr,
+    /* [in] */ Int64 yPropPtr,
+    /* [in] */ Int64 radiusPropPtr,
+    /* [in] */ Int64 paintPropPtr)
+{
+    DisplayListRenderer* renderer = reinterpret_cast<DisplayListRenderer*>(rendererPtr);
+    CanvasPropertyPrimitive* xProp = reinterpret_cast<CanvasPropertyPrimitive*>(xPropPtr);
+    CanvasPropertyPrimitive* yProp = reinterpret_cast<CanvasPropertyPrimitive*>(yPropPtr);
+    CanvasPropertyPrimitive* radiusProp = reinterpret_cast<CanvasPropertyPrimitive*>(radiusPropPtr);
+    CanvasPropertyPaint* paintProp = reinterpret_cast<CanvasPropertyPaint*>(paintPropPtr);
+    renderer->drawCircle(xProp, yProp, radiusProp, paintProp);
+}
 
 void GLES20Canvas::nDrawRoundRect(
-    /* [in] */ Int64 renderer,
-    /* [in] */ Int64 propLeft,
-    /* [in] */ Int64 propTop,
-    /* [in] */ Int64 propRight,
-    /* [in] */ Int64 propBottom,
-    /* [in] */ Int64 propRx,
-    /* [in] */ Int64 propRy,
-    /* [in] */ Int64 propPaint)
-{}
+    /* [in] */ Int64 rendererPtr,
+    /* [in] */ Int64 leftPropPtr,
+    /* [in] */ Int64 topPropPtr,
+    /* [in] */ Int64 rightPropPtr,
+    /* [in] */ Int64 bottomPropPtr,
+    /* [in] */ Int64 rxPropPtr,
+    /* [in] */ Int64 ryPropPtr,
+    /* [in] */ Int64 paintPropPtr)
+{
+    DisplayListRenderer* renderer = reinterpret_cast<DisplayListRenderer*>(rendererPtr);
+    CanvasPropertyPrimitive* leftProp = reinterpret_cast<CanvasPropertyPrimitive*>(leftPropPtr);
+    CanvasPropertyPrimitive* topProp = reinterpret_cast<CanvasPropertyPrimitive*>(topPropPtr);
+    CanvasPropertyPrimitive* rightProp = reinterpret_cast<CanvasPropertyPrimitive*>(rightPropPtr);
+    CanvasPropertyPrimitive* bottomProp = reinterpret_cast<CanvasPropertyPrimitive*>(bottomPropPtr);
+    CanvasPropertyPrimitive* rxProp = reinterpret_cast<CanvasPropertyPrimitive*>(rxPropPtr);
+    CanvasPropertyPrimitive* ryProp = reinterpret_cast<CanvasPropertyPrimitive*>(ryPropPtr);
+    CanvasPropertyPaint* paintProp = reinterpret_cast<CanvasPropertyPaint*>(paintPropPtr);
+    renderer->drawRoundRect(leftProp, topProp, rightProp, bottomProp, rxProp, ryProp, paintProp);
+}
 
 void GLES20Canvas::nDrawColor(
-    /* [in] */ Int64 renderer,
+    /* [in] */ Int64 rendererPtr,
     /* [in] */ Int32 color,
-    /* [in] */ Int32 mode)
-{}
+    /* [in] */ Int32 modeHandle)
+{
+    DisplayListRenderer* renderer = reinterpret_cast<DisplayListRenderer*>(rendererPtr);
+    SkPorterDuff::Mode mode = static_cast<SkPorterDuff::Mode>(modeHandle);
+    renderer->drawColor(color, SkPorterDuff::ToXfermodeMode(mode));
+}
 
 void GLES20Canvas::nDrawLines(
-    /* [in] */ Int64 renderer,
+    /* [in] */ Int64 rendererPtr,
     /* [in] */ ArrayOf<Float>* points,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 count,
-    /* [in] */ Int64 paint)
-{}
+    /* [in] */ Int64 paintPtr)
+{
+    DisplayListRenderer* renderer = reinterpret_cast<DisplayListRenderer*>(rendererPtr);
+    NativePaint* paint = reinterpret_cast<NativePaint*>(paintPtr);
+    renderer->drawLines(points->GetPayload() + offset, count, paint);
+}
 
 void GLES20Canvas::nDrawOval(
-    /* [in] */ Int64 renderer,
+    /* [in] */ Int64 rendererPtr,
     /* [in] */ Float left,
     /* [in] */ Float top,
     /* [in] */ Float right,
     /* [in] */ Float bottom,
-    /* [in] */ Int64 paint)
-{}
+    /* [in] */ Int64 paintPtr)
+{
+    DisplayListRenderer* renderer = reinterpret_cast<DisplayListRenderer*>(rendererPtr);
+    NativePaint* paint = reinterpret_cast<NativePaint*>(paintPtr);
+    renderer->drawOval(left, top, right, bottom, paint);
+}
 
 void GLES20Canvas::nDrawPath(
-    /* [in] */ Int64 renderer,
-    /* [in] */ Int64 path,
-    /* [in] */ Int64 paint)
-{}
+    /* [in] */ Int64 rendererPtr,
+    /* [in] */ Int64 pathPtr,
+    /* [in] */ Int64 paintPtr)
+{
+    DisplayListRenderer* renderer = reinterpret_cast<DisplayListRenderer*>(rendererPtr);
+    SkPath* path = reinterpret_cast<SkPath*>(pathPtr);
+    NativePaint* paint = reinterpret_cast<NativePaint*>(paintPtr);
+    renderer->drawPath(path, paint);
+}
 
 void GLES20Canvas::nDrawRects(
-    /* [in] */ Int64 renderer,
-    /* [in] */ Int64 region,
-    /* [in] */ Int64 paint)
-{}
+    /* [in] */ Int64 rendererPtr,
+    /* [in] */ Int64 regionPtr,
+    /* [in] */ Int64 paintPtr)
+{
+    DisplayListRenderer* renderer = reinterpret_cast<DisplayListRenderer*>(rendererPtr);
+    SkRegion* region = reinterpret_cast<SkRegion*>(regionPtr);
+    NativePaint* paint = reinterpret_cast<NativePaint*>(paintPtr);
+    if (paint->getStyle() != NativePaint::kFill_Style ||
+            (paint->isAntiAlias() && !renderer->isCurrentTransformSimple())) {
+        SkRegion::Iterator it(*region);
+        while (!it.done()) {
+            const SkIRect& r = it.rect();
+            renderer->drawRect(r.fLeft, r.fTop, r.fRight, r.fBottom, paint);
+            it.next();
+        }
+    } else {
+        int count = 0;
+        Vector<float> rects;
+        SkRegion::Iterator it(*region);
+        while (!it.done()) {
+            const SkIRect& r = it.rect();
+            rects.push(r.fLeft);
+            rects.push(r.fTop);
+            rects.push(r.fRight);
+            rects.push(r.fBottom);
+            count += 4;
+            it.next();
+        }
+        renderer->drawRects(rects.array(), count, paint);
+    }
+}
 
 void GLES20Canvas::nDrawPoints(
-    /* [in] */ Int64 renderer,
+    /* [in] */ Int64 rendererPtr,
     /* [in] */ ArrayOf<Float>* points,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 count,
-    /* [in] */ Int64 paint)
-{}
+    /* [in] */ Int64 paintPtr)
+{
+    DisplayListRenderer* renderer = reinterpret_cast<DisplayListRenderer*>(rendererPtr);
+    NativePaint* paint = reinterpret_cast<NativePaint*>(paintPtr);
+    renderer->drawPoints(points->GetPayload() + offset, count, paint);
+}
 
 void GLES20Canvas::nDrawRect(
-    /* [in] */ Int64 renderer,
+    /* [in] */ Int64 rendererPtr,
     /* [in] */ Float left,
     /* [in] */ Float top,
     /* [in] */ Float right,
     /* [in] */ Float bottom,
-    /* [in] */ Int64 paint)
-{}
+    /* [in] */ Int64 paintPtr)
+{
+    DisplayListRenderer* renderer = reinterpret_cast<DisplayListRenderer*>(rendererPtr);
+    NativePaint* paint = reinterpret_cast<NativePaint*>(paintPtr);
+    renderer->drawRect(left, top, right, bottom, paint);
+}
 
 void GLES20Canvas::nDrawRoundRect(
-    /* [in] */ Int64 renderer,
+    /* [in] */ Int64 rendererPtr,
     /* [in] */ Float left,
     /* [in] */ Float top,
     /* [in] */ Float right,
     /* [in] */ Float bottom,
     /* [in] */ Float rx,
-    /* [in] */ Float y,
-    /* [in] */ Int64 paint)
-{}
+    /* [in] */ Float ry,
+    /* [in] */ Int64 paintPtr)
+{
+    DisplayListRenderer* renderer = reinterpret_cast<DisplayListRenderer*>(rendererPtr);
+    NativePaint* paint = reinterpret_cast<NativePaint*>(paintPtr);
+    renderer->drawRoundRect(left, top, right, bottom, rx, ry, paint);
+}
 
 void GLES20Canvas::nDrawText(
-    /* [in] */ Int64 renderer,
+    /* [in] */ Int64 rendererPtr,
     /* [in] */ ArrayOf<Char32>* text,
     /* [in] */ Int32 index,
     /* [in] */ Int32 count,
     /* [in] */ Float x,
     /* [in] */ Float y,
     /* [in] */ Int32 bidiFlags,
-    /* [in] */ Int64 paint,
-    /* [in] */ Int64 typeface)
-{}
+    /* [in] */ Int64 paintPtr,
+    /* [in] */ Int64 typefacePtr)
+{
+    String str(*text);
+    DisplayListRenderer* renderer = reinterpret_cast<DisplayListRenderer*>(rendererPtr);
+
+    NativePaint* paint = reinterpret_cast<NativePaint*>(paintPtr);
+    TypefaceImpl* typeface = reinterpret_cast<TypefaceImpl*>(typefacePtr);
+
+    renderText(renderer, str.GetChar16s()->GetPayload() + index, count, x, y, bidiFlags, paint, typeface);
+}
 
 void GLES20Canvas::nDrawText(
-    /* [in] */ Int64 renderer,
+    /* [in] */ Int64 rendererPtr,
     /* [in] */ const String& text,
     /* [in] */ Int32 start,
     /* [in] */ Int32 end,
     /* [in] */ Float x,
     /* [in] */ Float y,
     /* [in] */ Int32 bidiFlags,
-    /* [in] */ Int64 paint,
-    /* [in] */ Int64 typeface)
-{}
+    /* [in] */ Int64 paintPtr,
+    /* [in] */ Int64 typefacePtr)
+{
+    DisplayListRenderer* renderer = reinterpret_cast<DisplayListRenderer*>(rendererPtr);
+
+    NativePaint* paint = reinterpret_cast<NativePaint*>(paintPtr);
+    TypefaceImpl* typeface = reinterpret_cast<TypefaceImpl*>(typefacePtr);
+
+    renderText(renderer, text.GetChar16s()->GetPayload() + start, end - start, x, y, bidiFlags, paint, typeface);
+}
 
 void GLES20Canvas::nDrawTextOnPath(
-    /* [in] */ Int64 renderer,
+    /* [in] */ Int64 rendererPtr,
     /* [in] */ ArrayOf<Char32>* text,
     /* [in] */ Int32 index,
     /* [in] */ Int32 count,
-    /* [in] */ Int64 path,
+    /* [in] */ Int64 pathPtr,
     /* [in] */ Float hOffset,
     /* [in] */ Float vOffset,
     /* [in] */ Int32 bidiFlags,
-    /* [in] */ Int64 nativePaint,
-    /* [in] */ Int64 typeface)
-{}
+    /* [in] */ Int64 paintPtr,
+    /* [in] */ Int64 typefacePtr)
+{
+    DisplayListRenderer* renderer = reinterpret_cast<DisplayListRenderer*>(rendererPtr);
+    String str(*text);
+    SkPath* path = reinterpret_cast<SkPath*>(pathPtr);
+    NativePaint* paint = reinterpret_cast<NativePaint*>(paintPtr);
+    TypefaceImpl* typeface = reinterpret_cast<TypefaceImpl*>(typefacePtr);
+
+    renderTextOnPath(renderer, str.GetChar16s()->GetPayload() + index, count, path,
+            hOffset, vOffset, bidiFlags, paint, typeface);
+}
 
 void GLES20Canvas::nDrawTextOnPath(
-    /* [in] */ Int64 renderer,
+    /* [in] */ Int64 rendererPtr,
     /* [in] */ const String& text,
     /* [in] */ Int32 start,
     /* [in] */ Int32 end,
-    /* [in] */ Int64 path,
+    /* [in] */ Int64 pathPtr,
     /* [in] */ Float hOffset,
     /* [in] */ Float vOffset,
     /* [in] */ Int32 bidiFlags,
-    /* [in] */ Int64 nativePaint,
-    /* [in] */ Int64 typeface)
-{}
+    /* [in] */ Int64 paintPtr,
+    /* [in] */ Int64 typefacePtr)
+{
+    DisplayListRenderer* renderer = reinterpret_cast<DisplayListRenderer*>(rendererPtr);
+    SkPath* path = reinterpret_cast<SkPath*>(pathPtr);
+    NativePaint* paint = reinterpret_cast<NativePaint*>(paintPtr);
+    TypefaceImpl* typeface = reinterpret_cast<TypefaceImpl*>(typefacePtr);
+
+    renderTextOnPath(renderer, text.GetChar16s()->GetPayload() + start, end - start, path,
+            hOffset, vOffset, bidiFlags, paint, typeface);
+}
 
 void GLES20Canvas::nDrawTextRun(
-    /* [in] */ Int64 renderer,
+    /* [in] */ Int64 rendererPtr,
     /* [in] */ ArrayOf<Char32>* text,
     /* [in] */ Int32 index,
     /* [in] */ Int32 count,
@@ -1772,12 +2251,21 @@ void GLES20Canvas::nDrawTextRun(
     /* [in] */ Float x,
     /* [in] */ Float y,
     /* [in] */ Boolean isRtl,
-    /* [in] */ Int64 nativePaint,
-    /* [in] */ Int64 nativeTypeface)
-{}
+    /* [in] */ Int64 paintPtr,
+    /* [in] */ Int64 typefacePtr)
+{
+    DisplayListRenderer* renderer = reinterpret_cast<DisplayListRenderer*>(rendererPtr);
+    String str(*text);
+    NativePaint* paint = reinterpret_cast<NativePaint*>(paintPtr);
+    TypefaceImpl* typeface = reinterpret_cast<TypefaceImpl*>(typefacePtr);
+
+    int bidiFlags = isRtl ? kBidi_Force_RTL : kBidi_Force_LTR;
+    renderTextRun(renderer, str.GetChar16s()->GetPayload() + contextIndex, index - contextIndex,
+            count, contextCount, x, y, bidiFlags, paint, typeface);
+}
 
 void GLES20Canvas::nDrawTextRun(
-    /* [in] */ Int64 renderer,
+    /* [in] */ Int64 rendererPtr,
     /* [in] */ const String& text,
     /* [in] */ Int32 start,
     /* [in] */ Int32 end,
@@ -1786,9 +2274,19 @@ void GLES20Canvas::nDrawTextRun(
     /* [in] */ Float x,
     /* [in] */ Float y,
     /* [in] */ Boolean isRtl,
-    /* [in] */ Int64 nativePaint,
-    /* [in] */ Int64 nativeTypeface)
-{}
+    /* [in] */ Int64 paintPtr,
+    /* [in] */ Int64 typefacePtr)
+{
+    DisplayListRenderer* renderer = reinterpret_cast<DisplayListRenderer*>(rendererPtr);
+    Int32 count = end - start;
+    Int32 contextCount = contextEnd - contextStart;
+    NativePaint* paint = reinterpret_cast<NativePaint*>(paintPtr);
+    TypefaceImpl* typeface = reinterpret_cast<TypefaceImpl*>(typefacePtr);
+
+    int bidiFlags = isRtl ? kBidi_Force_RTL : kBidi_Force_LTR;
+    renderTextRun(renderer, text.GetChar16s()->GetPayload() + contextStart, start - contextStart,
+            count, contextCount, x, y, bidiFlags, paint, typeface);
+}
 
 } // namespace View
 } // namespace Droid

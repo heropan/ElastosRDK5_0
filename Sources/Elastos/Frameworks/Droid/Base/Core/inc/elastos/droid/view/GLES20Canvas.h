@@ -57,6 +57,8 @@ class GLES20Canvas
     };
 
 public:
+    virtual ~GLES20Canvas();
+
     CARAPI GetWidth(
         /* [out] */ Int32* res);
 
@@ -981,7 +983,7 @@ private:
 
     // The native renderer will be destroyed when this object dies.
     // DO NOT overwrite this reference once it is set.
-    CanvasFinalizer mFinalizer;
+    CanvasFinalizer* mFinalizer;
 
     Int32 mWidth;
     Int32 mHeight;
