@@ -1183,6 +1183,7 @@ void AwContents::Init(
     OnContainerViewChanged();
 }
 
+CAR_INTERFACE_IMPL(AwContents, Object, IObject);
 /**
  * @param browserContext the browsing context to associate this view contents with.
  * @param containerView the view-hierarchy item this object will be bound to.
@@ -3137,16 +3138,17 @@ ECode AwContents::ExtractSmartClipData(
 }
 
 //@Override
-void AwContents::SetSmartClipResultHandler(
+ECode AwContents::SetSmartClipResultHandler(
     /* [in] */ IHandler* resultHandler)
 {
     if (resultHandler == NULL) {
         mContentViewCore->SetSmartClipDataListener(NULL);
-        return;
+        return NOERROR;
     }
 
     AutoPtr<ContentViewCore::SmartClipDataListener> listener = new InnerSmartClipDataListener(this, resultHandler);
     mContentViewCore->SetSmartClipDataListener(listener);
+    return NOERROR;
 }
 
 // Return true if the GeolocationPermissionAPI should be used.

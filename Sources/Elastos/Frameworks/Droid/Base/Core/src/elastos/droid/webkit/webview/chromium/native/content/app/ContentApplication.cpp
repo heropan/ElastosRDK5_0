@@ -1,10 +1,10 @@
-
+#include "Elastos.Droid.Os.h"
 #include "elastos/droid/webkit/webview/chromium/native/content/app/ContentApplication.h"
 #include "elastos/droid/webkit/webview/chromium/native/content/browser/TracingControllerElastos.h"
 
 using Elastos::Droid::Content::EIID_IContext;
 using Elastos::Droid::Os::EIID_IIdleHandler;
-// TODO using Elastos::Droid::Os::CLooperHelper;
+using Elastos::Droid::Os::CLooperHelper;
 using Elastos::Droid::Os::ILooperHelper;
 
 namespace Elastos {
@@ -33,8 +33,7 @@ ECode ContentApplication::InnerIdleHandler::QueueIdle(
     VALIDATE_NOT_NULL(result);
 
     // Will retry if the native library has not been initialized.
-    assert(0);
-    // TODO
+    // these code may be not needed, because in elastos no libraryloader need.
     // if (!LibraryLoader::IsInitialized()) {
     //     *result = TRUE;
     //     return result;
@@ -73,7 +72,7 @@ ECode ContentApplication::OnCreate()
 
     // Delay TracingControllerAndroid.registerReceiver() until the main loop is idle.
     AutoPtr<ILooperHelper> helper;
-    // TODO CLooperHelper::AcquireSingleton((ILooperHelper**)&helper);
+    CLooperHelper::AcquireSingleton((ILooperHelper**)&helper);
     AutoPtr<IMessageQueue> queue;
     helper->GetMyQueue((IMessageQueue**)&queue);
     AutoPtr<IIdleHandler> handler = new InnerIdleHandler(this);

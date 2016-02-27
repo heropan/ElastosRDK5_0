@@ -4,9 +4,6 @@
 #include "elastos/droid/webkit/webview/chromium/native/content/common/CleanupReference.h"
 #include "elastos/droid/webkit/webview/chromium/native/base/TraceEvent.h"
 #include "elastos/droid/webkit/webview/chromium/native/base/ThreadUtils.h"
-// TODO #include "elastos/droid/os/CMessageHelper.h"
-// TODO #include "elastos/droid/os/CLooperHelper.h"
-
 #include <elastos/core/AutoLock.h>
 #include <elastos/core/StringUtils.h>
 #include <elastos/utility/logging/Slogger.h>
@@ -14,13 +11,13 @@
 using Elastos::Core::AutoLock;
 using Elastos::Core::StringUtils;
 using Elastos::Droid::Os::ILooperHelper;
-// TODO using Elastos::Droid::Os::CLooperHelper;
+using Elastos::Droid::Os::CLooperHelper;
 using Elastos::Droid::Os::IMessage;
 using Elastos::Droid::Os::IMessageHelper;
-// TODO using Elastos::Droid::Os::CMessageHelper;
+using Elastos::Droid::Os::CMessageHelper;
 using Elastos::Droid::Webkit::Webview::Chromium::Base::TraceEvent;
 using Elastos::Droid::Webkit::Webview::Chromium::Base::ThreadUtils;
-// TODO using Elastos::Utility::CHashSet;
+using Elastos::Utility::CHashSet;
 using Elastos::Utility::IHashSet;
 using Elastos::Utility::EIID_IHashSet;
 using Elastos::Utility::Logging::Slogger;
@@ -130,9 +127,7 @@ ECode CleanupReference::InnerThread::Run()
 
             synchronized(sCleanupMonitor) {
                 AutoPtr<IMessageHelper> helper;
-                assert(0);
-                // TODO
-                // CMessageHelper::AcquireSingleton((IMessageHelper**)&helper);
+                CMessageHelper::AcquireSingleton((IMessageHelper**)&helper);
                 AutoPtr<IMessage> msg;
                 helper->Obtain(LazyHolder::sHandler, REMOVE_REF, (IObject*)ref, (IMessage**)&msg);
                 msg->SendToTarget();
@@ -159,8 +154,7 @@ Boolean CleanupReferenceStart()
     return TRUE;
 }
 
-// TODO
-static Boolean sStart;// = CleanupReferenceStart();
+static Boolean sStart = CleanupReferenceStart();
 
 const String CleanupReference::TAG("CleanupReference");
 const Boolean CleanupReference::DEBUG = FALSE;  // Always check in as false!
@@ -174,8 +168,7 @@ AutoPtr<IThread> CleanupReference_sReaperThread_Init()
     return thread;
 }
 
-// TODO
-AutoPtr<IThread> CleanupReference::sReaperThread;// = CleanupReference_sReaperThread_Init();
+AutoPtr<IThread> CleanupReference::sReaperThread = CleanupReference_sReaperThread_Init();
 
 // Add a new reference to sRefs. |msg.obj| is the CleanupReference to add.
 const Int32 CleanupReference::ADD_REF;
@@ -190,14 +183,11 @@ const Int32 CleanupReference::REMOVE_REF;
 AutoPtr<ISet> sRefsInit()
 {
     AutoPtr<IHashSet> hashSet;
-    assert(0);
-    // TODO
-    // CHashSet::New((IHashSet**)&hashSet);
+    CHashSet::New((IHashSet**)&hashSet);
     AutoPtr<ISet> set = ISet::Probe(hashSet);
     return set;
 }
-// TODO
-AutoPtr<ISet> CleanupReference::sRefs;// = sRefsInit();
+AutoPtr<ISet> CleanupReference::sRefs = sRefsInit();
 
 /**
  * @param obj the object whose loss of reachability should trigger the
@@ -233,15 +223,12 @@ void CleanupReference::HandleOnUiThread(
     /* [in] */ Int32 what)
 {
     AutoPtr<IMessageHelper> helper;
-    assert(0);
-    // TODO
-    // CMessageHelper::AcquireSingleton((IMessageHelper**)&helper);
+    CMessageHelper::AcquireSingleton((IMessageHelper**)&helper);
     AutoPtr<IMessage> msg;
     helper->Obtain(LazyHolder::sHandler, what, (IObject*)this, (IMessage**)&msg);
     AutoPtr<ILooperHelper> looperHelper;
     assert(0);
-    // TODO
-    // CLooperHelper::AcquireSingleton((ILooperHelper**)&looperHelper);
+    CLooperHelper::AcquireSingleton((ILooperHelper**)&looperHelper);
     AutoPtr<ILooper> myLooper;
     looperHelper->GetMyLooper((ILooper**)&myLooper);
     AutoPtr<IHandler> target;

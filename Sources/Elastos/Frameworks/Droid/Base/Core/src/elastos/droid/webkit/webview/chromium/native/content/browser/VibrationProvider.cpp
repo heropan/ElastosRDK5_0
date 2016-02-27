@@ -2,10 +2,12 @@
 #include "Elastos.Droid.Content.h"
 #include "Elastos.Droid.Media.h"
 #include "Elastos.Droid.Os.h"
+#include "elastos/droid/Manifest.h"
 #include "elastos/droid/webkit/webview/chromium/native/content/browser/VibrationProvider.h"
 #include "elastos/droid/webkit/webview/chromium/native/content/api/VibrationProvider_dec.h"
 #include <elastos/utility/logging/Slogger.h>
 
+using Elastos::Droid::Manifest;
 using Elastos::Utility::Logging::Slogger;
 
 namespace Elastos {
@@ -30,10 +32,10 @@ VibrationProvider::VibrationProvider(
     AutoPtr<IInterface> vObj;
     context->GetSystemService(IContext::VIBRATOR_SERVICE, (IInterface**)&vObj);
     mVibrator = IVibrator::Probe(vObj);
-    assert(0);
-    // TODO
-    // mHasVibratePermission = context.checkCallingOrSelfPermission(
-    //         android.Manifest.permission.VIBRATE) == PackageManager.PERMISSION_GRANTED;
+
+    Int32 result;
+    context->CheckCallingOrSelfPermission(Manifest::permission::VIBRATE, &result);
+    mHasVibratePermission = result == IPackageManager::PERMISSION_GRANTED;
     if (!mHasVibratePermission) {
         Slogger::W(TAG, "Failed to use vibrate API, requires VIBRATE permission.");
     }

@@ -5,7 +5,12 @@
 #include "Elastos.Droid.View.h"
 #include "Elastos.Droid.Widget.h"
 #include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/view/SurfaceView.h"
+#include "elastos/droid/widget/FrameLayout.h"
 #include "elastos/droid/webkit/webview/chromium/native/content/browser/ContentVideoViewClient.h"
+#include "elastos/droid/webkit/webview/chromium/native/ui/base/ViewElastos.h"
+#include "elastos/droid/webkit/webview/chromium/native/ui/base/ViewElastosDelegate.h"
+#include "elastos/droid/widget/LinearLayout.h"
 #include "elastos/droid/os/Runnable.h"
 
 using Elastos::Core::IRunnable;
@@ -15,15 +20,20 @@ using Elastos::Droid::App::IAlertDialog;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Content::IContextWrapper;
 using Elastos::Droid::Content::IDialogInterface;
-// import android.util.Log;
+using Elastos::Droid::Content::IDialogInterfaceOnClickListener;
 using Elastos::Droid::View::IGravity;
 using Elastos::Droid::View::IKeyEvent;
 using Elastos::Droid::View::ISurface;
+using Elastos::Droid::View::SurfaceView;
 using Elastos::Droid::View::ISurfaceHolder;
+using Elastos::Droid::View::ISurfaceHolderCallback;
 using Elastos::Droid::View::ISurfaceView;
 using Elastos::Droid::View::IView;
 using Elastos::Droid::View::IViewGroup;
-using Elastos::Droid::Widget::IFrameLayout;
+using Elastos::Droid::Webkit::Webview::Chromium::Ui::Base::ViewElastosDelegate;
+using Elastos::Droid::Webkit::Webview::Chromium::Ui::Base::ViewElastos;
+using Elastos::Droid::Widget::FrameLayout;
+using Elastos::Droid::Widget::LinearLayout;
 using Elastos::Droid::Widget::ILinearLayout;
 using Elastos::Droid::Widget::IProgressBar;
 using Elastos::Droid::Widget::ITextView;
@@ -48,26 +58,22 @@ namespace Browser {
  */
 //@JNINamespace("content")
 class ContentVideoView
-    : public Object
-//    : public FrameLayout
-//    , public ISurfaceHolderCallback
-//    , public ViewAndroidDelegate
+    : public FrameLayout
+    , public ISurfaceHolderCallback
+    , public ViewElastosDelegate
 {
 private:
     class VideoSurfaceView
-        : public Object
-        , public ISurfaceView
+        : public SurfaceView
     {
     public:
         VideoSurfaceView(
             /* [in] */ ContentVideoView* owner,
             /* [in] */ IContext* context);
 
-        CAR_INTERFACE_DECL()
-
     protected:
         //@Override
-        CARAPI OnMeasure(
+        CARAPI_(void) OnMeasure(
             /* [in] */ Int32 widthMeasureSpec,
             /* [in] */ Int32 heightMeasureSpec);
 
@@ -76,15 +82,12 @@ private:
     };
 
     class ProgressView
-        : public Object
-        , public ILinearLayout
+        : public LinearLayout
     {
     public:
         ProgressView(
             /* [in] */ IContext* context,
             /* [in] */ const String& videoLoadingText);
-
-        CAR_INTERFACE_DECL()
 
     private:
         const AutoPtr<IProgressBar> mProgressBar;
@@ -106,7 +109,27 @@ private:
         ContentVideoView* mOwner;
     };
 
+    class PositiveButtonClickListener
+        : public Object
+        , public IDialogInterfaceOnClickListener
+    {
+    public:
+        PositiveButtonClickListener(
+            /* [in] */ ContentVideoView* owner);
+
+        CAR_INTERFACE_DECL();
+
+        CARAPI OnClick(
+            /* [in] */ IDialogInterface* dialog,
+            /* [in] */ Int32 which);
+
+    private:
+        ContentVideoView* mOwner;
+    };
+
 public:
+    CAR_INTERFACE_DECL();
+
     //@CalledByNative
     virtual CARAPI_(void) OnMediaPlayerError(
         /* [in] */ Int32 errorType);
@@ -144,6 +167,8 @@ public:
     //@Override
     CARAPI AcquireAnchorView(
         /* [out] */ IView** view);
+
+    CARAPI_(AutoPtr<IView>) AcquireAnchorView();
 
     //@Override
     CARAPI SetAnchorViewPosition(
@@ -379,11 +404,11 @@ private:
     AutoPtr<IView> mProgressView;
 
     // The ViewAndroid is used to keep screen on during video playback.
-//    AutoPtr<ViewAndroid> mViewAndroid;
+    AutoPtr<ViewElastos> mViewAndroid;
 
-    const AutoPtr<ContentVideoViewClient> mClient;
+    AutoPtr<ContentVideoViewClient> mClient;
 
-    const AutoPtr<IRunnable> mExitFullscreenRunnable;
+    AutoPtr<IRunnable> mExitFullscreenRunnable;
 };
 
 } // namespace Browser

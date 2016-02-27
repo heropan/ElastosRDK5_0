@@ -7,6 +7,7 @@
 #define _ELASTOS_DROID_WEBKIT_WEBVIEW_CHROMIUM_CONTENT_BROWSER_FILEDESCRIPTORINFO_H_
 
 #include "elastos/droid/ext/frameworkext.h"
+#include <elastos/core/Object.h>
 
 namespace Elastos {
 namespace Droid {
@@ -16,7 +17,7 @@ namespace Chromium {
 namespace Content {
 namespace Browser {
 
-class FileDescriptorInfo : public ElRefBase
+class FileDescriptorInfo : public Object
 {
 public:
     FileDescriptorInfo(
@@ -37,6 +38,8 @@ public:
 } // namespace Webkit
 } // namespace Droid
 } // namespace Elastos
+
+DEFINE_CONVERSION_FOR(Elastos::Droid::Webkit::Webview::Chromium::Content::Browser::FileDescriptorInfo, IInterface)
 
 #endif // _ELASTOS_DROID_WEBKIT_WEBVIEW_CHROMIUM_CONTENT_BROWSER_FILEDESCRIPTORINFO_H_
 

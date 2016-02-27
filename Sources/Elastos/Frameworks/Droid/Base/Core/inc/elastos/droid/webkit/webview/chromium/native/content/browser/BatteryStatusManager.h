@@ -4,10 +4,12 @@
 
 #include "Elastos.Droid.Content.h"
 #include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/content/BroadcastReceiver.h"
 #include "elastos/droid/os/Build.h"
 #include <elastos/core/Object.h>
 
 using Elastos::Droid::Content::IBroadcastReceiver;
+using Elastos::Droid::Content::BroadcastReceiver;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Content::IIntent;
 using Elastos::Droid::Content::IIntentFilter;
@@ -37,8 +39,7 @@ class BatteryStatusManager
 {
 private:
   class InnerBroadcastReceiver
-    : public Object
-    , public IBroadcastReceiver
+    : public BroadcastReceiver
   {
   public:
     InnerBroadcastReceiver(
@@ -119,16 +120,16 @@ private:
     static const String TAG;
 
     // A reference to the application context in order to acquire the SensorService.
-    const AutoPtr<IContext> mAppContext;
-    const AutoPtr<IIntentFilter> mFilter;
-    const AutoPtr<IBroadcastReceiver> mReceiver;
+    AutoPtr<IContext> mAppContext;
+    AutoPtr<IIntentFilter> mFilter;
+    AutoPtr<IBroadcastReceiver> mReceiver;
 
     // Non-zero if and only if we're listening for events.
     // To avoid race conditions on the C++ side, access must be synchronized.
     Int64 mNativePtr;
 
     // The lock to access the mNativePtr.
-    const Object mNativePtrLock;
+    Object mNativePtrLock;
 
     Boolean mEnabled;
 };

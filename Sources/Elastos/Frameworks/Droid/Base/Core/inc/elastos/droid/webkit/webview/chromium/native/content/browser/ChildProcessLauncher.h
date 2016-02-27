@@ -21,6 +21,7 @@ using Elastos::Droid::Webkit::Webview::Chromium::Content::App::ChildProcessServi
 using Elastos::Droid::Webkit::Webview::Chromium::Content::App::ChromiumLinkerParams;
 using Elastos::Droid::Webkit::Webview::Chromium::Content::App::SandboxedProcessService;
 using Elastos::Droid::Webkit::Webview::Chromium::Content::App::PrivilegedProcessService;
+using Elastos::Utility::IList;
 
 // import com.google.common.annotations.VisibleForTesting;
 
@@ -80,7 +81,7 @@ private:
 
     private:
         // Connections to services. Indices of the array correspond to the service numbers.
-        const AutoPtr< ArrayOf<ChildProcessConnection*> > mChildProcessConnections;
+        AutoPtr< ArrayOf<ChildProcessConnection*> > mChildProcessConnections;
 
         // The list of free (not bound) service indices. When looking for a free service, the first
         // index in that list should be used. When a service is unbound, its index is added to the
@@ -90,8 +91,8 @@ private:
         // the process is reused and bad things happen (mostly static variables are set when we
         // don't expect them to).
         // SHOULD BE ACCESSED WITH mConnectionLock.
-//        const ArrayList<Integer> mFreeConnectionIndices;
-//        const Object mConnectionLock;
+        AutoPtr<IList> mFreeConnectionIndices;// ArrayList<Integer>
+        Object mConnectionLock;
 
         AutoPtr<ChildProcessService> mChildClass;
         const Boolean mInSandbox;
@@ -115,14 +116,14 @@ private:
     {
     public:
         InnerConnectionCallback(
-            /* [in] */ const ChildProcessConnection* connection,
-            /* [in] */ const Int64 clientContext);
+            /* [in] */ ChildProcessConnection* connection,
+            /* [in] */ Int64 clientContext);
 
         CARAPI_(void) OnConnected(
             /* [in] */ Int32 pid);
 
     private:
-        const ChildProcessConnection* mConnection;
+        ChildProcessConnection* mConnection;
         const Int64 mClientContext;
     };
 
@@ -192,7 +193,7 @@ public:
 
     //@VisibleForTesting
     static CARAPI_(void) TriggerConnectionSetup(
-        /* [in] */ const ChildProcessConnection* connection,
+        /* [in] */ ChildProcessConnection* connection,
         /* [in] */ ArrayOf<String>* commandLine,
         /* [in] */ Int32 childProcessId,
         /* [in] */ ArrayOf<FileDescriptorInfo*>* filesToBeMapped,
@@ -295,9 +296,9 @@ private:
     /**
      * This implementation is used to receive callbacks from the remote service.
      */
-//    static CARAPI_(AutoPtr<IChildProcessCallback>) CreateCallback(
-//        /* [in] */ const Int32 childProcessId,
-//        /* [in] */ const Int32 callbackType);
+    static CARAPI_(AutoPtr<IInterface/*IChildProcessCallback*/>) CreateCallback(
+        /* [in] */ const Int32 childProcessId,
+        /* [in] */ const Int32 callbackType);
 
     static CARAPI_(void) NativeOnChildProcessStarted(
         /* [in] */ Int64 clientContext,
@@ -321,8 +322,8 @@ public:
     // classes and PrivilegedProcessServiceX classes declared in this package and defined as
     // services in the embedding application's manifest file.
     // (See {@link ChildProcessService} for more details on defining the services.)
-    /* package */ static const Int32 MAX_REGISTERED_SANDBOXED_SERVICES = 13;
-    /* package */ static const Int32 MAX_REGISTERED_PRIVILEGED_SERVICES = 3;
+    static const Int32 MAX_REGISTERED_SANDBOXED_SERVICES = 13;
+    static const Int32 MAX_REGISTERED_PRIVILEGED_SERVICES = 3;
 
 private:
     static const String TAG;
@@ -362,6 +363,7 @@ private:
     // Map from surface texture id to Surface.
     //static Map<Pair<Integer, Integer>, Surface> sSurfaceTextureSurfaceMap;
     static AutoPtr<IMap> sSurfaceTextureSurfaceMap;
+    static Object sLock;
 };
 
 } // namespace Browser

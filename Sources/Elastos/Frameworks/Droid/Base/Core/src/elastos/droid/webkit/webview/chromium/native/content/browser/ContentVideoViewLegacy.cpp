@@ -1,4 +1,3 @@
-
 #include "elastos/droid/webkit/webview/chromium/native/content/browser/ContentVideoViewLegacy.h"
 
 using Elastos::Droid::View::EIID_IViewOnKeyListener;
@@ -30,18 +29,15 @@ ContentVideoViewLegacy::FullScreenMediaController::FullScreenMediaController(
     : mVideoView(video)
     , mListener(listener)
 {
-    assert(0);
-//    super(context);
+    FrameLayout::constructor(context);
 }
 
-CAR_INTERFACE_IMPL(ContentVideoViewLegacy::FullScreenMediaController, Object, IMediaController);
+//CAR_INTERFACE_IMPL(ContentVideoViewLegacy::FullScreenMediaController, Object, IMediaController);
 
 //@Override
 ECode ContentVideoViewLegacy::FullScreenMediaController::Show()
 {
-    assert(0);
-#if 0
-    super.show();
+    MediaController::Show();
     if (mListener != NULL) {
         mListener->OnMediaControlsVisibilityChanged(TRUE);
     }
@@ -49,8 +45,6 @@ ECode ContentVideoViewLegacy::FullScreenMediaController::Show()
     if (mVideoView != NULL) {
         mVideoView->SetSystemUiVisibility(IView::SYSTEM_UI_FLAG_VISIBLE);
     }
-#endif
-
     return NOERROR;
 }
 
@@ -65,8 +59,7 @@ ECode ContentVideoViewLegacy::FullScreenMediaController::Hide()
         mListener->OnMediaControlsVisibilityChanged(FALSE);
     }
 
-    assert(0);
-//    super.hide();
+    MediaController::Hide();
 
     return NOERROR;
 }
@@ -89,9 +82,6 @@ ECode ContentVideoViewLegacy::InnerViewOnKeyListener::OnKey(
     /* [in] */ IKeyEvent* event,
     /* [out] */ Boolean* result)
 {
-    assert(0);
-#if 0
-    VALIDATE_NOT_NULL(v);
     VALIDATE_NOT_NULL(result);
 
     Int32 action;
@@ -106,48 +96,48 @@ ECode ContentVideoViewLegacy::InnerViewOnKeyListener::OnKey(
             keyCode != IKeyEvent::KEYCODE_SEARCH &&
             keyCode != IKeyEvent::KEYCODE_ENDCALL);
 
-    if (IsInPlaybackState() && isKeyCodeSupported && mMediaController != NULL) {
+    if (mOwner->IsInPlaybackState() && isKeyCodeSupported && mOwner->mMediaController != NULL) {
         if (keyCode == IKeyEvent::KEYCODE_HEADSETHOOK ||
                 keyCode == IKeyEvent::KEYCODE_MEDIA_PLAY_PAUSE) {
-            if (IsPlaying()) {
-                Pause();
-                mMediaController->Show();
+            if (mOwner->IsPlaying()) {
+                mOwner->Pause();
+                mOwner->mMediaController->Show();
             }
             else {
-                Start();
-                mMediaController->Hide();
+                mOwner->Start();
+                mOwner->mMediaController->Hide();
             }
 
             *result = TRUE;
             return NOERROR;
         }
         else if (keyCode == IKeyEvent::KEYCODE_MEDIA_PLAY) {
-            if (!IsPlaying()) {
-                Start();
-                mMediaController->Hide();
+            if (!mOwner->IsPlaying()) {
+                mOwner->Start();
+                mOwner->mMediaController->Hide();
             }
             *result = TRUE;
             return NOERROR;
         }
         else if (keyCode == IKeyEvent::KEYCODE_MEDIA_STOP
                 || keyCode == IKeyEvent::KEYCODE_MEDIA_PAUSE) {
-            if (IsPlaying()) {
-                Pause();
-                mMediaController->Show();
+            if (mOwner->IsPlaying()) {
+                mOwner->Pause();
+                mOwner->mMediaController->Show();
             }
 
             *result = TRUE;
             return NOERROR;
         }
         else {
-            ToggleMediaControlsVisiblity();
+            mOwner->ToggleMediaControlsVisiblity();
         }
     }
     else if (keyCode == IKeyEvent::KEYCODE_BACK &&
             (event->GetAction(&action), action == IKeyEvent::ACTION_UP)) {
-        ExitFullscreen(FALSE);
+        mOwner->ExitFullscreen(FALSE);
         *result = TRUE;
-            return NOERROR;
+        return NOERROR;
     }
     else if (keyCode == IKeyEvent::KEYCODE_MENU || keyCode == IKeyEvent::KEYCODE_SEARCH) {
         *result = TRUE;
@@ -155,7 +145,6 @@ ECode ContentVideoViewLegacy::InnerViewOnKeyListener::OnKey(
     }
 
     *result = FALSE;
-#endif
     return NOERROR;
 }
 
@@ -176,20 +165,15 @@ ECode ContentVideoViewLegacy::InnerViewOnTouchListener::OnTouch(
     /* [in] */ IMotionEvent* event,
     /* [out] */ Boolean* result)
 {
-    assert(0);
-#if 0
-    VALIDATE_NOT_NULL(v);
-    VALIDATE_NOT_NULL(event);
     VALIDATE_NOT_NULL(result);
 
     Int32 action;
-    if (IsInPlaybackState() && mMediaController != NULL &&
+    if (mOwner->IsInPlaybackState() && mOwner->mMediaController != NULL &&
             (event->GetAction(&action), action == IMotionEvent::ACTION_DOWN)) {
-        ToggleMediaControlsVisiblity();
+        mOwner->ToggleMediaControlsVisiblity();
     }
 
     *result = TRUE;
-#endif
     return NOERROR;
 }
 
@@ -301,28 +285,25 @@ ContentVideoViewLegacy::ContentVideoViewLegacy(
     , mCanSeekBackward(FALSE)
     , mCanSeekForward(FALSE)
 {
-    assert(0);
-//    SetBackgroundColor(IColor::BLACK);
+    SetBackgroundColor(IColor::BLACK);
     mCurrentBufferPercentage = 0;
 }
 
 //@Override
 void ContentVideoViewLegacy::ShowContentVideoView()
 {
-    assert(0);
-#if 0
     AutoPtr<ISurfaceView> surfaceView = GetSurfaceView();
     surfaceView->SetZOrderOnTop(TRUE);
     AutoPtr<IViewOnKeyListener> listener = new InnerViewOnKeyListener(this);
-    surfaceView->SetOnKeyListener(listener);
+    IView::Probe(surfaceView)->SetOnKeyListener(listener);
 
     AutoPtr<IViewOnTouchListener> touchListener = new InnerViewOnTouchListener(this);
     SetOnTouchListener(touchListener);
-    surfaceView->SetFocusable(TRUE);
-    surfaceView->SetFocusableInTouchMode(TRUE);
-    surfaceView->RequestFocus();
+    IView::Probe(surfaceView)->SetFocusable(TRUE);
+    IView::Probe(surfaceView)->SetFocusableInTouchMode(TRUE);
+    Boolean res;
+    IView::Probe(surfaceView)->RequestFocus(&res);
     ContentVideoView::ShowContentVideoView();
-#endif
 }
 
 //@Override
@@ -357,8 +338,6 @@ void ContentVideoViewLegacy::OnUpdateMediaMetadata(
     /* [in] */ Boolean canSeekBack,
     /* [in] */ Boolean canSeekForward)
 {
-    assert(0);
-#if 0
     ContentVideoView::OnUpdateMediaMetadata(videoWidth, videoHeight, duration,
             canPause, canSeekBack, canSeekForward);
     mCanPause = canPause;
@@ -373,9 +352,8 @@ void ContentVideoViewLegacy::OnUpdateMediaMetadata(
         mMediaController->Show();
     }
     else {
-        mMediaController->Show(0);
+        mMediaController->MediaController::Show(0);
     }
-#endif
 }
 
 //@Override
@@ -385,16 +363,13 @@ ECode ContentVideoViewLegacy::SurfaceChanged(
     /* [in] */ Int32 width,
     /* [in] */ Int32 height)
 {
-    assert(0);
-#if 0
     ContentVideoView::SurfaceChanged(holder, format, width, height);
     AutoPtr<ISurfaceView> surfaceView = GetSurfaceView();
-    surfaceView->SetFocusable(TRUE);
-    surfaceView->SetFocusableInTouchMode(TRUE);
+    IView::Probe(surfaceView)->SetFocusable(TRUE);
+    IView::Probe(surfaceView)->SetFocusableInTouchMode(TRUE);
     if (IsInPlaybackState() && mMediaController != NULL) {
         mMediaController->Show();
     }
-#endif
 
     return NOERROR;
 }
@@ -402,8 +377,6 @@ ECode ContentVideoViewLegacy::SurfaceChanged(
 //@Override
 void ContentVideoViewLegacy::OpenVideo()
 {
-    assert(0);
-#if 0
     ContentVideoView::OpenVideo();
 
     mCurrentBufferPercentage = 0;
@@ -412,12 +385,13 @@ void ContentVideoViewLegacy::OpenVideo()
         return;
     }
 
-    mMediaController = new FullScreenMediaController(GetContext(), this, mListener);
-    AutoPtr<IMediaController> controller = new InnerMediaPlayerControl(this);
-    mMediaController->SetMediaPlayer(controller);
-    mMediaController->SetAnchorView(GetSurfaceView());
+    AutoPtr<IContext> context;
+    GetContext((IContext**)&context);
+    mMediaController = new FullScreenMediaController(context, this, mListener);
+    AutoPtr<IMediaPlayerControl> control = new InnerMediaPlayerControl(this);
+    mMediaController->SetMediaPlayer(control);
+    mMediaController->SetAnchorView(IView::Probe(GetSurfaceView()));
     mMediaController->SetEnabled(FALSE);
-#endif
 }
 
 //@Override
@@ -456,8 +430,6 @@ void ContentVideoViewLegacy::ToggleMediaControlsVisiblity()
 void ContentVideoViewLegacy::DestroyContentVideoView(
     /* [in] */ Boolean nativeViewDestroyed)
 {
-    assert(0);
-#if 0
     if (mMediaController != NULL) {
         mMediaController->SetEnabled(FALSE);
         mMediaController->Hide();
@@ -465,7 +437,6 @@ void ContentVideoViewLegacy::DestroyContentVideoView(
     }
 
     ContentVideoView::DestroyContentVideoView(nativeViewDestroyed);
-#endif
 }
 
 //@Override

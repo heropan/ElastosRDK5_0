@@ -260,7 +260,8 @@ ECode ScreenOrientationListener::UpdateOrientation()
             mOrientation = -90;
             break;
         default:
-            assert(0);
+            Slogger::E("ScreenOrientationListener::UpdateOrientation", "Display.getRotation() shouldn't return that value");
+            return E_ILLEGAL_STATE_EXCEPTION;
             // throw new IllegalStateException(
             //         "Display.getRotation() shouldn't return that value");
     }

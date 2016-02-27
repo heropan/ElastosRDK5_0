@@ -9,6 +9,7 @@
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/os/SystemClock.h"
 #include "elastos/droid/view/GestureDetector.h"
+#include "elastos/droid/view/View.h"
 
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Content::Res::IResources;
@@ -44,8 +45,7 @@ namespace Browser {
   * canvas and touch events to display the on-demand zoom magnifier.
   */
 class PopupZoomer
-    : public Object
-    //, public View
+    : public Elastos::Droid::View::View
 {
 public:
     /**
@@ -191,7 +191,7 @@ protected:
     virtual CARAPI_(Boolean) AcceptZeroSizeView();
 
     // @Override
-    CARAPI OnDraw(
+    CARAPI_(void) OnDraw(
         /* [in] */ ICanvas* canvas);
 
 private:

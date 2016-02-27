@@ -6924,7 +6924,7 @@ ECode WebViewChromium::ExtractSmartClipData(
 }
 
 ECode WebViewChromium::SetSmartClipResultHandler(
-    /* [in] */ const IHandler* resultHandler)
+    /* [in] */ IHandler* resultHandler)
 {
     VALIDATE_NOT_NULL(resultHandler);
     // ==================before translated======================

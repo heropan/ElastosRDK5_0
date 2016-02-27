@@ -113,7 +113,8 @@ class FullScreenView;
  */
 //@JNINamespace("android_webview")
 class AwContents
-    : public SmartClipProvider
+    : public Object
+    , public SmartClipProvider
 {
 public:
     /**
@@ -793,6 +794,8 @@ public:
     static const String SAVE_RESTORE_STATE_KEY;
 
 public:
+    CAR_INTERFACE_DECL();
+
     /**
      * @param browserContext the browsing context to associate this view contents with.
      * @param containerView the view-hierarchy item this object will be bound to.
@@ -1487,7 +1490,7 @@ public:
         /* [in] */ Int32 height);
 
     //@Override
-    virtual CARAPI_(void) SetSmartClipResultHandler(
+    virtual CARAPI SetSmartClipResultHandler(
         /* [in] */ IHandler* resultHandler);
 
 private:

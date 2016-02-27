@@ -28,10 +28,9 @@ Boolean JellyBeanContentView::PerformAccessibilityAction(
         return mContentViewCore->PerformAccessibilityAction(action, arguments);
     }
 
-    assert(0);
-    // TODO
-    // return ContentView::PerformAccessibilityAction(action, arguments);
-    return FALSE;
+    Boolean res;
+    ContentView::PerformAccessibilityAction(action, arguments, &res);
+    return res;
 }
 
 AutoPtr<IAccessibilityNodeProvider> JellyBeanContentView::GetAccessibilityNodeProvider()
@@ -40,10 +39,8 @@ AutoPtr<IAccessibilityNodeProvider> JellyBeanContentView::GetAccessibilityNodePr
     if (provider != NULL) {
         return provider;
     } else {
-        assert(0);
-        // TODO
-        // return ContentView::GetAccessibilityNodeProvider();
-        return NULL;
+        ContentView::GetAccessibilityNodeProvider((IAccessibilityNodeProvider**)&provider);
+        return provider;
     }
 }
 

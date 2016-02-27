@@ -116,12 +116,10 @@ AutoPtr<LoadUrlParams> LoadUrlParams::CreateLoadDataParamsWithBaseUrl(
     // // baseUrl and historyUrl.
     // TODO(joth): we should just append baseURL and historyURL here, and move the
     // WebView specific transform up to a wrapper factory function in android_webview/.
-    assert(0);
-    // TODO
-    // if (baseUrl == NULL || !baseUrl.ToLowerCase(ILocale::US).StartsWith("data:")) {
-    //     params->SetBaseUrlForDataUrl(baseUrl != NULL ? baseUrl : String("about:blank"));
-    //     params->SetVirtualUrlForDataUrl(historyUrl != NULL ? historyUrl : String("about:blank"));
-    // }
+    if (baseUrl.IsNullOrEmpty() || !baseUrl.ToLowerCase(/*TODO ILocale::US*/).StartWith("data:")) {
+        params->SetBaseUrlForDataUrl(!baseUrl.IsNullOrEmpty() ? baseUrl : String("about:blank"));
+        params->SetVirtualUrlForDataUrl(!historyUrl.IsNullOrEmpty() ? historyUrl : String("about:blank"));
+    }
 
     return params;
 }
@@ -310,9 +308,10 @@ String LoadUrlParams::GetExtraHeadersString(
         // Header name should be lower case.
         AutoPtr<ICharSequence> key;
         header->GetKey((IInterface**)&key);
-        assert(0);
-        // TODO
+        String strKey;
+        key->ToString(&strKey);
         // headerBuilder.append(header.getKey().toLowerCase(Locale.US));
+        headerBuilder->Append(strKey);
         headerBuilder->Append(":");
         AutoPtr<ICharSequence> value;
         header->GetValue((IInterface**)&value);

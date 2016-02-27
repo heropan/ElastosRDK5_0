@@ -1,14 +1,33 @@
 
+#include "Elastos.Droid.App.h"
 #include "Elastos.Droid.Content.h"
+#include "elastos/droid/webkit/webview/chromium/native/base/ThreadUtils.h"
 #include "elastos/droid/webkit/webview/chromium/native/content/browser/ContentVideoView.h"
+#include "elastos/droid/webkit/webview/chromium/native/content/browser/ContentVideoViewLegacy.h"
 #include "elastos/droid/webkit/webview/chromium/native/content/api/ContentVideoView_dec.h"
 #include "elastos/droid/webkit/webview/chromium/native/content/R_Content.h"
+#include "elastos/droid/R.h"
 #include <elastos/utility/logging/Logger.h>
 
-using Elastos::Droid::View::EIID_ISurfaceView;
-using Elastos::Droid::Webkit::Webview::Chromium::Content::R;
+//using Elastos::Droid::View::EIID_ISurfaceView;
+using Elastos::Droid::App::IAlertDialogBuilder;
+using Elastos::Droid::App::CAlertDialogBuilder;
+using Elastos::Droid::Content::EIID_IDialogInterfaceOnClickListener;
+using Elastos::Droid::View::EIID_ISurfaceHolderCallback;
+using Elastos::Droid::View::CView;
+using Elastos::Droid::Webkit::Webview::Chromium::Base::ThreadUtils;
+using Elastos::Droid::Webkit::Webview::Chromium::Content::Browser::ContentVideoViewLegacy;
+using Elastos::Droid::Widget::IFrameLayoutLayoutParams;
 using Elastos::Droid::Widget::EIID_ILinearLayout;
+using Elastos::Droid::Widget::ILinearLayoutLayoutParams;
+using Elastos::Droid::Widget::CLinearLayoutLayoutParams;
+using Elastos::Droid::Widget::CTextView;
+using Elastos::Droid::Widget::IProgressBar;
+using Elastos::Droid::Widget::CProgressBar;
+using Elastos::Droid::Widget::CFrameLayoutLayoutParams;
 using Elastos::Core::EIID_IRunnable;
+using Elastos::Core::CString;
+using Elastos::Core::ICharSequence;
 using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
@@ -28,19 +47,16 @@ ContentVideoView::VideoSurfaceView::VideoSurfaceView(
     /* [in] */ IContext* context)
     : mOwner(owner)
 {
-    assert(0);
-//    super(context);
+    SurfaceView::constructor(context);
 }
 
-CAR_INTERFACE_IMPL(ContentVideoView::VideoSurfaceView, Object, ISurfaceView);
+//CAR_INTERFACE_IMPL(ContentVideoView::VideoSurfaceView, Object, ISurfaceView);
 
 //@Override
-ECode ContentVideoView::VideoSurfaceView::OnMeasure(
+void ContentVideoView::VideoSurfaceView::OnMeasure(
     /* [in] */ Int32 widthMeasureSpec,
     /* [in] */ Int32 heightMeasureSpec)
 {
-    assert(0);
-#if 0
     // set the default surface view size to (1, 1) so that it won't block
     // the infobar. (0, 0) is not a valid size for surface view.
     Int32 width = 1;
@@ -57,8 +73,6 @@ ECode ContentVideoView::VideoSurfaceView::OnMeasure(
     }
 
     SetMeasuredDimension(width, height);
-#endif
-    return NOERROR;
 }
 
 //===============================================================
@@ -69,26 +83,25 @@ ContentVideoView::ProgressView::ProgressView(
     /* [in] */ IContext* context,
     /* [in] */ const String& videoLoadingText)
 {
-    assert(0);
-#if 0
-    super(context);
+    LinearLayout::constructor(context);
     SetOrientation(ILinearLayout::VERTICAL);
     AutoPtr<ILinearLayoutLayoutParams> params;
     CLinearLayoutLayoutParams::New(
-            ILinearLayoutLayoutParams::WRAP_CONTENT,
-            ILinearLayoutLayoutParams::WRAP_CONTENT,
+            IViewGroupLayoutParams::WRAP_CONTENT,
+            IViewGroupLayoutParams::WRAP_CONTENT,
             (ILinearLayoutLayoutParams**)&params);
-    SetLayoutParams(params);
-    CProgressBar::New(context, NULL, android::R::attr::progressBarStyleLarge,
+    SetLayoutParams(IViewGroupLayoutParams::Probe(params));
+    CProgressBar::New(context, NULL, Elastos::Droid::R::attr::progressBarStyleLarge,
         (IProgressBar**)&mProgressBar);
     CTextView::New(context, (ITextView**)&mTextView);
-    mTextView->SetText(videoLoadingText);
-    AddView(mProgressBar);
-    AddView(mTextView);
-#endif
+    AutoPtr<ICharSequence> vdText;
+    CString::New(videoLoadingText, (ICharSequence**)&vdText);
+    mTextView->SetText(vdText);
+    AddView(IView::Probe(mProgressBar));
+    AddView(IView::Probe(mTextView));
 }
 
-CAR_INTERFACE_IMPL(ContentVideoView::ProgressView, Object, ILinearLayout);
+//CAR_INTERFACE_IMPL(ContentVideoView::ProgressView, Object, ILinearLayout);
 
 //===============================================================
 //               ContentVideoView::InnerRunnable
@@ -107,6 +120,29 @@ ECode ContentVideoView::InnerRunnable::Run()
     mOwner->ExitFullscreen(TRUE);
     return NOERROR;
 }
+
+//==============================================================
+//           ContentVideoView::PositiveButtonClickListener
+//==============================================================
+CAR_INTERFACE_IMPL(ContentVideoView::PositiveButtonClickListener, Object, IDialogInterfaceOnClickListener);
+
+ContentVideoView::PositiveButtonClickListener::PositiveButtonClickListener(
+    /* [in] */ ContentVideoView* owner)
+    : mOwner(owner)
+{
+}
+
+ECode ContentVideoView::PositiveButtonClickListener::OnClick(
+    /* [in] */ IDialogInterface* dialog,
+    /* [in] */ Int32 which)
+{
+    /* Inform that the video is over.
+    */
+    mOwner->OnCompletion();
+    return NOERROR;
+}
+
+//==============================================================
 
 //===============================================================
 //                     ContentVideoView
@@ -140,6 +176,8 @@ const Int32 ContentVideoView::STATE_PLAYING;
 const Int32 ContentVideoView::STATE_PAUSED;
 const Int32 ContentVideoView::STATE_PLAYBACK_COMPLETED;
 
+CAR_INTERFACE_IMPL(ContentVideoView, FrameLayout, ISurfaceHolderCallback);
+
 ContentVideoView::ContentVideoView(
     /* [in] */ IContext* context,
     /* [in] */ Int64 nativeContentVideoView,
@@ -149,18 +187,17 @@ ContentVideoView::ContentVideoView(
     , mDuration(0)
     , mCurrentState(0)
 {
-    assert(0);
-#if 0
-    super(context);
+    FrameLayout::constructor(context);
     mExitFullscreenRunnable = new InnerRunnable(this);
     mNativeContentVideoView = nativeContentVideoView;
-    mViewAndroid = new ViewAndroid(new WindowAndroid(context.getApplicationContext()), this);
+    AutoPtr<IContext> ctx;
+    context->GetApplicationContext((IContext**)&ctx);
+    mViewAndroid = new ViewElastos(new WindowElastos(ctx), this);
     mClient = client;
-    initResources(context);
-    mVideoSurfaceView = new VideoSurfaceView(context);
-    showContentVideoView();
-    setVisibility(View.VISIBLE);
-#endif
+    InitResources(context);
+    mVideoSurfaceView = new VideoSurfaceView(this, context);
+    ShowContentVideoView();
+    SetVisibility(IView::VISIBLE);
 }
 
 AutoPtr<ContentVideoViewClient> ContentVideoView::GetContentVideoViewClient()
@@ -171,41 +208,44 @@ AutoPtr<ContentVideoViewClient> ContentVideoView::GetContentVideoViewClient()
 void ContentVideoView::InitResources(
     /* [in] */ IContext* context)
 {
-    assert(0);
-#if 0
-    if (mPlaybackErrorText != null) return;
-    mPlaybackErrorText = context.getString(
-            org.chromium.content.R.string.media_player_error_text_invalid_progressive_playback);
-    mUnknownErrorText = context.getString(
-            org.chromium.content.R.string.media_player_error_text_unknown);
-    mErrorButton = context.getString(
-            org.chromium.content.R.string.media_player_error_button);
-    mErrorTitle = context.getString(
-            org.chromium.content.R.string.media_player_error_title);
-    mVideoLoadingText = context.getString(
-            org.chromium.content.R.string.media_player_loading_video);
-#endif
+    if (mPlaybackErrorText != NULL) return;
+    //mPlaybackErrorText =
+    context->GetString(Elastos::Droid::Webkit::Webview::Chromium::Content::R::string::media_player_error_text_invalid_progressive_playback,
+            &mPlaybackErrorText);
+    //mUnknownErrorText =
+    context->GetString(Elastos::Droid::Webkit::Webview::Chromium::Content::R::string::media_player_error_text_unknown,
+            &mUnknownErrorText);
+    //mErrorButton =
+    context->GetString(Elastos::Droid::Webkit::Webview::Chromium::Content::R::string::media_player_error_button,
+            &mErrorButton);
+    //mErrorTitle =
+    context->GetString(Elastos::Droid::Webkit::Webview::Chromium::Content::R::string::media_player_error_title,
+            &mErrorTitle);
+    //mVideoLoadingText =
+    context->GetString(Elastos::Droid::Webkit::Webview::Chromium::Content::R::string::media_player_loading_video,
+            &mVideoLoadingText);
 }
 
 void ContentVideoView::ShowContentVideoView()
 {
-    assert(0);
-#if 0
-    mVideoSurfaceView.getHolder().addCallback(this);
-    this.addView(mVideoSurfaceView, new FrameLayout.LayoutParams(
-            ViewGroup.LayoutParams.WRAP_CONTENT,
-            ViewGroup.LayoutParams.WRAP_CONTENT,
-            Gravity.CENTER));
+    AutoPtr<ISurfaceHolder> surfaceHolder;
+    mVideoSurfaceView->GetHolder((ISurfaceHolder**)&surfaceHolder);
+    surfaceHolder->AddCallback(this);
 
-    mProgressView = mClient.getVideoLoadingProgressView();
-    if (mProgressView == null) {
-        mProgressView = new ProgressView(getContext(), mVideoLoadingText);
+    AutoPtr<IFrameLayoutLayoutParams> flp;
+    CFrameLayoutLayoutParams::New(IViewGroupLayoutParams::WRAP_CONTENT,
+                                  IViewGroupLayoutParams::WRAP_CONTENT,
+                                  IGravity::CENTER,
+                                  (IFrameLayoutLayoutParams**)&flp);
+    this->AddView(mVideoSurfaceView, IViewGroupLayoutParams::Probe(flp));
+
+    mProgressView = mClient->GetVideoLoadingProgressView();
+    if (mProgressView == NULL) {
+        AutoPtr<IContext> context;
+        GetContext((IContext**)&context);
+        mProgressView = new ProgressView(context, mVideoLoadingText);
     }
-    this.addView(mProgressView, new FrameLayout.LayoutParams(
-            ViewGroup.LayoutParams.WRAP_CONTENT,
-            ViewGroup.LayoutParams.WRAP_CONTENT,
-            Gravity.CENTER));
-#endif
+    this->AddView(mProgressView, IViewGroupLayoutParams::Probe(flp));
 }
 
 AutoPtr<ISurfaceView> ContentVideoView::GetSurfaceView()
@@ -217,9 +257,7 @@ AutoPtr<ISurfaceView> ContentVideoView::GetSurfaceView()
 void ContentVideoView::OnMediaPlayerError(
     /* [in] */ Int32 errorType)
 {
-    assert(0);
-#if 0
-    Log.d(TAG, "OnMediaPlayerError: " + errorType);
+    Logger::D(TAG, "OnMediaPlayerError: %d", errorType);
     if (mCurrentState == STATE_ERROR || mCurrentState == STATE_PLAYBACK_COMPLETED) {
         return;
     }
@@ -239,7 +277,8 @@ void ContentVideoView::OnMediaPlayerError(
      * TODO(qinmin): We need to review whether this Dialog is OK with
      * the rest of the browser UI elements.
      */
-    if (getWindowToken() != null) {
+    AutoPtr<IBinder> windowToken;
+    if ((GetWindowToken((IBinder**)&windowToken), windowToken) != NULL) {
         String message;
 
         if (errorType == MEDIA_ERROR_NOT_VALID_FOR_PROGRESSIVE_PLAYBACK) {
@@ -248,26 +287,29 @@ void ContentVideoView::OnMediaPlayerError(
             message = mUnknownErrorText;
         }
 
-        try {
-            new AlertDialog.Builder(getContext())
-                .setTitle(mErrorTitle)
-                .setMessage(message)
-                .setPositiveButton(mErrorButton,
-                        new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int whichButton) {
-                        /* Inform that the video is over.
-                         */
-                        onCompletion();
-                    }
-                })
-                .setCancelable(false)
-                .show();
-        } catch (RuntimeException e) {
-            Log.e(TAG, "Cannot show the alert dialog, error message: " + message, e);
-        }
+        //try {
+        AutoPtr<IContext> context;
+        GetContext((IContext**)&context);
+        AutoPtr<IAlertDialogBuilder> builder;
+        CAlertDialogBuilder::New(context, (IAlertDialogBuilder**)&builder);
+            //new AlertDialog.Builder(getContext())
+        AutoPtr<ICharSequence> title;
+        CString::New(mErrorTitle, (ICharSequence**)&title);
+        builder->SetTitle(title);
+        AutoPtr<ICharSequence> msg;
+        CString::New(message, (ICharSequence**)&msg);
+        builder->SetMessage(msg);
+        AutoPtr<ICharSequence> pButton;
+        CString::New(mErrorButton, (ICharSequence**)&pButton);
+        builder->SetPositiveButton(pButton,
+                        new PositiveButtonClickListener(this));
+        builder->SetCancelable(FALSE);
+        AutoPtr<IAlertDialog> ad;
+        builder->Show((IAlertDialog**)&ad);
+        //} catch (RuntimeException e) {
+        //    Log.e(TAG, "Cannot show the alert dialog, error message: " + message, e);
+        //}
     }
-#endif
 }
 
 //@CalledByNative
@@ -275,13 +317,12 @@ void ContentVideoView::OnVideoSizeChanged(
     /* [in] */ Int32 width,
     /* [in] */ Int32 height)
 {
-    assert(0);
-#if 0
     mVideoWidth = width;
     mVideoHeight = height;
     // This will trigger the SurfaceView.onMeasure() call.
-    mVideoSurfaceView.getHolder().setFixedSize(mVideoWidth, mVideoHeight);
-#endif
+    AutoPtr<ISurfaceHolder> surfaceHolder;
+    mVideoSurfaceView->GetHolder((ISurfaceHolder**)&surfaceHolder);
+    surfaceHolder->SetFixedSize(mVideoWidth, mVideoHeight);
 }
 
 //@CalledByNative
@@ -339,8 +380,8 @@ ECode ContentVideoView::SurfaceDestroyed(
     }
 
     mSurfaceHolder = NULL;
-    assert(0);
-//    Post(mExitFullscreenRunnable);
+    Boolean res;
+    Post(mExitFullscreenRunnable, &res);
 
     return NOERROR;
 }
@@ -443,50 +484,46 @@ AutoPtr<ContentVideoView> ContentVideoView::CreateContentVideoView(
     /* [in] */ ContentVideoViewClient* client,
     /* [in] */ Boolean legacy)
 {
-    assert(0);
-#if 0
     ThreadUtils::AssertOnUiThread();
     // The context needs be Activity to create the ContentVideoView correctly.
-    if (!isActivityContext(context)) {
-        Log.e(TAG, "Wrong type of context, can't create fullscreen video");
-        return null;
+    if (!IsActivityContext(context)) {
+        Logger::E(TAG, "Wrong type of context, can't create fullscreen video");
+        return NULL;
     }
-    ContentVideoView videoView = null;
+    AutoPtr<ContentVideoView> videoView = NULL;
     if (legacy) {
         videoView = new ContentVideoViewLegacy(context, nativeContentVideoView, client);
     } else {
         videoView = new ContentVideoView(context, nativeContentVideoView, client);
     }
 
-    if (videoView.getContentVideoViewClient().onShowCustomView(videoView)) {
+    if (videoView->GetContentVideoViewClient()->OnShowCustomView(videoView)) {
         return videoView;
     }
-    return null;
-#endif
     return NULL;
 }
 
 Boolean ContentVideoView::IsActivityContext(
     /* [in] */ IContext* context)
 {
-    assert(0);
-#if 0
     // Only retrieve the base context if the supplied context is a ContextWrapper but not
     // an Activity, given that Activity is already a subclass of ContextWrapper.
-    if (context instanceof ContextWrapper && !(context instanceof Activity)) {
-        context = ((ContextWrapper) context).getBaseContext();
+    AutoPtr<IActivity> activity = IActivity::Probe(context);
+    AutoPtr<IContextWrapper> cw = IContextWrapper::Probe(context);
+    if (cw != NULL && !(activity == NULL)) {
+        //context = ((ContextWrapper) context).getBaseContext();
+        AutoPtr<IContext> baseContext;
+        cw->GetBaseContext((IContext**)&baseContext);
+        context = baseContext;
     }
-    return context instanceof Activity;
-#endif
-
-    return FALSE;
+    AutoPtr<IActivity> a = IActivity::Probe(context);
+    return a != NULL;
 }
 
 void ContentVideoView::RemoveSurfaceView()
 {
-    assert(0);
-//    RemoveView(mVideoSurfaceView);
-//    RemoveView(mProgressView);
+    RemoveView(mVideoSurfaceView);
+    RemoveView(mProgressView);
     mVideoSurfaceView = NULL;
     mProgressView = NULL;
 }
@@ -517,8 +554,7 @@ void ContentVideoView::DestroyContentVideoView(
 {
     if (mVideoSurfaceView != NULL) {
         RemoveSurfaceView();
-        assert(0);
-//        SetVisibility(IView::GONE);
+        SetVisibility(IView::GONE);
 
         // To prevent re-entrance, call this after removeSurfaceView.
         mClient->OnDestroyContentVideoView();
@@ -540,30 +576,31 @@ ECode ContentVideoView::OnKeyUp(
     /* [in] */ IKeyEvent* event,
     /* [out] */ Boolean* result)
 {
-    assert(0);
-#if 0
     if (keyCode == IKeyEvent::KEYCODE_BACK) {
         ExitFullscreen(FALSE);
-        return TRUE;
+        *result = TRUE;
+        return NOERROR;
     }
-    return super.onKeyUp(keyCode, event);
-#endif
-
-    return NOERROR;
+    return FrameLayout::OnKeyUp(keyCode, event, result);
 }
 
 //@Override
 ECode ContentVideoView::AcquireAnchorView(
     /* [out] */ IView** view)
 {
-    assert(0);
-#if 0
-    View anchorView = new View(getContext());
-    addView(anchorView);
-    return anchorView;
-#endif
-
+    AutoPtr<IContext> context;
+    GetContext((IContext**)&context);
+    AutoPtr<IView> anchorView;
+     CView::New(context, (IView**)&anchorView);
+    AddView(anchorView);
     return NOERROR;
+}
+
+AutoPtr<IView> ContentVideoView::AcquireAnchorView()
+{
+    AutoPtr<IView> view;
+    AcquireAnchorView((IView**)&view);
+    return view;
 }
 
 //@Override
@@ -574,7 +611,7 @@ ECode ContentVideoView::SetAnchorViewPosition(
     /* [in] */ Float width,
     /* [in] */ Float height)
 {
-//    Log.e(TAG, "setAnchorViewPosition isn't implemented");
+    Logger::E(TAG, "setAnchorViewPosition isn't implemented");
     return NOERROR;
 }
 
@@ -582,23 +619,20 @@ ECode ContentVideoView::SetAnchorViewPosition(
 ECode ContentVideoView::ReleaseAnchorView(
     /* [in] */ IView* anchorView)
 {
-    assert(0);
-//    RemoveView(anchorView);
+    RemoveView(anchorView);
     return NOERROR;
 }
 
 //@CalledByNative
 Int64 ContentVideoView::GetNativeViewAndroid()
 {
-    assert(0);
-//    return mViewAndroid->GetNativePointer();
-    return -1;
+    return mViewAndroid->GetNativePointer();
 }
 
 AutoPtr<ContentVideoView> ContentVideoView::NativeGetSingletonJavaContentVideoView()
 {
     AutoPtr<IInterface> cvv = Elastos_ContentVideoView_nativeGetSingletonJavaContentVideoView();
-    return (ContentVideoView*)(IObject::Probe(cvv));
+    return (ContentVideoView*)(FrameLayout*)(IObject::Probe(cvv));
 }
 
 void ContentVideoView::NativeExitFullscreen(
@@ -674,7 +708,7 @@ void ContentVideoView::OnMediaPlayerError(
     /* [in] */ IInterface* obj,
     /* [in] */ Int32 errorType)
 {
-    AutoPtr<ContentVideoView> mObj = (ContentVideoView*)(IObject::Probe(obj));
+    AutoPtr<ContentVideoView> mObj = (ContentVideoView*)(FrameLayout*)(IObject::Probe(obj));
     if (NULL == mObj)
     {
         Logger::E(TAG, "ContentVideoView::OnMediaPlayerError, mObj is NULL");
@@ -688,7 +722,7 @@ void ContentVideoView::OnVideoSizeChanged(
     /* [in] */ Int32 width,
     /* [in] */ Int32 height)
 {
-    AutoPtr<ContentVideoView> mObj = (ContentVideoView*)(IObject::Probe(obj));
+    AutoPtr<ContentVideoView> mObj = (ContentVideoView*)(FrameLayout*)(IObject::Probe(obj));
     if (NULL == mObj)
     {
         Logger::E(TAG, "ContentVideoView::OnVideoSizeChanged, mObj is NULL");
@@ -701,7 +735,7 @@ void ContentVideoView::OnBufferingUpdate(
     /* [in] */ IInterface* obj,
     /* [in] */ Int32 percent)
 {
-    AutoPtr<ContentVideoView> mObj = (ContentVideoView*)(IObject::Probe(obj));
+    AutoPtr<ContentVideoView> mObj = (ContentVideoView*)(FrameLayout*)(IObject::Probe(obj));
     if (NULL == mObj)
     {
         Logger::E(TAG, "ContentVideoView::OnBufferingUpdate, mObj is NULL");
@@ -713,7 +747,7 @@ void ContentVideoView::OnBufferingUpdate(
 void ContentVideoView::OnPlaybackComplete(
     /* [in] */ IInterface* obj)
 {
-    AutoPtr<ContentVideoView> mObj = (ContentVideoView*)(IObject::Probe(obj));
+    AutoPtr<ContentVideoView> mObj = (ContentVideoView*)(FrameLayout*)(IObject::Probe(obj));
     if (NULL == mObj)
     {
         Logger::E(TAG, "ContentVideoView::OnPlaybackComplete, mObj is NULL");
@@ -731,7 +765,7 @@ void ContentVideoView::OnUpdateMediaMetadata(
     /* [in] */ Boolean canSeekBack,
     /* [in] */ Boolean canSeekForward)
 {
-    AutoPtr<ContentVideoView> mObj = (ContentVideoView*)(IObject::Probe(obj));
+    AutoPtr<ContentVideoView> mObj = (ContentVideoView*)(FrameLayout*)(IObject::Probe(obj));
     if (NULL == mObj)
     {
         Logger::E(TAG, "ContentVideoView::OnUpdateMediaMetadata, mObj is NULL");
@@ -743,7 +777,7 @@ void ContentVideoView::OnUpdateMediaMetadata(
 void ContentVideoView::OpenVideo(
     /* [in] */ IInterface* obj)
 {
-    AutoPtr<ContentVideoView> mObj = (ContentVideoView*)(IObject::Probe(obj));
+    AutoPtr<ContentVideoView> mObj = (ContentVideoView*)(FrameLayout*)(IObject::Probe(obj));
     if (NULL == mObj)
     {
         Logger::E(TAG, "ContentVideoView::OpenVideo, mObj is NULL");
@@ -758,7 +792,7 @@ AutoPtr<IInterface> ContentVideoView::CreateContentVideoView(
     /* [in] */ IInterface* client,
     /* [in] */ Boolean legacy)
 {
-    AutoPtr<ContentVideoViewClient> cvvc = (ContentVideoViewClient*)(IObject::Probe(client));
+    AutoPtr<ContentVideoViewClient> cvvc = (ContentVideoViewClient*)(FrameLayout*)(IObject::Probe(client));
     AutoPtr<IContext> c = IContext::Probe(context);
     return TO_IINTERFACE(CreateContentVideoView(c, nativeContentVideoView, cvvc, legacy));
 }
@@ -766,7 +800,7 @@ AutoPtr<IInterface> ContentVideoView::CreateContentVideoView(
 void ContentVideoView::OnExitFullscreen(
     /* [in] */ IInterface* obj)
 {
-    AutoPtr<ContentVideoView> mObj = (ContentVideoView*)(IObject::Probe(obj));
+    AutoPtr<ContentVideoView> mObj = (ContentVideoView*)(FrameLayout*)(IObject::Probe(obj));
     if (NULL == mObj)
     {
         Logger::E(TAG, "ContentVideoView::OnExitFullscreen, mObj is NULL");
@@ -779,7 +813,7 @@ void ContentVideoView::DestroyContentVideoView(
     /* [in] */ IInterface* obj,
     /* [in] */ Boolean nativeViewDestroyed)
 {
-    AutoPtr<ContentVideoView> mObj = (ContentVideoView*)(IObject::Probe(obj));
+    AutoPtr<ContentVideoView> mObj = (ContentVideoView*)(FrameLayout*)(IObject::Probe(obj));
     if (NULL == mObj)
     {
         Logger::E(TAG, "ContentVideoView::DestroyContentVideoView, mObj is NULL");
@@ -791,7 +825,7 @@ void ContentVideoView::DestroyContentVideoView(
 Int64 ContentVideoView::GetNativeViewAndroid(
     /* [in] */ IInterface* obj)
 {
-    AutoPtr<ContentVideoView> mObj = (ContentVideoView*)(IObject::Probe(obj));
+    AutoPtr<ContentVideoView> mObj = (ContentVideoView*)(FrameLayout*)(IObject::Probe(obj));
     if (NULL == mObj)
     {
         Logger::E(TAG, "ContentVideoView::GetNativeViewAndroid, mObj is NULL");

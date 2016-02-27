@@ -51,17 +51,17 @@ private:
     class ConnectionParams : public Object
     {
     public:
-        // ConnectionParams(
-        //     /* [in] */ ArrayOf<String>* commandLine,
-        //     /* [in] */ ArrayOf<FileDescriptorInfo>* filesToBeMapped,
-        //     /* [in] */ IChildProcessCallback* callback,
-        //     /* [in] */ IBundle* sharedRelros);
+        ConnectionParams(
+            /* [in] */ ArrayOf<String>* commandLine,
+            /* [in] */ ArrayOf<FileDescriptorInfo*>* filesToBeMapped,
+            /* [in] */ IInterface/*IChildProcessCallback*/* callback,
+            /* [in] */ IBundle* sharedRelros);
 
     public:
-        const AutoPtr< ArrayOf<String> > mCommandLine;
-        const AutoPtr< ArrayOf<FileDescriptorInfo> > mFilesToBeMapped;
-//        const AutoPtr<IChildProcessCallback> mCallback;
-        const AutoPtr<IBundle> mSharedRelros;
+        AutoPtr< ArrayOf<String> > mCommandLine;
+        AutoPtr< ArrayOf<FileDescriptorInfo*> > mFilesToBeMapped;
+        AutoPtr<IInterface/*IChildProcessCallback*/> mCallback;
+        AutoPtr<IBundle> mSharedRelros;
     };
 
     class ChildServiceConnection
@@ -117,7 +117,7 @@ public:
     CARAPI_(Boolean) IsInSandbox();
 
     //@Override
-//    CARAPI_(AutoPtr<IChildProcessService>) GetService();
+    CARAPI_(AutoPtr<ChildProcessService/*IChildProcessService*/>) GetService();
 
     //@Override
     CARAPI_(Int32) GetPid();
@@ -127,12 +127,12 @@ public:
         /* [in] */ ArrayOf<String>* commandLine);
 
     //@Override
-    // CARAPI_(void) SetupConnection(
-    //     /* [in] */ ArrayOf<String>* commandLine,
-    //     /* [in] */ ArrayOf<FileDescriptorInfo>* filesToBeMapped,
-    //     /* [in] */ IChildProcessCallback* processCallback,
-    //     /* [in] */ ConnectionCallback* connectionCallback,
-    //     /* [in] */ IBundle* sharedRelros);
+    CARAPI_(void) SetupConnection(
+        /* [in] */ ArrayOf<String>* commandLine,
+        /* [in] */ ArrayOf<FileDescriptorInfo*>* filesToBeMapped,
+        /* [in] */ IInterface/*IChildProcessCallback*/* processCallback,
+        /* [in] */ ConnectionCallback* connectionCallback,
+        /* [in] */ IBundle* sharedRelros);
 
     //@Override
     CARAPI_(void) Stop();
@@ -173,17 +173,17 @@ private:
     CARAPI_(void) DoConnectionSetupLocked();
 
 private:
-    /*const*/ AutoPtr<IContext> mContext;
+    AutoPtr<IContext> mContext;
     const Int32 mServiceNumber;
     const Boolean mInSandbox;
     const AutoPtr<ChildProcessConnection::DeathCallback> mDeathCallback;
-//    const AutoPtr<IInterface> mServiceClass;
+    const AutoPtr<ChildProcessService/*TODO IInterface*/> mServiceClass;
 
     // Synchronization: While most internal flow occurs on the UI thread, the public API
     // (specifically start and stop) may be called from any thread, hence all entry point methods
     // into the class are synchronized on the lock to protect access to these members.
-//    const Object mLock;
-//    AutoPtr<IChildProcessService> mService;
+    Object mLock;
+    AutoPtr<ChildProcessService/*TODO IChildProcessService*/> mService;
     // Set to true when the service connected successfully.
     Boolean mServiceConnectComplete;
     // Set to true when the service disconnects, as opposed to being properly closed. This happens

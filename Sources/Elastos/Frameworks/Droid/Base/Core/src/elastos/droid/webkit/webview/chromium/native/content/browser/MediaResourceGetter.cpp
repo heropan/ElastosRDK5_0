@@ -9,29 +9,30 @@
 #include "elastos/droid/webkit/webview/chromium/native/content/browser/MediaResourceGetter.h"
 #include "elastos/droid/webkit/webview/chromium/native/content/api/MediaResourceGetter_dec.h"
 #include "elastos/droid/webkit/webview/chromium/native/base/PathUtils.h"
-//TODO #include <elastos/core/CInteger32.h>
+#include "elastos/droid/os/Build.h"
+#include "elastos/droid/text/TextUtils.h"
+#include "elastos/droid/Manifest.h"
 #include <elastos/core/StringUtils.h>
 #include <elastos/utility/logging/Slogger.h>
-//TODO #include "elastos/utility/CArrayList.h"
-#include "elastos/droid/os/Build.h"
-//TODO #include "elastos/droid/os/CParcelFileDescriptorHelper.h"
-#include "elastos/droid/text/TextUtils.h"
-//TODO #include "elastos/droid/utility/CHashMap.h"
-#include "elastos/droid/Manifest.h"
 
-//TODO using Elastos::Core::CInteger32;
+using Elastos::Core::CInteger32;
 using Elastos::Core::StringUtils;
 using Elastos::IO::IFileDescriptor;
+using Elastos::IO::CFile;
+using Elastos::Net::CURIHelper;
+using Elastos::Net::IURIHelper;
 using Elastos::Droid::Os::Build;
 using Elastos::Droid::Os::IParcelFileDescriptorHelper;
-//TODO using Elastos::Droid::Os::CParcelFileDescriptorHelper;
+using Elastos::Droid::Os::CParcelFileDescriptorHelper;
 using Elastos::Droid::Text::TextUtils;
 using Elastos::Droid::Webkit::Webview::Chromium::Base::PathUtils;
+using Elastos::Core::CString;
+using Elastos::Core::ICharSequence;
 using Elastos::Utility::IIterator;
 using Elastos::Utility::IIterable;
 using Elastos::Utility::EIID_IIterable;
-//TODO using Elastos::Utility::CArrayList;
-//TODO using Elastos::Utility::CHashMap;
+using Elastos::Utility::CArrayList;
+using Elastos::Utility::CHashMap;
 using Elastos::Utility::Logging::Slogger;
 
 namespace Elastos {
@@ -112,8 +113,8 @@ Boolean MediaResourceGetter::MediaMetadata::Equals(
     if (obj == NULL)
         return FALSE;
 
-    assert(0);
-    // TODO
+    Slogger::E("MediaMetadata::Equals", "be aware of the obj real type");
+    // how to check the obj is an instance of MediaMetadata
     // if (getClass() != obj.getClass())
     //     return FALSE;
 
@@ -225,9 +226,9 @@ Boolean MediaResourceGetter::Configure(
 {
     AutoPtr<IURI> uri;
     // try {
-        assert(0);
-        // TODO
-        // uri = URI.create(url);
+        AutoPtr<IURIHelper> uriHelper;
+        CURIHelper::AcquireSingleton((IURIHelper**)&uriHelper);
+        uriHelper->Create(url, (IURI**)&uri);
     // } catch (IllegalArgumentException  e) {
     //     Log.e(TAG, "Cannot parse uri.", e);
     //     return false;
@@ -268,19 +269,21 @@ Boolean MediaResourceGetter::Configure(
         }
 
         AutoPtr<IMap> headersMap;
-        assert(0);
-        // TODO
-        // CHashMap::New((IMap**)&headersMap);
+        CHashMap::New((IMap**)&headersMap);
         if (!TextUtils::IsEmpty(cookies)) {
-            assert(0);
-            // TODO
-            // headersMap.put("Cookie", cookies);
+            AutoPtr<ICharSequence> valueCS;
+            CString::New(cookies, (ICharSequence**)&valueCS);
+            AutoPtr<ICharSequence> keyCS;
+            CString::New(String("Cookie"), (ICharSequence**)&keyCS);
+            headersMap->Put(TO_IINTERFACE(keyCS), TO_IINTERFACE(valueCS));
         }
 
         if (!TextUtils::IsEmpty(userAgent)) {
-            assert(0);
-            // TODO
-            // headersMap.put("User-Agent", userAgent);
+            AutoPtr<ICharSequence> valueCS;
+            CString::New(userAgent, (ICharSequence**)&valueCS);
+            AutoPtr<ICharSequence> keyCS;
+            CString::New(String("User-Agent"), (ICharSequence**)&keyCS);
+            headersMap->Put(keyCS, valueCS);
         }
     //     try {
             Configure(url, headersMap);
@@ -296,9 +299,8 @@ Boolean MediaResourceGetter::IsNetworkReliable(
     /* [in] */ IContext* context)
 {
     Int32  permission;
-    assert(0 && "TODO");
-    // context->CheckCallingOrSelfPermission(
-    //         Elastos::Droid::Manifest::permission::ACCESS_NETWORK_STATE, &permission);
+    context->CheckCallingOrSelfPermission(
+             Elastos::Droid::Manifest::permission::ACCESS_NETWORK_STATE, &permission);
     if (permission != IPackageManager::PERMISSION_GRANTED) {
         Slogger::W(TAG, "permission denied to access network state");
         return FALSE;
@@ -341,9 +343,10 @@ Boolean MediaResourceGetter::FilePathAcceptable(
     // get unusual results in testing systems or possibly on rooted devices.
     // Note that canonicalized directory paths always end with '/'.
     AutoPtr<IList> acceptablePaths = Canonicalize(GetRawAcceptableDirectories());
-    assert(0);
-    // TODO
-    // acceptablePaths->Add(GetExternalStorageDirectory());
+    String esd = GetExternalStorageDirectory();
+    AutoPtr<ICharSequence> esdCS;
+    CString::New(esd, (ICharSequence**)&esdCS);
+    acceptablePaths->Add(TO_IINTERFACE(esdCS));
     String pathLog("canonicalized file path: ");
     pathLog += path;
     Slogger::D(TAG, pathLog);
@@ -376,9 +379,7 @@ AutoPtr<IFile> MediaResourceGetter::UriToFile(
     /* [in] */ const String& path)
 {
     AutoPtr<IFile> file;
-    assert(0);
-    // TODO
-    // CFile::New(path, (IFile**)&file);
+    CFile::New(path, (IFile**)&file);
     return file;
 }
 
@@ -405,9 +406,7 @@ AutoPtr<IInteger32> MediaResourceGetter::GetNetworkType(
     Int32 type;
     info->GetType(&type);
     AutoPtr<IInteger32> iType;
-    assert(0);
-    // TODO
-    // CInteger32::New(type, (IInteger32**)&iType);
+    CInteger32::New(type, (IInteger32**)&iType);
 
     return iType;
 }
@@ -423,9 +422,7 @@ ECode MediaResourceGetter::Configure(
     /* [in] */ Int64 length)
 {
     AutoPtr<IParcelFileDescriptorHelper> helper;
-    assert(0);
-    // TODO
-    // CParcelFileDescriptorHelper::AcquireSingleton((IParcelFileDescriptorHelper**)&helper);
+    CParcelFileDescriptorHelper::AcquireSingleton((IParcelFileDescriptorHelper**)&helper);
     AutoPtr<IParcelFileDescriptor> parcelFd;
     helper->AdoptFd(fd, (IParcelFileDescriptor**)&parcelFd);
 
@@ -560,11 +557,13 @@ Boolean MediaResourceGetter::IsLoopbackAddress(
 AutoPtr<IList> MediaResourceGetter::GetRawAcceptableDirectories()
 {
     AutoPtr<IList> result;
-    assert(0);
-    // TODO
-    // CArrayList::New((IList**)&result);
-    // result.add("/mnt/sdcard/");
-    // result.add("/sdcard/");
+    CArrayList::New((IList**)&result);
+    AutoPtr<ICharSequence> d1;
+    CString::New(String("/mnt/sdcard/"), (ICharSequence**)&d1);
+    AutoPtr<ICharSequence> d2;
+    CString::New(String("/sdcard"), (ICharSequence**)&d2);
+    result->Add(TO_IINTERFACE(d1));
+    result->Add(TO_IINTERFACE(d2));
     return result;
 }
 
@@ -574,9 +573,7 @@ AutoPtr<IList> MediaResourceGetter::Canonicalize(
     AutoPtr<IList> result;
     Int32 size;
     paths->GetSize(&size);
-    assert(0);
-    // TODO
-    // CArrayList::New(size, (IList**)&result);
+    CArrayList::New(size, (IList**)&result);
 
     // try {
         AutoPtr<IIterable> iterable = IIterable::Probe(paths);
@@ -589,14 +586,12 @@ AutoPtr<IList> MediaResourceGetter::Canonicalize(
             String path;
             pathCS->ToString(&path);
             AutoPtr<IFile> file;
-            assert(0);
-            // TODO
-            // CFile::New(path, (IFile**)&file);
+            CFile::New(path, (IFile**)&file);
             String pathfile;
             file->GetCanonicalPath(&pathfile);
-            assert(0);
-            // TODO
-            // result->Add(pathfile);
+            AutoPtr<ICharSequence> pfCS;
+            CString::New(pathfile, (ICharSequence**)&pfCS);
+            result->Add(TO_IINTERFACE(pfCS));
         }
         return result;
     // } catch (IOException e) {

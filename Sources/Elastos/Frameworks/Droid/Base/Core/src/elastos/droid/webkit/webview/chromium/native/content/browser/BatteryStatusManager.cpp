@@ -1,7 +1,13 @@
-
+#include "Elastos.Droid.Content.h"
+#include "Elastos.Droid.Os.h"
 #include "elastos/droid/webkit/webview/chromium/native/content/browser/BatteryStatusManager.h"
 #include "elastos/droid/webkit/webview/chromium/native/content/api/BatteryStatusManager_dec.h"
+#include <elastos/core/AutoLock.h>
+#include <elastos/core/Math.h>
 #include <elastos/utility/logging/Logger.h>
+
+using Elastos::Droid::Content::CIntentFilter;
+using Elastos::Core::AutoLock;
 using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
@@ -41,10 +47,9 @@ BatteryStatusManager::BatteryStatusManager(
   : mNativePtr(0)
   , mEnabled(FALSE)
 {
-  assert(0);
-  // mReceiver = new InnerBroadcastReceiver(this);
-  // CIntentFilter::New(IIntent::ACTION_BATTERY_CHANGED, (IIntentFilter**)&mFilter);
-  // context->GetApplicationContext((IContext**)&mAppContext);
+  mReceiver = new InnerBroadcastReceiver(this);
+  CIntentFilter::New(IIntent::ACTION_BATTERY_CHANGED, (IIntentFilter**)&mFilter);
+  context->GetApplicationContext((IContext**)&mAppContext);
 }
 
 //@CalledByNative
@@ -62,16 +67,15 @@ AutoPtr<BatteryStatusManager> BatteryStatusManager::GetInstance(
 Boolean BatteryStatusManager::Start(
   /* [in] */ Int64 nativePtr)
 {
-  assert(0);
-    // synchronized(mNativePtrLock) {
-    //     if (!mEnabled && mAppContext.registerReceiver(mReceiver, mFilter) != null) {
-    //         // success
-    //         mNativePtr = nativePtr;
-    //         mEnabled = true;
-    //     }
-    // }
-    // return mEnabled;
-  return FALSE;
+    synchronized(mNativePtrLock) {
+        AutoPtr<IIntent> stickyIntent;
+        if (!mEnabled && (mAppContext->RegisterReceiver(mReceiver, mFilter, (IIntent**)&stickyIntent), stickyIntent) != NULL) {
+            // success
+            mNativePtr = nativePtr;
+            mEnabled = TRUE;
+        }
+    }
+    return mEnabled;
 }
 
 /**
@@ -80,55 +84,59 @@ Boolean BatteryStatusManager::Start(
 //@CalledByNative
 void BatteryStatusManager::Stop()
 {
-  assert(0);
-    // synchronized(mNativePtrLock) {
-    //     if (mEnabled) {
-    //         mAppContext.unregisterReceiver(mReceiver);
-    //         mNativePtr = 0;
-    //         mEnabled = false;
-    //     }
-    // }
+    synchronized(mNativePtrLock) {
+        if (mEnabled) {
+            mAppContext->UnregisterReceiver(mReceiver);
+            mNativePtr = 0;
+            mEnabled = FALSE;
+        }
+    }
 }
 
 //@VisibleForTesting
 void BatteryStatusManager::OnReceive(
   /* [in] */ IIntent* intent)
 {
-  assert(0);
+    String action;
+    intent->GetAction(&action);
+    if (!action.Equals(IIntent::ACTION_BATTERY_CHANGED)) {
+        Logger::E(TAG, "Unexpected intent.");
+        return;
+    }
 
-#if 0
-   if (!intent.getAction().equals(Intent.ACTION_BATTERY_CHANGED)) {
-       Log.e(TAG, "Unexpected intent.");
-       return;
-   }
+    Boolean present;//= IgnoreBatteryPresentState() ? TRUE : intent->GetBooleanExtra(IBatteryManager::EXTRA_PRESENT, FALSE);
+    if (IgnoreBatteryPresentState()) {
+        present = TRUE;
+    } else {
+        intent->GetBooleanExtra(IBatteryManager::EXTRA_PRESENT, FALSE, &present);
+    }
 
-   boolean present = ignoreBatteryPresentState() ?
-           true : intent.getBooleanExtra(BatteryManager.EXTRA_PRESENT, false);
+    if (!present) {
+        // No battery, return default values.
+        GotBatteryStatus(TRUE, 0, Elastos::Core::Math::DOUBLE_POSITIVE_INFINITY, 1);
+        return;
+    }
 
-   if (!present) {
-       // No battery, return default values.
-       gotBatteryStatus(true, 0, Double.POSITIVE_INFINITY, 1);
-       return;
-   }
+    Int32 current;
+    intent->GetInt32Extra(IBatteryManager::EXTRA_LEVEL, -1, &current);
+    Int32 max;
+    intent->GetInt32Extra(IBatteryManager::EXTRA_SCALE, -1, &max);
+    Double level = (Double)current / (Double)max;
+    if (level < 0 || level > 1) {
+        // Sanity check, assume default value in this case.
+        level = 1.0;
+    }
 
-   int current = intent.getIntExtra(BatteryManager.EXTRA_LEVEL, -1);
-   int max = intent.getIntExtra(BatteryManager.EXTRA_SCALE, -1);
-   double level = (double)current / (double)max;
-   if (level < 0 || level > 1) {
-       // Sanity check, assume default value in this case.
-       level = 1.0;
-   }
+    Int32 status;
+    intent->GetInt32Extra(IBatteryManager::EXTRA_STATUS, -1, &status);
+    Boolean charging = !(status == IBatteryManager::BATTERY_STATUS_DISCHARGING);
 
-   int status = intent.getIntExtra(BatteryManager.EXTRA_STATUS, -1);
-   boolean charging = !(status == BatteryManager.BATTERY_STATUS_DISCHARGING);
+    // TODO(timvolodine) : add proper projection for chargingTime, dischargingTime.
+    Double chargingTime = (status == IBatteryManager::BATTERY_STATUS_FULL) ?
+        0 : Elastos::Core::Math::DOUBLE_POSITIVE_INFINITY;
+    Double dischargingTime = Elastos::Core::Math::DOUBLE_POSITIVE_INFINITY;
 
-   // TODO(timvolodine) : add proper projection for chargingTime, dischargingTime.
-   double chargingTime = (status == BatteryManager.BATTERY_STATUS_FULL) ?
-           0 : Double.POSITIVE_INFINITY;
-   double dischargingTime = Double.POSITIVE_INFINITY;
-
-   gotBatteryStatus(charging, chargingTime, dischargingTime, level);
-#endif
+    GotBatteryStatus(charging, chargingTime, dischargingTime, level);
 }
 
 /**
@@ -148,12 +156,11 @@ void BatteryStatusManager::GotBatteryStatus(
   /* [in] */ Double dischargingTime,
   /* [in] */ Double level)
 {
-  assert(0);
-    // synchronized(mNativePtrLock) {
-    //     if (mNativePtr != 0) {
-    //         nativeGotBatteryStatus(mNativePtr, charging, chargingTime, dischargingTime, level);
-    //     }
-    // }
+    synchronized(mNativePtrLock) {
+        if (mNativePtr != 0) {
+            NativeGotBatteryStatus(mNativePtr, charging, chargingTime, dischargingTime, level);
+        }
+    }
 }
 
 /**

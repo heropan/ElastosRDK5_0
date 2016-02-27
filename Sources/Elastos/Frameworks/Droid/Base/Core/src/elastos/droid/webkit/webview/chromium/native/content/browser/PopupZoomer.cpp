@@ -1,25 +1,25 @@
 
+#include "Elastos.Droid.Animation.h"
 #include "Elastos.Droid.Content.h"
 #include "Elastos.Droid.Graphics.h"
 #include "elastos/droid/webkit/webview/chromium/native/content/browser/PopupZoomer.h"
-//TODO #include ""elastos/droid/graphics/CCanvas.h"
-//TODO #include ""elastos/droid/graphics/CPaint.h"
-//TODO #include ""elastos/droid/graphics/CPath.h"
-//TODO #include ""elastos/droid/graphics/CRectF.h"
-//TODO #include ""elastos/droid/graphics/CPorterDuffXfermode.h"
-//TODO #include ""elastos/droid/view/CMotionEventHelper.h"
-//TODO #include ""elastos/droid/view/CGestureDetector.h"
 #include "elastos/droid/webkit/webview/chromium/native/content/R_Content.h"
 
-//TODO using Elastos::Droid::Graphics::CCanvas;
-//TODO using Elastos::Droid::Graphics::CPaint;
-//TODO using Elastos::Droid::Graphics::CPath;
-//TODO using Elastos::Droid::Graphics::CRectF;
-//TODO using Elastos::Droid::Graphics::CPorterDuffXfermode;
+using Elastos::Droid::Animation::ITimeInterpolator;
+using Elastos::Droid::Graphics::CCanvas;
+using Elastos::Droid::Graphics::CPointF;
+using Elastos::Droid::Graphics::CPaint;
+using Elastos::Droid::Graphics::CPath;
+using Elastos::Droid::Graphics::CRect;
+using Elastos::Droid::Graphics::CRectF;
+using Elastos::Droid::Graphics::CPorterDuffXfermode;
 using Elastos::Droid::Graphics::IXfermode;
 using Elastos::Droid::Graphics::EIID_IXfermode;
-//TODO using Elastos::Droid::View::CMotionEventHelper;
-//TODO using Elastos::Droid::View::CGestureDetector;
+using Elastos::Droid::Graphics::PathDirection_CCW;
+using Elastos::Droid::Graphics::RegionOp_XOR;
+using Elastos::Droid::Graphics::PorterDuffMode_SRC;
+using Elastos::Droid::View::CMotionEventHelper;
+using Elastos::Droid::View::CGestureDetector;
 using Elastos::Droid::View::IMotionEventHelper;
 using Elastos::Droid::Webkit::Webview::Chromium::Content::R;
 
@@ -102,9 +102,7 @@ Boolean PopupZoomer::InnerGestureDetectorSimpleOnGestureListener::HandleTapOrPre
     else if (mOwner->mOnTapListener != NULL) {
         AutoPtr<IPointF> converted = mOwner->ConvertTouchPoint(x, y);
         AutoPtr<IMotionEventHelper> motionEventHelper;
-        assert(0);
-        // TODO
-        //CMotionEventHelper::AcquireSingleton((IMotionEventHelper**)&motionEventHelper);
+        CMotionEventHelper::AcquireSingleton((IMotionEventHelper**)&motionEventHelper);
         AutoPtr<IMotionEvent> event;
         motionEventHelper->ObtainNoHistory(e, (IMotionEvent**)&event);
         Float x, y;
@@ -112,14 +110,10 @@ Boolean PopupZoomer::InnerGestureDetectorSimpleOnGestureListener::HandleTapOrPre
         converted->GetY(&y);
         event->SetLocation(x, y);
         if (isLongPress) {
-            assert(0);
-            // TODO
-            // mOwner->mOnTapListener->OnLongPress(mOwner, event);
+            mOwner->mOnTapListener->OnLongPress(mOwner, event);
         }
         else {
-            assert(0);
-            // TODO
-            // mOwner->mOnTapListener->OnSingleTap(mOwner, event);
+            mOwner->mOnTapListener->OnSingleTap(mOwner, event);
         }
 
         mOwner->Hide(TRUE);
@@ -149,10 +143,7 @@ ECode PopupZoomer::ReverseInterpolator::GetInterpolation(
         return NOERROR;
     }
 
-    assert(0);
-    // TODO
-    // return mInterpolator->GetInterpolation(input, &interpolation);
-    return E_NOT_IMPLEMENTED;
+    return ITimeInterpolator::Probe(mInterpolator)->GetInterpolation(input, interpolation);
 }
 
 //=====================================================================
@@ -168,18 +159,15 @@ Float PopupZoomer::sOverlayCornerRadius;
 
 PopupZoomer::PopupZoomer(
     /* [in] */ IContext* context)
-    //TODO : View(context)
 {
-    assert(0);
-    // TODO
-    // SetVisibility(IView::INVISIBLE);
-    // SetFocusable(TRUE);
-    // SetFocusableInTouchMode(TRUE);
+    View::constructor(context);
+    SetVisibility(IView::INVISIBLE);
+    SetFocusable(TRUE);
+    SetFocusableInTouchMode(TRUE);
 
     AutoPtr<GestureDetector::SimpleOnGestureListener> listener = new InnerGestureDetectorSimpleOnGestureListener(this);
 
-    // TODO
-    // CGestureDetector::New(context, listener, (IGestureDetector**)&mGestureDetector);
+    CGestureDetector::New(context, listener, (IGestureDetector**)&mGestureDetector);
 }
 
 ECode PopupZoomer::SetOnTapListener(
@@ -208,31 +196,24 @@ ECode PopupZoomer::SetBitmap(
 
     // Round the corners of the bitmap so it doesn't stick out around the overlay.
     AutoPtr<ICanvas> canvas;
-    assert(0);
-    // TODO
-    // CCanvas::New(mZoomedBitmap, (ICanvas**)&canvas);
+    CCanvas::New(mZoomedBitmap, (ICanvas**)&canvas);
     AutoPtr<IPath> path;
-    assert(0);
-    // TODO
-    // CPath::New((IPath**)&path);
+    CPath::New((IPath**)&path);
     AutoPtr<IRectF> canvasRect;
     Int32 width, height;
     canvas->GetWidth(&width);
     canvas->GetHeight(&height);
-    assert(0);
-    // TODO
-    // CRectF::New(0, 0, width, height, (IRectF**)&canvasRect);
-    // Float overlayCornerRadius = GetOverlayCornerRadius(GetContext());
-    // path->AddRoundRect(canvasRect, overlayCornerRadius, overlayCornerRadius, Direction.CCW);
-    // canvas->ClipPath(path, RegionOp_XOR);
+    CRectF::New(0, 0, width, height, (IRectF**)&canvasRect);
+    AutoPtr<IContext> context;
+    GetContext((IContext**)&context);
+    Float overlayCornerRadius = GetOverlayCornerRadius(context);
+    path->AddRoundRect(canvasRect, overlayCornerRadius, overlayCornerRadius, PathDirection_CCW);
+    Boolean res;
+    canvas->ClipPath(path, RegionOp_XOR, &res);
     AutoPtr<IPaint> clearPaint;
-    assert(0);
-    // TODO
-    // CPaint::New((IPaint**)&clearPaint);
+    CPaint::New((IPaint**)&clearPaint);
     AutoPtr<IPorterDuffXfermode> porterDuffXfermode;
-    assert(0);
-    // TODO
-    // CPorterDuffXfermode::New(IMode::SRC, (IPorterDuffXfermode**)&porterDuffXfermode);
+    CPorterDuffXfermode::New(PorterDuffMode_SRC, (IPorterDuffXfermode**)&porterDuffXfermode);
     AutoPtr<IXfermode> xfermode = IXfermode::Probe(porterDuffXfermode);
     clearPaint->SetXfermode(xfermode);
     clearPaint->SetColor(IColor::TRANSPARENT);
@@ -293,14 +274,13 @@ Boolean PopupZoomer::AcceptZeroSizeView()
     return FALSE;
 }
 
-ECode PopupZoomer::OnDraw(
+void PopupZoomer::OnDraw(
     /* [in] */ ICanvas* canvas)
 {
-    if (!IsShowing() || mZoomedBitmap == NULL) return NOERROR;
+    if (!IsShowing() || mZoomedBitmap == NULL) return;
 
-    assert(0);
-    // TODO
-    // if (!AcceptZeroSizeView() && (GetWidth() == 0 || GetHeight() == 0)) return NOERROR;
+    Int32 width, height;
+    if (!AcceptZeroSizeView() && ((GetWidth(&width), width) == 0 || (GetHeight(&height), height) == 0)) return;
 
     if (mNeedsToInitDimensions) {
         mNeedsToInitDimensions = FALSE;
@@ -317,26 +297,20 @@ ECode PopupZoomer::OnDraw(
         mAnimating = FALSE;
         if (!IsShowing()) {
             HideImmediately();
-            return NOERROR;
+            return;
         }
     }
     else {
-        assert(0);
-        // TODO
-        // Invalidate();
+        Invalidate();
     }
 
     // Fraction of the animation to actally show.
     Float fractionAnimation;
     if (mShowing) {
-        assert(0);
-        // TODO
-        // mShowInterpolator->GetInterpolation(time, &fractionAnimation);
+        ITimeInterpolator::Probe(mShowInterpolator)->GetInterpolation(time, &fractionAnimation);
     }
     else {
-        assert(0);
-        // TODO
-        // mHideInterpolator->GetInterpolation(time, &fractionAnimation);
+        ITimeInterpolator::Probe(mHideInterpolator)->GetInterpolation(time, &fractionAnimation);
     }
 
     // Draw a faded color over the entire view to fade out the original content, increasing
@@ -361,9 +335,7 @@ ECode PopupZoomer::OnDraw(
 
     // Compute the rect to show.
     AutoPtr<IRectF> rect;
-    assert(0);
-    // TODO
-    // CRectF::New((IRectF**)&rect);
+    CRectF::New((IRectF**)&rect);
     Float touchX, touchY;
     mTouch->GetX(&touchX);
     mTouch->GetY(&touchY);
@@ -384,7 +356,9 @@ ECode PopupZoomer::OnDraw(
     canvas->Translate(mPopupScrollX, mPopupScrollY);
     canvas->DrawBitmap(mZoomedBitmap, left, top, NULL);
     canvas->Restore();
-    AutoPtr<IDrawable> overlayNineTile;//TODO = GetOverlayDrawable(GetContext());
+    AutoPtr<IContext> context;
+    GetContext((IContext**)&context);
+    AutoPtr<IDrawable> overlayNineTile = GetOverlayDrawable(context);
     Float right, bottom;
     rect->GetRight(&right);
     rect->GetBottom(&bottom);
@@ -404,7 +378,7 @@ ECode PopupZoomer::OnDraw(
     overlayNineTile->Draw(canvas);
     canvas->Restore();
 
-    return NOERROR;
+    return;
 }
 
 Float PopupZoomer::GetOverlayCornerRadius(
@@ -414,10 +388,8 @@ Float PopupZoomer::GetOverlayCornerRadius(
     //     try {
             AutoPtr<IResources> res;
             context->GetResources((IResources**)&res);
-            assert(0);
-            // TODO
-            // res->GetDimension(
-            //         R::dimen::link_preview_overlay_radius, &sOverlayCornerRadius);
+            res->GetDimension(
+                     R::dimen::link_preview_overlay_radius, &sOverlayCornerRadius);
     //     } catch (Resources.NotFoundException e) {
     //         Log.w(LOGTAG, "No corner radius resource for PopupZoomer overlay found.");
     //         sOverlayCornerRadius = 1.0f;
@@ -434,18 +406,14 @@ AutoPtr<IDrawable> PopupZoomer::GetOverlayDrawable(
     //     try {
             AutoPtr<IResources> res;
             context->GetResources((IResources**)&res);
-            assert(0);
-            // TODO
-            // res->GetDrawable(
-            //         R::drawable::ondemand_overlay,
-            //         &sOverlayDrawable);
+            res->GetDrawable(
+                    R::drawable::ondemand_overlay,
+                    (IDrawable**)&sOverlayDrawable);
     //     } catch (Resources.NotFoundException e) {
     //         Log.w(LOGTAG, "No drawable resource for PopupZoomer overlay found.");
     //         sOverlayDrawable = new ColorDrawable();
     //     }
-        assert(0);
-        // TODO
-        // CRect::New((IRect**)&sOverlayPadding);
+        CRect::New((IRect**)&sOverlayPadding);
         Boolean result;
         sOverlayDrawable->GetPadding(sOverlayPadding, &result);
     }
@@ -475,9 +443,7 @@ ECode PopupZoomer::Scroll(
 {
     mPopupScrollX = Constrain(mPopupScrollX - x, mMinScrollX, mMaxScrollX);
     mPopupScrollY = Constrain(mPopupScrollY - y, mMinScrollY, mMaxScrollY);
-    assert(0);
-    // TODO
-    // Invalidate();
+    Invalidate();
 
     return NOERROR;
 }
@@ -489,9 +455,7 @@ ECode PopupZoomer::StartAnimation(
     mShowing = show;
     mTimeLeft = 0;
     if (show) {
-        assert(0);
-        // TODO
-        // SetVisibility(IView::VISIBLE);
+        SetVisibility(IView::VISIBLE);
         mNeedsToInitDimensions = TRUE;
         if (mOnVisibilityChangedListener != NULL) {
             mOnVisibilityChangedListener->OnPopupZoomerShown(this);
@@ -504,9 +468,7 @@ ECode PopupZoomer::StartAnimation(
     }
 
     mAnimationStartTime = SystemClock::GetUptimeMillis();
-    assert(0);
-    // TODO
-    // Invalidate();
+    Invalidate();
 
     return NOERROR;
 }
@@ -520,9 +482,7 @@ ECode PopupZoomer::HideImmediately()
         mOnVisibilityChangedListener->OnPopupZoomerHidden(this);
     }
 
-    assert(0);
-    // TODO
-    // SetVisibility(IView::INVISIBLE);
+    SetVisibility(IView::INVISIBLE);
     mZoomedBitmap->Recycle();
     mZoomedBitmap = NULL;
 
@@ -559,20 +519,16 @@ ECode PopupZoomer::InitDimensions()
     Float t = touchY - mScale * (touchY - targetBoundsTop);
     Float r = l + zoomedBitmapWidth;
     Float b = t + zoomedBitmapHeight;
-    assert(0);
-    assert(r);//TODO remove suppress the warning here
-    assert(b);//TODO remove, here only for warning.
-    // TODO
-    // CRectF::New(l, t, r, b, (IRectF**)&mClipRect);
-    Int32 width;//TODO = GetWidth();
-    Int32 height;//TODO = GetHeight();
+    CRectF::New(l, t, r, b, (IRectF**)&mClipRect);
+    Int32 width;
+    GetWidth(&width);
+    Int32 height;
+    GetHeight(&height);
 
-    assert(0);
-    // TODO
-    // CRectF::New(ZOOM_BOUNDS_MARGIN,
-    //        ZOOM_BOUNDS_MARGIN,
-    //        width - ZOOM_BOUNDS_MARGIN,
-    //        height - ZOOM_BOUNDS_MARGIN, (IRectF**)&mViewClipRect);
+    CRectF::New(ZOOM_BOUNDS_MARGIN,
+            ZOOM_BOUNDS_MARGIN,
+            width - ZOOM_BOUNDS_MARGIN,
+            height - ZOOM_BOUNDS_MARGIN, (IRectF**)&mViewClipRect);
 
     // Ensure it stays inside the bounds of the view.  First shift it around to see if it
     // can fully fit in the view, then clip it to the padding section of the view to
@@ -686,9 +642,7 @@ AutoPtr<IPointF> PopupZoomer::ConvertTouchPoint(
     x = touchX + (x - touchX - mPopupScrollX) / mScale;
     y = touchY + (y - touchY - mPopupScrollY) / mScale;
     AutoPtr<IPointF> point;
-    assert(0);
-    // TODO
-    // CPointF::New(x, y, (IPointF**)&point);
+    CPointF::New(x, y, (IPointF**)&point);
     return NOERROR;
 }
 

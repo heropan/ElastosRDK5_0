@@ -26,6 +26,7 @@ namespace Browser {
   */
 class NavigationHistory : public Object
 {
+    friend class ContentViewCore;
 public:
     /* package */
     virtual CARAPI SetCurrentEntryIndex(

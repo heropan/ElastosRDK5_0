@@ -10,20 +10,6 @@ using Elastos::Utility::IList;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Os::Runnable;
 using Elastos::Droid::Os::IHandler;
-// import android.util.Log;
-
-// import com.google.common.annotations.VisibleForTesting;
-
-// import org.chromium.base.CalledByNative;
-// import org.chromium.base.JNINamespace;
-// import org.chromium.base.ThreadUtils;
-// import org.chromium.base.library_loader.LibraryLoader;
-// import org.chromium.base.library_loader.LoaderErrors;
-// import org.chromium.base.library_loader.ProcessInitException;
-// import org.chromium.content.app.ContentMain;
-
-// import java.util.ArrayList;
-// import java.util.List;
 
 namespace Elastos {
 namespace Droid {
@@ -229,13 +215,12 @@ private:
 
     // A list of callbacks that should be called when the async startup of the browser process is
     // complete.
-    //const List<StartupCallback> mAsyncStartupCallbacks;
     AutoPtr<IList> mAsyncStartupCallbacks;
 
     // The context is set on creation, but the reference is cleared after the browser process
     // initialization has been started, since it is not needed anymore. This is to ensure the
     // context is not leaked.
-    const AutoPtr<IContext> mContext;
+    AutoPtr<IContext> mContext;
 
     // Whether the async startup of the browser process has started.
     Boolean mHasStartedInitializingBrowserProcess;

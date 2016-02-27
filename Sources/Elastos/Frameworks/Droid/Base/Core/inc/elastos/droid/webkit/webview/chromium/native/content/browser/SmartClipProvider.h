@@ -26,9 +26,10 @@ namespace Browser {
   * Please make sure implementation of them is somewhere in the view
   * hierarchy.
   */
-class SmartClipProvider : public Object
+class SmartClipProvider
 {
 public:
+    CAR_INTERFACE_DECL();
     /**
       * Initiate extraction of text, HTML, and other information for clipping puposes (smart clip)
       * from the rectangle area defined by starting positions (x and y), and width and height.
@@ -43,7 +44,7 @@ public:
       * Register a handler to handle smart clip data once extraction is done.
       */
     virtual CARAPI SetSmartClipResultHandler(
-        /* [in] */ const IHandler* resultHandler) = 0;
+        /* [in] */ IHandler* resultHandler) = 0;
 };
 
 } // namespace Browser

@@ -164,7 +164,7 @@ private:
     // current device locale. Use setExtractImplicitLocale() to
     // change this behavior.
     static Boolean sExtractImplicitLocalePak;
-    /*const*/ AutoPtr<IContext> mContext;
+    AutoPtr<IContext> mContext;
     AutoPtr<ExtractTask> mExtractTask;
     static AutoPtr<ResourceExtractor> sInstance;
 };

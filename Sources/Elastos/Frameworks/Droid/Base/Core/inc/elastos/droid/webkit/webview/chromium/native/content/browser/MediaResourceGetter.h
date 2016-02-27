@@ -231,8 +231,8 @@ private:
 
 private:
     static const String TAG;
-    /*const*/ AutoPtr<MediaMetadata> EMPTY_METADATA;
-    /*const*/ AutoPtr<IMediaMetadataRetriever> mRetriever;
+    AutoPtr<MediaMetadata> EMPTY_METADATA;
+    AutoPtr<IMediaMetadataRetriever> mRetriever;
 };
 
 } // namespace Browser

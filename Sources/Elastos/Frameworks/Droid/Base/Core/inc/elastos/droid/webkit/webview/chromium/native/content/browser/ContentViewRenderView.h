@@ -4,7 +4,7 @@
 
 #include "Elastos.Droid.Graphics.h"
 #include "elastos/droid/ext/frameworkext.h"
-//TODO #include "elastos/droid/widget/FrameLayout.h"
+#include "elastos/droid/widget/FrameLayout.h"
 #include "elastos/droid/os/Runnable.h"
 #include "elastos/droid/webkit/webview/chromium/native/content/browser/ContentReadbackHandler.h"
 
@@ -16,7 +16,7 @@ using Elastos::Droid::View::ISurface;
 using Elastos::Droid::View::ISurfaceHolder;
 using Elastos::Droid::View::ISurfaceHolderCallback;
 using Elastos::Droid::View::ISurfaceView;
-//TODO using Elastos::Droid::Widget::FrameLayout;
+using Elastos::Droid::Widget::FrameLayout;
 using Elastos::Droid::Widget::IFrameLayout;
 
 namespace Elastos {
@@ -27,7 +27,7 @@ namespace Chromium {
 namespace Ui {
 namespace Base {
 
-class WindowAndroid;
+class WindowElastos;
 
 } // namespace Base
 } // namespace Ui
@@ -37,7 +37,7 @@ class WindowAndroid;
 } // namespace Droid
 } // namespace Elastos
 
-using Elastos::Droid::Webkit::Webview::Chromium::Ui::Base::WindowAndroid;
+using Elastos::Droid::Webkit::Webview::Chromium::Ui::Base::WindowElastos;
 
 // import org.chromium.base.CalledByNative;
 // import org.chromium.base.JNINamespace;
@@ -59,8 +59,7 @@ namespace Browser {
  */
 //@JNINamespace("content")
 class ContentViewRenderView
-    : public Object
-    //TODO : public FrameLayout
+    : public FrameLayout
 {
 private:
     class InnerSurfaceHolderCallback
@@ -137,7 +136,7 @@ public:
      * @param rootWindow The {@link WindowAndroid} this render view should be linked to.
      */
     CARAPI_(void) OnNativeLibraryLoaded(
-        /* [in] */ WindowAndroid* rootWindow);
+        /* [in] */ WindowElastos* rootWindow);
 
     /**
      * @return The content readback handler.
@@ -251,7 +250,7 @@ private:
     Int64 mNativeContentViewRenderView;
     AutoPtr<ISurfaceHolderCallback> mSurfaceCallback;
 
-    const AutoPtr<ISurfaceView> mSurfaceView;
+    AutoPtr<ISurfaceView> mSurfaceView;
 
     AutoPtr<ContentReadbackHandler> mContentReadbackHandler;
 };

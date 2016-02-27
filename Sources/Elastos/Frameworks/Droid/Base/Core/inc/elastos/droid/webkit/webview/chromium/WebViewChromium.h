@@ -77,7 +77,8 @@ namespace Chromium {
   * and a small set of no-op deprecated APIs.
   */
 class WebViewChromium
-    : public SmartClipProvider
+    : public Object
+    , public SmartClipProvider
     , public IWebViewProvider
     , public IWebViewProviderScrollDelegate
     , public IWebViewProviderViewDelegate
@@ -2659,7 +2660,7 @@ public:
     // Implements SmartClipProvider
     // @Override
     CARAPI SetSmartClipResultHandler(
-        /* [in] */ const IHandler* resultHandler);
+        /* [in] */ IHandler* resultHandler);
 
 public:
     // The WebView that this WebViewChromium is the provider for.

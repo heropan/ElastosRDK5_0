@@ -7,7 +7,7 @@
 #include "elastos/droid/os/Build.h"
 #include "elastos/droid/os/Handler.h"
 #include "elastos/droid/os/SystemClock.h"
-//#include "elastos/droid/text/TextUtils.h"
+#include "elastos/droid/text/TextUtils.h"
 #include "elastos/droid/webkit/webview/chromium/native/base/ObserverList.h"
 #include "elastos/droid/webkit/webview/chromium/native/content/browser/ContentSettings.h"
 #include "elastos/droid/webkit/webview/chromium/native/content/browser/ContentViewClient.h"
@@ -34,6 +34,7 @@
 #include "elastos/droid/webkit/webview/chromium/native/ui/base/ViewElastosDelegate.h"
 #include "elastos/droid/webkit/webview/chromium/native/ui/base/ViewElastos.h"
 #include "elastos/droid/webkit/webview/chromium/native/ui/base/WindowElastos.h"
+#include "elastos/droid/os/ResultReceiver.h"
 
 using Elastos::Utility::IHashSet;
 using Elastos::Utility::IMap;
@@ -61,13 +62,14 @@ using Elastos::Droid::Os::Handler;
 using Elastos::Droid::Os::IBundle;
 using Elastos::Droid::Os::IHandler;
 using Elastos::Droid::Os::IResultReceiver;
+using Elastos::Droid::Os::ResultReceiver;
 using Elastos::Droid::Os::SystemClock;
 using Elastos::Droid::Provider::IBrowser;
 using Elastos::Droid::Provider::ISettings;
 using Elastos::Droid::Text::IEditable;
 using Elastos::Droid::Text::ISelection;
 using Elastos::Droid::Text::IAnnotation;
-//using Elastos::Droid::Text::TextUtils;
+using Elastos::Droid::Text::TextUtils;
 // import android.util.Log;
 // import android.util.Pair;
 using Elastos::Droid::View::IActionMode;
@@ -172,9 +174,10 @@ public:
      */
     //@SuppressWarnings("javadoc")
     class InternalAccessDelegate
-        : public Object
     {
     public:
+        CAR_INTERFACE_DECL();
+
         /**
          * @see View#drawChild(Canvas, View, long)
          */
@@ -284,9 +287,12 @@ public:
 
 private:
     class InnerViewAndroidDelegate
-        : public ViewElastosDelegate
+        : public Object
+        , public ViewElastosDelegate
     {
     public:
+        CAR_INTERFACE_DECL();
+
         InnerViewAndroidDelegate(
             /* [in] */ ContentViewCore* owner);
 
@@ -311,22 +317,22 @@ private:
 
         // mContainerView can change, but this ViewAndroidDelegate can only be used to
         // add and remove views from the mContainerViewAtCreation.
-        const IViewGroup* mContainerViewAtCreation;
+        IViewGroup* mContainerViewAtCreation;
     };
 
     class InnerImeAdapterDelegate
         : public ImeAdapter::ImeAdapterDelegate
     {
-    private:
+    public:
         class InnerResultReceiver
-            : public Object
-            , public IResultReceiver
+            : public ResultReceiver
         {
         public:
             InnerResultReceiver(
-                /* [in] */ InnerImeAdapterDelegate* owner);
+                /* [in] */ InnerImeAdapterDelegate* owner,
+                /* [in] */ IHandler* handler);
 
-            CARAPI OnReceiveResult(
+            CARAPI_(void) OnReceiveResult(
                 /* [in] */ Int32 resultCode,
                 /* [in] */ IBundle* resultData);
 
@@ -422,13 +428,13 @@ private:
         public:
             OnPopupZoomerShownRunnable(
                 /* [in] */ InnerOnVisibilityChangedListener* owner,
-                /* [in] */ const PopupZoomer* zoomer);
+                /* [in] */ PopupZoomer* zoomer);
 
             CARAPI Run();
 
         private:
             InnerOnVisibilityChangedListener* mOwner;
-            const PopupZoomer* mZoomer;
+            PopupZoomer* mZoomer;
         };
 
         class OnPopupZoomerHiddenRunnable
@@ -437,13 +443,13 @@ private:
         public:
             OnPopupZoomerHiddenRunnable(
                 /* [in] */ InnerOnVisibilityChangedListener* owner,
-                /* [in] */ const PopupZoomer* zoomer);
+                /* [in] */ PopupZoomer* zoomer);
 
             CARAPI Run();
 
         private:
             InnerOnVisibilityChangedListener* mOwner;
-            const PopupZoomer* mZoomer;
+            PopupZoomer* mZoomer;
         };
 
     public:
@@ -462,6 +468,7 @@ private:
 
     private:
         ContentViewCore* mOwner;
+        IViewGroup* mContainerViewAtCreation;
     };
 
     class InnerOnTapListener
@@ -487,7 +494,7 @@ private:
 
         // mContainerView can change, but this OnTapListener can only be used
         // with the mContainerViewAtCreation.
-        const IViewGroup* mContainerViewAtCreation;
+        IViewGroup* mContainerViewAtCreation;
     };
 
     class FakeMouseMoveRunnable
@@ -2649,7 +2656,7 @@ private:
 
     // Temporary notification to tell onSizeChanged to focus a form element,
     // because the OSK was just brought up.
-    const AutoPtr<IRect> mFocusPreOSKViewportRect;
+    AutoPtr<IRect> mFocusPreOSKViewportRect;
 
     // On tap this will store the x, y coordinates of the touch.
     Int32 mLastTapX;

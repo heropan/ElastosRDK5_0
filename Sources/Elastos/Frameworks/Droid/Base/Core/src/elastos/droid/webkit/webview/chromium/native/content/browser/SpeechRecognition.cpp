@@ -1,29 +1,27 @@
 
 #include <Elastos.CoreLibrary.Utility.h>
 #include "Elastos.Droid.Content.h"
+#include "Elastos.Droid.Speech.h"
 #include "Elastos.Droid.Os.h"
 #include "elastos/droid/webkit/webview/chromium/native/content/browser/SpeechRecognition.h"
 #include "elastos/droid/webkit/webview/chromium/native/content/api/SpeechRecognition_dec.h"
 #include "elastos/droid/webkit/webview/chromium/native/content/browser/SpeechRecognitionError.h"
-// TODO #include "elastos/droid/content/CIntent.h"
-// TODO #include "elastos/droid/content/CComponentName.h"
-// TODO #include "elastos/droid/speech/CSpeechRecognizerHelper.h"
 #include <elastos/utility/logging/Logger.h>
-using Elastos::Utility::Logging::Logger;
 
-using Elastos::Core::IString;
-// TODO using Elastos::Droid::Content::CIntent;
-// TODO using Elastos::Droid::Content::CComponentName;
+//using Elastos::Core::IString;
+using Elastos::Droid::Content::CIntent;
+using Elastos::Droid::Content::CComponentName;
 using Elastos::Droid::Content::Pm::IPackageInfo;
 using Elastos::Droid::Content::Pm::IPackageItemInfo;
 using Elastos::Droid::Content::Pm::EIID_IPackageItemInfo;
 using Elastos::Droid::Speech::EIID_IRecognitionListener;
-// TODO using Elastos::Droid::Speech::CSpeechRecognizerHelper;
+using Elastos::Droid::Speech::CSpeechRecognizerHelper;
 using Elastos::Droid::Speech::ISpeechRecognizerHelper;
 using Elastos::Utility::IList;
 using Elastos::Utility::IIterable;
 using Elastos::Utility::IIterator;
 using Elastos::Utility::EIID_IIterable;
+using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
 namespace Droid {
@@ -162,11 +160,18 @@ ECode SpeechRecognition::Listener::HandleResults(
             ISpeechRecognizer::RESULTS_RECOGNITION, (IArrayList**)&list);
     Int32 size;
     list->GetSize(&size);
-    AutoPtr< ArrayOf<IString*> > strList = ArrayOf<IString*>::Alloc(size);
-    AutoPtr< ArrayOf<String> > results;
-    assert(0);
-    // TODO
-    // list->ToArray(strList, (ArrayOf<IInterface*>**)&results);
+    //AutoPtr< ArrayOf<IInterface*> > strList = ArrayOf<IInterface*>::Alloc(size);
+    AutoPtr< ArrayOf<IInterface*> > oArray;
+    //list->ToArray(strList, (ArrayOf<IInterface*>**)&results);
+    list->ToArray((ArrayOf<IInterface*>**)&oArray);
+    Int32 len = oArray->GetLength();
+    AutoPtr<ArrayOf<String> > results = ArrayOf<String>::Alloc(len);
+    for(Int32 i = 0; i < len; ++i) {
+        ICharSequence* cs = ICharSequence::Probe((*oArray)[i]);
+        String str;
+        cs->ToString(&str);
+        results->Set(i, str);
+    }
 
     AutoPtr< ArrayOf<Float> > scores;
     bundle->GetFloatArray(ISpeechRecognizer::CONFIDENCE_SCORES, (ArrayOf<Float>**)&scores);
@@ -196,14 +201,10 @@ SpeechRecognition::SpeechRecognition(
     , mContinuous(FALSE)
 {
     mListener = new Listener(this);
-    assert(0);
-    // TODO
-    // CIntent::New(IRecognizerIntent::ACTION_RECOGNIZE_SPEECH, (IIntent**)&mIntent);
+    CIntent::New(IRecognizerIntent::ACTION_RECOGNIZE_SPEECH, (IIntent**)&mIntent);
 
     AutoPtr<ISpeechRecognizerHelper> helper;
-    assert(0);
-    // TODO
-    // CSpeechRecognizerHelper::AcquireSingleton((ISpeechRecognizerHelper**)&helper)
+    CSpeechRecognizerHelper::AcquireSingleton((ISpeechRecognizerHelper**)&helper);
     if (sRecognitionProvider != NULL) {
         helper->CreateSpeechRecognizer(mContext, sRecognitionProvider, (ISpeechRecognizer**)&mRecognizer);
     }
@@ -222,9 +223,7 @@ Boolean SpeechRecognition::Initialize(
     /* [in] */ IContext* context)
 {
     AutoPtr<ISpeechRecognizerHelper> helper;
-    assert(0);
-    // TODO
-    // CSpeechRecognizerHelper::AcquireSingleton((ISpeechRecognizerHelper**)&helper);
+    CSpeechRecognizerHelper::AcquireSingleton((ISpeechRecognizerHelper**)&helper);
     Boolean bFlag;
     helper->IsRecognitionAvailable(context, &bFlag);
     if (!bFlag)
@@ -233,9 +232,7 @@ Boolean SpeechRecognition::Initialize(
     AutoPtr<IPackageManager> pm;
     context->GetPackageManager((IPackageManager**)&pm);
     AutoPtr<IIntent> intent;
-    assert(0);
-    // TODO
-    // CIntent::New(IRecognitionService::SERVICE_INTERFACE, (IIntent**)&intent);
+    CIntent::New(IRecognitionService::SERVICE_INTERFACE, (IIntent**)&intent);
     AutoPtr<IList> list;
     pm->QueryIntentServices(intent, IPackageManager::GET_SERVICES, (IList**)&list);
 
@@ -270,9 +267,7 @@ Boolean SpeechRecognition::Initialize(
 
         String name;
         packageItemInfo->GetName(&name);
-        assert(0);
-        // TODO
-        // CComponentName::New(packageName, name, (IComponentName**)&sRecognitionProvider);
+        CComponentName::New(packageName, name, (IComponentName**)&sRecognitionProvider);
 
         return TRUE;
     }

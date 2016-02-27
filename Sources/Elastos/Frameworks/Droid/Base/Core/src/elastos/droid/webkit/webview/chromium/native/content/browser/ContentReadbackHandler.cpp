@@ -6,6 +6,7 @@
 #include <elastos/utility/logging/Logger.h>
 
 using Elastos::Droid::Webkit::Webview::Chromium::Base::ThreadUtils;
+using Elastos::Droid::Utility::CSparseArray;
 using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
@@ -23,8 +24,8 @@ ContentReadbackHandler::ContentReadbackHandler()
     : mNextReadbackId(1)
     , mNativeContentReadbackHandler(0)
 {
-    assert(0);
-//    mGetBitmapRequests = new SparseArray<GetBitmapCallback>();
+    //mGetBitmapRequests = new SparseArray<GetBitmapCallback>();
+    CSparseArray::New((ISparseArray**)&mGetBitmapRequests);
 }
 
 /**
@@ -53,18 +54,18 @@ void ContentReadbackHandler::NotifyGetBitmapFinished(
     /* [in] */ Boolean success,
     /* [in] */ IBitmap* bitmap)
 {
-    assert(0);
-#if 0
-    AutoPtr<GetBitmapCallback> callback = mGetBitmapRequests->Get(readbackId);
+    AutoPtr<IInterface> obj;
+    mGetBitmapRequests->Get(readbackId, (IInterface**)&obj);
+    AutoPtr<GetBitmapCallback> callback = (GetBitmapCallback*)(IObject::Probe(obj));
     if (callback != NULL) {
         mGetBitmapRequests->Delete(readbackId);
         callback->OnFinishGetBitmap(success, bitmap);
     }
     else {
         // readback Id is unregistered.
-        assert false : "Readback finished for unregistered Id: " + readbackId;
+        //assert false : "Readback finished for unregistered Id: " + readbackId;
+        Logger::E("ContentReadbackHandler::NotifyGetBitmapFinished", "Readback finished for unregistered Id: %d", readbackId);
     }
-#endif
 }
 
 /**
@@ -83,8 +84,6 @@ void ContentReadbackHandler::GetContentBitmapAsync(
     /* [in] */ ContentViewCore* view,
     /* [in] */ GetBitmapCallback* callback)
 {
-    assert(0);
-#if 0
     if (!ReadyForReadback()) {
         callback->OnFinishGetBitmap(FALSE, NULL);
         return;
@@ -93,16 +92,15 @@ void ContentReadbackHandler::GetContentBitmapAsync(
     ThreadUtils::AssertOnUiThread();
 
     Int32 readbackId = mNextReadbackId++;
-    mGetBitmapRequests->Put(readbackId, callback);
+    mGetBitmapRequests->Put(readbackId, TO_IINTERFACE(callback));
     Int32 width, height, top, left;
     srcRect->GetWidth(&width);
     srcRect->GetHeight(&height);
     srcRect->GetTop(&top);
     srcRect->GetLeft(&left);
     NativeGetContentBitmap(mNativeContentReadbackHandler, readbackId, scale,
-            Bitmap.Config.ARGB_8888, top, left, width,
-            height, view);
-#endif
+            Elastos::Droid::Graphics::BitmapConfig_ARGB_8888, top, left, width,
+            height, TO_IINTERFACE(view));
 }
 
 /**
@@ -111,22 +109,22 @@ void ContentReadbackHandler::GetContentBitmapAsync(
  * @param windowAndroid The window that hosts the compositor.
  * @param callback      The callback to be executed after readback completes.
  */
-// void ContentReadbackHandler::GetCompositorBitmapAsync(
-//     /* [in] */ WindowAndroid* windowAndroid,
-//     /* [in] */ GetBitmapCallback* callback)
-// {
-//     if (!ReadyForReadback()) {
-//         callback->OnFinishGetBitmap(FALSE, NULL);
-//         return;
-//     }
+void ContentReadbackHandler::GetCompositorBitmapAsync(
+    /* [in] */ WindowElastos* windowAndroid,
+    /* [in] */ GetBitmapCallback* callback)
+{
+    if (!ReadyForReadback()) {
+        callback->OnFinishGetBitmap(FALSE, NULL);
+        return;
+    }
 
-//     ThreadUtils::AssertOnUiThread();
+    ThreadUtils::AssertOnUiThread();
 
-//     Int32 readbackId = mNextReadbackId++;
-//     mGetBitmapRequests->Put(readbackId, callback);
-//     NativeGetCompositorBitmap(mNativeContentReadbackHandler, readbackId,
-//             windowAndroid->GetNativePointer());
-// }
+    Int32 readbackId = mNextReadbackId++;
+    mGetBitmapRequests->Put(readbackId, TO_IINTERFACE(callback));
+    NativeGetCompositorBitmap(mNativeContentReadbackHandler, readbackId,
+            windowAndroid->GetNativePointer());
+}
 
 Int64 ContentReadbackHandler::NativeInit()
 {

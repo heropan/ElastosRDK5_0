@@ -6,7 +6,7 @@
 #include "elastos/droid/os/Build.h"
 #include "elastos/droid/webkit/webview/chromium/native/content/browser/ContentViewCore.h"
 #include "elastos/droid/webkit/webview/chromium/native/content/browser/SmartClipProvider.h"
-//#include "elastos/droid/widget/FrameLayout.h"
+#include "elastos/droid/widget/FrameLayout.h"
 
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Content::Res::IConfiguration;
@@ -24,7 +24,7 @@ using Elastos::Droid::View::Accessibility::IAccessibilityEvent;
 using Elastos::Droid::View::Accessibility::IAccessibilityNodeInfo;
 using Elastos::Droid::View::InputMethod::IEditorInfo;
 using Elastos::Droid::View::InputMethod::IInputConnection;
-//using Elastos::Droid::Widget::FrameLayout;
+using Elastos::Droid::Widget::FrameLayout;
 using Elastos::Droid::Widget::IFrameLayout;
 
 // import org.chromium.base.TraceEvent;
@@ -42,8 +42,8 @@ namespace Browser {
  * exposes the various {@link View} functionality to it.
  */
 class ContentView
-    //: public FrameLayout
-    : public ContentViewCore::InternalAccessDelegate
+    : public FrameLayout
+    , public ContentViewCore::InternalAccessDelegate
     , public SmartClipProvider
 {
 private:
@@ -53,7 +53,7 @@ private:
     public:
         InnerSmartClipDataListener(
             /* [in] */ ContentView* owner,
-            /* [in] */ const IHandler* resultHandler);
+            /* [in] */ IHandler* resultHandler);
 
         CARAPI_(void) OnSmartClipDataExtracted(
             /* [in] */ const String& text,
@@ -62,12 +62,11 @@ private:
 
     private:
         ContentView* mOwner;
-        const IHandler* mResultHandler;
+        IHandler* mResultHandler;
     };
 
 public:
-    CAR_INTERFACE_DECL()
-
+    CAR_INTERFACE_DECL();
     /**
      * Creates an instance of a ContentView.
      * @param context The Context the view is running in, through which it can
@@ -102,7 +101,7 @@ public:
     CARAPI_(Boolean) OnCheckIsTextEditor();
 
     //@Override
-    CARAPI_(void) OnWindowFocusChanged(
+    CARAPI OnWindowFocusChanged(
         /* [in] */ Boolean hasWindowFocus);
 
     //@Override
@@ -145,12 +144,12 @@ public:
      * (0, 0). This is critical for drawing ContentView correctly.
      */
     //@Override
-    CARAPI_(void) ScrollBy(
+    CARAPI ScrollBy(
         /* [in] */ Int32 x,
         /* [in] */ Int32 y);
 
     //@Override
-    CARAPI_(void) ScrollTo(
+    CARAPI ScrollTo(
         /* [in] */ Int32 x,
         /* [in] */ Int32 y);
 
@@ -163,7 +162,7 @@ public:
     CARAPI_(Boolean) AwakenScrollBars();
 
     //@Override
-    CARAPI_(void) OnInitializeAccessibilityNodeInfo(
+    CARAPI OnInitializeAccessibilityNodeInfo(
         /* [in] */ IAccessibilityNodeInfo* info);
 
     /**
@@ -171,7 +170,7 @@ public:
      * @param event Event being fired.
      */
     //@Override
-    CARAPI_(void) OnInitializeAccessibilityEvent(
+    CARAPI OnInitializeAccessibilityEvent(
         /* [in] */ IAccessibilityEvent* event);
 
     // Implements SmartClipProvider
@@ -185,7 +184,7 @@ public:
     // Implements SmartClipProvider
     //@Override
     CARAPI SetSmartClipResultHandler(
-        /* [in] */ const IHandler* resultHandler);
+        /* [in] */ IHandler* resultHandler);
 
     ///////////////////////////////////////////////////////////////////////////////////////////////
     //              Start Implementation of ContentViewCore.InternalAccessDelegate               //
@@ -264,18 +263,18 @@ protected:
     // End FrameLayout overrides.
 
     //@Override
-    CARAPI_(void) OnAttachedToWindow();
+    CARAPI OnAttachedToWindow();
 
     //@Override
-    CARAPI_(void) OnDetachedFromWindow();
+    CARAPI OnDetachedFromWindow();
 
     //@Override
-    CARAPI_(void) OnVisibilityChanged(
+    CARAPI OnVisibilityChanged(
         /* [in] */ IView* changedView,
         /* [in] */ Int32 visibility);
 
 protected:
-    const AutoPtr<ContentViewCore> mContentViewCore;
+    AutoPtr<ContentViewCore> mContentViewCore;
 
 private:
     static const String TAG;

@@ -1,13 +1,18 @@
-
+#include "Elastos.Droid.Content.h"
 #include "elastos/droid/webkit/webview/chromium/native/content/browser/ChildProcessConnectionImpl.h"
 #include "elastos/droid/webkit/webview/chromium/native/base/TraceEvent.h"
 #include "elastos/droid/webkit/webview/chromium/native/base/ThreadUtils.h"
-//#include "elastos/droid/content/CIntent.h"
+#include <elastos/utility/logging/Logger.h>
+#include "elastos/core/AutoLock.h"
 
-//using Elastos::Droid::Content::CIntent;
+using Elastos::Droid::Content::CIntent;
 using Elastos::Droid::Content::EIID_IServiceConnection;
 using Elastos::Droid::Webkit::Webview::Chromium::Base::TraceEvent;
 using Elastos::Droid::Webkit::Webview::Chromium::Base::ThreadUtils;
+using Elastos::Core::AutoLock;
+using Elastos::Core::StringUtils;
+using Elastos::Core::AutoLock;
+using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
 namespace Droid {
@@ -21,17 +26,17 @@ namespace Browser {
 //         ChildProcessConnectionImpl::ConnectionParams
 //===============================================================
 
-// ChildProcessConnectionImpl::ConnectionParams::ConnectionParams(
-//     /* [in] */ ArrayOf<String>* commandLine,
-//     /* [in] */ ArrayOf<FileDescriptorInfo>* filesToBeMapped,
-//     /* [in] */ IChildProcessCallback* callback,
-//     /* [in] */ IBundle* sharedRelros)
-//     : mCommandLine(commandLine)
-//     , mFilesToBeMapped(filesToBeMapped)
-//     , mCallback(callback)
-//     , mSharedRelros(sharedRelros)
-// {
-// }
+ChildProcessConnectionImpl::ConnectionParams::ConnectionParams(
+    /* [in] */ ArrayOf<String>* commandLine,
+    /* [in] */ ArrayOf<FileDescriptorInfo*>* filesToBeMapped,
+    /* [in] */ IInterface/*IChildProcessCallback*/* callback,
+    /* [in] */ IBundle* sharedRelros)
+    : mCommandLine(commandLine)
+    , mFilesToBeMapped(filesToBeMapped)
+    , mCallback(callback)
+    , mSharedRelros(sharedRelros)
+{
+}
 
 //===============================================================
 //      ChildProcessConnectionImpl::ChildServiceConnection
@@ -50,20 +55,16 @@ CAR_INTERFACE_IMPL(ChildProcessConnectionImpl::ChildServiceConnection, Object, I
 
 AutoPtr<IIntent> ChildProcessConnectionImpl::ChildServiceConnection::CreateServiceBindIntent()
 {
-    assert(0);
-#if 0
     AutoPtr<IIntent> intent;
     CIntent::New((IIntent**)&intent);
     String name;
-    mServiceClass->GetName(&name);
-    name += mServiceNumber;
-    intent->SetClassName(mContext,  name);
+    //TODO mServiceClass->GetName(&name);
+    name += StringUtils::ToString(mOwner->mServiceNumber);
+    intent->SetClassName(mOwner->mContext,  name);
     String pkgName;
-    mContext->GetPackageName(&pkgName);
+    mOwner->mContext->GetPackageName(&pkgName);
     intent->SetPackage(pkgName);
     return intent;
-#endif
-    return NULL;
 }
 
 Boolean ChildProcessConnectionImpl::ChildServiceConnection::Bind(
@@ -80,8 +81,7 @@ Boolean ChildProcessConnectionImpl::ChildServiceConnection::Bind(
             mOwner->mLinkerParams->AddIntentExtras(intent);
         }
 
-        assert(0);
-//        mOwner->mContext->BindService(intent, this, mBindFlags, &mBound);
+        mOwner->mContext->BindService(intent, this, mBindFlags, &mBound);
         TraceEvent::End();
     }
 
@@ -91,8 +91,7 @@ Boolean ChildProcessConnectionImpl::ChildServiceConnection::Bind(
 void ChildProcessConnectionImpl::ChildServiceConnection::Unbind()
 {
     if (mBound) {
-        assert(0);
-//        mOwner->mContext->UnbindService(this);
+        mOwner->mContext->UnbindService(this);
         mBound = FALSE;
     }
 }
@@ -107,28 +106,25 @@ ECode ChildProcessConnectionImpl::ChildServiceConnection::OnServiceConnected(
     /* [in] */ IComponentName* className,
     /* [in] */ IBinder* service)
 {
-    assert(0);
-#if 0
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mOwner->mLock);
 
     // A flag from the parent class ensures we run the post-connection logic only once
     // (instead of once per each ChildServiceConnection).
-    if (mServiceConnectComplete) {
-        return;
+    if (mOwner->mServiceConnectComplete) {
+        return NOERROR;
     }
 
-    TraceEvent::Begin();
-    mServiceConnectComplete = TRUE;
-    mService = IChildProcessService.Stub.asInterface(service);
+    //TraceEvent::Begin();
+    mOwner->mServiceConnectComplete = TRUE;
+    mOwner->mService = /*TODO IChildProcessService::Probe*/(ChildProcessService*)(IObject::Probe(service));
     // Run the setup if the connection parameters have already been provided. If not,
     // doConnectionSetupLocked() will be called from setupConnection().
-    if (mConnectionParams != NULL) {
-        DoConnectionSetupLocked();
+    if (mOwner->mConnectionParams != NULL) {
+        mOwner->DoConnectionSetupLocked();
     }
-    TraceEvent::End();
-#endif
 
-    return E_NOT_IMPLEMENTED;
+    //TraceEvent::End();
+    return NOERROR;
 }
 
 
@@ -137,32 +133,29 @@ ECode ChildProcessConnectionImpl::ChildServiceConnection::OnServiceConnected(
 ECode ChildProcessConnectionImpl::ChildServiceConnection::OnServiceDisconnected(
     /* [in] */ IComponentName* className)
 {
-    assert(0);
-#if 0
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mOwner->mLock);
 
     // Ensure that the disconnection logic runs only once (instead of once per each
     // ChildServiceConnection).
-    if (mServiceDisconnected) {
-        return;
+    if (mOwner->mServiceDisconnected) {
+        return NOERROR;
     }
 
-    mServiceDisconnected = TRUE;
+    mOwner->mServiceDisconnected = TRUE;
     // Stash the status of the oom bindings, since stop() will release all bindings.
-    mWasOomProtected = mInitialBinding->IsBound() || mStrongBinding->IsBound();
-//    Log.w(TAG, "onServiceDisconnected (crash or killed by oom): pid=" + mPid);
-    Stop();  // We don't want to auto-restart on crash. Let the browser do that.
-    mDeathCallback->OnChildProcessDied(ChildProcessConnectionImpl.this);
+    mOwner->mWasOomProtected = mOwner->mInitialBinding->IsBound() || mOwner->mStrongBinding->IsBound();
+    Logger::W(TAG, "onServiceDisconnected (crash or killed by oom): pid=%d", mOwner->mPid);
+    mOwner->Stop();  // We don't want to auto-restart on crash. Let the browser do that.
+    mOwner->mDeathCallback->OnChildProcessDied(mOwner);
     // If we have a pending connection callback, we need to communicate the failure to
     // the caller.
-    if (mConnectionCallback != NULL) {
-        mConnectionCallback->OnConnected(0);
+    if (mOwner->mConnectionCallback != NULL) {
+        mOwner->mConnectionCallback->OnConnected(0);
     }
 
-    mConnectionCallback = NULL;
-#endif
+    mOwner->mConnectionCallback = NULL;
 
-    return E_NOT_IMPLEMENTED;
+    return NOERROR;
 }
 
 //===============================================================
@@ -182,12 +175,12 @@ ChildProcessConnectionImpl::ChildProcessConnectionImpl(
     , mServiceNumber(number)
     , mInSandbox(inSandbox)
     , mDeathCallback(deathCallback)
+    , mServiceClass(serviceClass)
     , mServiceConnectComplete(FALSE)
     , mServiceDisconnected(FALSE)
     , mWasOomProtected(FALSE)
     , mPid(0)
     , mStrongBindingCount(0)
-//    , mServiceClass(serviceClass)
     , mLinkerParams(chromiumLinkerParams)
 {
     mInitialBinding = new ChildServiceConnection(this, IContext::BIND_AUTO_CREATE);
@@ -210,11 +203,11 @@ Boolean ChildProcessConnectionImpl::IsInSandbox()
 }
 
 //@Override
-// AutoPtr<IChildProcessService> ChildProcessConnectionImpl::GetService()
-// {
-//     Object::Autolock lock(mLock);
-//     return mService;
-// }
+AutoPtr<ChildProcessService/*TODO IChildProcessService*/> ChildProcessConnectionImpl::GetService()
+{
+    AutoLock lock(mLock);
+    return mService;
+}
 
 //@Override
 Int32 ChildProcessConnectionImpl::GetPid()
@@ -249,13 +242,13 @@ void ChildProcessConnectionImpl::Start(
 }
 
 //@Override
-// void ChildProcessConnectionImpl::SetupConnection(
-//     /* [in] */ ArrayOf<String>* commandLine,
-//     /* [in] */ ArrayOf<FileDescriptorInfo>* filesToBeMapped,
-//     /* [in] */ IChildProcessCallback* processCallback,
-//     /* [in] */ ConnectionCallback* connectionCallback,
-//     /* [in] */ IBundle* sharedRelros)
-// {
+void ChildProcessConnectionImpl::SetupConnection(
+    /* [in] */ ArrayOf<String>* commandLine,
+    /* [in] */ ArrayOf<FileDescriptorInfo*>* filesToBeMapped,
+    /* [in] */ IInterface/*TODO IChildProcessCallback*/* processCallback,
+    /* [in] */ ConnectionCallback* connectionCallback,
+    /* [in] */ IBundle* sharedRelros)
+{
 //     Object::Autolock lock(mLock);
 
 //     assert(mConnectionParams == NULL);
@@ -275,7 +268,7 @@ void ChildProcessConnectionImpl::Start(
 //         DoConnectionSetupLocked();
 //     }
 //     TraceEvent::End();
-// }
+}
 
 //@Override
 void ChildProcessConnectionImpl::Stop()

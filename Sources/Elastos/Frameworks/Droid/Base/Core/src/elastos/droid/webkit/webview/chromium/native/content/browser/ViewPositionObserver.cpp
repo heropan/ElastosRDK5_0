@@ -7,6 +7,7 @@ using Elastos::Droid::View::IViewTreeObserver;
 using Elastos::Utility::EIID_IIterable;
 using Elastos::Utility::IIterable;
 using Elastos::Utility::IIterator;
+using Elastos::Utility::CArrayList;
 
 namespace Elastos {
 namespace Droid {
@@ -44,9 +45,7 @@ ViewPositionObserver::ViewPositionObserver(
     /* [in] */ IView* view)
     : mView(view)
 {
-    assert(0);
-    // TODO
-    // CArrayList::New((IArrayList**)&mListeners);
+    CArrayList::New((IArrayList**)&mListeners);
     UpdatePosition();
     mPreDrawListener = new InnerViewTreeObserverOnPreDrawListener(this);
 }
@@ -130,9 +129,7 @@ ECode ViewPositionObserver::UpdatePosition()
 {
     Int32 previousPositionX = (*mPosition)[0];
     Int32 previousPositionY = (*mPosition)[1];
-    assert(0);
-    // TODO
-    // mView->GetLocationInWindow(mPosition);
+    mView->GetLocationInWindow(mPosition);
     if ((*mPosition)[0] != previousPositionX || (*mPosition)[1] != previousPositionY) {
         NotifyListeners();
     }

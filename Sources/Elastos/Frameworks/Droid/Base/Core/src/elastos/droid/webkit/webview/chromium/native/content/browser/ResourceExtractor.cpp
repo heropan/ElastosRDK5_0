@@ -1,19 +1,40 @@
-
+#include "Elastos.CoreLibrary.Utility.h"
 #include "Elastos.Droid.Content.h"
 #include "Elastos.Droid.Preference.h"
 #include "elastos/droid/webkit/webview/chromium/native/content/browser/ResourceExtractor.h"
 #include "elastos/droid/webkit/webview/chromium/native/ui/base/LocalizationUtils.h"
+#include "elastos/droid/webkit/webview/chromium/native/base/PathUtils.h"
 #include <elastos/core/StringUtils.h>
+#include "elastos/core/StringBuilder.h"
+#include "elastos/core/CoreUtils.h"
 #include <elastos/utility/logging/Slogger.h>
-//TODO #include "preference/CPreferenceManagerHelper.h"
+#include <elastos/utility/logging/Logger.h>
 
-using Elastos::Core::StringUtils;
-using Elastos::IO::EIID_IFilenameFilter;
-//TODO using Elastos::Droid::Preference::CPreferenceManagerHelper;
-using Elastos::Droid::Preference::IPreferenceManagerHelper;
+using Elastos::Droid::Content::Res::IResources;
 using Elastos::Droid::Content::ISharedPreferences;
+using Elastos::Droid::Content::ISharedPreferencesEditor;
+using Elastos::Droid::Preference::CPreferenceManagerHelper;
+using Elastos::Droid::Preference::IPreferenceManagerHelper;
 using Elastos::Droid::Webkit::Webview::Chromium::Ui::Base::LocalizationUtils;
+using Elastos::Droid::Webkit::Webview::Chromium::Base::PathUtils;
+using Elastos::Core::StringBuilder;
+using Elastos::Core::StringUtils;
+using Elastos::Core::CoreUtils;
+using Elastos::IO::EIID_IFilenameFilter;
+using Elastos::IO::CFile;
+using Elastos::IO::IInputStream;
+using Elastos::IO::IOutputStream;
+using Elastos::IO::IFlushable;
+using Elastos::IO::CFileOutputStream;
+using Elastos::Utility::ISet;
+using Elastos::Utility::IIterator;
+using Elastos::Utility::CHashSet;
+using Elastos::Utility::Regex::IPattern;
+using Elastos::Utility::Regex::IPatternHelper;
+using Elastos::Utility::Regex::IMatcher;
+using Elastos::Utility::Regex::CPatternHelper;
 using Elastos::Utility::Logging::Slogger;
+using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
 namespace Droid {
@@ -76,110 +97,158 @@ ECode ResourceExtractor::ExtractTask::DoInBackground(
     }
 
     AutoPtr<IPreferenceManagerHelper> helper;
-    assert(0);
-    // TODO
-    // CPreferenceManagerHelper::AcquireSingleton((IPreferenceManagerHelper**)&helper);
+    CPreferenceManagerHelper::AcquireSingleton((IPreferenceManagerHelper**)&helper);
     AutoPtr<ISharedPreferences> prefs;
     helper->GetDefaultSharedPreferences(mOwner->mContext, (ISharedPreferences**)&prefs);
-    assert(0);
-    // TODO
     // HashSet<String> filenames = (HashSet<String>) prefs.getStringSet(
     //         PAK_FILENAMES, new HashSet<String>());
+    AutoPtr<ISet> defValue;
+    CHashSet::New((ISet**)&defValue);
+    AutoPtr<ISet> filenames;
+    prefs->GetStringSet(PAK_FILENAMES, defValue, (ISet**)&filenames);
     String currentLocale = LocalizationUtils::GetDefaultLocale();
-    String currentLanguage;// TODO = currentLocale.Split("-", 2)[0];
+    AutoPtr<ArrayOf<String> > array;
+    StringUtils::Split(currentLocale, "-", 2, (ArrayOf<String>**)&array);
+    String currentLanguage = (*array)[0];
 
-    assert(0);
-    // TODO
-    // String value;
-    // prefs->GetString(LAST_LANGUAGE, String(""), &value);
-    // if (value.Equals(currentLanguage)
-    //         &&  filenames.size() >= sMandatoryPaks.length) {
-    //     boolean filesPresent = true;
-    //     for (String file : filenames) {
-    //         if (!new File(outputDir, file).exists()) {
-    //             filesPresent = false;
-    //             break;
-    //         }
-    //     }
-    //     if (filesPresent) return null;
-    // } else {
-    //     prefs.edit().putString(LAST_LANGUAGE, currentLanguage).apply();
-    // }
+    String value;
+    prefs->GetString(LAST_LANGUAGE, String(""), &value);
+    Int32 filenamesSize;
+    filenames->GetSize(&filenamesSize);
+    if (value.Equals(currentLanguage)
+            &&  filenamesSize >= sMandatoryPaks->GetLength()) {
+        Boolean filesPresent = TRUE;
+        AutoPtr<IIterator> keyIter;
+        filenames->GetIterator((IIterator**)&keyIter);
+        Boolean isflag = FALSE;
+        while ((keyIter->HasNext(&isflag), isflag)) {
+            AutoPtr<IInterface> obj;
+            keyIter->GetNext((IInterface**)&obj);
+            ICharSequence* cs = ICharSequence::Probe(obj);
+            String file;
+            cs->ToString(&file);
+            AutoPtr<IFile> f;
+            CFile::New(outputDir, file, (IFile**)&f);
+            Boolean isExist;
+            if (!(f->Exists(&isExist), isExist)) {
+                filesPresent = FALSE;
+                break;
+            }
+        }
+        if (filesPresent) {
+            *result = NULL;
+            return NOERROR;
+        }
+    } else {
+        AutoPtr<ISharedPreferencesEditor> spe;
+        prefs->Edit((ISharedPreferencesEditor**)&spe);
+        spe->PutString(LAST_LANGUAGE, currentLanguage);
+        spe->Apply();
+    }
 
-    // StringBuilder p = new StringBuilder();
-    // for (String mandatoryPak : sMandatoryPaks) {
-    //     if (p.length() > 0) p.append('|');
-    //     p.append("\\Q" + mandatoryPak + "\\E");
-    // }
+    AutoPtr<StringBuilder> p = new StringBuilder();
+    for(Int32 i = 0; i < sMandatoryPaks->GetLength(); ++i) {
+        String mandatoryPak = (*sMandatoryPaks)[i];
+        Int32 len;
+        p->GetLength(&len);
+        if (len > 0) p->Append('|');
+        p->Append("\\Q");
+        p->Append(mandatoryPak);
+        p->Append("\\E");
+    }
 
-    // if (sExtractImplicitLocalePak) {
-    //     if (p.length() > 0) p.append('|');
-    //     // As well as the minimum required set of .paks above, we'll also add all .paks that
-    //     // we have for the user's currently selected language.
+    if (sExtractImplicitLocalePak) {
+        Int32 len;
+        p->GetLength(&len);
+        if (len > 0) p->Append('|');
+        // As well as the minimum required set of .paks above, we'll also add all .paks that
+        // we have for the user's currently selected language.
 
-    //     p.append(currentLanguage);
-    //     p.append("(-\\w+)?\\.pak");
-    // }
+        p->Append(currentLanguage);
+        p->Append("(-\\w+)?\\.pak");
+    }
 
-    // Pattern paksToInstall = Pattern.compile(p.toString());
+    AutoPtr<IPatternHelper> pHelper;
+    CPatternHelper::AcquireSingleton((IPatternHelper**)&pHelper);
+    AutoPtr<IPattern> paksToInstall;
+    pHelper->Compile(p->ToString(), (IPattern**)&paksToInstall);
 
-    // AssetManager manager = mContext.getResources().getAssets();
+    AutoPtr<IResources> resources;
+    mOwner->mContext->GetResources((IResources**)&resources);
+    AutoPtr<IAssetManager> manager;
+    resources->GetAssets((IAssetManager**)&manager);
     // try {
-    //     // Loop through every asset file that we have in the APK, and look for the
-    //     // ones that we need to extract by trying to match the Patterns that we
-    //     // created above.
-    //     byte[] buffer = null;
-    //     String[] files = manager.list("");
-    //     for (String file : files) {
-    //         if (!paksToInstall.matcher(file).matches()) {
-    //             continue;
-    //         }
-    //         boolean isICUData = file.equals(ICU_DATA_FILENAME);
-    //         File output = new File(isICUData ? getAppDataDir() : outputDir, file);
-    //         if (output.exists()) {
-    //             continue;
-    //         }
+         // Loop through every asset file that we have in the APK, and look for the
+         // ones that we need to extract by trying to match the Patterns that we
+         // created above.
+         //byte[] buffer = null;
+         AutoPtr<ArrayOf<Byte> > buffer;
+         AutoPtr<ArrayOf<String> > files;
+         manager->List(String(""), (ArrayOf<String>**)&files);
+         //for (String file : files)
+         for (Int32 i = 0; i < files->GetLength(); ++i) {
+             String file = (*files)[i];
+             AutoPtr<IMatcher> matcher;
+             paksToInstall->Matcher(file, (IMatcher**)&matcher);
+             Boolean matched = FALSE;
+             if (!matcher->Matches(&matched)) {
+                 continue;
+             }
+             Boolean isICUData = file.Equals(ICU_DATA_FILENAME);
+             AutoPtr<IFile> output;
+             CFile::New(isICUData ? mOwner->GetAppDataDir() : outputDir, file, (IFile**)&output);
+             Boolean exists;
+             if (output->Exists(&exists), exists) {
+                 continue;
+             }
 
-    //         InputStream is = null;
-    //         OutputStream os = null;
-    //         try {
-    //             is = manager.open(file);
-    //             os = new FileOutputStream(output);
-    //             Log.i(LOGTAG, "Extracting resource " + file);
-    //             if (buffer == null) {
-    //                 buffer = new byte[BUFFER_SIZE];
-    //             }
+             AutoPtr<IInputStream> is;
+             AutoPtr<IOutputStream> os;
+             //try {
+                 manager->Open(file, (IInputStream**)&is);
+                 CFileOutputStream::New(output, (IOutputStream**)&os);
+                 Logger::I(LOGTAG, "Extracting resource %s", file.string());
+                 if (buffer == NULL) {
+                     //buffer = new byte[BUFFER_SIZE];
+                     buffer = ArrayOf<Byte>::Alloc(BUFFER_SIZE);
+                 }
 
-    //             int count = 0;
-    //             while ((count = is.read(buffer, 0, BUFFER_SIZE)) != -1) {
-    //                 os.write(buffer, 0, count);
-    //             }
-    //             os.flush();
+                 Int32 count = 0;
+                 while ((is->Read(buffer, 0, BUFFER_SIZE, &count), count) != -1) {
+                     os->Write(buffer, 0, count);
+                 }
+                 IFlushable::Probe(os)->Flush();
 
-    //             // Ensure something reasonable was written.
-    //             if (output.length() == 0) {
-    //                 throw new IOException(file + " extracted with 0 length!");
-    //             }
+                 // Ensure something reasonable was written.
+                 Int64 outputLength;
+                 output->GetLength(&outputLength);
+                 if (outputLength == 0) {
+                     //throw new IOException(file + " extracted with 0 length!");
+                     Logger::E(LOGTAG, "%s extracted with 0 length", file.string());
+                 }
 
-    //             if (!isICUData) {
-    //                 filenames.add(file);
-    //             } else {
-    //                 // icudata needs to be accessed by a renderer process.
-    //                 output.setReadable(true, false);
-    //             }
-    //         } finally {
-    //             try {
-    //                 if (is != null) {
-    //                     is.close();
-    //                 }
-    //             } finally {
-    //                 if (os != null) {
-    //                     os.close();
-    //                 }
-    //             }
-    //         }
-    //     }
-    // } catch (IOException e) {
+
+                 if (!isICUData) {
+
+                     filenames->Add(TO_IINTERFACE(CoreUtils::Convert(file)));
+                 } else {
+                     // icudata needs to be accessed by a renderer process.
+                     Boolean res;
+                     output->SetReadable(TRUE, FALSE, &res);
+                 }
+             //} finally {
+             //    try {
+                     if (is != NULL) {
+                         is->Close();
+                     }
+             //    } finally {
+                     if (os != NULL) {
+                         os->Close();
+                     }
+             //    }
+             //}
+         }
+    //} catch (IOException e) {
     //     // TODO(benm): See crbug/152413.
     //     // Try to recover here, can we try again after deleting files instead of
     //     // returning null? It might be useful to gather UMA here too to track if
@@ -189,20 +258,27 @@ ECode ResourceExtractor::ExtractTask::DoInBackground(
     //     return null;
     // }
 
-    // // Finished, write out a timestamp file if we need to.
+    // Finished, write out a timestamp file if we need to.
 
-    // if (timestampFile != null) {
-    //     try {
-    //         new File(outputDir, timestampFile).createNewFile();
-    //     } catch (IOException e) {
-    //         // Worst case we don't write a timestamp, so we'll re-extract the resource
-    //         // paks next start up.
-    //         Log.w(LOGTAG, "Failed to write resource pak timestamp!");
-    //     }
-    // }
-    // // TODO(yusufo): Figure out why remove is required here.
-    // prefs.edit().remove(PAK_FILENAMES).apply();
-    // prefs.edit().putStringSet(PAK_FILENAMES, filenames).apply();
+    if (timestampFile != NULL) {
+        //try {
+        AutoPtr<IFile> file;
+        CFile::New(outputDir, timestampFile, (IFile**)&file);
+        Boolean res;
+        file->CreateNewFile(&res);
+        //} catch (IOException e) {
+            // Worst case we don't write a timestamp, so we'll re-extract the resource
+            // paks next start up.
+        //    Log.w(LOGTAG, "Failed to write resource pak timestamp!");
+        //}
+    }
+    // TODO(yusufo): Figure out why remove is required here.
+    AutoPtr<ISharedPreferencesEditor> spe;
+    prefs->Edit((ISharedPreferencesEditor**)&spe);
+    spe->Remove(PAK_FILENAMES);
+    spe->Apply();
+    spe->PutStringSet(PAK_FILENAMES, filenames);
+    spe->Apply();
 
     *result = NULL;
 
@@ -307,9 +383,8 @@ ECode ResourceExtractor::WaitForCompletion()
     assert(mExtractTask != NULL);
 
     // try {
-        assert(0);
-        // TODO
-        // mExtractTask->Get();
+        AutoPtr<IInterface> task;
+        mExtractTask->Get((IInterface**)&task);
     // } catch (CancellationException e) {
     //     // Don't leave the files in an inconsistent state.
     //     deleteFiles();
@@ -333,9 +408,7 @@ ECode ResourceExtractor::StartExtractingResources()
     }
 
     mExtractTask = new ExtractTask(this);
-    assert(0);
-    // TODO
-    // mExtractTask->ExecuteOnExecutor(AsyncTask::THREAD_POOL_EXECUTOR);
+    mExtractTask->ExecuteOnExecutor(AsyncTask::THREAD_POOL_EXECUTOR, NULL);
 
     return NOERROR;
 }
@@ -349,27 +422,21 @@ ResourceExtractor::ResourceExtractor(
 AutoPtr<IFile> ResourceExtractor::GetAppDataDir()
 {
     AutoPtr<IFile> file;
-    assert(0);
-    // TODO
-    // CFile::New(PathUtils::GetDataDirectory(mContext), (IFile**)&file);
+    CFile::New(PathUtils::GetDataDirectory(mContext), (IFile**)&file);
     return file;
 }
 
 AutoPtr<IFile> ResourceExtractor::GetOutputDir()
 {
     AutoPtr<IFile> file;
-    assert(0);
-    // TODO
-    // CFile::New(GetAppDataDir(), String("paks"), (IFile**)&file);
+    CFile::New(GetAppDataDir(), String("paks"), (IFile**)&file);
     return file;
 }
 
 ECode ResourceExtractor::DeleteFiles()
 {
     AutoPtr<IFile> icudata;
-    assert(0);
-    // TODO
-    // CFile(GetAppDataDir(), ICU_DATA_FILENAME, (IFile**)&icudata);
+    CFile::New(GetAppDataDir(), ICU_DATA_FILENAME, (IFile**)&icudata);
     Boolean bExists, bDelete;
     if ((icudata->Exists(&bExists), bExists) && !(icudata->Delete(&bDelete), bDelete)) {
         String log("Unable to remove the icudata ");

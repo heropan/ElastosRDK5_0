@@ -5,13 +5,10 @@
 #include "elastos/droid/webkit/webview/chromium/native/content/browser/DeviceSensors.h"
 #include "elastos/droid/webkit/webview/chromium/native/content/api/DeviceSensors_dec.h"
 #include "elastos/droid/webkit/webview/chromium/native/base/ThreadUtils.h"
-#include <elastos/core/AutoLock.h>
-#include <elastos/core/Math.h>
+#include "elastos/core/AutoLock.h"
+#include "elastos/core/CoreUtils.h"
+#include "elastos/core/Math.h"
 #include <elastos/utility/logging/Logger.h>
-//TODO #include "elastos/droid/hardware/CSensorManagerHelper.h"
-//TODO #include "elastos/droid/os/CHandlerThread.h"
-//TODO #include "elastos/droid/os/CHandler.h"
-//TODO #include "elastos/droid/utility/CHashSet.h"
 
 using Elastos::Droid::Webkit::Webview::Chromium::Base::ThreadUtils;
 using Elastos::Core::AutoLock;
@@ -20,10 +17,11 @@ using Elastos::Core::IInteger32;
 using Elastos::Droid::Hardware::EIID_ISensorManager;
 using Elastos::Droid::Hardware::EIID_ISensorEventListener;
 using Elastos::Droid::Hardware::ISensorManagerHelper;
-//TODO using Elastos::Droid::Hardware::CSensorManagerHelper;
-//TODO using Elastos::Droid::Os::CHandler;
-//TODO using Elastos::Droid::Os::CHandlerThread;
-//TODO using Elastos::Utility::CHashSet;
+using Elastos::Droid::Hardware::CSensorManagerHelper;
+using Elastos::Droid::Os::CHandler;
+using Elastos::Droid::Os::CHandlerThread;
+using Elastos::Core::CoreUtils;
+using Elastos::Utility::CHashSet;
 using Elastos::Utility::EIID_ICollection;
 using Elastos::Utility::EIID_IIterable;
 using Elastos::Utility::ICollection;
@@ -58,14 +56,16 @@ Boolean DeviceSensors::SensorManagerProxyImpl::RegisterListener(
     /* [in] */ Int32 rate,
     /* [in] */ IHandler* handler)
 {
-    assert(0);
-    // TODO
-    // AutoPtr<IList> sensors = mSensorManager.getSensorList(sensorType);
-    // if (sensors.isEmpty()) {
-    //     return false;
-    // }
-    // return mSensorManager.registerListener(listener, sensors.get(0), rate, handler);
-    return FALSE;
+    //AutoPtr<IList> sensors = mSensorManager.getSensorList(sensorType);
+    AutoPtr<ArrayOf<ISensor*> > sensors;
+    mSensorManager->GetSensorList(sensorType, (ArrayOf<ISensor*>**)&sensors);
+    if (sensors->GetLength()) {
+        return FALSE;
+    }
+    ISensor* sensor = (*sensors)[0];
+    Boolean res;
+    mSensorManager->RegisterListener(listener, sensor, rate, handler, &res);
+    return res;
 }
 
 //@Override
@@ -73,12 +73,13 @@ void DeviceSensors::SensorManagerProxyImpl::UnregisterListener(
     /* [in] */ ISensorEventListener* listener,
     /* [in] */ Int32 sensorType)
 {
-    assert(0);
-    // TODO
-    // List<Sensor> sensors = mSensorManager.getSensorList(sensorType);
-    // if (!sensors.isEmpty()) {
-    //     mSensorManager.unregisterListener(listener, sensors.get(0));
-    // }
+    //List<Sensor> sensors = mSensorManager.getSensorList(sensorType);
+    AutoPtr<ArrayOf<ISensor*> > sensors;
+    mSensorManager->GetSensorList(sensorType, (ArrayOf<ISensor*>**)&sensors);
+    if (sensors->GetLength() > 0) {
+        ISensor* sensor = (*sensors)[0];
+        mSensorManager->UnregisterListener(listener, sensor);
+    }
 }
 
 //===============================================================
@@ -115,13 +116,33 @@ Object DeviceSensors::sSingletonLock;
 const Int32 DeviceSensors::DEVICE_ORIENTATION;
 const Int32 DeviceSensors::DEVICE_MOTION;
 
-/*const*/ AutoPtr<ISet> DeviceSensors::DEVICE_ORIENTATION_SENSORS;//TODO = CollectionUtil.newHashSet(
-        // Sensor.TYPE_ROTATION_VECTOR);
+//= CollectionUtil.newHashSet(Sensor.TYPE_ROTATION_VECTOR);
+static AutoPtr<ISet> Init_Orientation_Sensors()
+{
+    AutoPtr<ISet> set;
+    CHashSet::New((ISet**)&set);
+    AutoPtr<IInteger32> type = CoreUtils::Convert(ISensor::TYPE_ROTATION_VECTOR);
+    set->Add(TO_IINTERFACE(type));
+    return set;
+}
 
-/*const*/ AutoPtr<ISet> DeviceSensors::DEVICE_MOTION_SENSORS;//TODO = CollectionUtil.newHashSet(
-        // Sensor.TYPE_ACCELEROMETER,
-        // Sensor.TYPE_LINEAR_ACCELERATION,
-        // Sensor.TYPE_GYROSCOPE);
+AutoPtr<ISet> DeviceSensors::DEVICE_ORIENTATION_SENSORS = Init_Orientation_Sensors();
+
+//= CollectionUtil.newHashSet( Sensor.TYPE_ACCELEROMETER, Sensor.TYPE_LINEAR_ACCELERATION, Sensor.TYPE_GYROSCOPE);
+static AutoPtr<ISet> Init_Motion_Sensors()
+{
+    AutoPtr<ISet> set;
+    CHashSet::New((ISet**)&set);
+    AutoPtr<IInteger32> type_accelerometer = CoreUtils::Convert(ISensor::TYPE_ACCELEROMETER);
+    AutoPtr<IInteger32> type_linear_acc = CoreUtils::Convert(ISensor::TYPE_LINEAR_ACCELERATION);
+    AutoPtr<IInteger32> type_gyroscope = CoreUtils::Convert(ISensor::TYPE_GYROSCOPE);
+    set->Add(TO_IINTERFACE(type_accelerometer));
+    set->Add(TO_IINTERFACE(type_linear_acc));
+    set->Add(TO_IINTERFACE(type_gyroscope));
+    return set;
+}
+
+AutoPtr<ISet> DeviceSensors::DEVICE_MOTION_SENSORS = Init_Motion_Sensors();
 
 DeviceSensors::DeviceSensors(
     /* [in] */ IContext* context)
@@ -163,7 +184,7 @@ Boolean DeviceSensors::Start(
                 success = RegisterSensors(DEVICE_MOTION_SENSORS, rateInMilliseconds, FALSE);
                 break;
             default:
-//                Log.e(TAG, "Unknown event type: " + eventType);
+                Logger::E(TAG, "Unknown event type: %d", eventType);
                 return FALSE;
         }
 
@@ -180,9 +201,7 @@ Boolean DeviceSensors::Start(
 Int32 DeviceSensors::GetNumberActiveDeviceMotionSensors()
 {
     AutoPtr<ISet> deviceMotionSensors;
-    assert(0);
-    // TODO
-    // CHashSet::New(DEVICE_MOTION_SENSORS, (ISet**)&deviceMotionSensors);
+    CHashSet::New(ICollection::Probe(DEVICE_MOTION_SENSORS), (ISet**)&deviceMotionSensors);
     AutoPtr<ICollection> activeSensors = ICollection::Probe(mActiveSensors);
     deviceMotionSensors->RemoveAll(activeSensors);
     Int32 size1, size2;
@@ -205,9 +224,7 @@ void DeviceSensors::Stop(
     /* [in] */ Int32 eventType)
 {
     AutoPtr<ISet> sensorsToRemainActive;
-    assert(0);
-    // TODO
-    // CHashSet::New((ISet**)&sensorsToRemainActive);
+    CHashSet::New((ISet**)&sensorsToRemainActive);
 
     {
         AutoLock lock(mNativePtrLock);
@@ -225,14 +242,12 @@ void DeviceSensors::Stop(
                 }
                 break;
             default:
-//                Log.e(TAG, "Unknown event type: " + eventType);
+                Logger::E(TAG, "Unknown event type: %d", eventType);
                 return;
         }
 
         AutoPtr<ISet> sensorsToDeactivate;
-        assert(0);
-        // TODO
-        // CHashSet::New(mActiveSensors, (ISet**)&sensorsToDeactivate);
+        CHashSet::New(ICollection::Probe(mActiveSensors), (ISet**)&sensorsToDeactivate);
         AutoPtr<ICollection> collection = ICollection::Probe(sensorsToDeactivate);
         sensorsToDeactivate->RemoveAll(collection);
         AutoPtr<IIterable> iterable = IIterable::Probe(sensorsToDeactivate);
@@ -300,9 +315,10 @@ void DeviceSensors::SensorChanged(
                     if (mTruncatedRotationVector == NULL) {
                         mTruncatedRotationVector = ArrayOf<Float>::Alloc(4);
                     }
-                    assert(0);
-                    // TODO
                     // System.arraycopy(values, 0, mTruncatedRotationVector, 0, 4);
+                    for(Int32 i = 0; i < 4; ++i) {
+                        mTruncatedRotationVector->Set(i, (*values)[i]);
+                    }
                     GetOrientationFromRotationVector(mTruncatedRotationVector);
                 }
                 else {
@@ -413,9 +429,7 @@ void DeviceSensors::GetOrientationFromRotationVector(
 {
     AutoPtr< ArrayOf<Float> > deviceRotationMatrix = ArrayOf<Float>::Alloc(9);
     AutoPtr<ISensorManagerHelper> sensorManagerHelper;
-    assert(0);
-    // TODO
-    // CSensorManagerHelper::AcquireSingleton((ISensorManagerHelper**)&sensorManagerHelper);
+    CSensorManagerHelper::AcquireSingleton((ISensorManagerHelper**)&sensorManagerHelper);
     sensorManagerHelper->GetRotationMatrixFromVector(deviceRotationMatrix, rotationVector);
 
     AutoPtr< ArrayOf<Double> > rotationAngles = ArrayOf<Double>::Alloc(3);
@@ -477,9 +491,7 @@ Boolean DeviceSensors::RegisterSensors(
     /* [in] */ Boolean failOnMissingSensor)
 {
     AutoPtr<ISet> sensorsToActivate;
-    assert(0);
-    // TODO
-    // CHashSet::New(sensorTypes, (ISet**)&sensorsToActivate);
+    CHashSet::New(ICollection::Probe(sensorTypes), (ISet**)&sensorsToActivate);
     AutoPtr<ICollection> collection = ICollection::Probe(mActiveSensors);
     sensorsToActivate->RemoveAll(collection);
     Boolean success = FALSE;
@@ -598,16 +610,12 @@ AutoPtr<IHandler> DeviceSensors::GetHandler()
     AutoLock lock(mHandlerLock);
     if (mHandler == NULL) {
         AutoPtr<IHandlerThread> handlerThread;
-        assert(0);
-        // TODO
-        // CHandlerThread::New(String("DeviceMotionAndOrientation"), (IHandlerThread**)&thread);
+        CHandlerThread::New(String("DeviceMotionAndOrientation"), (IHandlerThread**)&handlerThread);
         AutoPtr<IThread> thread = IThread::Probe(handlerThread);
         thread->Start();
         AutoPtr<ILooper> looper;
         handlerThread->GetLooper((ILooper**)&looper);
-        assert(0);
-        // TODO
-        // CHandler::New(looper, (IHandler**)&mHandler);  // blocks on thread start
+        CHandler::New(looper, (IHandler**)&mHandler);  // blocks on thread start
     }
     return mHandler;
 }

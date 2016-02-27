@@ -2,13 +2,12 @@
 #include <Elastos.CoreLibrary.Utility.h>
 #include "Elastos.Droid.Content.h"
 #include "Elastos.Droid.Os.h"
+#include "elastos/droid/webkit/webview/chromium/native/content/browser/PepperPluginManager.h"
 #include <elastos/core/StringBuffer.h>
 #include <elastos/utility/logging/Slogger.h>
-//TODO #include "elastos/droid/content/CIntent.h"
-#include "elastos/droid/webkit/webview/chromium/native/content/browser/PepperPluginManager.h"
 
 using Elastos::Core::StringBuffer;
-//TODO using Elastos::Droid::Content::CIntent;
+using Elastos::Droid::Content::CIntent;
 using Elastos::Droid::Content::Pm::IPackageItemInfo;
 using Elastos::Droid::Content::Pm::EIID_IPackageItemInfo;
 using Elastos::Utility::IList;
@@ -46,9 +45,7 @@ String PepperPluginManager::GetPlugins(
     context->GetPackageManager((IPackageManager**)&pm);
     AutoPtr<IList> plugins;
     AutoPtr<IIntent> intent;
-    assert(0);
-    // TODO
-    // CIntent::New(PEPPER_PLUGIN_ACTION, (IIntent**)&intent);
+    CIntent::New(PEPPER_PLUGIN_ACTION, (IIntent**)&intent);
     pm->QueryIntentServices(intent,
             IPackageManager::GET_SERVICES | IPackageManager::GET_META_DATA,
             (IList**)&plugins);
@@ -86,12 +83,16 @@ String PepperPluginManager::GetPlugins(
     //         continue;
     //     }
 
-        assert(0);
-        // TODO
-        // if (pkgInfo == NULL ||
-        //         (pkgInfo.applicationInfo.flags & ApplicationInfo.FLAG_SYSTEM) == 0) {
-        //     continue;
-        // }
+        if (pkgInfo == NULL) {
+            continue;
+        } else {
+            AutoPtr<IApplicationInfo> info;
+            pkgInfo->GetApplicationInfo((IApplicationInfo**)&info);
+            Int32 flags;
+            info->GetFlags(&flags);
+            if((flags & IApplicationInfo::FLAG_SYSTEM) == 0)
+                continue;
+        }
 
         packageItemInfo->GetPackageName(&packageName);
         String strLog("The given plugin package is preloaded: ");

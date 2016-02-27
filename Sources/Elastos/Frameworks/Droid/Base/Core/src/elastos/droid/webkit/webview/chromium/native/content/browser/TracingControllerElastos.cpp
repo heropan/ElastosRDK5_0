@@ -8,20 +8,28 @@
 #include "elastos/droid/webkit/webview/chromium/native/content/api/TracingControllerElastos_dec.h"
 #include "elastos/droid/webkit/webview/chromium/native/content/R_Content.h"
 #include "elastos/droid/text/TextUtils.h"
-// TODO #include "elastos/droid/os/CEnvironment.h"
-// TODO #include "elastos/droid/widget/CToastHelper.h"
+#include "elastos/core/CoreUtils.h"
 #include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Droid::Content::EIID_IBroadcastReceiver;
-// TODO using Elastos::Droid::Os::CEnvironment;
+using Elastos::Droid::Os::CEnvironment;
 using Elastos::Droid::Text::TextUtils;
 using Elastos::Droid::Webkit::Webview::Chromium::Content::R;
-// TODO using Elastos::Droid::Widget::CToastHelper;
+using Elastos::Droid::Widget::CToastHelper;
 using Elastos::Droid::Widget::IToastHelper;
 using Elastos::Core::CString;
-// TODO using Elastos::IO::CFile;
-// TODO using Elastos::Text::CSimpleDateFormat
+using Elastos::Core::CoreUtils;
+using Elastos::Core::ICharSequence;
+using Elastos::Core::StringUtils;
+using Elastos::IO::CFile;
+using Elastos::Text::CSimpleDateFormat;
 using Elastos::Text::ISimpleDateFormat;
+using Elastos::Text::IDateFormat;
+using Elastos::Utility::ILocaleHelper;
+using Elastos::Utility::CLocaleHelper;
+using Elastos::Utility::CDate;
+using Elastos::Utility::CTimeZoneHelper;
+using Elastos::Utility::ITimeZoneHelper;
 using Elastos::Utility::Logging::Slogger;
 
 namespace Elastos {
@@ -55,10 +63,11 @@ ECode TracingControllerElastos::TracingBroadcastReceiver::OnReceive(
             categories = mOwner->NativeGetDefaultCategories();
         }
         else {
-            assert(0);
-            // TODO
-            // categories = categories.ReplaceFirst(
+            //categories = categories.ReplaceFirst(
             //         DEFAULT_CHROME_CATEGORIES_PLACE_HOLDER, mOwner->NativeGetDefaultCategories());
+            String strResult;
+            StringUtils::ReplaceFirst(categories, DEFAULT_CHROME_CATEGORIES_PLACE_HOLDER, mOwner->NativeGetDefaultCategories(), &strResult);
+            categories = strResult;
         }
         String strExtra;
         intent->GetStringExtra(RECORD_CONTINUOUSLY_EXTRA, &strExtra);
@@ -206,9 +215,15 @@ Boolean TracingControllerElastos::StartTracing(
         return FALSE;
     }
 
-    assert(0);
-    // TODO
-    // LogForProfiler(String.format(PROFILER_STARTED_FMT, categories));
+
+    AutoPtr< ArrayOf<IInterface*> > formatArgs = ArrayOf<IInterface*>::Alloc(1);
+    AutoPtr<ICharSequence> charSequenceTmp;
+    CString::New(categories, (ICharSequence**)&charSequenceTmp);
+    formatArgs->Set(0, TO_IINTERFACE(charSequenceTmp));
+
+    String lfp = StringUtils::Format(PROFILER_STARTED_FMT, formatArgs);
+    LogForProfiler(lfp);
+
     String toast;
     mContext->GetString(R::string::profiler_started_toast, &toast);
     toast += ": ";
@@ -248,13 +263,14 @@ ECode TracingControllerElastos::OnTracingStopped()
         return NOERROR;
     }
 
-    assert(0);
-    // TODO
-    // LogForProfiler(String.format(PROFILER_FINISHED_FMT, mFilename));
     AutoPtr< ArrayOf<IInterface*> > formatArgs = ArrayOf<IInterface*>::Alloc(1);
     AutoPtr<ICharSequence> charSequenceTmp;
     CString::New(mFilename, (ICharSequence**)&charSequenceTmp);
     formatArgs->Set(0, TO_IINTERFACE(charSequenceTmp));
+
+    String lfp = StringUtils::Format(PROFILER_FINISHED_FMT, formatArgs);
+    LogForProfiler(lfp);
+
     String str;
     mContext->GetString(R::string::profiler_stopped_toast, formatArgs, &str);
     ShowToast(str);
@@ -277,9 +293,7 @@ ECode TracingControllerElastos::Finalize()
 String TracingControllerElastos::GenerateTracingFilePath()
 {
     AutoPtr<IEnvironment> env;
-    assert(0);
-    // TODO
-    // CEnvironment::AcquireSingleton((IEnvironment**)&env);
+    CEnvironment::AcquireSingleton((IEnvironment**)&env);
     String state;
     env->GetExternalStorageState(&state);
     if (!IEnvironment::MEDIA_MOUNTED.Equals(state)) {
@@ -289,30 +303,29 @@ String TracingControllerElastos::GenerateTracingFilePath()
     // Generate a hopefully-unique filename using the UTC timestamp.
     // (Not a huge problem if it isn't unique, we'll just append more data.)
     AutoPtr<ISimpleDateFormat> formatter;
-    assert(0);
-    // TODO
-    // CSimpleDateFormat::New(
-    //         String("yyyy-MM-dd-HHmmss"), ILocale::US,
-    //         (ISimpleDateFormat**)&formatter);
-    // formatter.setTimeZone(TimeZone.getTimeZone("UTC"));
+    AutoPtr<ILocaleHelper> localHelper;
+    AutoPtr<ILocale> us;
+    CLocaleHelper::AcquireSingleton((ILocaleHelper**)&localHelper);
+    localHelper->GetUS((ILocale**)&us);
+    CSimpleDateFormat::New(
+            String("yyyy-MM-dd-HHmmss"), us,
+            (ISimpleDateFormat**)&formatter);
+    AutoPtr<ITimeZoneHelper> tzHelper;
+    CTimeZoneHelper::AcquireSingleton((ITimeZoneHelper**)&tzHelper);
+    AutoPtr<ITimeZone> tz;
+    tzHelper->GetTimeZone(String("UTC"), (ITimeZone**)&tz);
+    IDateFormat::Probe(formatter)->SetTimeZone(tz);
     AutoPtr<IFile> dir;
     env->GetExternalStoragePublicDirectory(
             IEnvironment::DIRECTORY_DOWNLOADS, (IFile**)&dir);
     AutoPtr<IFile> file;
     AutoPtr<IDate> date;
-    assert(0);
-    // TODO
-    // CDate::New((IDate**)&date);
+    CDate::New((IDate**)&date);
     String formatStr;
-    assert(0);
-    // TODO
-    // formatter->Format(date, &formatStr);
+    IDateFormat::Probe(formatter)->Format(date, &formatStr);
     String str("chrome-profile-results-");
     str += formatStr;
-    assert(0);
-    // TODO
-    // CFile::New(
-    //         dir,  str, (IFile**)&file);
+    CFile::New(dir,  str, (IFile**)&file);
     String path;
     file->GetPath(&path);
     return path;
@@ -333,13 +346,10 @@ ECode TracingControllerElastos::LogAndToastError(
     Slogger::E(TAG, str);
     if (mShowToasts) {
         AutoPtr<IToastHelper> helper;
-        assert(0);
-        // TODO
-        // CToastHelper::AcquireSingleton((IToastHelper**)&helper);
+        CToastHelper::AcquireSingleton((IToastHelper**)&helper);
         AutoPtr<IToast> toast;
-        assert(0);
-        // TODO
-        // helper->MakeText(mContext, str, IToast::LENGTH_SHORT, (IToast**)&toast);
+        AutoPtr<ICharSequence> cs = CoreUtils::Convert(str);
+        helper->MakeText(mContext, cs, IToast::LENGTH_SHORT, (IToast**)&toast);
         toast->Show();
     }
 
@@ -358,13 +368,10 @@ ECode TracingControllerElastos::ShowToast(
 {
     if (mShowToasts) {
         AutoPtr<IToastHelper> helper;
-        assert(0);
-        // TODO
-        // CToastHelper::AcquireSingleton((IToastHelper**)&helper);
+        CToastHelper::AcquireSingleton((IToastHelper**)&helper);
         AutoPtr<IToast> toast;
-        assert(0);
-        // TODO
-        // helper->MakeText(mContext, str, IToast::LENGTH_SHORT, (IToast**)&toast)
+        AutoPtr<ICharSequence> cs = CoreUtils::Convert(str);
+        helper->MakeText(mContext, cs, IToast::LENGTH_SHORT, (IToast**)&toast);
         toast->Show();
     }
 

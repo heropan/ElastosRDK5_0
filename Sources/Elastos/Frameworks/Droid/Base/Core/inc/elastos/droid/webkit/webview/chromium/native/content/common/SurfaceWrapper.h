@@ -5,8 +5,6 @@
 #include "elastos/droid/ext/frameworkext.h"
 #include <elastos/core/Object.h>
 
-// TODO using Elastos::Droid::Os::IParcel;
-// TODO using Elastos::Droid::Os::IParcelable;
 using Elastos::Droid::View::ISurface;
 
 namespace Elastos {
@@ -22,7 +20,7 @@ namespace Common {
  */
 class SurfaceWrapper
     : public Object
-    // TODO , public IParcelable
+    , public IParcelable
 {
 public:
     SurfaceWrapper(
@@ -30,14 +28,12 @@ public:
 
     AutoPtr<ISurface> GetSurface();
 
-    //@Override
-    // TODO
-    // CARAPI WriteToParcel(
-    //     /* [in] */ IParcel* out,
-    //     /* [in] */ Int32 flags);
+    CARAPI ReadFromParcel(
+        /* [in] */ IParcel* source);
 
-public:
-    // TODO static final Parcelable.Creator<SurfaceWrapper> CREATOR;
+    //@Override
+    CARAPI WriteToParcel(
+        /* [in] */ IParcel* dest);
 
 private:
     AutoPtr<ISurface> mSurface;

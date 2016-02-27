@@ -2,11 +2,14 @@
 #ifndef __ELASTOS_DROID_WEBKIT_WEBVIEW_CHROMIUM_CONTENT_BROWSER_CONTENTREADBACKHANDLER_H__
 #define __ELASTOS_DROID_WEBKIT_WEBVIEW_CHROMIUM_CONTENT_BROWSER_CONTENTREADBACKHANDLER_H__
 
+#include "Elastos.Droid.Utility.h"
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/webkit/webview/chromium/native/content/browser/ContentViewCore.h"
+#include "elastos/droid/webkit/webview/chromium/native/ui/base/WindowElastos.h"
 
 using Elastos::Droid::Graphics::IBitmap;
 using Elastos::Droid::Graphics::IRect;
+using Elastos::Droid::Webkit::Webview::Chromium::Ui::Base::WindowElastos;
 using Elastos::Droid::Utility::ISparseArray;
 
 // import org.chromium.base.CalledByNative;
@@ -85,9 +88,9 @@ public:
      * @param windowAndroid The window that hosts the compositor.
      * @param callback      The callback to be executed after readback completes.
      */
-//    virtual CARAPI_(void) GetCompositorBitmapAsync(
-//        /* [in] */ WindowAndroid* windowAndroid,
-//        /* [in] */ GetBitmapCallback* callback);
+    virtual CARAPI_(void) GetCompositorBitmapAsync(
+        /* [in] */ WindowElastos* windowAndroid,
+        /* [in] */ GetBitmapCallback* callback);
 
     static CARAPI_(void*) ElaContentReadbackHandlerCallback_Init();
 
@@ -134,7 +137,7 @@ private:
 
 private:
     Int32 mNextReadbackId;
-//    SparseArray<GetBitmapCallback> mGetBitmapRequests;
+    AutoPtr<ISparseArray> mGetBitmapRequests;// <GetBitmapCallback>
 
     Int64 mNativeContentReadbackHandler;
 };

@@ -1,15 +1,14 @@
 
 #include "elastos/droid/webkit/webview/chromium/native/content/browser/ContentViewRenderView.h"
 #include "elastos/droid/webkit/webview/chromium/native/content/api/ContentViewRenderView_dec.h"
+#include "elastos/droid/webkit/webview/chromium/native/ui/base/WindowElastos.h"
 #include <elastos/utility/logging/Logger.h>
-//TODO #include "elastos/droid/view/CSurfaceView.h"
-//TODO #include "elastos/droid/webkit/webview/chromium/native/ui/base/WindowAndroid.h"
-//TODO #include "elastos/droid/widget/CFrameLayoutLayoutParams.h"
 
 using Elastos::Droid::View::EIID_IView;
-//TODO using Elastos::Droid::View::CSurfaceView;
+using Elastos::Droid::View::CSurfaceView;
+using Elastos::Droid::Webkit::Webview::Chromium::Ui::Base::WindowElastos;
 using Elastos::Droid::Widget::IFrameLayoutLayoutParams;
-//TODO using Elastos::Droid::Widget::CFrameLayoutLayoutParams;
+using Elastos::Droid::Widget::CFrameLayoutLayoutParams;
 using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
@@ -127,21 +126,21 @@ ContentViewRenderView::ContentViewRenderView(
     /* [in] */ IContext* context)
     : mNativeContentViewRenderView(0)
 {
-    assert(0);
-    // TODO
-    // super(context);
+    FrameLayout::constructor(context);
 
-    // mSurfaceView = CreateSurfaceView(GetContext());
-    // mSurfaceView->SetZOrderMediaOverlay(TRUE);
+    AutoPtr<IContext> iContext;
+    GetContext((IContext**)&iContext);
+    mSurfaceView = CreateSurfaceView(iContext);
+    mSurfaceView->SetZOrderMediaOverlay(TRUE);
 
-    // SetSurfaceViewBackgroundColor(IColor::WHITE);
-    // AutoPtr<IFrameLayoutLayoutParams> param;
-    // CFrameLayoutLayoutParams::New(
-    //                 IFrameLayoutLayoutParams::MATCH_PARENT,
-    //                 IFrameLayoutLayoutParams::MATCH_PARENT,
-    //                 (IFrameLayoutLayoutParams**)&param);
-    // AddView(mSurfaceView, param);
-    // mSurfaceView->SetVisibility(GONE);
+    SetSurfaceViewBackgroundColor(IColor::WHITE);
+    AutoPtr<IFrameLayoutLayoutParams> param;
+    CFrameLayoutLayoutParams::New(
+                    IViewGroupLayoutParams::MATCH_PARENT,
+                    IViewGroupLayoutParams::MATCH_PARENT,
+                    (IFrameLayoutLayoutParams**)&param);
+    AddView(IView::Probe(mSurfaceView), IViewGroupLayoutParams::Probe(param));
+    IView::Probe(mSurfaceView)->SetVisibility(GONE);
 }
 
 /**
@@ -150,15 +149,13 @@ ContentViewRenderView::ContentViewRenderView(
  * @param rootWindow The {@link WindowAndroid} this render view should be linked to.
  */
 void ContentViewRenderView::OnNativeLibraryLoaded(
-    /* [in] */ WindowAndroid* rootWindow)
+    /* [in] */ WindowElastos* rootWindow)
 {
 //    assert !mSurfaceView.getHolder().getSurface().isValid() :
 //            "Surface created before native library loaded.";
     assert(rootWindow != NULL);
 
-    assert(0);
-    // TODO
-    // mNativeContentViewRenderView = NativeInit(rootWindow->GetNativePointer());
+    mNativeContentViewRenderView = NativeInit(rootWindow->GetNativePointer());
     assert(mNativeContentViewRenderView != 0);
     mSurfaceCallback = new InnerSurfaceHolderCallback(this);
     AutoPtr<ISurfaceHolder> surfaceHolder;
@@ -217,9 +214,10 @@ void ContentViewRenderView::SetCurrentContentViewCore(
     mContentViewCore = contentViewCore;
 
     if (mContentViewCore != NULL) {
-        assert(0);
-        // TODO
-        // mContentViewCore->OnPhysicalBackingSizeChanged(GetWidth(), GetHeight());
+        Int32 width, height;
+        GetWidth(&width);
+        GetHeight(&height);
+        mContentViewCore->OnPhysicalBackingSizeChanged(width, height);
         NativeSetCurrentContentViewCore(mNativeContentViewRenderView,
                                         mContentViewCore->GetNativeContentViewCore());
     }
@@ -246,9 +244,7 @@ AutoPtr<ISurfaceView> ContentViewRenderView::CreateSurfaceView(
     /* [in] */ IContext* context)
 {
     AutoPtr<ISurfaceView> view;
-    assert(0);
-    // TODO
-    // CSurfaceView::New((ISurfaceView**)&view);
+    CSurfaceView::New(context, (ISurfaceView**)&view);
     return view;
 }
 
@@ -301,9 +297,8 @@ void ContentViewRenderView::OnSwapBuffersCompleted()
     view->GetBackground((IDrawable**)&draw);
     if (draw != NULL) {
         AutoPtr<IRunnable> runnable = new InnerRunnable(this);
-        assert(0);
-        // TODO
-        // Post(runnable);
+        Boolean res;
+        Post(runnable, &res);
     }
 }
 

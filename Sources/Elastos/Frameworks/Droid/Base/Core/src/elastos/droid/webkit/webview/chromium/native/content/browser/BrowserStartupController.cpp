@@ -9,11 +9,14 @@
 #include "elastos/droid/webkit/webview/chromium/native/content/browser/PepperPluginManager.h"
 #include "elastos/droid/webkit/webview/chromium/native/content/app/ContentMain.h"
 #include "elastos/droid/webkit/webview/chromium/native/base/ThreadUtils.h"
+#include <elastos/utility/logging/Logger.h>
 
 using Elastos::Core::EIID_IRunnable;
 using Elastos::Droid::Os::CHandler;
 using Elastos::Droid::Webkit::Webview::Chromium::Base::ThreadUtils;
 using Elastos::Droid::Webkit::Webview::Chromium::Content::App::ContentMain;
+using Elastos::Utility::CArrayList;
+using Elastos::Utility::Logging::Logger;
 
 // Copyright 2013 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
@@ -115,8 +118,7 @@ BrowserStartupController::BrowserStartupController(
     , mStartupDone(FALSE)
     , mStartupSuccess(FALSE)
 {
-    assert(0);
-//    mAsyncStartupCallbacks = new ArrayList<StartupCallback>();
+    CArrayList::New((IList**)&mAsyncStartupCallbacks);
 }
 
 void BrowserStartupController::SetAsynchronousStartup(
@@ -184,9 +186,8 @@ void BrowserStartupController::StartBrowserProcessesAsync(
         return;
     }
 
-    assert(0);
     // Browser process has not been fully started yet, so we defer executing the callback.
-//    mAsyncStartupCallbacks->Add(callback);
+    mAsyncStartupCallbacks->Add(TO_IINTERFACE(callback));
 
     if (!mHasStartedInitializingBrowserProcess) {
         // This is the first time we have been asked to start the browser process. We set the
@@ -234,6 +235,7 @@ void BrowserStartupController::StartBrowserProcessesSync(
     assert(mStartupDone);
     if (!mStartupSuccess) {
         //throw new ProcessInitException(LoaderErrors.LOADER_ERROR_NATIVE_STARTUP_FAILED);
+        Logger::E(TAG, "ProcessInitException(LoaderErrors.LOADER_ERROR_NATIVE_STARTUP_FAILED)");
         assert(0);
     }
 }
@@ -255,8 +257,7 @@ void BrowserStartupController::AddStartupCompletedObserver(
         PostStartupCompleted(callback);
     }
     else {
-        assert(0);
-//        mAsyncStartupCallbacks->Add(callback);
+        mAsyncStartupCallbacks->Add(TO_IINTERFACE(callback));
     }
 }
 
@@ -264,12 +265,15 @@ void BrowserStartupController::ExecuteEnqueuedCallbacks(
     /* [in] */ Int32 startupResult,
     /* [in] */ Boolean alreadyStarted)
 {
-    assert(0);
-#if 0
 //    assert ThreadUtils.runningOnUiThread() : "Callback from browser startup from wrong thread.";
     mStartupDone = TRUE;
     mStartupSuccess = (startupResult <= 0);
-    for (StartupCallback asyncStartupCallback : mAsyncStartupCallbacks) {
+    Int32 size;
+    mAsyncStartupCallbacks->GetSize(&size);
+    for(Int32 i = 0; i < size; ++i) {
+        AutoPtr<IInterface> obj;
+        mAsyncStartupCallbacks->Get(i, (IInterface**)&obj);
+        AutoPtr<StartupCallback> asyncStartupCallback = (StartupCallback*)(IObject::Probe(obj));
         if (mStartupSuccess) {
             asyncStartupCallback->OnSuccess(alreadyStarted);
         }
@@ -279,7 +283,6 @@ void BrowserStartupController::ExecuteEnqueuedCallbacks(
     }
     // We don't want to hold on to any objects after we do not need them anymore.
     mAsyncStartupCallbacks->Clear();
-#endif
 }
 
 // Queue the callbacks to run. Since running the callbacks clears the list it is safe to call
@@ -309,7 +312,7 @@ void BrowserStartupController::PostStartupCompleted(
 void BrowserStartupController::PrepareToStartBrowserProcess(
     /* [in] */ Int32 maxRendererProcesses)
 {
-//    Log.i(TAG, "Initializing chromium process, renderers=" + maxRendererProcesses);
+    Logger::V(TAG, "Initializing chromium process, renderers=%d", maxRendererProcesses);
 
     // Normally Main.java will have kicked this off asynchronously for Chrome. But other
     // ContentView apps like tests also need them so we make sure we've extracted resources
@@ -319,8 +322,8 @@ void BrowserStartupController::PrepareToStartBrowserProcess(
 
     // Normally Main.java will have already loaded the library asynchronously, we only need
     // to load it here if we arrived via another flow, e.g. bookmark access & sync setup.
-    assert(0);
-//    LibraryLoader::EnsureInitialized(mContext, TRUE);
+    // do not need this in elastos
+    //LibraryLoader::EnsureInitialized(mContext, TRUE);
 
     // TODO(yfriedman): Remove dependency on a command line flag for this.
     DeviceUtils::AddDeviceSpecificUserAgentSwitch(mContext);

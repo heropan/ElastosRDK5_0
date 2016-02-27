@@ -88,7 +88,7 @@ public:
             /* [in] */ Int32 sensorType);
 
     private:
-        const AutoPtr<ISensorManager> mSensorManager;
+        AutoPtr<ISensorManager> mSensorManager;
     };
 
 private:
@@ -332,12 +332,12 @@ public:
     static const Int32 DEVICE_ORIENTATION = 0;
     static const Int32 DEVICE_MOTION = 1;
 
-    static /*const*/ AutoPtr<ISet> DEVICE_ORIENTATION_SENSORS;
+    static AutoPtr<ISet> DEVICE_ORIENTATION_SENSORS;//IInteger32
 
-    static /*const*/ AutoPtr<ISet> DEVICE_MOTION_SENSORS;
+    static AutoPtr<ISet> DEVICE_MOTION_SENSORS;//IInteger32
 
     //@VisibleForTesting
-    const AutoPtr<ISet> mActiveSensors;
+    AutoPtr<ISet> mActiveSensors;
     Boolean mDeviceMotionIsActive;
     Boolean mDeviceOrientationIsActive;
 
@@ -359,7 +359,7 @@ private:
     Int64 mNativePtr;
 
     // The lock to access the mNativePtr.
-    /*const*/ Object mNativePtrLock;
+    Object mNativePtrLock;
 
     // Holds a shortened version of the rotation vector for compatibility purposes.
     AutoPtr< ArrayOf<Float> > mTruncatedRotationVector;

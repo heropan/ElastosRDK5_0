@@ -25,9 +25,19 @@ namespace Base {
   * Interface to acquire and release anchor views from the implementing View.
   */
 class ViewElastosDelegate
-    : public Object
 {
 public:
+    virtual CARAPI_(UInt32) AddRef() = 0;
+
+    virtual CARAPI_(UInt32) Release() = 0;
+
+    virtual CARAPI_(PInterface) Probe(
+        /* [in] */ REIID riid) = 0;
+
+    virtual CARAPI GetInterfaceID(
+        /* [in] */ IInterface* object,
+        /* [out] */ InterfaceID* iid) = 0;
+
     /**
       * @return An anchor view that can be used to anchor decoration views like Autofill popup.
       */

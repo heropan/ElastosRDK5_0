@@ -125,40 +125,28 @@ ECode SelectActionModeCallback::CreateActionMenu(
 {
     AutoPtr<IMenuInflater> menuInflater;
     mode->GetMenuInflater((IMenuInflater**)&menuInflater);
-    assert(0);
-    // TODO
-    // menuInflater->Inflate(R::menu::select_action_menu, menu);
+    menuInflater->Inflate(R::menu::select_action_menu, menu);
     if (!mEditable || !CanPaste()) {
-        assert(0);
-        // TODO
-        // menu->RemoveItem(R::id::select_action_menu_paste);
+        menu->RemoveItem(R::id::select_action_menu_paste);
     }
 
     if (!mEditable) {
-        assert(0);
-        // TODO
-        // menu->RemoveItem(R::id::select_action_menu_cut);
+        menu->RemoveItem(R::id::select_action_menu_cut);
     }
 
     Boolean bIsShareAvailable;
     mActionHandler->IsShareAvailable(&bIsShareAvailable);
     if (mEditable || !bIsShareAvailable) {
-        assert(0);
-        // TODO
-        // menu->RemoveItem(R::id::select_action_menu_share);
+        menu->RemoveItem(R::id::select_action_menu_share);
     }
 
     Boolean bIsWebSearchAvailable;
     if (mEditable || mIncognito || !(mActionHandler->IsWebSearchAvailable(&bIsWebSearchAvailable), bIsWebSearchAvailable)) {
-        assert(0);
-        // TODO
-        // menu->RemoveItem(R::id::select_action_menu_web_search);
+        menu->RemoveItem(R::id::select_action_menu_web_search);
     }
     if (mIsPasswordType) {
-        assert(0);
-        // TODO
-        // menu->RemoveItem(R::id::select_action_menu_copy);
-        // menu->RemoveItem(R::id::select_action_menu_cut);
+        menu->RemoveItem(R::id::select_action_menu_copy);
+        menu->RemoveItem(R::id::select_action_menu_cut);
     }
 
     return NOERROR;

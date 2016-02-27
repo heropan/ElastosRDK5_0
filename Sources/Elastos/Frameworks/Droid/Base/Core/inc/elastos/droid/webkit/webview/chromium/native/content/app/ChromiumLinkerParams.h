@@ -20,7 +20,8 @@ namespace App {
  * service one when using the chromium linker. For more information, read the
  * technical notes in Linker.java.
  */
-class ChromiumLinkerParams : public Object
+class ChromiumLinkerParams
+    : public Object
 {
 public:
     ChromiumLinkerParams(
@@ -49,14 +50,14 @@ public:
 
 public:
     // Use this base address to load native shared libraries. If 0, ignore other members.
-    /*const*/ Int64 mBaseLoadAddress;
+    Int64 mBaseLoadAddress;
 
     // If true, wait for a shared RELRO Bundle just after loading the libraries.
-    /*const*/ Boolean mWaitForSharedRelro;
+    Boolean mWaitForSharedRelro;
 
     // If not empty, name of Linker.TestRunner implementation that needs to be
     // registered in the service process.
-    /*const*/ String mTestRunnerClassName;
+    String mTestRunnerClassName;
 
 private:
     static const String EXTRA_LINKER_PARAMS_BASE_LOAD_ADDRESS;

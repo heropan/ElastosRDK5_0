@@ -7,6 +7,7 @@
 #include "elastos/droid/webkit/webview/chromium/native/content/browser/BindingManager.h"
 
 using Elastos::Droid::Os::Runnable;
+using Elastos::Droid::Utility::ISparseArray;
 
 // import android.util.Log;
 // import android.util.SparseArray;
@@ -38,6 +39,7 @@ private:
      */
     class ManagedConnection : public Object
     {
+        friend class BindingManagerImpl;
     private:
         class DelayedRunnable
             : public Runnable
@@ -78,7 +80,7 @@ private:
             /* [in] */ BindingManagerImpl* owner,
             /* [in] */ ChildProcessConnection* connection);
 
-        CAR_INTERFACE_DECL()
+        //CAR_INTERFACE_DECL()
 
         /**
          * Sets the visibility of the service, adding or removing the strong binding as needed. This
@@ -203,7 +205,8 @@ private:
     const Boolean mIsLowMemoryDevice;
 
     // This can be manipulated on different threads, synchronize access on mManagedConnections.
-//    const SparseArray<ManagedConnection> mManagedConnections;
+    AutoPtr<ISparseArray> mManagedConnections;// ManagedConnection
+    Object mManagedConnectionsLock;
 
     // The connection that was most recently set as foreground (using setInForeground()). This is
     // used to add additional binding on it when the embedder goes to background. On low-end, this
@@ -213,7 +216,7 @@ private:
 
     // Synchronizes operations that access mLastInForeground: setInForeground() and
     // addNewConnection().
-    const Object mLastInForegroundLock;
+    Object mLastInForegroundLock;
 
     // The connection bound with additional binding in onSentToBackground().
     AutoPtr<ManagedConnection> mBoundForBackgroundPeriod;

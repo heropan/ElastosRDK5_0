@@ -4,11 +4,14 @@
 
 #include "elastos/droid/ext/frameworkext.h"
 #include <elastos/core/Object.h>
+#include "elastos/droid/webkit/webview/chromium/native/content/browser/FileDescriptorInfo.h"
+#include "elastos/droid/webkit/webview/chromium/native/content/app/ChildProcessService.h"
 
 using Elastos::Droid::Os::IBundle;
 
 // import org.chromium.content.common.IChildProcessCallback;
 // import org.chromium.content.common.IChildProcessService;
+using Elastos::Droid::Webkit::Webview::Chromium::Content::App::ChildProcessService;
 
 namespace Elastos {
 namespace Droid {
@@ -24,7 +27,7 @@ namespace Browser {
  * bindings held onto the service (addStrongBinding(), removeStrongBinding(),
  * removeInitialBinding()).
  */
-class ChildProcessConnection : public ElRefBase
+class ChildProcessConnection : public Object
 {
 public:
     /**
@@ -74,7 +77,7 @@ public:
 
     virtual CARAPI_(Boolean) IsInSandbox() = 0;
 
-//    virtual CARAPI_(AutoPtr<IChildProcessService>) GetService() = 0;
+    virtual CARAPI_(AutoPtr<ChildProcessService/*TODO IChildProcessService*/>) GetService() = 0;
 
     /**
      * @return the connection pid, or 0 if not yet connected
@@ -100,12 +103,12 @@ public:
      * @param connectionCallback will be called exactly once after the connection is set up or the
      *                           setup fails
      */
-    // virtual CARAPI_(void) SetupConnection(
-    //     /* [in] */ ArrayOf<String>* commandLine,
-    //     /* [in] */ ArrayOf<FileDescriptorInfo>* filesToBeMapped,
-    //     /* [in] */ IChildProcessCallback* processCallback,
-    //     /* [in] */ ConnectionCallback* connectionCallback,
-    //     /* [in] */ IBundle* sharedRelros) = 0;
+    virtual CARAPI_(void) SetupConnection(
+        /* [in] */ ArrayOf<String>* commandLine,
+        /* [in] */ ArrayOf<FileDescriptorInfo*>* filesToBeMapped,
+        /* [in] */ IInterface/*TODO IChildProcessCallback*/* processCallback,
+        /* [in] */ ConnectionCallback* connectionCallback,
+        /* [in] */ IBundle* sharedRelros) = 0;
 
     /**
      * Terminates the connection to IChildProcessService, closing all bindings. It is safe to call
@@ -159,5 +162,6 @@ public:
 } // namespace Webkit
 } // namespace Droid
 } // namespace Elastos
+DEFINE_CONVERSION_FOR(Elastos::Droid::Webkit::Webview::Chromium::Content::Browser::ChildProcessConnection, IInterface)
 
 #endif//__ELASTOS_DROID_WEBKIT_WEBVIEW_CHROMIUM_CONTENT_BROWSER_CHILDPROCESSCONNECTION_H__

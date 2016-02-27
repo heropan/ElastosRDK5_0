@@ -4,8 +4,9 @@
 
 #include "Elastos.Droid.Content.h"
 #include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/content/BroadcastReceiver.h"
 
-using Elastos::Droid::Content::IBroadcastReceiver;
+using Elastos::Droid::Content::BroadcastReceiver;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Content::IIntent;
 
@@ -23,12 +24,9 @@ namespace Base {
  * declared in its manifest.
  */
 class PowerStatusReceiver
-    //: public Object
-    : public IBroadcastReceiver
+    : public BroadcastReceiver
 {
 public:
-    CAR_INTERFACE_DECL();
-
     //@Override
     CARAPI OnReceive(
         /* [in] */ IContext* context,

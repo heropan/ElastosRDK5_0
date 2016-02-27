@@ -34,6 +34,7 @@ class SelectActionModeCallback
     : public Object
     , public IActionModeCallback
 {
+    friend class ContentViewClient;
 public:
     /**
       * An interface to retrieve information about the current selection, and also to perform

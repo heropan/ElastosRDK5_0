@@ -2,14 +2,11 @@
 #include "elastos/droid/webkit/webview/chromium/native/content/browser/TouchEventSynthesizer.h"
 #include "elastos/droid/webkit/webview/chromium/native/content/api/TouchEventSynthesizer_dec.h"
 #include "elastos/droid/webkit/webview/chromium/native/content/browser/ContentViewCore.h"
-// TODO #include "elastos/droid/view/CPointerCoords.h"
-// TODO #include "elastos/droid/view/CPointerProperties.h"
-// TODO #include "elastos/droid/view/CMotionEventHelper.h"
 #include <elastos/utility/logging/Logger.h>
 
-// TODO using Elastos::Droid::View::CPointerCoords;
-// TODO using Elastos::Droid::View::CPointerProperties;
-// TODO using Elastos::Droid::View::CMotionEventHelper;
+using Elastos::Droid::View::CPointerCoords;
+using Elastos::Droid::View::CPointerProperties;
+using Elastos::Droid::View::CMotionEventHelper;
 using Elastos::Droid::View::IMotionEventHelper;
 using Elastos::Droid::View::IInputEvent;
 using Elastos::Droid::View::EIID_IInputEvent;
@@ -52,18 +49,14 @@ ECode TouchEventSynthesizer::SetPointer(
     Float scaleFactor = mContentViewCore->GetRenderCoordinates()->GetDeviceScaleFactor();
 
     AutoPtr<IPointerCoords> coords;
-    assert(0);
-    // TODO
-    // CPointerCoords::New((IPointerCoords**)&coords);
+    CPointerCoords::New((IPointerCoords**)&coords);
     coords->SetX(scaleFactor * x);
     coords->SetY(scaleFactor * y);
     coords->SetPressure(1.0f);
     (*mPointerCoords)[index] = coords;
 
     AutoPtr<IPointerProperties> properties;
-    assert(0);
-    // TODO
-    // CPointerProperties::New((IPointerProperties**)&properties);
+    CPointerProperties::New((IPointerProperties**)&properties);
     properties->SetId(id);
     (*mPointerProperties)[index] = properties;
 
@@ -76,9 +69,7 @@ ECode TouchEventSynthesizer::Inject(
     /* [in] */ Int64 timeInMs)
 {
     AutoPtr<IMotionEventHelper> motionEventHelper;
-    assert(0);
-    // TODO
-    // CMotionEventHelper::AcquireSingleton((IMotionEventHelper**)&motionEventHelper);
+    CMotionEventHelper::AcquireSingleton((IMotionEventHelper**)&motionEventHelper);
 
     switch (action) {
         case ACTION_START: {

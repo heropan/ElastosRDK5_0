@@ -1,9 +1,10 @@
-
+#include "Elastos.Droid.Content.h"
 #include "elastos/droid/webkit/webview/chromium/native/content/browser/ContentViewClient.h"
 #include "elastos/droid/webkit/webview/chromium/native/content/browser/SelectActionModeCallback.h"
-//#include "elastos/droid/content/CIntentHelper.h"
 
-//using Elastos::Droid::Content::CIntentHelper;
+using Elastos::Droid::Content::IIntent;
+using Elastos::Droid::Content::IIntentHelper;
+using Elastos::Droid::Content::CIntentHelper;
 
 namespace Elastos {
 namespace Droid {
@@ -91,9 +92,7 @@ AutoPtr<IActionModeCallback> ContentViewClient::GetSelectActionModeCallback(
     /* [in] */ SelectActionModeCallback::ActionHandler* actionHandler,
     /* [in] */ Boolean incognito)
 {
-    assert(0);
-//    return new SelectActionModeCallback(context, actionHandler, incognito);
-    return NULL;
+    return new SelectActionModeCallback(context, actionHandler, incognito);
 }
 
 /**
@@ -147,8 +146,6 @@ void ContentViewClient::OnStartContentIntent(
     /* [in] */ IContext* context,
     /* [in] */ const String& intentUrl)
 {
-    assert(0);
-#if 0
     AutoPtr<IIntent> intent;
     // Perform generic parsing of the URI to turn it into an Intent.
     // try {
@@ -161,11 +158,11 @@ void ContentViewClient::OnStartContentIntent(
     // }
 
     // try {
-        context->StartActivity(intent);
+        if( intent != NULL)
+            context->StartActivity(intent);
     // } catch (ActivityNotFoundException ex) {
     //     Log.w(TAG, "No application can handle " + intentUrl);
     // }
-#endif
 }
 
 AutoPtr<ContentVideoViewClient> ContentViewClient::GetContentVideoViewClient()

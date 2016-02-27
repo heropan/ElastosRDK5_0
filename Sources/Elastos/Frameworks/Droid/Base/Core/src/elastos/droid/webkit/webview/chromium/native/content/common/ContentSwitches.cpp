@@ -10,9 +10,9 @@ namespace Content {
 namespace Common {
 
 // Prevent instantiation.
-ContentSwitches::ContentSwitches()
-{
-}
+//ContentSwitches::ContentSwitches()
+//{
+//}
 
 // Tell Java to use the official command line, loaded from the
 // official-command-line.xml files.  WARNING this is not done

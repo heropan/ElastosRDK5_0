@@ -1,9 +1,11 @@
 
 #include "elastos/droid/webkit/webview/chromium/native/content/browser/ContentViewStatics.h"
 #include "elastos/droid/webkit/webview/chromium/native/content/api/ContentViewStatics_dec.h"
-//TODO #include "elastos/droid/webkit/webview/chromium/native/net/ProxyChangeListener.h"
+#include "elastos/droid/webkit/webview/chromium/native/net/ProxyChangeListener.h"
+#include <elastos/utility/logging/Logger.h>
 
-//TODO using Elastos::Droid::Webkit::Webview::Chromium::Net::ProxyChangeListener;
+using Elastos::Droid::Webkit::Webview::Chromium::Net::ProxyChangeListener;
+using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
 namespace Droid {
@@ -25,6 +27,7 @@ String ContentViewStatics::FindAddress(
 {
     if (addr == NULL) {
         //throw new NullPointerException("addr is null");
+        Logger::E("ContentViewStatics::FindAddress", "addr is null");
         assert(0);
     }
 
@@ -52,9 +55,7 @@ void ContentViewStatics::SetWebKitSharedTimersSuspended(
  */
 void ContentViewStatics::EnablePlatformNotifications()
 {
-    assert(0);
-    // TODO
-    // ProxyChangeListener::SetEnabled(TRUE);
+    ProxyChangeListener::SetEnabled(TRUE);
 }
 
 /**
@@ -63,9 +64,7 @@ void ContentViewStatics::EnablePlatformNotifications()
  */
 void ContentViewStatics::DisablePlatformNotifications ()
 {
-    assert(0);
-    // TODO
-    // ProxyChangeListener::SetEnabled(FALSE);
+    ProxyChangeListener::SetEnabled(FALSE);
 }
 
 // Native functions

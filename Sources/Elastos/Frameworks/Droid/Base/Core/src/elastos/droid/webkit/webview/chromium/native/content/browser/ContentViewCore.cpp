@@ -1,9 +1,15 @@
 
 #include "Elastos.Droid.App.h"
+#include "Elastos.Droid.Content.h"
+#include "Elastos.Droid.Graphics.h"
 #include "Elastos.Droid.Provider.h"
 #include "Elastos.Droid.Net.h"
 #include "Elastos.Droid.Os.h"
+#include "Elastos.Droid.Text.h"
+#include "Elastos.Droid.View.h"
+#include "Elastos.Droid.Widget.h"
 #include "Elastos.Droid.Utility.h"
+#include "elastos/droid/webkit/webview/chromium/native/base/ApiCompatibilityUtils.h"
 #include "elastos/droid/webkit/webview/chromium/native/content/browser/ContentViewCore.h"
 #include "elastos/droid/webkit/webview/chromium/native/content/api/ContentViewCore_dec.h"
 #include "elastos/droid/webkit/webview/chromium/native/content/browser/DeviceUtils.h"
@@ -17,42 +23,47 @@
 #include "elastos/droid/webkit/webview/chromium/native/content/common/ContentSwitches.h"
 #include "elastos/droid/webkit/webview/chromium/native/base/CommandLine.h"
 #include "elastos/droid/webkit/webview/chromium/native/base/TraceEvent.h"
-//TODO #include "elastos/droid/content/CIntent.h"
-//TODO #include "elastos/droid/content/CIntentHelper.h"
+#include "elastos/droid/webkit/webview/chromium/native/ui/gfx/DeviceDisplayInfo.h"
+#include "elastos/droid/webkit/webview/chromium/native/content/R_Content.h"
+#include "elastos/droid/Manifest.h"
+//#include "elastos/droid/R.h"
 #include "elastos/droid/text/TextUtils.h"
-//TODO #include "elastos/droid/text/CEditableFactory.h"
-//TODO #include "elastos/droid/text/CSelection.h"
-//TODO #include "elastos/droid/provider/CSettingsSecure.h"
-//TODO #include "elastos/droid/widget/CView.h"
-//TODO #include "elastos/droid/view/CMotionEventHelper.h"
-//TODO #include "elastos/droid/utility/CArrayList.h"
-
 #include <elastos/core/Math.h>
 #include <elastos/core/StringUtils.h>
 #include <elastos/utility/logging/Logger.h>
 
 using Elastos::Droid::App::EIID_IActivity;
 using Elastos::Droid::App::ISearchManager;
-//TODO using Elastos::Droid::Content::CIntent;
-//TODO using Elastos::Droid::Content::CIntentHelper;
+using Elastos::Droid::Content::CIntent;
+using Elastos::Droid::Content::CIntentHelper;
 using Elastos::Droid::Content::IIntentHelper;
+using Elastos::Droid::Graphics::CRect;
+using Elastos::Droid::Os::EIID_IResultReceiver;
 using Elastos::Droid::Os::IBinder;
 using Elastos::Droid::Os::CHandler;
-//TODO using Elastos::Droid::Provider::CSettingsSecure;
+using Elastos::Droid::Provider::CSettingsSecure;
 using Elastos::Droid::Provider::ISettingsSecure;
+//using Elastos::Droid::R;
 using Elastos::Droid::Text::TextUtils;
-//TODO using Elastos::Droid::Text::CSelection;
+using Elastos::Droid::Text::CSelection;
 using Elastos::Droid::Text::ISelection;
-//TODO using Elastos::Droid::Text::CEditableFactory;
+using Elastos::Droid::Text::CEditableFactory;
 using Elastos::Droid::Text::IEditableFactory;
 using Elastos::Droid::Text::ISpannable;
 using Elastos::Droid::Text::EIID_ISpannable;
-//TODO using Elastos::Droid::Widget::CView;
+using Elastos::Droid::Manifest;
+using Elastos::Droid::View::CView;
+using Elastos::Droid::Widget::IFrameLayoutLayoutParams;
+using Elastos::Droid::Widget::CFrameLayoutLayoutParams;
+using Elastos::Droid::Widget::IAbsoluteLayout;
+using Elastos::Droid::Widget::CAbsoluteLayoutLayoutParams;
+using Elastos::Droid::Widget::IAbsoluteLayoutLayoutParams;
 using Elastos::Droid::Utility::IDisplayMetrics;
 using Elastos::Droid::Utility::CPairHelper;
 using Elastos::Droid::Utility::IPair;
 using Elastos::Droid::Utility::IPairHelper;
 
+using Elastos::Droid::Webkit::Webview::Chromium::Base::ApiCompatibilityUtils;
 using Elastos::Droid::Webkit::Webview::Chromium::Content::Common::ContentSwitches;
 using Elastos::Droid::Webkit::Webview::Chromium::Content::Browser::Input::GamepadList;
 using Elastos::Droid::Webkit::Webview::Chromium::Content::Browser::Input::HandleView;
@@ -61,6 +72,8 @@ using Elastos::Droid::Webkit::Webview::Chromium::Content::Browser::Input::Select
 using Elastos::Droid::Webkit::Webview::Chromium::Content::Browser::Input::SelectPopupItem;
 using Elastos::Droid::Webkit::Webview::Chromium::Base::CommandLine;
 using Elastos::Droid::Webkit::Webview::Chromium::Base::TraceEvent;
+using Elastos::Droid::Webkit::Webview::Chromium::Ui::Gfx::DeviceDisplayInfo;
+using Elastos::Droid::Webkit::Webview::Chromium::Content::R;
 
 using Elastos::Droid::View::Accessibility::EIID_IAccessibilityRecord;
 using Elastos::Droid::View::Accessibility::EIID_IAccessibilityManagerAccessibilityStateChangeListener;
@@ -70,11 +83,13 @@ using Elastos::Droid::View::EIID_IInputEvent;
 using Elastos::Droid::View::EIID_IOnTouchModeChangeListener;
 using Elastos::Droid::View::IInputEvent;
 using Elastos::Droid::View::InputMethod::EIID_IInputConnection;
-//TODO using Elastos::Droid::View::CMotionEventHelper;
+using Elastos::Droid::View::CMotionEventHelper;
 using Elastos::Droid::View::IMotionEventHelper;
 using Elastos::Core::StringUtils;
 using Elastos::Core::CString;
+using Elastos::Core::ICharSequence;
 using Elastos::Utility::IList;
+using Elastos::Utility::CArrayList;
 using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
@@ -88,6 +103,7 @@ namespace Browser {
 //===============================================================
 //         ContentViewCore::InnerViewAndroidDelegate
 //===============================================================
+CAR_INTERFACE_IMPL(ContentViewCore::InnerViewAndroidDelegate, Object, IObject);
 
 ContentViewCore::InnerViewAndroidDelegate::InnerViewAndroidDelegate(
     /* [in] */ ContentViewCore* owner)
@@ -99,15 +115,10 @@ ContentViewCore::InnerViewAndroidDelegate::InnerViewAndroidDelegate(
 //@Override
 AutoPtr<IView> ContentViewCore::InnerViewAndroidDelegate::AcquireAnchorView()
 {
-    assert(0);
-#if 0
     AutoPtr<IView> anchorView;
     CView::New(mOwner->mContext, (IView**)&anchorView);
     mContainerViewAtCreation->AddView(anchorView);
     return anchorView;
-#endif
-
-    return NULL;
 }
 
 //@Override
@@ -119,8 +130,6 @@ ECode ContentViewCore::InnerViewAndroidDelegate::SetAnchorViewPosition(
     /* [in] */ Float width,
     /* [in] */ Float height)
 {
-    assert(0);
-#if 0
     AutoPtr<IViewParent> viewParent;
     view->GetParent((IViewParent**)&viewParent);
     if (viewParent == NULL) {
@@ -128,37 +137,40 @@ ECode ContentViewCore::InnerViewAndroidDelegate::SetAnchorViewPosition(
         // already been released.
         return NOERROR;
     }
-    assert(viewParent == mContainerViewAtCreation);
+    //assert(viewParent == mContainerViewAtCreation);
 
-    Float scale = (Float) DeviceDisplayInfo::Create(mContext)->GetDIPScale();
+    Float scale = (Float) DeviceDisplayInfo::Create(mOwner->mContext)->GetDIPScale();
 
     // The anchor view should not go outside the bounds of the ContainerView.
-    Int32 leftMargin = Math::Round(x * scale);
-    Int32 topMargin = Math::Round(mRenderCoordinates->GetContentOffsetYPix() + y * scale);
-    Int32 scaledWidth = Math::Round(width * scale);
+    Int32 leftMargin = Elastos::Core::Math::Round(x * scale);
+    Int32 topMargin = Elastos::Core::Math::Round(mOwner->mRenderCoordinates->GetContentOffsetYPix() + y * scale);
+    Int32 scaledWidth = Elastos::Core::Math::Round(width * scale);
     // ContentViewCore currently only supports these two container view types.
     //if (mContainerViewAtCreation->Probe(EIID_IFrameLayout) != NULL) {
     if (IFrameLayout::Probe(mContainerViewAtCreation) != NULL) {
         Int32 startMargin;
-        if (ApiCompatibilityUtils::IsLayoutRtl(mContainerViewAtCreation)) {
-            startMargin = mContainerViewAtCreation->GetMeasuredWidth()
-                    - Math::Round((width + x) * scale);
+        if (ApiCompatibilityUtils::IsLayoutRtl(IView::Probe(mContainerViewAtCreation))) {
+            Int32 measuredWidth;
+            IView::Probe(mContainerViewAtCreation)->GetMeasuredWidth(&measuredWidth);
+            startMargin = measuredWidth - Elastos::Core::Math::Round((width + x) * scale);
         }
         else {
             startMargin = leftMargin;
         }
 
-        if (scaledWidth + startMargin > mContainerViewAtCreation->GetWidth()) {
-            scaledWidth = mContainerViewAtCreation->GetWidth() - startMargin;
+        Int32 width;
+        IView::Probe(mContainerViewAtCreation)->GetWidth(&width);
+        if (scaledWidth + startMargin > width) {
+            scaledWidth = width - startMargin;
         }
 
         AutoPtr<IFrameLayoutLayoutParams> lp;
         CFrameLayoutLayoutParams::New(
-            scaledWidth, Math::Round(height * scale),
+            scaledWidth, Elastos::Core::Math::Round(height * scale),
             (IFrameLayoutLayoutParams**)&lp);
-        ApiCompatibilityUtils::SetMarginStart(lp, startMargin);
-        lp->SetTopMargin(topMargin);
-        view->SetLayoutParams(lp);
+        ApiCompatibilityUtils::SetMarginStart(IViewGroupMarginLayoutParams::Probe(lp), startMargin);
+        IViewGroupMarginLayoutParams::Probe(lp)->SetTopMargin(topMargin);
+        view->SetLayoutParams(IViewGroupLayoutParams::Probe(lp));
     }
     //else if (mContainerViewAtCreation->Probe(EIID_IAbsoluteLayout) != NULL) {
     else if (IAbsoluteLayout::Probe(mContainerViewAtCreation) != NULL) {
@@ -167,19 +179,19 @@ ECode ContentViewCore::InnerViewAndroidDelegate::SetAnchorViewPosition(
         // TODO(sgurun) fix this to use mContainerViewAtCreation.getScroll[X/Y]()
         // as it naturally accounts for scroll differences between
         // these models.
-        leftMargin += mRenderCoordinates->GetScrollXPixInt();
-        topMargin += mRenderCoordinates->GetScrollYPixInt();
+        leftMargin += mOwner->mRenderCoordinates->GetScrollXPixInt();
+        topMargin += mOwner->mRenderCoordinates->GetScrollYPixInt();
 
         AutoPtr<IAbsoluteLayoutLayoutParams> lp;
         CAbsoluteLayoutLayoutParams::New(
                     scaledWidth, (Int32) (height * scale), leftMargin, topMargin,
                     (IAbsoluteLayoutLayoutParams**)&lp);
-        view->SetLayoutParams(lp);
+        view->SetLayoutParams(IViewGroupLayoutParams::Probe(lp));
     }
     else {
-//        Log.e(TAG, "Unknown layout " + mContainerViewAtCreation.getClass().getName());
+        //Log.e(TAG, "Unknown layout " + mContainerViewAtCreation.getClass().getName());
+        Logger::E(TAG, "Unknow layout");
     }
-#endif
     return NOERROR;
 }
 
@@ -187,8 +199,7 @@ ECode ContentViewCore::InnerViewAndroidDelegate::SetAnchorViewPosition(
 ECode ContentViewCore::InnerViewAndroidDelegate::ReleaseAnchorView(
     /* [in] */ IView* anchorView)
 {
-    assert(0);
-//    mContainerViewAtCreation->RemoveView(anchorView);
+    mContainerViewAtCreation->RemoveView(anchorView);
     return NOERROR;
 }
 
@@ -229,8 +240,7 @@ AutoPtr<IResultReceiver> ContentViewCore::InnerImeAdapterDelegate::GetNewShowKey
 {
     AutoPtr<IHandler> handler;
     CHandler::New((IHandler**)&handler);
-    assert(0);
-    AutoPtr<IResultReceiver> receiver;// = new InnerResultReceiver(this, handler);
+    AutoPtr<IResultReceiver> receiver = new InnerResultReceiver(this, handler);
     return receiver;
 }
 
@@ -239,12 +249,14 @@ AutoPtr<IResultReceiver> ContentViewCore::InnerImeAdapterDelegate::GetNewShowKey
 //==========================================================================
 
 ContentViewCore::InnerImeAdapterDelegate::InnerResultReceiver::InnerResultReceiver(
-    /* [in] */ InnerImeAdapterDelegate* owner)
+    /* [in] */ InnerImeAdapterDelegate* owner,
+    /* [in] */ IHandler* handler)
     : mOwner(owner)
 {
+    ResultReceiver::constructor(handler);
 }
 
-ECode ContentViewCore::InnerImeAdapterDelegate::InnerResultReceiver::OnReceiveResult(
+void ContentViewCore::InnerImeAdapterDelegate::InnerResultReceiver::OnReceiveResult(
     /* [in] */ Int32 resultCode,
     /* [in] */ IBundle* resultData)
 {
@@ -257,17 +269,14 @@ ECode ContentViewCore::InnerImeAdapterDelegate::InnerResultReceiver::OnReceiveRe
         // new size).
         // TODO(jdduke): We should not assume that onSizeChanged will
         // always be called, crbug.com/294908.
-        assert(0);
-//        mOwner->mOwner->GetContainerView()->GetWindowVisibleDisplayFrame(
-//                mFocusPreOSKViewportRect);
+        IView::Probe(mOwner->mOwner->GetContainerView())->GetWindowVisibleDisplayFrame(
+                mOwner->mOwner->mFocusPreOSKViewportRect);
     }
     else if (mOwner->mOwner->HasFocus() && resultCode ==
             IInputMethodManager::RESULT_UNCHANGED_SHOWN) {
         // If the OSK was already there, focus the form immediately.
         mOwner->mOwner->ScrollFocusedEditableNodeIntoView();
     }
-
-    return NOERROR;
 }
 
 //===============================================================
@@ -364,6 +373,7 @@ ECode ContentViewCore::InnerWebContentsObserverAndroid::RenderProcessGone(
 ContentViewCore::InnerOnVisibilityChangedListener::InnerOnVisibilityChangedListener(
     /* [in] */ ContentViewCore* owner)
     : mOwner(owner)
+    , mContainerViewAtCreation(owner->mContainerView)
 {
 }
 
@@ -371,20 +381,20 @@ ContentViewCore::InnerOnVisibilityChangedListener::InnerOnVisibilityChangedListe
 ECode ContentViewCore::InnerOnVisibilityChangedListener::OnPopupZoomerShown(
     /* [in] */ PopupZoomer* zoomer)
 {
-    assert(0);
-//    AutoPtr<IRunnable> runnable = new OnPopupZoomerShownRunnable(this, zoomer);
-//    mContainerViewAtCreation->Post(runnable);
-    return E_NOT_IMPLEMENTED;
+    AutoPtr<IRunnable> runnable = new OnPopupZoomerShownRunnable(this, zoomer);
+    Boolean res;
+    IView::Probe(mContainerViewAtCreation)->Post(runnable, &res);
+    return NOERROR;
 }
 
 //@Override
 ECode ContentViewCore::InnerOnVisibilityChangedListener::OnPopupZoomerHidden(
     /* [in] */ PopupZoomer* zoomer)
 {
-    assert(0);
-//    AutoPtr<IRunnable> runnable = new OnPopupZoomerHiddenRunnable(this, zoomer);
-//    mContainerViewAtCreation->Post(runnable);
-    return E_NOT_IMPLEMENTED;
+    AutoPtr<IRunnable> runnable = new OnPopupZoomerHiddenRunnable(this, zoomer);
+    Boolean res;
+    IView::Probe(mContainerViewAtCreation)->Post(runnable, &res);
+    return NOERROR;
 }
 
 //===========================================================================================
@@ -393,7 +403,7 @@ ECode ContentViewCore::InnerOnVisibilityChangedListener::OnPopupZoomerHidden(
 
 ContentViewCore::InnerOnVisibilityChangedListener::OnPopupZoomerShownRunnable::OnPopupZoomerShownRunnable(
     /* [in] */ InnerOnVisibilityChangedListener* owner,
-    /* [in] */ const PopupZoomer* zoomer)
+    /* [in] */ PopupZoomer* zoomer)
     : mOwner(owner)
     , mZoomer(zoomer)
 {
@@ -401,16 +411,14 @@ ContentViewCore::InnerOnVisibilityChangedListener::OnPopupZoomerShownRunnable::O
 
 ECode ContentViewCore::InnerOnVisibilityChangedListener::OnPopupZoomerShownRunnable::Run()
 {
-    assert(0);
-#if 0
-    if (mContainerViewAtCreation->IndexOfChild(mZoomer) == -1) {
-        mContainerViewAtCreation->AddView(mZoomer);
+    Int32 index;
+    if ((mOwner->mContainerViewAtCreation->IndexOfChild(mZoomer, &index), index) == -1) {
+        mOwner->mContainerViewAtCreation->AddView(IView::Probe(mZoomer));
     }
     else {
         assert(0);
 //        assert false : "PopupZoomer should never be shown without being hidden";
     }
-#endif
 
     return NOERROR;
 }
@@ -421,7 +429,7 @@ ECode ContentViewCore::InnerOnVisibilityChangedListener::OnPopupZoomerShownRunna
 
 ContentViewCore::InnerOnVisibilityChangedListener::OnPopupZoomerHiddenRunnable::OnPopupZoomerHiddenRunnable(
     /* [in] */ InnerOnVisibilityChangedListener* owner,
-    /* [in] */ const PopupZoomer* zoomer)
+    /* [in] */ PopupZoomer* zoomer)
     : mOwner(owner)
     , mZoomer(zoomer)
 {
@@ -429,17 +437,15 @@ ContentViewCore::InnerOnVisibilityChangedListener::OnPopupZoomerHiddenRunnable::
 
 ECode ContentViewCore::InnerOnVisibilityChangedListener::OnPopupZoomerHiddenRunnable::Run()
 {
-    assert(0);
-#if 0
-    if (mContainerViewAtCreation->IndexOfChild(zoomer) != -1) {
-        mContainerViewAtCreation->RemoveView(zoomer);
-        mContainerViewAtCreation->Invalidate();
+    Int32 index;
+    if ((mOwner->mContainerViewAtCreation->IndexOfChild(mZoomer, &index), index) != -1) {
+        mOwner->mContainerViewAtCreation->RemoveView(IView::Probe(mZoomer));
+        IView::Probe(mOwner->mContainerViewAtCreation)->Invalidate();
     }
     else {
         assert(0);
 //        assert false : "PopupZoomer should never be hidden without being shown";
     }
-#endif
 
     return NOERROR;
 }
@@ -461,19 +467,16 @@ Boolean ContentViewCore::InnerOnTapListener::OnSingleTap(
     /* [in] */ IView* v,
     /* [in] */ IMotionEvent* e)
 {
-    assert(0);
-#if 0
-    mContainerViewAtCreation->RequestFocus();
+    Boolean res;
+    IView::Probe(mContainerViewAtCreation)->RequestFocus(&res);
     if (mOwner->mNativeContentViewCore != 0) {
         Int64 time;
         Float x, y;
-        e->GetEventTime(&time);
+        IInputEvent::Probe(e)->GetEventTime(&time);
         e->GetX(&x);
         e->GetY(&y);
-        if (mOwner->NativeSingleTap(mNativeContentViewCore, time, x, y);
+        mOwner->NativeSingleTap(mOwner->mNativeContentViewCore, time, x, y);
     }
-#endif
-
     return TRUE;
 }
 
@@ -482,18 +485,14 @@ Boolean ContentViewCore::InnerOnTapListener::OnLongPress(
     /* [in] */ IView* v,
     /* [in] */ IMotionEvent* e)
 {
-    assert(0);
-#if 0
     if (mOwner->mNativeContentViewCore != 0) {
         Int64 time;
-        Int32 x, y;
-        e->GetEventTime(&time);
+        Float x, y;
+        IInputEvent::Probe(e)->GetEventTime(&time);
         e->GetX(&x);
         e->GetY(&y);
         mOwner->NativeLongPress(mOwner->mNativeContentViewCore, time, x, y);
     }
-#endif
-
     return TRUE;
 }
 
@@ -512,8 +511,7 @@ ContentViewCore::FakeMouseMoveRunnable::FakeMouseMoveRunnable(
 ECode ContentViewCore::FakeMouseMoveRunnable::Run()
 {
     mOwner->OnHoverEvent(mEventFakeMouseMove);
-    assert(0);
-//    mEventFakeMouseMove->Recycle();
+    IInputEvent::Probe(mEventFakeMouseMove)->Recycle();
     return NOERROR;
 }
 
@@ -597,10 +595,8 @@ void ContentViewCore::InnerInsertionHandleController::Paste()
 //@Override
 Int32 ContentViewCore::InnerInsertionHandleController::GetLineHeight()
 {
-    assert(0);
-//    return (Int32) Math::Ceil(
-//        mRenderCoordinates->FromLocalCssToPix(AVERAGE_LINE_HEIGHT));
-    return 0;
+    return (Int32) Elastos::Core::Math::Ceil(
+        mOwner->mRenderCoordinates->FromLocalCssToPix(AVERAGE_LINE_HEIGHT));
 }
 
 //@Override
@@ -656,20 +652,18 @@ ECode ContentViewCore::InnerActionHandler::Share()
     }
 
     AutoPtr<IIntent> send;
-    // TODO
-//    CIntent::New(IIntent::ACTION_SEND, (IIntent**)&send);
+    CIntent::New(IIntent::ACTION_SEND, (IIntent**)&send);
     send->SetType(String("text/plain"));
     send->PutExtra(IIntent::EXTRA_TEXT, query);
     // try {
         AutoPtr<IIntentHelper> helper;
-        // TODO
-        //CIntentHelper::AcquireSingleton((IIntentHelper**)&helper);
+        CIntentHelper::AcquireSingleton((IIntentHelper**)&helper);
         AutoPtr<IIntent> i;
         String str;
-        //TODO
-        assert(0);
-//        mOwner->GetContext()->GetString(R::string::actionbar_share, &str);
-//        helper->CreateChooser(send, str, (IIntent**)&i);
+        mOwner->GetContext()->GetString(R::string::actionbar_share, &str);
+        AutoPtr<ICharSequence> cs;
+        CString::New(str, (ICharSequence**)&cs);
+        helper->CreateChooser(send, cs, (IIntent**)&i);
         i->SetFlags(IIntent::FLAG_ACTIVITY_NEW_TASK);
         mOwner->GetContext()->StartActivity(i);
     // } catch (android.content.ActivityNotFoundException ex) {
@@ -694,8 +688,7 @@ ECode ContentViewCore::InnerActionHandler::Search()
     }
 
     AutoPtr<IIntent> i;
-    // TODO
-//    CIntent::New(IIntent::ACTION_WEB_SEARCH, (IIntent**)&i);
+    CIntent::New(IIntent::ACTION_WEB_SEARCH, (IIntent**)&i);
     i->PutExtra(ISearchManager::EXTRA_NEW_SEARCH, TRUE);
     i->PutExtra(ISearchManager::QUERY, query);
     String name;
@@ -752,8 +745,7 @@ ECode ContentViewCore::InnerActionHandler::IsShareAvailable(
     VALIDATE_NOT_NULL(result);
 
     AutoPtr<IIntent> intent;
-    // TODO
-    //CIntent::New(IIntent::ACTION_SEND, (IIntent**)&intent);
+    CIntent::New(IIntent::ACTION_SEND, (IIntent**)&intent);
     intent->SetType(String("text/plain"));
     AutoPtr<IPackageManager> pm;
     mOwner->GetContext()->GetPackageManager((IPackageManager**)&pm);
@@ -781,8 +773,7 @@ ECode ContentViewCore::InnerActionHandler::IsWebSearchAvailable(
     }
 
     AutoPtr<IIntent> intent;
-    // TODO
-    //CIntent::New(IIntent::ACTION_WEB_SEARCH, (IIntent**)&intent);
+    CIntent::New(IIntent::ACTION_WEB_SEARCH, (IIntent**)&intent);
     intent->PutExtra(ISearchManager::EXTRA_NEW_SEARCH, TRUE);
     AutoPtr<IPackageManager> pm;
     mOwner->GetContext()->GetPackageManager((IPackageManager**)&pm);
@@ -940,12 +931,12 @@ ContentViewCore::ContentViewCore(
     mGestureStateListenersIterator = mGestureStateListeners.GetRewindableIterator();
 
     AutoPtr<IEditableFactory> factory;
-    // TODO
-    //CEditableFactory::AcquireSingleton((IEditableFactory**)&factory);
-    //factory->NewEditable(String(""), (IEditable**)&mEditable);
+    CEditableFactory::AcquireSingleton((IEditableFactory**)&factory);
+    AutoPtr<ICharSequence> cs;
+    CString::New(String(""), (ICharSequence**)&cs);
+    factory->NewEditable(cs, (IEditable**)&mEditable);
     AutoPtr<ISelection> select;
-    // TODO
-    //CSelection::AcquireSingleton((ISelection**)&select);
+    CSelection::AcquireSingleton((ISelection**)&select);
     AutoPtr<ISpannable> spannable = ISpannable::Probe(mEditable);
     select->SetSelection2(spannable, 0);
 }
@@ -1120,20 +1111,21 @@ void ContentViewCore::SetContainerView(
     AutoPtr<IView> view = IView::Probe(mContainerView);
     mPositionObserver = new ViewPositionObserver(view);
     String contentDescription("Web View");
-    assert(0);
-// TODO
-//    if (R::string::accessibility_content_view == 0) {
-//        Log.w(TAG, "Setting contentDescription to 'Web View' as no value was specified.");
-//    }
-//    else {
-//        AutoPtr<IResources> res;
-//        mContext->GetResources((IResources**)&res);
-//        res->GetString(
-//                R::string::accessibility_content_view,
-//                &contentDescription);
-//    }
 
-//    view->SetContentDescription(contentDescription);
+    if (R::string::accessibility_content_view == 0) {
+        Logger::W(TAG, "Setting contentDescription to 'Web View' as no value was specified.");
+    }
+    else {
+        AutoPtr<IResources> res;
+        mContext->GetResources((IResources**)&res);
+        res->GetString(
+                R::string::accessibility_content_view,
+                &contentDescription);
+    }
+
+    AutoPtr<ICharSequence> desCS;
+    CString::New(contentDescription, (ICharSequence**)&desCS);
+    view->SetContentDescription(desCS);
     view->SetWillNotDraw(FALSE);
     view->SetClickable(TRUE);
     TraceEvent::End();
@@ -1184,11 +1176,9 @@ void ContentViewCore::Destroy()
     }
 
     mWebContents = NULL;
-    assert(0);
-    // TODO
-    // if (mViewElastos != NULL) {
-    //     mViewElastos->Destroy();
-    // }
+    if (mViewElastos != NULL) {
+         mViewElastos->Destroy();
+    }
     mNativeContentViewCore = 0;
     mContentSettings = NULL;
     mJavaScriptInterfaces->Clear();
@@ -1235,6 +1225,7 @@ void ContentViewCore::SetContentViewClient(
 {
     if (client == NULL) {
         //throw new IllegalArgumentException("The client can't be null.");
+        Logger::E(TAG, "The client can't be null.");
         assert(0);
     }
 
@@ -1715,10 +1706,8 @@ Boolean ContentViewCore::OnTouchEvent(
 
         Int32 pointerCount;
         event->GetPointerCount(&pointerCount);
-        Int32 eventTime;
-        assert(0);
-        // TODO
-        // event->GetEventTime(&eventTime);
+        Int64 eventTime;
+        IInputEvent::Probe(event)->GetEventTime(&eventTime);
         Int32 historySize;
         event->GetHistorySize(&historySize);
         Int32 actionIndex;
@@ -1761,10 +1750,10 @@ Boolean ContentViewCore::OnTouchEvent(
             inputEvent->Recycle();
         }
 
-        return consumed;
     // } finally {
          TraceEvent::End(String("onTouchEvent"));
     // }
+        return consumed;
 }
 
 void ContentViewCore::SetIgnoreRemainingTouchEvents()
@@ -2320,9 +2309,7 @@ void ContentViewCore::UpdateAfterSizeChanged()
     mFocusPreOSKViewportRect->IsEmpty(&isEmpty);
     if (!isEmpty) {
         AutoPtr<IRect> rect;
-        assert(0);
-        // TODO
-        // CRect::New((IRect**)&rect);
+        CRect::New((IRect**)&rect);
         AutoPtr<IView> view = IView::Probe(GetContainerView());
         view->GetWindowVisibleDisplayFrame(rect);
         Boolean bFlag = FALSE;
@@ -2416,10 +2403,10 @@ Boolean ContentViewCore::DispatchKeyEventPreIme(
     /* [in] */ IKeyEvent* event)
 {
     // try {
-        TraceEvent::Begin();
+        //TraceEvent::Begin();
         return mContainerViewInternals->Super_dispatchKeyEventPreIme(event);
     // } finally {
-        TraceEvent::End();
+        //TraceEvent::End();
     // }
 }
 
@@ -2470,9 +2457,8 @@ Boolean ContentViewCore::OnHoverEvent(
         }
 
         AutoPtr<IView> view = IView::Probe(mContainerView);
-        // assert(0);
-        // TODO
-        // view->RemoveCallbacks(mFakeMouseMoveRunnable);
+        Boolean res;
+        view->RemoveCallbacks(mFakeMouseMoveRunnable, &res);
         if (mNativeContentViewCore != 0) {
             Int64 time;
             inputEvent->GetEventTime(&time);
@@ -2524,16 +2510,13 @@ Boolean ContentViewCore::OnGenericMotionEvent(
                         x, y,
                         value);
 
-                assert(0);
-                // TODO
-                // mContainerView->RemoveCallbacks(mFakeMouseMoveRunnable);
+                Boolean res;
+                IView::Probe(mContainerView)->RemoveCallbacks(mFakeMouseMoveRunnable, &res);
 
                 // Send a delayed onMouseMove event so that we end
                 // up hovering over the right position after the scroll.
                 AutoPtr<IMotionEventHelper> helper;
-                assert(0);
-                // TODO
-                // CMotionEventHelper::AcquireSingleton((IMotionEventHelper**)&helper);
+                CMotionEventHelper::AcquireSingleton((IMotionEventHelper**)&helper);
                 AutoPtr<IMotionEvent> eventFakeMouseMove;
                 helper->Obtain(event, (IMotionEvent**)&eventFakeMouseMove);
                 mFakeMouseMoveRunnable = new FakeMouseMoveRunnable(this, eventFakeMouseMove);
@@ -2566,9 +2549,7 @@ AutoPtr<IMotionEvent> ContentViewCore::CreateOffsetMotionEvent(
 {
     AutoPtr<IMotionEvent> dst;
     AutoPtr<IMotionEventHelper> helper;
-    // assert(0);
-    // TODO
-    // CMotionEventHelper::AcquireSingleton((IMotionEventHelper**)&helper);
+    CMotionEventHelper::AcquireSingleton((IMotionEventHelper**)&helper);
     helper->Obtain(src, (IMotionEvent**)&dst);
     dst->OffsetLocation(mCurrentTouchOffsetX, mCurrentTouchOffsetY);
     return dst;
@@ -2946,11 +2927,11 @@ Boolean ContentViewCore::GetUseDesktopUserAgent()
  * @param reloadOnChange Reload the page if the UA has changed.
  */
 void ContentViewCore::SetUseDesktopUserAgent(
-    /* [in] */ Boolean override,
+    /* [in] */ Boolean _override,
     /* [in] */ Boolean reloadOnChange)
 {
     if (mNativeContentViewCore != 0) {
-        NativeSetUseDesktopUserAgent(mNativeContentViewCore, override, reloadOnChange);
+        NativeSetUseDesktopUserAgent(mNativeContentViewCore, _override, reloadOnChange);
     }
 }
 
@@ -3013,9 +2994,8 @@ void ContentViewCore::ScheduleTextHandleFadeIn()
     }
 
     AutoPtr<IView> view = IView::Probe(mContainerView);
-    // assert(0);
-    // TODO
-    // view->RemoveCallbacks(mDeferredHandleFadeInRunnable);
+    Boolean res;
+    view->RemoveCallbacks(mDeferredHandleFadeInRunnable, &res);
     Boolean result;
     view->PostDelayed(mDeferredHandleFadeInRunnable, TEXT_HANDLE_FADE_IN_DELAY, &result);
 }
@@ -3220,12 +3200,10 @@ void ContentViewCore::ShowSelectPopup(
     assert(items->GetLength() == enabled->GetLength());
     //List<SelectPopupItem> popupItems = new ArrayList<SelectPopupItem>();
     AutoPtr<IList> popupItems;
-    // assert(0);
-    // TODO
-    // CArrayList::New((IList**)&popupItems);
+    CArrayList::New((IList**)&popupItems);
     for (Int32 i = 0; i < items->GetLength(); i++) {
         AutoPtr<SelectPopupItem> item = new SelectPopupItem((*items)[i], (*enabled)[i]);
-        //popupItems.add(new SelectPopupItem(items[i], enabled[i]));
+        //popupItems->Add(new SelectPopupItem((*items)[i], (*enabled)[i]));
         Boolean modified;
         AutoPtr<IObject> iItem = IObject::Probe(TO_IINTERFACE(item));
         popupItems->Add(iItem, &modified);
@@ -3587,9 +3565,9 @@ void ContentViewCore::AddJavascriptInterface(
     /* [in] */ IInterface* object,
     /* [in] */ const String& name)
 {
-    assert(0);
-    // TODO
-    // AddPossiblyUnsafeJavascriptInterface(object, name, JavascriptInterface.class);
+    // NULL means expose all methods to javascript
+    // need update to expose the expected methods only
+    AddPossiblyUnsafeJavascriptInterface(object, name, NULL/*TODO JavascriptInterface.class*/);
 }
 
 /**
@@ -3660,9 +3638,9 @@ void ContentViewCore::AddPossiblyUnsafeJavascriptInterface(
 void ContentViewCore::RemoveJavascriptInterface(
     /* [in] */ const String& name)
 {
-    assert(0);
-    // TODO
-    // mJavaScriptInterfaces->Remove(name);
+    AutoPtr<ICharSequence> csname;
+    CString::New(name, (ICharSequence**)&csname);
+    mJavaScriptInterfaces->Remove(TO_IINTERFACE(csname));
     if (mNativeContentViewCore != 0) {
         NativeRemoveJavascriptInterface(mNativeContentViewCore, name);
     }
@@ -3803,9 +3781,9 @@ void ContentViewCore::OnInitializeAccessibilityEvent(
     /* [in] */ IAccessibilityEvent* event)
 {
     // Note: this is only used by the script-injecting accessibility code.
-    assert(0);
-    // TODO
-    // event->SetClassName(this.getClass().getName());
+    AutoPtr<ICharSequence> csClassName;
+    CString::New(String("ContentViewCore"), (ICharSequence**)&csClassName);
+    IAccessibilityRecord::Probe(event)->SetClassName(csClassName);
 
     // Identify where the top-left of the screen currently points to.
     AutoPtr<IAccessibilityRecord> record = IAccessibilityRecord::Probe(event);
@@ -3845,26 +3823,21 @@ Boolean ContentViewCore::IsDeviceAccessibilityScriptInjectionEnabled()
         }
 
         Int32 result;
-        assert(0);
-        // TODO
-        // GetContext()->CheckCallingOrSelfPermission(
-        //         android::Manifest::permission::INTERNET, &result);
+        AutoPtr<IContext> context = GetContext();
+        context->CheckCallingOrSelfPermission(
+                 Manifest::permission::INTERNET, &result);
         if (result != IPackageManager::PERMISSION_GRANTED) {
             return FALSE;
         }
 
-        assert(0);
-        // TODO
         // Field field = Settings.Secure.class.getField("ACCESSIBILITY_SCRIPT_INJECTION");
         // field.setAccessible(true);
-        String accessibilityScriptInjection;//TODO = (String) field.get(null);
+        String accessibilityScriptInjection = ISettingsSecure::ACCESSIBILITY_SCRIPT_INJECTION;
         AutoPtr<IContentResolver> contentResolver;
         GetContext()->GetContentResolver((IContentResolver**)&contentResolver);
 
         AutoPtr<ISettingsSecure> settingsSecure;
-        assert(0);
-        // TODO
-        // CSettingsSecure::AcquireSingleton((ISettingsSecure**)&settingsSecure);
+        CSettingsSecure::AcquireSingleton((ISettingsSecure**)&settingsSecure);
         if (mAccessibilityScriptInjectionObserver == NULL) {
             AutoPtr<IHandler> handle;
             CHandler::New((IHandler**)&handle);
@@ -4012,9 +3985,8 @@ void ContentViewCore::AddToNavigationHistory(
     AutoPtr<NavigationEntry> entry = new NavigationEntry(
             index, url, virtualUrl, originalUrl, title, favicon);
 
-    assert(0);
     // TODO don't kown (NavigationHistory*)history to (IInterface*) history way
-    // ((NavigationHistory*) history)->AddEntry(entry);
+    ((NavigationHistory*)(IObject::Probe(history)))->AddEntry(entry);
 }
 
 /**
@@ -4024,10 +3996,8 @@ AutoPtr<NavigationHistory> ContentViewCore::GetNavigationHistory()
 {
     AutoPtr<NavigationHistory> history = new NavigationHistory();
     if (mNativeContentViewCore != 0) {
-        assert(0);
-        // TODO
-        // Int32 currentIndex = NativeGetNavigationHistory(mNativeContentViewCore, history);
-        // history->SetCurrentEntryIndex(currentIndex);
+        Int32 currentIndex = NativeGetNavigationHistory(mNativeContentViewCore, TO_IINTERFACE(history));
+        history->SetCurrentEntryIndex(currentIndex);
     }
 
     return history;
@@ -4075,9 +4045,7 @@ AutoPtr<IInterface> ContentViewCore::CreateRect(
     /* [in] */ Int32 bottom)
 {
     AutoPtr<IRect> rect;
-    assert(0);
-    // TODO
-    // CRect::New(x, y, right, bottomj, (IRect**)&rect);
+    CRect::New(x, y, right, bottom, (IRect**)&rect);
     return TO_IINTERFACE(rect);
 }
 

@@ -2,15 +2,14 @@
 #include <Elastos.CoreLibrary.Utility.h>
 #include "Elastos.Droid.Content.h"
 #include "Elastos.Droid.Os.h"
-#include <elastos/utility/logging/Slogger.h>
 #include "elastos/droid/webkit/webview/chromium/native/base/ThreadUtils.h"
 #include "elastos/droid/webkit/webview/chromium/native/content/browser/LocationProviderFactory.h"
 #include "elastos/droid/webkit/webview/chromium/native/content/browser/LocationProviderAdapter.h"
-//TODO #include "elastos/droid/location/CCriteria.h"
+#include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Core::ICharSequence;
 using Elastos::Droid::Webkit::Webview::Chromium::Base::ThreadUtils;
-//TODO using Elastos::Droid::Location::CCriteria;
+using Elastos::Droid::Location::CCriteria;
 using Elastos::Droid::Location::EIID_ILocationListener;
 using Elastos::Utility::IList;
 using Elastos::Utility::Logging::Slogger;
@@ -173,9 +172,7 @@ ECode LocationProviderFactory::LocationProviderImpl::RegisterForLocationUpdates(
     // bounce notifications to the Geolocation thread as they arrive in the mainLooper.
     // try {
         AutoPtr<ICriteria> criteria;
-        assert(0);
-        // TODO
-        // CCriteria::New((ICriteria**)&criteria);
+        CCriteria::New((ICriteria**)&criteria);
         mLocationManager->RequestLocationUpdates(0, 0, criteria, this,
                ThreadUtils::GetUiThreadLooper());
         if (isGpsEnabled) {

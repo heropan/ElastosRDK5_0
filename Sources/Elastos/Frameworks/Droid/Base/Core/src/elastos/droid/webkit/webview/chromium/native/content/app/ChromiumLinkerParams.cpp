@@ -61,15 +61,12 @@ void ChromiumLinkerParams::AddIntentExtras(
 // For debugging traces only.
 String ChromiumLinkerParams::ToString()
 {
-    assert(0);
-    // TODO
-    // return String.format(
-    //         "LinkerParams(baseLoadAddress:0x%x, waitForSharedRelro:%s, " +
-    //                 "testRunnerClassName:%s",
-    //         mBaseLoadAddress,
-    //         mWaitForSharedRelro ? "true" : "false",
-    //         mTestRunnerClassName);
-    return String(NULL);
+    String str1;
+    str1.AppendFormat("LinkerParams(baseLoadAddress:0x%x, waitForSharedRelro:%s, ",
+            mBaseLoadAddress, mWaitForSharedRelro ? "true" : "false");
+    String str2;
+    str2.AppendFormat("testRunnerClassName:%s", mTestRunnerClassName.string());
+    return str1 + str2;
 }
 
 } // namespace App

@@ -4,6 +4,7 @@
 
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/webkit/webview/chromium/native/content/browser/ContentVideoView.h"
+#include "elastos/droid/widget/MediaController.h"
 
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Graphics::IColor;
@@ -15,6 +16,7 @@ using Elastos::Droid::View::IView;
 using Elastos::Droid::View::IViewOnKeyListener;
 using Elastos::Droid::View::IViewOnTouchListener;
 using Elastos::Droid::Widget::IMediaController;
+using Elastos::Droid::Widget::MediaController;
 using Elastos::Droid::Widget::IMediaPlayerControl;
 
 namespace Elastos {
@@ -52,8 +54,7 @@ public:
 
 private:
     class FullScreenMediaController
-        : public Object
-        , public IMediaController
+        : public MediaController
     {
     public:
         /**
@@ -65,8 +66,6 @@ private:
             /* [in] */ IContext* context,
             /* [in] */ IView* video,
             /* [in] */ MediaControlsVisibilityListener* listener);
-
-        CAR_INTERFACE_DECL();
 
         //@Override
         CARAPI Show();

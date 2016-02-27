@@ -1,9 +1,14 @@
-
 #include "Elastos.Droid.Os.h"
 #include "elastos/droid/webkit/webview/chromium/native/content/browser/ContentView.h"
 #include "elastos/droid/webkit/webview/chromium/native/content/browser/JellyBeanContentView.h"
+#include "elastos/droid/webkit/webview/chromium/native/base/TraceEvent.h"
+#include "elastos/droid/R.h"
 
 using Elastos::Droid::Os::CBundle;
+using Elastos::Droid::Os::CMessageHelper;
+using Elastos::Droid::Os::IMessageHelper;
+using Elastos::Droid::Webkit::Webview::Chromium::Base::TraceEvent;
+using Elastos::Droid::R;
 
 namespace Elastos {
 namespace Droid {
@@ -19,7 +24,7 @@ namespace Browser {
 
 ContentView::InnerSmartClipDataListener::InnerSmartClipDataListener(
     /* [in] */ ContentView* owner,
-    /* [in] */ const IHandler* resultHandler)
+    /* [in] */ IHandler* resultHandler)
     : mOwner(owner)
     , mResultHandler(resultHandler)
 {
@@ -30,13 +35,11 @@ void ContentView::InnerSmartClipDataListener::OnSmartClipDataExtracted(
     /* [in] */ const String& html,
     /* [in] */ IRect* clipRect)
 {
-    assert(0);
-#if 0
     AutoPtr<IBundle> bundle;
     CBundle::New((IBundle**)&bundle);
-    bundle->PutString(String("url"), mContentViewCore->GetWebContents()->GetVisibleUrl());
-    bundle->PutString(String("title"), mContentViewCore->GetWebContents()->GetTitle());
-    bundle->PutParcelable(String("rect"), clipRect);
+    bundle->PutString(String("url"), mOwner->mContentViewCore->GetWebContents()->GetVisibleUrl());
+    bundle->PutString(String("title"), mOwner->mContentViewCore->GetWebContents()->GetTitle());
+    bundle->PutParcelable(String("rect"), IParcelable::Probe(clipRect));
     bundle->PutString(String("text"), text);
     bundle->PutString(String("html"), html);
     // try {
@@ -49,7 +52,6 @@ void ContentView::InnerSmartClipDataListener::OnSmartClipDataExtracted(
     // } catch (Exception e) {
     //     Log.e(TAG, "Error calling handler for smart clip data: ", e);
     // }
-#endif
 }
 
 //===============================================================
@@ -62,11 +64,10 @@ ContentView::ContentView(
     /* [in] */ IContext* context,
     /* [in] */ ContentViewCore* cvc)
 {
-    assert(0);
-#if 0
-    super(context, NULL, android::R::attr::webViewStyle);
+    FrameLayout::constructor(context, NULL, R::attr::webViewStyle);
 
-    if (GetScrollBarStyle() == IView::SCROLLBARS_INSIDE_OVERLAY) {
+    Int32 barStyle;
+    if ((GetScrollBarStyle(&barStyle), barStyle) == IView::SCROLLBARS_INSIDE_OVERLAY) {
         SetHorizontalScrollBarEnabled(FALSE);
         SetVerticalScrollBarEnabled(FALSE);
     }
@@ -75,9 +76,9 @@ ContentView::ContentView(
     SetFocusableInTouchMode(TRUE);
 
     mContentViewCore = cvc;
-#endif
 }
 
+CAR_INTERFACE_IMPL(ContentView, FrameLayout, IObject)
 /**
  * Creates an instance of a ContentView.
  * @param context The Context the view is running in, through which it can
@@ -95,6 +96,7 @@ AutoPtr<ContentView> ContentView::NewInstance(
     else {
         return new JellyBeanContentView(context, cvc);
     }
+    return NULL;
 }
 
 // Needed by ContentViewCore.InternalAccessDelegate
@@ -104,9 +106,7 @@ Boolean ContentView::DrawChild(
     /* [in] */ IView* child,
     /* [in] */ Int64 drawingTime)
 {
-    assert(0);
-//    return super.drawChild(canvas, child, drawingTime);
-    return FALSE;
+    return FrameLayout::DrawChild(canvas, child, drawingTime);
 }
 
 // Needed by ContentViewCore.InternalAccessDelegate
@@ -117,8 +117,7 @@ void ContentView::OnScrollChanged(
     /* [in] */ Int32 oldl,
     /* [in] */ Int32 oldt)
 {
-    assert(0);
-//    super.onScrollChanged(l, t, oldl, oldt);
+    FrameLayout::OnScrollChanged(l, t, oldl, oldt);
 }
 
 //@Override
@@ -128,13 +127,10 @@ void ContentView::OnSizeChanged(
     /* [in] */ Int32 ow,
     /* [in] */ Int32 oh)
 {
-    assert(0);
-#if 0
     TraceEvent::Begin();
-    super.onSizeChanged(w, h, ow, oh);
+    FrameLayout::OnSizeChanged(w, h, ow, oh);
     mContentViewCore->OnSizeChanged(w, h, ow, oh);
     TraceEvent::End();
-#endif
 }
 
 //@Override
@@ -156,24 +152,19 @@ void ContentView::OnFocusChanged(
     /* [in] */ Int32 direction,
     /* [in] */ IRect* previouslyFocusedRect)
 {
-    assert(0);
-#if 0
     TraceEvent::Begin();
-    super.onFocusChanged(gainFocus, direction, previouslyFocusedRect);
+    FrameLayout::OnFocusChanged(gainFocus, direction, previouslyFocusedRect);
     mContentViewCore->OnFocusChanged(gainFocus);
     TraceEvent::End();
-#endif
 }
 
 //@Override
-void ContentView::OnWindowFocusChanged(
+ECode ContentView::OnWindowFocusChanged(
     /* [in] */ Boolean hasWindowFocus)
 {
-    assert(0);
-#if 0
-    super.onWindowFocusChanged(hasWindowFocus);
+    FrameLayout::OnWindowFocusChanged(hasWindowFocus);
     mContentViewCore->OnWindowFocusChanged(hasWindowFocus);
-#endif
+    return NOERROR;
 }
 
 //@Override
@@ -195,16 +186,15 @@ Boolean ContentView::DispatchKeyEventPreIme(
 Boolean ContentView::DispatchKeyEvent(
     /* [in] */ IKeyEvent* event)
 {
-    assert(0);
-#if 0
-    if (IsFocused()) {
+    Boolean isFocused;
+    if (IsFocused(&isFocused), isFocused) {
         return mContentViewCore->DispatchKeyEvent(event);
     }
     else {
-        return super.dispatchKeyEvent(event);
+        Boolean res;
+        FrameLayout::DispatchKeyEvent(event, &res);
+        return res;
     }
-#endif
-
     return FALSE;
 }
 
@@ -226,8 +216,8 @@ Boolean ContentView::OnHoverEvent(
 {
     Boolean consumed = mContentViewCore->OnHoverEvent(event);
     if (!mContentViewCore->IsTouchExplorationEnabled()) {
-        assert(0);
-//        super.onHoverEvent(event);
+        Boolean res;
+        FrameLayout::OnHoverEvent(event, &res);
     }
     return consumed;
 }
@@ -259,19 +249,21 @@ void ContentView::OnConfigurationChanged(
  * (0, 0). This is critical for drawing ContentView correctly.
  */
 //@Override
-void ContentView::ScrollBy(
+ECode ContentView::ScrollBy(
     /* [in] */ Int32 x,
     /* [in] */ Int32 y)
 {
     mContentViewCore->ScrollBy(x, y);
+    return NOERROR;
 }
 
 //@Override
-void ContentView::ScrollTo(
+ECode ContentView::ScrollTo(
     /* [in] */ Int32 x,
     /* [in] */ Int32 y)
 {
     mContentViewCore->ScrollTo(x, y);
+    return NOERROR;
 }
 
 //@Override
@@ -325,18 +317,16 @@ Boolean ContentView::AwakenScrollBars(
 //@Override
 Boolean ContentView::AwakenScrollBars()
 {
-    assert(0);
-//    return super.awakenScrollBars();
-    return FALSE;
+    return FrameLayout::AwakenScrollBars();
 }
 
 //@Override
-void ContentView::OnInitializeAccessibilityNodeInfo(
+ECode ContentView::OnInitializeAccessibilityNodeInfo(
     /* [in] */ IAccessibilityNodeInfo* info)
 {
-    assert(0);
-//    super.onInitializeAccessibilityNodeInfo(info);
-//    mContentViewCore->OnInitializeAccessibilityNodeInfo(info);
+    FrameLayout::OnInitializeAccessibilityNodeInfo(info);
+    mContentViewCore->OnInitializeAccessibilityNodeInfo(info);
+    return NOERROR;
 }
 
 /**
@@ -344,38 +334,38 @@ void ContentView::OnInitializeAccessibilityNodeInfo(
  * @param event Event being fired.
  */
 //@Override
-void ContentView::OnInitializeAccessibilityEvent(
+ECode ContentView::OnInitializeAccessibilityEvent(
     /* [in] */ IAccessibilityEvent* event)
 {
-    assert(0);
-//    super.onInitializeAccessibilityEvent(event);
-//    mContentViewCore->OnInitializeAccessibilityEvent(event);
+    FrameLayout::OnInitializeAccessibilityEvent(event);
+    mContentViewCore->OnInitializeAccessibilityEvent(event);
+    return NOERROR;
 }
 
 //@Override
-void ContentView::OnAttachedToWindow()
+ECode ContentView::OnAttachedToWindow()
 {
-    assert(0);
-//    super.onAttachedToWindow();
-//    mContentViewCore->OnAttachedToWindow();
+    FrameLayout::OnAttachedToWindow();
+    mContentViewCore->OnAttachedToWindow();
+    return NOERROR;
 }
 
 //@Override
-void ContentView::OnDetachedFromWindow()
+ECode ContentView::OnDetachedFromWindow()
 {
-    assert(0);
-//    super.onDetachedFromWindow();
-//    mContentViewCore->OnDetachedFromWindow();
+    FrameLayout::OnDetachedFromWindow();
+    mContentViewCore->OnDetachedFromWindow();
+    return NOERROR;
 }
 
 //@Override
-void ContentView::OnVisibilityChanged(
+ECode ContentView::OnVisibilityChanged(
     /* [in] */ IView* changedView,
     /* [in] */ Int32 visibility)
 {
-    assert(0);
-//    super.onVisibilityChanged(changedView, visibility);
-//    mContentViewCore->OnVisibilityChanged(changedView, visibility);
+    FrameLayout::OnVisibilityChanged(changedView, visibility);
+    mContentViewCore->OnVisibilityChanged(changedView, visibility);
+    return NOERROR;
 }
 
 // Implements SmartClipProvider
@@ -393,7 +383,7 @@ ECode ContentView::ExtractSmartClipData(
 // Implements SmartClipProvider
 //@Override
 ECode ContentView::SetSmartClipResultHandler(
-    /* [in] */ const IHandler* resultHandler)
+    /* [in] */ IHandler* resultHandler)
 {
     if (resultHandler == NULL) {
         mContentViewCore->SetSmartClipDataListener(NULL);
@@ -415,44 +405,43 @@ Boolean ContentView::Super_onKeyUp(
     /* [in] */ Int32 keyCode,
     /* [in] */ IKeyEvent* event)
 {
-    assert(0);
-//    return super.onKeyUp(keyCode, event);
-    return FALSE;
+    Boolean res;
+    FrameLayout::OnKeyUp(keyCode, event, &res);
+    return res;
 }
 
 //@Override
 Boolean ContentView::Super_dispatchKeyEventPreIme(
     /* [in] */ IKeyEvent* event)
 {
-    assert(0);
-//    return super.dispatchKeyEventPreIme(event);
-    return FALSE;
+    Boolean res;
+    FrameLayout::DispatchKeyEventPreIme(event, &res);
+    return res;
 }
 
 //@Override
 Boolean ContentView::Super_dispatchKeyEvent(
     /* [in] */ IKeyEvent* event)
 {
-    assert(0);
-//    return super.dispatchKeyEvent(event);
-    return FALSE;
+    Boolean res;
+    FrameLayout::DispatchKeyEvent(event, &res);
+    return res;
 }
 
 //@Override
 Boolean ContentView::Super_onGenericMotionEvent(
     /* [in] */ IMotionEvent* event)
 {
-    assert(0);
-//    return super.onGenericMotionEvent(event);
-    return FALSE;
+    Boolean res;
+    FrameLayout::OnGenericMotionEvent(event, &res);
+    return res;
 }
 
 //@Override
 void ContentView::Super_onConfigurationChanged(
     /* [in] */ IConfiguration* newConfig)
 {
-    assert(0);
-//    super.onConfigurationChanged(newConfig);
+    FrameLayout::OnConfigurationChanged(newConfig);
 }
 
 //@Override
@@ -460,9 +449,7 @@ Boolean ContentView::Super_awakenScrollBars(
     /* [in] */ Int32 startDelay,
     /* [in] */ Boolean invalidate)
 {
-    assert(0);
-//    return super.awakenScrollBars(startDelay, invalidate);
-    return FALSE;
+    return FrameLayout::AwakenScrollBars(startDelay, invalidate);
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////

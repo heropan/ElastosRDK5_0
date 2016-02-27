@@ -3,9 +3,11 @@
 #include "elastos/droid/webkit/webview/chromium/native/content/browser/ScreenOrientationProvider.h"
 #include "elastos/droid/webkit/webview/chromium/native/content/api/ScreenOrientationProvider_dec.h"
 #include "elastos/droid/webkit/webview/chromium/native/base/ApplicationStatus.h"
+#include "elastos/droid/webkit/webview/chromium/native/content/common/ScreenOrientationValues.h"
 #include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Droid::Webkit::Webview::Chromium::Base::ApplicationStatus;
+using Elastos::Droid::Webkit::Webview::Chromium::Content::Common::ScreenOrientationValues;
 using Elastos::Droid::Content::Pm::IActivityInfo;
 using Elastos::Utility::Logging::Slogger;
 
@@ -61,27 +63,25 @@ Int32 ScreenOrientationProvider::GetOrientationFromWebScreenOrientations(
     /* [in] */ Byte orientations)
 {
     switch (orientations) {
-        assert(0);
-        // TODO
-        // case ScreenOrientationValues::DEFAULT:
-        //     return IActivityInfo::SCREEN_ORIENTATION_UNSPECIFIED;
-        // case ScreenOrientationValues::PORTRAIT_PRIMARY:
-        //     return IActivityInfo::SCREEN_ORIENTATION_PORTRAIT;
-        // case ScreenOrientationValues::PORTRAIT_SECONDARY:
-        //     return IActivityInfo::SCREEN_ORIENTATION_REVERSE_PORTRAIT;
-        // case ScreenOrientationValues::LANDSCAPE_PRIMARY:
-        //     return IActivityInfo::SCREEN_ORIENTATION_LANDSCAPE;
-        // case ScreenOrientationValues::LANDSCAPE_SECONDARY:
-        //     return IActivityInfo::SCREEN_ORIENTATION_REVERSE_LANDSCAPE;
-        // case ScreenOrientationValues::PORTRAIT:
-        //     return IActivityInfo::SCREEN_ORIENTATION_SENSOR_PORTRAIT;
-        // case ScreenOrientationValues::LANDSCAPE:
-        //     return IActivityInfo::SCREEN_ORIENTATION_SENSOR_LANDSCAPE;
-        // case ScreenOrientationValues::ANY:
-        //     return IActivityInfo::SCREEN_ORIENTATION_FULL_SENSOR;
-        // default:
-        //     Slogger::W(TAG, "Trying to lock to unsupported orientation!");
-        //     return IActivityInfo::SCREEN_ORIENTATION_UNSPECIFIED;
+        case ScreenOrientationValues::DEFAULT:
+            return IActivityInfo::SCREEN_ORIENTATION_UNSPECIFIED;
+        case ScreenOrientationValues::PORTRAIT_PRIMARY:
+            return IActivityInfo::SCREEN_ORIENTATION_PORTRAIT;
+        case ScreenOrientationValues::PORTRAIT_SECONDARY:
+            return IActivityInfo::SCREEN_ORIENTATION_REVERSE_PORTRAIT;
+        case ScreenOrientationValues::LANDSCAPE_PRIMARY:
+            return IActivityInfo::SCREEN_ORIENTATION_LANDSCAPE;
+        case ScreenOrientationValues::LANDSCAPE_SECONDARY:
+            return IActivityInfo::SCREEN_ORIENTATION_REVERSE_LANDSCAPE;
+        case ScreenOrientationValues::PORTRAIT:
+            return IActivityInfo::SCREEN_ORIENTATION_SENSOR_PORTRAIT;
+        case ScreenOrientationValues::LANDSCAPE:
+            return IActivityInfo::SCREEN_ORIENTATION_SENSOR_LANDSCAPE;
+        case ScreenOrientationValues::ANY:
+            return IActivityInfo::SCREEN_ORIENTATION_FULL_SENSOR;
+        default:
+            Slogger::W(TAG, "Trying to lock to unsupported orientation!");
+            return IActivityInfo::SCREEN_ORIENTATION_UNSPECIFIED;
     }
 
     return 0;

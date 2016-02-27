@@ -4,6 +4,7 @@
 #include "elastos/droid/webkit/webview/chromium/native/content/api/DownloadController_dec.h"
 #include "elastos/droid/webkit/webview/chromium/native/content/browser/DownloadInfo.h"
 #include <elastos/utility/logging/Logger.h>
+
 using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {

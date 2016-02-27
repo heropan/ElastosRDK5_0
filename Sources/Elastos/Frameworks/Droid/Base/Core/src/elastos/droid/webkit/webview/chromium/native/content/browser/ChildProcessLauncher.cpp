@@ -1,15 +1,27 @@
-
+#include "Elastos.CoreLibrary.Utility.h"
 #include "Elastos.Droid.Content.h"
 #include "Elastos.Droid.Graphics.h"
 #include "Elastos.Droid.View.h"
 #include "elastos/droid/webkit/webview/chromium/native/content/browser/ChildProcessLauncher.h"
 #include "elastos/droid/webkit/webview/chromium/native/content/api/ChildProcessLauncher_dec.h"
 #include "elastos/droid/webkit/webview/chromium/native/content/browser/BindingManagerImpl.h"
+#include "elastos/droid/webkit/webview/chromium/native/content/browser/ChildProcessConnectionImpl.h"
 #include "elastos/droid/webkit/webview/chromium/native/base/ThreadUtils.h"
 #include "elastos/droid/webkit/webview/chromium/native/base/TraceEvent.h"
+#include "elastos/core/CoreUtils.h"
+#include "elastos/core/AutoLock.h"
+#include <elastos/utility/logging/Logger.h>
 
+using Elastos::Droid::View::CSurface;
 using Elastos::Droid::Webkit::Webview::Chromium::Base::ThreadUtils;
 using Elastos::Droid::Webkit::Webview::Chromium::Base::TraceEvent;
+using Elastos::Core::CoreUtils;
+using Elastos::Core::AutoLock;
+using Elastos::Utility::CArrayList;
+using Elastos::Utility::Concurrent::CConcurrentHashMap;
+using Elastos::Droid::Utility::CPair;
+using Elastos::Droid::Utility::IPair;
+using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
 namespace Droid {
@@ -27,16 +39,17 @@ ChildProcessLauncher::ChildConnectionAllocator::ChildConnectionAllocator(
     /* [in] */ Boolean inSandbox)
     : mInSandbox(inSandbox)
 {
-    assert(0);
     Int32 numChildServices = inSandbox ?
             MAX_REGISTERED_SANDBOXED_SERVICES : MAX_REGISTERED_PRIVILEGED_SERVICES;
-    // mChildProcessConnections = ArrayOf<ChildProcessConnection>::Alloc(numChildServices);
-    // mFreeConnectionIndices = new ArrayList<Integer>(numChildServices);
+    mChildProcessConnections = ArrayOf<ChildProcessConnection*>::Alloc(numChildServices);
+    //mFreeConnectionIndices = new ArrayList<Integer>(numChildServices);
+    CArrayList::New((IList**)&mFreeConnectionIndices);
     for (Int32 i = 0; i < numChildServices; i++) {
-    //     mFreeConnectionIndices->Add(i);
+        AutoPtr<IInteger32> iint = CoreUtils::Convert(i);
+         mFreeConnectionIndices->Add(TO_IINTERFACE(iint));
     }
-    // SetServiceClass(inSandbox ?
-    //         SandboxedProcessService.class : PrivilegedProcessService.class);
+    //maybe here need to pass the class EID(car class must).
+    //TODO SetServiceClass(inSandbox ? SandboxedProcessService.class : PrivilegedProcessService.class);
 }
 
 void ChildProcessLauncher::ChildConnectionAllocator::SetServiceClass(
@@ -50,55 +63,52 @@ AutoPtr<ChildProcessConnection> ChildProcessLauncher::ChildConnectionAllocator::
     /* [in] */ ChildProcessConnection::DeathCallback* deathCallback,
     /* [in] */ ChromiumLinkerParams* chromiumLinkerParams)
 {
-    assert(0);
-#if 0
-    Object::Autolock lock(mConnectionLock);
+    AutoLock lock(mConnectionLock);
 
-    if (mFreeConnectionIndices->IsEmpty()) {
-//        Log.w(TAG, "Ran out of service.");
+    Boolean isEmpty = FALSE;
+    if (mFreeConnectionIndices->IsEmpty(&isEmpty), isEmpty) {
+        Logger::W(TAG, "Ran out of service.");
         return NULL;
     }
 
-    Int32 slot = mFreeConnectionIndices.remove(0);
-    assert((*mChildProcessConnections)[slot] == NULL);
+    AutoPtr<IInterface> obj;
+    mFreeConnectionIndices->Remove(0, (IInterface**)&obj);
+    AutoPtr<IInteger32> iint = IInteger32::Probe(obj);
+    Int32 slot;
+    iint->GetValue(&slot);
+    //assert((*mChildProcessConnections)[slot] == NULL);
     (*mChildProcessConnections)[slot] = new ChildProcessConnectionImpl(context, slot,
             mInSandbox, deathCallback, mChildClass, chromiumLinkerParams);
     return (*mChildProcessConnections)[slot];
-#endif
-
-    return NULL;
 }
 
 void ChildProcessLauncher::ChildConnectionAllocator::Free(
     /* [in] */ ChildProcessConnection* connection)
 {
-    assert(0);
-#if 0
-    Object::Autolock lock(mConnectionLock);
+    AutoLock lock(mConnectionLock);
 
     Int32 slot = connection->GetServiceNumber();
-    if (mChildProcessConnections[slot] != connection) {
+    if ((*mChildProcessConnections)[slot] != connection) {
         Int32 occupier = (*mChildProcessConnections)[slot] == NULL ?
                 -1 : (*mChildProcessConnections)[slot]->GetServiceNumber();
-//        Log.e(TAG, "Unable to find connection to free in slot: " + slot +
-//                " already occupied by service: " + occupier);
+        Logger::E(TAG, "Unable to find connection to free in slot: %d already occupied by service: %d", slot, occupier);
         assert(FALSE);
     }
     else {
         (*mChildProcessConnections)[slot] = NULL;
-        assert(!mFreeConnectionIndices->Contains(slot));
-        mFreeConnectionIndices->Add(slot);
+        //assert(!mFreeConnectionIndices->Contains(slot));
+        AutoPtr<IInteger32> iint = CoreUtils::Convert(slot);
+        mFreeConnectionIndices->Add(TO_IINTERFACE(iint));
     }
-#endif
 }
 
 /** @return the count of connections managed by the allocator */
 //@VisibleForTesting
 Int32 ChildProcessLauncher::ChildConnectionAllocator::AllocatedConnectionsCountForTesting()
 {
-    assert(0);
-//    return mChildProcessConnections->GetLength() - mFreeConnectionIndices->Size();
-    return 0;
+    Int32 size;
+    mFreeConnectionIndices->GetSize(&size);
+    return mChildProcessConnections->GetLength() - size;
 }
 
 //===============================================================
@@ -125,8 +135,8 @@ void ChildProcessLauncher::InnerDeathCallback::OnChildProcessDied(
 //===============================================================
 
 ChildProcessLauncher::InnerConnectionCallback::InnerConnectionCallback(
-    /* [in] */ const ChildProcessConnection* connection,
-    /* [in] */ const Int64 clientContext)
+    /* [in] */ ChildProcessConnection* connection,
+    /* [in] */ Int64 clientContext)
     : mConnection(connection)
     , mClientContext(clientContext)
 {
@@ -135,12 +145,11 @@ ChildProcessLauncher::InnerConnectionCallback::InnerConnectionCallback(
 void ChildProcessLauncher::InnerConnectionCallback::OnConnected(
     /* [in] */ Int32 pid)
 {
-    assert(0);
-#if 0
-//    Log.d(TAG, "on connect callback, pid=" + pid + " context=" + clientContext);
+    Logger::D(TAG, "on connect callback, pid=%d context=%d", pid, mClientContext);
     if (pid != NULL_PROCESS_HANDLE) {
         sBindingManager->AddNewConnection(pid, mConnection);
-        sServiceMap->Put(pid, mConnection);
+        AutoPtr<IInteger32> iint = CoreUtils::Convert(pid);
+        sServiceMap->Put(TO_IINTERFACE(iint), TO_IINTERFACE(mConnection));
     }
 
     // If the connection fails and pid == 0, the Java-side cleanup was already
@@ -149,7 +158,6 @@ void ChildProcessLauncher::InnerConnectionCallback::OnConnected(
     if (mClientContext != 0) {  // Will be 0 in Java instrumentation tests.
         NativeOnChildProcessStarted(mClientContext, pid);
     }
-#endif
 }
 
 //===============================================================
@@ -180,10 +188,10 @@ const Int32 ChildProcessLauncher::MAX_REGISTERED_PRIVILEGED_SERVICES;
 // Service class for child process. As the default value it uses SandboxedProcessService0 and
 // PrivilegedProcessService0.
 // TODO:
-const AutoPtr<ChildProcessLauncher::ChildConnectionAllocator> ChildProcessLauncher::sSandboxedChildConnectionAllocator;// =
-        // new ChildConnectionAllocator(TRUE);
-const AutoPtr<ChildProcessLauncher::ChildConnectionAllocator> ChildProcessLauncher::sPrivilegedChildConnectionAllocator;// =
-        // new ChildProcessLauncher::ChildConnectionAllocator(FALSE);
+const AutoPtr<ChildProcessLauncher::ChildConnectionAllocator> ChildProcessLauncher::sSandboxedChildConnectionAllocator =
+        new ChildProcessLauncher::ChildConnectionAllocator(TRUE);
+const AutoPtr<ChildProcessLauncher::ChildConnectionAllocator> ChildProcessLauncher::sPrivilegedChildConnectionAllocator =
+        new ChildProcessLauncher::ChildConnectionAllocator(FALSE);
 
 Boolean ChildProcessLauncher::sConnectionAllocated = FALSE;
 
@@ -194,23 +202,40 @@ Int64 ChildProcessLauncher::sLinkerLoadAddress = 0;
 const Int32 ChildProcessLauncher::NULL_PROCESS_HANDLE;
 
 // Map from pid to ChildService connection.
-//Map<Integer, ChildProcessConnection> ChildProcessLauncher::sServiceMap =
-//        new ConcurrentHashMap<Integer, ChildProcessConnection>();
+static AutoPtr<IMap> InitServiceMap()
+{
+    AutoPtr<IMap> map;
+    CConcurrentHashMap::New((IMap**)&map);
+    return map;
+}
+AutoPtr<IMap> ChildProcessLauncher::sServiceMap = InitServiceMap();// <Integer, ChildProcessConnection>
 
 // A pre-allocated and pre-bound connection ready for connection setup, or null.
 AutoPtr<ChildProcessConnection> ChildProcessLauncher::sSpareSandboxedConnection;
 
 // Manages oom bindings used to bind chind services.
 // TODO
-AutoPtr<BindingManager> ChildProcessLauncher::sBindingManager;// = BindingManagerImpl::CreateBindingManager();
+AutoPtr<BindingManager> ChildProcessLauncher::sBindingManager = BindingManagerImpl::CreateBindingManager();
 
 // Map from surface id to Surface.
-//Map<Integer, Surface> ChildProcessLauncher::sViewSurfaceMap =
-//        new ConcurrentHashMap<Integer, Surface>();
+static AutoPtr<IMap> InitViewSurfaceMap()
+{
+    AutoPtr<IMap> map;
+    CConcurrentHashMap::New((IMap**)&map);
+    return map;
+}
+AutoPtr<IMap> ChildProcessLauncher::sViewSurfaceMap = InitViewSurfaceMap();//<Integer, Surface>
 
 // Map from surface texture id to Surface.
-//Map<Pair<Integer, Integer>, Surface> ChildProcessLauncher::sSurfaceTextureSurfaceMap =
-//        new ConcurrentHashMap<Pair<Integer, Integer>, Surface>();
+static AutoPtr<IMap> InitSurfaceTextureSurfaceMap()
+{
+    AutoPtr<IMap> map;
+    CConcurrentHashMap::New((IMap**)&map);
+    return map;
+}
+AutoPtr<IMap> ChildProcessLauncher::sSurfaceTextureSurfaceMap = InitSurfaceTextureSurfaceMap();// <<Pair<Integer, Integer>, Surface>
+
+Object ChildProcessLauncher::sLock;
 
 /**
  * Sets service class for sandboxed service and privileged service.
@@ -228,8 +253,7 @@ void ChildProcessLauncher::SetChildProcessClass(
 AutoPtr<ChildProcessLauncher::ChildConnectionAllocator> ChildProcessLauncher::GetConnectionAllocator(
     /* [in] */ Boolean inSandbox)
 {
-    return inSandbox ?
-            sSandboxedChildConnectionAllocator : sPrivilegedChildConnectionAllocator;
+    return inSandbox ? sSandboxedChildConnectionAllocator : sPrivilegedChildConnectionAllocator;
 }
 
 AutoPtr<ChildProcessConnection> ChildProcessLauncher::AllocateConnection(
@@ -245,14 +269,12 @@ AutoPtr<ChildProcessConnection> ChildProcessLauncher::AllocateConnection(
 
 AutoPtr<ChromiumLinkerParams> ChildProcessLauncher::GetLinkerParamsForNewConnection()
 {
-    assert(0);
-#if 0
     if (!sLinkerInitialized) {
-        if (Linker::IsUsed()) {
-            sLinkerLoadAddress = Linker::GetBaseLoadAddress();
-            if (sLinkerLoadAddress == 0) {
+        if (FALSE/*Linker::IsUsed()*/) {//never use Linker in Android, see NativeLibraries.java::USE_LINKER
+//            sLinkerLoadAddress = Linker::GetBaseLoadAddress();
+//            if (sLinkerLoadAddress == 0) {
 //                Log.i(TAG, "Shared RELRO support disabled!");
-            }
+//            }
         }
         sLinkerInitialized = TRUE;
     }
@@ -260,15 +282,14 @@ AutoPtr<ChromiumLinkerParams> ChildProcessLauncher::GetLinkerParamsForNewConnect
     if (sLinkerLoadAddress == 0) {
         return NULL;
     }
-
-    // Always wait for the shared RELROs in service processes.
-    const Boolean waitForSharedRelros = TRUE;
-    return new ChromiumLinkerParams(sLinkerLoadAddress,
-                            waitForSharedRelros,
-                            Linker::GetTestRunnerClassName());
-#endif
-
     return NULL;
+    //in android, will not execute here.
+
+//    // Always wait for the shared RELROs in service processes.
+//    const Boolean waitForSharedRelros = TRUE;
+//    return new ChromiumLinkerParams(sLinkerLoadAddress,
+//                            waitForSharedRelros,
+//                            Linker::GetTestRunnerClassName());
 }
 
 AutoPtr<ChildProcessConnection> ChildProcessLauncher::AllocateBoundConnection(
@@ -312,16 +333,16 @@ void ChildProcessLauncher::RegisterViewSurface(
     /* [in] */ Int32 surfaceId,
     /* [in] */ ISurface* surface)
 {
-    assert(0);
-//    sViewSurfaceMap->Put(surfaceId, surface);
+    AutoPtr<IInteger32> iint = CoreUtils::Convert(surfaceId);
+    sViewSurfaceMap->Put(TO_IINTERFACE(iint), TO_IINTERFACE(surface));
 }
 
 //@CalledByNative
 void ChildProcessLauncher::UnregisterViewSurface(
     /* [in] */ Int32 surfaceId)
 {
-    assert(0);
-//    sViewSurfaceMap->Remove(surfaceId);
+    AutoPtr<IInteger32> iint = CoreUtils::Convert(surfaceId);
+    sViewSurfaceMap->Remove(TO_IINTERFACE(iint));
 }
 
 //@CalledByNative
@@ -330,13 +351,14 @@ void ChildProcessLauncher::RegisterSurfaceTexture(
     /* [in] */ Int32 childProcessId,
     /* [in] */ ISurfaceTexture* surfaceTexture)
 {
-    assert(0);
-#if 0
-    Pair<Integer, Integer> key = new Pair<Integer, Integer>(surfaceTextureId, childProcessId);
+    //Pair<Integer, Integer> key = new Pair<Integer, Integer>(surfaceTextureId, childProcessId);
+    AutoPtr<IInteger32> istid = CoreUtils::Convert(surfaceTextureId);
+    AutoPtr<IInteger32> cpid = CoreUtils::Convert(childProcessId);
+    AutoPtr<IPair> key;
+    CPair::New(TO_IINTERFACE(istid), TO_IINTERFACE(cpid), (IPair**)&key);
     AutoPtr<ISurface> sur;
     CSurface::New((ISurface**)&sur);
-    sSurfaceTextureSurfaceMap->Put(key, sur);
-#endif
+    sSurfaceTextureSurfaceMap->Put(TO_IINTERFACE(key), TO_IINTERFACE(sur));
 }
 
 //@CalledByNative
@@ -344,11 +366,12 @@ void ChildProcessLauncher::UnregisterSurfaceTexture(
     /* [in] */ Int32 surfaceTextureId,
     /* [in] */ Int32 childProcessId)
 {
-    assert(0);
-#if 0
-    Pair<Integer, Integer> key = new Pair<Integer, Integer>(surfaceTextureId, childProcessId);
-    sSurfaceTextureSurfaceMap->Remove(key);
-#endif
+    AutoPtr<IInteger32> istid = CoreUtils::Convert(surfaceTextureId);
+    AutoPtr<IInteger32> cpid = CoreUtils::Convert(childProcessId);
+    AutoPtr<IPair> key;
+    CPair::New(TO_IINTERFACE(istid), TO_IINTERFACE(cpid), (IPair**)&key);
+    //Pair<Integer, Integer> key = new Pair<Integer, Integer>(surfaceTextureId, childProcessId);
+    sSurfaceTextureSurfaceMap->Remove(TO_IINTERFACE(key));
 }
 
 /**
@@ -388,8 +411,7 @@ void ChildProcessLauncher::OnBroughtToForeground()
 void ChildProcessLauncher::WarmUp(
     /* [in] */ IContext* context)
 {
-    assert(0);
-//    Object::Autolock lock(this);
+    AutoLock lock(sLock);
     assert(!ThreadUtils::RunningOnUiThread());
     if (sSpareSandboxedConnection == NULL) {
         sSpareSandboxedConnection = AllocateBoundConnection(context, NULL, TRUE);
@@ -459,18 +481,15 @@ void ChildProcessLauncher::Start(
     String processType = GetSwitchValue(commandLine, SWITCH_PROCESS_TYPE);
     if (SWITCH_RENDERER_PROCESS.Equals(processType)) {
         callbackType = CALLBACK_FOR_RENDERER_PROCESS;
-    }
-    else if (SWITCH_GPU_PROCESS.Equals(processType)) {
+    } else if (SWITCH_GPU_PROCESS.Equals(processType)) {
         callbackType = CALLBACK_FOR_GPU_PROCESS;
-    }
-    else if (SWITCH_PPAPI_BROKER_PROCESS.Equals(processType)) {
+    } else if (SWITCH_PPAPI_BROKER_PROCESS.Equals(processType)) {
         inSandbox = FALSE;
     }
 
     AutoPtr<ChildProcessConnection> allocatedConnection;
     {
-        assert(0);
-//        Object::Autolock lock(this);
+        AutoLock lock(sLock);
         if (inSandbox) {
             allocatedConnection = sSpareSandboxedConnection;
             sSpareSandboxedConnection = NULL;
@@ -478,20 +497,17 @@ void ChildProcessLauncher::Start(
     }
 
     if (allocatedConnection == NULL) {
-        assert(0);
-//        allocatedConnection = AllocateBoundConnection(context, commandLine, inSandbox);
+        allocatedConnection = AllocateBoundConnection(context, commandLine, inSandbox);
         if (allocatedConnection == NULL) {
             // Notify the native code so it can free the heap allocated callback.
             NativeOnChildProcessStarted(clientContext, 0);
-//            Log.e(TAG, "Allocation of new service failed.");
+            Logger::E(TAG, "Allocation of new service failed.");
             TraceEvent::End();
             return;
         }
     }
 
-//    Log.d(TAG, "Setting up connection to process: slot=" +
-//            allocatedConnection.getServiceNumber());
-    assert(0);
+    Logger::D(TAG, "Setting up connection to process: slot=%d", allocatedConnection->GetServiceNumber());
     TriggerConnectionSetup(allocatedConnection, commandLine, childProcessId, filesToBeMapped,
             callbackType, clientContext);
     TraceEvent::End();
@@ -499,7 +515,7 @@ void ChildProcessLauncher::Start(
 
 //@VisibleForTesting
 void ChildProcessLauncher::TriggerConnectionSetup(
-    /* [in] */ const ChildProcessConnection* connection,
+    /* [in] */ ChildProcessConnection* connection,
     /* [in] */ ArrayOf<String>* commandLine,
     /* [in] */ Int32 childProcessId,
     /* [in] */ ArrayOf<FileDescriptorInfo*>* filesToBeMapped,
@@ -511,12 +527,11 @@ void ChildProcessLauncher::TriggerConnectionSetup(
     // TODO(sievers): Revisit this as it doesn't correctly handle the utility process
     // assert callbackType != CALLBACK_FOR_UNKNOWN_PROCESS;
 
-    assert(0);
-    // connection->SetupConnection(commandLine,
-    //                            filesToBeMapped,
-    //                            CreateCallback(childProcessId, callbackType),
-    //                            connectionCallback,
-    //                            Linker::GetSharedRelros());
+    connection->SetupConnection(commandLine,
+                               filesToBeMapped,
+                               CreateCallback(childProcessId, callbackType),
+                               connectionCallback,
+                               NULL/*TODO Linker::GetSharedRelros()*/);//NULL because not used multi-process architecture
 }
 
 /**
@@ -528,27 +543,27 @@ void ChildProcessLauncher::TriggerConnectionSetup(
 void ChildProcessLauncher::Stop(
     /* [in] */ Int32 pid)
 {
-    assert(0);
-#if 0
-//    Log.d(TAG, "stopping child connection: pid=" + pid);
-    AutoPtr<ChildProcessConnection> connection = sServiceMap->Remove(pid);
+    Logger::D(TAG, "stopping child connection: pid=%d", pid);
+    AutoPtr<IInteger32> iint = CoreUtils::Convert(pid);
+    AutoPtr<IInterface> obj;
+    sServiceMap->Remove(TO_IINTERFACE(iint), (IInterface**)&obj);
+    AutoPtr<ChildProcessConnection> connection = (ChildProcessConnection*)(IObject::Probe(obj));
     if (connection == NULL) {
-        LogPidWarning(pid, "Tried to stop non-existent connection");
+        LogPidWarning(pid, String("Tried to stop non-existent connection"));
         return;
     }
     sBindingManager->ClearConnection(pid);
     connection->Stop();
     FreeConnection(connection);
-#endif
 }
 
 /**
  * This implementation is used to receive callbacks from the remote service.
  */
-// AutoPtr<IChildProcessCallback> ChildProcessLauncher::CreateCallback(
-//     /* [in] */ const Int32 childProcessId,
-//     /* [in] */ const Int32 callbackType)
-// {
+ AutoPtr<IInterface/*TODO IChildProcessCallback*/> ChildProcessLauncher::CreateCallback(
+     /* [in] */ const Int32 childProcessId,
+     /* [in] */ const Int32 callbackType)
+ {
 //     return new IChildProcessCallback.Stub() {
 //         /**
 //          * This is called by the remote service regularly to tell us about new values. Note that
@@ -609,7 +624,8 @@ void ChildProcessLauncher::Stop(
 //             return new SurfaceWrapper(surface);
 //         }
 //     };
-// }
+     return NULL;
+}
 
 void ChildProcessLauncher::LogPidWarning(
     /* [in] */ Int32 pid,
@@ -617,7 +633,8 @@ void ChildProcessLauncher::LogPidWarning(
 {
     // This class is effectively a no-op in single process mode, so don't log warnings there.
     if (pid > 0 && !NativeIsSingleProcess()) {
-//        Log.w(TAG, message + ", pid=" + pid);
+        Logger::W(TAG, message.string());
+        Logger::W(TAG, "pid %d", pid);
     }
 }
 
@@ -639,9 +656,9 @@ Int32 ChildProcessLauncher::AllocatedConnectionsCountForTesting()
 //@VisibleForTesting
 Int32 ChildProcessLauncher::ConnectedServicesCountForTesting()
 {
-    assert(0);
-//    return sServiceMap.size();
-    return 0;
+    Int32 size;
+    sServiceMap->GetSize(&size);
+    return size;
 }
 
 void ChildProcessLauncher::NativeOnChildProcessStarted(

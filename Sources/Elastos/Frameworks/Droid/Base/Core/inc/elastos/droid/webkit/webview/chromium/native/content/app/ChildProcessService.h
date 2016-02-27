@@ -4,6 +4,7 @@
 
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/webkit/webview/chromium/native/content/app/ChromiumLinkerParams.h"
+#include "elastos/droid/app/Service.h"
 #include "elastos/droid/os/Runnable.h"
 
 using Elastos::Core::IThread;
@@ -53,8 +54,7 @@ namespace App {
  */
 //@JNINamespace("content")
 class ChildProcessService
-    : public Object
-    // TODO : public Service
+    : public Elastos::Droid::App::Service
 {
 private:
     class InnerRunnable
@@ -163,9 +163,10 @@ private:
     CARAPI_(void) NativeShutdownMainThread();
 
 private:
+
     static const String MAIN_THREAD_NAME;
     static const String TAG;
-// TODO    AutoPtr<IChildProcessCallback> mCallback;
+    //TODO AutoPtr<IChildProcessCallback> mCallback;
 
     // This is the native "Main" thread for the renderer / utility process.
     AutoPtr<IThread> mMainThread;

@@ -2,11 +2,11 @@
 #include "elastos/droid/webkit/webview/chromium/native/content/browser/DeviceUtils.h"
 #include "elastos/droid/webkit/webview/chromium/native/content/common/ContentSwitches.h"
 #include "elastos/droid/webkit/webview/chromium/native/base/CommandLine.h"
-//TODO #include "elastos/droid/webkit/webview/chromium/native/ui/base/DeviceFormFactor.h"
+#include "elastos/droid/webkit/webview/chromium/native/ui/base/DeviceFormFactor.h"
 
 using Elastos::Droid::Webkit::Webview::Chromium::Base::CommandLine;
 using Elastos::Droid::Webkit::Webview::Chromium::Content::Common::ContentSwitches;
-//TODO using Elastos::Droid::Webkit::Webview::Chromium::Ui::Base::DeviceFormFactor;
+using Elastos::Droid::Webkit::Webview::Chromium::Ui::Base::DeviceFormFactor;
 
 namespace Elastos {
 namespace Droid {
@@ -25,10 +25,7 @@ namespace Browser {
 Boolean DeviceUtils::IsTablet(
     /* [in] */ IContext* context)
 {
-    assert(0);
-    // TODO
-    // return DeviceFormFactor::IsTablet(context);
-    return FALSE;
+    return DeviceFormFactor::IsTablet(context);
 }
 
 /**
