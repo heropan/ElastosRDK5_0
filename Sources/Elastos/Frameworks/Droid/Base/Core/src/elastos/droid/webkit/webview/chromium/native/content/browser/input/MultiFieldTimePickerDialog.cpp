@@ -81,9 +81,11 @@ MultiFieldTimePickerDialog::MultiFieldTimePickerDialog(
     }
 
     AutoPtr<ILayoutInflater> inflater;
+    AutoPtr<IInterface> obj;
     context->GetSystemService(
                     IContext::LAYOUT_INFLATER_SERVICE,
-                    (IInterface**)&inflater);
+                    (IInterface**)&obj);
+    inflater = ILayoutInflater::Probe(obj);
     AutoPtr<IView> view;
     assert(0);
     // TODO

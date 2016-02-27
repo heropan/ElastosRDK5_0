@@ -21,7 +21,9 @@ InputMethodManagerWrapper::InputMethodManagerWrapper(
 AutoPtr<IInputMethodManager> InputMethodManagerWrapper::GetInputMethodManager()
 {
     AutoPtr<IInputMethodManager> manager;
-    mContext->GetSystemService(IContext::INPUT_METHOD_SERVICE, (IInterface**)&manager);
+    AutoPtr<IInterface> obj;
+    mContext->GetSystemService(IContext::INPUT_METHOD_SERVICE, (IInterface**)&obj);
+    manager = IInputMethodManager::Probe(obj);
     return manager;
 }
 

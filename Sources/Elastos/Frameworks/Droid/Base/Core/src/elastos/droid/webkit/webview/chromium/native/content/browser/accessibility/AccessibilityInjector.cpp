@@ -36,7 +36,9 @@ const Int64 AccessibilityInjector::VibratorWrapper::MAX_VIBRATE_DURATION_MS;
 AccessibilityInjector::VibratorWrapper::VibratorWrapper(
     /* [in] */ IContext* context)
 {
-    context->GetSystemService(IContext::VIBRATOR_SERVICE, (IInterface**)&mVibrator);
+    AutoPtr<IInterface> obj;
+    context->GetSystemService(IContext::VIBRATOR_SERVICE, (IInterface**)&obj);
+    mVibrator = IVibrator::Probe(obj);
 }
 
 //@JavascriptInterface
@@ -530,8 +532,10 @@ String AccessibilityInjector::GetScreenReaderInjectingJs()
 AutoPtr<IAccessibilityManager> AccessibilityInjector::GetAccessibilityManager()
 {
     if (mAccessibilityManager == NULL) {
+        AutoPtr<IInterface> obj;
         mContentViewCore->GetContext()->GetSystemService(IContext::ACCESSIBILITY_SERVICE,
-            (IInterface**)&mAccessibilityManager);
+            (IInterface**)&obj);
+        mAccessibilityManager = IAccessibilityManager::Probe(obj);
     }
 
     return mAccessibilityManager;

@@ -74,8 +74,9 @@ NetworkChangeNotifierAutoDetect::ConnectivityManagerDelegate::ConnectivityManage
     // ==================before translated======================
     // mConnectivityManager =
     //         (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-
-    context->GetSystemService(IContext::CONNECTIVITY_SERVICE, (IInterface**)&mConnectivityManager);
+    AutoPtr<IInterface> obj;
+    context->GetSystemService(IContext::CONNECTIVITY_SERVICE, (IInterface**)&obj);
+    mConnectivityManager = IConnectivityManager::Probe(obj);
 }
 
 NetworkChangeNotifierAutoDetect::ConnectivityManagerDelegate::ConnectivityManagerDelegate()

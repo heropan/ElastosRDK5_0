@@ -387,7 +387,9 @@ AutoPtr<IInteger32> MediaResourceGetter::GetNetworkType(
 {
     // TODO(qinmin): use ConnectionTypeObserver to listen to the network type change.
     AutoPtr<IConnectivityManager> mConnectivityManager;
-    context->GetSystemService(IContext::CONNECTIVITY_SERVICE, (IInterface**)&mConnectivityManager);
+    AutoPtr<IInterface> obj;
+    context->GetSystemService(IContext::CONNECTIVITY_SERVICE, (IInterface**)&obj);
+    mConnectivityManager = IConnectivityManager::Probe(obj);
     if (mConnectivityManager == NULL) {
         Slogger::W(TAG, "no connectivity manager available");
         return NULL;

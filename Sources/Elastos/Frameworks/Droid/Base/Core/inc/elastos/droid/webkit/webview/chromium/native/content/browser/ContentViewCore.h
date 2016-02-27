@@ -2633,7 +2633,7 @@ private:
     AutoPtr<BrowserAccessibilityManager> mBrowserAccessibilityManager;
 
     // System accessibility service.
-    const AutoPtr<IAccessibilityManager> mAccessibilityManager;
+    AutoPtr<IAccessibilityManager> mAccessibilityManager;
 
     // Accessibility touch exploration state.
     Boolean mTouchExplorationEnabled;

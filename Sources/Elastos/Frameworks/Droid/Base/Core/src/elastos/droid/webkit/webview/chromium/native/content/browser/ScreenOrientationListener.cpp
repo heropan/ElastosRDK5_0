@@ -92,14 +92,18 @@ CAR_INTERFACE_IMPL(ScreenOrientationListener::ScreenOrientationDisplayListener, 
 ECode ScreenOrientationListener::ScreenOrientationDisplayListener::StartListening()
 {
     AutoPtr<IDisplayManager> displayManager;
-    mOwner->mAppContext->GetSystemService(IContext::DISPLAY_SERVICE, (IInterface**)&displayManager);
+    AutoPtr<IInterface> obj;
+    mOwner->mAppContext->GetSystemService(IContext::DISPLAY_SERVICE, (IInterface**)&obj);
+    displayManager = IDisplayManager::Probe(obj);
     return displayManager->RegisterDisplayListener(this, NULL);
 }
 
 ECode ScreenOrientationListener::ScreenOrientationDisplayListener::StopListening()
 {
     AutoPtr<IDisplayManager> displayManager;
-    mOwner->mAppContext->GetSystemService(IContext::DISPLAY_SERVICE, (IInterface**)&displayManager);
+    AutoPtr<IInterface> obj;
+    mOwner->mAppContext->GetSystemService(IContext::DISPLAY_SERVICE, (IInterface**)&obj);
+    displayManager = IDisplayManager::Probe(obj);
     return displayManager->UnregisterDisplayListener(this);
 }
 
@@ -234,7 +238,9 @@ ECode ScreenOrientationListener::NotifyObservers()
 ECode ScreenOrientationListener::UpdateOrientation()
 {
     AutoPtr<IWindowManager> windowManager;
-    mAppContext->GetSystemService(IContext::WINDOW_SERVICE, (IInterface**)&windowManager);
+    AutoPtr<IInterface> obj;
+    mAppContext->GetSystemService(IContext::WINDOW_SERVICE, (IInterface**)&obj);
+    windowManager = IWindowManager::Probe(obj);
 
     AutoPtr<IDisplay> display;
     windowManager->GetDefaultDisplay((IDisplay**)&display);

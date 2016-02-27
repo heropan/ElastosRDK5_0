@@ -52,8 +52,10 @@ BrowserAccessibilityManager::BrowserAccessibilityManager(
     mContentViewCore->SetBrowserAccessibilityManager(this);
     mView = mContentViewCore->GetContainerView();
     mRenderCoordinates = mContentViewCore->GetRenderCoordinates();
+    AutoPtr<IInterface> obj;
     mContentViewCore->GetContext()
-        ->GetSystemService(IContext::ACCESSIBILITY_SERVICE, (IInterface**)&mAccessibilityManager);
+        ->GetSystemService(IContext::ACCESSIBILITY_SERVICE, (IInterface**)&obj);
+    mAccessibilityManager = IAccessibilityManager::Probe(obj);
 }
 
 /**

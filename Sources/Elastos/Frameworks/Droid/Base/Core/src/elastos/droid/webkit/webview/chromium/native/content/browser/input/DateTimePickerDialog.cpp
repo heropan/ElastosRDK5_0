@@ -68,7 +68,9 @@ DateTimePickerDialog::DateTimePickerDialog(
     // SetTitle(titleCS);
 
     AutoPtr<ILayoutInflater> inflater;
-    context->GetSystemService(IContext::LAYOUT_INFLATER_SERVICE, (IInterface**)&inflater);
+    AutoPtr<IInterface> obj;
+    context->GetSystemService(IContext::LAYOUT_INFLATER_SERVICE, (IInterface**)&obj);
+    inflater = ILayoutInflater::Probe(obj);
     AutoPtr<IView> view;
     assert(0);
     // TODO

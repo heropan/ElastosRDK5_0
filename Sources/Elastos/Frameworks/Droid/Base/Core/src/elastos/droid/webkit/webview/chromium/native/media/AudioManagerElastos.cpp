@@ -1048,7 +1048,9 @@ Boolean AudioManagerElastos::HasBluetoothHeadset()
         // Use BluetoothManager to get the BluetoothAdapter for
         // Android 4.3 and above.
         AutoPtr<IBluetoothManager> btManager;
-        mContext->GetSystemService(IContext::BLUETOOTH_SERVICE, (IInterface**)&btManager);
+        AutoPtr<IInterface> obj;
+        mContext->GetSystemService(IContext::BLUETOOTH_SERVICE, (IInterface**)&obj);
+        btManager = IBluetoothManager::Probe(obj);
         btManager->GetAdapter((IBluetoothAdapter**)&btAdapter);
     }
     else {

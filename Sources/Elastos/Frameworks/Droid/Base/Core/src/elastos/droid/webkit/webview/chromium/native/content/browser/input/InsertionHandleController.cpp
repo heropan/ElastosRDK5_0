@@ -91,7 +91,9 @@ void InsertionHandleController::PastePopupMenu::UpdateContent(
     if (view == NULL) {
         const Int32 layout = (*mPasteViewLayouts)[viewIndex];
         AutoPtr<ILayoutInflater> inflater;
-        mOwner->mContext->GetSystemService(IContext::LAYOUT_INFLATER_SERVICE, (IInterface**)&inflater);
+        AutoPtr<IInterface> obj;
+        mOwner->mContext->GetSystemService(IContext::LAYOUT_INFLATER_SERVICE, (IInterface**)&obj);
+        inflater = ILayoutInflater::Probe(obj);
         if (inflater != NULL) {
             inflater->Inflate(layout, NULL, (IView**)&view);
         }
@@ -386,9 +388,11 @@ ECode InsertionHandleController::OnDetached()
 Boolean InsertionHandleController::CanPaste()
 {
     AutoPtr<IClipboardManager> cm;
+    AutoPtr<IInterface> obj;
     mContext->GetSystemService(
             IContext::CLIPBOARD_SERVICE,
-            (IInterface**)&cm);
+            (IInterface**)&obj);
+    cm = IClipboardManager::Probe(obj);
     Boolean bFlag = FALSE;
     cm->HasPrimaryClip(&bFlag);
 

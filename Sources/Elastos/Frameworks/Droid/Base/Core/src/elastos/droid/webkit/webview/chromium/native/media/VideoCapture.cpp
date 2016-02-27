@@ -379,9 +379,11 @@ Int32 VideoCapture::GetDeviceOrientation()
     Int32 orientation = 0;
     if (mContext != NULL) {
         AutoPtr<IWindowManager> wm;
+        AutoPtr<IInterface> obj;
         mContext->GetSystemService(
                 IContext::WINDOW_SERVICE,
-                (IInterface**)&wm);
+                (IInterface**)&obj);
+        wm = IWindowManager::Probe(obj);
 
         AutoPtr<IDisplay> display;
         wm->GetDefaultDisplay((IDisplay**)&display);

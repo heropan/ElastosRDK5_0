@@ -935,7 +935,9 @@ ContentViewCore::ContentViewCore(
     mStartHandlePoint = mRenderCoordinates->CreateNormalizedPoint();
     mEndHandlePoint = mRenderCoordinates->CreateNormalizedPoint();
     mInsertionHandlePoint = mRenderCoordinates->CreateNormalizedPoint();
-    GetContext()->GetSystemService(IContext::ACCESSIBILITY_SERVICE, (IInterface**)&mAccessibilityManager);
+    AutoPtr<IInterface> obj;
+    GetContext()->GetSystemService(IContext::ACCESSIBILITY_SERVICE, (IInterface**)&obj);
+    mAccessibilityManager = IAccessibilityManager::Probe(obj);
     mGestureStateListenersIterator = mGestureStateListeners.GetRewindableIterator();
 
     AutoPtr<IEditableFactory> factory;

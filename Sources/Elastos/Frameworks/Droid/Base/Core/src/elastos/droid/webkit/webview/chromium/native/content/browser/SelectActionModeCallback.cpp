@@ -167,7 +167,9 @@ ECode SelectActionModeCallback::CreateActionMenu(
 Boolean SelectActionModeCallback::CanPaste()
 {
     AutoPtr<IClipboardManager> clipMgr;
-    GetContext()->GetSystemService(IContext::CLIPBOARD_SERVICE, (IInterface**)&clipMgr);
+    AutoPtr<IInterface> obj;
+    GetContext()->GetSystemService(IContext::CLIPBOARD_SERVICE, (IInterface**)&obj);
+    clipMgr = IClipboardManager::Probe(obj);
     Boolean bFlag;
     clipMgr->HasPrimaryClip(&bFlag);
     return bFlag;

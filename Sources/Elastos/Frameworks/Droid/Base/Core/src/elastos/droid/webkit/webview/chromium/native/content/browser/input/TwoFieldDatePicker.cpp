@@ -93,7 +93,9 @@ TwoFieldDatePicker::TwoFieldDatePicker(
     // super(context, NULL, android::R::attr::datePickerStyle);
 
     AutoPtr<ILayoutInflater> inflater;
-    context->GetSystemService(IContext::LAYOUT_INFLATER_SERVICE, (IInterface**)&inflater);
+    AutoPtr<IInterface> obj;
+    context->GetSystemService(IContext::LAYOUT_INFLATER_SERVICE, (IInterface**)&obj);
+    inflater = ILayoutInflater::Probe(obj);
     assert(0);
     // TODO
     // inflater->Inflate(R::layout::two_field_date_picker, this, TRUE);

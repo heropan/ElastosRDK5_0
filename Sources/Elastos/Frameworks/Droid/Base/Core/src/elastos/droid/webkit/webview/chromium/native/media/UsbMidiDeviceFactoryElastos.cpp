@@ -107,7 +107,9 @@ AutoPtr<IInterface> UsbMidiDeviceFactoryElastos::Create(
 Boolean UsbMidiDeviceFactoryElastos::EnumerateDevices(
     /* [in] */ IContext* context)
 {
-    context->GetSystemService(IContext::USB_SERVICE, (IInterface**)&mUsbManager);
+    AutoPtr<IInterface> obj;
+    context->GetSystemService(IContext::USB_SERVICE, (IInterface**)&obj);
+    mUsbManager = IUsbManager::Probe(obj);
     //Map<String, UsbDevice> devices = mUsbManager.GetDeviceList();
     AutoPtr<IMap> devices;
     mUsbManager->GetDeviceList((IMap**)&devices);

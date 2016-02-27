@@ -144,7 +144,9 @@ void MediaPlayerListener::ReleaseResources()
     if (mContext != NULL) {
         // Unregister the wish for audio focus.
         AutoPtr<IAudioManager> am;
-        mContext->GetSystemService(IContext::AUDIO_SERVICE, (IInterface**)&am);
+        AutoPtr<IInterface> obj;
+        mContext->GetSystemService(IContext::AUDIO_SERVICE, (IInterface**)&obj);
+        am = IAudioManager::Probe(obj);
         if (am != NULL) {
             Int32 result;
             am->AbandonAudioFocus(this, &result);
@@ -168,7 +170,9 @@ AutoPtr<IInterface> MediaPlayerListener::Create(
     mediaPlayerBridge->SetOnVideoSizeChangedListener(listener);
 
     AutoPtr<IAudioManager> am;
-    context->GetSystemService(IContext::AUDIO_SERVICE, (IInterface**)&am);
+    AutoPtr<IInterface> obj;
+    context->GetSystemService(IContext::AUDIO_SERVICE, (IInterface**)&obj);
+    am = IAudioManager::Probe(obj);
     Int32 result;
     am->RequestAudioFocus(
             listener,

@@ -24,8 +24,12 @@ const String VibrationProvider::TAG("VibrationProvider");
 VibrationProvider::VibrationProvider(
     /* [in] */ IContext* context)
 {
-    context->GetSystemService(IContext::AUDIO_SERVICE, (IInterface**)&mAudioManager);
-    context->GetSystemService(IContext::VIBRATOR_SERVICE, (IInterface**)&mVibrator);
+    AutoPtr<IInterface> amObj;
+    context->GetSystemService(IContext::AUDIO_SERVICE, (IInterface**)&amObj);
+    mAudioManager = IAudioManager::Probe(amObj);
+    AutoPtr<IInterface> vObj;
+    context->GetSystemService(IContext::VIBRATOR_SERVICE, (IInterface**)&vObj);
+    mVibrator = IVibrator::Probe(vObj);
     assert(0);
     // TODO
     // mHasVibratePermission = context.checkCallingOrSelfPermission(

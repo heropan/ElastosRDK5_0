@@ -146,9 +146,11 @@ ECode LocationProviderFactory::LocationProviderImpl::EnsureLocationManagerCreate
         return NOERROR;
     }
 
+    AutoPtr<IInterface> obj;
     mContext->GetSystemService(
             IContext::LOCATION_SERVICE,
-            (IInterface**)&mLocationManager);
+            (IInterface**)&obj);
+    mLocationManager = ILocationManager::Probe(obj);
     if (mLocationManager == NULL) {
         Slogger::E(TAG, "Could not get location manager.");
     }

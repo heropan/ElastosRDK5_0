@@ -124,7 +124,9 @@ void GamepadList::AttachedToWindow(
     /* [in] */ IContext* context)
 {
     if (mAttachedToWindowCounter++ == 0) {
-        context->GetSystemService(IContext::INPUT_SERVICE, (IInterface**)&mInputManager);
+        AutoPtr<IInterface> obj;
+        context->GetSystemService(IContext::INPUT_SERVICE, (IInterface**)&obj);
+        mInputManager = IInputManager::Probe(obj);
         {
             AutoLock lock(mLock);
             InitializeDevices();
