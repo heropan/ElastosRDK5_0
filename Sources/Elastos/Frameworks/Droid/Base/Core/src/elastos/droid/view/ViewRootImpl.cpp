@@ -1307,7 +1307,6 @@ ECode ViewRootImpl::constructor(
     display->GetDisplayAdjustments((IDisplayAdjustments**)&mDisplayAdjustments);
 
     mThread = Thread::GetCurrentThread();
-    assert(0 && "TODO");
     /*mLocation = new WindowLeaked(null);
     mLocation.fillInStackTrace();*/
     mWidth = -1;
@@ -2766,20 +2765,18 @@ void ViewRootImpl::PerformTraversals()
         Boolean stableInsetsChanged = !stableInsetsChangedTemp;
 
         if (contentInsetsChanged) {
-            Logger::V(TAG, "TODO, ViewRootImpl::PerformTraversals LINE:%d", __LINE__);
-            assert(0 && "TODO");
-            // Boolean isValid;
-            // if (mWidth > 0 && mHeight > 0 && lp != NULL &&
-            //     ((lp->mSystemUiVisibility|lp->mSubtreeSystemUiVisibility)
-            //         & IView::SYSTEM_UI_LAYOUT_FLAGS) == 0 &&
-            //     mSurface != NULL && (mSurface->IsValid(&isValid), isValid) &&
-            //     !mAttachInfo->mTurnOffWindowResizeAnim &&
-            //     mAttachInfo->mHardwareRenderer != NULL &&
-            //     mAttachInfo->mHardwareRenderer->IsEnabled() &&
-            //     lp != NULL && !CPixelFormat::FormatHasAlpha(lp->mFormat)
-            //     && !mBlockResizeBuffer) {
+            Boolean isValid, enabled, hasAlpha;
+            if (mWidth > 0 && mHeight > 0 && lp != NULL &&
+                ((lp->mSystemUiVisibility|lp->mSubtreeSystemUiVisibility)
+                    & IView::SYSTEM_UI_LAYOUT_FLAGS) == 0 &&
+                mSurface != NULL && (mSurface->IsValid(&isValid), isValid) &&
+                !mAttachInfo->mTurnOffWindowResizeAnim &&
+                mAttachInfo->mHardwareRenderer != NULL &&
+                (mAttachInfo->mHardwareRenderer->IsEnabled(&enabled), enabled) &&
+                lp != NULL && !PixelFormat::FormatHasAlpha(lp->mFormat)
+                && !mBlockResizeBuffer) {
 
-            //     DisposeResizeBuffer();
+                DisposeResizeBuffer();
 
 // TODO: Again....
                /*if (mResizeBuffer == null) {
@@ -2830,7 +2827,7 @@ void ViewRootImpl::PerformTraversals()
                    mResizeBuffer.endRecording(mTempRect);
                }
                mAttachInfo.mHardwareRenderer.flushLayerUpdates();*/
-            // }
+            }
             mAttachInfo->mContentInsets->Set(mPendingContentInsets);
 
             if (DEBUG_LAYOUT) {

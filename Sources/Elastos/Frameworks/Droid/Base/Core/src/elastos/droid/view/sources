@@ -164,7 +164,7 @@ SOURCES += InputEventSender.cpp
 SOURCES += AccessibilityIterators.cpp
 SOURCES += HardwareLayer.cpp
 SOURCES += GLES20Canvas.cpp
-
+SOURCES += GLES20RecordingCanvas.cpp
 ELASTOS_LIBS += inputmethod/inputmethod.lib
 ELASTOS_LIBS += accessibility/accessibility.lib
 ELASTOS_LIBS += animation/animation.lib
