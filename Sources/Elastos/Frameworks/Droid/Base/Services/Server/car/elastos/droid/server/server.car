@@ -9,6 +9,9 @@ module
     merge("NativeDaemonConnector.car");
     merge("MountServiceIdler.car");
 
+    merge("accessibility/EventStreamTransformation.car");
+    merge("accessibility/ScreenMagnifier.car");
+
     merge("am/ActivityRecord.car");
     merge("am/BroadcastFilter.car");
     merge("am/PendingIntentRecord.car");
@@ -85,8 +88,6 @@ module
     merge("NetworkManagementService.car");
     // merge("power/SuspendBlocker.car");
     // merge("power/ScreenOnBlocker.car");
-    // merge("accessibility/EventStreamTransformation.car");
-    // merge("accessibility/ScreenMagnifier.car");
     // merge("RecognitionManagerService.car");
     // merge("DeviceStorageMonitorService.car");
     // merge("search/Searchables.car");
@@ -98,6 +99,8 @@ module
     interface Elastos.Droid.Server.Wallpaper.IWallpaperData;
     interface Elastos.Droid.Server.Wallpaper.IWallpaperManagerService;
 
+    using interface Elastos.Droid.AccessibilityService.IAccessibilityServiceInfo;
+    using interface Elastos.Droid.AccessibilityService.IIAccessibilityServiceConnection;
     using interface Elastos.Droid.App.IIActivityContainer;
     using interface Elastos.Droid.App.IIActivityManager;
     using interface Elastos.Droid.App.IIAlarmManager;
@@ -112,6 +115,7 @@ module
     using interface Elastos.Droid.Bluetooth.IIBluetoothManager;
     using interface Elastos.Droid.Bluetooth.IIBluetoothCallback;
     using interface Elastos.Droid.Content.IContext;
+    using interface Elastos.Droid.Content.IComponentName;
     using interface Elastos.Droid.Content.IContextWrapper;
     using interface Elastos.Droid.Content.IComponentCallbacks;
     using interface Elastos.Droid.Content.IComponentCallbacks2;
@@ -190,6 +194,7 @@ module
     using interface Elastos.Droid.Service.Persistentdata.IIPersistentDataBlockService;
     using interface Elastos.Droid.Service.Wallpaper.IIWallpaperConnection;
     using interface Elastos.Droid.Utility.ITrustedTime;
+    using interface Elastos.Droid.View.Accessibility.IIAccessibilityManager;
     using interface Elastos.Droid.View.IApplicationToken;
     using interface Elastos.Droid.View.IIInputFilterHost;
     using interface Elastos.Droid.View.IInputChannel;
@@ -682,67 +687,6 @@ module
 //             interface IIPrivacySettingsManager;
 //     }
 
-//     namespace Accessibility {
-//         [local]
-//         class CAccessibilityManagerService {
-//             constructor(
-//                 [in] IContext* ctx);
-
-//             interface IIAccessibilityManager;
-//         }
-
-//         class CAccessibilityServiceConnection {
-//             constructor(
-//                 [in] ILooper* looper,
-//                 [in] Int32 userId,
-//                 [in] IComponentName* componentName,
-//                 [in] IAccessibilityServiceInfo* accessibilityServiceInfo,
-//                 [in] Boolean isAutomation,
-//                 [in] IIAccessibilityManager* accessibilityManager);
-
-//             interface IIAccessibilityServiceConnection;
-//             interface IServiceConnection;
-//             interface IProxyDeathRecipient;
-//         }
-
-//         [local]
-//         class CAccessibilityInputFilter {
-//             constructor(
-//                 [in] IContext* ctx,
-//                 [in] IIAccessibilityManager* service);
-
-//             interface IInputFilter;
-//             interface IEventStreamTransformation;
-//         }
-
-//         class CMagnificationSpec {
-//             constructor(
-//                 [in] Handle32 screenMagnifier);
-
-//             interface IMagnificationSpec;
-//         }
-
-//         class CMagnificationController {
-//             constructor(
-//                 [in] Handle32 screenMagnifier,
-//                 [in] Int32 animationDuration);
-
-//             interface IMagnificationController;
-//         }
-
-//         [local]
-//         class CViewportWindow {
-//             constructor(
-//                 [in] IContext* ctx,
-//                 [in] IWindowManager* service,
-//                 [in] Handle32 displayProvider);
-
-//             interface IViewportWindow;
-//         }
-
-//     } // Accessibility
-
-
 //     namespace Accounts {
 
 //     /**
@@ -936,6 +880,45 @@ module
 //         interface IBinder;
 //     }
 
+    } // namespace Server
+    } // namepsace Droid
+    } // namespace Elastos
+
+    namespace Elastos {
+    namespace Droid {
+    namespace Server {
+    namespace Accessibility {
+
+        class CAccessibilityManagerService {
+            constructor(
+                [in] IContext* ctx);
+
+            interface IIAccessibilityManager;
+            interface IBinder;
+        }
+
+        class CAccessibilityServiceConnection {
+            constructor(
+                [in] Int32 userId,
+                [in] IComponentName* componentName,
+                [in] IAccessibilityServiceInfo* accessibilityServiceInfo,
+                [in] IIAccessibilityManager* accessibilityManager);
+
+            interface IIAccessibilityServiceConnection;
+            interface IBinder;
+            interface IServiceConnection;
+            interface IProxyDeathRecipient;
+        }
+
+        class CMagnificationController {
+            constructor(
+                [in] IEventStreamTransformation* screenMagnifier,
+                [in] Int64 animationDuration);
+
+            interface IMagnificationController;
+        }
+
+    } // namespace Accessibility
     } // namespace Server
     } // namepsace Droid
     } // namespace Elastos

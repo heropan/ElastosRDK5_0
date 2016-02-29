@@ -100,6 +100,7 @@ SOURCES += Watchdog.cpp
 #SOURCES += CKortideRemoteService.cpp
 
 
+ELASTOS_LIBS += accessibility/accessibility.lib
 ELASTOS_LIBS += am/am.lib
 ELASTOS_LIBS += appwidget/appwidget.lib
 ELASTOS_LIBS += clipboard/clipboard.lib
@@ -127,7 +128,6 @@ ELASTOS_LIBS += webkit/webkit.lib
 
 
 #ELASTOS_LIBS += usb/usb.lib
-#ELASTOS_LIBS += accessibility/accessibility.lib
 #ELASTOS_LIBS += accounts/accounts.lib
 #ELASTOS_LIBS += search/search.lib
 #ELASTOS_LIBS += zigbee/zigbee.lib

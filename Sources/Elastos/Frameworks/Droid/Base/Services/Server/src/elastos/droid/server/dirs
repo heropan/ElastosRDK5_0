@@ -1,6 +1,6 @@
 
 
-#DIRS = accessibility
+DIRS = accessibility
 #DIRS += accounts
 DIRS += am
 DIRS += appwidget
