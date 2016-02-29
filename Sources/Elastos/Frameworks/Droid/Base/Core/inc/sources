@@ -30,6 +30,7 @@ EXPORT_HEADERS += elastos/droid/content/Intent.h
 EXPORT_HEADERS += elastos/droid/content/IntentFilter.h
 EXPORT_HEADERS += elastos/droid/content/ContextWrapper.h
 EXPORT_HEADERS += elastos/droid/content/Context.h
+EXPORT_HEADERS += elastos/droid/content/ContentProvider.h
 EXPORT_HEADERS += elastos/droid/content/pm/PackageParser.h
 EXPORT_HEADERS += elastos/droid/content/pm/PackageUserState.h
 EXPORT_HEADERS += elastos/droid/content/ContentProvider.h
@@ -101,6 +102,8 @@ EXPORT_HEADERS += elastos/droid/os/UEventObserver.h
 EXPORT_HEADERS += elastos/droid/os/SELinux.h
 
 EXPORT_HEADERS += elastos/droid/provider/Settings.h
+EXPORT_HEADERS += elastos/droid/provider/DocumentsProvider.h
+
 //EXPORT_HEADERS += elastos/droid/preference/PreferenceActivity.h
 EXPORT_HEADERS += elastos/droid/server/LocalServices.h
 EXPORT_HEADERS += elastos/droid/server/net/BaseNetworkObserver.h
