@@ -2717,7 +2717,8 @@ ECode BaseStatusBar::UpdateNotification(
                 AutoPtr<IViewGroup> holder;
                 mHeadsUpNotificationView->GetHolder((IViewGroup**)&holder);
                 if (InflateViewsForHeadsUp(newEntry, holder)) {
-                    mHeadsUpNotificationView->ShowNotification(newEntry);
+                    Boolean tmp = FALSE;
+                    mHeadsUpNotificationView->ShowNotification(newEntry, &tmp);
                     if (alertAgain) {
                         ResetHeadsUpDecayTimer();
                     }

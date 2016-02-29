@@ -295,6 +295,7 @@ module
     using interface Elastos.Droid.View.IContextThemeWrapper;
     using interface Elastos.Droid.View.ILayoutInflaterFactory;
     using interface Elastos.Droid.View.ILayoutInflaterFactory2;
+    using interface Elastos.Droid.View.IOnComputeInternalInsetsListener;
     using interface Elastos.Droid.View.IOnPreDrawListener;
     using interface Elastos.Droid.View.IOnWindowDismissedCallback;
     using interface Elastos.Droid.View.IViewGroup;
@@ -313,7 +314,9 @@ module
     using interface Elastos.Droid.Widget.ITextView;
     using interface Elastos.Core.ICharSequence;
     interface Elastos.Droid.SystemUI.IDemoMode;
+    interface Elastos.Droid.SystemUI.IExpandHelperCallback;
     interface Elastos.Droid.SystemUI.ISystemUI;
+    interface Elastos.Droid.SystemUI.ISwipeHelperCallback;
     interface Elastos.Droid.SystemUI.Recents.Model.ITaskStack;
     interface Elastos.Droid.SystemUI.StatusBar.INotificationOverflowIconsView;
     interface Elastos.Droid.SystemUI.StatusBar.IStatusBarPanel;
@@ -1464,22 +1467,49 @@ module
             interface IAccessibilityEventSource;
         }
 
-//     [local]
-//     class CKeyButtonView {
-//         constructor(
-//             [in] IContext* ctx,
-//             [in] IAttributeSet* attrs);
+        [local]
+        class CHeadsUpNotificationView {
+            constructor(
+                [in] IContext* ctx,
+                [in] IAttributeSet* attrs);
 
-//         constructor(
-//             [in] IContext* ctx,
-//             [in] IAttributeSet* attrs,
-//             [in] Int32 defStyle);
+            constructor(
+                [in] IContext* ctx,
+                [in] IAttributeSet* attrs,
+                [in] Int32 defStyle);
 
-//         interface IKeyButtonView;
-//         interface IDrawableCallback;
-//         interface IKeyEventCallback;
-//         interface IAccessibilityEventSource;
-//     }
+            interface IHeadsUpNotificationView;
+            interface ISwipeHelperCallback;
+            interface IExpandHelperCallback;
+            interface IOnComputeInternalInsetsListener;
+            interface IFrameLayout;
+            interface IViewGroup;
+            interface IView;
+            interface IViewParent;
+            interface IViewManager;
+            interface IDrawableCallback;
+            interface IKeyEventCallback;
+            interface IAccessibilityEventSource;
+        }
+
+        [local]
+        class CKeyButtonView {
+            constructor(
+                [in] IContext* ctx,
+                [in] IAttributeSet* attrs);
+
+            constructor(
+                [in] IContext* ctx,
+                [in] IAttributeSet* attrs,
+                [in] Int32 defStyle);
+
+            interface IKeyButtonView;
+            interface IImageView;
+            interface IView;
+            interface IDrawableCallback;
+            interface IKeyEventCallback;
+            interface IAccessibilityEventSource;
+        }
 
 //     [local]
 //     class CToggleSlider {
@@ -1501,27 +1531,6 @@ module
 //         interface IDrawableCallback;
 //         interface IKeyEventCallback;
 //         interface IAccessibilityEventSource;
-//     }
-
-//     [local]
-//     class CNotificationRowLayout {
-//         constructor(
-//             [in] IContext* ctx,
-//             [in] IAttributeSet* attrs);
-
-//         constructor(
-//             [in] IContext* ctx,
-//             [in] IAttributeSet* attrs,
-//             [in] Int32 defStyle);
-
-//         interface INotificationRowLayout;
-//         interface IViewParent;
-//         interface IViewManager;
-//         interface IDrawableCallback;
-//         interface IKeyEventCallback;
-//         interface IAccessibilityEventSource;
-//         interface ISwipeHelperCallback;
-//         interface IExpandHelperCallback;
 //     }
 
         } // namespace Policy

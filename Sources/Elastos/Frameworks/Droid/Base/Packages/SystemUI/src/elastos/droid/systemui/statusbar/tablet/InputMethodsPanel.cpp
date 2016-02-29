@@ -199,7 +199,7 @@ ECode InputMethodsPanel::InitImpl(
     mContext = context;
 
     AutoPtr<IInterface> tmpObj;
-    mContext->GetSystemService(IContext::INPUT_METHOD_SERVICE, (IInterface**)&mImm);
+    mContext->GetSystemService(IContext::INPUT_METHOD_SERVICE, (IInterface**)&tmpObj);
     mImm = IInputMethodManager::Probe(tmpObj.Get());
     if (mImm == NULL) {
         Logger::E(TAG, "Failed to get input method service!");
