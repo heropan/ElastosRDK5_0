@@ -341,6 +341,9 @@
 # ==== buid SystemUI ====
   Elastos/Frameworks/Droid/Base/Packages/SystemUI/src/elastos/droid/systemui SystemUI.car
 > Elastos/Frameworks/Droid/Base/Packages/SystemUI/src/elastos/droid/systemui/doze
+  Elastos/Frameworks/Droid/Base/Packages/SystemUI/src/elastos/droid/systemui/egg
+  Elastos/Frameworks/Droid/Base/Packages/SystemUI/src/elastos/droid/systemui/net
+  Elastos/Frameworks/Droid/Base/Packages/SystemUI/src/elastos/droid/systemui/recents/misc
   Elastos/Frameworks/Droid/Base/Packages/SystemUI/src/elastos/droid/systemui/recents/views
   Elastos/Frameworks/Droid/Base/Packages/SystemUI/src/elastos/droid/systemui/recents/model
 > Elastos/Frameworks/Droid/Base/Packages/SystemUI/src/elastos/droid/systemui/recents

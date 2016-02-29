@@ -212,16 +212,16 @@ module
     merge("../../../../car/elastos/droid/recents/Constants.car");
     merge("../../../../car/elastos/droid/recents/RecentsActivity.car");
     merge("../../../../car/elastos/droid/recents/RecentsAppWidgetHost.car");
-    merge("../../../../car/elastos/droid/recents/RecentsConfiguration.car");
+    //merge("../../../../car/elastos/droid/recents/RecentsConfiguration.car");
 
     //recents/misc
-    merge("../../../../car/elastos/droid/recents/misc/Console.car");
-    merge("../../../../car/elastos/droid/recents/misc/DebugTrigger.car");
-    merge("../../../../car/elastos/droid/recents/misc/DozeTrigger.car");
-    merge("../../../../car/elastos/droid/recents/misc/NamedCounter.car");
-    merge("../../../../car/elastos/droid/recents/misc/ReferenceCountedTrigger.car");
-    merge("../../../../car/elastos/droid/recents/misc/SystemServicesProxy.car");
-    merge("../../../../car/elastos/droid/recents/misc/Utilities.car");
+    //merge("../../../../car/elastos/droid/recents/misc/Console.car");
+    //merge("../../../../car/elastos/droid/recents/misc/DebugTrigger.car");
+    //merge("../../../../car/elastos/droid/recents/misc/DozeTrigger.car");
+    //merge("../../../../car/elastos/droid/recents/misc/NamedCounter.car");
+    //merge("../../../../car/elastos/droid/recents/misc/ReferenceCountedTrigger.car");
+    //merge("../../../../car/elastos/droid/recents/misc/SystemServicesProxy.car");
+    //merge("../../../../car/elastos/droid/recents/misc/Utilities.car");
 
     //recents/model
     merge("../../../../car/elastos/droid/recents/model/BitmapLruCache.car");
@@ -233,7 +233,7 @@ module
     merge("../../../../car/elastos/droid/recents/model/TaskGrouping.car");
     merge("../../../../car/elastos/droid/recents/model/TaskStack.car");
     merge("../../../../car/elastos/droid/recents/model/SpaceNode.car");
-    merge("../../../../car/elastos/droid/recents/model/RecentsTaskLoader.car");
+    //merge("../../../../car/elastos/droid/recents/model/RecentsTaskLoader.car");
 
     //recents/views
     merge("../../../../car/elastos/droid/recents/views/DebugOverlayView.car");
@@ -551,6 +551,58 @@ module
         }
     } // namespace Doze
 
+    //===========================================================================
+    //                              Egg
+    //===========================================================================
+    namespace Egg {
+        class CLLand {
+            constructor(
+                [in] IContext* context);
+
+            constructor(
+                [in] IContext* context,
+                [in] IAttributeSet* attrs);
+
+            constructor(
+                [in] IContext* context,
+                [in] IAttributeSet* attrs,
+                [in] Int32 defStyle);
+
+            interface ILLand;
+            interface IFrameLayout;
+            interface IViewGroup;
+            interface IView;
+            interface IDrawableCallback;
+            interface IKeyEventCallback;
+            interface IAccessibilityEventSource;
+            interface IViewParent;
+            interface IViewManager;
+        }
+
+        class CLLandActivity {
+            constructor();
+
+            interface ILLandActivity;
+            interface IActivity;
+            interface ILayoutInflaterFactory;
+            interface ILayoutInflaterFactory2;
+            interface IWindowCallback;
+            interface IKeyEventCallback;
+            interface IViewOnCreateContextMenuListener;
+            interface IComponentCallbacks;
+            interface IComponentCallbacks2;
+            interface IOnWindowDismissedCallback;
+            interface IContextThemeWrapper;
+            interface IContextWrapper;
+            interface IContext;
+        }
+
+        singleton class CLLandHelper {
+            interface ILLandHelper;
+        }
+
+    } // namespace Egg
+
 //     //===========================================================================
 //     //                              Media
 //     //===========================================================================
@@ -568,6 +620,31 @@ module
 //             interface IRingtonePlayer;
 //         }
 //     }
+
+    //===========================================================================
+    //                              Net
+    //===========================================================================
+    namespace Net {
+
+        class CNetworkOverLimitActivity {
+            constructor();
+
+            interface INetworkOverLimitActivity;
+            interface IActivity;
+            interface ILayoutInflaterFactory;
+            interface ILayoutInflaterFactory2;
+            interface IWindowCallback;
+            interface IKeyEventCallback;
+            interface IViewOnCreateContextMenuListener;
+            interface IComponentCallbacks;
+            interface IComponentCallbacks2;
+            interface IOnWindowDismissedCallback;
+            interface IContextThemeWrapper;
+            interface IContextWrapper;
+            interface IContext;
+        }
+
+    } // namespace Net
 
 //     //===========================================================================
 //     //                              Recent

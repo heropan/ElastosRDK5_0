@@ -1,6 +1,7 @@
 
 #include "elastos/droid/systemui/recents/model/TaskStack.h"
 #include "elastos/droid/systemui/recents/Constants.h"
+#include "elastos/droid/systemui/recents/misc/NamedCounter.h"
 #include <elastos/core/StringBuilder.h>
 
 using Elastos::Droid::Graphics::IColor;
@@ -13,7 +14,7 @@ using Elastos::Utility::ICollections;
 using Elastos::Utility::ICollection;
 using Elastos::Utility::CRandom;
 using Elastos::Utility::IRandom;
-using Elastos::Droid::SystemUI::Recents::Misc::INamedCounter;
+using Elastos::Droid::SystemUI::Recents::Misc::NamedCounter;
 
 namespace Elastos {
 namespace Droid {
@@ -445,8 +446,7 @@ void TaskStack::CreateAffiliatedGroupings(
         CCollections::AcquireSingleton((ICollections**)&collections);
         collections->Sort(IList::Probe(tasks), comparator);
         // Create groups when sequential packages are the same
-        assert(0);
-        AutoPtr<INamedCounter> counter;// = new NamedCounter(String("task-group"), String(""));
+        AutoPtr<NamedCounter> counter = new NamedCounter(String("task-group"), String(""));
         Int32 taskCount;
         tasks->GetSize(&taskCount);
         String prevPackage("");
