@@ -68,6 +68,7 @@ using namespace android::uirenderer;
 namespace Elastos {
 namespace Droid {
 namespace View {
+CAR_INTERFACE_IMPL(GLES20Canvas, HardwareCanvas, IGLES20Canvas)
 
 GLES20Canvas::CanvasFinalizer::CanvasFinalizer(
 /* [in] */ Int64 rendererPtr)

@@ -7,7 +7,7 @@
 #include "Elastos.Droid.Widget.h"
 #include "elastos/droid/view/Window.h"
 #include "elastos/droid/view/WindowManagerImpl.h"
-// #include "elastos/droid/view/CViewConfiguration.h"
+#include "elastos/droid/view/CViewConfiguration.h"
 #include "elastos/droid/os/SystemProperties.h"
 #include "elastos/droid/ext/frameworkdef.h"
 #include "elastos/droid/R.h"
@@ -515,8 +515,7 @@ Boolean Window::IsOutOfBounds(
     Int32 x = (Int32)fX;
     Int32 y = (Int32)fY;
     Int32 slop;
-    assert(0 && "TODO");
-    // CViewConfiguration::Get(context)->GetScaledWindowTouchSlop(&slop);
+    CViewConfiguration::Get(context)->GetScaledWindowTouchSlop(&slop);
     AutoPtr<IView> decorView;
     GetDecorView((IView**)&decorView);
     Int32 width, height;

@@ -44,6 +44,7 @@ class GLES20Canvas
     : public HardwareCanvas
     , public IGLES20Canvas
 {
+    friend class HardwareRenderer;
     class CanvasFinalizer
     {
     public:
@@ -57,6 +58,8 @@ class GLES20Canvas
     };
 
 public:
+    CAR_INTERFACE_DECL()
+
     virtual ~GLES20Canvas();
 
     CARAPI GetWidth(
