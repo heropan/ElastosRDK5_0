@@ -1545,6 +1545,23 @@ module
         }
 
         [local]
+        class CSplitClockView {
+            constructor(
+                [in] IContext* ctx,
+                [in] IAttributeSet* attrs);
+
+            interface ISplitClockView;
+            interface ILinearLayout;
+            interface IViewGroup;
+            interface IView;
+            interface IViewParent;
+            interface IViewManager;
+            interface IDrawableCallback;
+            interface IKeyEventCallback;
+            interface IAccessibilityEventSource;
+        }
+
+        [local]
         class CHeadsUpNotificationView {
             constructor(
                 [in] IContext* ctx,
