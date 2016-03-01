@@ -2,8 +2,8 @@
 #ifndef __NATIVEINPUTMANAGER_H__
 #define __NATIVEINPUTMANAGER_H__
 
-#include "InputApplicationHandle.h"
-#include "InputWindowHandle.h"
+#include "elastos/droid/server/input/InputApplicationHandle.h"
+#include "elastos/droid/server/input/InputWindowHandle.h"
 #include <utils/Looper.h>
 #include <inputflinger/InputManager.h>
 #include <input/PointerController.h>
@@ -34,7 +34,7 @@ public:
         /* [in] */ const android::sp<android::Looper>& looper);
 
     inline android::sp<android::InputManager> getInputManager() const
-    { return mInputManager; }
+        { return mInputManager; }
 
     void dump(android::String8& dump);
 
@@ -127,8 +127,6 @@ public:
     virtual void getDispatcherConfiguration(
         /* [in] */ android::InputDispatcherConfiguration* outConfig);
 
-    virtual bool isKeyRepeatEnabled();
-
     virtual void interceptKeyBeforeQueueing(
         /* [in] */ const android::KeyEvent* keyEvent,
         /* [in] */ uint32_t& policyFlags);
@@ -172,13 +170,6 @@ private:
 
     void ensureSpriteControllerLocked();
 
-    // Power manager interactions.
-    bool isScreenOn();
-    bool isScreenBright();
-    void tempWakeUp(nsecs_t eventTime);
-    bool isBootFastStatus();
-    bool isPowered();
-
 private:
     android::sp<android::InputManager> mInputManager;
 
@@ -212,9 +203,6 @@ private:
     } mLocked;
 
     volatile bool mInteractive;
-
-    static bool checkAndClearExceptionFromCallback(
-            /* [in] */ const char* methodName);
 };
 
 } // namespace Input

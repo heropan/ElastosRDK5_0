@@ -6,7 +6,6 @@
 #include "Elastos.Droid.Graphics.h"
 #include "elastos/droid/server/input/InputApplicationHandle.h"
 #include "elastos/core/Object.h"
-#include <inputflinger/InputWindow.h>
 
 using Elastos::Droid::Graphics::IRegion;
 using Elastos::Droid::View::IInputChannel;
@@ -34,9 +33,6 @@ public:
         /* [in] */ Int32 displayId);
 
     virtual ~InputWindowHandle();
-
-    static CARAPI_(android::sp<android::InputWindowHandle>) GetHandle(
-        /* [in] */ InputWindowHandle* inputWindowHandleObj);
 
 private:
     void NativeDispose();
@@ -103,10 +99,9 @@ public:
     // Display this input is on.
     Int32 mDisplayId;
 
-private:
+public:
     // Pointer to the native input window handle.
     // This field is lazily initialized via JNI.
-    //@SuppressWarnings("unused")
     Int64 mPtr;
 };
 

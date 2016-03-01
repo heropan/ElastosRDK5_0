@@ -1,6 +1,5 @@
 
 #include "elastos/droid/server/input/NativeInputWindowHandle.h"
-#include "elastos/droid/server/input/InputWindowHandle.h"
 #include "elastos/droid/view/NativeInputChannel.h"
 #include "elastos/droid/view/InputChannel.h"
 #include <skia/core/SkRegion.h>
@@ -14,24 +13,28 @@ namespace Input {
 
 NativeInputWindowHandle::NativeInputWindowHandle(
     /* [in] */ const android::sp<android::InputApplicationHandle>& inputApplicationHandle,
-    /* [in] */ Input::InputWindowHandle* obj)
+    /* [in] */ IWeakReference* objWeak)
     : InputWindowHandle(inputApplicationHandle)
-    , mObject(obj)
+    , mObjWeak(objWeak)
 {}
 
 NativeInputWindowHandle::~NativeInputWindowHandle()
 {
-    mObject = NULL;
+    mObjWeak = NULL;
 }
 
-Input::InputWindowHandle* NativeInputWindowHandle::getInputWindowHandleObj()
+AutoPtr<Elastos::Droid::Server::Input::InputWindowHandle> NativeInputWindowHandle::getInputWindowHandleObj()
 {
-    return mObject;
+    AutoPtr<IInputWindowHandle> obj;
+    mObjWeak->Resolve(EIID_IInputWindowHandle, (IInterface**)&obj);
+    return (Elastos::Droid::Server::Input::InputWindowHandle*)obj.Get();
 }
 
 bool NativeInputWindowHandle::updateInfo()
 {
-    if (!mObject) {
+    AutoPtr<IInputWindowHandle> obj;
+    mObjWeak->Resolve(EIID_IInputWindowHandle, (IInterface**)&obj);
+    if (!obj) {
         releaseInfo();
         return false;
     }
@@ -39,56 +42,62 @@ bool NativeInputWindowHandle::updateInfo()
     if (!mInfo) {
         mInfo = new android::InputWindowInfo();
     }
+    else {
+        mInfo->touchableRegion.clear();
+    }
 
-    IInputChannel* inputChannelObj = mObject->mInputChannel;
+    Elastos::Droid::Server::Input::InputWindowHandle* handle =
+            (Elastos::Droid::Server::Input::InputWindowHandle*)obj.Get();
+    AutoPtr<IInputChannel> inputChannelObj = handle->mInputChannel;
     if (inputChannelObj) {
-        NativeInputChannel* nativeInputChannel;
-        //inputChannelObj->GetNativeInputChannel((Handle32*)&nativeInputChannel);
-        Elastos::Droid::View::InputChannel* otherObj = (Elastos::Droid::View::InputChannel*)inputChannelObj;
-        nativeInputChannel = (NativeInputChannel*)(otherObj->mNative);
-
+        Handle64 ptr;
+        inputChannelObj->GetNativeInputChannel(&ptr);
+        NativeInputChannel* nativeInputChannel = reinterpret_cast<NativeInputChannel*>(ptr);
         mInfo->inputChannel = nativeInputChannel != NULL ? nativeInputChannel->getInputChannel() : NULL;
     }
     else {
         mInfo->inputChannel.clear();
     }
 
-    if (!mObject->mName.IsNull()) {
-        mInfo->name.setTo((const char*)mObject->mName);
+    if (!handle->mName.IsNull()) {
+        mInfo->name.setTo(handle->mName.string());
     }
     else {
         mInfo->name.setTo("<null>");
     }
 
-    mInfo->layoutParamsFlags = mObject->mLayoutParamsFlags;
-    mInfo->layoutParamsType = mObject->mLayoutParamsType;
-    mInfo->dispatchingTimeout = mObject->mDispatchingTimeoutNanos;
-    mInfo->frameLeft = mObject->mFrameLeft;
-    mInfo->frameTop = mObject->mFrameTop;
-    mInfo->frameRight = mObject->mFrameRight;
-    mInfo->frameBottom = mObject->mFrameBottom;
-    mInfo->scaleFactor = mObject->mScaleFactor;
+    mInfo->layoutParamsFlags = handle->mLayoutParamsFlags;
+    mInfo->layoutParamsType = handle->mLayoutParamsType;
+    mInfo->dispatchingTimeout = handle->mDispatchingTimeoutNanos;
+    mInfo->frameLeft = handle->mFrameLeft;
+    mInfo->frameTop = handle->mFrameTop;
+    mInfo->frameRight = handle->mFrameRight;
+    mInfo->frameBottom = handle->mFrameBottom;
+    mInfo->scaleFactor = handle->mScaleFactor;
 
-    IRegion* regionObj = mObject->mTouchableRegion;
+    AutoPtr<IRegion> regionObj = handle->mTouchableRegion;
     if (regionObj) {
-        android::Rect *region;
-        regionObj->GetNativeRegion((Handle64*)&region);
-        mInfo->touchableRegion.set(*region);
-    }
-    else {
-        mInfo->name.setTo("<null>");
+        Int64 regionHandle;
+        regionObj->GetNativeRegion((Handle64*)&regionHandle);
+        SkRegion* region = reinterpret_cast<SkRegion*>(regionHandle);
+        SkASSERT(region != NULL);
+
+        for (SkRegion::Iterator it(*region); !it.done(); it.next()) {
+            const SkIRect& rect = it.rect();
+            mInfo->addTouchableRegion(android::Rect(rect.fLeft, rect.fTop, rect.fRight, rect.fBottom));
+        }
     }
 
-    mInfo->visible = mObject->mVisible;
-    mInfo->canReceiveKeys = mObject->mCanReceiveKeys;
-    mInfo->hasFocus = mObject->mHasFocus;
-    mInfo->hasWallpaper = mObject->mHasWallpaper;
-    mInfo->paused = mObject->mPaused;
-    mInfo->layer = mObject->mLayer;
-    mInfo->ownerPid = mObject->mOwnerPid;
-    mInfo->ownerUid = mObject->mOwnerUid;
-    mInfo->inputFeatures = mObject->mInputFeatures;
-    mInfo->displayId = mObject->mDisplayId;
+    mInfo->visible = handle->mVisible;
+    mInfo->canReceiveKeys = handle->mCanReceiveKeys;
+    mInfo->hasFocus = handle->mHasFocus;
+    mInfo->hasWallpaper = handle->mHasWallpaper;
+    mInfo->paused = handle->mPaused;
+    mInfo->layer = handle->mLayer;
+    mInfo->ownerPid = handle->mOwnerPid;
+    mInfo->ownerUid = handle->mOwnerUid;
+    mInfo->inputFeatures = handle->mInputFeatures;
+    mInfo->displayId = handle->mDisplayId;
 
     return true;
 }

@@ -3,9 +3,6 @@
 
 #include "_Elastos.Droid.Server.h"
 #include "elastos/core/Object.h"
-//#include <elastos.h>
-#include "elastos/droid/server/input/NativeInputApplicationHandle.h"
-#include <inputflinger/InputApplication.h>
 
 namespace Elastos {
 namespace Droid {
@@ -24,9 +21,6 @@ public:
 
     virtual ~InputApplicationHandle();
 
-    static CARAPI_(android::sp<android::InputApplicationHandle>) GetHandle(
-        /* [in] */ InputApplicationHandle* inputApplicationHandleObj);
-
 private:
     CARAPI_(void) NativeDispose();
 
@@ -40,10 +34,10 @@ public:
     // Dispatching timeout.
     Int64 mDispatchingTimeoutNanos;
 
-private:
+public:
     // Pointer to the native input application handle.
     // This field is lazily initialized via JNI.
-    NativeInputApplicationHandle* mNative;
+    Int64 mPtr;
 };
 
 } // Input

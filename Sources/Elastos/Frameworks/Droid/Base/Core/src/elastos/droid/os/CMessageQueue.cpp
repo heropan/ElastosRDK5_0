@@ -694,10 +694,10 @@ ECode CMessageQueue::RemoveCallbacksAndMessages(
 }
 
 ECode CMessageQueue::GetNativeMessageQueue(
-    /* [out] */ Handle32* queue)
+    /* [out] */ Handle64* queue)
 {
     VALIDATE_NOT_NULL(queue);
-    *queue = mPtr;
+    *queue = (Handle64)mPtr;
     return NOERROR;
 }
 
@@ -885,15 +885,6 @@ Boolean CMessageQueue::NativeIsIdling()
 {
     NativeMessageQueue* nativeMessageQueue = (NativeMessageQueue*)mPtr;
     return (Boolean)nativeMessageQueue->GetLooper()->isIdling();
-}
-
-ECode CMessageQueue::GetMPtr(
-    /* [out] */ Int64* handle)
-{
-    VALIDATE_NOT_NULL(handle);
-
-    *handle = mPtr;
-    return NOERROR;
 }
 
 } // namespace Os

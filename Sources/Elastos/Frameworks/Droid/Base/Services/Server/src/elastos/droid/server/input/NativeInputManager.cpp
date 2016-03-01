@@ -1,34 +1,24 @@
 
 #include "elastos/droid/server/input/NativeInputManager.h"
 #include "elastos/droid/server/input/CInputManagerService.h"
-#include "elastos/droid/view/NativeInputChannel.h"
+#include "elastos/droid/server/input/InputApplicationHandle.h"
 #include "elastos/droid/server/input/NativeInputApplicationHandle.h"
 #include "elastos/droid/server/input/NativeInputWindowHandle.h"
-//#include "elastos/droid/server/power/CPowerManagerService.h"
-#include <inputflinger/InputManager.h>
-#include <elastos/utility/logging/Slogger.h>
 #include <elastos/core/Math.h>
 
-#include <skia/core/SkImageDecoder.h>
-#include <skia/core/SkStream.h>
-
+using Elastos::Droid::Graphics::IBitmap;
 using Elastos::Droid::View::IInputEvent;
 using Elastos::Droid::View::IKeyEvent;
-using Elastos::Droid::View::CKeyEvent;
+using Elastos::Droid::View::IKeyEventHelper;
+using Elastos::Droid::View::CKeyEventHelper;
 using Elastos::Droid::View::IMotionEvent;
-using Elastos::Droid::View::CMotionEvent;
+using Elastos::Droid::View::IMotionEventHelper;
+using Elastos::Droid::View::CMotionEventHelper;
 using Elastos::Droid::View::CKeyCharacterMap;
 using Elastos::Droid::View::IKeyCharacterMap;
 using Elastos::Droid::View::CInputDevice;
 using Elastos::Droid::View::CPointerIconHelper;
 using Elastos::Droid::View::IPointerIconHelper;
-using Elastos::Droid::Graphics::IBitmap;
-using Elastos::Utility::Logging::Slogger;
-//using Elastos::Droid::Server::Power::CPowerManagerService;
-
-//
-// frameworks/base/services/core/jni/com_android_server_input_InputManagerService.cpp
-//
 
 namespace Elastos {
 namespace Droid {
@@ -40,7 +30,7 @@ namespace Input {
 // where the speed ranges from -7 to + 7 and is supplied by the user.
 static const Float POINTER_SPEED_EXPONENT = 1.0f / 4;
 
-static InputApplicationHandle* GetInputApplicationHandleObj(
+static AutoPtr<InputApplicationHandle> GetInputApplicationHandleObj(
     /* [in] */ const android::sp<android::InputApplicationHandle>& inputApplicationHandle)
 {
     if (inputApplicationHandle == NULL) {
@@ -50,7 +40,7 @@ static InputApplicationHandle* GetInputApplicationHandleObj(
     return obj->getInputApplicationHandleObj();
 }
 
-static InputWindowHandle* GetInputWindowHandleObj(
+static AutoPtr<InputWindowHandle> GetInputWindowHandleObj(
     /* [in] */ const android::sp<android::InputWindowHandle>& inputWindowHandle)
 {
     if (inputWindowHandle == NULL) {
@@ -63,8 +53,10 @@ static InputWindowHandle* GetInputWindowHandleObj(
 static AutoPtr<IKeyEvent> CreateKeyEventFromNative(
     /* [in] */ const android::KeyEvent* event)
 {
+    AutoPtr<IKeyEventHelper> helper;
+    CKeyEventHelper::AcquireSingleton((IKeyEventHelper**)&helper);
     AutoPtr<IKeyEvent> eventObj;
-    ECode ec = CKeyEvent::New(nanoseconds_to_milliseconds(event->getDownTime()),
+    ECode ec = helper->Obtain(nanoseconds_to_milliseconds(event->getDownTime()),
             nanoseconds_to_milliseconds(event->getEventTime()),
             event->getAction(),
             event->getKeyCode(),
@@ -74,6 +66,7 @@ static AutoPtr<IKeyEvent> CreateKeyEventFromNative(
             event->getScanCode(),
             event->getFlags(),
             event->getSource(),
+            String(NULL),
             (IKeyEvent**)&eventObj);
     if (FAILED(ec)) {
 //        ALOGE("An exception occurred while obtaining a key event.");
@@ -116,17 +109,22 @@ static android::status_t KeyEventToNative(
 static AutoPtr<IMotionEvent> CreateMotionEventFromNative(
     /* [in] */ const android::MotionEvent* event)
 {
+    AutoPtr<IMotionEventHelper> helper;
+    CMotionEventHelper::AcquireSingleton((IMotionEventHelper**)&helper);
     AutoPtr<IMotionEvent> eventObj;
-    if (FAILED(CMotionEvent::New((IMotionEvent**)&eventObj))) {
-        return NULL;
-    }
+    assert(0);
+    // TODO
+    // ECode ec = helper->Obtain((IMotionEvent**)&eventObj);
+    // if (FAILED(ec)) {
+    //     return NULL;
+    // }
 
     Handle64 native;
     eventObj->GetNative(&native);
-    android::MotionEvent* destEvent = (android::MotionEvent*)native;
+    android::MotionEvent* destEvent = reinterpret_cast<android::MotionEvent*>(native);
     if (!destEvent) {
         destEvent = new android::MotionEvent();
-        eventObj->SetNative((Handle32)destEvent);
+        eventObj->SetNative(reinterpret_cast<Handle64>(destEvent));
     }
 
     destEvent->copyFrom(event, true);
@@ -135,8 +133,6 @@ static AutoPtr<IMotionEvent> CreateMotionEventFromNative(
 
 enum {
     WM_ACTION_PASS_TO_USER = 1,
-    WM_ACTION_WAKE_UP = 2,
-    WM_ACTION_GO_TO_SLEEP = 4,
 };
 
 NativeInputManager::NativeInputManager(
@@ -146,6 +142,7 @@ NativeInputManager::NativeInputManager(
     : mContext(context)
     , mService(service)
     , mLooper(looper)
+    , mInteractive(TRUE)
 {
     {
         android::AutoMutex _l(mLock);
@@ -162,6 +159,7 @@ NativeInputManager::NativeInputManager(
 
 NativeInputManager::~NativeInputManager()
 {
+    mService = NULL;
 }
 
 void NativeInputManager::dump(
@@ -227,7 +225,6 @@ void NativeInputManager::getReaderConfiguration(
     outConfig->virtualKeyQuietTime = milliseconds_to_nanoseconds(virtualKeyQuietTime);
 
     outConfig->excludedDeviceNames.clear();
-
     AutoPtr<ArrayOf<String> > excludedDeviceNames = mService->GetExcludedDeviceNames();
 
     Int32 length = excludedDeviceNames->GetLength();
@@ -331,9 +328,9 @@ static android::status_t PointerIcon_load(
     if (elBitmap) {
         Handle64 b = 0;
         elBitmap->GetNativeBitmap(&b);
-        SkBitmap* bitmap = (SkBitmap*)b;
+        SkBitmap* bitmap = reinterpret_cast<SkBitmap*>(b);
         if (bitmap) {
-            outPointerIcon->bitmap = *(SkBitmap*)bitmap; // use a shared pixel ref
+            outPointerIcon->bitmap = *bitmap; // use a shared pixel ref
         }
     }
 
@@ -351,6 +348,7 @@ android::sp<android::PointerControllerInterface> NativeInputManager::obtainPoint
 
         controller = new android::PointerController(this, mLooper, mLocked.mSpriteController);
         mLocked.mPointerController = controller;
+
         android::DisplayViewport& v = mLocked.mInternalViewport;
         controller->setDisplayViewport(
                 v.logicalRight - v.logicalLeft,
@@ -382,43 +380,83 @@ void NativeInputManager::ensureSpriteControllerLocked()
     }
 }
 
+/*   KeyCharacterMap   */
+class NativeKeyCharacterMap
+{
+public:
+    NativeKeyCharacterMap(int32_t deviceId, const android::sp<android::KeyCharacterMap>& map) :
+        mDeviceId(deviceId), mMap(map)
+    {
+    }
+
+    ~NativeKeyCharacterMap() {
+    }
+
+    inline int32_t getDeviceId() const {
+        return mDeviceId;
+    }
+
+    inline const android::sp<android::KeyCharacterMap>& getMap() const {
+        return mMap;
+    }
+
+private:
+    int32_t mDeviceId;
+    android::sp<android::KeyCharacterMap> mMap;
+};
+
 static AutoPtr<IKeyCharacterMap> KeyCharacterMap_create(
     /* [in] */ int32_t deviceId,
     /* [in] */ const android::sp<android::KeyCharacterMap>& kcm)
 {
-    android::KeyCharacterMap* map = kcm.get();
-    if (!map)
-        map = android::KeyCharacterMap::empty().get();
+    NativeKeyCharacterMap* map = new NativeKeyCharacterMap(deviceId,
+            kcm.get() ? kcm : android::KeyCharacterMap::empty());
+    if (!map) {
+        return NULL;
+    }
 
     AutoPtr<IKeyCharacterMap> elKcm;
-    CKeyCharacterMap::New(reinterpret_cast<Int32>(map), (IKeyCharacterMap**)&elKcm);
-
+    CKeyCharacterMap::New(reinterpret_cast<Int64>(map), (IKeyCharacterMap**)&elKcm);
     return elKcm;
 }
 
 static AutoPtr<IInputDevice> InputDevice_create(
     /* [in] */ const android::InputDeviceInfo& deviceInfo)
 {
-    AutoPtr<IKeyCharacterMap> kcm = KeyCharacterMap_create(
+    String nameObj(deviceInfo.getDisplayName().string());
+    if (nameObj.IsNull()) {
+        return NULL;
+    }
+
+    String descriptorObj(deviceInfo.getIdentifier().descriptor.string());
+    if (descriptorObj.IsNull()) {
+        return NULL;
+    }
+
+    AutoPtr<IKeyCharacterMap> kcmObj = KeyCharacterMap_create(
         deviceInfo.getId(), deviceInfo.getKeyCharacterMap());
+    if (kcmObj == NULL) {
+        return NULL;
+    }
+
+    const android::InputDeviceIdentifier& ident = deviceInfo.getIdentifier();
 
     AutoPtr<IInputDevice> inputDevice;
-/*
     CInputDevice::New(
-        deviceInfo.getId(), deviceInfo.getGeneration(),
-        String(deviceInfo.getDisplayName().string()),
-        String(deviceInfo.getIdentifier().descriptor.string()),
-        deviceInfo.isExternal(), deviceInfo.getSources(),
-        deviceInfo.getKeyboardType(), kcm.Get(), deviceInfo.hasVibrator(),
-        (IInputDevice**)&inputDevice);
+            deviceInfo.getId(), deviceInfo.getGeneration(),
+            deviceInfo.getControllerNumber(), nameObj,
+            static_cast<int32_t>(ident.vendor), static_cast<int32_t>(ident.product),
+            descriptorObj, deviceInfo.isExternal(), deviceInfo.getSources(),
+            deviceInfo.getKeyboardType(), kcmObj.Get(), deviceInfo.hasVibrator(),
+            deviceInfo.hasButtonUnderPad(), (IInputDevice**)&inputDevice);
 
     const android::Vector<android::InputDeviceInfo::MotionRange>& ranges = deviceInfo.getMotionRanges();
     for (size_t i = 0; i < ranges.size(); i++) {
         const android::InputDeviceInfo::MotionRange& range = ranges.itemAt(i);
-        inputDevice->AddMotionRange(
-            range.axis, range.source, range.min, range.max, range.flat, range.fuzz);
+        inputDevice->AddMotionRange(range.axis, range.source, range.min,
+                range.max, range.flat, range.fuzz, range.resolution);
     }
-*/
+
     return inputDevice;
 }
 
@@ -428,7 +466,6 @@ void NativeInputManager::notifyInputDevicesChanged(
     size_t count = inputDevices.size();
     AutoPtr<ArrayOf<IInputDevice*> > inputDevicesArray =
             ArrayOf<IInputDevice*>::Alloc(count);
-
     if (inputDevicesArray != NULL) {
         bool error = false;
         for (size_t i = 0; i < count; i++) {
@@ -437,7 +474,7 @@ void NativeInputManager::notifyInputDevicesChanged(
                 error = true;
                 break;
             }
-            inputDevicesArray->Set(i, inputDevice.Get());
+            inputDevicesArray->Set(i, inputDevice);
         }
 
         if (!error) {
@@ -451,16 +488,21 @@ android::sp<android::KeyCharacterMap> NativeInputManager::getKeyboardLayoutOverl
     /* [in] */ const android::InputDeviceIdentifier& identifier)
 {
     android::sp<android::KeyCharacterMap> result;
-/*
-    AutoPtr<ArrayOf<String> > array = mService->GetKeyboardLayoutOverlay(
-        String(inputDeviceDescriptor.string()));
 
-    if (array != NULL) {
+    String descriptor(identifier.descriptor.string());
+    AutoPtr<IInputDeviceIdentifier> identifierObj;
+    assert(0);
+    // TODO:
+    // CInputDeviceIdentifier::New(descriptor, identifier.vendor, identifier.product,
+    //         (IInputDeviceIdentifier**)&identifierObj);
+    AutoPtr<ArrayOf<String> > arrayObj = mService->GetKeyboardLayoutOverlay(identifierObj);
+    if (arrayObj) {
+        String filenameChars = (*arrayObj)[0];
+        String contentsChars = (*arrayObj)[1];
         android::KeyCharacterMap::loadContents(
-            android::String8((*array)[0].string()), android::String8((*array)[1].string()),
-            android::KeyCharacterMap::FORMAT_OVERLAY, &result);
+                android::String8(filenameChars.string()),
+                android::String8(contentsChars.string()), android::KeyCharacterMap::FORMAT_OVERLAY, &result);
     }
-*/
     return result;
 }
 
@@ -473,53 +515,8 @@ android::String8 NativeInputManager::getDeviceAlias(
     if (!alias.IsNull()) {
         result.setTo(alias.string());
     }
-
     return result;
 }
-
-android::TouchAffineTransformation NativeInputManager::getTouchAffineTransformation(
-    /* [in] */ ArrayOf<Float>* matrixArr)
-{
-//TODO
-/*
-    ScopedLocalRef<jstring> descriptorObj(env, env->NewStringUTF(inputDeviceDescriptor.string()));
-
-    jobject cal = env->CallObjectMethod(mServiceObj,
-            gServiceClassInfo.getTouchCalibrationForInputDevice, descriptorObj.get(),
-            surfaceRotation);
-
-    jfloatArray matrixArr = jfloatArray(env->CallObjectMethod(cal,
-            gTouchCalibrationClassInfo.getAffineTransform));
-
-    TouchAffineTransformation transform = getTouchAffineTransformation(env, matrixArr);
-
-    env->DeleteLocalRef(matrixArr);
-    env->DeleteLocalRef(cal);
-
-    return transform;
-*/
-}
-
-android::TouchAffineTransformation NativeInputManager::getTouchAffineTransformation(
-    /* [in] */ const android::String8& inputDeviceDescriptor,
-    /* [in] */ int32_t surfaceRotation)
-{
-/*
-    ScopedFloatArrayRO matrix(env, matrixArr);
-    assert(matrix.size() == 6);
-
-    TouchAffineTransformation transform;
-    transform.x_scale  = matrix[0];
-    transform.x_ymix   = matrix[1];
-    transform.x_offset = matrix[2];
-    transform.y_xmix   = matrix[3];
-    transform.y_scale  = matrix[4];
-    transform.y_offset = matrix[5];
-
-    return transform;
-*/
-}
-
 
 void NativeInputManager::notifySwitch(
         /* [in] */ nsecs_t when,
@@ -554,9 +551,9 @@ nsecs_t NativeInputManager::notifyANR(
    ALOGD("notifyANR");
 #endif
 
-    InputApplicationHandle* inputApplicationHandleObj =
+    AutoPtr<InputApplicationHandle> inputApplicationHandleObj =
             GetInputApplicationHandleObj(inputApplicationHandle);
-    InputWindowHandle* inputWindowHandleObj =
+    AutoPtr<InputWindowHandle> inputWindowHandleObj =
             GetInputWindowHandleObj(inputWindowHandle);
 
     Int64 newTimeout = mService->NotifyANR(inputApplicationHandleObj, inputWindowHandleObj, String(reason.string()));
@@ -571,7 +568,7 @@ void NativeInputManager::notifyInputChannelBroken(
 #if DEBUG_INPUT_DISPATCHER_POLICY
     ALOGD("notifyInputChannelBroken");
 #endif
-    InputWindowHandle* inputWindowHandleObj =
+    AutoPtr<InputWindowHandle> inputWindowHandleObj =
             GetInputWindowHandleObj(inputWindowHandle);
     if (inputWindowHandleObj) {
         mService->NotifyInputChannelBroken(inputWindowHandleObj);
@@ -588,12 +585,6 @@ void NativeInputManager::getDispatcherConfiguration(
     outConfig->keyRepeatDelay = milliseconds_to_nanoseconds(keyRepeatDelay);
 }
 
-bool NativeInputManager::isKeyRepeatEnabled()
-{
-    // Only enable automatic key repeating when the screen is on.
-    return isScreenOn();
-}
-
 void NativeInputManager::setInputWindows(
     /* [in] */ ArrayOf<InputWindowHandle*>* windowHandleObjArray)
 {
@@ -607,7 +598,7 @@ void NativeInputManager::setInputWindows(
         }
 
         android::sp<android::InputWindowHandle> windowHandle =
-                InputWindowHandle::GetHandle(windowHandleObj);
+                GetNativeInputWindowHandle(windowHandleObj);
         if (windowHandle != NULL) {
             windowHandles.push(windowHandle);
         }
@@ -646,7 +637,7 @@ void NativeInputManager::setFocusedApplication(
     /* [in] */ InputApplicationHandle* applicationHandleObj)
 {
     android::sp<android::InputApplicationHandle> applicationHandle =
-            InputApplicationHandle::GetHandle(applicationHandleObj);
+            GetNativeInputApplicationHandle(applicationHandleObj);
     mInputManager->getDispatcher()->setFocusedApplication(applicationHandle);
 }
 
@@ -717,27 +708,50 @@ void NativeInputManager::setShowTouches(
             android::InputReaderConfiguration::CHANGE_SHOW_TOUCHES);
 }
 
-//TODO
-
-    void setInteractive(
-        /* [in] */ bool interactive);
-
-    void reloadCalibration();
-
-
-
-bool NativeInputManager::isScreenOn()
+void NativeInputManager::setInteractive(
+    /* [in] */ bool interactive)
 {
-    return TRUE;
-//TODO
-//    return CPowerManagerService::isScreenOn();
+    mInteractive = interactive;
 }
 
-bool NativeInputManager::isScreenBright()
+void NativeInputManager::reloadCalibration()
 {
-    return TRUE;
-//TODO
-//    return CPowerManagerService::isScreenBright();
+    mInputManager->getReader()->requestRefreshConfiguration(
+            android::InputReaderConfiguration::TOUCH_AFFINE_TRANSFORMATION);
+}
+
+android::TouchAffineTransformation NativeInputManager::getTouchAffineTransformation(
+    /* [in] */ ArrayOf<Float>* matrixArr)
+{
+    assert(matrixArr->GetLength() == 6);
+
+    android::TouchAffineTransformation transform;
+    transform.x_scale  = (*matrixArr)[0];
+    transform.x_ymix   = (*matrixArr)[1];
+    transform.x_offset = (*matrixArr)[2];
+    transform.y_xmix   = (*matrixArr)[3];
+    transform.y_scale  = (*matrixArr)[4];
+    transform.y_offset = (*matrixArr)[5];
+
+    return transform;
+}
+
+android::TouchAffineTransformation NativeInputManager::getTouchAffineTransformation(
+    /* [in] */ const android::String8& inputDeviceDescriptor,
+    /* [in] */ int32_t surfaceRotation)
+{
+    String descriptorObj(inputDeviceDescriptor.string());
+
+    AutoPtr<ITouchCalibration> cal;
+    mService->GetTouchCalibrationForInputDevice(
+            descriptorObj, surfaceRotation, (ITouchCalibration**)&cal);
+
+    AutoPtr< ArrayOf<Float> > matrixArr;
+    cal->GetAffineTransform((ArrayOf<Float>**)&matrixArr);
+
+    android::TouchAffineTransformation transform = getTouchAffineTransformation(matrixArr);
+
+    return transform;
 }
 
 bool NativeInputManager::filterInputEvent(
@@ -779,7 +793,6 @@ void NativeInputManager::interceptKeyBeforeQueueing(
     if (mInteractive) {
         policyFlags |= android::POLICY_FLAG_INTERACTIVE;
     }
-
     if ((policyFlags & android::POLICY_FLAG_TRUSTED)) {
         nsecs_t when = keyEvent->getEventTime();
 
@@ -797,7 +810,9 @@ void NativeInputManager::interceptKeyBeforeQueueing(
         handleInterceptActions(wmActions, when, /*byref*/ policyFlags);
     }
     else {
-        policyFlags |= android::POLICY_FLAG_PASS_TO_USER;
+        if (mInteractive) {
+            policyFlags |= android::POLICY_FLAG_PASS_TO_USER;
+        }
     }
 }
 
@@ -814,11 +829,19 @@ void NativeInputManager::interceptMotionBeforeQueueing(
         policyFlags |= android::POLICY_FLAG_INTERACTIVE;
     }
     if ((policyFlags & android::POLICY_FLAG_TRUSTED) && !(policyFlags & android::POLICY_FLAG_INJECTED)) {
-        Int32 wmActions = mService->InterceptMotionBeforeQueueingNonInteractive(when, policyFlags);
-        handleInterceptActions(wmActions, when, /*byref*/ policyFlags);
+        if (policyFlags & android::POLICY_FLAG_INTERACTIVE) {
+            policyFlags |= android::POLICY_FLAG_PASS_TO_USER;
+        }
+        else {
+            Int32 wmActions = mService->InterceptMotionBeforeQueueingNonInteractive(when, policyFlags);
+
+            handleInterceptActions(wmActions, when, /*byref*/ policyFlags);
+        }
     }
     else {
-        policyFlags |= android::POLICY_FLAG_PASS_TO_USER;
+        if (mInteractive) {
+            policyFlags |= android::POLICY_FLAG_PASS_TO_USER;
+        }
     }
 }
 
@@ -827,27 +850,10 @@ void NativeInputManager::handleInterceptActions(
     /* [in] */ nsecs_t when,
     /* [in] */ uint32_t& policyFlags)
 {
-    // TODO:
-    //
-    if (wmActions & WM_ACTION_GO_TO_SLEEP) {
-#if DEBUG_INPUT_DISPATCHER_POLICY
-        ALOGD("handleInterceptActions: Going to sleep.");
-#endif
-//TODO
-//        CPowerManagerService::goToSleep(when);
-    }
-
-    if (wmActions & WM_ACTION_WAKE_UP) {
-#if DEBUG_INPUT_DISPATCHER_POLICY
-        ALOGD("handleInterceptActions: Waking up.");
-#endif
-//TODO
-//        CPowerManagerService::wakeUp(when);
-    }
-
     if (wmActions & WM_ACTION_PASS_TO_USER) {
         policyFlags |= android::POLICY_FLAG_PASS_TO_USER;
-    } else {
+    }
+    else {
 #if DEBUG_INPUT_DISPATCHER_POLICY
         ALOGD("handleInterceptActions: Not passing key to user.");
 #endif
@@ -920,32 +926,13 @@ bool NativeInputManager::dispatchUnhandledKey(
     return result;
 }
 
-bool NativeInputManager::isBootFastStatus()
-{
-    return TRUE;
-//TODO
-//    return CPowerManagerService::isBootFastStatus();
-}
-
-bool NativeInputManager::isPowered()
-{
-    return TRUE;
-//TODO
-//    return CPowerManagerService::isPowered();
-}
-
-void NativeInputManager::tempWakeUp(nsecs_t eventTime)
-{
-//TODO
-//    CPowerManagerService::tempWakeuUp(eventTime);
-}
-
 void NativeInputManager::pokeUserActivity(
     /* [in] */ nsecs_t eventTime,
     /* [in] */ int32_t eventType)
 {
-//TODO
-//    CPowerManagerService::userActivity(eventTime, eventType);
+    assert(0);
+    // TODO:
+    // android_server_PowerManagerService_userActivity(eventTime, eventType);
 }
 
 bool NativeInputManager::checkInjectEventsPermissionNonReentrant(
@@ -968,7 +955,6 @@ static AutoPtr<IPointerIcon> PointerIcon_getSystemIcon(
         ALOGW("An exception occurred while getting a pointer icon with style %d.", style);
         return NULL;
     }
-
     return pointerIcon;
 }
 
@@ -984,25 +970,24 @@ static android::status_t PointerIcon_loadSystemIcon(
     }
 
     android::status_t status = PointerIcon_load(
-        pointerIcon, context, outPointerIcon);
+            pointerIcon, context, outPointerIcon);
 
     return status;
 }
 
 static void loadSystemIconAsSprite(
-    /* [in] */ IContext* context,
-    /* [in] */ int32_t style,
-    /* [in] */ android::SpriteIcon* outSpriteIcon)
+   /* [in] */ IContext* context,
+   /* [in] */ int32_t style,
+   /* [in] */ android::SpriteIcon* outSpriteIcon)
 {
-    PointerIcon pointerIcon;
-    android::status_t status = PointerIcon_loadSystemIcon(
-        context, style, &pointerIcon);
-    if (!status) {
-//TODO
-//        pointerIcon.bitmap.copyTo(&outSpriteIcon->bitmap, SkBitmap::kARGB_8888_Config);
+   PointerIcon pointerIcon;
+   android::status_t status = PointerIcon_loadSystemIcon(
+            context, style, &pointerIcon);
+   if (!status) {
+        pointerIcon.bitmap.copyTo(&outSpriteIcon->bitmap, kN32_SkColorType);
         outSpriteIcon->hotSpotX = pointerIcon.hotSpotX;
         outSpriteIcon->hotSpotY = pointerIcon.hotSpotY;
-    }
+   }
 }
 
 void NativeInputManager::loadPointerResources(

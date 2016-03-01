@@ -1,11 +1,11 @@
-#include "elastos/droid/server/input/CIInputFilterHost.h"
+#include "elastos/droid/server/input/CInputFilterHost.h"
 
 namespace Elastos {
 namespace Droid {
 namespace Server {
 namespace Input {
 
-CAR_OBJECT_IMPL(CIInputFilterHost);
+CAR_OBJECT_IMPL(CInputFilterHost);
 
 } // Input
 } // Server

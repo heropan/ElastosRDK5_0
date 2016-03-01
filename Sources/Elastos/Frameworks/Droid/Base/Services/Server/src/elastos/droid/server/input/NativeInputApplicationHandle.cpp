@@ -8,23 +8,27 @@ namespace Server {
 namespace Input {
 
 NativeInputApplicationHandle::NativeInputApplicationHandle(
-    /* [in] */ Input::InputApplicationHandle* obj)
-    : mObject(obj)
+    /* [in] */ IWeakReference* obj)
+    : mObjWeak(obj)
 {}
 
 NativeInputApplicationHandle::~NativeInputApplicationHandle()
 {
-    mObject = NULL;
+    mObjWeak = NULL;
 }
 
-Input::InputApplicationHandle* NativeInputApplicationHandle::getInputApplicationHandleObj()
+AutoPtr<Elastos::Droid::Server::Input::InputApplicationHandle> NativeInputApplicationHandle::getInputApplicationHandleObj()
 {
-    return mObject;
+    AutoPtr<IInputApplicationHandle> obj;
+    mObjWeak->Resolve(EIID_IInputApplicationHandle, (IInterface**)&obj);
+    return (Elastos::Droid::Server::Input::InputApplicationHandle*)obj.Get();
 }
 
 bool NativeInputApplicationHandle::updateInfo()
 {
-    if (mObject == NULL) {
+    AutoPtr<IInputApplicationHandle> obj;
+    mObjWeak->Resolve(EIID_IInputApplicationHandle, (IInterface**)&obj);
+    if (!obj) {
         releaseInfo();
         return false;
     }
@@ -33,14 +37,16 @@ bool NativeInputApplicationHandle::updateInfo()
         mInfo = new android::InputApplicationInfo();
     }
 
-    if (!mObject->mName.IsNull()) {
-        mInfo->name.setTo((const char*)mObject->mName);
+    Elastos::Droid::Server::Input::InputApplicationHandle* handle =
+            (Elastos::Droid::Server::Input::InputApplicationHandle*)obj.Get();
+    if (!handle->mName.IsNull()) {
+        mInfo->name.setTo(handle->mName.string());
     }
     else {
         mInfo->name.setTo("<null>");
     }
 
-    mInfo->dispatchingTimeout = mObject->mDispatchingTimeoutNanos;
+    mInfo->dispatchingTimeout = handle->mDispatchingTimeoutNanos;
 
     return true;
 }

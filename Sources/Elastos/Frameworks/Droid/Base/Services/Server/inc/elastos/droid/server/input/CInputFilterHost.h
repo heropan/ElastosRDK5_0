@@ -1,16 +1,16 @@
-#ifndef __ELASTOS_DROID_SERVER_INPUT_CIINPUTFILTERHOST_H__
-#define __ELASTOS_DROID_SERVER_INPUT_CIINPUTFILTERHOST_H__
+#ifndef __ELASTOS_DROID_SERVER_INPUT_CINPUTFILTERHOST_H__
+#define __ELASTOS_DROID_SERVER_INPUT_CINPUTFILTERHOST_H__
 
 #include "elastos/droid/ext/frameworkdef.h"
 #include "elastos/droid/server/input/CInputManagerService.h"
-#include "_Elastos_Droid_Server_Input_CIInputFilterHost.h"
+#include "_Elastos_Droid_Server_Input_CInputFilterHost.h"
 
 namespace Elastos {
 namespace Droid {
 namespace Server {
 namespace Input {
 
-CarClass(CIInputFilterHost)
+CarClass(CInputFilterHost)
     , public CInputManagerService::InputFilterHost
 {
 public:
@@ -22,4 +22,4 @@ public:
 } // Droid
 } // Elastos
 
-#endif //__ELASTOS_DROID_SERVER_INPUT_CIINPUTFILTERHOST_H__
+#endif //__ELASTOS_DROID_SERVER_INPUT_CINPUTFILTERHOST_H__

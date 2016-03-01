@@ -1571,7 +1571,7 @@ module
         interface IBinder;
     }
 
-    class CIInputFilterHost {
+    class CInputFilterHost {
         constructor(
             [in] IIInputManager* parent);
 

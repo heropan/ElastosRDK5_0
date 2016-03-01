@@ -181,6 +181,14 @@ ECode InputChannel::Dup(
     return NOERROR;
 }
 
+ECode InputChannel::GetNativeInputChannel(
+    /* [out] */ Handle64* ptr)
+{
+    VALIDATE_NOT_NULL(ptr);
+    *ptr = mNative;
+    return NOERROR;
+}
+
 ECode InputChannel::NativeOpenInputChannelPair(
     /* [in] */ const String& nameStr,
     /* [out] */ ArrayOf<IInputChannel*>** pair)

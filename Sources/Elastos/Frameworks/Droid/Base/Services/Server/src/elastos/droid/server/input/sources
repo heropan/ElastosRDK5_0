@@ -14,7 +14,7 @@ include $(MAKEDIR)/../../../../../../../../sources.inc
 SOURCES = InputApplicationHandle.cpp
 SOURCES += InputWindowHandle.cpp
 SOURCES += PersistentDataStore.cpp
-SOURCES += CIInputFilterHost.cpp
+SOURCES += CInputFilterHost.cpp
 SOURCES += CInputManagerService.cpp
 SOURCES += NativeInputManager.cpp
 SOURCES += NativeInputApplicationHandle.cpp

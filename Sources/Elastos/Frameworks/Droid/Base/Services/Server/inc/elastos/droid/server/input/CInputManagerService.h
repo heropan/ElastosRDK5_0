@@ -5,17 +5,17 @@
 #include "_Elastos_Droid_Server_Input_CInputManagerService.h"
 #include "Elastos.Droid.Utility.h"
 #include "Elastos.Droid.Text.h"
+#include "Elastos.CoreLibrary.Core.h"
+#include "Elastos.CoreLibrary.IO.h"
 #include "Elastos.CoreLibrary.Utility.h"
-#include "elastos/core/Object.h"
 #include "elastos/droid/content/BroadcastReceiver.h"
 #include "elastos/droid/database/ContentObserver.h"
 #include "elastos/droid/os/Handler.h"
-#include "elastos/droid/server/input/PersistentDataStore.h"
 #include "elastos/droid/server/input/InputApplicationHandle.h"
 #include "elastos/droid/server/input/InputWindowHandle.h"
-#include <elastos/utility/etl/List.h>
-#include "NativeInputManager.h"
-#include <elastos/utility/etl/HashSet.h>
+#include "elastos/droid/server/input/NativeInputManager.h"
+#include "elastos/droid/server/input/PersistentDataStore.h"
+#include "elastos/core/Object.h"
 
 using Elastos::Droid::App::INotificationManager;
 using Elastos::Droid::App::IPendingIntent;
@@ -48,12 +48,14 @@ using Elastos::Droid::View::IPointerIcon;
 using Elastos::Droid::View::IInputChannel;
 using Elastos::Droid::View::IKeyEvent;
 using Elastos::Droid::Widget::IToast;
+using Elastos::Core::Object;
 using Elastos::IO::IFileDescriptor;
 using Elastos::IO::IPrintWriter;
-using Elastos::Utility::Etl::List;
-using Elastos::Utility::Etl::HashSet;
+using Elastos::Utility::IHashSet;
+using Elastos::Utility::IList;
 
 // these macros are defined in .../Linux/usr/include/linux/input.h
+#ifdef BTN_MOUSE
 #undef BTN_MOUSE
 #undef SW_LID
 #undef SW_KEYPAD_SLIDE
@@ -62,11 +64,14 @@ using Elastos::Utility::Etl::HashSet;
 #undef SW_LINEOUT_INSERT
 #undef SW_JACK_PHYSICAL_INSERT
 #undef SW_CAMERA_LENS_COVER
+#endif
 
 namespace Elastos {
 namespace Droid {
 namespace Server {
 namespace Input {
+
+class CInputFilterHost;
 
 /*
  * Wraps the C++ InputManager and provides its callbacks.
@@ -79,6 +84,8 @@ CarClass(CInputManagerService)
     , public IWatchdogMonitor
     , public IBinder
 {
+    friend class NativeInputManager;
+
 public:
     /**
      * Hosting interface for input filters to call back into the input manager.
@@ -210,6 +217,7 @@ private:
 
         LocalService(
             /* [in] */ CInputManagerService* host);
+
         //@Override
         CARAPI SetDisplayViewports(
             /* [in] */ IDisplayViewport* defaultViewport,
@@ -230,11 +238,11 @@ private:
     };
 
 private:
-    class Start_BroadcastReceiver
+    class BroadcastReceiverInStart
         : public BroadcastReceiver
     {
     public:
-        Start_BroadcastReceiver(
+        BroadcastReceiverInStart(
             /* [in] */ CInputManagerService* owner);
 
         //@Override
@@ -246,19 +254,20 @@ private:
             /* [out] */ String* info)
         {
             VALIDATE_NOT_NULL(info);
-            *info = String("CInputManagerService::Start_BroadcastReceiver: ");
+            *info = "CInputManagerService::BroadcastReceiverInStart: ";
             (*info).AppendFormat("%p", this);
             return NOERROR;
         }
+
     private:
         CInputManagerService* mOwner;
     };
 
-    class SystemRunning_BroadcastReceiver_1
+    class BroadcastReceiver1InSystemRunning
         : public BroadcastReceiver
     {
     public:
-        SystemRunning_BroadcastReceiver_1(
+        BroadcastReceiver1InSystemRunning(
             /* [in] */ CInputManagerService* owner);
 
         //@Override
@@ -270,19 +279,20 @@ private:
             /* [out] */ String* info)
         {
             VALIDATE_NOT_NULL(info);
-            *info = String("CInputManagerService::SystemRunning_BroadcastReceiver_1: ");
+            *info = "CInputManagerService::BroadcastReceiver1InSystemRunning: ";
             (*info).AppendFormat("%p", this);
             return NOERROR;
         }
+
     private:
         CInputManagerService* mOwner;
     };
 
-    class SystemRunning_BroadcastReceiver_2
+    class BroadcastReceiver2InSystemRunning
         : public BroadcastReceiver
     {
     public:
-        SystemRunning_BroadcastReceiver_2(
+        BroadcastReceiver2InSystemRunning(
             /* [in] */ CInputManagerService* owner);
 
         //@Override
@@ -294,23 +304,24 @@ private:
             /* [out] */ String* info)
         {
             VALIDATE_NOT_NULL(info);
-            *info = String("CInputManagerService::SystemRunning_BroadcastReceiver_2: ");
+            *info = "CInputManagerService::BroadcastReceiver2InSystemRunning: ";
             (*info).AppendFormat("%p", this);
             return NOERROR;
         }
+
     private:
         CInputManagerService* mOwner;
     };
 
-    class UpdateKeyboardLayouts_KeyboardLayoutVisitor
+    class KeyboardLayoutVisitorInUpdateKeyboardLayouts
         : public Object
         , public IKeyboardLayoutVisitor
     {
     public:
         CAR_INTERFACE_DECL();
 
-        UpdateKeyboardLayouts_KeyboardLayoutVisitor(
-            /* [in] */ HashSet<String>& availableKeyboardLayouts);
+        KeyboardLayoutVisitorInUpdateKeyboardLayouts(
+            /* [in] */ IHashSet* availableKeyboardLayouts);
 
         CARAPI VisitKeyboardLayout(
             /* [in] */ IResources* resources,
@@ -321,18 +332,18 @@ private:
             /* [in] */ Int32 priority);
 
     private:
-        HashSet<String>& mAvailableKeyboardLayouts;
+        AutoPtr<IHashSet> mAvailableKeyboardLayouts;
     };
 
-    class GetKeyboardLayouts_KeyboardLayoutVisitor
+    class KeyboardLayoutVisitorInGetKeyboardLayouts
         : public Object
         , public IKeyboardLayoutVisitor
     {
     public:
         CAR_INTERFACE_DECL();
 
-        GetKeyboardLayouts_KeyboardLayoutVisitor(
-            /* [in] */ List<AutoPtr<IKeyboardLayout> >& list);
+        KeyboardLayoutVisitorInGetKeyboardLayouts(
+            /* [in] */ IArrayList* list);
 
         CARAPI VisitKeyboardLayout(
             /* [in] */ IResources* resources,
@@ -343,18 +354,18 @@ private:
             /* [in] */ Int32 priority);
 
     private:
-        List<AutoPtr<IKeyboardLayout> >& mList;
+        AutoPtr<IArrayList> mList;
     };
 
-    class GetKeyboardLayout_KeyboardLayoutVisitor
+    class KeyboardLayoutVisitorInGetKeyboardLayout
         : public Object
         , public IKeyboardLayoutVisitor
     {
     public:
         CAR_INTERFACE_DECL();
 
-        GetKeyboardLayout_KeyboardLayoutVisitor(
-            /* [in] */ IKeyboardLayout** layout);
+        KeyboardLayoutVisitorInGetKeyboardLayout(
+            /* [in] */ ArrayOf<IKeyboardLayout*>* layouts);
 
         CARAPI VisitKeyboardLayout(
             /* [in] */ IResources* resources,
@@ -365,18 +376,18 @@ private:
             /* [in] */ Int32 priority);
 
     private:
-        IKeyboardLayout** mLayout;
+        AutoPtr< ArrayOf<IKeyboardLayout*> > mLayouts;
     };
 
-    class GetKeyboardLayoutOverlay_KeyboardLayoutVisitor
+    class KeyboardLayoutVisitorInGetKeyboardLayoutOverlay
         : public Object
         , public IKeyboardLayoutVisitor
     {
     public:
         CAR_INTERFACE_DECL();
 
-        GetKeyboardLayoutOverlay_KeyboardLayoutVisitor(
-            /* [in] */ ArrayOf<String>* layouts);
+        KeyboardLayoutVisitorInGetKeyboardLayoutOverlay(
+            /* [in] */ ArrayOf<String>* layoutOverlays);
 
         CARAPI VisitKeyboardLayout(
             /* [in] */ IResources* resources,
@@ -387,41 +398,38 @@ private:
             /* [in] */ Int32 priority);
 
     private:
-        AutoPtr<ArrayOf<String> > mLayouts;
+        AutoPtr< ArrayOf<String> > mLayoutOverlays;
     };
 
-    class RegisterPointerSpeedSettingObserver_ContentObserver
+    class ContentObserverInRegisterPointerSpeedSettingObserver
         : public ContentObserver
     {
     public:
-        RegisterPointerSpeedSettingObserver_ContentObserver(
+        ContentObserverInRegisterPointerSpeedSettingObserver(
             /* [in] */ CInputManagerService* owner,
             /* [in] */ IHandler* handler);
 
         CARAPI OnChange(
-            /* [in] */ Boolean selfChange,
-            /* [in] */ IUri* uri);
+            /* [in] */ Boolean selfChange);
 
     private:
         CInputManagerService* mOwner;
     };
 
-    class RegisterShowTouchesSettingObserver_ContentObserver
+    class ContentObserverInRegisterShowTouchesSettingObserver
         : public ContentObserver
     {
     public:
-        RegisterShowTouchesSettingObserver_ContentObserver(
+        ContentObserverInRegisterShowTouchesSettingObserver(
             /* [in] */ CInputManagerService* owner,
             /* [in] */ IHandler* handler);
 
         CARAPI OnChange(
-            /* [in] */ Boolean selfChange,
-            /* [in] */ IUri* uri);
+            /* [in] */ Boolean selfChange);
 
     private:
         CInputManagerService* mOwner;
     };
-
 
 public:
     CAR_INTERFACE_DECL();
@@ -660,7 +668,7 @@ public:
     CARAPI TransferTouchFocus(
         /* [in] */ IInputChannel* fromChannel,
         /* [in] */ IInputChannel* toChannel,
-        /* [out] */ Boolean* transferIt);
+        /* [out] */ Boolean* result);
 
     // @Override // Binder call
     CARAPI TryPointerSpeed(
@@ -705,7 +713,7 @@ public:
     CARAPI ToString(
         /* [out] */ String* str);
 
-public:
+private:
     CARAPI_(void) ReloadKeyboardLayouts();
 
     CARAPI_(void) ReloadDeviceAliases();
@@ -880,8 +888,7 @@ public:
     CARAPI_(String) GetDeviceAlias(
         /* [in] */ const String& uniqueId);
 
-    CARAPI_(void) NativeInit(
-        /* [in] */ CInputManagerService* service,
+    CARAPI NativeInit(
         /* [in] */ IContext* context,
         /* [in] */ IMessageQueue* messageQueue);
 
@@ -1053,7 +1060,7 @@ private:
     const static Int32 MSG_RELOAD_DEVICE_ALIASES = 5;
 
     // Pointer to native input manager service object.
-    android::sp<NativeInputManager> mNativeInputManager;
+    Int64 mPtr;
 
     AutoPtr<IContext> mContext;
     AutoPtr<InputManagerHandler> mHandler;
@@ -1085,7 +1092,8 @@ private:
     // State for the currently installed input filter.
     Object mInputFilterLock;
     AutoPtr<IIInputFilter> mInputFilter;         // guarded by mInputFilterLock
-    AutoPtr<InputFilterHost> mInputFilterHost;  // guarded by mInputFilterLock
+    // need call AddRef and Release manually
+    CInputFilterHost* mInputFilterHost;  // guarded by mInputFilterLock
 
     // Input event injection constants defined in InputDispatcher.h.
     const static Int32 INPUT_EVENT_INJECTION_SUCCEEDED = 0;
