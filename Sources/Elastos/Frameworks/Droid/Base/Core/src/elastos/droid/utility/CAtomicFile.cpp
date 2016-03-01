@@ -102,7 +102,7 @@ ECode CAtomicFile::StartWrite(
 
     // Rename the current file so it may be used as a backup during the next read
     Boolean b;
-    mBaseName->Exists(&b);
+    FAIL_RETURN(mBaseName->Exists(&b));
     if (b) {
         mBackupName->Exists(&b);
         if (!b) {
@@ -226,6 +226,8 @@ ECode CAtomicFile::OpenAppend(
     /* [out] */ IFileOutputStream** stream)
 {
     VALIDATE_NOT_NULL(stream);
+    *stream = NULL;
+
     //try {
     ECode ec = CFileOutputStream::New(mBaseName, TRUE, stream);
     if (ec == (ECode)E_FILE_NOT_FOUND_EXCEPTION) {
@@ -254,6 +256,7 @@ ECode CAtomicFile::OpenRead(
     /* [out] */ IFileInputStream** stream)
 {
     VALIDATE_NOT_NULL(stream);
+    *stream = NULL;
     Boolean result;
     mBackupName->Exists(&result);
     if (result) {
@@ -267,7 +270,7 @@ ECode CAtomicFile::GetLastModifiedTime(
     /* [out] */ Int64* time)
 {
     VALIDATE_NOT_NULL(time)
-
+    *time = 0;
     Boolean result;
     mBackupName->Exists(&result);
     if (result) {

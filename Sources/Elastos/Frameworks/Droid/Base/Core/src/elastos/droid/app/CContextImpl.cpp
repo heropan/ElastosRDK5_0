@@ -2838,7 +2838,7 @@ ECode CContextImpl::CheckPermission(
     /* [out] */ Int32* result)
 {
     VALIDATE_NOT_NULL(result);
-    *result = 0;
+    *result = IPackageManager::PERMISSION_DENIED;
 
     if (permission.IsNull()) {
 //        throw new IllegalArgumentException("permission is NULL");
@@ -2846,9 +2846,12 @@ ECode CContextImpl::CheckPermission(
     }
 
 //    try {
-    ECode ec = ActivityManagerNative::GetDefault()->CheckPermission(
-            permission, pid, uid, result);
-    if (FAILED(ec)) *result = IPackageManager::PERMISSION_DENIED;
+    ECode ec = NOERROR;
+    AutoPtr<IIActivityManager> am = ActivityManagerNative::GetDefault();
+    if (am != NULL) {
+        ec = am->CheckPermission(permission, pid, uid, result);
+        if (FAILED(ec)) *result = IPackageManager::PERMISSION_DENIED;
+    }
     return ec;
 //    } catch (RemoteException e) {
 //        return PackageManager.PERMISSION_DENIED;

@@ -78,7 +78,6 @@ ECode CDeviceAdminReceiver::OnDisabled(
     return NOERROR;
 }
 
-
 ECode CDeviceAdminReceiver::OnPasswordChanged(
     /* [in] */ IContext* context,
     /* [in] */ IIntent* intent)
@@ -86,14 +85,12 @@ ECode CDeviceAdminReceiver::OnPasswordChanged(
     return NOERROR;
 }
 
-
 ECode CDeviceAdminReceiver::OnPasswordFailed(
     /* [in] */ IContext* context,
     /* [in] */ IIntent* intent)
 {
     return NOERROR;
 }
-
 
 ECode CDeviceAdminReceiver::OnPasswordSucceeded(
     /* [in] */ IContext* context,

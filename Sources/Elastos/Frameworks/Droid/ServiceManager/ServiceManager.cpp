@@ -13,7 +13,7 @@ ServiceManager::ServiceDeathRecipient::ServiceDeathRecipient(
 void ServiceManager::ServiceDeathRecipient::binderDied(
     /* [in] */ const android::wp<android::IBinder>& who)
 {
-    ALOGE("[ServiceDeathRecipient], the systemserver may be died, so unregister the service's binder. name=[%s]",
+    ALOGE("[ServiceManager::ServiceDeathRecipient], the service may be died, so unregister the service's binder. name=[%s]",
         mName.string());
     HashMap<String, InterfacePack*>::Iterator it = mHost->mServices.Find(mName);
     if (it != mHost->mServices.End()) {
@@ -80,7 +80,7 @@ android::status_t ServiceManager::onTransact(
 
                 //Register the DeathRecipient callback
                 assert(ip->m_pBinder != NULL);
-                android::sp<ServiceDeathRecipient> sdr = new ServiceDeathRecipient(this,String(name));
+                android::sp<ServiceDeathRecipient> sdr = new ServiceDeathRecipient(this, String(name));
                 ip->m_pBinder->linkToDeath(sdr, sdr.get(), 0);
                 mSdrList.push_back(sdr);
             }

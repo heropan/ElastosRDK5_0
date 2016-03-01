@@ -148,17 +148,21 @@ Boolean SELinuxMMAC::ReadInstallPolicy()
     HashMap<AutoPtr<ISignature>, AutoPtr<Policy> > sigSeinfo;
     String defaultSeinfo(NULL);
 
-    AutoPtr<IFileReader> policyFile;
+    AutoPtr<IReader> policyFile;
     // try {
-    CFileReader::New(MAC_PERMISSIONS, (IFileReader**)&policyFile);
+    CFileReader::New(MAC_PERMISSIONS, (IReader**)&policyFile);
     Slogger::D(TAG, "Using policy file %s", MAC_PERMISSIONS.string());
 
     AutoPtr<IXmlPullParser> parser;
     Xml::NewPullParser((IXmlPullParser**)&parser);
     ECode ec = NOERROR;
+    String nullStr;
     while (TRUE) {
-        ec = parser->SetInput(IReader::Probe(policyFile));
-        if (FAILED(ec)) break;
+        ec = parser->SetInput(policyFile);
+        if (FAILED(ec)) {
+            Slogger::D(TAG, " >> SetInput");
+            break;
+        }
 
         ec = XmlUtils::BeginDocument(parser, String("policy"));
         if (FAILED(ec)) break;
@@ -174,8 +178,11 @@ Boolean SELinuxMMAC::ReadInstallPolicy()
         parser->GetName(&tagName);
         if (tagName.Equals("signer")) {
             String cert;
-            ec = parser->GetAttributeValue(String(NULL), String("signature"), &cert);
-            if (FAILED(ec)) break;
+            ec = parser->GetAttributeValue(nullStr, String("signature"), &cert);
+            if (FAILED(ec)) {
+                Slogger::E(TAG, "failed to GetAttributeValue signature");
+                break;
+            }
             if (cert.IsNull()) {
                 String desc;
                 parser->GetPositionDescription(&desc);
@@ -183,22 +190,23 @@ Boolean SELinuxMMAC::ReadInstallPolicy()
                 XmlUtils::SkipCurrentTag(parser);
                 continue;
             }
+
             AutoPtr<ISignature> signature;
-            // try {
             ec = CSignature::New(cert, (ISignature**)&signature);
             if (ec == (ECode)E_ILLEGAL_ARGUMENT_EXCEPTION) {
                 String desc;
                 parser->GetPositionDescription(&desc);
-                Slogger::W(TAG, "<signer> with bad signature at %s", desc.string());
+                Slogger::W(TAG, "<signer> with bad signature at %s, E_ILLEGAL_ARGUMENT_EXCEPTION", desc.string());
                 XmlUtils::SkipCurrentTag(parser);
                 continue;
             }
-            // } catch (IllegalArgumentException e) {
-            //     Slog.w(TAG, "<signer> with bad signature at "
-            //            + parser.getPositionDescription(), e);
-            //     XmlUtils.skipCurrentTag(parser);
-            //     continue;
-            // }
+            else if (FAILED(ec)) {
+                String desc;
+                parser->GetPositionDescription(&desc);
+                Slogger::W(TAG, "<signer> with bad signature at %s, ec=%08x", desc.string(), ec);
+                break;
+            }
+
             AutoPtr<Policy> policy;
             ec = ReadPolicyTags(parser, (Policy**)&policy);
             if (FAILED(ec)) break;
@@ -218,19 +226,20 @@ Boolean SELinuxMMAC::ReadInstallPolicy()
             XmlUtils::SkipCurrentTag(parser);
         }
     }
-    // } catch (XmlPullParserException xpe) {
-    //     Slog.w(TAG, "Got exception parsing " + MAC_PERMISSIONS, xpe);
-    //     return false;
-    // } catch (IOException ioe) {
-    //     Slog.w(TAG, "Got exception parsing " + MAC_PERMISSIONS, ioe);
-    //     return false;
-    // } finally {
-    //     IoUtils.closeQuietly(policyFile);
-    // }
+
     AutoPtr<IIoUtils> ioUtils;
     CIoUtils::AcquireSingleton((IIoUtils**)&ioUtils);
     ioUtils->CloseQuietly(ICloseable::Probe(policyFile));
-    if (FAILED(ec)) {
+
+    if (ec == (ECode)E_XML_PULL_PARSER_EXCEPTION) {
+        Slogger::W(TAG, "Got exception parsing %s, E_XML_PULL_PARSER_EXCEPTION", MAC_PERMISSIONS.string());
+        return FALSE;
+    }
+    else if (ec == (ECode)E_IO_EXCEPTION) {
+        Slogger::W(TAG, "Got exception parsing %s, E_IO_EXCEPTION", MAC_PERMISSIONS.string());
+        return FALSE;
+    }
+    else if (FAILED(ec)) {
         Slogger::W(TAG, "Got exception parsing %s, ec: 0x%08x", MAC_PERMISSIONS.string(), ec);
         return FALSE;
     }

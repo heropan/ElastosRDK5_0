@@ -326,6 +326,7 @@ ECode SystemServer::StartBootstrapServices()
     mInstaller = new Installer(mSystemContext);
     mSystemServiceManager->StartService(mInstaller.Get());
 
+    Slogger::I(TAG, "    start Activity manager");
     // Activity manager runs the show.
     AutoPtr<CActivityManagerService::Lifecycle> am = new CActivityManagerService::Lifecycle();
     ECode ec = am->constructor(mSystemContext);
@@ -334,6 +335,7 @@ ECode SystemServer::StartBootstrapServices()
     mActivityManagerService = am->GetService();
     mActivityManagerService->SetSystemServiceManager(mSystemServiceManager);
 
+    Slogger::I(TAG, "    start Power manager");
     // Power manager needs to be started early because other services need it.
     // Native daemons may be watching for it to be registered so it must be ready
     // to handle incoming binder calls immediately (including being able to verify
@@ -342,12 +344,13 @@ ECode SystemServer::StartBootstrapServices()
     mPowerManagerService = new PowerManagerService();
     ec = mPowerManagerService->constructor(mSystemContext);
     if (FAILED(ec)) Slogger::E(TAG, "Failed to start Power manager service.");
-    mSystemServiceManager->StartService(service.Get());
+    mSystemServiceManager->StartService(mPowerManagerService.Get());
 
     // Now that the power manager has been started, let the activity manager
     // initialize power management features.
     mActivityManagerService->InitPowerManagement();
 
+    Slogger::I(TAG, "    start Display manager");
     // Display manager is needed to provide display metrics before package manager
     // starts up.
     service = NULL;
@@ -373,8 +376,8 @@ ECode SystemServer::StartBootstrapServices()
         mOnlyCore = TRUE;
     }
 
+    Slogger::I(TAG, "    start Package manager");
     // Start the package manager.
-    Slogger::I(TAG, "Package Manager");
     AutoPtr<IIPackageManager> pm = CPackageManagerService::Main(mSystemContext, mInstaller,
             mFactoryTestMode != FactoryTest::FACTORY_TEST_OFF, mOnlyCore);
     mPackageManagerService = (CPackageManagerService*)pm.Get();
@@ -388,6 +391,7 @@ ECode SystemServer::StartBootstrapServices()
     // Initialize attribute cache used to cache resources from packages.
     AttributeCache::Init(mSystemContext);
 
+    Slogger::I(TAG, "    start Activity manager SetSystemProcess");
     // Set up the Application instance for the system process and get started.
     ec = mActivityManagerService->SetSystemProcess();
     if (FAILED(ec)) Slogger::E(TAG, "Failed to start the Application instance for the system process.");

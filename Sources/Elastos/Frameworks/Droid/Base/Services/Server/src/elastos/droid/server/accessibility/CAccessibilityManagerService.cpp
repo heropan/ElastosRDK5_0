@@ -1,4 +1,3 @@
-
 #include "elastos/droid/server/accessibility/CAccessibilityManagerService.h"
 
 namespace Elastos {

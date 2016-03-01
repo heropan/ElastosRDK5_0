@@ -338,7 +338,6 @@ ECode CZygoteInit::HandleSystemServerProcess(
     /* [in] */ ZygoteConnection::Arguments* parsedArgs,
     /* [out] */ IRunnable** task)
 {
-    Logger::I(TAG, "Handleing system server process...");
     VALIDATE_NOT_NULL(task);
     *task = NULL;
 
@@ -370,11 +369,15 @@ ECode CZygoteInit::HandleSystemServerProcess(
             amendedArgs->Copy(2, args);
         }
 
+        Logger::I(TAG, "Handleing system server process: WrapperInit::ExecApplication %s",
+            parsedArgs->mNiceName.string());
         return WrapperInit::ExecApplication(parsedArgs->mInvokeWith,
             parsedArgs->mNiceName, parsedArgs->mTargetSdkVersion,
             NULL, args);
     }
     else {
+        Logger::I(TAG, "Handleing system server process: RuntimeInit::ZygoteInit");
+
         // ClassLoader cl = null;
         // if (systemServerClasspath != null) {
         //     cl = new PathClassLoader(systemServerClasspath, ClassLoader.getSystemClassLoader());

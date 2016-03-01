@@ -454,8 +454,11 @@ ECode CResources::constructor(
     }
     UpdateConfiguration(config, metrics);
     mAssets->EnsureStringBlocks();
-    IWeakReferenceSource* wrs = IWeakReferenceSource::Probe(token);
-    wrs->GetWeakReference((IWeakReference**)&mToken);
+
+    if (token) {
+        IWeakReferenceSource* wrs = IWeakReferenceSource::Probe(token);
+        wrs->GetWeakReference((IWeakReference**)&mToken);
+    }
     return NOERROR;
 }
 

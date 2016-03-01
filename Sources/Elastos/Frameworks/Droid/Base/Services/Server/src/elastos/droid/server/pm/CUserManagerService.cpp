@@ -898,47 +898,55 @@ AutoPtr< ArrayOf<Int32> > CUserManagerService::GetUserIdsLPr()
 
 void CUserManagerService::ReadUserListLocked()
 {
+    Logger::I(TAG, " >>> ReadUserListLocked");
     String tag;
     Boolean isExist;
     if (mUserListFile->Exists(&isExist), !isExist) {
         FallbackToSingleUserLocked();
         return;
     }
-    AutoPtr<IFileInputStream> fis;
     AutoPtr<IAtomicFile> userListFile;
     CAtomicFile::New(mUserListFile, (IAtomicFile**)&userListFile);
+
+    Slogger::I(TAG, " >>> 1 %s", TO_CSTR(mUserListFile));
 //     try {
-    userListFile->OpenRead((IFileInputStream**)&fis);
-    AutoPtr<IXmlPullParser> parser;
-    Xml::NewPullParser((IXmlPullParser**)&parser);
-    parser->SetInput(IInputStream::Probe(fis), String(NULL));
     Int32 type;
-    while ((parser->Next(&type), type) != IXmlPullParser::START_TAG
-            && type != IXmlPullParser::END_DOCUMENT) {
-        ;
+    ECode ec = NOERROR;
+    AutoPtr<IXmlPullParser> parser;
+    String nullStr;
+    AutoPtr<IFileInputStream> fis;
+    ec = userListFile->OpenRead((IFileInputStream**)&fis);
+    FAIL_GOTO(ec, _EXIT_);
+Slogger::I(TAG, " >>> 2");
+    Xml::NewPullParser((IXmlPullParser**)&parser);
+    ec = parser->SetInput(IInputStream::Probe(fis), nullStr);
+    FAIL_GOTO(ec, _EXIT_);
+
+Slogger::I(TAG, " >>> 3");
+    ec = parser->Next(&type);
+    FAIL_GOTO(ec, _EXIT_);
+    while (type != IXmlPullParser::START_TAG && type != IXmlPullParser::END_DOCUMENT) {
+        ec = parser->Next(&type);
+        FAIL_GOTO(ec, _EXIT_);
     }
 
+Slogger::I(TAG, " >>> 4");
     if (type != IXmlPullParser::START_TAG) {
         Slogger::E(TAG, "Unable to read user list");
         FallbackToSingleUserLocked();
-        if (fis != NULL) {
-            // try {
-            ICloseable::Probe(fis)->Close();
-            // } catch (IOException e) {
-            // }
-        }
-        return;
+        goto _EXIT_;
     }
 
+Slogger::I(TAG, " >>> 5");
     mNextSerialNumber = -1;
     if (parser->GetName(&tag), tag.Equals(TAG_USERS)) {
         String lastSerialNumber;
-        parser->GetAttributeValue(String(NULL), ATTR_NEXT_SERIAL_NO, &lastSerialNumber);
+        parser->GetAttributeValue(nullStr, ATTR_NEXT_SERIAL_NO, &lastSerialNumber);
         if (!lastSerialNumber.IsNull()) {
             mNextSerialNumber = StringUtils::ParseInt32(lastSerialNumber);
         }
         String versionNumber;
-        parser->GetAttributeValue(String(NULL), ATTR_USER_VERSION, &versionNumber);
+        parser->GetAttributeValue(nullStr, ATTR_USER_VERSION, &versionNumber);
         if (!versionNumber.IsNull()) {
             mUserVersion = StringUtils::ParseInt32(versionNumber);
         }
@@ -950,7 +958,7 @@ void CUserManagerService::ReadUserListLocked()
             parser->GetName(&name);
             if (name.Equals(TAG_USER)) {
                 String id;
-                parser->GetAttributeValue(String(NULL), ATTR_ID, &id);
+                parser->GetAttributeValue(nullStr, ATTR_ID, &id);
                 AutoPtr<IUserInfo> user = ReadUserLocked(StringUtils::ParseInt32(id));
 
                 if (user != NULL) {
@@ -970,14 +978,16 @@ void CUserManagerService::ReadUserListLocked()
     }
     UpdateUserIdsLocked();
     UpgradeIfNecessaryLock();
-//     } catch (IOException ioe) {
-//         fallbackToSingleUserLocked();
-//     } catch (XmlPullParserException pe) {
-//         fallbackToSingleUserLocked();
-//     } catch (Exception e) {
-//         Slog.e(LOG_TAG, "Error readUserListLocked , restore default" + "\n" + e);
-//         fallbackToSingleUserLocked();
-//     } finally {
+
+_EXIT_:
+    if (ec == (ECode)E_IO_EXCEPTION || ec == (ECode)E_XML_PULL_PARSER_EXCEPTION) {
+        FallbackToSingleUserLocked();
+    }
+    else if (FAILED(ec)) {
+        Slogger::E(LOG_TAG, "Error readUserListLocked , restore default. ec=%08x\n", ec);
+        FallbackToSingleUserLocked();
+    }
+
     if (fis != NULL) {
         // try {
         ICloseable::Probe(fis)->Close();

@@ -45,6 +45,7 @@ using Elastos::Droid::Graphics::CRegion;
 using Elastos::Droid::Graphics::GraphicsNative;
 using Elastos::Droid::Graphics::INinePatchInsetStruct;
 using Elastos::Core::AutoLock;
+using Elastos::Utility::Logging::Slogger;
 
 namespace Elastos {
 namespace Droid {
@@ -259,6 +260,7 @@ ECode SurfaceControl::SetOpaque(
 ECode SurfaceControl::ToString(
     /* [out] */ String* str)
 {
+    VALIDATE_NOT_NULL(str)
     *str = String("Surface(name=") + mName + ")";
     return NOERROR;
 }
@@ -269,7 +271,7 @@ ECode SurfaceControl::SetDisplayPowerMode(
 {
     if (displayToken == NULL) {
         // throw new IllegalArgumentException("displayToken must not be null");
-        SLOGGERE(TAG, "displayToken must not be null")
+        Slogger::E(TAG, "displayToken must not be null");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
     NativeSetDisplayPowerMode(displayToken, mode);
@@ -280,9 +282,11 @@ ECode SurfaceControl::GetDisplayConfigs(
     /* [in] */ IBinder* displayToken,
     /* [out] */ ArrayOf<IPhysicalDisplayInfo*>** infos)
 {
+    VALIDATE_NOT_NULL(infos)
+    *infos = NULL;
     if (displayToken == NULL) {
         // throw new IllegalArgumentException("displayToken must not be null");
-        SLOGGERE(TAG, "displayToken must not be null")
+        Slogger::E(TAG, "displayToken must not be null");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
     return NativeGetDisplayConfigs(displayToken, infos);
@@ -292,9 +296,11 @@ ECode SurfaceControl::GetActiveConfig(
     /* [in] */ IBinder* displayToken,
     /* [out] */ Int32* res)
 {
+    VALIDATE_NOT_NULL(res)
+    *res = 0;
     if (displayToken == NULL) {
         // throw new IllegalArgumentException("displayToken must not be null");
-        SLOGGERE(TAG, "displayToken must not be null")
+        Slogger::E(TAG, "displayToken must not be null");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
     return NativeGetActiveConfig(displayToken, res);
@@ -305,10 +311,11 @@ ECode SurfaceControl::SetActiveConfig(
     /* [in] */ Int32 id,
     /* [out] */ Boolean* res)
 {
+    VALIDATE_NOT_NULL(res)
     *res = FALSE;
     if (displayToken == NULL) {
         // throw new IllegalArgumentException("displayToken must not be null");
-        SLOGGERE(TAG, "displayToken must not be null")
+        Slogger::E(TAG, "displayToken must not be null");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
     return NativeSetActiveConfig(displayToken, id, res);
@@ -322,17 +329,17 @@ ECode SurfaceControl::SetDisplayProjection(
 {
     if (displayToken == NULL) {
         // throw new IllegalArgumentException("displayToken must not be null");
-        SLOGGERE(TAG, "displayToken must not be null")
+        Slogger::E(TAG, "displayToken must not be null");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
     if (layerStackRect == NULL) {
         // throw new IllegalArgumentException("layerStackRect must not be null");
-        SLOGGERE(TAG, "layerStackRect must not be null")
+        Slogger::E(TAG, "layerStackRect must not be null");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
     if (displayRect == NULL) {
         // throw new IllegalArgumentException("displayRect must not be null");
-        SLOGGERE(TAG, "displayRect must not be null")
+        Slogger::E(TAG, "displayRect must not be null");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
     Int32 lLeft, dLeft, lRight, dRight, lTop, dTop, lBottom, dBottom;
@@ -359,7 +366,7 @@ ECode SurfaceControl::SetDisplayLayerStack(
 {
     if (displayToken == NULL) {
         // throw new IllegalArgumentException("displayToken must not be null");
-        SLOGGERE(TAG, "displayToken must not be null")
+        Slogger::E(TAG, "displayToken must not be null");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
     NativeSetDisplayLayerStack(displayToken, layerStack);
@@ -372,7 +379,7 @@ ECode SurfaceControl::SetDisplaySurface(
 {
     if (displayToken == NULL) {
         // throw new IllegalArgumentException("displayToken must not be null");
-        SLOGGERE(TAG, "displayToken must not be null")
+        Slogger::E(TAG, "displayToken must not be null");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
 
@@ -393,12 +400,12 @@ ECode SurfaceControl::SetDisplaySize(
 {
     if (displayToken == NULL) {
         // throw new IllegalArgumentException("displayToken must not be null");
-        SLOGGERE(TAG, "displayToken must not be null")
+        Slogger::E(TAG, "displayToken must not be null");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
     if (width <= 0 || height <= 0) {
         // throw new IllegalArgumentException("width and height must be positive");
-        SLOGGERE(TAG, "width and height must be positive")
+        Slogger::E(TAG, "width and height must be positive");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
 
@@ -411,9 +418,11 @@ ECode SurfaceControl::CreateDisplay(
     /* [in] */ Boolean secure,
     /* [out] */ IBinder** token)
 {
+    VALIDATE_NOT_NULL(token)
+    *token = NULL;
     if (name == NULL) {
         // throw new IllegalArgumentException("name must not be null");
-        SLOGGERE(TAG, "name must not be null")
+        Slogger::E(TAG, "name must not be null");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
     *token = NativeCreateDisplay(name, secure);
@@ -426,7 +435,7 @@ ECode SurfaceControl::DestroyDisplay(
 {
     if (displayToken == NULL) {
         // throw new IllegalArgumentException("displayToken must not be null");
-        SLOGGERE(TAG, "displayToken must not be null")
+        Slogger::E(TAG, "displayToken must not be null");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
     NativeDestroyDisplay(displayToken);
@@ -640,21 +649,21 @@ ECode SurfaceControl::constructor(
 {
     if (session == NULL) {
         // throw new IllegalArgumentException("session must not be null");
-        SLOGGERE(TAG, "session must not be null")
+        Slogger::E(TAG, "session must not be null");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
     if (name == NULL) {
         // throw new IllegalArgumentException("name must not be null");
-        SLOGGERE(TAG, "name must not be null")
+        Slogger::E(TAG, "name must not be null");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
 
     if ((flags & ISurfaceControl::HIDDEN) == 0) {
-        SLOGGERW(TAG, String("Surfaces should always be created with the HIDDEN flag set ")
-                + "to ensure that they are not made visible prematurely before "
-                + "all of the surface's properties have been configured.  "
-                + "Set the other properties and make the surface visible within "
-                + "a transaction.  New surface name: " + name)
+        Slogger::W(TAG, "Surfaces should always be created with the HIDDEN flag set "
+                "to ensure that they are not made visible prematurely before "
+                "all of the surface's properties have been configured.  "
+                "Set the other properties and make the surface visible within "
+                "a transaction.  New surface name: %s", name.string());
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
 
@@ -663,7 +672,7 @@ ECode SurfaceControl::constructor(
     if (mNativeObject == 0) {
         // throw new OutOfResourcesException(
                 // "Couldn't allocate SurfaceControl native object");
-        SLOGGERE(TAG, "Couldn't allocate SurfaceControl native object")
+        Slogger::E(TAG, "Couldn't allocate SurfaceControl native object");
         return E_OUT_OF_RESOURCES_EXCEPTION;
     }
 
@@ -674,7 +683,7 @@ ECode SurfaceControl::constructor(
 ECode SurfaceControl::CheckNotReleased()
 {
     if (mNativeObject == 0) {
-        SLOGGERE(TAG, "mNativeObject is null. Have you called release() already?")
+        Slogger::E(TAG, "mNativeObject is null. Have you called release() already?");
         return E_NULL_POINTER_EXCEPTION;
     }
     return NOERROR;
@@ -693,11 +702,11 @@ void SurfaceControl::Screenshot(
 {
     if (display == NULL) {
         // throw new IllegalArgumentException("displayToken must not be null");
-        SLOGGERE(TAG, "displayToken must not be null")
+        Slogger::E(TAG, "displayToken must not be null");
     }
     if (consumer == NULL) {
         // throw new IllegalArgumentException("consumer must not be null");
-        SLOGGERE(TAG, "consumer must not be null")
+        Slogger::E(TAG, "consumer must not be null");
     }
     NativeScreenshot(display, consumer, sourceCrop, width, height,
             minLayer, maxLayer, allLayers, useIdentityTransform);
@@ -712,6 +721,7 @@ ECode SurfaceControl::NativeCreate(
     /* [in] */ Int32 flags,
     /* [out] */ Int64* ptr)
 {
+    VALIDATE_NOT_NULL(ptr)
     CSurfaceSession* sessionImpl = (CSurfaceSession*)session;
 
     sp<android::SurfaceComposerClient> client = sessionImpl->mNativeClient;
@@ -1100,6 +1110,7 @@ ECode SurfaceControl::NativeGetContentFrameStats(
 ECode SurfaceControl::NativeClearAnimationFrameStats(
     /* [out] */ Boolean* result)
 {
+    VALIDATE_NOT_NULL(result)
     android::status_t err = android::SurfaceComposerClient::clearAnimationFrameStats();
     *result = FALSE;
 
@@ -1120,6 +1131,7 @@ ECode SurfaceControl::NativeGetAnimationFrameStats(
     /* [in] */ IWindowAnimationFrameStats* outStats,
     /* [out] */ Boolean* result)
 {
+    VALIDATE_NOT_NULL(result)
     android::FrameStats stats;
     *result = FALSE;
 
@@ -1249,11 +1261,15 @@ ECode SurfaceControl::NativeGetDisplayConfigs(
     *infos = NULL;
 
     sp<android::IBinder> token(IBinderForDroidObject(displayToken));
-    if (token == NULL) return NOERROR;
+    if (token == NULL) {
+        Slogger::I(TAG, "NativeGetDisplayConfigs IBinderForDroidObject %s is null.", TO_CSTR(displayToken));
+        return NOERROR;
+    }
 
     android::Vector<android::DisplayInfo> configs;
     if (android::SurfaceComposerClient::getDisplayConfigs(token, &configs) != android::NO_ERROR ||
             configs.size() == 0) {
+        Slogger::I(TAG, "NativeGetDisplayConfigs getDisplayConfigs: no configs!");
         return NOERROR;
     }
 
@@ -1286,6 +1302,7 @@ ECode SurfaceControl::NativeGetActiveConfig(
     /* [in] */ IBinder* displayToken,
     /* [out] */ Int32* res)
 {
+    VALIDATE_NOT_NULL(res)
     sp<android::IBinder> token(IBinderForDroidObject(displayToken));
     if (token == NULL) {
         *res = -1;
@@ -1300,6 +1317,7 @@ ECode SurfaceControl::NativeSetActiveConfig(
     /* [in] */ Int32 id,
     /* [out] */ Boolean* res)
 {
+    VALIDATE_NOT_NULL(res)
     sp<android::IBinder> token(IBinderForDroidObject(displayToken));
     if (token == NULL) return NOERROR;
     android::status_t err = android::SurfaceComposerClient::setActiveConfig(token, static_cast<int>(id));

@@ -3,11 +3,13 @@
 #include "Elastos.Droid.Content.h"
 #include "elastos/droid/app/ActivityManagerNative.h"
 #include "elastos/droid/os/ServiceManager.h"
+#include <elastos/utility/logging/Logger.h>
 
 using Elastos::Droid::Os::IServiceManager;
 using Elastos::Droid::Os::ServiceManager;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Content::IIIntentSender;
+using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
 namespace Droid {
@@ -19,7 +21,9 @@ AutoPtr<IIActivityManager> ActivityManagerNative::GetDefault()
 {
     AutoPtr<IIActivityManager> service =
             (IIActivityManager*)ServiceManager::GetService(IContext::ACTIVITY_SERVICE).Get();
-    assert(service != NULL);
+    if (service == NULL) {
+        Logger::W("ActivityManagerNative", "GetDefault(): %s service not ready yet.", IContext::ACTIVITY_SERVICE.string());
+    }
     return service;
 }
 
