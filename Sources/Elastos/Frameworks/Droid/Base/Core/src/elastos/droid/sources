@@ -58,6 +58,7 @@ ELASTOS_LIBS += service/voice/voice.lib
 ELASTOS_LIBS += service/notification/notification.lib
 ELASTOS_LIBS += service/media/media.lib
 ELASTOS_LIBS += speech/speech.lib
+ELASTOS_LIBS += telephony/telephony.lib
 ELASTOS_LIBS += text/text.lib
 ELASTOS_LIBS += transition/transition.lib
 ELASTOS_LIBS += utility/utility.lib
@@ -74,7 +75,6 @@ ELASTOS_LIBS += wifi/wifi.lib
 // ELASTOS_LIBS += accounts/accounts.lib
 // ELASTOS_LIBS += inputmethods/pinyinIME/pinyin.lib
 // ELASTOS_LIBS += swextend/gpio/gpio.lib
-// ELASTOS_LIBS += telephony/telephony.lib
 
 LIBRARIES += $(XDK_USER_LIB)/crt0.lib
 LIBRARIES += $(XDK_USER_LIB)/Elastos.Runtime.lib

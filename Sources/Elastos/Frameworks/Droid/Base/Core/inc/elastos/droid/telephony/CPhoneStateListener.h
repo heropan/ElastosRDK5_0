@@ -2,25 +2,33 @@
 #ifndef __ELASTOS_DROID_TELEPHONY_CPHONESTATELISTENER_H__
 #define __ELASTOS_DROID_TELEPHONY_CPHONESTATELISTENER_H__
 
+#include "Elastos.Droid.Internal.h"
+#include <Elastos.CoreLibrary.Core.h>
+#include <Elastos.CoreLibrary.IO.h>
+#include <Elastos.CoreLibrary.Utility.h>
 #include "_Elastos_Droid_Telephony_CPhoneStateListener.h"
-#include "elastos/droid/os/HandlerBase.h"
 #include "elastos/droid/ext/frameworkdef.h"
+#include "elastos/droid/os/Handler.h"
+#include <elastos/core/Object.h>
 
-using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Internal::Telephony::IIPhoneStateListener;
-using Elastos::Droid::Os::HandlerBase;
+using Elastos::Droid::Os::Handler;
 using Elastos::Droid::Os::IBundle;
+using Elastos::Utility::IList;
 
 namespace Elastos {
 namespace Droid {
 namespace Telephony {
 
 CarClass(CPhoneStateListener)
+    , public Object
+    , public IPhoneStateListener
 {
-public:
+    friend class CTelephonyManager;
 
+public:
     class CPhoneStateListenerCallback
-        : public ElRefBase
+        : public Object
         , public IIPhoneStateListener
     {
         CAR_INTERFACE_DECL();
@@ -40,7 +48,6 @@ public:
         CARAPI OnCallForwardingIndicatorChanged(
             /* [in] */ Boolean cfi);
 
-        // we use bundle here instead of CellLocation so it can get the right subclass
         CARAPI OnCellLocationChanged(
             /* [in] */ IBundle* location);
 
@@ -62,19 +69,37 @@ public:
             /* [in] */ Int32 otaspMode);
 
         CARAPI OnCellInfoChanged(
-            /* [in] */ ArrayOf<ICellInfo*>* cellInfo);
+            /* [in] */ IList* cellInfo);
+
+        CARAPI OnPreciseCallStateChanged(
+            /* [in] */ IPreciseCallState* callState);
+
+        CARAPI OnPreciseDataConnectionStateChanged(
+            /* [in] */ IPreciseDataConnectionState* dataConnectionState);
+
+        CARAPI OnDataConnectionRealTimeInfoChanged(
+            /* [in] */ IDataConnectionRealTimeInfo* dcRtInfo);
+
+        CARAPI OnVoLteServiceStateChanged(
+            /* [in] */ IVoLteServiceState* stateInfo);
+
+        CARAPI OnOemHookRawEvent(
+            /* [in] */ ArrayOf<Byte>* rawData);
 
     private:
         CPhoneStateListener* mHost;
     };
 
     class MyHandler
-        : public HandlerBase
+        : public Handler
     {
     public:
-
         MyHandler(
-            /* [in] */ CPhoneStateListener* host);
+            /* [in] */ CPhoneStateListener* host,
+            /* [in] */ ILooper* looper)
+            : Handler(looper)
+            , mHost(host)
+        {}
 
         virtual CARAPI HandleMessage(
             /* [in] */ IMessage* msg);
@@ -83,14 +108,24 @@ public:
         CPhoneStateListener* mHost;
     };
 
-    CARAPI SetContext(
-        /* [in] */ IContext* context);
+public:
+    CPhoneStateListener();
 
-    CARAPI SetPackageName(
-        /* [in] */ const String& packageName);
+    CAR_INTERFACE_DECL()
 
-    CARAPI SetUid(
-        /* [in] */ Int32 uid);
+    CAR_OBJECT_DECL()
+
+    CARAPI constructor();
+
+    CARAPI constructor(
+        /* [in] */ ILooper* looper);
+
+    CARAPI constructor(
+        /* [in] */ Int64 subId);
+
+    CARAPI constructor(
+        /* [in] */ Int64 subId,
+        /* [in] */ ILooper* looper);
 
     CARAPI OnServiceStateChanged(
         /* [in] */ IServiceState* serviceState);
@@ -128,24 +163,41 @@ public:
         /* [in] */ Int32 otaspMode);
 
     CARAPI OnCellInfoChanged(
-        /* [in] */ ArrayOf<ICellInfo *>* cellInfo);
+        /* [in] */ IList* cellInfo);
 
-    CARAPI constructor();
+    CARAPI OnPreciseCallStateChanged(
+        /* [in] */ IPreciseCallState* callState);
 
-    AutoPtr<IIPhoneStateListener> callback;
-    AutoPtr<MyHandler> mHandler;
-    AutoPtr<IContext> mContext;
-    String mPackageName;
-    Int32 mUid;
+    CARAPI OnPreciseDataConnectionStateChanged(
+        /* [in] */ IPreciseDataConnectionState* dataConnectionState);
+
+    CARAPI OnDataConnectionRealTimeInfoChanged(
+        /* [in] */ IDataConnectionRealTimeInfo* dcRtInfo);
+
+    CARAPI OnVoLteServiceStateChanged(
+        /* [in] */ IVoLteServiceState* stateInfo);
+
+    CARAPI OnOemHookRawEvent(
+        /* [in] */ ArrayOf<Byte>* rawData);
+
+protected:
+     /*
+     * Subscription used to listen to the phone state changes
+     * @hide
+     */
+    /** @hide */
+    Int64 mSubId;
 
 private:
+    static const String TAG;;
+    static const Boolean DBG; // STOPSHIP if true
 
-    // BEGIN privacy-added
-    static const String TAG/* = "PhoneStateListener"*/;
+    AutoPtr<MyHandler> mHandler;
+    AutoPtr<IIPhoneStateListener> callback;
 };
 
-}
-}
-}
+} // namespace Telephony
+} // namespace Droid
+} // namespace Elastos
 
 #endif // __ELASTOS_DROID_TELEPHONY_CPHONESTATELISTENER_H__

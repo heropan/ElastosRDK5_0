@@ -39,7 +39,7 @@ using Elastos::Droid::Telephony::ICellLocationHelper;
 // using Elastos::Droid::Telephony::CCellLocationHelper;
 using Elastos::Droid::Telephony::ITelephonyManagerHelper;
 // using Elastos::Droid::Telephony::CTelephonyManagerHelper;
-using Elastos::Droid::Telephony::ISubscriptionManagerHelper;
+using Elastos::Droid::Telephony::ISubscriptionManager;
 // using Elastos::Droid::Telephony::CSubscriptionManagerHelper;
 using Elastos::Droid::Internal::Telephony::EIID_IITelephonyRegistry;
 // using Elastos::Droid::Opt::Internal::Telephony::IDefaultPhoneNotifierHelper;
@@ -365,7 +365,7 @@ ECode CTelephonyRegistry::Listen(
         synchronized(mRecordsLock) {
             // register
             AutoPtr<Record> r;
-            AutoPtr<ISubscriptionManagerHelper> smHelper;
+            AutoPtr<ISubscriptionManager> smHelper;
             //CSubscriptionManagerHelper::AcquireSingleton((ISubscriptionManagerHelper**)&smHelper);
             Boolean found = FALSE, bval;
             AutoPtr<IBinder> b = IBinder::Probe(callback);
@@ -575,7 +575,7 @@ ECode CTelephonyRegistry::NotifyCallStateForSubscriber(
     }
     ECode ec = NOERROR;
     synchronized(mRecordsLock) {
-        AutoPtr<ISubscriptionManagerHelper> smHelper;
+        AutoPtr<ISubscriptionManager> smHelper;
         //CSubscriptionManagerHelper::AcquireSingleton((ISubscriptionManagerHelper**)&smHelper);
         Int32 phoneId;
         smHelper->GetPhoneId(subId, &phoneId);
@@ -672,7 +672,7 @@ ECode CTelephonyRegistry::NotifySignalStrengthForSubscriber(
     }
     ECode ec = NOERROR;
     synchronized(mRecordsLock) {
-        AutoPtr<ISubscriptionManagerHelper> smHelper;
+        AutoPtr<ISubscriptionManager> smHelper;
         //CSubscriptionManagerHelper::AcquireSingleton((ISubscriptionManagerHelper**)&smHelper);
         Int32 phoneId;
         smHelper->GetPhoneId(subId, &phoneId);
@@ -746,7 +746,7 @@ ECode CTelephonyRegistry::NotifyCellInfoForSubscriber(
 
     ECode ec = NOERROR;
     synchronized(mRecordsLock) {
-        AutoPtr<ISubscriptionManagerHelper> smHelper;
+        AutoPtr<ISubscriptionManager> smHelper;
         //CSubscriptionManagerHelper::AcquireSingleton((ISubscriptionManagerHelper**)&smHelper);
         Int32 phoneId;
         smHelper->GetPhoneId(subId, &phoneId);
@@ -859,7 +859,7 @@ ECode CTelephonyRegistry::NotifyCallForwardingChangedForSubscriber(
     }
     ECode ec = NOERROR;
     synchronized(mRecordsLock) {
-        AutoPtr<ISubscriptionManagerHelper> smHelper;
+        AutoPtr<ISubscriptionManager> smHelper;
         //CSubscriptionManagerHelper::AcquireSingleton((ISubscriptionManagerHelper**)&smHelper);
         Int32 phoneId;
         smHelper->GetPhoneId(subId, &phoneId);
@@ -898,7 +898,7 @@ ECode CTelephonyRegistry::NotifyDataActivityForSubscriber(
     }
     ECode ec = NOERROR;
     synchronized(mRecordsLock) {
-        AutoPtr<ISubscriptionManagerHelper> smHelper;
+        AutoPtr<ISubscriptionManager> smHelper;
         //CSubscriptionManagerHelper::AcquireSingleton((ISubscriptionManagerHelper**)&smHelper);
         Int32 phoneId;
         smHelper->GetPhoneId(subId, &phoneId);
@@ -957,7 +957,7 @@ ECode CTelephonyRegistry::NotifyDataConnectionForSubscriber(
     }
     ECode ec = NOERROR;
     synchronized(mRecordsLock) {
-        AutoPtr<ISubscriptionManagerHelper> smHelper;
+        AutoPtr<ISubscriptionManager> smHelper;
         //CSubscriptionManagerHelper::AcquireSingleton((ISubscriptionManagerHelper**)&smHelper);
         Int32 phoneId;
         smHelper->GetPhoneId(subId, &phoneId);
@@ -1103,7 +1103,7 @@ ECode CTelephonyRegistry::NotifyCellLocationForSubscriber(
 
     ECode ec = NOERROR;
     synchronized(mRecordsLock) {
-        AutoPtr<ISubscriptionManagerHelper> smHelper;
+        AutoPtr<ISubscriptionManager> smHelper;
         //CSubscriptionManagerHelper::AcquireSingleton((ISubscriptionManagerHelper**)&smHelper);
         Int32 phoneId;
         smHelper->GetPhoneId(subId, &phoneId);
