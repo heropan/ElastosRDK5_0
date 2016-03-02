@@ -2675,26 +2675,17 @@ ECode CActivityManagerService::constructor(
         bstats->SetCallback(this);
     }
 
-    Slogger::I(TAG, " create file procstats");
     AutoPtr<IFile> file;
     ec = CFile::New(systemDir, String("procstats"), (IFile**)&file);
-    if (FAILED(ec)) Slogger::E(TAG, "failed to create file %s/procstats, ec=%08x", TO_CSTR(systemDir), ec);
     CProcessStatsService::NewByFriend(this, file, (CProcessStatsService**)&mProcessStats);
 
-    Slogger::I(TAG, " create file appops.xml");
     file = NULL;
     ec = CFile::New(systemDir, String("appops.xml"), (IFile**)&file);
-    if (FAILED(ec)) Slogger::E(TAG, "failed to create file %s/appops.xml, ec=%08x", TO_CSTR(systemDir), ec);
     CAppOpsService::NewByFriend(file, mHandler, (CAppOpsService**)&mAppOpsService);
 
-    Slogger::I(TAG, " create file urigrants.xml");
     file = NULL;
     ec = CFile::New(systemDir, String("urigrants.xml"), (IFile**)&file);
-    if (FAILED(ec)) Slogger::E(TAG, "failed to create file %s/urigrants.xml, ec=%08x", TO_CSTR(systemDir), ec);
     ec = CAtomicFile::New(file, (IAtomicFile**)&mGrantFile);
-    if (FAILED(ec)) {
-        Slogger::E(TAG, "failed to create CAtomicFile %s", TO_CSTR(file));
-    }
 
     // User 0 is the first and only user that runs at boot.
     AutoPtr<IUserHandle> userHandle;

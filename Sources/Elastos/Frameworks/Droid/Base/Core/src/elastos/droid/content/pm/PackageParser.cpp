@@ -34,6 +34,7 @@
 #include "elastos/droid/internal/utility/XmlUtils.h"
 #include "elastos/droid/R.h"
 #include "elastos/droid/Manifest.h"
+#include <elastos/core/StringUtils.h>
 #include <elastos/core/CoreUtils.h>
 #include <elastos/utility/Arrays.h>
 #include <elastos/utility/logging/Logger.h>
@@ -58,6 +59,7 @@ using Elastos::Droid::Internal::Utility::XmlUtils;
 
 using Elastos::Core::CString;
 using Elastos::Core::CoreUtils;
+using Elastos::Core::StringUtils;
 using Elastos::Core::EIID_IComparator;
 using Elastos::IO::IInputStream;
 using Elastos::IO::IBufferedInputStream;
@@ -95,9 +97,9 @@ namespace Droid {
 namespace Content {
 namespace Pm {
 
-const Boolean PackageParser::DEBUG_JAR = FALSE;
-const Boolean PackageParser::DEBUG_PARSER = FALSE;
-const Boolean PackageParser::DEBUG_BACKUP = FALSE;
+const Boolean PackageParser::DEBUG_JAR = TRUE;
+const Boolean PackageParser::DEBUG_PARSER = TRUE;
+const Boolean PackageParser::DEBUG_BACKUP = TRUE;
 
 const String PackageParser::TAG("PackageParser");
 
@@ -493,7 +495,7 @@ ECode PackageParser::Package::ToString(
 {
     VALIDATE_NOT_NULL(str)
     StringBuilder sb("Package(");
-    sb += (Int32)this;
+    sb += StringUtils::ToHexString((Int32)this);
     sb += " ";
     sb += mPackageName;
     sb += "}";
@@ -1280,13 +1282,14 @@ ECode PackageParser::ParseClusterPackageLite(
     String packageName;
     Int32 versionCode = 0;
 
-    AutoPtr<IArrayMap> apks;
-    CArrayMap::New((IArrayMap**)&apks);
-    IMap* map = IMap::Probe(apks);
+    AutoPtr<IMap> apks;
+    CArrayMap::New((IMap**)&apks);
 
     for (Int32 i = 0; i < files->GetLength(); ++i) {
         IFile* file = (*files)[i];
         if (IsApkFile(file)) {
+            Logger::I(TAG, " >> ParseClusterPackageLite sub apk file %d : %s", i, TO_CSTR(file));
+
             AutoPtr<ApkLite> lite;
             FAIL_RETURN(ParseApkLite(file, flags, readBuffer, (ApkLite**)&lite))
 
@@ -1318,11 +1321,8 @@ ECode PackageParser::ParseClusterPackageLite(
             // Assert that each split is defined only once
             AutoPtr<IInterface> old;
             AutoPtr<ICharSequence> key = CoreUtils::Convert(lite->mSplitName);
-            map->Put(TO_IINTERFACE(key), TO_IINTERFACE(lite), (IInterface**)&old);
+            apks->Put(TO_IINTERFACE(key), TO_IINTERFACE(lite), (IInterface**)&old);
             if (old != NULL) {
-                // throw new PackageParserException(INSTALL_PARSE_FAILED_BAD_MANIFEST,
-                //         "Split name " + lite->mSplitName
-                //         + " defined more than once; most recent was " + file);
                 Logger::E(TAG, "INSTALL_PARSE_FAILED_BAD_MANIFEST : Split name %s  defined more than once; most recent was %s",
                     lite->mSplitName.string(), TO_CSTR(file));
                 return E_PACKAGE_PARSER_EXCEPTION;
@@ -1331,12 +1331,9 @@ ECode PackageParser::ParseClusterPackageLite(
     }
 
     AutoPtr<IInterface> old;
-    map->Remove(NULL, (IInterface**)&old);
+    apks->Remove(NULL, (IInterface**)&old);
     if (old == NULL) {
-        // throw new PackageParserException(INSTALL_PARSE_FAILED_BAD_MANIFEST,
-        //         "Missing base APK in " + packageDir);
-        Logger::E(TAG, "INSTALL_PARSE_FAILED_BAD_MANIFEST : Missing base APK in  %s",
-            TO_CSTR(packageDir));
+        Logger::W(TAG, "INSTALL_PARSE_FAILED_BAD_MANIFEST : Missing base APK in %s", TO_CSTR(packageDir));
         return E_PACKAGE_PARSER_EXCEPTION;
     }
 
@@ -1344,7 +1341,7 @@ ECode PackageParser::ParseClusterPackageLite(
 
     // Always apply deterministic ordering based on splitName
     Int32 size;
-    map->GetSize(&size);
+    apks->GetSize(&size);
 
     AutoPtr<ArrayOf<IInterface*> > splitNames;
     AutoPtr<ArrayOf<IInterface*> > splitCodePaths;
@@ -1353,7 +1350,7 @@ ECode PackageParser::ParseClusterPackageLite(
         splitCodePaths = ArrayOf<IInterface*>::Alloc(size);
 
         AutoPtr<ISet> ks;
-        map->GetKeySet((ISet**)&ks);
+        apks->GetKeySet((ISet**)&ks);
 
         AutoPtr<ArrayOf<IInterface*> > temp;
         ks->ToArray(splitNames, (ArrayOf<IInterface*>**)&temp);
@@ -1363,7 +1360,7 @@ ECode PackageParser::ParseClusterPackageLite(
 
         for (Int32 i = 0; i < size; i++) {
             AutoPtr<IInterface> obj;
-            map->Get((*splitNames)[i], (IInterface**)&obj);
+            apks->Get((*splitNames)[i], (IInterface**)&obj);
             ApkLite* al = (ApkLite*)IObject::Probe(obj);
             AutoPtr<ICharSequence> value = CoreUtils::Convert(al->mCodePath);
             splitCodePaths->Set(i, TO_IINTERFACE(value));
@@ -1402,9 +1399,9 @@ ECode PackageParser::ParsePackage(
     packageFile->IsDirectory(&isDir);
     if (isDir) {
         return ParseClusterPackage(packageFile, flags, readBuffer, pkgLite);
-    } else {
-        return ParseMonolithicPackage(packageFile, flags, readBuffer, pkgLite);
     }
+
+    return ParseMonolithicPackage(packageFile, flags, readBuffer, pkgLite);
 }
 
 ECode PackageParser::ParseClusterPackage(
@@ -1458,10 +1455,7 @@ ECode PackageParser::ParseClusterPackage(
     FAIL_GOTO(ec, _EXIT_)
 
     if (pkg == NULL) {
-        // throw new PackageParserException(INSTALL_PARSE_FAILED_NOT_APK,
-        //         "Failed to parse base APK: " + baseApk);
-        Logger::E(TAG, "INSTALL_PARSE_FAILED_NOT_APK: Failed to parse base APK: %s",
-            TO_CSTR(baseApk));
+        Logger::E(TAG, "INSTALL_PARSE_FAILED_NOT_APK: Failed to parse base APK: %s", TO_CSTR(baseApk));
         ec = E_PACKAGE_PARSER_EXCEPTION;
         goto _EXIT_;
     }
@@ -1519,18 +1513,16 @@ ECode PackageParser::ParseMonolithicPackage(
     AutoPtr<Package> pkg;
 
     // try {
-    ParseBaseApk(apkFile, assets, flags, (Package**)&pkg);
-    apkFile->GetAbsolutePath(&pkg->mCodePath);
-
-    // } finally {
+    ECode ec = ParseBaseApk(apkFile, assets, flags, (Package**)&pkg);
     ioUtils->CloseQuietly(ICloseable::Probe(assets));
-    // }
+
+    FAIL_RETURN(ec)
+    apkFile->GetAbsolutePath(&pkg->mCodePath);
 
     *pkgLite = pkg;
     REFCOUNT_ADD(*pkgLite)
     return NOERROR;
 }
-
 
 ECode PackageParser::LoadApkIntoAssetManager(
     /* [in] */ IAssetManager* assets,
@@ -1577,7 +1569,7 @@ ECode PackageParser::ParseBaseApk(
     apkFile->GetAbsolutePath(&apkPath);
 
     sParseError = IPackageManager::INSTALL_SUCCEEDED;
-    apkFile->GetAbsolutePath(&mArchiveSourcePath);
+    mArchiveSourcePath = apkPath;
 
     if (DEBUG_JAR) Slogger::D(TAG, "Scanning base APK: %s", apkPath.string());
 
@@ -1601,11 +1593,10 @@ ECode PackageParser::ParseBaseApk(
     FAIL_GOTO(ec, _EXIT_)
 
     if (pkg == NULL) {
-        // throw new PackageParserException(sParseError,
-        //         apkPath + " (at " + parser.getPositionDescription() + "): " + outError[0]);
         String pos;
         IXmlPullParser::Probe(parser)->GetPositionDescription(&pos);
-        Logger::E(TAG, "%d %s (at %d): %s", sParseError, apkPath.string(), pos.string(),(*outError)[0].string());
+        Logger::E(TAG, "ParseBaseApk error %d, file %s (at %d): %s",
+            sParseError, apkPath.string(), pos.string(),(*outError)[0].string());
         ec = E_PACKAGE_PARSER_EXCEPTION;
         goto _EXIT_;
     }
@@ -1634,7 +1625,7 @@ _EXIT_:
 
     *pkgLite = pkg;
     REFCOUNT_ADD(*pkgLite)
-    return NOERROR;
+    return ec;
 }
 
 ECode PackageParser::ParseSplitApk(
@@ -2314,6 +2305,7 @@ ECode PackageParser::ParseBaseApk(
     /* [in] */ ArrayOf<String>* outError,
     /* [out] */ Package** result)
 {
+    Logger::I(TAG, " >>> ParseBaseApk ==============");
     VALIDATE_NOT_NULL(result)
     *result = NULL;
 
@@ -2328,16 +2320,19 @@ ECode PackageParser::ParseBaseApk(
     mParseServiceArgs = NULL;
     mParseProviderArgs = NULL;
 
+    Logger::I(TAG, " =-===== 0");
+
     String pkgName;
     String splitName;
-    // try {
+
     AutoPtr<ArrayOf<String> > packageSplit;
     ECode ec = ParsePackageSplitNames(parser, attrs, flags, (ArrayOf<String>**)&packageSplit);
-    // } catch (PackageParserException e) {
-    if (ec == (ECode)E_PACKAGE_PARSER_EXCEPTION)
+    if (ec == (ECode)E_PACKAGE_PARSER_EXCEPTION) {
         sParseError = IPackageManager::INSTALL_PARSE_FAILED_BAD_PACKAGE_NAME;
         return NOERROR;
-    // }
+    }
+
+    Logger::I(TAG, " =-===== 1");
 
     pkgName = (*packageSplit)[0];
     splitName = (*packageSplit)[1];
@@ -2352,6 +2347,7 @@ ECode PackageParser::ParseBaseApk(
         return NOERROR;
     }
 
+    Logger::I(TAG, " pkgName %s, splitName %s", pkgName.string(), splitName.string());
     AutoPtr<PackageParser::Package> pkg = new PackageParser::Package(pkgName);
     Boolean foundApp = FALSE;
 
@@ -2361,10 +2357,8 @@ ECode PackageParser::ParseBaseApk(
     layout->Copy(R::styleable::AndroidManifest, size);
 
     AutoPtr<ITypedArray> sa;
-    ASSERT_SUCCEEDED(res->ObtainAttributes(
-        attrs, layout, (ITypedArray**)&sa));
-    sa->GetInteger(
-        R::styleable::AndroidManifest_versionCode, 0, &pkg->mVersionCode);
+    ASSERT_SUCCEEDED(res->ObtainAttributes(attrs, layout, (ITypedArray**)&sa));
+    sa->GetInteger(R::styleable::AndroidManifest_versionCode, 0, &pkg->mVersionCode);
     pkg->mApplicationInfo->SetVersionCode(pkg->mVersionCode);
     sa->GetNonConfigurationString(
         R::styleable::AndroidManifest_versionName, 0, &pkg->mVersionName);
@@ -2372,8 +2366,7 @@ ECode PackageParser::ParseBaseApk(
     //     pkg->mVersionName = pkg->mVersionName.intern();
     // }
     String str;
-    sa->GetNonConfigurationString(
-            R::styleable::AndroidManifest_sharedUserId, 0, &str);
+    sa->GetNonConfigurationString(R::styleable::AndroidManifest_sharedUserId, 0, &str);
     if (!str.IsNullOrEmpty()) {
         String nameError = ValidateName(str, TRUE);
         if (!nameError.IsNull() && !pkgName.Equals("android")) {
@@ -2437,6 +2430,7 @@ ECode PackageParser::ParseBaseApk(
 
         String tagName;
         parser->GetName(&tagName);
+        Logger::I(TAG, " current tag name %s", tagName.string());
         if (tagName.Equals("application")) {
             if (foundApp) {
                 if (RIGID_PARSER) {
@@ -2940,6 +2934,8 @@ ECode PackageParser::ParseBaseApk(
         }
     }
 
+    Logger::I(TAG, " =-===== 2");
+
     if (!foundApp && pkg->mInstrumentation.Begin() == pkg->mInstrumentation.End()) {
         (*outError)[0] = "<manifest> does not contain an <application> or <instrumentation>";
         sParseError = IPackageManager::INSTALL_PARSE_FAILED_MANIFEST_EMPTY;
@@ -3044,6 +3040,7 @@ ECode PackageParser::ParseBaseApk(
         }
     }
 
+    Logger::I(TAG, " <<< ParseBaseApk");
     *result = pkg;
     REFCOUNT_ADD(*result)
     return NOERROR;

@@ -48,7 +48,6 @@ ECode CAtomicFile::constructor(
         return ec;
     }
     name += ".bak";
-    Logger::I("CAtomicFile", "create CAtomicFile with path %s", name.string());
     return CFile::New(name, (IFile**)&mBackupName);
 }
 

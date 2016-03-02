@@ -3967,20 +3967,20 @@ ECode CPackageManagerService::RemoveUnusedPackagesRunnable::Run()
 //==============================================================================
 
 const String CPackageManagerService::TAG("CPackageManagerService");
-const Boolean CPackageManagerService::DEBUG_SETTINGS = FALSE;
-const Boolean CPackageManagerService::DEBUG_PREFERRED = FALSE;
-const Boolean CPackageManagerService::DEBUG_UPGRADE = FALSE;
-const Boolean CPackageManagerService::DEBUG_INSTALL = FALSE;
-const Boolean CPackageManagerService::DEBUG_REMOVE = FALSE;
-const Boolean CPackageManagerService::DEBUG_BROADCASTS = FALSE;
-const Boolean CPackageManagerService::DEBUG_SHOW_INFO = FALSE;
-const Boolean CPackageManagerService::DEBUG_PACKAGE_INFO = FALSE;
-const Boolean CPackageManagerService::DEBUG_INTENT_MATCHING = FALSE;
-const Boolean CPackageManagerService::DEBUG_PACKAGE_SCANNING = FALSE;
-const Boolean CPackageManagerService::DEBUG_VERIFY = FALSE;
-const Boolean CPackageManagerService::DEBUG_DEXOPT = FALSE;
-const Boolean CPackageManagerService::DEBUG_ABI_SELECTION = FALSE;
-const Boolean CPackageManagerService::DEBUG_SD_INSTALL = FALSE;
+const Boolean CPackageManagerService::DEBUG_SETTINGS = TRUE;
+const Boolean CPackageManagerService::DEBUG_PREFERRED = TRUE;
+const Boolean CPackageManagerService::DEBUG_UPGRADE = TRUE;
+const Boolean CPackageManagerService::DEBUG_INSTALL = TRUE;
+const Boolean CPackageManagerService::DEBUG_REMOVE = TRUE;
+const Boolean CPackageManagerService::DEBUG_BROADCASTS = TRUE;
+const Boolean CPackageManagerService::DEBUG_SHOW_INFO = TRUE;
+const Boolean CPackageManagerService::DEBUG_PACKAGE_INFO = TRUE;
+const Boolean CPackageManagerService::DEBUG_INTENT_MATCHING = TRUE;
+const Boolean CPackageManagerService::DEBUG_PACKAGE_SCANNING = TRUE;
+const Boolean CPackageManagerService::DEBUG_VERIFY = TRUE;
+const Boolean CPackageManagerService::DEBUG_DEXOPT = TRUE;
+const Boolean CPackageManagerService::DEBUG_ABI_SELECTION = TRUE;
+const Boolean CPackageManagerService::DEBUG_SD_INSTALL = TRUE;
 
 const Int32 CPackageManagerService::RADIO_UID;
 const Int32 CPackageManagerService::LOG_UID;
@@ -8558,40 +8558,41 @@ void CPackageManagerService::ScanDirLI(
     AutoPtr<ArrayOf<IFile*> > files;
     dir->ListFiles((ArrayOf<IFile*>**)&files);
     if (ArrayUtils::IsEmpty<IFile*>(files)) {
-        Logger::D(TAG, "No files in app dir %p", dir);
+        Logger::D(TAG, "No files in app dir %s", TO_CSTR(dir));
         return;
     }
 
     if (DEBUG_PACKAGE_SCANNING) {
-        Logger::D(TAG, "Scanning app dir %p scanFlags=%d flags=%d", dir, scanFlags, parseFlags);
+        Logger::D(TAG, "Scanning app dir %s scanFlags=%d flags=%d", TO_CSTR(dir), scanFlags, parseFlags);
     }
 
     // ActionsCode(authro:songzhining, comment: fix uninstall bug for apk in vendor/app/app.)
-    String path;
+    String path, name;
     dir->GetPath(&path);
     Boolean isVendorApp = path.StartWith(VENDOR_APP_DIR);
+    Boolean isDirectory, isPackage;
+    ECode ec = NOERROR;
     for (Int32 i = 0; i < files->GetLength(); ++i) {
         AutoPtr<IFile> file = (*files)[i];
-        Boolean isDirectory;
-        String name;
         file->GetName(&name);
-        Boolean isPackage = (PackageParser::IsApkFile(file) ||
+        isPackage = (PackageParser::IsApkFile(file) ||
                 (file->IsDirectory(&isDirectory), isDirectory)) && !isVendorApp
                 && !CPackageInstallerService::IsStageName(name);
         if (!isPackage) {
             // Ignore entries which are not packages
             continue;
         }
+
         // try {
         AutoPtr<PackageParser::Package> pkg;
-        if (FAILED(ScanPackageLI(file, parseFlags | PackageParser::PARSE_MUST_BE_APK,
-                scanFlags, currentTime, NULL, readBuffer, (PackageParser::Package**)&pkg))) {
-            Slogger::W(TAG, "Failed to parse %p", file.Get());
+        ec = ScanPackageLI(file, parseFlags | PackageParser::PARSE_MUST_BE_APK,
+                scanFlags, currentTime, NULL, readBuffer, (PackageParser::Package**)&pkg);
+        if (FAILED(ec)) {
+            Slogger::W(TAG, "Failed to parse %s, ec = %08x", TO_CSTR(file), ec);
 
             // Delete invalid userdata apps
             if ((parseFlags & PackageParser::PARSE_IS_SYSTEM) == 0 /*&& e.error == PackageManager.INSTALL_FAILED_INVALID_APK*/) {
-                String str;
-                IObject::Probe(file)->ToString(&str);
+                String str = Object::ToString(file);
                 LogCriticalInfo(ILogHelper::WARN, String("Deleting invalid package at ") + str);
                 if (file->IsDirectory(&isDirectory), isDirectory) {
                     FileUtils::DeleteContents(file);
@@ -8759,7 +8760,7 @@ ECode CPackageManagerService::ScanPackageLI(
     VALIDATE_NOT_NULL(_pkg)
     *_pkg = NULL;
 
-    if (DEBUG_INSTALL) Slogger::D(TAG, "Parsing: %p", scanFile);
+    if (DEBUG_INSTALL) Slogger::D(TAG, "ScanPackageLI Parsing: %s", TO_CSTR(scanFile));
     parseFlags |= mDefParseFlags;
     AutoPtr<PackageParser> pp = new PackageParser();
     pp->SetSeparateProcesses(mSeparateProcesses);
@@ -8805,7 +8806,7 @@ ECode CPackageManagerService::ScanPackageLI(
         // package.  Must look for it either under the original or real
         // package name depending on our state.
         updatedPkg = mSettings->GetDisabledSystemPkgLPr(ps != NULL ? ps->mName : pkg->mPackageName);
-        if (DEBUG_INSTALL && updatedPkg != NULL) Slogger::D(TAG, "updatedPkg = %p", updatedPkg.Get());
+        if (DEBUG_INSTALL && updatedPkg != NULL) Slogger::D(TAG, "updatedPkg = %s", TO_CSTR(updatedPkg));
     }
     Boolean updatedPkgBetter = FALSE;
     // First check if this is a system package that may involve an update
@@ -8815,7 +8816,7 @@ ECode CPackageManagerService::ScanPackageLI(
             // The path has changed from what was last scanned...  check the
             // version of the new path against what we have stored to determine
             // what to do.
-            if (DEBUG_INSTALL) Slogger::D(TAG, "Path changing from %p", ps->mCodePath.Get());
+            if (DEBUG_INSTALL) Slogger::D(TAG, "Path changing from %s", TO_CSTR(ps->mCodePath));
             if (pkg->mVersionCode < ps->mVersionCode) {
                 // The system package has been updated and the code path does not match
                 // Ignore entry. Skip it.
@@ -10367,7 +10368,7 @@ ECode CPackageManagerService::ScanPackageDirtyLI(
                 if (pkgSetting->mSharedUser != NULL) {
                     if (CompareSignatures(pkgSetting->mSharedUser->mSignatures->mSignatures,
                             pkg->mSignatures) != IPackageManager::SIGNATURE_MATCH) {
-                        Slogger::E(TAG, "Signature mismatch for shared user : %p", pkgSetting->mSharedUser.Get());
+                        Slogger::E(TAG, "Signature mismatch for shared user : %s", TO_CSTR(pkgSetting->mSharedUser));
                         sLastScanError = IPackageManager::INSTALL_PARSE_FAILED_INCONSISTENT_CERTIFICATES;
                         return E_PACKAGE_MANAGER_EXCEPTION;
                     }
@@ -10585,7 +10586,7 @@ ECode CPackageManagerService::ScanPackageDirtyLI(
         else {
             if (DEBUG_PACKAGE_SCANNING) {
                 if ((parseFlags & PackageParser::PARSE_CHATTY) != 0)
-                    Logger::V(TAG, "Want this data dir: %p", dataPath.Get());
+                    Logger::V(TAG, "Want this data dir: %s", TO_CSTR(dataPath));
             }
             //invoke installer to do the actual installation
             Int32 pkgAppUid;
@@ -10608,7 +10609,7 @@ ECode CPackageManagerService::ScanPackageDirtyLI(
                 pkg->mApplicationInfo->SetDataDir(path);
             }
             else {
-                Slogger::W(TAG, "Unable to create data directory: %p", dataPath.Get());
+                Slogger::W(TAG, "Unable to create data directory: %s", TO_CSTR(dataPath));
                 pkg->mApplicationInfo->SetDataDir(String(NULL));
             }
         }
@@ -11632,7 +11633,8 @@ void CPackageManagerService::SetUpCustomResolverActivity(
         mResolveInfo->SetPreferredOrder(0);
         mResolveInfo->SetMatch(0);
         mResolveComponentName = mCustomResolverComponentName;
-        Slogger::I(TAG, "Replacing default ResolverActivity with custom activity: %p", mResolveComponentName.Get());
+        Slogger::I(TAG, "Replacing default ResolverActivity with custom activity: %s",
+            TO_CSTR(mResolveComponentName));
     }
 }
 
@@ -11666,7 +11668,7 @@ String CPackageManagerService::CalculateBundledApkRoot(
             parent = tmp;
         }
         codeRoot = f;
-        Slogger::W(TAG, "Unrecognized code path %p - using %p", codePath.Get(), codeRoot.Get());
+        Slogger::W(TAG, "Unrecognized code path %s - using %s", TO_CSTR(codePath), TO_CSTR(codeRoot));
         // } catch (IOException e) {
         //     // Can't canonicalize the code path -- shenanigans?
         //     Slog.w(TAG, "Can't canonicalize code path " + codePath);
@@ -11885,7 +11887,7 @@ void CPackageManagerService::SetBundledAppAbi(
 
         Int32 flags;
         if (pkg->mApplicationInfo->GetFlags(&flags), (flags & IApplicationInfo::FLAG_MULTIARCH) == 0) {
-            Slogger::E(TAG, "Package: %p has multiple bundled libs, but is not multiarch.", pkg);
+            Slogger::E(TAG, "Package: %s has multiple bundled libs, but is not multiarch.", TO_CSTR(pkg));
         }
         // TODO
         // if (VMRuntime.is64BitInstructionSet(GetPreferredInstructionSet())) {
@@ -12356,7 +12358,7 @@ void CPackageManagerService::GrantPermissionsLPw(
         }
         if (DEBUG_INSTALL) {
             if (gp != ps) {
-                Logger::I(TAG, "Package %s checking %s: %p", pkg->mPackageName.string(), name.string(), bp.Get());
+                Logger::I(TAG, "Package %s checking %s: %s", pkg->mPackageName.string(), name.string(), TO_CSTR(bp));
             }
         }
         if (bp == NULL || bp->mPackageSetting == NULL) {
@@ -13366,7 +13368,7 @@ ECode CPackageManagerService::SetInstallerPackageName(
                 callerSignature = ps->mSignatures->mSignatures;
             }
             else {
-                Slogger::E(TAG, "Bad object %p for uid %d", obj.Get(), uid);
+                Slogger::E(TAG, "Bad object %s for uid %d", TO_CSTR(obj), uid);
                 return E_SECURITY_EXCEPTION;
             }
         }
@@ -13667,7 +13669,7 @@ void CPackageManagerService::InstallNewPackageLI(
     // Remember this for later, in case we need to rollback this install
     String pkgName = pkg->mPackageName;
 
-    if (DEBUG_INSTALL) Slogger::D(TAG, "installNewPackageLI: %p", pkg);
+    if (DEBUG_INSTALL) Slogger::D(TAG, "installNewPackageLI: %s", TO_CSTR(pkg));
     Boolean dataDirExists;
     GetDataPathForPackage(pkg->mPackageName, 0)->Exists(&dataDirExists);
     synchronized(mPackagesLock) {
@@ -13765,7 +13767,7 @@ void CPackageManagerService::ReplacePackageLI(
         if (it != mPackages.End()) {
             oldPackage = it->mSecond;
         }
-        if (DEBUG_INSTALL) Slogger::D(TAG, "replacePackageLI: new=%p, old=%p", pkg, oldPackage.Get());
+        if (DEBUG_INSTALL) Slogger::D(TAG, "replacePackageLI: new=%s, old=%s", TO_CSTR(pkg), TO_CSTR(oldPackage));
         AutoPtr<PackageSetting> ps;
         HashMap<String, AutoPtr<PackageSetting> >::Iterator pkgIt = mSettings->mPackages.Find(pkgName);
         if (pkgIt != mSettings->mPackages.End()) {
@@ -13825,7 +13827,7 @@ void CPackageManagerService::ReplaceNonSystemPackageLI(
     Boolean deletedPkg = TRUE;
     Boolean updatedSettings = FALSE;
 
-    if (DEBUG_INSTALL) Slogger::D(TAG, "replaceNonSystemPackageLI: new=%p, old=%p", pkg, deletedPackage);
+    if (DEBUG_INSTALL) Slogger::D(TAG, "replaceNonSystemPackageLI: new=%s, old=%s", TO_CSTR(pkg), TO_CSTR(deletedPackage));
     Int64 origUpdateTime;
     if (pkg->mExtras != NULL) {
         AutoPtr<PackageSetting> extras = reinterpret_cast<PackageSetting*>(pkg->mExtras->Probe(EIID_PackageSetting));
@@ -13941,7 +13943,7 @@ void CPackageManagerService::ReplaceSystemPackageLI(
     /* [in] */ PackageInstalledInfo* res,
     /* [in] */ ArrayOf<Byte>* readBuffer)
 {
-    if (DEBUG_INSTALL) Slogger::D(TAG, "replaceSystemPackageLI: new=%p, old=%p", pkg, deletedPackage);
+    if (DEBUG_INSTALL) Slogger::D(TAG, "replaceSystemPackageLI: new=%s, old=%s", TO_CSTR(pkg), TO_CSTR(deletedPackage));
     Boolean disabledSystem = FALSE;
     Boolean updatedSettings = FALSE;
     parseFlags |= PackageParser::PARSE_IS_SYSTEM;
@@ -14177,7 +14179,7 @@ void CPackageManagerService::InstallPackageLI(
     // Result object to be returned
     res->mReturnCode = IPackageManager::INSTALL_SUCCEEDED;
 
-    if (DEBUG_INSTALL) Slogger::D(TAG, "installPackageLI: path=%p", tmpPackageFile.Get());
+    if (DEBUG_INSTALL) Slogger::D(TAG, "installPackageLI: path=%s", TO_CSTR(tmpPackageFile));
     // Retrieve PackageSettings and parse package
     Int32 parseFlags = mDefParseFlags | PackageParser::PARSE_CHATTY |
             (forwardLocked ? PackageParser::PARSE_FORWARD_LOCK : 0) |
@@ -14338,7 +14340,7 @@ void CPackageManagerService::InstallPackageLI(
             ps = it->mSecond;
         }
         if (ps != NULL) {
-            if (DEBUG_INSTALL) Slogger::D(TAG, "Existing package: %p", ps.Get());
+            if (DEBUG_INSTALL) Slogger::D(TAG, "Existing package: %s", TO_CSTR(ps));
             oldCodePath = ps->mCodePathString;
             if (ps->mPkg != NULL && ps->mPkg->mApplicationInfo != NULL) {
                 Int32 flags;
@@ -14718,7 +14720,7 @@ void CPackageManagerService::RemovePackageDataLI(
     /* [in] */ Boolean writeSettings)
 {
     String packageName = ps->mName;
-    if (DEBUG_REMOVE) Slogger::D(TAG, "removePackageDataLI: %p", ps);
+    if (DEBUG_REMOVE) Slogger::D(TAG, "removePackageDataLI: %s", TO_CSTR(ps));
     RemovePackageLI(ps, (flags & REMOVE_CHATTY) != 0);
     // Retrieve object to delete permissions for shared user later on
     AutoPtr<PackageSetting> deletedPs;
@@ -15008,7 +15010,7 @@ Boolean CPackageManagerService::DeletePackageLI(
         Slogger::W(TAG, "Attempt to delete null packageName.");
         return FALSE;
     }
-    if (DEBUG_REMOVE) Slogger::D(TAG, "deletePackageLI: %s user %p", packageName.string(), user);
+    if (DEBUG_REMOVE) Slogger::D(TAG, "deletePackageLI: %s user %s", packageName.string(), TO_CSTR(user));
     AutoPtr<PackageSetting> ps;
     Boolean dataOnly = FALSE;
     Int32 removeUser = -1;

@@ -898,7 +898,6 @@ AutoPtr< ArrayOf<Int32> > CUserManagerService::GetUserIdsLPr()
 
 void CUserManagerService::ReadUserListLocked()
 {
-    Logger::I(TAG, " >>> ReadUserListLocked");
     String tag;
     Boolean isExist;
     if (mUserListFile->Exists(&isExist), !isExist) {
@@ -908,7 +907,6 @@ void CUserManagerService::ReadUserListLocked()
     AutoPtr<IAtomicFile> userListFile;
     CAtomicFile::New(mUserListFile, (IAtomicFile**)&userListFile);
 
-    Slogger::I(TAG, " >>> 1 %s", TO_CSTR(mUserListFile));
 //     try {
     Int32 type;
     ECode ec = NOERROR;
@@ -917,12 +915,11 @@ void CUserManagerService::ReadUserListLocked()
     AutoPtr<IFileInputStream> fis;
     ec = userListFile->OpenRead((IFileInputStream**)&fis);
     FAIL_GOTO(ec, _EXIT_);
-Slogger::I(TAG, " >>> 2");
+
     Xml::NewPullParser((IXmlPullParser**)&parser);
     ec = parser->SetInput(IInputStream::Probe(fis), nullStr);
     FAIL_GOTO(ec, _EXIT_);
 
-Slogger::I(TAG, " >>> 3");
     ec = parser->Next(&type);
     FAIL_GOTO(ec, _EXIT_);
     while (type != IXmlPullParser::START_TAG && type != IXmlPullParser::END_DOCUMENT) {
@@ -930,14 +927,12 @@ Slogger::I(TAG, " >>> 3");
         FAIL_GOTO(ec, _EXIT_);
     }
 
-Slogger::I(TAG, " >>> 4");
     if (type != IXmlPullParser::START_TAG) {
         Slogger::E(TAG, "Unable to read user list");
         FallbackToSingleUserLocked();
         goto _EXIT_;
     }
 
-Slogger::I(TAG, " >>> 5");
     mNextSerialNumber = -1;
     if (parser->GetName(&tag), tag.Equals(TAG_USERS)) {
         String lastSerialNumber;

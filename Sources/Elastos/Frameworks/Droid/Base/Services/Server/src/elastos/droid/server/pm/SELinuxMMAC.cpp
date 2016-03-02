@@ -149,28 +149,23 @@ Boolean SELinuxMMAC::ReadInstallPolicy()
     String defaultSeinfo(NULL);
 
     AutoPtr<IReader> policyFile;
-    // try {
     CFileReader::New(MAC_PERMISSIONS, (IReader**)&policyFile);
-    Slogger::D(TAG, "Using policy file %s", MAC_PERMISSIONS.string());
 
     AutoPtr<IXmlPullParser> parser;
     Xml::NewPullParser((IXmlPullParser**)&parser);
+    parser->SetInput(policyFile);
+
     ECode ec = NOERROR;
     String nullStr;
+    Int32 type;
     while (TRUE) {
-        ec = parser->SetInput(policyFile);
-        if (FAILED(ec)) {
-            Slogger::D(TAG, " >> SetInput");
-            break;
-        }
-
-        ec = XmlUtils::BeginDocument(parser, String("policy"));
-        if (FAILED(ec)) break;
-
         ec = XmlUtils::NextElement(parser);
         if (FAILED(ec)) break;
-        Int32 type;
-        if (parser->GetEventType(&type), type == IXmlPullParser::END_DOCUMENT) {
+
+        ec = parser->GetEventType(&type);
+        if (FAILED(ec)) break;
+
+        if (type == IXmlPullParser::END_DOCUMENT) {
             break;
         }
 

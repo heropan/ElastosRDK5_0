@@ -1358,6 +1358,7 @@ ECode CResources::ObtainAttributes(
     /* [out] */ ITypedArray** array)
 {
     VALIDATE_NOT_NULL(array);
+    *array = NULL;
 
     Int32 len = attrs->GetLength();
     AutoPtr<ITypedArray> ta = CTypedArray::Obtain(THIS_PROBE(IResources), len);

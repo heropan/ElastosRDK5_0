@@ -190,8 +190,6 @@ ECode SystemConfig::ReadPermissionsFromXml(
     /* [in] */ IFile* permFile,
     /* [in] */ Boolean onlyFeatures)
 {
-    Logger::I(TAG, " >>> ReadPermissionsFromXml %s", TO_CSTR(permFile));
-
     AutoPtr<IFileReader> permReader;
     ECode ec = CFileReader::New(permFile, (IFileReader**)&permReader);
     if (ec == (ECode)E_FILE_NOT_FOUND_EXCEPTION){
@@ -207,47 +205,43 @@ ECode SystemConfig::ReadPermissionsFromXml(
 
     const String sname("name");
     const String spackage("package");
-Logger::I(TAG, " >>> 1");
+
     AutoPtr<IXmlPullParser> parser;
     ec = Xml::NewPullParser((IXmlPullParser**)&parser);
     FAIL_GOTO(ec, _Exit_)
-Logger::I(TAG, " >>> 1-1");
+
     ec = parser->SetInput(IReader::Probe(permReader));
     FAIL_GOTO(ec, _Exit_)
-Logger::I(TAG, " >>> 2");
+
     ec = parser->Next(&type);
-Logger::I(TAG, " >>> 2-1");
     FAIL_GOTO(ec, _Exit_)
-Logger::I(TAG, " >>> 2-2");
     while (type != IXmlPullParser::START_TAG
         && type != IXmlPullParser::END_DOCUMENT) {
         ec = parser->Next(&type);
-Logger::I(TAG, " >>> 2-3");
         FAIL_GOTO(ec, _Exit_)
     }
-Logger::I(TAG, " >>> 3");
+
     if (type != IXmlPullParser::START_TAG) {
         Logger::E(TAG, "No start tag found");
         ec =  E_XML_PULL_PARSER_EXCEPTION;
         FAIL_GOTO(ec, _Exit_)
     }
-Logger::I(TAG, " >>> 4");
+
     parser->GetName(&name);
     if (!name.Equals("permissions") && !name.Equals("config")) {
         Logger::E(TAG, "Unexpected start tag: found %s, expected 'permissions' or 'config'", name.string());
         ec =  E_XML_PULL_PARSER_EXCEPTION;
         FAIL_GOTO(ec, _Exit_)
     }
-Logger::I(TAG, " >>> 5");
+
     while (TRUE) {
         FAIL_GOTO(XmlUtils::NextElement(parser), _Exit_)
         FAIL_GOTO(parser->GetEventType(&eventType), _Exit_)
         if (eventType == IXmlPullParser::END_DOCUMENT) {
             break;
         }
-Logger::I(TAG, " >>> 6");
+
         FAIL_GOTO(parser->GetName(&name), _Exit_)
-Logger::I(TAG, " >>> 7: %s", name.string());
         if (name.Equals("group") && !onlyFeatures) {
             FAIL_GOTO(parser->GetAttributeValue(nullStr, String("gid"), &gidStr), _Exit_)
             if (!gidStr.IsNull()) {
@@ -381,7 +375,6 @@ Logger::I(TAG, " >>> 7: %s", name.string());
         }
     }
 
-Logger::I(TAG, " >>> 8");
     ICloseable::Probe(permReader)->Close();
 
 _Exit_:
