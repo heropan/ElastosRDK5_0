@@ -305,9 +305,7 @@ ECode SystemServer::CreateSystemContext()
     AutoPtr<IActivityThread> activityThread;
     AutoPtr<IActivityThreadHelper> helper;
     CActivityThreadHelper::AcquireSingleton((IActivityThreadHelper**)&helper);
-    Slogger::I(TAG, " === 1 ===");
     helper->GetSystemMain((IActivityThread**)&activityThread);
-    Slogger::I(TAG, " === 2 ===");
     AutoPtr<IContextImpl> ctxImpl;
     activityThread->GetSystemContext((IContextImpl**)&ctxImpl);
     mSystemContext = IContext::Probe(ctxImpl);

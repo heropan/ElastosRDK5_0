@@ -2365,7 +2365,11 @@ ECode CContextImpl::GetSystemService(
     }
     else if (IContext::DISPLAY_SERVICE.Equals(name)) {
         AutoPtr<IContext> ctx = GetOuterContext();
-        return CDisplayManager::New(ctx, (IDisplayManager**)object);
+        AutoPtr<IDisplayManager> dm;
+        CDisplayManager::New(ctx, (IDisplayManager**)&dm);
+        *object = dm.Get();
+        REFCOUNT_ADD(*object)
+        return NOERROR;
     }
     else if (IContext::WIFI_SERVICE.Equals(name)) {
         AutoLock lock(mCacheLock);
@@ -3399,9 +3403,9 @@ AutoPtr<CContextImpl> CContextImpl::CreateSystemContext(
     ci->mResourcesManager->GetConfiguration((IConfiguration**)&config);
     AutoPtr<IDisplayMetrics> dm;
     ci->mResourcesManager->GetDisplayMetricsLocked(IDisplay::DEFAULT_DISPLAY, (IDisplayMetrics**)&dm);
-    Logger::I(TAG, " === TODO CContextImpl::CreateSystemContext UpdateConfiguration");
-    // ci->mResources->UpdateConfiguration(config, dm);
-    Logger::I(TAG, " === CreateSystemContext 2 ===");
+    Logger::I(TAG, " === TODO CContextImpl::CreateSystemContext UpdateConfiguration >>>>>");
+    ci->mResources->UpdateConfiguration(config, dm);
+    Logger::I(TAG, " === TODO CContextImpl::CreateSystemContext UpdateConfiguration <<<<<");
     return ci;
 }
 

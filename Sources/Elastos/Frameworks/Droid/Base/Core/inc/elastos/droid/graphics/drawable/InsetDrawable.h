@@ -183,8 +183,7 @@ public:
         /* [out] */ IDrawableConstantState** state);
 
     //@Override
-    CARAPI Mutate(
-        /* [out] */ IDrawable** drawable);
+    CARAPI Mutate();
 
     virtual CARAPI GetDrawable(
         /* [out] */ IDrawable** drawable);

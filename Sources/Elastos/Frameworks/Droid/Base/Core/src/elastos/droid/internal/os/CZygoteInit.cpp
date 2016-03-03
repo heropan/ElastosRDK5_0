@@ -241,23 +241,18 @@ void CZygoteInit::PreloadResources()
         Int64 startTime = SystemClock::GetUptimeMillis();
         AutoPtr<ITypedArray> ar;
         mResources->ObtainTypedArray(R::array::preloaded_drawables, (ITypedArray**)&ar);
-        if (ar != NULL) {
-            Int32 N = PreloadDrawables(ar);
-            ar->Recycle();
-            Logger::I(TAG, "...preloaded %d drawables in %lld ms",
-                N, (SystemClock::GetUptimeMillis() - startTime));
+        Int32 N = PreloadDrawables(ar);
+        ar->Recycle();
+        Logger::I(TAG, "...preloaded %d drawables in %lld ms",
+            N, (SystemClock::GetUptimeMillis() - startTime));
 
-            startTime = SystemClock::GetUptimeMillis();
-            ar = NULL;
-            mResources->ObtainTypedArray(R::array::preloaded_color_state_lists, (ITypedArray**)&ar);
-            N = PreloadColorStateLists(ar);
-            ar->Recycle();
-            Logger::I(TAG, "...preloaded %d color state lists in %lld ms",
-                N, (SystemClock::GetUptimeMillis() - startTime));
-        }
-        else {
-            Logger::E(TAG, "failed to ObtainTypedArray R::array::preloaded_drawables");
-        }
+        startTime = SystemClock::GetUptimeMillis();
+        ar = NULL;
+        mResources->ObtainTypedArray(R::array::preloaded_color_state_lists, (ITypedArray**)&ar);
+        N = PreloadColorStateLists(ar);
+        ar->Recycle();
+        Logger::I(TAG, "...preloaded %d color state lists in %lld ms",
+            N, (SystemClock::GetUptimeMillis() - startTime));
     }
     mResources->FinishPreloading();
 

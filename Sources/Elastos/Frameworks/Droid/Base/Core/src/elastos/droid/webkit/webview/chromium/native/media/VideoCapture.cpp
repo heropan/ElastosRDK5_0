@@ -145,7 +145,7 @@ Boolean VideoCapture::Allocate(
     //List<int[]> listFpsRange = parameters->GetSupportedPreviewFpsRange();
     AutoPtr<ArrayOf<Int32> > fpsMinMax;
     /*TODO the interface GetSupportedPreviewFpsRange is not stable
-    parameters->GetSupportedPreviewFpsRange((IList**)listRange);
+    parameters->GetSupportedPreviewFpsRange((IArrayList**)&listRange);
     Boolean emptyList;
     listFpsRange->IsEmpty(&emptyList);
     if (listFpsRange == NULL || emptyList) {

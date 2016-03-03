@@ -116,14 +116,14 @@ LayerDrawable::LayerState::~LayerState()
 ECode LayerDrawable::LayerState::NewDrawable(
     /* [out] */ IDrawable** drawable)
 {
-    return CLayerDrawable::New(this, NULL, NULL, (ILayerDrawable**)drawable);
+    return CLayerDrawable::New(this, NULL, NULL, drawable);
 }
 
 ECode LayerDrawable::LayerState::NewDrawable(
     /* [in] */ IResources* res,
     /* [out] */ IDrawable** drawable)
 {
-    return CLayerDrawable::New(this, res, NULL, (ILayerDrawable**)drawable);
+    return CLayerDrawable::New(this, res, NULL, drawable);
 }
 
 ECode LayerDrawable::LayerState::NewDrawable(
@@ -131,7 +131,7 @@ ECode LayerDrawable::LayerState::NewDrawable(
     /* [in] */ IResourcesTheme* theme,
     /* [out] */ IDrawable** drawable)
 {
-    return CLayerDrawable::New(this, res, theme, (ILayerDrawable**)drawable);
+    return CLayerDrawable::New(this, res, theme, drawable);
 }
 
 ECode LayerDrawable::LayerState::GetChangingConfigurations(
@@ -1123,25 +1123,18 @@ ECode LayerDrawable::GetConstantState(
     return NOERROR;
 }
 
-ECode LayerDrawable::Mutate(
-    /* [out] */ IDrawable** drawable)
+ECode LayerDrawable::Mutate()
 {
-    VALIDATE_NOT_NULL(drawable);
-    AutoPtr<IDrawable> tmp;
-    if (!mMutated && ((Drawable::Mutate((IDrawable**)&tmp), tmp.Get())
-        == (IDrawable*)this->Probe(EIID_IDrawable))) {
-
+    if (!mMutated) {
         mLayerState = CreateConstantState(mLayerState, NULL);
         AutoPtr< ArrayOf<ChildDrawable*> > array = mLayerState->mChildren;
         Int32 N = mLayerState->mNum;
         for (Int32 i = 0; i < N; i++) {
-            AutoPtr<IDrawable> drawable;
-            (*array)[i]->mDrawable->Mutate((IDrawable**)&drawable);
+            (*array)[i]->mDrawable->Mutate();
         }
         mMutated = TRUE;
     }
-    *drawable = (IDrawable*)this->Probe(EIID_IDrawable);
-    REFCOUNT_ADD(*drawable);
+
     return NOERROR;
 }
 

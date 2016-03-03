@@ -65,16 +65,14 @@ InsetDrawable::InsetState::InsetState(
 ECode InsetDrawable::InsetState::NewDrawable(
     /* [out] */ IDrawable** drawable)
 {
-    VALIDATE_NOT_NULL(drawable);
-    return CInsetDrawable::New(this, NULL, (IInsetDrawable**)drawable);
+    return CInsetDrawable::New(this, NULL, drawable);
 }
 
 ECode InsetDrawable::InsetState::NewDrawable(
     /* [in] */ IResources* res,
     /* [out] */ IDrawable** drawable)
 {
-    VALIDATE_NOT_NULL(drawable);
-    return CInsetDrawable::New(this, res, (IInsetDrawable**)drawable);
+    return CInsetDrawable::New(this, res, drawable);
 }
 
 ECode InsetDrawable::InsetState::GetChangingConfigurations(
@@ -521,18 +519,12 @@ ECode InsetDrawable::GetConstantState(
     return NOERROR;
 }
 
-ECode InsetDrawable::Mutate(
-    /* [out] */ IDrawable** drawable)
+ECode InsetDrawable::Mutate()
 {
-    VALIDATE_NOT_NULL(drawable);
-    AutoPtr<IDrawable> tmp;
-    if (!mMutated && (Drawable::Mutate((IDrawable**)&tmp), tmp.Get()) == THIS_PROBE(IDrawable)) {
-        tmp = NULL;
-        mInsetState->mDrawable->Mutate((IDrawable**)&tmp);
+    if (!mMutated) {
+        mInsetState->mDrawable->Mutate();
         mMutated = TRUE;
     }
-    *drawable = THIS_PROBE(IDrawable);
-    REFCOUNT_ADD(*drawable);
     return NOERROR;
 }
 

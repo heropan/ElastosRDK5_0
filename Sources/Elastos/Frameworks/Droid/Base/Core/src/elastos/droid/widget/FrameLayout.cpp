@@ -407,7 +407,7 @@ ECode FrameLayout::GetForegroundTintMode(
 ECode FrameLayout::ApplyForegroundTint()
 {
     if (mForeground != NULL && (mHasForegroundTint || mHasForegroundTintMode)) {
-        mForeground->Mutate((IDrawable**)&mForeground);
+        mForeground->Mutate();
 
         if (mHasForegroundTint) {
             mForeground->SetTintList(mForegroundTintList);

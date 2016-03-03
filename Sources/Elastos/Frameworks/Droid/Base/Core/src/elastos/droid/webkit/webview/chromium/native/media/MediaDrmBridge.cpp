@@ -541,7 +541,7 @@ Boolean MediaDrmBridge::CreateMediaCrypto()
             mMediaCryptoSession->GetArray((ArrayOf<Byte>**)&mediaCryptoSession);
 
             //mMediaCrypto = new MediaCrypto(mSchemeUUID, mediaCryptoSession);
-            //TODO: CMediaCrypto::New(mSchemeUUID, mediaCryptoSession, (IMediaCrypto**)mMediaCrypto);
+            //TODO: CMediaCrypto::New(mSchemeUUID, mediaCryptoSession, mMediaCrypto);
             assert(mMediaCrypto != NULL);
             Logger::D(TAG, "MediaCrypto successfully created!");
             //mSessionIds.put(mMediaCryptoSession, INVALID_SESSION_ID);

@@ -237,7 +237,7 @@ ECode CheckedTextView::GetCheckMarkTintMode(
 void CheckedTextView::ApplyCheckMarkTint()
 {
     if (mCheckMarkDrawable != NULL && (mHasCheckMarkTint || mHasCheckMarkTintMode)) {
-        mCheckMarkDrawable->Mutate((IDrawable**)&mCheckMarkDrawable);
+        mCheckMarkDrawable->Mutate();
 
         if (mHasCheckMarkTint) {
             mCheckMarkDrawable->SetTintList(mCheckMarkTintList);

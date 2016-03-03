@@ -242,7 +242,7 @@ ECode AbsSeekBar::GetThumbTintMode(
 void AbsSeekBar::ApplyThumbTint()
 {
     if (mThumb != NULL && (mHasThumbTint || mHasThumbTintMode)) {
-        mThumb->Mutate((IDrawable**)&mThumb);
+        mThumb->Mutate();
 
         if (mHasThumbTint) {
             mThumb->SetTintList(mThumbTintList);

@@ -2154,7 +2154,7 @@ ECode ListPopupWindow::GetSelectedItem(
         return NOERROR;
     }
 
-    mDropDownList->GetSelectedItem((IInterface**)result);
+    mDropDownList->GetSelectedItem(result);
     return NOERROR;
 }
 
@@ -2220,7 +2220,7 @@ ECode ListPopupWindow::GetSelectedView(
         return NOERROR;
     }
 
-    mDropDownList->GetSelectedView((IView**)result);
+    mDropDownList->GetSelectedView(result);
     return NOERROR;
 }
 

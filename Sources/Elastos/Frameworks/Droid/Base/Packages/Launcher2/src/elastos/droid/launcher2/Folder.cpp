@@ -324,7 +324,7 @@ ECode Folder::OnFinishInflate()
     mContent = ICellLayout::Probe(view);
     mContent->SetGridSize(0, 0);
     AutoPtr<IShortcutAndWidgetContainer> container;
-    mContent->GetShortcutsAndWidgets((IShortcutAndWidgetContainer**)container);
+    mContent->GetShortcutsAndWidgets((IShortcutAndWidgetContainer**)&container);
     container->SetMotionEventSplittingEnabled(FALSE);
     mContent->SetInvertIfRtl(TRUE);
     AutoPtr<IView> view2;
@@ -1437,7 +1437,7 @@ ECode Folder::GetItemCount(
     VALIDATE_NOT_NULL(count);
 
     AutoPtr<IShortcutAndWidgetContainer> container;
-    mContent->GetShortcutsAndWidgets((IShortcutAndWidgetContainer**)container);
+    mContent->GetShortcutsAndWidgets((IShortcutAndWidgetContainer**)&container);
     return container->GetChildCount(count);
 }
 
@@ -1448,7 +1448,7 @@ ECode Folder::GetItemAt(
     VALIDATE_NOT_NULL(view);
 
     AutoPtr<IShortcutAndWidgetContainer> container;
-    mContent->GetShortcutsAndWidgets((IShortcutAndWidgetContainer**)container);
+    mContent->GetShortcutsAndWidgets((IShortcutAndWidgetContainer**)&container);
     return container->GetChildAt(index, view);
 }
 

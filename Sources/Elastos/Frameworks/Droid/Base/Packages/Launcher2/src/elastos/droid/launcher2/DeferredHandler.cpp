@@ -83,7 +83,7 @@ ECode DeferredHandler::Post(
     synchronized(mQueueLock) {
         AutoPtr<IInteger32> obj = CoreUtil::Convert(type);
         AutoPtr<IPair> pair;
-        CPair::New(TO_IINTERFACE(runnable), TO_IINTERFACE(obj), (IPair**)pair);
+        CPair::New(TO_IINTERFACE(runnable), TO_IINTERFACE(obj), (IPair**)&pair);
         mQueue->Add(TO_IINTERFACE(pair));
         Int32 size;
         mQueue->GetSize(&size);
@@ -131,7 +131,7 @@ ECode DeferredHandler::CancelAllRunnablesOfType(
             p = IPair::Probe(obj);
 
             AutoPtr<IInterface> tmp;
-            p->GetSecond((IInterface**)tmp);
+            p->GetSecond((IInterface**)&tmp);
             AutoPtr<IInteger32> intObj = IInteger32::Probe(tmp);
             Int32 value;
             intObj->GetValue(&value);

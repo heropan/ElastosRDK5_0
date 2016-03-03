@@ -229,7 +229,7 @@ AutoPtr<IArrayList> InstallShortcutReceiver::GetAndClearInstallQueue(
         }
 
         AutoPtr<ISharedPreferencesEditor> edit;
-        sharedPrefs->Edit((ISharedPreferencesEditor**)edit);
+        sharedPrefs->Edit((ISharedPreferencesEditor**)&edit);
         AutoPtr<ISet> set;
         HashSet::New((ISet**)&set);
         edit->PutStringSet(APPS_PENDING_INSTALL, set);

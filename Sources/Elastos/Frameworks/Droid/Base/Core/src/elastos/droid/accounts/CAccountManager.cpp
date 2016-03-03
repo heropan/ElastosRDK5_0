@@ -199,7 +199,13 @@ ECode CAccountManager::AmsTask::GetResult(
     /* [out] */ IInterface** result)
 {
     VALIDATE_NOT_NULL(result);
-    return InternalGetResult(NULL, NULL, (IBundle**)result);
+    *result = NULL;
+
+    AutoPtr<IBundle> bundle;
+    FAIL_RETURN(InternalGetResult(NULL, NULL, (IBundle**)&bundle))
+    *result = bundle.Get();
+    REFCOUNT_ADD(*result)
+    return NOERROR;
 }
 
 ECode CAccountManager::AmsTask::GetResult(
@@ -208,9 +214,15 @@ ECode CAccountManager::AmsTask::GetResult(
     /* [out] */ IInterface** result)
 {
     VALIDATE_NOT_NULL(result);
+    *result = NULL;
+
     AutoPtr<IInteger64> integer64;
     CInteger64::New(timeout, (IInteger64**)&integer64);
-    return InternalGetResult(integer64, unit, (IBundle**)result);
+    AutoPtr<IBundle> bundle;
+    InternalGetResult(integer64, unit, (IBundle**)&bundle);
+    *result = bundle.Get();
+    REFCOUNT_ADD(*result)
+    return NOERROR;
 }
 
 void CAccountManager::AmsTask::Done()

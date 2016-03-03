@@ -925,11 +925,11 @@ ECode ExpandableListConnector::GetItem(
     PositionMetadata* posMetadata = (PositionMetadata*)metadata.Get();
 
     if (posMetadata->mPosition->mType == IExpandableListPosition::GROUP) {
-        mExpandableListAdapter->GetGroup(posMetadata->mPosition->mGroupPos, (IInterface**)result);
+        mExpandableListAdapter->GetGroup(posMetadata->mPosition->mGroupPos, result);
     }
     else if (posMetadata->mPosition->mType == IExpandableListPosition::CHILD) {
         mExpandableListAdapter->GetChild(posMetadata->mPosition->mGroupPos,
-            posMetadata->mPosition->mChildPos, (IInterface**)result);
+            posMetadata->mPosition->mChildPos, result);
     }
     else {
         // TODO: clean exit
@@ -1029,13 +1029,13 @@ ECode ExpandableListConnector::GetView(
     Boolean expanded = FALSE;
     if (posMetadata->mPosition->mType == IExpandableListPosition::GROUP) {
         mExpandableListAdapter->GetGroupView(posMetadata->mPosition->mGroupPos,
-            (posMetadata->IsExpanded(&expanded), expanded), convertView, parent, (IView**)result);
+            (posMetadata->IsExpanded(&expanded), expanded), convertView, parent, result);
     }
     else if (posMetadata->mPosition->mType == IExpandableListPosition::CHILD) {
         Boolean isLastChild = posMetadata->mGroupMetadata->mLastChildFlPos == flatListPos;
 
         mExpandableListAdapter->GetChildView(posMetadata->mPosition->mGroupPos,
-            posMetadata->mPosition->mChildPos, isLastChild, convertView, parent, (IView**)result);
+            posMetadata->mPosition->mChildPos, isLastChild, convertView, parent, result);
     }
     else {
         // TODO: clean exit

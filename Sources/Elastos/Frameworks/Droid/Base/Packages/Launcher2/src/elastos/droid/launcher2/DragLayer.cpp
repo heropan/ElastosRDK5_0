@@ -921,7 +921,7 @@ ECode DragLayer::AnimateViewIntoPosition(
     AutoPtr<IShortcutAndWidgetContainer> parentChildren = IShortcutAndWidgetContainer::Probe(p);
 
     AutoPtr<IViewGroupLayoutParams> params;
-    child->GetLayoutParams((IViewGroupLayoutParams**)params);
+    child->GetLayoutParams((IViewGroupLayoutParams**)&params);
     AutoPtr<ICellLayoutLayoutParams> lp =  ICellLayoutLayoutParams::Probe(params);
     parentChildren->MeasureChild(child);
 

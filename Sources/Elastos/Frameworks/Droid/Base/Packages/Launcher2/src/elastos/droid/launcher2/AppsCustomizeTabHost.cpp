@@ -143,7 +143,7 @@ ECode AppsCustomizeTabHost::MyRunnable2::Run()
         Int32 height;
         child->GetMeasuredHeight(&height);
         AutoPtr<IFrameLayoutLayoutParams> p;
-        CFrameLayoutLayoutParams::New(width, height, (IFrameLayoutLayoutParams**)p);
+        CFrameLayoutLayoutParams::New(width, height, (IFrameLayoutLayoutParams**)&p);
         Int32 left;
         child->GetLeft(&left);
         Int32 top;

@@ -332,7 +332,7 @@ ECode WebViewChromium::InnerContextWrapper::GetClassLoader(
 //        REFCOUNT_ADD(*object);
 //    }
 //    else {
-//        baseContext->GetSystemService(name, (IInterface**)object);
+//        baseContext->GetSystemService(name, object);
 //    }
 //    return NOERROR;
 //}
@@ -5400,7 +5400,7 @@ ECode WebViewChromium::GetZoomControls(
     AutoPtr<IContext> context;
     viewTmp->GetContext((IContext**)&context);
     if (mAwContents->GetSettings()->SupportZoom()) {
-        CView::New(context, (IView**)result);
+        CView::New(context, result);
         REFCOUNT_ADD(*result);
     }
     else {
@@ -6981,7 +6981,7 @@ ECode WebViewChromium::RunBlockingFuture(
         AutoPtr<ITimeUnit> timeUnit;
         helper->GetSECONDS((ITimeUnit**)&timeUnit);
 
-        task->Get(4, timeUnit, (IInterface**)result);
+        task->Get(4, timeUnit, result);
         return NOERROR;
     //}
     //catch (java.util.concurrent.TimeoutException e) {

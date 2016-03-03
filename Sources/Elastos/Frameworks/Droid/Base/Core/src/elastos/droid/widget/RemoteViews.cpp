@@ -2159,8 +2159,7 @@ ECode RemoteViews::TextViewDrawableColorFilterAction::Apply(
     }
     AutoPtr<IDrawable> d = (*drawables)[mIndex];
     if (d != NULL) {
-        AutoPtr<IDrawable> tmp;
-        d->Mutate((IDrawable**)&tmp);
+        d->Mutate();
         d->SetColorFilter(mColor, mMode);
     }
     return NOERROR;

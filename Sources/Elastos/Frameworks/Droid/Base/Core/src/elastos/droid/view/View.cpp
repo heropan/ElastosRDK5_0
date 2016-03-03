@@ -14115,10 +14115,8 @@ ECode View::SetBackgroundColor(
     /* [in] */ Int32 color)
 {
     if (IColorDrawable::Probe(mBackground) != NULL) {
-        AutoPtr<IDrawable> drawable;
-        mBackground->Mutate((IDrawable**)&drawable);
-        assert(drawable != NULL);
-        IColorDrawable::Probe(drawable)->SetColor(color);
+        mBackground->Mutate();
+        IColorDrawable::Probe(mBackground)->SetColor(color);
         ComputeOpaqueFlags();
         mBackgroundResource = 0;
     }
@@ -14416,7 +14414,7 @@ ECode View::ApplyBackgroundTint()
     if (mBackground != NULL && mBackgroundTint != NULL) {
         AutoPtr<TintInfo> tintInfo = mBackgroundTint;
         if (tintInfo->mHasTintList || tintInfo->mHasTintMode) {
-            mBackground->Mutate((IDrawable**)&mBackground);
+            mBackground->Mutate();
 
             if (tintInfo->mHasTintList) {
                 mBackground->SetTintList(tintInfo->mTintList);

@@ -60,6 +60,7 @@ public:
          */
         SimplePool(
             /* [in] */ Int32 maxPoolSize)
+            : mPoolSize(maxPoolSize)
         {
             assert(maxPoolSize > 0);
             mPool = ArrayOf<T*>::Alloc(maxPoolSize);
@@ -72,7 +73,7 @@ public:
                 assert(mPool != NULL);
                 assert(lastPooledIndex >= 0);
                 ELA_ASSERT_WITH_BLOCK(lastPooledIndex < mPool->GetLength()) {
-                    Logger::E("Pools", "lastPooledIndex: %d bigger than mPool->GetLength(): %d, mPoolSize: %d",
+                    Logger::E("Pools", "error: lastPooledIndex: %d bigger than mPool->GetLength(): %d, mPoolSize: %d",
                         lastPooledIndex, mPool->GetLength(), mPoolSize);
                 }
                 AutoPtr<T> instance = (*mPool)[lastPooledIndex];

@@ -32,10 +32,10 @@ ECode PreloadReceiver::OnReceive(
     /* [in] */ IIntent* intent)
 {
     AutoPtr<IContext> ctx;
-    context->GetApplicationContext((IContext**)ctx);
+    context->GetApplicationContext((IContext**)&ctx);
     AutoPtr<ILauncherApplication> app = ILauncherApplication::Probe(ctx);
     AutoPtr<ILauncherProvider> provider;
-    app->GetLauncherProvider((ILauncherProvider**)provider);
+    app->GetLauncherProvider((ILauncherProvider**)&provider);
     if (provider != NULL) {
         String name;
         intent->GetStringExtra(EXTRA_WORKSPACE_NAME, &name);

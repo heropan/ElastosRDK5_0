@@ -1584,6 +1584,7 @@ ECode PackageParser::ParseBaseApk(
     AutoPtr<IXmlResourceParser> parser;
     // try {
     CResources::New(assets, mMetrics, NULL, (IResources**)&res);
+
     assets->SetConfiguration(0, 0, String(NULL), 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
             Build::VERSION::RESOURCES_SDK_INT);
     ECode ec = assets->OpenXmlResourceParser(cookie, ANDROID_MANIFEST_FILENAME, (IXmlResourceParser**)&parser);
@@ -2320,8 +2321,6 @@ ECode PackageParser::ParseBaseApk(
     mParseServiceArgs = NULL;
     mParseProviderArgs = NULL;
 
-    Logger::I(TAG, " =-===== 0");
-
     String pkgName;
     String splitName;
 
@@ -2331,8 +2330,6 @@ ECode PackageParser::ParseBaseApk(
         sParseError = IPackageManager::INSTALL_PARSE_FAILED_BAD_PACKAGE_NAME;
         return NOERROR;
     }
-
-    Logger::I(TAG, " =-===== 1");
 
     pkgName = (*packageSplit)[0];
     splitName = (*packageSplit)[1];
@@ -2347,7 +2344,6 @@ ECode PackageParser::ParseBaseApk(
         return NOERROR;
     }
 
-    Logger::I(TAG, " pkgName %s, splitName %s", pkgName.string(), splitName.string());
     AutoPtr<PackageParser::Package> pkg = new PackageParser::Package(pkgName);
     Boolean foundApp = FALSE;
 
@@ -2355,6 +2351,8 @@ ECode PackageParser::ParseBaseApk(
     Int32 size = ArraySize(R::styleable::AndroidManifest);
     AutoPtr<ArrayOf<Int32> > layout = ArrayOf<Int32>::Alloc(size);
     layout->Copy(R::styleable::AndroidManifest, size);
+
+    Logger::I(TAG, " pkgName %s, splitName %s, size %d", pkgName.string(), splitName.string(), size);
 
     AutoPtr<ITypedArray> sa;
     ASSERT_SUCCEEDED(res->ObtainAttributes(attrs, layout, (ITypedArray**)&sa));
@@ -3563,6 +3561,7 @@ ECode PackageParser::ParsePermissionGroup(
 
     AutoPtr<ITypedArray> sa;
     res->ObtainAttributes(attrs, layout, (ITypedArray**)&sa);
+    assert(sa != NULL);
 
     if (!ParsePackageItemInfo(owner, IPackageItemInfo::Probe(perm->mInfo), outError,
             String("<permission-group>"), sa,
@@ -4542,6 +4541,7 @@ Boolean PackageParser::ParsePackageItemInfo(
     /* [in] */ Int32 logoRes,
     /* [in] */ Int32 bannerRes)
 {
+    assert(sa != NULL);
     String name;
     sa->GetNonConfigurationString(nameRes, 0, &name);
     if (name.IsNull()) {

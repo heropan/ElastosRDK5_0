@@ -1566,7 +1566,7 @@ ECode CInputMethodManagerService::GetInputMethodList(
     }
 
     AutoLock lock(mMethodMap.Get());
-    return CArrayList::New(ICollection::Probe(mMethodList), (IList**)infos);
+    return CArrayList::New(ICollection::Probe(mMethodList), infos);
 }
 
 ECode CInputMethodManagerService::GetEnabledInputMethodList(
