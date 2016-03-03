@@ -2,6 +2,8 @@
 #include "elastos/droid/launcher2/CellLayout.h"
 #include <elastos/utility/Arrays.h>
 #include <elastos/core/Math.h>
+#include <elastos/utility/logging/Logger.h>
+#include <elastos/droid/R.h>
 #include "R.h"
 
 using Elastos::Droid::Animation::IAnimatorSet;
@@ -27,6 +29,7 @@ using Elastos::Utility::ICollections;
 using Elastos::Utility::EIID_IComparator;
 using Elastos::Utility::CHashMap;
 using Elastos::Utility::CStack;
+using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
 namespace Droid {
