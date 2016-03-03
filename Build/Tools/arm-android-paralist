@@ -342,9 +342,8 @@
 > Elastos/Frameworks/Droid/App_process Elastos.Droid.Core.eco
 > Elastos/Frameworks/Droid/App_process
 # ==== buid Framework JavaProxy ====
-#> Elastos/Frameworks/Droid/JavaProxy Elastos.Droid.JavaProxy.car
-#- Elastos/Frameworks/Droid/JavaProxy/src
-#> Elastos/Frameworks/Droid/JavaProxy
+> Elastos/Frameworks/Droid/JavaProxy/src/elastos/droid/javaproxy Elastos.Droid.JavaProxy.car
+> Elastos/Frameworks/Droid/JavaProxy/src/elastos/droid/javaproxy
 # ==== buid SystemUI ====
   Elastos/Frameworks/Droid/Base/Packages/SystemUI/src/elastos/droid/systemui SystemUI.car
 > Elastos/Frameworks/Droid/Base/Packages/SystemUI/src/elastos/droid/systemui/doze
