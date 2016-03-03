@@ -35,6 +35,7 @@ DIRS += speech
 DIRS += telephony
 DIRS += text
 DIRS += transition
+DIRS += telecom
 DIRS += utility
 DIRS += webkit
 DIRS += widget
