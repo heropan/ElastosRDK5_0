@@ -9,6 +9,7 @@ using Elastos::Core::StringBuilder;
 using Libcore::Utility::EmptyArray;
 using Elastos::Utility::EIID_ICollection;
 using Elastos::Utility::EIID_ISet;
+using Elastos::Utility::EIID_IIterable;
 using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {

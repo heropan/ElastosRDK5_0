@@ -57,6 +57,7 @@ module
     using interface Elastos.Utility.IMap;
     using interface Elastos.Utility.ISet;
     using interface Elastos.Utility.ICollection;
+    using interface Elastos.Utility.IIterable;
     using interface Org.Xmlpull.V1.IXmlPullParser;
 
     namespace Elastos {
@@ -99,7 +100,7 @@ module
         interface IArraySet;
         interface ISet;
         interface ICollection;
-        interface Iterable;
+        interface IIterable;
     }
 
     singleton class CBase64 {
