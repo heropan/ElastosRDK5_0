@@ -14,11 +14,13 @@
 #include "elastos/droid/content/pm/PackageManager.h"
 #include "elastos/droid/content/pm/CApplicationInfo.h"
 #include "elastos/droid/view/DisplayAdjustments.h"
+#include <elastos/droid/DroidRuntime.h>
 #include <elastos/core/AutoLock.h>
 #include <elastos/core/StringBuilder.h>
 #include <elastos/core/StringBuffer.h>
 #include <elastos/utility/logging/Slogger.h>
 
+using Elastos::Droid::DroidRuntime;
 using Elastos::Droid::Os::Process;
 using Elastos::Droid::Os::Handler;
 using Elastos::Droid::Os::CUserHandle;
@@ -34,6 +36,8 @@ using Elastos::Droid::View::DisplayAdjustments;
 using Elastos::Core::EIID_IRunnable;
 using Elastos::Core::CPathClassLoader;
 using Elastos::Core::StringBuilder;
+using Elastos::Core::ISystem;
+using Elastos::Core::CSystem;
 using Elastos::IO::CFile;
 using Elastos::Utility::Etl::Pair;
 using Elastos::Utility::Logging::Slogger;
@@ -629,18 +633,23 @@ AutoPtr<IApplicationInfo> LoadedPkg::AdjustNativeLibraryPaths(
     // depending on what the current runtime's instruction set is.
     CApplicationInfo* info = (CApplicationInfo*)aInfo;
     if (info->mPrimaryCpuAbi != NULL && info->mSecondaryCpuAbi != NULL) {
-        assert(0 && "TODO");
-        // final String runtimeIsa = VMRuntime.getRuntime().vmInstructionSet();
-        // final String secondaryIsa = VMRuntime.getInstructionSet(info.secondaryCpuAbi);
+        AutoPtr<ISystem> system;
+        CSystem::AcquireSingleton((ISystem**)&system);
+        String runtimeIsa = DroidRuntime::GetRuntime()->GetInstructionSetString();
+        String secondaryIsa;
+        system->GetInstructionSet(info->mSecondaryCpuAbi, &secondaryIsa);
 
-        // // If the runtimeIsa is the same as the primary isa, then we do nothing.
-        // // Everything will be set up correctly because info.nativeLibraryDir will
-        // // correspond to the right ISA.
-        // if (runtimeIsa.equals(secondaryIsa)) {
-        //     final ApplicationInfo modified = new ApplicationInfo(info);
-        //     modified.nativeLibraryDir = modified.secondaryNativeLibraryDir;
-        //     return modified;
-        // }
+        // If the runtimeIsa is the same as the primary isa, then we do nothing.
+        // Everything will be set up correctly because info.nativeLibraryDir will
+        // correspond to the right ISA.
+        if (runtimeIsa.Equals(secondaryIsa)) {
+            AutoPtr<IApplicationInfo> modified;
+            CApplicationInfo::New(info, (IApplicationInfo**)&modified);
+            String dir;
+            modified->GetSecondaryNativeLibraryDir(&dir);
+            modified->SetNativeLibraryDir(dir);
+            return modified;
+        }
     }
 
     return aInfo;
@@ -707,7 +716,7 @@ ECode LoadedPkg::GetClassLoader(
     //     // The activity manager will perform ensure that dexopt is performed before
     //     // spinning up the process.
     //     if (!Objects.equals(mPackageName, ActivityThread.currentPackageName())) {
-    //         final String isa = VMRuntime.getRuntime().vmInstructionSet();
+    //         final String isa = DroidRuntime.getRuntime()->GetInstructionSetString();
     //         try {
     //             ActivityThread.getPackageManager().performDexOptIfNeeded(mPackageName, isa);
     //         } catch (RemoteException re) {

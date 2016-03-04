@@ -1396,10 +1396,8 @@ ECode CResources::UpdateConfiguration(
     /* [in] */ ICompatibilityInfo* compat)
 {
     {
-        Logger::I(TAG, " >>>> UpdateConfiguration lock mAccessLock 1-0");
         AutoLock lock(mAccessLock);
 
-        Logger::I(TAG, " >>>> UpdateConfiguration lock mAccessLock 1-1");
         // if (false) {
         //     Slog.i(TAG, "**** Updating config of " + this + ": old config is "
         //             + mConfiguration + " old compat is " + mCompatibilityInfo);
@@ -1500,13 +1498,10 @@ ECode CResources::UpdateConfiguration(
         ClearDrawableCachesLocked(mColorDrawableCache, configChanges);
         mColorStateListCache.Clear();
         FlushLayoutCache();
-        Logger::I(TAG, " >>>> UpdateConfiguration lock mAccessLock 1-2");
     }
 
     {
-        Logger::I(TAG, " >>>> UpdateConfiguration lock this 2-0");
         AutoLock lock(this);
-        Logger::I(TAG, " >>>> UpdateConfiguration lock this 2-1");
         if (mPluralRule != NULL) {
             AutoPtr<INativePluralRulesHelper> helper;
             CNativePluralRulesHelper::AcquireSingleton((INativePluralRulesHelper**)&helper);
@@ -1515,10 +1510,8 @@ ECode CResources::UpdateConfiguration(
             config->GetLocale((ILocale**)&locale);
             helper->ForLocale(locale, (INativePluralRules**)&mPluralRule);
         }
-        Logger::I(TAG, " >>>> UpdateConfiguration lock this 2-2");
     }
 
-    Logger::I(TAG, " <<<< UpdateConfiguration");
     return NOERROR;
 }
 

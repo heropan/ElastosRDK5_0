@@ -3974,20 +3974,25 @@ ECode CActivityManagerService::StartProcessLocked(
         debugFlags |= IZygote::DEBUG_ENABLE_ASSERT;
     }
 
-    String requiredAbi;
-    if (abiOverride != NULL)
+    String requiredAbi, primaryCpuAbi;
+    if (abiOverride != NULL) {
         requiredAbi = abiOverride;
-    else
-        app->mInfo->GetPrimaryCpuAbi(&requiredAbi);
+    }
+    else {
+        app->mInfo->GetPrimaryCpuAbi(&primaryCpuAbi);
+        requiredAbi = primaryCpuAbi;
+    }
 
     if (requiredAbi == NULL) {
         requiredAbi = (*Build::SUPPORTED_ABIS)[0];
     }
 
     String instructionSet;
-    // if (app.info.primaryCpuAbi != NULL) {
-    //     instructionSet = VMRuntime.getInstructionSet(app.info.primaryCpuAbi);
-    // }
+    if (primaryCpuAbi != NULL) {
+        AutoPtr<ISystem> system;
+        CSystem::AcquireSingleton((ISystem**)&system);
+        system->GetInstructionSet(primaryCpuAbi, &instructionSet);
+    }
 
     // Start the process.  It will either succeed and return a result containing
     // the PID of the new process, or else throw a RuntimeException.

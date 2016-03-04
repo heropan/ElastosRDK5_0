@@ -56,6 +56,7 @@ module
     using interface Elastos.IO.IFilterOutputStream;
     using interface Elastos.Utility.IMap;
     using interface Elastos.Utility.ISet;
+    using interface Elastos.Utility.IIterable;
     using interface Elastos.Utility.ICollection;
     using interface Elastos.Utility.IIterable;
     using interface Org.Xmlpull.V1.IXmlPullParser;

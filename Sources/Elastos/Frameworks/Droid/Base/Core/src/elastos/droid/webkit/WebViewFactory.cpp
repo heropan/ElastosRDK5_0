@@ -23,6 +23,8 @@ using Elastos::Droid::App::AppGlobals;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Os::Build;
 using Elastos::Droid::Os::SystemProperties;
+using Elastos::Core::ISystem;
+using Elastos::Core::CSystem;
 using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
@@ -292,9 +294,12 @@ AutoPtr< ArrayOf<String> > WebViewFactory::GetWebViewNativeLibraryPaths()
     // PackageManager pm = AppGlobals.getInitialApplication().getPackageManager();
     // ApplicationInfo ai = pm.getApplicationInfo(getWebViewPackageName(), 0);
 
+    AutoPtr<ISystem> system;
+    CSystem::AcquireSingleton((ISystem**)&system);
     // String path32;
     // String path64;
-    // boolean primaryArchIs64bit = VMRuntime.is64BitAbi(ai.primaryCpuAbi);
+    // boolean primaryArchIs64bit;
+    // system->Is64BitAbi(ai.primaryCpuAbi, &primaryArchIs64bit);
     // if (!TextUtils.isEmpty(ai.secondaryCpuAbi)) {
     //     // Multi-arch case.
     //     if (primaryArchIs64bit) {
@@ -368,10 +373,13 @@ void WebViewFactory::LoadNativeLibrary()
         return;
     }
 
-    assert(0);
+    AutoPtr<ISystem> system;
+    CSystem::AcquireSingleton((ISystem**)&system);
+    Boolean is64Bit;
+    system->Is64Bit(&is64Bit);
     // TODO
     // try {
-    //     getUpdateService().waitForRelroCreationCompleted(VMRuntime.getRuntime().is64Bit());
+    //     getUpdateService().waitForRelroCreationCompleted(is64Bit);
     // } catch (RemoteException e) {
     //     Log.e(LOGTAG, "error waiting for relro creation, proceeding without", e);
     //     return;

@@ -607,7 +607,7 @@ void CPackageManagerService::PackageHandler::DoHandleMessage(
         case CPackageManagerService::INIT_COPY:{
             AutoPtr<IInterface> obj;
             msg->GetObj((IInterface**)&obj);
-            AutoPtr<HandlerParams> params = (HandlerParams*)(IObject*)obj.Get();
+            AutoPtr<HandlerParams> params = (HandlerParams*)IObject::Probe(obj);
             if (DEBUG_INSTALL) {
                 // Slog.i(TAG, "init_copy idx=" + idx + ": " + params);
             }
@@ -1078,7 +1078,7 @@ void CPackageManagerService::PackageHandler::DoHandleMessage(
             Int32 verificationId = arg1;
             AutoPtr<IInterface> obj;
             msg->GetObj((IInterface**)&obj);
-            AutoPtr<PackageVerificationResponse> response = (PackageVerificationResponse*)(IObject*)obj.Get();
+            AutoPtr<PackageVerificationResponse> response = (PackageVerificationResponse*)IObject::Probe(obj);
             HashMap<Int32, AutoPtr<PackageVerificationState> >::Iterator it
                     = mHost->mPendingVerification.Find(verificationId);
             AutoPtr<PackageVerificationState> state;
@@ -1207,11 +1207,11 @@ void CPackageManagerService::ActivityIntentResolver::AddActivity(
     Boolean systemApp = CPackageManagerService::IsSystemApp(appInfo);
     mActivities[a->GetComponentName()] = a;
 //     if (DEBUG_SHOW_INFO)
-//         Log.v(
+//         Logger::V(
 //         TAG, "  " + type + " " +
 //         (a.info.nonLocalizedLabel != null ? a.info.nonLocalizedLabel : a.info.name) + ":");
 //     if (DEBUG_SHOW_INFO)
-//         Log.v(TAG, "    Class=" + a.info.name);
+//         Logger::V(TAG, "    Class=" + a.info.name);
     List<AutoPtr<PackageParser::ActivityIntentInfo> >::Iterator it;
     for (it = a->mIntents.Begin(); it != a->mIntents.End(); ++it) {
         AutoPtr<PackageParser::ActivityIntentInfo> intent = *it;
@@ -1221,7 +1221,7 @@ void CPackageManagerService::ActivityIntentResolver::AddActivity(
 //                     + a.className + " with priority > 0, forcing to 0");
         }
 //         if (DEBUG_SHOW_INFO) {
-//             Log.v(TAG, "    IntentFilter:");
+//             Logger::V(TAG, "    IntentFilter:");
 //             intent.dump(new LogPrinter(Log.VERBOSE, TAG), "      ");
 //         }
 //         if (!intent.debugCheck()) {
@@ -1237,15 +1237,15 @@ void CPackageManagerService::ActivityIntentResolver::RemoveActivity(
 {
     mActivities.Erase(a->GetComponentName());
 //     if (DEBUG_SHOW_INFO) {
-//         Log.v(TAG, "  " + type + " "
+//         Logger::V(TAG, "  " + type + " "
 //                 + (a.info.nonLocalizedLabel != null ? a.info.nonLocalizedLabel
 //                         : a.info.name) + ":");
-//         Log.v(TAG, "    Class=" + a.info.name);
+//         Logger::V(TAG, "    Class=" + a.info.name);
 //     }
     List<AutoPtr<PackageParser::ActivityIntentInfo> >::Iterator it;
     for (it = a->mIntents.Begin(); it != a->mIntents.End(); ++it) {
 //        if (DEBUG_SHOW_INFO) {
-//            Log.v(TAG, "    IntentFilter:");
+//            Logger::V(TAG, "    IntentFilter:");
 //            intent.dump(new LogPrinter(Log.VERBOSE, TAG), "      ");
 //        }
         RemoveFilter(*it);
@@ -1468,15 +1468,15 @@ void CPackageManagerService::ServiceIntentResolver::AddService(
     mServices[cn] = s;
 
 //    if (DEBUG_SHOW_INFO) {
-//        Log.v(TAG, "  "
+//        Logger::V(TAG, "  "
 //                + (s.info.nonLocalizedLabel != null
 //                ? s.info.nonLocalizedLabel : s.info.name) + ":");
-//        Log.v(TAG, "    Class=" + s.info.name);
+//        Logger::V(TAG, "    Class=" + s.info.name);
 //    }
     List< AutoPtr<PackageParser::ServiceIntentInfo> >::Iterator it;
     for (it = s->mIntents.Begin(); it != s->mIntents.End(); ++it) {
 //        if (DEBUG_SHOW_INFO) {
-//            Log.v(TAG, "    IntentFilter:");
+//            Logger::V(TAG, "    IntentFilter:");
 //            intent.dump(new LogPrinter(Log.VERBOSE, TAG), "      ");
 //        }
 //        if (!intent.debugCheck()) {
@@ -1491,14 +1491,14 @@ void CPackageManagerService::ServiceIntentResolver::RemoveService(
 {
     mServices.Erase(s->GetComponentName());
 //    if (DEBUG_SHOW_INFO) {
-//        Log.v(TAG, "  " + (s.info.nonLocalizedLabel != null
+//        Logger::V(TAG, "  " + (s.info.nonLocalizedLabel != null
 //                ? s.info.nonLocalizedLabel : s.info.name) + ":");
-//        Log.v(TAG, "    Class=" + s.info.name);
+//        Logger::V(TAG, "    Class=" + s.info.name);
 //    }
     List<AutoPtr<PackageParser::ServiceIntentInfo> >::Iterator it;
     for (it = s->mIntents.Begin(); it != s->mIntents.End(); ++it) {
 //        if (DEBUG_SHOW_INFO) {
-//            Log.v(TAG, "    IntentFilter:");
+//            Logger::V(TAG, "    IntentFilter:");
 //            intent.dump(new LogPrinter(Log.VERBOSE, TAG), "      ");
 //        }
         RemoveFilter(*it);
@@ -1724,7 +1724,7 @@ void CPackageManagerService::ProviderIntentResolver::AddProvider(
     List<AutoPtr<PackageParser::ProviderIntentInfo> >::Iterator it;
     for (it = p->mIntents.Begin(); it != p->mIntents.End(); ++it) {
         // if (DEBUG_SHOW_INFO) {
-        //     Log.v(TAG, "    IntentFilter:");
+        //     Logger::V(TAG, "    IntentFilter:");
         //     intent.dump(new LogPrinter(Log.VERBOSE, TAG), "      ");
         // }
         // if (!intent.debugCheck()) {
@@ -1740,14 +1740,14 @@ void CPackageManagerService::ProviderIntentResolver::RemoveProvider(
     AutoPtr<IComponentName> cn = p->GetComponentName();
     mProviders.Erase(cn);
     // if (DEBUG_SHOW_INFO) {
-    //     Log.v(TAG, "  " + (p.info.nonLocalizedLabel != null
+    //     Logger::V(TAG, "  " + (p.info.nonLocalizedLabel != null
     //             ? p.info.nonLocalizedLabel : p.info.name) + ":");
-    //     Log.v(TAG, "    Class=" + p.info.name);
+    //     Logger::V(TAG, "    Class=" + p.info.name);
     // }
     List<AutoPtr<PackageParser::ProviderIntentInfo> >::Iterator it;
     for (it = p->mIntents.Begin(); it != p->mIntents.End(); ++it) {
         // if (DEBUG_SHOW_INFO) {
-        //     Log.v(TAG, "    IntentFilter:");
+        //     Logger::V(TAG, "    IntentFilter:");
         //     intent.dump(new LogPrinter(Log.VERBOSE, TAG), "      ");
         // }
         RemoveFilter(*it);
@@ -2310,8 +2310,7 @@ ECode CPackageManagerService::InstallParams::ToString(
     CSystem::AcquireSingleton((ISystem**)&sys);
     Int32 hashCode;
     sys->IdentityHashCode((IObject*)this, &hashCode);
-    String fileStr;
-    IObject::Probe(mOrigin->mFile)->ToString(&fileStr);
+    String fileStr = Object::ToString(mOrigin->mFile);
     *str = String("InstallParams{") + StringUtils::ToHexString(hashCode)
             + " file=" + fileStr + " cid=" + mOrigin->mCid + "}";
     return NOERROR;
@@ -4898,9 +4897,8 @@ void CPackageManagerService::CleanupInstallFailedPackage(
         Boolean succeeded;
         ps->mCodePath->Delete(&succeeded);
     }
-    Boolean equals;
-    if (ps->mResourcePath != NULL
-            && (IObject::Probe(ps->mResourcePath)->Equals(ps->mCodePath, &equals), !equals)) {
+
+    if (ps->mResourcePath != NULL && !Object::Equals(ps->mResourcePath, ps->mCodePath)) {
         Boolean isDirectory;
         if (ps->mResourcePath->IsDirectory(&isDirectory), isDirectory) {
             FileUtils::DeleteContents(ps->mResourcePath);
@@ -5562,7 +5560,7 @@ ECode CPackageManagerService::GetActivityInfo(
             a = it->mSecond;
         }
 
-        // if (DEBUG_PACKAGE_INFO) Log.v(TAG, "getActivityInfo " + component + ": " + a);
+        // if (DEBUG_PACKAGE_INFO) Logger::V(TAG, "getActivityInfo " + component + ": " + a);
         if (a != NULL && mSettings->IsEnabledLPr(IComponentInfo::Probe(a->mInfo), flags, userId)) {
             String pkgName;
             component->GetPackageName(&pkgName);
@@ -5581,8 +5579,8 @@ ECode CPackageManagerService::GetActivityInfo(
             REFCOUNT_ADD(*info)
             return NOERROR;
         }
-        Boolean isEqual = FALSE;
-        if (IObject::Probe(mResolveComponentName)->Equals(component, &isEqual), isEqual) {
+
+        if (Object::Equals(mResolveComponentName, component)) {
             AutoPtr<PackageUserState> state = new PackageUserState();
             *info = PackageParser::GenerateActivityInfo(mResolveActivity, flags, state, userId);
             REFCOUNT_ADD(*info)
@@ -6551,8 +6549,7 @@ Int32 CPackageManagerService::CompareSignatures(
 
     // Since both signature sets are of size 1, we can compare without HashSets.
     if (s1->GetLength() == 1) {
-        Boolean equals;
-        IObject::Probe((*s1)[0])->Equals((*s2)[0], &equals);
+        Boolean equals = Object::Equals((*s1)[0], (*s2)[0]);
         return equals ? IPackageManager::SIGNATURE_MATCH : IPackageManager::SIGNATURE_NO_MATCH;
     }
 
@@ -6567,8 +6564,8 @@ Int32 CPackageManagerService::CompareSignatures(
         set2->Add((*s2)[i]);
     }
     // Make sure s2 contains all signatures in s1.
-    Boolean isEqual;
-    if (IObject::Probe(set1)->Equals(set2, &isEqual), isEqual) {
+    Boolean isEqual = Object::Equals(set1, set2);
+    if (isEqual) {
         return IPackageManager::SIGNATURE_MATCH;
     }
     return IPackageManager::SIGNATURE_NO_MATCH;
@@ -6617,8 +6614,8 @@ Int32 CPackageManagerService::CompareSignaturesCompat(
      * Make sure the expanded scanned set contains all signatures in the
      * existing one.
      */
-    Boolean equals;
-    if (IObject::Probe(scannedCompatSet)->Equals(existingSet, &equals), equals) {
+    Boolean equals = Object::Equals(scannedCompatSet, existingSet);
+    if (equals) {
         // Migrate the old signatures to the new scheme.
         existingSigs->AssignSignatures(scannedPkg->mSignatures);
         // The new KeySets will be re-added later in the scanning process.
@@ -8706,10 +8703,9 @@ ECode CPackageManagerService::CollectCertificatesLI(
     /* [in] */ Int32 parseFlags,
     /* [in] */ ArrayOf<Byte>* readBuffer)
 {
-    Boolean equals;
     Int64 time;
     if (ps != NULL
-            && (IObject::Probe(ps->mCodePath)->Equals(srcFile, &equals), equals)
+            && Object::Equals(ps->mCodePath, srcFile)
             && (srcFile->GetLastModified(&time), ps->mTimeStamp == time)
             && !IsCompatSignatureUpdateNeeded(pkg)
             && !IsRecoverSignatureUpdateNeeded(pkg)) {
@@ -8781,11 +8777,13 @@ ECode CPackageManagerService::ScanPackageLI(
     // } catch (PackageParserException e) {
     //     throw PackageManagerException.from(e);
     // }
+    assert(pkg != NULL);
 
     AutoPtr<PackageSetting> ps;
     AutoPtr<PackageSetting> updatedPkg;
     // reader
     synchronized (mPackagesLock) {
+        Logger::I(TAG, " >>> find %s in %d", pkg->mPackageName.string(), mSettings->mRenamedPackages.GetSize());
         // Look to see if we already know about this package.
         String oldName;
         HashMap<String, String>::Iterator it = mSettings->mRenamedPackages.Find(pkg->mPackageName);
@@ -8812,8 +8810,7 @@ ECode CPackageManagerService::ScanPackageLI(
     Boolean updatedPkgBetter = FALSE;
     // First check if this is a system package that may involve an update
     if (updatedPkg != NULL && (parseFlags & PackageParser::PARSE_IS_SYSTEM) != 0) {
-        Boolean isEqual = FALSE;
-        if (ps != NULL && (IObject::Probe(ps->mCodePath)->Equals(scanFile, &isEqual), !isEqual)) {
+        if (ps != NULL && !Object::Equals(ps->mCodePath, scanFile)) {
             // The path has changed from what was last scanned...  check the
             // version of the new path against what we have stored to determine
             // what to do.
@@ -8821,13 +8818,12 @@ ECode CPackageManagerService::ScanPackageLI(
             if (pkg->mVersionCode < ps->mVersionCode) {
                 // The system package has been updated and the code path does not match
                 // Ignore entry. Skip it.
-                String str;
-                IObject::Probe(scanFile)->ToString(&str);
+                String str = Object::ToString(scanFile);;
                 LogCriticalInfo(ILogHelper::INFO, String("Package ") + ps->mName + " at " + str
                             + " ignored: updated version " + StringUtils::ToString(ps->mVersionCode)
                             + " better than this " + StringUtils::ToString(pkg->mVersionCode));
-                Boolean equals;
-                if (IObject::Probe(updatedPkg->mCodePath)->Equals(scanFile, &equals), !equals) {
+
+                if (!Object::Equals(updatedPkg->mCodePath, scanFile)) {
                     Slogger::W(TAG, "Code path for hidden system pkg : %s changing from %s to %s"
                             , ps->mName.string(), updatedPkg->mCodePathString.string(), str.string());
                     updatedPkg->mCodePath = scanFile;
@@ -8856,8 +8852,7 @@ ECode CPackageManagerService::ScanPackageLI(
                     // Just remove the loaded entries from package lists.
                     mPackages.Erase(ps->mName);
                 }
-                String str;
-                IObject::Probe(scanFile)->ToString(&str);
+                String str = Object::ToString(scanFile);
                 LogCriticalInfo(ILogHelper::WARN, String("Package ") + ps->mName + " at " + str
                         + " reverting from " + ps->mCodePathString
                         + ": new version " + StringUtils::ToString(pkg->mVersionCode)
@@ -8916,8 +8911,7 @@ ECode CPackageManagerService::ScanPackageLI(
              */
             if (pkg->mVersionCode < ps->mVersionCode) {
                 shouldHideSystemApp = TRUE;
-                String str;
-                IObject::Probe(scanFile)->ToString(&str);
+                String str = Object::ToString(scanFile);
                 LogCriticalInfo(ILogHelper::INFO, String("Package ") + ps->mName + " appeared at " + str
                         + " but new version " + StringUtils::ToString(pkg->mVersionCode) + " better than installed "
                         + StringUtils::ToString(ps->mVersionCode) + "; hiding system");
@@ -8929,8 +8923,7 @@ ECode CPackageManagerService::ScanPackageLI(
                  * already-installed application and replace it with our own
                  * while keeping the application data.
                  */
-                String str;
-                IObject::Probe(scanFile)->ToString(&str);
+                String str = Object::ToString(scanFile);
                 LogCriticalInfo(ILogHelper::WARN, String("Package ") + ps->mName + " at " + str
                         + " reverting from " + ps->mCodePathString + ": new version "
                         + StringUtils::ToString(pkg->mVersionCode) + " better than installed " + StringUtils::ToString(ps->mVersionCode));
@@ -8949,16 +8942,14 @@ ECode CPackageManagerService::ScanPackageLI(
     // vendor path).
     // TODO grab this value from PackageSettings
     if ((parseFlags & PackageParser::PARSE_IS_SYSTEM_DIR) == 0) {
-        Boolean equals;
-        if (ps != NULL &&
-                (IObject::Probe(ps->mCodePath)->Equals(ps->mResourcePath, &equals), !equals)) {
+        if (ps != NULL && !Object::Equals(ps->mCodePath, ps->mResourcePath)) {
             parseFlags |= PackageParser::PARSE_FORWARD_LOCK;
         }
     }
 
     // TODO: extend to support forward-locked splits
-    String resourcePath(NULL);
-    String baseResourcePath(NULL);
+    String resourcePath;
+    String baseResourcePath;
     if ((parseFlags & PackageParser::PARSE_FORWARD_LOCK) != 0 && !updatedPkgBetter) {
         if (ps != NULL && !ps->mResourcePathString.IsNull()) {
             resourcePath = ps->mResourcePathString;
@@ -9257,8 +9248,7 @@ void CPackageManagerService::FilterRecentlyUsedApps(
                 if (DEBUG_DEXOPT) {
                     AutoPtr<IDate> d;
                     CDate::New(then, (IDate**)&d);
-                    String str;
-                    IObject::Probe(d)->ToString(&str);
+                    String str = Object::ToString(d);
                     Logger::I(TAG, "Skipping dexopt of %s last resumed: %s",
                             pkg->mPackageName.string(), ((then == 0) ? "never" : str.string()));
                 }
@@ -9355,8 +9345,11 @@ String CPackageManagerService::GetPrimaryInstructionSet(
         return GetPreferredInstructionSet();
     }
 
-    assert(0);
-    // return VMRuntime.getInstructionSet(info.primaryCpuAbi);
+    AutoPtr<ISystem> system;
+    CSystem::AcquireSingleton((ISystem**)&system);
+    String result;
+    system->GetInstructionSet(primaryCpuAbi, &result);
+    return result;
 }
 
 Boolean CPackageManagerService::PerformDexOpt(
@@ -9507,6 +9500,7 @@ Int32 CPackageManagerService::PerformDexOptLI(
     // 3.) we are skipping an unneeded dexopt
     AutoPtr< ArrayOf<String> > dexCodeInstructionSets = GetDexCodeInstructionSets(instructionSets);
     ISet* set = ISet::Probe(pkg->mDexOptPerformed);
+
     for (Int32 i = 0; i < dexCodeInstructionSets->GetLength(); ++i) {
         String dexCodeInstructionSet = (*dexCodeInstructionSets)[i];
         AutoPtr<ICharSequence> cs = CoreUtils::Convert(dexCodeInstructionSet);
@@ -9613,19 +9607,19 @@ AutoPtr< ArrayOf<String> > CPackageManagerService::GetAppDexInstructionSets(
 {
     String primaryCpuAbi;
     if (info->GetPrimaryCpuAbi(&primaryCpuAbi), !primaryCpuAbi.IsNull()) {
+        AutoPtr<ISystem> system;
+        CSystem::AcquireSingleton((ISystem**)&system);
         String secondaryCpuAbi;
         if (info->GetSecondaryCpuAbi(&secondaryCpuAbi), !secondaryCpuAbi.IsNull()) {
             AutoPtr< ArrayOf<String> > sets = ArrayOf<String>::Alloc(2);
-            // (*sets)[0] = VMRuntime.getInstructionSet(primaryCpuAbi);
-            // (*sets)[1] = VMRuntime.getInstructionSet(secondaryCpuAbi);
-            // return sets;
-            assert(0);
+            system->GetInstructionSet(primaryCpuAbi, &(*sets)[0]);
+            system->GetInstructionSet(secondaryCpuAbi, &(*sets)[1]);
+            return sets;
         }
         else {
             AutoPtr< ArrayOf<String> > sets = ArrayOf<String>::Alloc(1);
-            // (*sets)[0] = VMRuntime.getInstructionSet(primaryCpuAbi);
-            // return sets;
-            assert(0);
+            system->GetInstructionSet(primaryCpuAbi, &(*sets)[0]);
+            return sets;
         }
     }
 
@@ -9638,16 +9632,18 @@ AutoPtr< ArrayOf<String> > CPackageManagerService::GetAppDexInstructionSets(
     /* [in] */ PackageSetting* ps)
 {
     if (!ps->mPrimaryCpuAbiString.IsNull()) {
+        AutoPtr<ISystem> system;
+        CSystem::AcquireSingleton((ISystem**)&system);
         if (!ps->mSecondaryCpuAbiString.IsNull()) {
             AutoPtr< ArrayOf<String> > sets = ArrayOf<String>::Alloc(2);
-            // (*sets)[0] = VMRuntime.getInstructionSet(ps->mPrimaryCpuAbi);
-            // (*sets)[1] = VMRuntime.getInstructionSet(ps->mSecondaryCpuAbi);
-            // return sets;
+            system->GetInstructionSet(ps->mPrimaryCpuAbiString, &(*sets)[0]);
+            system->GetInstructionSet(ps->mSecondaryCpuAbiString, &(*sets)[1]);
+            return sets;
         }
         else {
             AutoPtr< ArrayOf<String> > sets = ArrayOf<String>::Alloc(1);
-            // (*sets)[0] = VMRuntime.getInstructionSet(ps->mPrimaryCpuAbi);
-            // return sets;
+            system->GetInstructionSet(ps->mPrimaryCpuAbiString, &(*sets)[0]);
+            return sets;
         }
     }
 
@@ -9666,7 +9662,9 @@ AutoPtr< ArrayOf<String> > CPackageManagerService::GetAppDexInstructionSets(
 String CPackageManagerService::GetPreferredInstructionSet()
 {
     if (sPreferredInstructionSet.IsNull()) {
-        // sPreferredInstructionSet = VMRuntime.getInstructionSet(Build.SUPPORTED_ABIS[0]);
+        AutoPtr<ISystem> system;
+        CSystem::AcquireSingleton((ISystem**)&system);
+        system->GetInstructionSet((*Build::SUPPORTED_ABIS)[0], &sPreferredInstructionSet);
     }
 
     return sPreferredInstructionSet;
@@ -9677,12 +9675,18 @@ AutoPtr<List<String> > CPackageManagerService::GetAllInstructionSets()
     AutoPtr< ArrayOf<String> > allAbis = Build::SUPPORTED_ABIS;
     AutoPtr<List<String> > allInstructionSets = new List<String>(allAbis->GetLength());
 
+    AutoPtr<ISystem> system;
+    CSystem::AcquireSingleton((ISystem**)&system);
+    List<String>::Iterator it;
     for (Int32 i = 0; i < allAbis->GetLength(); ++i) {
-        String abi = (*allAbis)[i];
-        // String instructionSet = VMRuntime.getInstructionSet(abi);
-        // if (!allInstructionSets.contains(instructionSet)) {
-        //     allInstructionSets.add(instructionSet);
-        // }
+        String instructionSet;
+        system->GetInstructionSet((*allAbis)[i], &instructionSet);
+        if (!instructionSet.IsNull()) {
+            it = Find(allInstructionSets->Begin(), allInstructionSets->End(), instructionSet);
+            if (it == allInstructionSets->End()) {
+                allInstructionSets->PushBack(instructionSet);
+            }
+        }
     }
 
     return allInstructionSets;
@@ -9711,11 +9715,13 @@ AutoPtr< ArrayOf<String> > CPackageManagerService::GetDexCodeInstructionSets(
 
 AutoPtr< ArrayOf<String> > CPackageManagerService::GetAllDexCodeInstructionSets()
 {
+    AutoPtr<ISystem> system;
+    CSystem::AcquireSingleton((ISystem**)&system);
+    String is;
     AutoPtr< ArrayOf<String> > supportedInstructionSets = ArrayOf<String>::Alloc(Build::SUPPORTED_ABIS->GetLength());
     for (Int32 i = 0; i < supportedInstructionSets->GetLength(); i++) {
-        String abi = (*Build::SUPPORTED_ABIS)[i];
-        assert(0);
-        // supportedInstructionSets[i] = VMRuntime.getInstructionSet(abi);
+        system->GetInstructionSet((*Build::SUPPORTED_ABIS)[i], &is);
+        supportedInstructionSets->Set(i, is);
     }
     return GetDexCodeInstructionSets(supportedInstructionSets);
 }
@@ -10274,8 +10280,9 @@ ECode CPackageManagerService::ScanPackageDirtyLI(
                             }
                         }
                         else {
-//                             if (DEBUG_UPGRADE) Log.v(TAG, "Renaming new package "
-//                                             + pkg.packageName + " to old name " + origPackage.name);
+                            if (DEBUG_UPGRADE)
+                                Logger::V(TAG, "Renaming new package %s  to old name %s",
+                                    pkg->mPackageName.string(), origPackage->mName.string());
                         }
                         break;
                     }
@@ -10296,6 +10303,10 @@ ECode CPackageManagerService::ScanPackageDirtyLI(
         pkg->mApplicationInfo->GetSecondaryCpuAbi(&secondaryCpuAbi);
         Int32 flags;
         pkg->mApplicationInfo->GetFlags(&flags);
+
+        Logger::I(TAG, " package: %s application info: primaryCpuAbi:%s, secondaryCpuAbi:%s",
+            pkg->mPackageName.string(), primaryCpuAbi.string(), secondaryCpuAbi.string());
+
         pkgSetting = mSettings->GetPackageLPw(pkg, origPackage, realName, suid, destCodeFile,
                 destResourceFile, nativeLibraryRootDir, primaryCpuAbi, secondaryCpuAbi, flags, user, FALSE);
         if (pkgSetting == NULL) {
@@ -10618,6 +10629,9 @@ ECode CPackageManagerService::ScanPackageDirtyLI(
         pkgSetting->mUidError = uidError;
     }
 
+    AutoPtr<ISystem> system;
+    CSystem::AcquireSingleton((ISystem**)&system);
+
     String path;
     scanFile->GetPath(&path);
     pkg->mApplicationInfo->GetCodePath(&codePath);
@@ -10649,9 +10663,10 @@ ECode CPackageManagerService::ScanPackageDirtyLI(
             // renderscript code. We'll need to force the app to 32 bit if it has
             // renderscript bitcode.
             String primaryCpuAbi, secondaryCpuAbi;
-            if ((pkg->mApplicationInfo->GetPrimaryCpuAbi(&primaryCpuAbi), primaryCpuAbi.IsNull())
-                    && (pkg->mApplicationInfo->GetSecondaryCpuAbi(&secondaryCpuAbi), secondaryCpuAbi.IsNull())
-                    && Build::SUPPORTED_64_BIT_ABIS->GetLength() >  0) {
+            pkg->mApplicationInfo->GetPrimaryCpuAbi(&primaryCpuAbi);
+            pkg->mApplicationInfo->GetSecondaryCpuAbi(&secondaryCpuAbi);
+            if (primaryCpuAbi.IsNull() && secondaryCpuAbi.IsNull()
+                && Build::SUPPORTED_64_BIT_ABIS->GetLength() >  0) {
                 AutoPtr<INativeLibraryHelperHandle> handle;
                 // try {
                 AutoPtr<INativeLibraryHelperHandleHelper> hh;
@@ -10834,15 +10849,19 @@ ECode CPackageManagerService::ScanPackageDirtyLI(
             // and if the native libraries are 32 bit libraries. We do not provide
             // this symlink for 64 bit libraries.
             String appPrimaryCpuAbi;
-            if ((pkg->mApplicationInfo->GetPrimaryCpuAbi(&appPrimaryCpuAbi), !appPrimaryCpuAbi.IsNull())
-                    /*&& !VMRuntime.is64BitAbi(pkg->mApplicationInfo->primaryCpuAbi)*/) {
-                String nativeLibPath;
-                pkg->mApplicationInfo->GetNativeLibraryDir(&nativeLibPath);
-                for (Int32 i = 0; i < userIds->GetLength(); ++i) {
-                    if (mInstaller->LinkNativeLibraryDirectory(pkg->mPackageName, nativeLibPath, (*userIds)[i]) < 0) {
-                        Slogger::E(TAG, "Failed linking native library dir (user=%d)", (*userIds)[i]);
-                        sLastScanError = IPackageManager::INSTALL_FAILED_INTERNAL_ERROR;
-                        return E_PACKAGE_MANAGER_EXCEPTION;
+            pkg->mApplicationInfo->GetPrimaryCpuAbi(&appPrimaryCpuAbi);
+            if (!appPrimaryCpuAbi.IsNull()) {
+                Boolean bval;
+                system->Is64BitAbi(appPrimaryCpuAbi, &bval);
+                if (!bval) {
+                    String nativeLibPath;
+                    pkg->mApplicationInfo->GetNativeLibraryDir(&nativeLibPath);
+                    for (Int32 i = 0; i < userIds->GetLength(); ++i) {
+                        if (mInstaller->LinkNativeLibraryDirectory(pkg->mPackageName, nativeLibPath, (*userIds)[i]) < 0) {
+                            Slogger::E(TAG, "Failed linking native library dir (user=%d)", (*userIds)[i]);
+                            sLastScanError = IPackageManager::INSTALL_FAILED_INTERNAL_ERROR;
+                            return E_PACKAGE_MANAGER_EXCEPTION;
+                        }
                     }
                 }
             }
@@ -10854,10 +10873,9 @@ ECode CPackageManagerService::ScanPackageDirtyLI(
     // of this ABI so that we can deal with "normal" applications that run under
     // the same UID correctly.
     if (mPlatformPackage.Get() == pkg) {
-        // assert(0 && "TODO");
-        // pkg->mApplicationInfo->primaryCpuAbi = VMRuntime.getRuntime().is64Bit() ?
-        //         Build.SUPPORTED_64_BIT_ABIS[0] : Build.SUPPORTED_32_BIT_ABIS[0];
-        String cpuAbi = (*Build::SUPPORTED_32_BIT_ABIS)[0];
+        Boolean bval;
+        system->Is64Bit(&bval);
+        String cpuAbi = bval ? (*Build::SUPPORTED_64_BIT_ABIS)[0] : (*Build::SUPPORTED_32_BIT_ABIS)[0];
         pkg->mApplicationInfo->SetPrimaryCpuAbi(cpuAbi);
     }
 
@@ -11108,7 +11126,7 @@ ECode CPackageManagerService::ScanPackageDirtyLI(
         // }
 
         String pkgAppProcName;
-        IComponentInfo::Probe(pkg->mApplicationInfo)->GetProcessName(&pkgAppProcName);
+        pkg->mApplicationInfo->GetProcessName(&pkgAppProcName);
         Int32 pkgAppUid;
         pkg->mApplicationInfo->GetUid(&pkgAppUid);
         AutoPtr<StringBuilder> r;
@@ -11153,7 +11171,7 @@ ECode CPackageManagerService::ScanPackageDirtyLI(
                         }
 //                         if (DEBUG_PACKAGE_SCANNING) {
 //                             if ((parseFlags & PackageParser::PARSE_CHATTY) != 0)
-//                                 Log.d(TAG, "Registered content provider: " + names[j]
+//                                 Logger::D(TAG, "Registered content provider: " + names[j]
 //                                         + ", className = " + p.info.name + ", isSyncable = "
 //                                         + p.info.isSyncable);
 //                         }
@@ -11185,9 +11203,9 @@ ECode CPackageManagerService::ScanPackageDirtyLI(
                 r->Append(pInfoName);
             }
         }
-//         if (r != NULL) {
-//             if (DEBUG_PACKAGE_SCANNING) Log.d(TAG, "  Providers: " + r);
-//         }
+        if (r != NULL) {
+            if (DEBUG_PACKAGE_SCANNING) Logger::D(TAG, "  Providers: %s", r->ToString().string());
+        }
 
         r = NULL;
         List< AutoPtr<PackageParser::Service> >::Iterator psit;
@@ -11210,9 +11228,9 @@ ECode CPackageManagerService::ScanPackageDirtyLI(
                 r->Append(sInfoName);
             }
         }
-//         if (r != NULL) {
-//             if (DEBUG_PACKAGE_SCANNING) Log.d(TAG, "  Services: " + r);
-//         }
+        if (r != NULL) {
+            if (DEBUG_PACKAGE_SCANNING) Logger::D(TAG, "  Services: %s", r->ToString().string());
+        }
 
         r = NULL;
         List< AutoPtr<PackageParser::Activity> >::Iterator pait;
@@ -11235,9 +11253,9 @@ ECode CPackageManagerService::ScanPackageDirtyLI(
                 r->Append(aInfoName);
             }
         }
-//         if (r != NULL) {
-//             if (DEBUG_PACKAGE_SCANNING) Log.d(TAG, "  Receivers: " + r);
-//         }
+        if (r != NULL) {
+            if (DEBUG_PACKAGE_SCANNING) Logger::D(TAG, "  Receivers: %s", r->ToString().string());
+        }
 
         r = NULL;
 
@@ -11266,9 +11284,9 @@ ECode CPackageManagerService::ScanPackageDirtyLI(
                 r->Append(aInfoName);
             }
         }
-//         if (r != NULL) {
-//             if (DEBUG_PACKAGE_SCANNING) Log.d(TAG, "  Activities: " + r);
-//         }
+        if (r != NULL) {
+            if (DEBUG_PACKAGE_SCANNING) Logger::D(TAG, "  Activities: %s", r->ToString().string());
+        }
 
         r = NULL;
         List< AutoPtr<PackageParser::PermissionGroup> >::Iterator ppgit;
@@ -11310,7 +11328,7 @@ ECode CPackageManagerService::ScanPackageDirtyLI(
             }
         }
 //         if (r != NULL) {
-//             if (DEBUG_PACKAGE_SCANNING) Log.d(TAG, "  Permission Groups: " + r);
+//             if (DEBUG_PACKAGE_SCANNING) Logger::D(TAG, "  Permission Groups: " + r);
 //         }
 
         r = NULL;
@@ -11335,10 +11353,7 @@ ECode CPackageManagerService::ScanPackageDirtyLI(
                 AutoPtr<BasePermission> bp = permissionMap[pInfoName];
 
                 // Allow system apps to redefine non-system permissions
-                AutoPtr<ICharSequence> cs1, cs2;
-                CString::New(bp->mSourcePackage, (ICharSequence**)&cs1);
-                CString::New(pInfoPkgName, (ICharSequence**)&cs1);
-                if (bp != NULL && !Objects::Equals(cs1, cs2)) {
+                if (bp != NULL && !pInfoPkgName.Equals(bp->mSourcePackage)) {
                     Boolean currentOwnerIsSystem = (bp->mPerm != NULL && IsSystemApp(bp->mPerm->mOwner));
                     if (IsSystemApp(p->mOwner)) {
                         if (bp->mType == BasePermission::TYPE_BUILTIN && bp->mPerm == NULL) {
@@ -11349,8 +11364,7 @@ ECode CPackageManagerService::ScanPackageDirtyLI(
                             IPackageItemInfo::Probe(p->mInfo)->GetPackageName(&bp->mSourcePackage);
                         }
                         else if (!currentOwnerIsSystem) {
-                            String ownerstr;
-                            p->mOwner->ToString(&ownerstr);
+                            String ownerstr = Object::ToString(p->mOwner);
                             String msg = String("New decl ") + ownerstr + " of permission  "
                                     + pInfoName + " is system; overriding " + bp->mSourcePackage;
                             ReportSettingsProblem(ILogHelper::WARN, msg);
@@ -11384,16 +11398,14 @@ ECode CPackageManagerService::ScanPackageDirtyLI(
                             }
                         }
                         else {
-//                             Slog.w(TAG, "Permission " + p.info.name + " from package "
-//                                     + p.info.packageName + " ignored: base tree "
-//                                     + tree.name + " is from package "
-//                                     + tree.sourcePackage);
+                            Slogger::W(TAG, "Permission %s from package %s ignored: base tree: %s is from package %s",
+                                pInfoName.string(), pInfoPkgName.string(),
+                                tree->mName.string(), tree->mSourcePackage.string());
                         }
                     }
                     else {
-//                         Slog.w(TAG, "Permission " + p.info.name + " from package "
-//                                 + p.info.packageName + " ignored: original from "
-//                                 + bp.sourcePackage);
+                        Slogger::W(TAG, "Permission %s from package %s ignored: original from: %s",
+                            pInfoName.string(), pInfoPkgName.string(), bp->mSourcePackage.string());
                     }
                 }
                 else if ((parseFlags & PackageParser::PARSE_CHATTY) != 0) {
@@ -11411,14 +11423,13 @@ ECode CPackageManagerService::ScanPackageDirtyLI(
                 }
             }
             else {
-//                 Slog.w(TAG, "Permission " + p.info.name + " from package "
-//                             + p.info.packageName + " ignored: no group "
-//                             + p.group);
+                Slogger::W(TAG, "Permission %s from package %s ignored: no group: %s",
+                    pInfoName.string(), pInfoPkgName.string(), pInfoGroup.string());
             }
         }
-//         if (r != NULL) {
-//             if (DEBUG_PACKAGE_SCANNING) Log.d(TAG, "  Permissions: " + r);
-//         }
+        if (r != NULL) {
+            if (DEBUG_PACKAGE_SCANNING) Logger::D(TAG, "  Permissions: %s", r->ToString().string());
+        }
 
         String pkgAppSrcDir, pkgAppPubSrcDir, pkgAppDataDir, pkgAppNatLibDir;
         pkg->mApplicationInfo->GetSourceDir(&pkgAppSrcDir);
@@ -11456,9 +11467,9 @@ ECode CPackageManagerService::ScanPackageDirtyLI(
                 r->Append(aInfoName);
             }
         }
-//         if (r != NULL) {
-//             if (DEBUG_PACKAGE_SCANNING) Log.d(TAG, "  Instrumentation: " + r);
-//         }
+        if (r != NULL) {
+            if (DEBUG_PACKAGE_SCANNING) Logger::D(TAG, "  Instrumentation: %s", r->ToString().string());
+        }
 
         if (pkg->mProtectedBroadcasts != NULL) {
             List<String>::Iterator it;
@@ -11517,13 +11528,15 @@ void CPackageManagerService::AdjustCpuAbisForSharedUserLPw(
     /* [in] */ Boolean forceDexOpt,
     /* [in] */ Boolean deferDexOpt)
 {
-    String requiredInstructionSet(NULL);
+    AutoPtr<ISystem> system;
+    CSystem::AcquireSingleton((ISystem**)&system);
+    String requiredInstructionSet;
     String primaryCpuAbi;
-    if (scannedPackage != NULL &&
-            (scannedPackage->mApplicationInfo->GetPrimaryCpuAbi(&primaryCpuAbi), !primaryCpuAbi.IsNull())) {
-        assert(0);
-        // requiredInstructionSet = VMRuntime.getInstructionSet(
-        //          scannedPackage.applicationInfo.primaryCpuAbi);
+    if (scannedPackage != NULL) {
+        scannedPackage->mApplicationInfo->GetPrimaryCpuAbi(&primaryCpuAbi);
+        if (!primaryCpuAbi.IsNull()) {
+            system->GetInstructionSet(primaryCpuAbi, &requiredInstructionSet);
+        }
     }
 
     AutoPtr<PackageSetting> requirer;
@@ -11538,8 +11551,8 @@ void CPackageManagerService::AdjustCpuAbisForSharedUserLPw(
             if (ps->mPrimaryCpuAbiString.IsNull()) {
                 continue;
             }
-            // TODO
-            String instructionSet;/* = VMRuntime.getInstructionSet(ps.primaryCpuAbiString);*/
+            String instructionSet;
+            system->GetInstructionSet(ps->mPrimaryCpuAbiString, &instructionSet);
             if (!requiredInstructionSet.IsNull() && !instructionSet.Equals(requiredInstructionSet)) {
                 // We have a mismatch between instruction sets (say arm vs arm64) warn about
                 // this but there's not much we can do.
@@ -11547,12 +11560,8 @@ void CPackageManagerService::AdjustCpuAbisForSharedUserLPw(
                 if (requirer) {
                     requirer->ToString(&str);
                 }
-                String psStr;
-                ps->ToString(&psStr);
-                String errorMessage = String("Instruction set mismatch, ")
-                        + str + " requires " + requiredInstructionSet + " whereas " + psStr
-                        + " requires " + instructionSet;
-                Slogger::W(TAG, "%s", errorMessage.string());
+                Slogger::W(TAG, "%s", "Instruction set mismatch, %s requires %s whereas %s requires %s",
+                    str.string(), requiredInstructionSet.string(), TO_CSTR(ps), instructionSet.string());
             }
 
             if (requiredInstructionSet.IsNull()) {
@@ -11685,6 +11694,8 @@ String CPackageManagerService::CalculateBundledApkRoot(
 void CPackageManagerService::SetNativeLibraryPaths(
     /* [in] */ PackageParser::Package* pkg)
 {
+    AutoPtr<ISystem> system;
+    CSystem::AcquireSingleton((ISystem**)&system);
     AutoPtr<IApplicationInfo> info = pkg->mApplicationInfo;
     String codePath = pkg->mCodePath;
     AutoPtr<IFile> codeFile;
@@ -11705,9 +11716,9 @@ void CPackageManagerService::SetNativeLibraryPaths(
             String sourceDir;
             info->GetSourceDir(&sourceDir);
             String apkRoot = CalculateBundledApkRoot(sourceDir);
-            // TODO
-            Boolean is64Bit = FALSE;/* = VMRuntime.is64BitInstructionSet(
-                    getPrimaryInstructionSet(info));*/
+            String pis = GetPrimaryInstructionSet(info);
+            Boolean is64Bit;
+            system->Is64BitInstructionSet(pis, &is64Bit);
 
             // This is a bundled system app so choose the path based on the ABI.
             // if it's a 64 bit abi, use lib64 otherwise use lib32. Note that this
@@ -11776,9 +11787,13 @@ void CPackageManagerService::SetNativeLibraryPaths(
 
         String secondaryCpuAbi;
         if (info->GetSecondaryCpuAbi(&secondaryCpuAbi), !secondaryCpuAbi.IsNull()) {
-            assert(0);
-            // info.secondaryNativeLibraryDir = new File(info.nativeLibraryRootDir,
-            //         VMRuntime.getInstructionSet(info.secondaryCpuAbi)).getAbsolutePath();
+            String is;
+            system->GetInstructionSet(secondaryCpuAbi, &is);
+            info->GetNativeLibraryRootDir(&absolutePath);
+            AutoPtr<IFile> file;
+            CFile::New(absolutePath, is, (IFile**)&file);
+            file->GetAbsolutePath(&absolutePath);
+            info->SetSecondaryNativeLibraryDir(absolutePath);
         }
     }
 }
@@ -11814,25 +11829,26 @@ void CPackageManagerService::SetBundledAppAbi(
     /* [in] */ const String& apkRoot,
     /* [in] */ const String& apkName)
 {
+    AutoPtr<ISystem> system;
+    CSystem::AcquireSingleton((ISystem**)&system);
     AutoPtr<IFile> codeFile;
     CFile::New(pkg->mCodePath, (IFile**)&codeFile);
 
-    Boolean has64BitLibs;
-    Boolean has32BitLibs;
+    Boolean has64BitLibs = FALSE;
+    Boolean has32BitLibs = FALSE;
     if (PackageParser::IsApkFile(codeFile)) {
         // Monolithic install
-        AutoPtr<IFile> lib64F;
+        AutoPtr<IFile> lib64F, apkRootF, libF, apkRootF1;
         CFile::New(INativeLibraryHelper::LIB64_DIR_NAME, apkName, (IFile**)&lib64F);
-        String lib64Path;
+        String lib64Path, libPath;
         lib64F->GetPath(&lib64Path);
-        AutoPtr<IFile> apkRootF;
+
         CFile::New(apkRoot, lib64Path, (IFile**)&apkRootF);
         apkRootF->Exists(&has64BitLibs);
-        AutoPtr<IFile> libF;
+
         CFile::New(INativeLibraryHelper::LIB_DIR_NAME, apkName, (IFile**)&libF);
-        String libPath;
         libF->GetPath(&libPath);
-        AutoPtr<IFile> apkRootF1;
+
         CFile::New(apkRoot, libPath, (IFile**)&apkRootF1);
         apkRootF1->Exists(&has32BitLibs);
     }
@@ -11842,25 +11858,20 @@ void CPackageManagerService::SetBundledAppAbi(
         CFile::New(codeFile, INativeLibraryHelper::LIB_DIR_NAME, (IFile**)&rootDir);
         if (!ArrayUtils::IsEmpty(Build::SUPPORTED_64_BIT_ABIS.Get())
                 && !TextUtils::IsEmpty((*Build::SUPPORTED_64_BIT_ABIS)[0])) {
-            // TODO
-            String isa(NULL);/*VMRuntime.getInstructionSet(Build.SUPPORTED_64_BIT_ABIS[0]);*/
+            String isa;
+            system->GetInstructionSet((*Build::SUPPORTED_64_BIT_ABIS)[0], &isa);
             AutoPtr<IFile> rootDirF;
             CFile::New(rootDir, isa, (IFile**)&rootDirF);
             rootDirF->Exists(&has64BitLibs);
         }
-        else {
-            has64BitLibs = FALSE;
-        }
+
         if (!ArrayUtils::IsEmpty(Build::SUPPORTED_32_BIT_ABIS.Get())
                 && !TextUtils::IsEmpty((*Build::SUPPORTED_32_BIT_ABIS)[0])) {
-            // TODO
-            String isa(NULL);/*VMRuntime.getInstructionSet(Build.SUPPORTED_32_BIT_ABIS[0]);*/
+            String isa;
+            system->GetInstructionSet((*Build::SUPPORTED_32_BIT_ABIS)[0], &isa);
             AutoPtr<IFile> rootDirF;
             CFile::New(rootDir, isa, (IFile**)&rootDirF);
             rootDirF->Exists(&has32BitLibs);
-        }
-        else {
-            has32BitLibs = FALSE;
         }
     }
 
@@ -11891,15 +11902,18 @@ void CPackageManagerService::SetBundledAppAbi(
         if (pkg->mApplicationInfo->GetFlags(&flags), (flags & IApplicationInfo::FLAG_MULTIARCH) == 0) {
             Slogger::E(TAG, "Package: %s has multiple bundled libs, but is not multiarch.", TO_CSTR(pkg));
         }
-        // TODO
-        // if (VMRuntime.is64BitInstructionSet(GetPreferredInstructionSet())) {
-        //     pkg->mApplicationInfo->SetPrimaryCpuAbi((*Build::SUPPORTED_64_BIT_ABIS)[0]);
-        //     pkg->mApplicationInfo->SetSecondaryCpuAbi((*Build::SUPPORTED_32_BIT_ABIS)[0]);
-        // }
-        // else {
-        //     pkg->mApplicationInfo->SetPrimaryCpuAbi((*Build::SUPPORTED_32_BIT_ABIS)[0]);
-        //     pkg->mApplicationInfo->SetSecondaryCpuAbi((*Build::SUPPORTED_64_BIT_ABIS)[0]);
-        // }
+
+        String pis = GetPreferredInstructionSet();
+        Boolean bval;
+        system->Is64BitInstructionSet(pis, &bval);
+        if (bval) {
+            pkg->mApplicationInfo->SetPrimaryCpuAbi((*Build::SUPPORTED_64_BIT_ABIS)[0]);
+            pkg->mApplicationInfo->SetSecondaryCpuAbi((*Build::SUPPORTED_32_BIT_ABIS)[0]);
+        }
+        else {
+            pkg->mApplicationInfo->SetPrimaryCpuAbi((*Build::SUPPORTED_32_BIT_ABIS)[0]);
+            pkg->mApplicationInfo->SetSecondaryCpuAbi((*Build::SUPPORTED_64_BIT_ABIS)[0]);
+        }
     }
     else {
         pkg->mApplicationInfo->SetPrimaryCpuAbi(String(NULL));
@@ -12257,7 +12271,7 @@ void CPackageManagerService::UpdatePermissionsLPw(
     while (pit != mSettings->mPermissions.End()) {
         AutoPtr<BasePermission> bp = pit->mSecond;
         if (bp->mType == BasePermission::TYPE_DYNAMIC) {
-//             if (DEBUG_SETTINGS) Log.v(TAG, "Dynamic permission: name="
+//             if (DEBUG_SETTINGS) Logger::V(TAG, "Dynamic permission: name="
 //                     + bp.name + " pkg=" + bp.sourcePackage
 //                     + " info=" + bp.pendingInfo);
             if (bp->mPackageSetting == NULL && bp->mPendingInfo != NULL) {
@@ -15258,14 +15272,19 @@ Boolean CPackageManagerService::ClearApplicationUserDataLI(
     // Create a native library symlink only if we have native libraries
     // and if the native libraries are 32 bit libraries. We do not provide
     // this symlink for 64 bit libraries.
-    String primaryCpuAbi;
-    if (pkg != NULL && (pkg->mApplicationInfo->GetPrimaryCpuAbi(&primaryCpuAbi), !primaryCpuAbi.IsNull())
-            /*&& !VMRuntime.is64BitAbi(pkg.applicationInfo.primaryCpuAbi)*/) {
-        String nativeLibPath;
-        pkg->mApplicationInfo->GetNativeLibraryDir(&nativeLibPath);
-        if (mInstaller->LinkNativeLibraryDirectory(pkg->mPackageName, nativeLibPath, userId) < 0) {
-            Slogger::W(TAG, "Failed linking native library dir");
-            return FALSE;
+    if (pkg != NULL) {
+        AutoPtr<ISystem> system;
+        CSystem::AcquireSingleton((ISystem**)&system);
+        String primaryCpuAbi;
+        pkg->mApplicationInfo->GetPrimaryCpuAbi(&primaryCpuAbi);
+        Boolean bval;
+        if (!primaryCpuAbi.IsNull() && (system->Is64BitAbi(primaryCpuAbi, &bval), !bval)) {
+            String nativeLibPath;
+            pkg->mApplicationInfo->GetNativeLibraryDir(&nativeLibPath);
+            if (mInstaller->LinkNativeLibraryDirectory(pkg->mPackageName, nativeLibPath, userId) < 0) {
+                Slogger::W(TAG, "Failed linking native library dir");
+                return FALSE;
+            }
         }
     }
 
@@ -15281,7 +15300,7 @@ void CPackageManagerService::RemoveKeystoreDataIfNeeded(
     }
 
     AutoPtr<IKeyStoreHelper> helper;
-    assert(0);
+    assert(0 && "TODO");
     // CKeyStoreHelper::AcquireSingleton((IKeyStoreHelper**)&helper);
     AutoPtr<IKeyStore> keyStore;
     helper->GetInstance((IKeyStore**)&keyStore);
@@ -15634,9 +15653,8 @@ ECode CPackageManagerService::ReplacePreferredActivity(
                         Slogger::I(TAG, "  -- CUR: mComponent=%s", str.string());
                     }
                 }
-                Boolean equals;
-                if (cur->mPref->mAlways &&
-                        (IObject::Probe(cur->mPref->mComponent)->Equals(activity, &equals), equals)
+
+                if (cur->mPref->mAlways && Object::Equals(cur->mPref->mComponent, activity)
                         && cur->mPref->mMatch == (match & IIntentFilter::MATCH_CATEGORY_MASK)
                         && cur->mPref->SameSet(set)) {
                     // Setting the preferred activity to what it happens to be already
@@ -16761,7 +16779,7 @@ void CPackageManagerService::UnloadAllContainers(
     while (it->HasNext(&next), next) {
         AutoPtr<IInterface> obj;
         it->GetNext((IInterface**)&obj);
-        AsecInstallArgs* arg = (AsecInstallArgs*)(IObject*)obj.Get();
+        AsecInstallArgs* arg = (AsecInstallArgs*)IObject::Probe(obj);
         synchronized (mInstallLock) {
             arg->DoPostDeleteLI(FALSE);
         }

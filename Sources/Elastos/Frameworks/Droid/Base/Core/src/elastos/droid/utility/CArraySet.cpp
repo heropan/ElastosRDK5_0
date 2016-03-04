@@ -6,11 +6,11 @@
 #include <libcore/utility/EmptyArray.h>
 
 using Elastos::Core::StringBuilder;
-using Libcore::Utility::EmptyArray;
 using Elastos::Utility::EIID_ICollection;
 using Elastos::Utility::EIID_ISet;
 using Elastos::Utility::EIID_IIterable;
 using Elastos::Utility::Logging::Logger;
+using Libcore::Utility::EmptyArray;
 
 namespace Elastos {
 namespace Droid {
@@ -679,7 +679,7 @@ AutoPtr<MapCollections> CArraySet::GetCollection()
     if (mCollections == NULL) {
         mCollections = new InnerMapCollections(this);
     }
-    return NULL;
+    return mCollections;
 }
 
 ECode CArraySet::GetIterator(
@@ -687,7 +687,7 @@ ECode CArraySet::GetIterator(
 {
     VALIDATE_NOT_NULL(it)
     AutoPtr<ISet> keySet = GetCollection()->GetKeySet();
-    return keySet->GetIterator((IIterator**)&it);
+    return keySet->GetIterator(it);
 }
 
 ECode CArraySet::ContainsAll(

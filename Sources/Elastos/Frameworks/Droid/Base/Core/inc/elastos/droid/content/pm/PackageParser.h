@@ -4,6 +4,7 @@
 
 #include "elastos/droid/ext/frameworkext.h"
 #include "Elastos.Droid.Utility.h"
+#include "Elastos.CoreLibrary.Utility.Concurrent.h"
 #include "elastos/droid/content/IntentFilter.h"
 #include "elastos/droid/content/pm/PackageUserState.h"
 #include "elastos/droid/os/Build.h"
@@ -35,13 +36,14 @@ using Elastos::Core::IComparator;
 using Elastos::Core::ICharSequence;
 using Elastos::Core::StringBuilder;
 using Elastos::Core::CString;
-using Elastos::Utility::Etl::List;
-using Elastos::Utility::Etl::HashSet;
 using Elastos::IO::IFile;
 using Elastos::IO::IInputStream;
 using Elastos::IO::IPrintWriter;
 using Elastos::Utility::Jar::IStrictJarFile;
 using Elastos::Utility::Zip::IZipEntry;
+using Elastos::Utility::Etl::List;
+using Elastos::Utility::Etl::HashSet;
+using Elastos::Utility::Concurrent::Atomic::IAtomicReference;
 using Elastos::Security::IPublicKey;
 using Elastos::Security::Cert::ICertificate;
 using Org::Xmlpull::V1::IXmlPullParser;
@@ -88,6 +90,10 @@ public:
     class ServiceIntentInfo;
     class ProviderIntentInfo;
 
+    class BufferWrapper : public Object {
+    public:
+        AutoPtr<ArrayOf<Byte> > mBuffer;
+    };
     /** @hide */
     class NewPermissionInfo : public Object
     {
@@ -873,7 +879,6 @@ public:
 
     static CARAPI ReadFullyIgnoringContents(
         /* [in] */ IInputStream* in,
-        /* [in] */ ArrayOf<Byte>* readBuffer,
         /* [out] */ Int64* result);
 
     static CloseQuietly(
@@ -1306,8 +1311,7 @@ private:
 
     static const AutoPtr<IComparator> sSplitNameComparator;// = new SplitNameComparator();
 
-
-    // static AtomicReference<byte[]> sBuffer = new AtomicReference<byte[]>();
+    static AutoPtr<IAtomicReference> sBuffer;// new AtomicReference<byte[]>(); BufferWrapper
 };
 
 //=================================================================

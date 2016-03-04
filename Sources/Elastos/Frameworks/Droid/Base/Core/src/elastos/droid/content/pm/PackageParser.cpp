@@ -80,6 +80,7 @@ using Elastos::Utility::Jar::IJarFile;
 using Elastos::Utility::Jar::CJarFile;
 using Elastos::Utility::Jar::IManifest;
 using Elastos::Utility::Jar::CStrictJarFile;
+using Elastos::Utility::Concurrent::Atomic::CAtomicReference;
 using Elastos::Security::Cert::ICertificate;
 using Elastos::Security::IPublicKey;
 using Elastos::Security::Spec::IEncodedKeySpec;
@@ -407,6 +408,8 @@ PackageParser::Package::Package(
     ASSERT_SUCCEEDED(CApplicationInfo::New((IApplicationInfo**)&mApplicationInfo));
     IPackageItemInfo::Probe(mApplicationInfo)->SetPackageName(mPackageName);
     mApplicationInfo->SetUid(-1);
+
+    CArraySet::New(4, (IArraySet**)&mDexOptPerformed);
 }
 
 PackageParser::Package::~Package()
@@ -841,7 +844,14 @@ ECode PackageParser::SplitNameComparator::Compare(
 // PackageParser
 //===========================================================================
 
+static AutoPtr<IAtomicReference> InitBuffer()
+{
+    AutoPtr<IAtomicReference> ar;
+    CAtomicReference::New((IAtomicReference**)&ar);
+    return ar;
+}
 const AutoPtr<IComparator> PackageParser::sSplitNameComparator = new PackageParser::SplitNameComparator();
+AutoPtr<IAtomicReference> PackageParser::sBuffer = InitBuffer();
 
 PackageParser::PackageParser()
     : mOnlyCoreApps(FALSE)
@@ -1180,7 +1190,7 @@ ECode PackageParser::LoadCertificates(
     }
 
     Int64 count;
-    ec = ReadFullyIgnoringContents(is, readBuffer, &count);
+    ec = ReadFullyIgnoringContents(is, &count);
     if (ec == (ECode)E_IO_EXCEPTION || ec == (ECode)E_RUNTIME_EXCEPTION) {
         ec = E_PACKAGE_PARSER_EXCEPTION;
         goto _EXIT_;
@@ -1395,6 +1405,7 @@ ECode PackageParser::ParsePackage(
     /* [out] */ Package** pkgLite)
 {
     VALIDATE_NOT_NULL(pkgLite)
+
     Boolean isDir;
     packageFile->IsDirectory(&isDir);
     if (isDir) {
@@ -2938,8 +2949,6 @@ ECode PackageParser::ParseBaseApk(
         }
     }
 
-    Logger::I(TAG, " =-===== 2");
-
     if (!foundApp && pkg->mInstrumentation.Begin() == pkg->mInstrumentation.End()) {
         (*outError)[0] = "<manifest> does not contain an <application> or <instrumentation>";
         sParseError = IPackageManager::INSTALL_PARSE_FAILED_MANIFEST_EMPTY;
@@ -3044,7 +3053,7 @@ ECode PackageParser::ParseBaseApk(
         }
     }
 
-    Logger::I(TAG, " <<< ParseBaseApk");
+    Logger::I(TAG, " <<< ParseBaseApk ==============");
     *result = pkg;
     REFCOUNT_ADD(*result)
     return NOERROR;
@@ -3990,21 +3999,21 @@ Boolean PackageParser::ParseBaseApplication(
 
     Boolean bvalue = FALSE;
 
-    // sa->GetBoolean(
-    //     R::styleable::AndroidManifestApplication_requiredForAllUsers,
-    //     FALSE, &bvalue)
+    sa->GetBoolean(
+        R::styleable::AndroidManifestApplication_requiredForAllUsers,
+        FALSE, &bvalue);
     if (bvalue) {
         owner->mRequiredForAllUsers = TRUE;
     }
 
     String restrictedAccountType;
-    // sa->GetString(R::styleable::AndroidManifestApplication_restrictedAccountType, &restrictedAccountType);
+    sa->GetString(R::styleable::AndroidManifestApplication_restrictedAccountType, &restrictedAccountType);
     if (!restrictedAccountType.IsNullOrEmpty()) {
         owner->mRestrictedAccountType = restrictedAccountType;
     }
 
     String requiredAccountType;
-    // sa->GetString(R::styleable::AndroidManifestApplication_requiredAccountType, &requiredAccountType);
+    sa->GetString(R::styleable::AndroidManifestApplication_requiredAccountType, &requiredAccountType);
     if (!requiredAccountType.IsNullOrEmpty()) {
         owner->mRequiredAccountType = requiredAccountType;
     }
@@ -4090,9 +4099,9 @@ Boolean PackageParser::ParseBaseApplication(
         ai->SetFlags(aiFlags);
     }
 
-    // sa->GetBoolean(
-    //     R::styleable::AndroidManifestApplication_multiArch,
-    //     FALSE, &bvalue);
+    sa->GetBoolean(
+        R::styleable::AndroidManifestApplication_multiArch,
+        FALSE, &bvalue);
     if (bvalue) {
         ai->GetFlags(&aiFlags);
         aiFlags |=IApplicationInfo::FLAG_MULTIARCH;
@@ -4151,9 +4160,9 @@ Boolean PackageParser::ParseBaseApplication(
         ai->SetEnabled(aiEnabled);
 
         Boolean value = FALSE;
-        // sa->GetBoolean(
-        //     R::styleable::AndroidManifestApplication_isGame,
-        //     FALSE, &value);
+        sa->GetBoolean(
+            R::styleable::AndroidManifestApplication_isGame,
+            FALSE, &value);
         if (value) {
             ai->GetFlags(&aiFlags);
             aiFlags |= IApplicationInfo::FLAG_IS_GAME;
@@ -4260,17 +4269,17 @@ Boolean PackageParser::ParseBaseApplication(
             }
 
         } else if (tagName.Equals("library")) {
-            // Int32 size = ArraySize(R::styleable::AndroidManifestLibrary);
-            // AutoPtr<ArrayOf<Int32> > layout = ArrayOf<Int32>::Alloc(size);
-            // layout->Copy(R::styleable::AndroidManifestLibrary, size);
+            Int32 size = ArraySize(R::styleable::AndroidManifestLibrary);
+            AutoPtr<ArrayOf<Int32> > layout = ArrayOf<Int32>::Alloc(size);
+            layout->Copy(R::styleable::AndroidManifestLibrary, size);
 
             AutoPtr<ITypedArray> sa;
-            // FAIL_RETURN(res->ObtainAttributes(attrs, layout, (ITypedArray**)&sa));
+            FAIL_RETURN(res->ObtainAttributes(attrs, layout, (ITypedArray**)&sa));
 
             // Note: don't allow this value to be a reference to a resource
             // that may change.
             String lname;
-            // sa->GetNonResourceString(R::styleable::AndroidManifestLibrary_name, &lname);
+            sa->GetNonResourceString(R::styleable::AndroidManifestLibrary_name, &lname);
 
             sa->Recycle();
 
@@ -4291,12 +4300,12 @@ Boolean PackageParser::ParseBaseApplication(
             XmlUtils::SkipCurrentTag(parser);
 
         } else if (tagName.Equals("uses-library")) {
-            // Int32 size = ArraySize(R::styleable::AndroidManifestUsesLibrary);
-            // AutoPtr<ArrayOf<Int32> > layout = ArrayOf<Int32>::Alloc(size);
-            // layout->Copy(R::styleable::AndroidManifestUsesLibrary, size);
+            Int32 size = ArraySize(R::styleable::AndroidManifestUsesLibrary);
+            AutoPtr<ArrayOf<Int32> > layout = ArrayOf<Int32>::Alloc(size);
+            layout->Copy(R::styleable::AndroidManifestUsesLibrary, size);
 
             AutoPtr<ITypedArray> sa;
-            // FAIL_RETURN(res->ObtainAttributes(attrs, layout, (ITypedArray**)&sa));
+            FAIL_RETURN(res->ObtainAttributes(attrs, layout, (ITypedArray**)&sa));
 
             // Note: don't allow this value to be a reference to a resource
             // that may change.
@@ -4956,30 +4965,31 @@ AutoPtr<PackageParser::Activity> PackageParser::ParseActivity(
             if (intent->CountActions() == 0) {
                 String des;
                 parser->GetPositionDescription(&des);
-                // Slogger::W(TAG, StringBuffer("No actions in intent filter at ")
-                //         + mArchiveSourcePath + " " + des);
+                Slogger::W(TAG, "No actions in intent filter at %s %s",
+                    mArchiveSourcePath.string(), des.string());
             }
             else {
                 a->mIntents.PushBack(intent);
             }
         }
         else if (!receiver && name.Equals("preferred")) {
-                AutoPtr<ActivityIntentInfo> intent = new ActivityIntentInfo(a);
-                if (!ParseIntent(res, parser, attrs, FALSE, intent, outError)) {
-                    return NULL;
-                }
-                if (intent->CountActions() == 0) {
-                    // Slogger::W(TAG, "No actions in preferred at "
-                    //         + mArchiveSourcePath + " "
-                    //         + parser.getPositionDescription());
-                }
-                else {
-                    if (owner->mPreferredActivityFilters == NULL) {
-                        owner->mPreferredActivityFilters = new List<AutoPtr<ActivityIntentInfo> >();
-                    }
-                    owner->mPreferredActivityFilters->PushBack(intent);
-                }
+            AutoPtr<ActivityIntentInfo> intent = new ActivityIntentInfo(a);
+            if (!ParseIntent(res, parser, attrs, FALSE, intent, outError)) {
+                return NULL;
             }
+            if (intent->CountActions() == 0) {
+                String des;
+                parser->GetPositionDescription(&des);
+                Slogger::W(TAG, "No actions in preferred at %s %s",
+                    mArchiveSourcePath.string(), des.string());
+            }
+            else {
+                if (owner->mPreferredActivityFilters == NULL) {
+                    owner->mPreferredActivityFilters = new List<AutoPtr<ActivityIntentInfo> >();
+                }
+                owner->mPreferredActivityFilters->PushBack(intent);
+            }
+        }
         else if (name.Equals("meta-data")) {
             if ((a->mMetaData = ParseMetaData(res, parser, attrs, a->mMetaData,
                     outError)) == NULL) {
@@ -4988,20 +4998,21 @@ AutoPtr<PackageParser::Activity> PackageParser::ParseActivity(
         }
         else {
             if (!RIGID_PARSER) {
-                // Slogger::W(TAG, StringBuffer("Problem in package ") + mArchiveSourcePath + ":");
+                Slogger::W(TAG, "Problem in package %s:", mArchiveSourcePath.string());
                 String des;
                 parser->GetPositionDescription(&des);
                 if (receiver) {
-                    // Slogger::W(TAG, StringBuffer("Unknown element under <receiver>: ") + name
-                    //     + " at " + mArchiveSourcePath + " " + des);
+                    Slogger::W(TAG, "Unknown element under <receiver>: %s at %s %s",
+                        name.string(), mArchiveSourcePath.string(), des.string());
                 }
                 else {
-                    // Slogger::W(TAG, StringBuffer("Unknown element under <activity>: ") + name
-                    //         + " at " + mArchiveSourcePath + " " + des);
+                    Slogger::W(TAG, "Unknown element under <activity>: %s at %s %s",
+                        name.string(), mArchiveSourcePath.string(), des.string());
                 }
                 XmlUtils::SkipCurrentTag(parser);
                 continue;
-            } else {
+            }
+            else {
                 if (receiver) {
                     // (*outError)[0] = (const char*)(StringBuffer("Bad element under <receiver>: ") + name);
                 }
@@ -6068,6 +6079,10 @@ Boolean PackageParser::ParseIntent(
 
     AutoPtr<ITypedArray> sa;
     res->ObtainAttributes(attrs, layout, (ITypedArray**)&sa);
+    if (sa == NULL) {
+        Logger::E(TAG, "=== error: FAILED to ParseIntent in %s", mArchiveSourcePath.string());
+        return FALSE;
+    }
 
     Int32 priority = 0;
     sa->GetInt32(
@@ -6226,8 +6241,8 @@ Boolean PackageParser::ParseIntent(
             String des;
             parser->GetName(&name);
             parser->GetPositionDescription(&des);
-            // Slogger::W(TAG, StringBuffer("Unknown element under <intent-filter>: ")
-            //         + name + " at " + (String)mArchiveSourcePath + " " + des);
+            Slogger::W(TAG, "Unknown element under <intent-filter>: %s at %s %s",
+                name.string(), mArchiveSourcePath.string(), des.string());
             XmlUtils::SkipCurrentTag(parser);
         }
         else {
@@ -6575,28 +6590,33 @@ void PackageParser::SetCompatibilityModeEnabled(
 
 ECode PackageParser::ReadFullyIgnoringContents(
     /* [in] */ IInputStream* in,
-    /* [in] */ ArrayOf<Byte>* buffer,
     /* [out] */ Int64* result)
 {
     VALIDATE_NOT_NULL(result)
     *result = 0;
 
-    assert(buffer && buffer->GetLength() >= 4096);
-    // byte[] buffer = sBuffer.getAndSet(NULL);
-    // if (buffer == NULL) {
-    //     buffer = new byte[4096];
-    // }
+    AutoPtr<BufferWrapper> wrapper;
+
+    AutoPtr<IInterface> obj;
+    sBuffer->GetAndSet(NULL, (IInterface**)&obj);
+    if (obj == NULL) {
+        wrapper = new BufferWrapper();
+        wrapper->mBuffer = ArrayOf<Byte>::Alloc(4096);
+    }
+    else {
+        wrapper = (BufferWrapper*)IObject::Probe(obj);
+    }
 
     Int32 n = 0;
     Int32 count = 0;
-    FAIL_RETURN(in->Read(buffer, 0, buffer->GetLength(), &n))
+    FAIL_RETURN(in->Read(wrapper->mBuffer, 0, wrapper->mBuffer->GetLength(), &n))
     while (n != -1) {
         count += n;
 
-        FAIL_RETURN(in->Read(buffer, 0, buffer->GetLength(), &n))
+        FAIL_RETURN(in->Read(wrapper->mBuffer, 0, wrapper->mBuffer->GetLength(), &n))
     }
 
-    // sBuffer.set(buffer);
+    sBuffer->Set(TO_IINTERFACE(wrapper));
     *result = count;
     return NOERROR;
 }
