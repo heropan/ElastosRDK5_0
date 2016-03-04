@@ -483,7 +483,7 @@ ECode KeySetManagerService::RemoveAppKeySetDataLPw(
     CArraySet::New((IArraySet**)&deletableKeys);
     AutoPtr<IArraySet> knownKeys;
     AutoPtr<IIterator> it;
-    ISet::Probe(deletableKeySets)->GetIterator((IIterator**)&it);
+    deletableKeySets->GetIterator((IIterator**)&it);
     Boolean hasNext;
     while (it->HasNext(&hasNext), hasNext) {
         AutoPtr<IInterface> value;

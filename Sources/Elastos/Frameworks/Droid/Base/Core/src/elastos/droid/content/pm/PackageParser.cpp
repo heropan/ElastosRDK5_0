@@ -1785,6 +1785,9 @@ ECode PackageParser::ParseSplitApk(
 ECode PackageParser::CollectManifestDigest(
     /* [in] */ Package* pkg)
 {
+    // Logger::I(TAG, " >>> CollectManifestDigest: TODO wait for signature can be parsered");
+    return TRUE;
+
     pkg->mManifestDigest = NULL;
 
     // TODO: extend to gather digest for split APKs
@@ -1860,6 +1863,9 @@ ECode PackageParser::CollectCertificates(
     /* [in] */ Int32 flags,
     /* [in] */ ArrayOf<Byte>* readBuffer)
 {
+    // Logger::I(TAG, " >>> CollectCertificates: TODO wait for signature can be parsered");
+    return TRUE;
+
     String apkPath;
     apkFile->GetAbsolutePath(&apkPath);
 
@@ -4541,6 +4547,7 @@ Boolean PackageParser::ParsePackageItemInfo(
     /* [in] */ Int32 logoRes,
     /* [in] */ Int32 bannerRes)
 {
+    assert(outInfo != NULL);
     assert(sa != NULL);
     String name;
     sa->GetNonConfigurationString(nameRes, 0, &name);

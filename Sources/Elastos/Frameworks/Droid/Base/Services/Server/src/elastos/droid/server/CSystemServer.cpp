@@ -1053,10 +1053,10 @@ ECode SystemServer::StartOtherServices()
     //     }
     // }
 
-    // // Needed by DevicePolicyManager for initialization
-    // mSystemServiceManager->StartBootPhase(ISystemService::PHASE_LOCK_SETTINGS_READY);
+    // Needed by DevicePolicyManager for initialization
+    mSystemServiceManager->StartBootPhase(ISystemService::PHASE_LOCK_SETTINGS_READY);
 
-    // mSystemServiceManager->StartBootPhase(ISystemService::PHASE_SYSTEM_SERVICES_READY);
+    mSystemServiceManager->StartBootPhase(ISystemService::PHASE_SYSTEM_SERVICES_READY);
 
     ec = wm->SystemReady();
     if (FAILED(ec)) {

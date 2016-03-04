@@ -242,7 +242,7 @@ Boolean SELinuxMMAC::ReadInstallPolicy()
     FlushInstallPolicy();
     sSigSeinfo = sigSeinfo;
     sDefaultSeinfo = defaultSeinfo;
-
+    Slogger::I(TAG, "SELinuxMMAC::ReadInstallPolicy: %s", sDefaultSeinfo.string());
     return TRUE;
 }
 
@@ -398,28 +398,31 @@ Boolean SELinuxMMAC::AssignSeinfoValue(
     /* [in] */ PackageParser::Package* pkg)
 {
     // We just want one of the signatures to match.
-    for (Int32 i = 0; i < pkg->mSignatures->GetLength(); ++i) {
-        AutoPtr<ISignature> s = (*pkg->mSignatures)[i];
-        if (s == NULL)
-            continue;
+    if (pkg->mSignatures != NULL) {
+        for (Int32 i = 0; i < pkg->mSignatures->GetLength(); ++i) {
+            AutoPtr<ISignature> s = (*pkg->mSignatures)[i];
+            if (s == NULL)
+                continue;
 
-        AutoPtr<Policy> policy;
-        HashMap<AutoPtr<ISignature>, AutoPtr<Policy> >::Iterator it = sSigSeinfo.Find(s);
-        if (it != sSigSeinfo.End()) {
-            policy = it->mSecond;
-        }
-        if (policy != NULL) {
-            String seinfo = policy->CheckPolicy(pkg->mPackageName);
-            if (!seinfo.IsNull()) {
-                pkg->mApplicationInfo->SetSeinfo(seinfo);
-                if (DEBUG_POLICY_INSTALL)
-                    Slogger::I(TAG, "package (%s) labeled with seinfo=%s",
-                            pkg->mPackageName.string(), seinfo.string());
+            AutoPtr<Policy> policy;
+            HashMap<AutoPtr<ISignature>, AutoPtr<Policy> >::Iterator it = sSigSeinfo.Find(s);
+            if (it != sSigSeinfo.End()) {
+                policy = it->mSecond;
+            }
+            if (policy != NULL) {
+                String seinfo = policy->CheckPolicy(pkg->mPackageName);
+                if (!seinfo.IsNull()) {
+                    pkg->mApplicationInfo->SetSeinfo(seinfo);
+                    if (DEBUG_POLICY_INSTALL)
+                        Slogger::I(TAG, "package (%s) labeled with seinfo=%s",
+                                pkg->mPackageName.string(), seinfo.string());
 
-                return TRUE;
+                    return TRUE;
+                }
             }
         }
     }
+
 
     // If we have a default seinfo value then great, otherwise
     // we set a null object and that is what we started with.

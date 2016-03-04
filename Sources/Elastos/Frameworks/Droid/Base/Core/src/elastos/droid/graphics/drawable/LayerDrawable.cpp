@@ -84,8 +84,8 @@ LayerDrawable::LayerState::LayerState(
         mChildrenChangingConfigurations = orig->mChildrenChangingConfigurations;
 
         for (Int32 i = 0; i < N; i++) {
-            AutoPtr<ChildDrawable> cd = (*origChildDrawable)[i];
-            (*mChildren)[i] = new ChildDrawable(cd, owner, res);
+            AutoPtr<ChildDrawable> cd = new ChildDrawable((*origChildDrawable)[i], owner, res);
+            mChildren->Set(i, cd);
         }
 
         mHaveOpacity = orig->mHaveOpacity;
@@ -493,7 +493,7 @@ void LayerDrawable::AddLayer(
         st->mChildren = nu;
     }
 
-    (*st->mChildren)[i] = layer;
+    st->mChildren->Set(i, layer);
     st->mNum++;
     st->InvalidateCache();
 }

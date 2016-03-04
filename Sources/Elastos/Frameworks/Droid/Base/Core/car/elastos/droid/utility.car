@@ -99,6 +99,7 @@ module
         interface IArraySet;
         interface ISet;
         interface ICollection;
+        interface Iterable;
     }
 
     singleton class CBase64 {
