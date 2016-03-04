@@ -13,7 +13,7 @@ namespace Elastos {
 namespace Droid {
 namespace Widget {
 
-class AbsSeekBar
+class ECO_PUBLIC AbsSeekBar
     : public ProgressBar
     , public IAbsSeekBar
 {
@@ -341,9 +341,9 @@ private:
      */
     Int32 mKeyProgressIncrement;
     AutoPtr<IObjectAnimator> mPositionAnimator;
-    static const Int32 PROGRESS_ANIMATION_DURATION;
+    ECO_LOCAL static const Int32 PROGRESS_ANIMATION_DURATION;
 
-    static const Int32 NO_ALPHA;
+    ECO_LOCAL static const Int32 NO_ALPHA;
     Float mDisabledAlpha;
 
     Int32 mScaledTouchSlop;

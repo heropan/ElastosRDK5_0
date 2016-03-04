@@ -167,3 +167,7 @@ EXPORT_HEADERS += elastos/droid/widget/ImageView.h
 EXPORT_HEADERS += elastos/droid/widget/ImageButton.h
 EXPORT_HEADERS += elastos/droid/widget/RemoteViews.h
 EXPORT_HEADERS += elastos/droid/widget/TextView.h
+EXPORT_HEADERS += elastos/droid/widget/RelativeLayout.h
+EXPORT_HEADERS += elastos/droid/widget/SeekBar.h
+EXPORT_HEADERS += elastos/droid/widget/AbsSeekBar.h
+EXPORT_HEADERS += elastos/droid/widget/ProgressBar.h

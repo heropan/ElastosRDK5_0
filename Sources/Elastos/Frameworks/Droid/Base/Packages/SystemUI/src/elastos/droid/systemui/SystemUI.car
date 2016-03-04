@@ -214,15 +214,6 @@ module
     merge("../../../../car/elastos/droid/recents/RecentsAppWidgetHost.car");
     //merge("../../../../car/elastos/droid/recents/RecentsConfiguration.car");
 
-    //recents/misc
-    //merge("../../../../car/elastos/droid/recents/misc/Console.car");
-    //merge("../../../../car/elastos/droid/recents/misc/DebugTrigger.car");
-    //merge("../../../../car/elastos/droid/recents/misc/DozeTrigger.car");
-    //merge("../../../../car/elastos/droid/recents/misc/NamedCounter.car");
-    //merge("../../../../car/elastos/droid/recents/misc/ReferenceCountedTrigger.car");
-    //merge("../../../../car/elastos/droid/recents/misc/SystemServicesProxy.car");
-    //merge("../../../../car/elastos/droid/recents/misc/Utilities.car");
-
     //recents/model
     merge("../../../../car/elastos/droid/recents/model/BitmapLruCache.car");
     merge("../../../../car/elastos/droid/recents/model/DrawableLruCache.car");
@@ -249,17 +240,9 @@ module
     merge("../../../../car/elastos/droid/recents/views/TaskViewThumbnail.car");
     merge("../../../../car/elastos/droid/recents/views/ViewPool.car");
 
-    //screenshot
-    merge("../../../../car/elastos/droid/screenshot/GlobalScreenshot.car");
-    merge("../../../../car/elastos/droid/screenshot/TakeScreenshotService.car");
-
     //settings
     merge("../../../../car/elastos/droid/settings/BrightnessController.car");
-    merge("../../../../car/elastos/droid/settings/BrightnessDialog.car");
-    merge("../../../../car/elastos/droid/settings/CurrentUserTracker.car");
-    merge("../../../../car/elastos/droid/settings/ToggleSeekBar.car");
     merge("../../../../car/elastos/droid/settings/ToggleSlider.car");
-
 
     using interface Elastos.Droid.App.IApplication;
     using interface Elastos.Droid.App.IAlertDialog;
@@ -980,6 +963,23 @@ module
 
     } // namespace Views
     } // namespace Recents
+
+    //===========================================================================
+    //                              Screenshot
+    //===========================================================================
+    namespace Screenshot {
+
+        class CTakeScreenshotService {
+            constructor();
+
+            interface IService;
+            interface IComponentCallbacks;
+            interface IComponentCallbacks2;
+            interface IContextWrapper;
+            interface IContext;
+        }
+
+    } // namespace Screenshot
 
     //===========================================================================
     //                              StatusBar
