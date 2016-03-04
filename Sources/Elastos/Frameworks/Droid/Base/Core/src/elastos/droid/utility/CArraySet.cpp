@@ -101,7 +101,7 @@ void CArraySet::InnerMapCollections::ColClear()
 //======================================================================
 //
 //======================================================================
-CAR_INTERFACE_IMPL_3(CArraySet, Object, IArraySet, ISet, ICollection)
+CAR_INTERFACE_IMPL_4(CArraySet, Object, IArraySet, ISet, ICollection, IIterable)
 
 CAR_OBJECT_IMPL(CArraySet)
 

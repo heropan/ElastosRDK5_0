@@ -49,14 +49,14 @@ ECode CLayerRasterizer::AddLayer(
     /* [in] */ Float dx,
     /* [in] */ Float dy)
 {
-    NativeAddLayer(mNativeInstance, ((Paint*)(IPaint*)paint->Probe(EIID_Paint))->mNativePaint, dx, dy);
+    NativeAddLayer(mNativeInstance, ((Paint*)paint)->mNativePaint, dx, dy);
     return NOERROR;
 }
 
 ECode CLayerRasterizer::AddLayer(
     /* [in] */ IPaint* paint)
 {
-    NativeAddLayer(mNativeInstance, ((Paint*)(IPaint*)paint->Probe(EIID_Paint))->mNativePaint, 0, 0);
+    NativeAddLayer(mNativeInstance, ((Paint*)paint)->mNativePaint, 0, 0);
     return NOERROR;
 }
 
