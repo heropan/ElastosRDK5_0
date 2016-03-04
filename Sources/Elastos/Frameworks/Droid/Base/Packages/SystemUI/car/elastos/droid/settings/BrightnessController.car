@@ -15,7 +15,6 @@ module
      * @Involve
      * interface IToggleSliderListener
      */
-    ////
     interface IBrightnessController {
 
         AddStateChangedCallback(

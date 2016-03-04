@@ -10,20 +10,20 @@ namespace Droid {
 namespace SystemUI {
 namespace Settings {
 
-ToggleSeekBar(
+ToggleSeekBar::ToggleSeekBar(
     /* [in] */ IContext* context)
 {
     SeekBar::constructor(context);
 }
 
-ToggleSeekBar(
+ToggleSeekBar::ToggleSeekBar(
     /* [in] */ IContext* context,
     /* [in] */ IAttributeSet* attrs)
 {
     SeekBar::constructor(context, attrs);
 }
 
-ToggleSeekBar(
+ToggleSeekBar::ToggleSeekBar(
     /* [in] */ IContext* context,
     /* [in] */ IAttributeSet* attrs,
     /* [in] */ Int32 defStyleAttr)
@@ -31,8 +31,7 @@ ToggleSeekBar(
     SeekBar::constructor(context, attrs, defStyleAttr);
 }
 
-// @Override
-CARAPI OnTouchEvent(
+ECode ToggleSeekBar::OnTouchEvent(
     /* [in] */ IMotionEvent* event,
     /* [out] */ Boolean* result)
 {
