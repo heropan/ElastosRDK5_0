@@ -12,6 +12,7 @@ module
      * Service that allows the interaction with an authentication server.
      * @hide
      */
+    [deprecated]
     interface IAccountAuthenticator {
         /**
          * prompts the user for account information and adds the result to the IAccountManager
@@ -20,7 +21,7 @@ module
             [in] IIAccountAuthenticatorResponse* response,
             [in] String accountType,
             [in] String authTokenType,
-            [in] ArrayOf<String> requiredFeatures,
+            [in] ArrayOf<String>* requiredFeatures,
             [in] IBundle* options);
 
         /**
@@ -70,7 +71,7 @@ module
         HasFeatures(
             [in] IIAccountAuthenticatorResponse* response,
             [in] IAccount* account,
-            [in] ArrayOf<String> features);
+            [in] ArrayOf<String>* features);
 
         /**
          * Gets whether or not the account is allowed to be removed.

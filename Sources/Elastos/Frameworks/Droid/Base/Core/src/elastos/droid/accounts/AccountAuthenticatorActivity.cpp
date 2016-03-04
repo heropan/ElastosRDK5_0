@@ -1,14 +1,18 @@
 
+#include "Elastos.Droid.Os.h"
 #include "elastos/droid/accounts/AccountAuthenticatorActivity.h"
 
 namespace Elastos {
 namespace Droid {
 namespace Accounts {
 
-void AccountAuthenticatorActivity::SetAccountAuthenticatorResult(
+CAR_INTERFACE_IMPL(AccountAuthenticatorActivity, Activity, IAccountAuthenticatorActivity)
+
+ECode AccountAuthenticatorActivity::SetAccountAuthenticatorResult(
     /* [in] */ IBundle* result)
 {
     mResultBundle = result;
+    return NOERROR;
 }
 
 ECode AccountAuthenticatorActivity::OnCreate(

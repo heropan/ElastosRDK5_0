@@ -6,6 +6,7 @@
 
 
 DIRS += accessibilityservice
+DIRS += accounts
 DIRS += app
 DIRS += appwidget
 DIRS += animation

@@ -23,6 +23,7 @@ SOURCES += frameworkext.cpp
 SOURCES += Elastos.CoreLibrary.cpp
 
 ELASTOS_LIBS += accessibilityservice/accessibilityservice.lib
+ELASTOS_LIBS += accounts/accounts.lib
 ELASTOS_LIBS += animation/animation.lib
 ELASTOS_LIBS += app/app.lib
 ELASTOS_LIBS += appwidget/appwidget.lib
