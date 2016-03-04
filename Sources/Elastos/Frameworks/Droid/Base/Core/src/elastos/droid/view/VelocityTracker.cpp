@@ -190,23 +190,19 @@ ECode VelocityTracker::Recycle()
 
 VelocityTracker::VelocityTracker(
     /* [in] */ const String& strategy)
-//   : mPtr(NativeInitialize(strategy))     // Zhangyu JNI TODO
-{
-    mStrategy = strategy;
-}
+    : mPtr(NativeInitialize(strategy))
+    , mStrategy(strategy)
+{}
 
 VelocityTracker::~VelocityTracker()
 {
-    // Zhangyu JNI TODO
-    // if (mPtr != NULL) {
-    //     mPtr = NULL;
-    // }
+    mPtr = NULL;
+
 }
 
 ECode VelocityTracker::Clear()
 {
-    // Zhangyu JNI TODO
-//    NativeClear(mPtr);
+    NativeClear(mPtr);
     return NOERROR;
 }
 
@@ -216,8 +212,7 @@ ECode VelocityTracker::AddMovement(
     if(ev == NULL) {
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
-    // Zhangyu JNI TODO
-//    NativeAddMovement(mPtr, ev);
+    NativeAddMovement(mPtr, ev);
     return NOERROR;
 }
 
@@ -231,8 +226,7 @@ ECode VelocityTracker::ComputeCurrentVelocity(
     /* [in] */ Int32 units,
     /* [in] */ Float maxVelocity)
 {
-    // Zhangyu JNI TODO
-//    NativeComputeCurrentVelocity(mPtr, units, maxVelocity);
+    NativeComputeCurrentVelocity(mPtr, units, maxVelocity);
     return NOERROR;
 }
 
@@ -241,8 +235,7 @@ ECode VelocityTracker::GetXVelocity(
 {
     VALIDATE_NOT_NULL(x);
 
-// Zhangyu JNI TODO
-//    *x = NativeGetXVelocity(mPtr, ACTIVE_POINTER_ID);
+    *x = NativeGetXVelocity(mPtr, ACTIVE_POINTER_ID);
     return NOERROR;
 }
 
@@ -251,8 +244,7 @@ ECode VelocityTracker::GetYVelocity(
 {
     VALIDATE_NOT_NULL(y);
 
-// Zhangyu JNI TODO
-//    *y = NativeGetYVelocity(mPtr, ACTIVE_POINTER_ID);
+    *y = NativeGetYVelocity(mPtr, ACTIVE_POINTER_ID);
     return NOERROR;
 }
 
@@ -262,8 +254,7 @@ ECode VelocityTracker::GetXVelocity(
 {
     VALIDATE_NOT_NULL(x);
 
-// Zhangyu JNI TODO
-//    *x = NativeGetXVelocity(mPtr, id);
+    *x = NativeGetXVelocity(mPtr, id);
     return NOERROR;
 }
 
@@ -273,8 +264,7 @@ ECode VelocityTracker::GetYVelocity(
 {
     VALIDATE_NOT_NULL(y);
 
-// Zhangyu JNI TODO
-//    *y = NativeGetYVelocity(mPtr, id);
+    *y = NativeGetYVelocity(mPtr, id);
     return NOERROR;
 }
 
@@ -290,8 +280,7 @@ ECode VelocityTracker::GetEstimator(
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
 
-// Zhangyu JNI TODO
-//    *result = NativeGetEstimator(mPtr, id, outEstimatorObj);
+    *result = NativeGetEstimator(mPtr, id, (Estimator*)outEstimatorObj);
     return NOERROR;
 }
 

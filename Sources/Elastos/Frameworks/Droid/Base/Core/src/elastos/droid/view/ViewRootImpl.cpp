@@ -6450,45 +6450,32 @@ void ViewRootImpl::HandleWindowFocusChanged(
 
         if (hasWindowFocus) {
             EnsureTouchModeLocally(inTouchMode);
-            Logger::D("ViewRootImpl", "TODO no impl, HandleWindowFocusChanged,line:%d ,hwRender:%p", __LINE__,mAttachInfo->mHardwareRenderer.Get());
-            //now because the HardwareRender is not implemented.
-            //so if need the OPENGL initialize function,try the below code
-            //here is bug, you should open the app twice, the first time is black screen
-            //AutoPtr<ISurface> surface;
-            //mHolder->GetSurface((ISurface**)&surface);
-            //Logger::D("ViewRootImpl", "HandleWindowFocusChanged,line:%d ,surface:%p", __LINE__,surface.Get());
-            //CGLES20::InitGL(surface);
-            // Boolean isValid;
-            // if (mAttachInfo->mHardwareRenderer != NULL &&
-            //     (mSurface->IsValid(&isValid), isValid)) {
-            //     mFullRedrawNeeded = TRUE;
-
-            //     CWindowManagerLayoutParams* lp = mWindowAttributes;
-            //     CRect* surfaceInsets = lp != NULL ? lp->mSurfaceInsets : NULL;
-            //     AutoPtr<ISurface> surface;
-            //     mHolder->GetSurface((ISurface**)&surface);
-            //     Boolean res;
-            //     ECode ec = mAttachInfo->mHardwareRenderer->InitializeIfNeeded(
-            //         mWidth, mHeight, surface, &res)
-            //     if (ec == (ECode)E_OUT_OF_RESOURCES_EXCEPTION) {
-            //         Logger::E(TAG, "OutOfResourcesException locking surface");
-
-            //         Boolean outOfMemory;
-            //         mWindowSession->OutOfMemory(mWindow, &outOfMemory);
-            //         if (!outOfMemory) {
-            //             Slogger:W(TAG, "No processes killed for memory; killing self");
-            //             CProcess::KillProcess(Process::MyPid());
-            //         }
-
-            //         // Retry in a bit.
-            //         sendMessageDelayed(obtainMessage(msg.what, msg.arg1, msg.arg2), 500);
-            //         return;
-            //     }
-            //     else if (FAILED(ec))
-            //     {
-            //         return;
-            //     }
-            // }
+            Boolean isValid;
+            if (mAttachInfo->mHardwareRenderer != NULL && (mSurface->IsValid(&isValid), isValid)){
+                mFullRedrawNeeded = TRUE;
+                // try {
+                    AutoPtr<IWindowManagerLayoutParams> lp = mWindowAttributes;
+                    AutoPtr<IRect> surfaceInsets;
+                    if (lp != NULL) {
+                        lp->GetSurfaceInsets((IRect**)&surfaceInsets);
+                    }
+                    Boolean result;
+                    mAttachInfo->mHardwareRenderer->InitializeIfNeeded(
+                            mWidth, mHeight, mSurface, surfaceInsets, &result);
+                // } catch (OutOfResourcesException e) {
+                //     Log.e(TAG, "OutOfResourcesException locking surface", e);
+                //     try {
+                //         if (!mWindowSession.outOfMemory(mWindow)) {
+                //             Slog.w(TAG, "No processes killed for memory; killing self");
+                //             Process.killProcess(Process.myPid());
+                //         }
+                //     } catch (RemoteException ex) {
+                //     }
+                //     // Retry in a bit.
+                //     sendMessageDelayed(obtainMessage(msg.what, msg.arg1, msg.arg2), 500);
+                //     return;
+                // }
+            }
         }
         mLastWasImTarget = CWindowManagerLayoutParams::MayUseInputMethod(
                 WINLAY_PROBE(mWindowAttributes)->mFlags);
