@@ -120,7 +120,7 @@ public:
 
     // @Override
     CARAPI OnInit(
-        /* [in] */ ToggleSlider* control);
+        /* [in] */ IToggleSlider* control);
 
     CARAPI_(void) RegisterCallbacks();
 
@@ -129,7 +129,7 @@ public:
 
     // @Override
     CARAPI OnChanged(
-        /* [in] */ ToggleSlider* view,
+        /* [in] */ IToggleSlider* view,
         /* [in] */ Boolean tracking,
         /* [in] */ Boolean automatic,
         /* [in] */ Int32 value);

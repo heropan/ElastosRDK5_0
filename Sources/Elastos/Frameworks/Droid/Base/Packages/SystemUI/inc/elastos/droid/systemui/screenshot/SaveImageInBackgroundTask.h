@@ -67,7 +67,7 @@ private:
     // and if the ticker text is the same as the previous notification, then it will not show. So
     // for now, we just add and remove a space from the ticker text to trigger the animation when
     // necessary.
-    static Boolean mTickerAddSpace;
+    static Boolean sTickerAddSpace;
 };
 
 } // namespace Screenshot

@@ -226,7 +226,7 @@ Boolean BrightnessController::RemoveStateChangedCallback(
 }
 
 ECode BrightnessController::OnInit(
-    /* [in] */ ToggleSlider* control)
+    /* [in] */ IToggleSlider* control)
 {
     // Do nothing
     return NOERROR;
@@ -263,7 +263,7 @@ void BrightnessController::UnregisterCallbacks()
 }
 
 ECode BrightnessController::OnChanged(
-    /* [in] */ ToggleSlider* view,
+    /* [in] */ IToggleSlider* view,
     /* [in] */ Boolean tracking,
     /* [in] */ Boolean automatic,
     /* [in] */ Int32 value)

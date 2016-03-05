@@ -82,6 +82,7 @@ const String SaveImageInBackgroundTask::TAG("SaveImageInBackgroundTask");
 const String SaveImageInBackgroundTask::SCREENSHOTS_DIR_NAME("Screenshots");
 const String SaveImageInBackgroundTask::SCREENSHOT_FILE_NAME_TEMPLATE("Screenshot_%s.png");
 const String SaveImageInBackgroundTask::SCREENSHOT_SHARE_SUBJECT_TEMPLATE("Screenshot (%s)");
+Boolean SaveImageInBackgroundTask::sTickerAddSpace;
 
 SaveImageInBackgroundTask::SaveImageInBackgroundTask(
     /* [in] */ IContext* context,
@@ -158,7 +159,7 @@ SaveImageInBackgroundTask::SaveImageInBackgroundTask(
     bh->CreateScaledBitmap(preview, iconSize, iconSize, TRUE, (IBitmap**)&croppedIcon);
 
     // Show the intermediate notification
-    mTickerAddSpace = !mTickerAddSpace;
+    sTickerAddSpace = !sTickerAddSpace;
     mNotificationId = nId;
     mNotificationManager = nManager;
     Int64 tm;
@@ -168,7 +169,7 @@ SaveImageInBackgroundTask::SaveImageInBackgroundTask(
     CNotificationBuilder::New(context, (INotificationBuilder**)&mNotificationBuilder);
     String s1;
     r->GetString(R::string::screenshot_saving_ticker, &s1);
-    s1 += mTickerAddSpace ? " " : "";
+    s1 += sTickerAddSpace ? " " : "";
     AutoPtr<ICharSequence> cs;
     CString::New(s1, (ICharSequence**)&cs);
     mNotificationBuilder->SetTicker(cs);
