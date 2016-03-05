@@ -1178,7 +1178,7 @@ ECode CAccountManager::GetAccountsAsUser(
 }
 
 ECode CAccountManager::GetAccountsForPackage(
-    /* [in] */ String packageName,
+    /* [in] */ const String& packageName,
     /* [in] */ Int32 uid,
     /* [out, callee] */ ArrayOf<IAccount*>** accounts)
 {
@@ -1187,8 +1187,8 @@ ECode CAccountManager::GetAccountsForPackage(
 }
 
 ECode CAccountManager::GetAccountsByTypeForPackage(
-    /* [in] */ String type,
-    /* [in] */ String packageName,
+    /* [in] */ const String& type,
+    /* [in] */ const String& packageName,
     /* [out, callee] */ ArrayOf<IAccount*>** accounts)
 {
     VALIDATE_NOT_NULL(accounts);

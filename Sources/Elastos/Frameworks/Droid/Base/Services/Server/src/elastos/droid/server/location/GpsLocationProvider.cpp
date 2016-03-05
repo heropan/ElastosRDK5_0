@@ -1130,7 +1130,7 @@ void GpsLocationProvider::LoadPropertiesFromResource(
 }
 
 Boolean GpsLocationProvider::LoadPropertiesFromFile(
-    /* [in] */ String filename,
+    /* [in] */ const String& filename,
     /* [in] */ IProperties* properties)
 {
 

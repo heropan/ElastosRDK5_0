@@ -51,7 +51,7 @@ public:
 private:
     static CARAPI_(void) ListAppend(
         /* [in] */ StringBuffer buffer,
-        /* [in] */ String str);
+        /* [in] */ const String& str);
 
 public:
     /** True if the call is muted, false otherwise. */

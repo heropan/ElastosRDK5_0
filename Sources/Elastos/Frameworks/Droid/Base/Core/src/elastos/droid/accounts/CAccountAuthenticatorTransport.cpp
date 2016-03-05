@@ -13,7 +13,7 @@ namespace Accounts {
 
 CAR_OBJECT_IMPL(CAccountAuthenticatorTransport)
 
-CAR_INTERFACE_IMPL(CAccountAuthenticatorTransport, Object, IAccountAuthenticator)
+CAR_INTERFACE_IMPL(CAccountAuthenticatorTransport, Object, IIAccountAuthenticator)
 
 ECode CAccountAuthenticatorTransport::AddAccount(
     /* [in] */ IIAccountAuthenticatorResponse* response,

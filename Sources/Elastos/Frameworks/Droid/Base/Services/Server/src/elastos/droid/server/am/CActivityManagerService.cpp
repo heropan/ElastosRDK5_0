@@ -9069,7 +9069,7 @@ AutoPtr<UriPermission> CActivityManagerService::FindUriPermissionLocked(
 }
 
 AutoPtr<UriPermission> CActivityManagerService::FindOrCreateUriPermissionLocked(
-    /* [in] */ String sourcePkg,
+    /* [in] */ const String& sourcePkg,
     /* [in] */ const String& targetPkg,
     /* [in] */ Int32 targetUid,
     /* [in] */ GrantUri* grantUri)

@@ -5,8 +5,10 @@
 #include "_Elastos_Droid_Accounts_CAccountManager.h"
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/content/BroadcastReceiver.h"
-#include <elastos/core/Object.h>
 #include <elastos/utility/concurrent/FutureTask.h>
+#include <elastos/core/Object.h>
+#include "Elastos.CoreLibrary.Utility.h"
+#include "Elastos.Droid.Os.h"
 
 using Elastos::Droid::App::IActivity;
 using Elastos::Droid::Content::IContext;
@@ -713,7 +715,7 @@ public:
      * @return the accounts that are available to this package and user.
      */
     CARAPI GetAccountsForPackage(
-        /* [in] */ String packageName,
+        /* [in] */ const String& packageName,
         /* [in] */ Int32 uid,
         /* [out, callee] */ ArrayOf<IAccount*>** accounts);
 
@@ -726,8 +728,8 @@ public:
      *     (never null) if no accounts of the specified type have been added.
      */
     CARAPI GetAccountsByTypeForPackage(
-        /* [in] */ String type,
-        /* [in] */ String packageName,
+        /* [in] */ const String& type,
+        /* [in] */ const String& packageName,
         /* [out, callee] */ ArrayOf<IAccount*>** accounts);
 
     /**

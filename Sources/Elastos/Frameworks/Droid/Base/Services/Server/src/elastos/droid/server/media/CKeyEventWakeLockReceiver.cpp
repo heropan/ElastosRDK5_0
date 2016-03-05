@@ -79,7 +79,7 @@ ECode CKeyEventWakeLockReceiver::OnSendFinished(
     /* [in] */ IPendingIntent* pendingIntent,
     /* [in] */ IIntent* intent,
     /* [in] */ Int32 resultCode,
-    /* [in] */ String resultData,
+    /* [in] */ const String& resultData,
     /* [in] */ IBundle* resultExtras)
 {
     OnReceiveResult(resultCode, NULL);

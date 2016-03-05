@@ -1582,7 +1582,7 @@ ECode PackageParser::ParseBaseApk(
     sParseError = IPackageManager::INSTALL_SUCCEEDED;
     mArchiveSourcePath = apkPath;
 
-    if (DEBUG_JAR) Slogger::D(TAG, "Scanning base APK: %s", apkPath.string());
+    if (DEBUG_JAR) Slogger::D(TAG, "========= Scanning base APK: %s", apkPath.string());
 
     Int32 cookie;
     FAIL_RETURN(LoadApkIntoAssetManager(assets, apkPath, flags, &cookie))
@@ -1864,7 +1864,7 @@ ECode PackageParser::CollectCertificates(
 
     endTime = SystemClock::GetUptimeMillis();
     cost = endTime - startTime;
-    Slogger::D(TAG, "  == Elastos CollectCertificates %s cost: %lld ms", pkg->mPackageName.string(), cost);
+    Slogger::D(TAG, " >> Elastos CollectCertificates %s cost: %lld ms", pkg->mPackageName.string(), cost);
     return NOERROR;
 }
 
@@ -4943,6 +4943,8 @@ AutoPtr<PackageParser::Activity> PackageParser::ParseActivity(
         return NULL;
     }
 
+    String dinfo = Object::ToString(a->mInfo);
+    Logger::D(TAG, " >>>>>>> parse activity %s in %s", dinfo.string(), mArchiveSourcePath.string());
     Int32 outerDepth;
     parser->GetDepth(&outerDepth);
 
@@ -4958,6 +4960,9 @@ AutoPtr<PackageParser::Activity> PackageParser::ParseActivity(
         String name;
         parser->GetName(&name);
         if (name.Equals("intent-filter")) {
+            String des;
+            parser->GetPositionDescription(&des);
+            Slogger::W(TAG, " >> parse intent filter at %s", des.string());
             AutoPtr<ActivityIntentInfo> intent = new ActivityIntentInfo(a);
             if (!ParseIntent(res, parser, attrs, TRUE, intent, outError)) {
                 return NULL;
@@ -6073,6 +6078,7 @@ Boolean PackageParser::ParseIntent(
     /* [in] */ IntentInfo* outInfo,
     /* [in] */ ArrayOf<String>* outError)
 {
+    Logger::I(TAG, "=== ParseIntent in %s", mArchiveSourcePath.string());
     Int32 size = ArraySize(R::styleable::AndroidManifestIntentFilter);
     AutoPtr<ArrayOf<Int32> > layout = ArrayOf<Int32>::Alloc(size);
     layout->Copy(R::styleable::AndroidManifestIntentFilter, size);
@@ -6081,7 +6087,7 @@ Boolean PackageParser::ParseIntent(
     res->ObtainAttributes(attrs, layout, (ITypedArray**)&sa);
     if (sa == NULL) {
         Logger::E(TAG, "=== error: FAILED to ParseIntent in %s", mArchiveSourcePath.string());
-        return FALSE;
+        // return FALSE;
     }
 
     Int32 priority = 0;

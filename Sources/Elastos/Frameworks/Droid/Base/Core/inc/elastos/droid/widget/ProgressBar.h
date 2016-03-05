@@ -6,6 +6,7 @@
 #include "elastos/droid/os/Runnable.h"
 #include "elastos/droid/view/View.h"
 #include "elastos/droid/utility/Pools.h"
+#include "Elastos.Droid.Widget.h"
 
 using Elastos::Droid::R;
 using Elastos::Droid::Graphics::Drawable::Shapes::IShape;

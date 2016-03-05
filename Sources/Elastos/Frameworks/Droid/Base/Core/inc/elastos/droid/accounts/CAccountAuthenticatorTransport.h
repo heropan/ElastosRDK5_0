@@ -16,7 +16,7 @@ class AbstractAccountAuthenticator;
 
 CarClass(CAccountAuthenticatorTransport)
     , public Object
-    , public IAccountAuthenticator
+    , public IIAccountAuthenticator
 {
 public:
     CAR_OBJECT_DECL()

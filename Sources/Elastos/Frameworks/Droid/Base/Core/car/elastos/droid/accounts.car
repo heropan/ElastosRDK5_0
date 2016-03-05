@@ -133,7 +133,7 @@ module
         constructor(
             [in] Handle32 host);
 
-        interface IAccountAuthenticator;
+        interface IIAccountAuthenticator;
     }
 
     class CAccountAndUser {

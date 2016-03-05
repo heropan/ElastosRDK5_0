@@ -80,7 +80,7 @@ String AudioState::AudioRouteToString(
 
 void AudioState::ListAppend(
     /* [in] */ StringBuffer buffer,
-    /* [in] */ String str)
+    /* [in] */ const String& str)
 {
 }
 

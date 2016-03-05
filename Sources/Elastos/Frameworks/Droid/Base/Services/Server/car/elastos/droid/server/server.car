@@ -692,7 +692,7 @@ module
 //     /**
 //      * A system service that provides  account, password, and authtoken management for all
 //      * accounts on the device. Some of these calls are implemented with the help of the corresponding
-//      * {@link IAccountAuthenticator} services. This service is not accessed by users directly,
+//      * {@link IIAccountAuthenticator} services. This service is not accessed by users directly,
 //      * instead one uses an instance of {@link AccountManager}, which can be accessed as follows:
 //      *    AccountManager accountManager =
 //      *      (AccountManager)context.getSystemService(Context.ACCOUNT_SERVICE)
