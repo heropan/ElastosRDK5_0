@@ -321,6 +321,8 @@
   Elastos/Frameworks/Droid/Base/Services/Server/src/elastos/droid/server/hdmi
 > Elastos/Frameworks/Droid/Base/Services/Server/src/elastos/droid/server/lights
 - Elastos/Frameworks/Droid/Base/Services/Server/src/elastos/droid/server/location
+> Elastos/Frameworks/Droid/Base/Services/Server/src/elastos/droid/server/media/projection
+> Elastos/Frameworks/Droid/Base/Services/Server/src/elastos/droid/server/media
 > Elastos/Frameworks/Droid/Base/Services/Server/src/elastos/droid/server/net
 > Elastos/Frameworks/Droid/Base/Services/Server/src/elastos/droid/server/notification
 > Elastos/Frameworks/Droid/Base/Services/Server/src/elastos/droid/server/os

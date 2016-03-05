@@ -8,6 +8,7 @@
 #include "elastos/droid/server/media/MediaSessionRecord.h"
 #include "elastos/droid/database/ContentObserver.h"
 #include "elastos/droid/os/Handler.h"
+#include "elastos/droid/server/SystemService.h"
 #include <elastos/core/AutoLock.h>
 #include <elastos/utility/etl/List.h>
 #include <elastos/utility/etl/HashMap.h>
@@ -24,6 +25,7 @@ using Elastos::Droid::Media::Session::IIActiveSessionsListener;
 using Elastos::Droid::Net::IUri;
 using Elastos::Droid::Os::IPowerManagerWakeLock;
 using Elastos::Droid::Os::Handler;
+using Elastos::Droid::Server::SystemService;
 using Elastos::Droid::Server::IWatchdogMonitor;
 using Elastos::Utility::Etl::List;
 using Elastos::Utility::Etl::HashMap;
@@ -32,6 +34,8 @@ namespace Elastos {
 namespace Droid {
 namespace Server {
 namespace Media {
+
+class CKeyEventWakeLockReceiver;
 
 /**
  * System implementation of MediaSessionManager
@@ -50,7 +54,7 @@ public:
     public:
         UserRecord(
             /* [in] */ IContext* context,
-            /* [in] */ Int32erId,
+            /* [in] */ Int32 userId,
             /* [in] */ MediaSessionService* host)
             : mUserId(userId)
             , mHost(host)
@@ -77,6 +81,9 @@ public:
         List<AutoPtr<MediaSessionRecord> > mSessions;
         AutoPtr<IPendingIntent> mLastMediaButtonReceiver;
         MediaSessionService* mHost;
+
+        friend class MediaSessionService;
+        friend class CSessionManagerImpl;
     };
 
     class SessionsListenerRecord
@@ -111,6 +118,9 @@ public:
         Int32 mPid;
         Int32 mUid;
         MediaSessionService* mHost;
+
+        friend class MediaSessionService;
+        friend class CSessionManagerImpl;
     };
 
     class SettingsObserver : public ContentObserver
@@ -153,6 +163,8 @@ public:
     private:
         static const Int32 MSG_SESSIONS_CHANGED = 1;
         MediaSessionService* mHost;
+
+        friend class MediaSessionService;
     };
 
 public:
@@ -196,7 +208,6 @@ public:
     CARAPI_(void) DestroySession(
         /* [in] */ MediaSessionRecord* session);
 
-protected:
     CARAPI EnforcePhoneStatePermission(
         /* [in] */ Int32 pid,
         /* [in] */ Int32 uid);
@@ -343,6 +354,7 @@ private:
     friend class SessionsListenerRecord;
     friend class SettingsObserver;
     friend class HandleMessage;
+    friend class CKeyEventWakeLockReceiver;
 };
 
 } // namespace Media

@@ -1,4 +1,5 @@
 
+#include <Elastos.Droid.Speech.h>
 #include "elastos/droid/server/media/CSessionManagerImpl.h"
 #include "elastos/droid/os/Binder.h"
 #include <elastos/droid/os/UserHandle.h>
@@ -6,13 +7,19 @@
 
 using Elastos::Droid::App::CActivityManagerHelper;
 using Elastos::Droid::App::IActivityManagerHelper;
+using Elastos::Droid::App::IActivity;
 using Elastos::Droid::Content::IComponentName;
 using Elastos::Droid::Content::IIntent;
 using Elastos::Droid::Content::CIntent;
-using Elastos::Droid::Media::IAudioSystemHelper;
-using Elastos::Droid::Media::CAudioSystemHelper;
+using Elastos::Droid::Media::IAudioSystem;
+using Elastos::Droid::Media::CAudioSystem;
+using Elastos::Droid::Media::Session::EIID_IISessionManager;
+using Elastos::Droid::Media::Session::IMediaControllerPlaybackInfo;
+using Elastos::Droid::Media::Session::IMediaSession;
 using Elastos::Droid::Os::Binder;
 using Elastos::Droid::Os::UserHandle;
+using Elastos::Droid::Os::EIID_IBinder;
+using Elastos::Droid::Os::IPowerManager;
 using Elastos::Droid::Speech::IRecognizerIntent;
 using Elastos::Droid::View::CKeyEventHelper;
 using Elastos::Droid::View::IKeyEventHelper;
@@ -40,7 +47,7 @@ ECode CSessionManagerImpl::KeyEventDone::OnReceive(
     if (extras == NULL) {
         return NOERROR;
     }
-    Autolock lock(mLock);
+    AutoLock lock(mHost->mLock);
     Boolean containsKey, isHeld;
     if ((extras->ContainsKey(EXTRA_WAKELOCK_ACQUIRED, &containsKey), containsKey)
             && (mHost->mMediaEventWakeLock->IsHeld(&isHeld), isHeld)) {
@@ -59,9 +66,9 @@ const Int32 CSessionManagerImpl::WAKELOCK_RELEASE_ON_FINISHED; // magic number
 
 CSessionManagerImpl::CSessionManagerImpl()
     : mVoiceButtonDown(FALSE)
-    : mVoiceButtonHandled(FALSE)
+    , mVoiceButtonHandled(FALSE)
 {
-    CKeyEventWakeLockReceiver::NewByFriend(mHost->mHandler, mHost, (CKeyEventWakeLockReceiver**)&mKeyEventReceiver);
+    CKeyEventWakeLockReceiver::NewByFriend(mHost->mHandler, (Handle64)mHost, (CKeyEventWakeLockReceiver**)&mKeyEventReceiver);
     mKeyEventDone = new KeyEventDone(mHost);
 }
 
@@ -117,7 +124,7 @@ ECode CSessionManagerImpl::CreateSession(
 }
 
 ECode CSessionManagerImpl::GetSessions(
-    /* [in] */ IComponentName* compName,
+    /* [in] */ IComponentName* componentName,
     /* [in] */ Int32 userId,
     /* [out] */ IList** result)
 {
@@ -130,14 +137,14 @@ ECode CSessionManagerImpl::GetSessions(
 
     // try {
     Int32 resolvedUserId;
-    ECode ec = mHost->VerifySessionsRequest(componentName, userId, pid, uid, &resolvedUserId);
+    ECode ec = VerifySessionsRequest(componentName, userId, pid, uid, &resolvedUserId);
     if (FAILED(ec)) {
         Binder::RestoreCallingIdentity(token);
         return ec;
     }
     AutoPtr<IList> binders;
     CArrayList::New((IList**)&binders);
-    Autolock lock(mHost->mLock);
+    AutoLock lock(mHost->mLock);
     AutoPtr<List<AutoPtr<MediaSessionRecord> > > records = mHost->mPriorityStack->GetActiveSessions(resolvedUserId);
     List<AutoPtr<MediaSessionRecord> >::Iterator it = records->Begin();
     for (; it != records->End(); ++it) {
@@ -155,7 +162,7 @@ ECode CSessionManagerImpl::GetSessions(
 
 ECode CSessionManagerImpl::AddSessionsListener(
     /* [in] */ IIActiveSessionsListener* listener,
-    /* [in] */ IComponentName* compName,
+    /* [in] */ IComponentName* componentName,
     /* [in] */ Int32 userId)
 {
     Int32 pid = Binder::GetCallingPid();
@@ -164,23 +171,23 @@ ECode CSessionManagerImpl::AddSessionsListener(
 
     // try {
     Int32 resolvedUserId;
-    ECode ec = mHost->VerifySessionsRequest(componentName, userId, pid, uid, &resolvedUserId);
+    ECode ec = VerifySessionsRequest(componentName, userId, pid, uid, &resolvedUserId);
     if (FAILED(ec)) {
         Binder::RestoreCallingIdentity(token);
         return NOERROR;
     }
-    Autolock lock(mLock);
-    List<AutoPtr<SessionsListenerRecord> >::Iterator it = mHost->FindIndexOfSessionsListenerLocked(listener);
+    AutoLock lock(mHost->mLock);
+    List<AutoPtr<MediaSessionService::SessionsListenerRecord> >::Iterator it = mHost->FindIndexOfSessionsListenerLocked(listener);
     if (it != mHost->mSessionsListeners.End()) {
         Slogger::W(MediaSessionService::TAG, "ActiveSessionsListener is already added, ignoring");
         return NOERROR;
     }
-    AutoPtr<SessionsListenerRecord> record = new MediaSessionService::SessionsListenerRecord(listener,
+    AutoPtr<MediaSessionService::SessionsListenerRecord> record = new MediaSessionService::SessionsListenerRecord(listener,
             componentName, resolvedUserId, pid, uid, mHost);
     // try {
     AutoPtr<IProxy> proxy = (IProxy*)IBinder::Probe(listener)->Probe(EIID_IProxy);
     if (proxy != NULL) {
-        if (FAILED(proxy->LinkToDeath(((IProxyDeathRecipient*))record.Get(), 0))) {
+        if (FAILED(proxy->LinkToDeath((IProxyDeathRecipient*)record.Get(), 0))) {
             Slogger::E(MediaSessionService::TAG, "ActiveSessionsListener is dead, ignoring it");
             Binder::RestoreCallingIdentity(token);
             return NOERROR;
@@ -201,16 +208,16 @@ ECode CSessionManagerImpl::AddSessionsListener(
 ECode CSessionManagerImpl::RemoveSessionsListener(
     /* [in] */ IIActiveSessionsListener* listener)
 {
-    Autolock lock(mLock);
-    List<AutoPtr<SessionsListenerRecord> >::Iterator it = mHost->FindIndexOfSessionsListenerLocked(listener);
+    AutoLock lock(mHost->mLock);
+    List<AutoPtr<MediaSessionService::SessionsListenerRecord> >::Iterator it = mHost->FindIndexOfSessionsListenerLocked(listener);
     if (it != mHost->mSessionsListeners.End()) {
-        AutoPtr<SessionsListenerRecord> record = *it;
-        mHot->mSessionsListeners.Erase(it);
+        AutoPtr<MediaSessionService::SessionsListenerRecord> record = *it;
+        mHost->mSessionsListeners.Erase(it);
         // try {
         AutoPtr<IProxy> proxy = (IProxy*)IBinder::Probe(record->mListener)->Probe(EIID_IProxy);
         if (proxy != NULL) {
             Boolean result;
-            return proxy->UnLinkToDeath((IProxyDeathRecipient*)record.Get(), 0, &result);
+            return proxy->UnlinkToDeath((IProxyDeathRecipient*)record.Get(), 0, &result);
         }
         // } catch (Exception e) {
         //     // ignore exceptions, the record is being removed
@@ -239,12 +246,10 @@ ECode CSessionManagerImpl::DispatchMediaKeyEvent(
         }
     }
 
-    Int32 pid = Binder->GetCallingPid();
-    Int32 uid = Binder->GetCallingUid();
-    Int64 token = Binder->ClearCallingIdentity();
+    Int64 token = Binder::ClearCallingIdentity();
 
     // try {
-    Autolock lock(mHost->mLock);
+    AutoLock lock(mHost->mLock);
     AutoPtr<MediaSessionRecord> session = mHost->mPriorityStack->GetDefaultMediaButtonSession(mHost->mCurrentUserId);
     Int32 keyCode;
     keyEvent->GetKeyCode(&keyCode);
@@ -266,12 +271,10 @@ ECode CSessionManagerImpl::DispatchAdjustVolume(
     /* [in] */ Int32 delta,
     /* [in] */ Int32 flags)
 {
-    Int32 pid = Binder::GetCallingPid();
-    Int32 uid = Binder::GetCallingUid();
     Int64 token = Binder::ClearCallingIdentity();
     // try {
-    Autolock lock(mHost->mLock);
-    AutoPtr<MediaSessionRecord> session = mHost->mPriorityStack->GetDefaultVolumeSession(mCurrentUserId);
+    AutoLock lock(mHost->mLock);
+    AutoPtr<MediaSessionRecord> session = mHost->mPriorityStack->GetDefaultVolumeSession(mHost->mCurrentUserId);
     ECode ec = DispatchAdjustVolumeLocked(suggestedStream, delta, flags, session);
     // }
     // } finally {
@@ -293,7 +296,7 @@ ECode CSessionManagerImpl::SetRemoteVolumeController(
         Binder::RestoreCallingIdentity(token);
         return ec;
     }
-    mRvc = rvc;
+    mHost->mRvc = rvc;
     // } finally {
     //     Binder.restoreCallingIdentity(token);
     // }
@@ -322,7 +325,8 @@ ECode CSessionManagerImpl::VerifySessionsRequest(
     if (componentName != NULL) {
         // If they gave us a component name verify they own the
         // package
-        componentName->GetPackageName();
+        String packageName;
+        componentName->GetPackageName(&packageName);
         FAIL_RETURN(mHost->EnforcePackageName(packageName, uid))
     }
     // Check that they can make calls on behalf of the user and
@@ -345,7 +349,7 @@ ECode CSessionManagerImpl::DispatchAdjustVolumeLocked(
     /* [in] */ Int32 flags,
     /* [in] */ MediaSessionRecord* session)
 {
-    if (DEBUG) {
+    if (MediaSessionService::DEBUG) {
         String description(NULL);
         if (session != NULL) {
             session->ToString(&description);
@@ -355,12 +359,12 @@ ECode CSessionManagerImpl::DispatchAdjustVolumeLocked(
 
     }
     if (session == NULL) {
-        if (flags & IAudioManager::FLAG_ACTIVE_MEDIA_ONLY) != 0) {
-            AutoPtr<IAudioSystemHelper> audioSysH;
-            CAudioSystemHelper::AcquireSingleton((IAudioSystemHelper**)&audioSysH);
+        if ((flags & IAudioManager::FLAG_ACTIVE_MEDIA_ONLY) != 0) {
+            AutoPtr<IAudioSystem> audioSys;
+            CAudioSystem::AcquireSingleton((IAudioSystem**)&audioSys);
             Boolean isStreamActive;
-            if (audioSysH->IsStreamActive(IAudioManager::STREAM_MUSIC, 0, &isStreamActive), !isStreamActive) {
-                if (DEBUG) {
+            if (audioSys->IsStreamActive(IAudioManager::STREAM_MUSIC, 0, &isStreamActive), !isStreamActive) {
+                if (MediaSessionService::DEBUG) {
                     Slogger::D(MediaSessionService::TAG, "No active session to adjust, skipping media only volume event");
                 }
                 return NOERROR;
@@ -389,7 +393,7 @@ ECode CSessionManagerImpl::DispatchAdjustVolumeLocked(
         if (session->GetPlaybackType() == IMediaControllerPlaybackInfo::PLAYBACK_TYPE_REMOTE
                 && mHost->mRvc != NULL) {
             // try {
-            ECode ec = mRvc->RemoteVolumeChanged(session->GetControllerBinder(), flags);
+            ECode ec = mHost->mRvc->RemoteVolumeChanged(session->GetControllerBinder(), flags);
             if (FAILED(ec)) {
                 Slogger::E(MediaSessionService::TAG, "Error sending volume change to system UI. 0x%08x", ec);
                 return ec;
@@ -451,7 +455,7 @@ void CSessionManagerImpl::DispatchMediaKeyEventLocked(
     /* [in] */ MediaSessionRecord* session)
 {
     if (session != NULL) {
-        if (DEBUG) {
+        if (MediaSessionService::DEBUG) {
             String str;
             session->ToString(&str);
             Slogger::D(MediaSessionService::TAG, "Sending media key to %s", str.string());
@@ -471,13 +475,13 @@ void CSessionManagerImpl::DispatchMediaKeyEventLocked(
         CActivityManagerHelper::AcquireSingleton((IActivityManagerHelper**)&helper);
         Int32 userId;
         helper->GetCurrentUser(&userId);
-        HashMap<Int32, AutoPtr<UserRecord> >::Iterator it = mHost->mUserRecords.Find(userId);
-        AutoPtr<UserRecord> user;
+        HashMap<Int32, AutoPtr<MediaSessionService::UserRecord> >::Iterator it = mHost->mUserRecords.Find(userId);
+        AutoPtr<MediaSessionService::UserRecord> user;
         if (it != mHost->mUserRecords.End()) {
             user = it->mSecond;
         }
         if (user->mLastMediaButtonReceiver != NULL) {
-            if (DEBUG) {
+            if (MediaSessionService::DEBUG) {
                 Slogger::D(MediaSessionService::TAG, "Sending media key to last known PendingIntent");
             }
             if (needWakeLock) {
@@ -485,7 +489,7 @@ void CSessionManagerImpl::DispatchMediaKeyEventLocked(
             }
             AutoPtr<IIntent> mediaButtonIntent;
             CIntent::New(IIntent::ACTION_MEDIA_BUTTON, (IIntent**)&mediaButtonIntent);
-            mediaButtonIntent->PutExtra(IIntent::EXTRA_KEY_EVENT, keyEvent);
+            mediaButtonIntent->PutExtra(IIntent::EXTRA_KEY_EVENT, IParcelable::Probe(keyEvent));
             // try {
             AutoPtr<IContext> ctx;
             mHost->GetContext((IContext**)&ctx);
@@ -494,7 +498,7 @@ void CSessionManagerImpl::DispatchMediaKeyEventLocked(
                     mediaButtonIntent, (IPendingIntentOnFinished*)mKeyEventReceiver.Get(), NULL);
             if (FAILED(ec)) {
                 Slogger::I(MediaSessionService::TAG, "Error sending key event to media button receiver %p, 0x%08x",
-                        user->mLastMediaButtonReceiver.Get(, ec);
+                        user->mLastMediaButtonReceiver.Get(), ec);
             }
             // } catch (CanceledException e) {
             //     Log.i(TAG, "Error sending key event to media button receiver "
@@ -502,23 +506,23 @@ void CSessionManagerImpl::DispatchMediaKeyEventLocked(
             // }
         }
         else {
-            if (DEBUG) {
+            if (MediaSessionService::DEBUG) {
                 Slogger::D(MediaSessionService::TAG, "Sending media key ordered broadcast");
             }
             if (needWakeLock) {
-                mHost->mMediaEventWakeLock->Acquire();
+                mHost->mMediaEventWakeLock->AcquireLock();
             }
             // Fallback to legacy behavior
             AutoPtr<IIntent> keyIntent;
             CIntent::New(IIntent::ACTION_MEDIA_BUTTON, NULL, (IIntent**)&keyIntent);
-            keyIntent->PutExtra(IIntent::EXTRA_KEY_EVENT, keyEvent);
+            keyIntent->PutExtra(IIntent::EXTRA_KEY_EVENT, IParcelable::Probe(keyEvent));
             if (needWakeLock) {
                 keyIntent->PutExtra(EXTRA_WAKELOCK_ACQUIRED, WAKELOCK_RELEASE_ON_FINISHED);
             }
             AutoPtr<IContext> ctx;
             mHost->GetContext((IContext**)&ctx);
             ctx->SendOrderedBroadcastAsUser(keyIntent, UserHandle::ALL,
-                    String(NULL), mKeyEventDone, mHandler, IActivity::RESULT_OK, String(NULL), NULL);
+                    String(NULL), mKeyEventDone, mHost->mHandler, IActivity::RESULT_OK, String(NULL), NULL);
         }
     }
 }
@@ -538,7 +542,7 @@ void CSessionManagerImpl::StartVoiceInput(
     context->GetSystemService(IContext::POWER_SERVICE, (IInterface**)&service);
     AutoPtr<IPowerManager> pm = IPowerManager::Probe(service);
     Boolean isKeyguardLocked;
-    Boolean isLocked = mHost->mHost->mKeyguardManager != NULL &&
+    Boolean isLocked = mHost->mKeyguardManager != NULL &&
             (mHost->mKeyguardManager->IsKeyguardLocked(&isKeyguardLocked), isKeyguardLocked);
     Boolean isScreenOn;
     if (!isLocked && (pm->IsScreenOn(&isScreenOn), isScreenOn)) {
@@ -549,12 +553,12 @@ void CSessionManagerImpl::StartVoiceInput(
         CIntent::New(IRecognizerIntent::ACTION_VOICE_SEARCH_HANDS_FREE, (IIntent**)&voiceIntent);
         Boolean isKeyguardSecure;
         voiceIntent->PutExtra(IRecognizerIntent::EXTRA_SECURE,
-                isLocked && (mKeyguardManager->IsKeyguardSecure(&isKeyguardSecure), isKeyguardSecure));
+                isLocked && (mHost->mKeyguardManager->IsKeyguardSecure(&isKeyguardSecure), isKeyguardSecure));
         Slogger::I(MediaSessionService::TAG, "voice-based interactions: about to use ACTION_VOICE_SEARCH_HANDS_FREE");
     }
     // start the search activity
     if (needWakeLock) {
-        mHost->mMediaEventWakeLock->Acquire();
+        mHost->mMediaEventWakeLock->AcquireLock();
     }
     // try {
     if (voiceIntent != NULL) {
@@ -564,7 +568,7 @@ void CSessionManagerImpl::StartVoiceInput(
         mHost->GetContext((IContext**)&context);
         ECode ec = context->StartActivityAsUser(voiceIntent, UserHandle::CURRENT);
         if (FAILED(ec)) {
-            Slogger::W(TAG, "No activity for search: 0x%08x", ec);
+            Slogger::W(MediaSessionService::TAG, "No activity for search: 0x%08x", ec);
         }
     }
     // } catch (ActivityNotFoundException e) {
@@ -583,6 +587,13 @@ Boolean CSessionManagerImpl::IsVoiceKey(
     /* [in] */ Int32 keyCode)
 {
     return keyCode == IKeyEvent::KEYCODE_HEADSETHOOK;
+}
+
+ECode CSessionManagerImpl::ToString(
+    /* [out] */ String* str)
+{
+    VALIDATE_NOT_NULL(str)
+    return Object::ToString(str);
 }
 
 } // namespace Media

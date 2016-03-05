@@ -3,11 +3,16 @@
 #define __ELASTOS_DROID_SERVER_MEDIA_PROJECTION_MEDIAPROJECTIONMANAGERSERVICE_H__
 
 #include "elastos/droid/ext/frameworkext.h"
+#define HASH_FOR_OS
+#include "elastos/droid/ext/frameworkhash.h"
 #include <Elastos.CoreLibrary.Utility.h>
 #include <Elastos.Droid.Os.h>
 #include <Elastos.Droid.Server.h>
 #include <Elastos.Droid.Media.h>
+#include <Elastos.Droid.Content.h>
+#include <Elastos.Droid.App.h>
 #include <_Elastos.Droid.Server.h>
+#include "elastos/droid/server/SystemService.h"
 #include "elastos/droid/server/media/projection/CMediaProjection.h"
 #include "elastos/droid/os/Runnable.h"
 #include <elastos/core/AutoLock.h>
@@ -26,6 +31,7 @@ using Elastos::Droid::Os::IBinder;
 using Elastos::Droid::Os::IHandler;
 using Elastos::Droid::Os::Runnable;
 using Elastos::Droid::Server::IWatchdogMonitor;
+using Elastos::Droid::Server::SystemService;
 using Elastos::Utility::Etl::HashMap;
 
 namespace Elastos {
@@ -33,6 +39,8 @@ namespace Droid {
 namespace Server {
 namespace Media {
 namespace Projection {
+
+class CMediaProjectionManager;
 
 /**
  * Manages MediaProjection sessions.
@@ -52,17 +60,20 @@ private:
         , public IProxyDeathRecipient
     {
     public:
-        CAR_INTERFACE_DECL()
-
         AddCallbackDeathRecipient(
+            /* [in] */ IIMediaProjectionWatcherCallback* callback,
             /* [in] */ MediaProjectionManagerService* host)
-            : mHost(host)
+            : mCallback(callback)
+            , mHost(host)
         {}
+
+        CAR_INTERFACE_DECL()
 
         //@Override
         CARAPI ProxyDied();
 
     private:
+        AutoPtr<IIMediaProjectionWatcherCallback> mCallback;
         MediaProjectionManagerService* mHost;
     };
 
@@ -273,6 +284,8 @@ private:
 
     friend class MediaRouterCallback;
     friend class CMediaProjection;
+    friend class CMediaProjectionManager;
+    friend class AddCallbackDeathRecipient;
 };
 
 } // namespace Projection

@@ -1,7 +1,8 @@
 
+#include <Elastos.Droid.Provider.h>
 #include "elastos/droid/server/media/MediaSessionService.h"
-#include "elastos/droid/server/ServiceManager.h"
 #include "elastos/droid/server/Watchdog.h"
+#include "elastos/droid/os/ServiceManager.h"
 #include "elastos/droid/text/TextUtils.h"
 #include "elastos/droid/Manifest.h"
 #include "elastos/core/StringUtils.h"
@@ -82,8 +83,9 @@ CAR_INTERFACE_IMPL(MediaSessionService::SessionsListenerRecord, Object, IProxyDe
 
 ECode MediaSessionService::SessionsListenerRecord::ProxyDied()
 {
-    Autolock lock(mHost->mLock);
+    AutoLock lock(mHost->mLock);
     mHost->mSessionsListeners.Remove(this);
+    return NOERROR;
 }
 
 
@@ -146,7 +148,6 @@ void MediaSessionService::MessageHandler::Post(
     AutoPtr<IMessage> msg;
     ObtainMessage(what, arg1, arg2, (IMessage**)&msg);
     msg->SendToTarget();
-    return NOERROR;
 }
 
 
@@ -160,16 +161,16 @@ const Int32 MediaSessionService::WAKELOCK_TIMEOUT;
 
 MediaSessionService::MediaSessionService(
     /* [in] */ IContext* context)
-    : SystemService(context)
-    , mCurrentUserId(-1)
+    : mCurrentUserId(-1)
 {
+    SystemService::constructor(context);
     mHandler = new MessageHandler(this);
     CSessionManagerImpl::NewByFriend((Handle64)this, (CSessionManagerImpl**)&mSessionManagerImpl);
     mPriorityStack = new MediaSessionStack();
     AutoPtr<IInterface> service;
     context->GetSystemService(IContext::POWER_SERVICE, (IInterface**)&service);
     AutoPtr<IPowerManager> pm = IPowerManager::Probe(service);
-    pm->NewWakeLock(IPowerManager::PARTIAL_WAKE_LOCK, String("handleMediaEvent"), (IPowerManager**)&mMediaEventWakeLock);
+    pm->NewWakeLock(IPowerManager::PARTIAL_WAKE_LOCK, String("handleMediaEvent"), (IPowerManagerWakeLock**)&mMediaEventWakeLock);
 }
 
 CAR_INTERFACE_IMPL(MediaSessionService, SystemService, IWatchdogMonitor)
@@ -201,7 +202,7 @@ void MediaSessionService::UpdateSession(
     /* [in] */ MediaSessionRecord* record)
 {
     synchronized (mLock) {
-        if (Find(mAllSessions.Begin(), mAllSessions.End(), record) == mAllSessions.End()) {
+        if (Find(mAllSessions.Begin(), mAllSessions.End(), AutoPtr<MediaSessionRecord>(record)) == mAllSessions.End()) {
             Slogger::D(TAG, "Unknown session updated. Ignoring.");
             return;
         }
@@ -217,7 +218,7 @@ void MediaSessionService::OnSessionPlaystateChange(
 {
     Boolean updateSessions = FALSE;
     synchronized (mLock) {
-        if (Find(mAllSessions.Begin(), mAllSessions.End(), record) == mAllSessions.End()) {
+        if (Find(mAllSessions.Begin(), mAllSessions.End(), AutoPtr<MediaSessionRecord>(record)) == mAllSessions.End()) {
             Slogger::D(TAG, "Unknown session changed playback state. Ignoring.");
             return;
         }
@@ -232,7 +233,7 @@ void MediaSessionService::OnSessionPlaybackTypeChanged(
     /* [in] */ MediaSessionRecord* record)
 {
     synchronized (mLock) {
-        if (Find(mAllSessions.Begin(), mAllSessions.End(), record) == mAllSessions.End()) {
+        if (Find(mAllSessions.Begin(), mAllSessions.End(), AutoPtr<MediaSessionRecord>(record)) == mAllSessions.End()) {
             Slogger::D(TAG, "Unknown session changed playback type. Ignoring.");
             return;
         }
@@ -244,12 +245,14 @@ ECode MediaSessionService::OnStartUser(
     /* [in] */ Int32 userHandle)
 {
     UpdateUser();
+    return NOERROR;
 }
 
 ECode MediaSessionService::OnSwitchUser(
     /* [in] */ Int32 userId)
 {
     UpdateUser();
+    return NOERROR;
 }
 
 ECode MediaSessionService::OnStopUser(
@@ -265,6 +268,7 @@ ECode MediaSessionService::OnStopUser(
             DestroyUserLocked(user);
         }
     }
+    return NOERROR;
 }
 
 ECode MediaSessionService::Monitor()
@@ -272,6 +276,7 @@ ECode MediaSessionService::Monitor()
     synchronized (mLock) {
         // Check for deadlock
     }
+    return NOERROR;
 }
 
 ECode MediaSessionService::EnforcePhoneStatePermission(
@@ -420,7 +425,7 @@ ECode MediaSessionService::EnforcePackageName(
     AutoPtr<IPackageManager> pm;
     context->GetPackageManager((IPackageManager**)&pm);
     AutoPtr<ArrayOf<String> > packages;
-    pm->GetPackagesForUid((ArrayOf<String>**)&packages);
+    pm->GetPackagesForUid(uid, (ArrayOf<String>**)&packages);
     Int32 packageCount = packages->GetLength();
     for (Int32 i = 0; i < packageCount; i++) {
         if (packageName.Equals((*packages)[i])) {
@@ -526,9 +531,11 @@ ECode MediaSessionService::CreateSessionInternal(
     /* [out] */ MediaSessionRecord** record)
 {
     VALIDATE_NOT_NULL(record)
+    ECode ec;
     synchronized (mLock) {
-        return CreateSessionLocked(callerPid, callerUid, userId, callerPackageName, cb, tag);
+        ec = CreateSessionLocked(callerPid, callerUid, userId, callerPackageName, cb, tag, record);
     }
+    return ec;
 }
 
 ECode MediaSessionService::CreateSessionLocked(
@@ -574,7 +581,7 @@ ECode MediaSessionService::CreateSessionLocked(
     return NOERROR;
 }
 
-AutoPtr<UserRecord> MediaSessionService::GetOrCreateUser(
+AutoPtr<MediaSessionService::UserRecord> MediaSessionService::GetOrCreateUser(
     /* [in] */ Int32 userId)
 {
     HashMap<Int32, AutoPtr<UserRecord> >::Iterator it = mUserRecords.Find(userId);
@@ -591,7 +598,7 @@ AutoPtr<UserRecord> MediaSessionService::GetOrCreateUser(
     return user;
 }
 
-List<AutoPtr<SessionsListenerRecord> >::Iterator MediaSessionService::FindIndexOfSessionsListenerLocked(
+List<AutoPtr<MediaSessionService::SessionsListenerRecord> >::Iterator MediaSessionService::FindIndexOfSessionsListenerLocked(
     /* [in] */ IIActiveSessionsListener* listener)
 {
     List<AutoPtr<SessionsListenerRecord> >::Iterator it = mSessionsListeners.Begin();
@@ -615,7 +622,7 @@ void MediaSessionService::PushSessionsChanged(
 {
     synchronized (mLock) {
         AutoPtr<List<AutoPtr<MediaSessionRecord> > > records = mPriorityStack->GetActiveSessions(userId);
-        if (records->Begin() 1= records->End()) {
+        if (records->Begin() != records->End()) {
             RememberMediaButtonReceiverLocked((*records->Begin()));
         }
         AutoPtr<IList> tokens;

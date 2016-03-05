@@ -1,12 +1,16 @@
 
 #include "elastos/droid/server/media/CSessionController.h"
+#include "elastos/droid/server/media/MediaSessionRecord.h"
 #include "elastos/droid/os/Binder.h"
 #include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Droid::Media::IAudioAttributesHelper;
 using Elastos::Droid::Media::CAudioAttributesHelper;
 using Elastos::Droid::Media::IVolumeProvider;
+using Elastos::Droid::Media::Session::EIID_IISessionController;
 using Elastos::Droid::Media::Session::IMediaControllerPlaybackInfo;
+using Elastos::Droid::Media::Session::CParcelableVolumeInfo;
+using Elastos::Droid::Os::EIID_IBinder;
 using Elastos::Droid::Os::Binder;
 using Elastos::Utility::Logging::Slogger;
 
@@ -39,16 +43,16 @@ ECode CSessionController::SendMediaButton(
     /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result)
-    return mHost->mSessionCb->SendMediaButton(mediaButtonIntent, 0, NULL, result);
+    return mHost->mSessionCb->SendMediaButton(mediaButton, 0, NULL, result);
 }
 
 ECode CSessionController::RegisterCallbackListener(
     /* [in] */ IISessionControllerCallback* cb)
 {
-    Autolock lock(mHost->mLock);
+    AutoLock lock(mHost->mLock);
     // If this session is already destroyed tell the caller and
     // don't add them.
-    if (mDestroyed) {
+    if (mHost->mDestroyed) {
         // try {
         cb->OnSessionDestroyed();
         // } catch (Exception e) {
@@ -58,7 +62,7 @@ ECode CSessionController::RegisterCallbackListener(
     }
     if (mHost->GetControllerCbIndexForCb(cb) == mHost->mControllerCallbacks.End()) {
         mHost->mControllerCallbacks.PushBack(cb);
-        if (DEBUG) {
+        if (MediaSessionRecord::DEBUG) {
             Slogger::D(MediaSessionRecord::TAG, "registering controller callback %p", cb);
         }
     }
@@ -68,13 +72,13 @@ ECode CSessionController::RegisterCallbackListener(
 ECode CSessionController::UnregisterCallbackListener(
     /* [in] */ IISessionControllerCallback* cb)
 {
-    Autolock lock(mHost->mLock);
+    AutoLock lock(mHost->mLock);
     List<AutoPtr<IISessionControllerCallback> >::Iterator it = mHost->GetControllerCbIndexForCb(cb);
     if (it != mHost->mControllerCallbacks.End()) {
         mHost->mControllerCallbacks.Erase(it);
     }
-    if (DEBUG) {
-        Slogger::D(TAG, "unregistering callback %p. index=", cb);
+    if (MediaSessionRecord::DEBUG) {
+        Slogger::D(MediaSessionRecord::TAG, "unregistering callback %p. index=", cb);
     }
     return NOERROR;
 }
@@ -116,11 +120,11 @@ ECode CSessionController::GetVolumeAttributes(
     /* [out] */ IParcelableVolumeInfo** result)
 {
     VALIDATE_NOT_NULL(result)
-    Autolock lock(mHost->mLock);
+    AutoLock lock(mHost->mLock);
     Int32 type;
     Int32 max;
     Int32 current;
-    if (mVolumeType == IMediaControllerPlaybackInfo::PLAYBACK_TYPE_REMOTE) {
+    if (mHost->mVolumeType == IMediaControllerPlaybackInfo::PLAYBACK_TYPE_REMOTE) {
         type = mHost->mVolumeControlType;
         max = mHost->mMaxVolume;
         current = mHost->mOptimisticVolume != -1 ? mHost->mOptimisticVolume : mHost->mCurrentVolume;
@@ -175,14 +179,14 @@ ECode CSessionController::Play()
 }
 
 ECode CSessionController::PlayFromMediaId(
-    /* [in] */ const String& uri,
+    /* [in] */ const String& mediaId,
     /* [in] */ IBundle* extras)
 {
     return mHost->mSessionCb->PlayFromMediaId(mediaId, extras);
 }
 
 ECode CSessionController::PlayFromSearch(
-    /* [in] */ const String& string,
+    /* [in] */ const String& query,
     /* [in] */ IBundle* extras)
 {
     return mHost->mSessionCb->PlayFromSearch(query, extras);
@@ -247,7 +251,7 @@ ECode CSessionController::GetMetadata(
     /* [out] */ IMediaMetadata** result)
 {
     VALIDATE_NOT_NULL(result)
-    Autolock lock(mHost->mLock);
+    AutoLock lock(mHost->mLock);
     *result = mHost->mMetadata;
     REFCOUNT_ADD(*result)
     return NOERROR;
@@ -266,7 +270,7 @@ ECode CSessionController::GetQueue(
     /* [out] */ IParceledListSlice** result)
 {
     VALIDATE_NOT_NULL(result)
-    Autolock lock(mHost->mLock);
+    AutoLock lock(mHost->mLock);
     *result = mHost->mQueue;
     REFCOUNT_ADD(*result)
     return NOERROR;
@@ -285,7 +289,7 @@ ECode CSessionController::GetExtras(
     /* [out] */ IBundle** result)
 {
     VALIDATE_NOT_NULL(result)
-    Autolock lock(mHost->mLock);
+    AutoLock lock(mHost->mLock);
     *result = mHost->mExtras;
     REFCOUNT_ADD(*result)
     return NOERROR;
@@ -303,8 +307,15 @@ ECode CSessionController::IsTransportControlEnabled(
     /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result)
-    *result = mHosts->IsTransportControlEnabled();
+    *result = mHost->IsTransportControlEnabled();
     return NOERROR;
+}
+
+ECode CSessionController::ToString(
+    /* [out] */ String* str)
+{
+    VALIDATE_NOT_NULL(str)
+    return Object::ToString(str);
 }
 
 } // namespace Media

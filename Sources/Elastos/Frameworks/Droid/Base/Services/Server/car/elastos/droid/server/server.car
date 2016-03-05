@@ -111,6 +111,7 @@ module
     using interface Elastos.Droid.App.IIUserSwitchObserver;
     using interface Elastos.Droid.App.IStopUserCallback;
     using interface Elastos.Droid.App.IWallpaperInfo;
+    using interface Elastos.Droid.App.IPendingIntentOnFinished;
     using interface Elastos.Droid.App.Job.IJobService;
     using interface Elastos.Droid.Bluetooth.IIBluetoothManager;
     using interface Elastos.Droid.Bluetooth.IIBluetoothCallback;
@@ -161,7 +162,14 @@ module
     using interface Elastos.Droid.Location.IIGpsGeofenceHardware;
     using interface Elastos.Droid.Location.IIGpsStatusProvider;
     using interface Elastos.Droid.Location.IINetInitiatedListener;
+    using interface Elastos.Droid.Media.IIMediaRouterService;
+    using interface Elastos.Droid.Media.IIRemoteDisplayCallback;
     using interface Elastos.Droid.Media.Projection.IIMediaProjectionCallback;
+    using interface Elastos.Droid.Media.Projection.IIMediaProjectionManager;
+    using interface Elastos.Droid.Media.Projection.IIMediaProjection;
+    using interface Elastos.Droid.Media.Session.IISession;
+    using interface Elastos.Droid.Media.Session.IISessionController;
+    using interface Elastos.Droid.Media.Session.IISessionManager;
     using interface Elastos.Droid.Net.IIConnectivityManager;
     using interface Elastos.Droid.Net.IINetworkManagementEventObserver;
     using interface Elastos.Droid.Net.IINetworkPolicyManager;
@@ -184,8 +192,8 @@ module
     using interface Elastos.Droid.Os.IINetworkManagementService;
     using interface Elastos.Droid.Os.IPermissionController;
     using interface Elastos.Droid.Os.IIUserManager;
-    using interface Elastos.Droid.Os.ILooper;
     using interface Elastos.Droid.Os.IIBatteryPropertiesListener;
+    using interface Elastos.Droid.Os.IResultReceiver;
     using interface Elastos.Droid.Os.Storage.IIMountShutdownObserver;
     using interface Elastos.Droid.Server.IWidgetBackupProvider;
     using interface Elastos.Droid.Service.Dreams.IIDreamManager;
@@ -844,6 +852,80 @@ module
 //     }
 
 //     } // Accounts
+
+    namespace Media {
+    namespace Projection {
+
+    class CMediaProjectionManager {
+        constructor(
+            [in] Handle64 host);
+        interface IIMediaProjectionManager;
+        interface IBinder;
+    }
+
+    class CMediaProjection {
+        constructor(
+            [in] Int32 type,
+            [in] Int32 uid,
+            [in] String packageName,
+            [in] Handle64 host);
+        interface IIMediaProjection;
+        interface IBinder;
+    }
+
+    } // Projection
+
+    [local]
+    class CMediaRouterService {
+        constructor(
+            [in] IContext* ctx);
+
+        interface IIMediaRouterService;
+        interface IWatchdogMonitor;
+        interface IBinder;
+    }
+
+    class CMediaSession {
+        constructor(
+            [in] Handle64 host);
+        interface IISession;
+        interface IBinder;
+    }
+
+    class CSessionController {
+        constructor(
+            [in] Handle64 host);
+        interface IISessionController;
+        interface IBinder;
+    }
+
+    class CSessionManagerImpl {
+        constructor(
+            [in] Handle64 host);
+        interface IISessionManager;
+        interface IBinder;
+    }
+
+    class CKeyEventWakeLockReceiver {
+        constructor(
+            [in] IHandler* handler,
+            [in] Handle64 host);
+
+        interface IResultReceiver;
+        interface IRunnable;
+        interface IPendingIntentOnFinished;
+        interface IParcelable;
+    }
+
+    class CProviderCallback {
+        constructor(
+            [in] Handle64 connection);
+
+        interface IIRemoteDisplayCallback;
+        interface IBinder;
+    }
+
+    } // Media
 
 //     [local]
 //     class CWifiService {

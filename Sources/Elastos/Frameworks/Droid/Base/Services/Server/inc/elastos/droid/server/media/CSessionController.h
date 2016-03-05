@@ -3,7 +3,9 @@
 #define __ELASTOS_DROID_SERVER_MEDIA_CSESSIONCONTROLLER_H__
 
 #include "_Elastos_Droid_Server_Media_CSessionController.h"
-#include "elastos/droid/server/media/MediaSessionRecord.h"
+#include <Elastos.Droid.App.h>
+#include <Elastos.Droid.Content.h>
+#include <elastos/core/Object.h>
 
 using Elastos::Droid::App::IPendingIntent;
 using Elastos::Droid::Content::Pm::IParceledListSlice;
@@ -23,6 +25,8 @@ namespace Elastos {
 namespace Droid {
 namespace Server {
 namespace Media {
+
+class MediaSessionRecord;
 
 CarClass(CSessionController)
     , public Object
@@ -81,11 +85,11 @@ public:
     CARAPI Play();
 
     CARAPI PlayFromMediaId(
-        /* [in] */ const String& uri,
+        /* [in] */ const String& mediaId,
         /* [in] */ IBundle* extras);
 
     CARAPI PlayFromSearch(
-        /* [in] */ const String& string,
+        /* [in] */ const String& query,
         /* [in] */ IBundle* extras);
 
     CARAPI SkipToQueueItem(
@@ -133,6 +137,9 @@ public:
 
     CARAPI IsTransportControlEnabled(
         /* [out] */ Boolean* result);
+
+    CARAPI ToString(
+        /* [out] */ String* str);
 
 private:
     MediaSessionRecord* mHost;

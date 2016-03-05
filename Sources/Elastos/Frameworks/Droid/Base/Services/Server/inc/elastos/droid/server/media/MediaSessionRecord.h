@@ -3,10 +3,10 @@
 #define __ELASTOS_DROID_SERVER_MEDIA_MEDIASESSIONRECORD_H__
 
 #include "elastos/droid/ext/frameworkext.h"
+#include <Elastos.Droid.View.h>
 #include <_Elastos.Droid.Server.h>
 #include "elastos/droid/server/media/CSessionController.h"
 #include "elastos/droid/server/media/CMediaSession.h"
-#include "elastos/droid/server/media/MediaSessionService.h"
 #include "elastos/droid/os/Handler.h"
 #include "elastos/droid/os/Runnable.h"
 #include <elastos/core/AutoLock.h>
@@ -24,8 +24,8 @@ using Elastos::Droid::Media::Session::IPlaybackState;
 using Elastos::Droid::Media::Session::IISessionCallback;
 using Elastos::Droid::Os::IBundle;
 using Elastos::Droid::Os::IHandler;
+using Elastos::Droid::Os::Handler;
 using Elastos::Droid::Os::ILooper;
-using Elastos::Droid::Os::IRunnable;
 using Elastos::Droid::Os::Runnable;
 using Elastos::Droid::Os::IResultReceiver;
 using Elastos::Droid::View::IKeyEvent;
@@ -36,6 +36,8 @@ namespace Elastos {
 namespace Droid {
 namespace Server {
 namespace Media {
+
+class MediaSessionService;
 
 /**
  * This is the system implementation of a Session. Apps will interact with the
@@ -108,6 +110,8 @@ public:
 
     private:
         AutoPtr<IISessionCallback> mCb;
+
+        friend class MediaSessionRecord;
     };
 
 private:
@@ -149,6 +153,9 @@ private:
         static const Int32 MSG_DESTROYED = 9;
 
         MediaSessionRecord* mHost;
+
+        friend class CMediaSession;
+        friend class MediaSessionRecord;
     };
 
     class ClearOptimisticVolumeRunnable : public Runnable
@@ -384,7 +391,7 @@ private:
 
 private:
     static const String TAG;
-    static const boolean DEBUG = FALSE;
+    static const Boolean DEBUG = FALSE;
 
     /**
      * The length of time a session will still be considered active after
@@ -446,7 +453,8 @@ private:
 
     friend class CSessionController;
     friend class SessionCb;
-    friend class ClearOptimisticVolumeRunnable
+    friend class ClearOptimisticVolumeRunnable;
+    friend class CMediaSession;
 };
 
 } // namespace Media

@@ -5,6 +5,7 @@
 
 using Elastos::Droid::Content::IIntent;
 using Elastos::Droid::Content::CIntent;
+using Elastos::Droid::Content::EIID_IServiceConnection;
 using Elastos::Droid::Os::CHandler;
 using Elastos::Droid::Os::IUserHandle;
 using Elastos::Droid::Os::CUserHandle;
@@ -17,7 +18,7 @@ namespace Server {
 namespace Media {
 
 // {7D60ED5E-65E5-4229-806C-1AFD69AF0AF1}
-extern "C" const InterfaceID EIID_IRemoteDisplayProviderProxyCallbacks =
+extern "C" const InterfaceID EIID_IRemoteDisplayProviderProxyCallback =
         { 0x7d60ed5e, 0x65e5, 0x4229, { 0x80, 0x6c, 0x1a, 0xfd, 0x69, 0xaf, 0xa, 0xf1 } };
 
 //==============================================================================
@@ -28,8 +29,7 @@ ECode RemoteDisplayProviderProxy::DisplayStateChangedRunnable::Run()
 {
     mHost->mScheduledDisplayStateChangedCallback = FALSE;
     if (mHost->mDisplayStateCallback != NULL) {
-        mHost->mDisplayStateCallback->OnDisplayStateChanged(
-                mHost->, mDisplayState);
+        mHost->mDisplayStateCallback->OnDisplayStateChanged(mHost, mHost->mDisplayState);
     }
     return NOERROR;
 }
@@ -87,7 +87,7 @@ Boolean RemoteDisplayProviderProxy::Connection::Register()
 {
     // try {
     AutoPtr<IBinder> b = IBinder::Probe(mProvider);
-    AutoPtr<IProxy> proxy = b->Probe(EIID_IProxy);
+    AutoPtr<IProxy> proxy = (IProxy*)b->Probe(EIID_IProxy);
     if (proxy != NULL) {
         if (FAILED(proxy->LinkToDeath((IProxyDeathRecipient*)this, 0))) {
             ProxyDied();
@@ -95,7 +95,7 @@ Boolean RemoteDisplayProviderProxy::Connection::Register()
         }
     }
     mProvider->SetCallback((IIRemoteDisplayCallback*)mCallback.Get());
-    AutoPtr<IRunnable> runnable = (IRunnable*)new RegisterRunnable(mHost);
+    AutoPtr<IRunnable> runnable = (IRunnable*)new RegisterRunnable(this);
     Boolean result;
     mHost->mHandler->Post(runnable, &result);
     return TRUE;
@@ -108,10 +108,10 @@ Boolean RemoteDisplayProviderProxy::Connection::Register()
 void RemoteDisplayProviderProxy::Connection::Dispose()
 {
     AutoPtr<IBinder> b = IBinder::Probe(mProvider);
-    AutoPtr<IProxy> proxy = b->Probe(EIID_IProxy);
+    AutoPtr<IProxy> proxy = (IProxy*)b->Probe(EIID_IProxy);
     if (proxy != NULL) {
         Boolean result;
-        proxy->UnLinkToDeath((IProxyDeathRecipient*)this, 0, &result);
+        proxy->UnlinkToDeath((IProxyDeathRecipient*)this, 0, &result);
     }
     mCallback->Dispose();
 }
@@ -180,7 +180,7 @@ void RemoteDisplayProviderProxy::Connection::AdjustVolume(
 
 ECode RemoteDisplayProviderProxy::Connection::ProxyDied()
 {
-    AutoPtr<IRunnable> runnable = (IRunnable*)new ProxyDiedRunnable(mHost);
+    AutoPtr<IRunnable> runnable = (IRunnable*)new ProxyDiedRunnable(this);
     Boolean result;
     mHost->mHandler->Post(runnable, &result);
     return NOERROR;
@@ -189,7 +189,7 @@ ECode RemoteDisplayProviderProxy::Connection::ProxyDied()
 void RemoteDisplayProviderProxy::Connection::PostStateChanged(
     /* [in] */ IRemoteDisplayState* state)
 {
-    AutoPtr<IRunnable> runnable = (IRunnable*)new PostStateChangedRunnable(mHost, state);
+    AutoPtr<IRunnable> runnable = (IRunnable*)new PostStateChangedRunnable(this, state);
     Boolean result;
     mHost->mHandler->Post(runnable, &result);
 }
@@ -506,7 +506,7 @@ void RemoteDisplayProviderProxy::Disconnect()
 void RemoteDisplayProviderProxy::SetDisplayState(
     /* [in] */ IRemoteDisplayState* state)
 {
-    if (!Objects::Equals(mDisplayState, state)) {
+    if (!Objects::Equals(mDisplayState.Get(), state)) {
         mDisplayState = state;
         if (!mScheduledDisplayStateChangedCallback) {
             mScheduledDisplayStateChangedCallback = TRUE;

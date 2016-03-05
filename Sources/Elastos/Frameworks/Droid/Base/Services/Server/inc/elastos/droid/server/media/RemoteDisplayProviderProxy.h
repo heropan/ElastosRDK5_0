@@ -2,22 +2,25 @@
 #ifndef __ELASTOS_DROID_SERVER_MEDIA_REMOTEDISPLAYPROVIDERPROXY_H__
 #define __ELASTOS_DROID_SERVER_MEDIA_REMOTEDISPLAYPROVIDERPROXY_H__
 
+#include <Elastos.Droid.Content.h>
 #include "elastos/droid/server/media/CProviderCallback.h"
 #include "elastos/droid/os/Runnable.h"
 
 using Elastos::Droid::Content::IServiceConnection;
 using Elastos::Droid::Content::IComponentName;
+using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Media::IRemoteDisplayState;
 using Elastos::Droid::Media::IIRemoteDisplayProvider;
 using Elastos::Droid::Os::IBinder;
 using Elastos::Droid::Os::Runnable;
+using Elastos::Droid::Os::IHandler;
 
 namespace Elastos {
 namespace Droid {
 namespace Server {
 namespace Media {
 
-extern "C" const InterfaceID EIID_IRemoteDisplayProviderProxyCallbacks;
+extern "C" const InterfaceID EIID_IRemoteDisplayProviderProxyCallback;
 
 /**
  * Maintains a connection to a particular remote display provider service.
@@ -27,7 +30,7 @@ class RemoteDisplayProviderProxy
     , public IServiceConnection
 {
 public:
-    interface ICallbacks : public IInterface
+    interface ICallback : public IInterface
     {
     public:
         virtual CARAPI OnDisplayStateChanged(
@@ -237,6 +240,8 @@ private:
     Boolean mScheduledDisplayStateChangedCallback;
 
     AutoPtr<IRunnable> mDisplayStateChanged;
+
+    friend class CProviderCallback;
 };
 
 } // namespace Media

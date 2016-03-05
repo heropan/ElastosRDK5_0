@@ -1,5 +1,9 @@
 
 #include "elastos/droid/server/media/CKeyEventWakeLockReceiver.h"
+#include "elastos/droid/server/media/MediaSessionService.h"
+
+using Elastos::Droid::App::EIID_IPendingIntentOnFinished;
+using Elastos::Core::EIID_IRunnable;
 
 namespace Elastos {
 namespace Droid {
@@ -22,7 +26,7 @@ ECode CKeyEventWakeLockReceiver::constructor(
 
 void CKeyEventWakeLockReceiver::OnTimeout()
 {
-    Autolock lock(mHost->mLock);
+    AutoLock lock(mHost->mLock);
     if (mRefCount == 0) {
         // We've already released it, so just return
         return;
@@ -35,12 +39,12 @@ void CKeyEventWakeLockReceiver::OnTimeout()
 void CKeyEventWakeLockReceiver::AquireWakeLockLocked()
 {
     if (mRefCount == 0) {
-        mHost->mMediaEventWakeLock->Acquire();
+        mHost->mMediaEventWakeLock->AcquireLock();
     }
     mRefCount++;
     mHandler->RemoveCallbacks((IRunnable*)this);
     Boolean result;
-    mHandler->PostDelayed((IRunnable*)this, WAKELOCK_TIMEOUT, &result);
+    mHandler->PostDelayed((IRunnable*)this, MediaSessionService::WAKELOCK_TIMEOUT, &result);
 }
 
 ECode CKeyEventWakeLockReceiver::Run()
@@ -59,7 +63,7 @@ void CKeyEventWakeLockReceiver::OnReceiveResult(
         return;
     }
     else {
-        Autolock lock(mHost->mLock);
+        AutoLock lock(mHost->mLock);
         if (mRefCount > 0) {
             mRefCount--;
             if (mRefCount == 0) {

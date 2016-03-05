@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_SERVER_MEDIA_CMEDIASESSION_H__
 
 #include "_Elastos_Droid_Server_Media_CMediaSession.h"
-#include "elastos/droid/server/media/MediaSessionRecord.h"
+#include <elastos/core/Object.h>
 
 using Elastos::Droid::App::IPendingIntent;
 using Elastos::Droid::Content::Pm::IParceledListSlice;
@@ -20,6 +20,8 @@ namespace Elastos {
 namespace Droid {
 namespace Server {
 namespace Media {
+
+class MediaSessionRecord;
 
 CarClass(CMediaSession)
     , public Object
@@ -84,6 +86,9 @@ public:
     CARAPI SetPlaybackToRemote(
         /* [in] */ Int32 control,
         /* [in] */ Int32 max);
+
+    CARAPI ToString(
+        /* [out] */ String* str);
 
 private:
     MediaSessionRecord* mHost;

@@ -3,15 +3,22 @@
 #define __ELASTOS_DROID_SERVER_MEDIA_CKEYEVENTWAKELOCKRECEIVER_H__
 
 #include "_Elastos_Droid_Server_Media_CKeyEventWakeLockReceiver.h"
-#include "elastos/droid/server/media/MediaSessionService.h"
 #include "elastos/droid/os/ResultReceiver.h"
 
+using Elastos::Droid::App::IPendingIntent;
+using Elastos::Droid::App::IPendingIntentOnFinished;
+using Elastos::Droid::Content::IIntent;
 using Elastos::Droid::Os::ResultReceiver;
+using Elastos::Droid::Os::IHandler;
+using Elastos::Droid::Os::IBundle;
 
 namespace Elastos {
 namespace Droid {
 namespace Server {
 namespace Media {
+
+class MediaSessionService;
+class CSessionManagerImpl;
 
 CarClass(CKeyEventWakeLockReceiver)
     , public ResultReceiver
@@ -58,6 +65,8 @@ private:
     Int32 mLastTimeoutId;
 
     MediaSessionService* mHost;
+
+    friend class CSessionManagerImpl;
 };
 
 } // namespace Media

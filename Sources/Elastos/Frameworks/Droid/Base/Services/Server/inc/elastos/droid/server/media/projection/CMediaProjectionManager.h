@@ -58,6 +58,9 @@ public:
     // @Override // Binder call
     // void dump(FileDescriptor fd, final PrintWriter pw, String[] args);
 
+    CARAPI ToString(
+        /* [out] */ String* str);
+
 private:
     CARAPI_(Boolean) CheckPermission(
         /* [in] */ const String& packageName,

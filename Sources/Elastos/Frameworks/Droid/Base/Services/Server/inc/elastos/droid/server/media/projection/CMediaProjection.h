@@ -3,17 +3,21 @@
 #define __ELASTOS_DROID_SERVER_MEDIA_PROJECTION_CMEDIAPROJECTION_H__
 
 #include "_Elastos_Droid_Server_Media_Projection_CMediaProjection.h"
-#include "elastos/droid/server/media/projection/MediaProjectionService.h"
+#include <elastos/core/Object.h>
 
 using Elastos::Droid::Media::Projection::IIMediaProjectionCallback;
 using Elastos::Droid::Media::Projection::IIMediaProjection;
+using Elastos::Droid::Media::Projection::IMediaProjectionInfo;
 using Elastos::Droid::Os::IUserHandle;
+using Elastos::Droid::Os::IBinder;
 
 namespace Elastos {
 namespace Droid {
 namespace Server {
 namespace Media {
 namespace Projection {
+
+class MediaProjectionManagerService;
 
 CarClass(CMediaProjection)
     , public Object
@@ -82,13 +86,16 @@ public:
 
     CARAPI_(AutoPtr<IMediaProjectionInfo>) GetProjectionInfo();
 
+    CARAPI ToString(
+        /* [out] */ String* str);
+
 public:
     Int32 mUid;
     String mPackageName;
     AutoPtr<IUserHandle> mUserHandle;
 
 private:
-    MediaProjectionService* mHost;
+    MediaProjectionManagerService* mHost;
 
     AutoPtr<IBinder> mToken;
     AutoPtr<IProxyDeathRecipient> mDeathEater;

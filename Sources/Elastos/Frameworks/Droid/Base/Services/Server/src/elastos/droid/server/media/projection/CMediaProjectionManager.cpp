@@ -2,11 +2,14 @@
 #include "elastos/droid/server/media/projection/CMediaProjectionManager.h"
 #include "elastos/droid/server/media/projection/CMediaProjection.h"
 #include "elastos/droid/os/Binder.h"
+#include "elastos/droid/Manifest.h"
 #include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Droid::Content::Pm::IPackageManager;
 using Elastos::Droid::Media::Projection::EIID_IIMediaProjection;
+using Elastos::Droid::Media::Projection::EIID_IIMediaProjectionManager;
 using Elastos::Droid::Os::Binder;
+using Elastos::Droid::Os::EIID_IBinder;
 using Elastos::Utility::Logging::Slogger;
 
 namespace Elastos {
@@ -51,7 +54,7 @@ ECode CMediaProjectionManager::CreateProjection(
     /* [in] */ Int32 uid,
     /* [in] */ const String& packageName,
     /* [in] */ Int32 type,
-    /* [in] */ Boolean permanentGrant,
+    /* [in] */ Boolean isPermanentGrant,
     /* [out] */ IIMediaProjection** result)
 {
     VALIDATE_NOT_NULL(result)
@@ -59,7 +62,7 @@ ECode CMediaProjectionManager::CreateProjection(
 
     Int32 perm;
     mHost->mContext->CheckCallingPermission(
-            Elastos::Droid::Manifest::permission::MANAGE_MEDIA_PROJECTION, &prem);
+            Elastos::Droid::Manifest::permission::MANAGE_MEDIA_PROJECTION, &perm);
     if (perm != IPackageManager::PERMISSION_GRANTED) {
         Slogger::E("CMediaProjectionManager", "Requires MANAGE_MEDIA_PROJECTION in order to grant projection permission");
         return E_SECURITY_EXCEPTION;
@@ -71,7 +74,7 @@ ECode CMediaProjectionManager::CreateProjection(
     Int64 callingToken = Binder::ClearCallingIdentity();
     AutoPtr<CMediaProjection> projection;
     // try {
-    CMediaProjection::NewByFriend(type, uid, packageName, (CMediaProjection**)&projection);
+    CMediaProjection::NewByFriend(type, uid, packageName, (Handle64)this, (CMediaProjection**)&projection);
     if (isPermanentGrant) {
         mHost->mAppOps->SetMode(IAppOpsManager::OP_PROJECT_MEDIA,
                 projection->mUid, projection->mPackageName, IAppOpsManager::MODE_ALLOWED);
@@ -79,7 +82,7 @@ ECode CMediaProjectionManager::CreateProjection(
     // } finally {
     //     Binder.restoreCallingIdentity(callingToken);
     // }
-    Binder::RestoreCallingIdentity(token);
+    Binder::RestoreCallingIdentity(callingToken);
     *result = (IIMediaProjection*)projection->Probe(EIID_IIMediaProjection);
     REFCOUNT_ADD(*result)
     return NOERROR;
@@ -100,7 +103,7 @@ ECode CMediaProjectionManager::GetActiveProjectionInfo(
     VALIDATE_NOT_NULL(result)
     *result = NULL;
     Int32 perm;
-    mContext->CheckCallingPermission(
+    mHost->mContext->CheckCallingPermission(
             Elastos::Droid::Manifest::permission::MANAGE_MEDIA_PROJECTION, &perm);
     if (perm != IPackageManager::PERMISSION_GRANTED) {
         Slogger::E("CMediaProjectionManager", "Requires MANAGE_MEDIA_PROJECTION in order to add projection callbacks");
@@ -120,7 +123,7 @@ ECode CMediaProjectionManager::GetActiveProjectionInfo(
 ECode CMediaProjectionManager::StopActiveProjection()
 {
     Int32 perm;
-    mContext->CheckCallingPermission(
+    mHost->mContext->CheckCallingPermission(
             Elastos::Droid::Manifest::permission::MANAGE_MEDIA_PROJECTION, &perm);
     if (perm != IPackageManager::PERMISSION_GRANTED) {
         Slogger::E("CMediaProjectionManager", "Requires MANAGE_MEDIA_PROJECTION in order to add projection callbacks");
@@ -142,7 +145,7 @@ ECode CMediaProjectionManager::AddCallback(
     /* [in] */ IIMediaProjectionWatcherCallback* cb)
 {
     Int32 perm;
-    mContext->CheckCallingPermission(
+    mHost->mContext->CheckCallingPermission(
             Elastos::Droid::Manifest::permission::MANAGE_MEDIA_PROJECTION, &perm);
     if (perm != IPackageManager::PERMISSION_GRANTED) {
         Slogger::E("CMediaProjectionManager", "Requires MANAGE_MEDIA_PROJECTION in order to add projection callbacks");
@@ -150,7 +153,7 @@ ECode CMediaProjectionManager::AddCallback(
     }
     Int64 token = Binder::ClearCallingIdentity();
     // try {
-    mHost->AddCallback(callback);
+    mHost->AddCallback(cb);
     // } finally {
     //     Binder.restoreCallingIdentity(token);
     // }
@@ -162,7 +165,7 @@ ECode CMediaProjectionManager::RemoveCallback(
     /* [in] */ IIMediaProjectionWatcherCallback* cb)
 {
     Int32 perm;
-    mContext->CheckCallingPermission(
+    mHost->mContext->CheckCallingPermission(
             Elastos::Droid::Manifest::permission::MANAGE_MEDIA_PROJECTION, &perm);
     if (perm != IPackageManager::PERMISSION_GRANTED) {
         Slogger::E("CMediaProjectionManager", "Requires MANAGE_MEDIA_PROJECTION in order to remove projection callbacks");
@@ -170,7 +173,7 @@ ECode CMediaProjectionManager::RemoveCallback(
     }
     Int64 token = Binder::ClearCallingIdentity();
     // try {
-    mHost->RemoveCallback(callback);
+    mHost->RemoveCallback(cb);
     // } finally {
     //     Binder.restoreCallingIdentity(token);
     // }
@@ -183,10 +186,17 @@ Boolean CMediaProjectionManager::CheckPermission(
     /* [in] */ const String& permission)
 {
     AutoPtr<IPackageManager> pm;
-    mContext->GetPackageManager((IPackageManager**)&pm);
+    mHost->mContext->GetPackageManager((IPackageManager**)&pm);
     Int32 perm;
     pm->CheckPermission(permission, packageName, &perm);
     return perm == IPackageManager::PERMISSION_GRANTED;
+}
+
+ECode CMediaProjectionManager::ToString(
+    /* [out] */ String* str)
+{
+    VALIDATE_NOT_NULL(str)
+    return Object::ToString(str);
 }
 
 } // namespace Projection

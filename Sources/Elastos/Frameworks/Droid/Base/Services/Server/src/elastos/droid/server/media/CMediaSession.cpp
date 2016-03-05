@@ -1,15 +1,20 @@
 
 #include "elastos/droid/server/media/CMediaSession.h"
+#include "elastos/droid/server/media/MediaSessionRecord.h"
+#include "elastos/droid/server/media/MediaSessionService.h"
 #include "elastos/droid/os/Binder.h"
 #include "elastos/droid/os/SystemClock.h"
 #include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Droid::Media::CMediaMetadataBuilder;
 using Elastos::Droid::Media::IMediaMetadataBuilder;
+using Elastos::Droid::Media::Session::EIID_IISession;
 using Elastos::Droid::Media::Session::IMediaSessionHelper;
 using Elastos::Droid::Media::Session::CMediaSessionHelper;
 using Elastos::Droid::Media::Session::IPlaybackState;
 using Elastos::Droid::Media::Session::IMediaControllerPlaybackInfo;
+using Elastos::Droid::Media::Session::IMediaSession;
+using Elastos::Droid::Os::EIID_IBinder;
 using Elastos::Droid::Os::CBundle;
 using Elastos::Droid::Os::Binder;
 using Elastos::Droid::Os::SystemClock;
@@ -47,8 +52,8 @@ ECode CMediaSession::SendEvent(
         CBundle::New(data, (IBundle**)&b);
     }
     AutoPtr<ICharSequence> cs;
-    CString::Probe(event, (ICharSequence**)&cs);
-    mHost->mHandler->Post(MediaSessionRecord::MessageHandler::MSG_SEND_EVENT, IObjecr::Probe(cs), b);
+    CString::New(event, (ICharSequence**)&cs);
+    mHost->mHandler->Post(MediaSessionRecord::MessageHandler::MSG_SEND_EVENT, IObject::Probe(cs), b);
     return NOERROR;
 }
 
@@ -73,18 +78,18 @@ ECode CMediaSession::SetActive(
 ECode CMediaSession::SetFlags(
     /* [in] */ Int32 flags)
 {
-    if ((flags & MediaSession::FLAG_EXCLUSIVE_GLOBAL_PRIORITY) != 0) {
+    if ((flags & IMediaSession::FLAG_EXCLUSIVE_GLOBAL_PRIORITY) != 0) {
         Int32 pid = Binder::GetCallingPid();
         Int32 uid = Binder::GetCallingUid();
         FAIL_RETURN(mHost->mService->EnforcePhoneStatePermission(pid, uid))
     }
-    mFlags = flags;
+    mHost->mFlags = flags;
     mHost->mHandler->Post(MediaSessionRecord::MessageHandler::MSG_UPDATE_SESSION_STATE);
     return NOERROR;
 }
 
 ECode CMediaSession::SetMediaButtonReceiver(
-    /* [in] */ IPendingIntent* mbr)
+    /* [in] */ IPendingIntent* pi)
 {
     mHost->mMediaButtonReceiver = pi;
     return NOERROR;
@@ -101,7 +106,7 @@ ECode CMediaSession::SetMetadata(
     /* [in] */ IMediaMetadata* metadata)
 {
     {
-        Autolock lock(mHost->mLock);
+        AutoLock lock(mHost->mLock);
         AutoPtr<IMediaMetadata> temp = metadata;
         if (temp == NULL) {
             AutoPtr<IMediaMetadataBuilder> builder;
@@ -140,7 +145,7 @@ ECode CMediaSession::SetPlaybackState(
         mHost->mLastActiveTime = SystemClock::GetElapsedRealtime();
     }
     {
-        Autolock lock(mHost->mLock);
+        AutoLock lock(mHost->mLock);
         mHost->mPlaybackState = state;
     }
     mHost->mService->OnSessionPlaystateChange(mHost, oldState, newState);
@@ -152,7 +157,7 @@ ECode CMediaSession::SetQueue(
     /* [in] */ IParceledListSlice* queue)
 {
     {
-        Autolock lock(mHost->mLock);
+        AutoLock lock(mHost->mLock);
         mHost->mQueue = queue;
     }
     mHost->mHandler->Post(MediaSessionRecord::MessageHandler::MSG_UPDATE_QUEUE);
@@ -171,7 +176,7 @@ ECode CMediaSession::SetExtras(
     /* [in] */ IBundle* extras)
 {
     {
-        Autolock lock(mHost->mLock);
+        AutoLock lock(mHost->mLock);
         mHost->mExtras = NULL;
         if (extras != NULL) {
             CBundle::New(extras, (IBundle**)&mHost->mExtras);
@@ -191,7 +196,7 @@ ECode CMediaSession::SetRatingType(
 ECode CMediaSession::SetCurrentVolume(
     /* [in] */ Int32 currentVolume)
 {
-    mHost->mCurrentVolume = volume;
+    mHost->mCurrentVolume = currentVolume;
     mHost->mHandler->Post(MediaSessionRecord::MessageHandler::MSG_UPDATE_VOLUME);
     return NOERROR;
 }
@@ -201,7 +206,7 @@ ECode CMediaSession::SetPlaybackToLocal(
 {
     Boolean typeChanged;
     {
-        Autolock lock(mHost->mLock);
+        AutoLock lock(mHost->mLock);
         typeChanged = mHost->mVolumeType == IMediaControllerPlaybackInfo::PLAYBACK_TYPE_REMOTE;
         mHost->mVolumeType = IMediaControllerPlaybackInfo::PLAYBACK_TYPE_LOCAL;
         if (attributes != NULL) {
@@ -223,7 +228,7 @@ ECode CMediaSession::SetPlaybackToRemote(
 {
     Boolean typeChanged;
     {
-        Autolock lock(mHost->mLock);
+        AutoLock lock(mHost->mLock);
         typeChanged = mHost->mVolumeType == IMediaControllerPlaybackInfo::PLAYBACK_TYPE_LOCAL;
         mHost->mVolumeType = IMediaControllerPlaybackInfo::PLAYBACK_TYPE_REMOTE;
         mHost->mVolumeControlType = control;
@@ -233,6 +238,13 @@ ECode CMediaSession::SetPlaybackToRemote(
         mHost->mService->OnSessionPlaybackTypeChanged(mHost);
     }
     return NOERROR;
+}
+
+ECode CMediaSession::ToString(
+    /* [out] */ String* str)
+{
+    VALIDATE_NOT_NULL(str)
+    return Object::ToString(str);
 }
 
 } // namespace Media

@@ -3,6 +3,9 @@
 #define __ELASTOS_DROID_SERVER_MEDIA_CMEDIAROUTERSERVICE_H__
 
 #include "_Elastos_Droid_Server_Media_CMediaRouterService.h"
+#include <Elastos.Droid.Utility.h>
+#define HASH_FOR_OS
+#include "elastos/droid/ext/frameworkhash.h"
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/server/media/RemoteDisplayProviderWatcher.h"
 #include "elastos/droid/server/media/RemoteDisplayProviderProxy.h"
@@ -10,6 +13,7 @@
 #include "elastos/droid/os/Handler.h"
 #include <elastos/core/AutoLock.h>
 #include <elastos/utility/etl/List.h>
+#include <elastos/utility/etl/HashMap.h>
 
 using Elastos::Droid::Content::BroadcastReceiver;
 using Elastos::Droid::Media::IIMediaRouterService;
@@ -23,6 +27,8 @@ using Elastos::Droid::Os::Handler;
 using Elastos::Droid::Server::IWatchdogMonitor;
 using Elastos::Droid::Utility::ISparseArray;
 using Elastos::Utility::IArrayList;
+using Elastos::Utility::Etl::List;
+using Elastos::Utility::Etl::HashMap;
 
 namespace Elastos {
 namespace Droid {
@@ -51,8 +57,8 @@ public:
      * The contents of this object is guarded by mLock.
      */
     class ClientRecord
-        : Object
-        , IProxyDeathRecipient
+        : public Object
+        , public IProxyDeathRecipient
     {
     public:
         ClientRecord(
@@ -107,7 +113,7 @@ public:
      * Information about a particular user.
      * The contents of this object is guarded by mLock.
      */
-    class UserRecord : Object
+    class UserRecord : public Object
     {
     public:
         UserRecord(
@@ -149,7 +155,7 @@ public:
      */
     class UserHandler
         : public Handler
-        , public RemoteDisplayProviderWatcher::ICallback,
+        , public RemoteDisplayProviderWatcher::ICallback
         , public RemoteDisplayProviderProxy::ICallback
     {
     public:
@@ -283,15 +289,15 @@ public:
         // public void dump(PrintWriter pw, String prefix);
 
         // @Override
-        CARAPI_(void) AddProvider(
+        CARAPI AddProvider(
             /* [in] */ RemoteDisplayProviderProxy* provider);
 
         // @Override
-        CARAPI_(void) RemoveProvider(
+        CARAPI RemoveProvider(
             /* [in] */ RemoteDisplayProviderProxy* provider);
 
         // @Override
-        CARAPI_(void) OnDisplayStateChanged(
+        CARAPI OnDisplayStateChanged(
             /* [in] */ RemoteDisplayProviderProxy* provider,
             /* [in] */ IRemoteDisplayState* state);
 
@@ -468,8 +474,11 @@ public:
     CARAPI_(void) ClientDied(
         /* [in] */ ClientRecord* clientRecord);
 
+    CARAPI ToString(
+        /* [out] */ String* str);
+
 private:
-    CARAPI_(void) RegisterClientLocked(
+    CARAPI RegisterClientLocked(
         /* [in] */ IIMediaRouterClient* client,
         /* [in] */ Int32 pid,
         /* [in] */ const String& packageName,

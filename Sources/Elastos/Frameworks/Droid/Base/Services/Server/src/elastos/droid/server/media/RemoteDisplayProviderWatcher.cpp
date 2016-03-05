@@ -1,4 +1,5 @@
 
+#include <Elastos.CoreLibrary.Utility.h>
 #include "elastos/droid/server/media/RemoteDisplayProviderWatcher.h"
 #include "elastos/droid/Manifest.h"
 #include <elastos/utility/logging/Slogger.h>
@@ -10,6 +11,7 @@ using Elastos::Droid::Content::CIntentFilter;
 using Elastos::Droid::Content::IComponentName;
 using Elastos::Droid::Content::CComponentName;
 using Elastos::Droid::Content::Pm::IResolveInfo;
+using Elastos::Droid::Content::Pm::IPackageItemInfo;
 using Elastos::Droid::Os::IUserHandle;
 using Elastos::Droid::Os::CUserHandle;
 using Elastos::Utility::IList;
@@ -24,9 +26,9 @@ namespace Droid {
 namespace Server {
 namespace Media {
 
-// {7D60ED5E-65E5-4229-806C-1AFD69AF0AF1}
-extern "C" const InterfaceID EIID_IRemoteDisplayProviderWatcherCallbacks =
-        { 0x7d60ed5e, 0x65e5, 0x4229, { 0x80, 0x6c, 0x1a, 0xfd, 0x69, 0xaf, 0xa, 0xf1 } };
+// {A515C487-74FB-4911-9A8B-33ABCD1D2A85}
+extern "C" const InterfaceID EIID_IRemoteDisplayProviderWatcherCallback =
+        { 0xa515c487, 0x74fb, 0x4911, { 0x9a, 0x8b, 0x33, 0xab, 0xcd, 0x1d, 0x2a, 0x85 } };
 
 //==============================================================================
 //                  RemoteDisplayProviderWatcher::ScanPackagesReceiver
@@ -156,9 +158,10 @@ void RemoteDisplayProviderWatcher::ScanPackages()
         AutoPtr<IServiceInfo> serviceInfo;
         resolveInfo->GetServiceInfo((IServiceInfo**)&serviceInfo);
         if (serviceInfo != NULL && VerifyServiceTrusted(serviceInfo)) {
+            AutoPtr<IPackageItemInfo> pii = IPackageItemInfo::Probe(serviceInfo);
             String packageName, name;
-            serviceInfo->GetPackageName(&packageName);
-            serviceInfo->GetName(&name);
+            pii->GetPackageName(&packageName);
+            pii->GetName(&name);
             Int32 sourceIndex = FindProvider(packageName, name);
             if (sourceIndex < 0) {
                 AutoPtr<IComponentName> cn;
@@ -166,7 +169,7 @@ void RemoteDisplayProviderWatcher::ScanPackages()
                 AutoPtr<RemoteDisplayProviderProxy> provider =
                         new RemoteDisplayProviderProxy(mContext, cn, mUserId);
                 provider->Start();
-                mProviders->Add(targetIndex++, provider);
+                mProviders->Add(targetIndex++, (IObject*)provider.Get());
                 mCallback->AddProvider(provider);
             }
             else if (sourceIndex >= targetIndex) {
@@ -200,6 +203,7 @@ void RemoteDisplayProviderWatcher::ScanPackages()
 Boolean RemoteDisplayProviderWatcher::VerifyServiceTrusted(
     /* [in] */ IServiceInfo* serviceInfo)
 {
+    AutoPtr<IPackageItemInfo> pii = IPackageItemInfo::Probe(serviceInfo);
     String permission;
     if ((serviceInfo->GetPermission(&permission), permission.IsNull())
             || !permission.Equals(Elastos::Droid::Manifest::permission::BIND_REMOTE_DISPLAY)) {
@@ -208,20 +212,20 @@ Boolean RemoteDisplayProviderWatcher::VerifyServiceTrusted(
         // misbehave.  So we only want to trust providers that require the
         // correct permissions.
         String packageName, name;
-        serviceInfo->GetPackageName(&packageName);
-        serviceInfo->GetName(&name);
+        pii->GetPackageName(&packageName);
+        pii->GetName(&name);
         Slogger::W(TAG, "Ignoring remote display provider service because it did not require the BIND_REMOTE_DISPLAY permission in its manifest: %s/%s",
                 packageName.string(), name.string());
         return FALSE;
     }
     String packageName;
-    serviceInfo->GetPackageName(&packageName);
+    pii->GetPackageName(&packageName);
     if (!HasCaptureVideoPermission(packageName)) {
         // If the service does not have permission to capture video then it
         // isn't going to be terribly useful as a remote display, is it?
         // Kind of makes you wonder what it's doing there in the first place.
         String name;
-        serviceInfo->GetName(&name);
+        pii->GetName(&name);
         Slogger::W(TAG, "Ignoring remote display provider service because it does not have the CAPTURE_VIDEO_OUTPUT or CAPTURE_SECURE_VIDEO_OUTPUT permission: %s/%s",
                 packageName.string(), name.string());
         return FALSE;

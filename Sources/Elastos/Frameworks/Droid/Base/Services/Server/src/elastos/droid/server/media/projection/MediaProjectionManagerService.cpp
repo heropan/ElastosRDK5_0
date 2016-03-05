@@ -7,6 +7,10 @@
 #include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Droid::Os::Looper;
+using Elastos::Droid::Media::EIID_IMediaRouterCallback;
+using Elastos::Droid::Media::EIID_IMediaRouterSimpleCallback;
+using Elastos::Droid::Media::Projection::IMediaProjectionManager;
+using Elastos::Droid::Os::CHandler;
 using Elastos::Droid::Server::Watchdog;
 using Elastos::Droid::Server::EIID_IWatchdogMonitor;
 using Elastos::Core::StringUtils;
@@ -22,10 +26,12 @@ namespace Projection {
 //                  MediaProjectionManagerService::AddCallbackDeathRecipient
 //==============================================================================
 
+CAR_INTERFACE_IMPL(MediaProjectionManagerService::AddCallbackDeathRecipient, Object, IProxyDeathRecipient)
+
 ECode MediaProjectionManagerService::AddCallbackDeathRecipient::ProxyDied()
 {
     AutoLock lock(mHost->mLock);
-    RemoveCallback(callback);
+    mHost->RemoveCallback(mCallback);
     return NOERROR;
 }
 
@@ -172,7 +178,7 @@ void MediaProjectionManagerService::CallbackDelegate::DispatchStart(
         HashMap<AutoPtr<IBinder>, AutoPtr<IIMediaProjectionWatcherCallback> >::Iterator it = mWatcherCallbacks.Begin();
         for (; it != mWatcherCallbacks.End(); ++it) {
             AutoPtr<IIMediaProjectionWatcherCallback> callback = it->mSecond;
-            AutoPtr<IMediaRouterRouteInfo> info = projection->GetProjectionInfo();
+            AutoPtr<IMediaProjectionInfo> info = projection->GetProjectionInfo();
             AutoPtr<IRunnable> startWatcher = (IRunnable*)new WatcherStartCallback(info, callback);
             Boolean result;
             mHandler->Post(startWatcher, &result);
@@ -196,10 +202,10 @@ void MediaProjectionManagerService::CallbackDelegate::DispatchStop(
             mHandler->Post(stopClient, &result);
         }
 
-        HashMap<AutoPtr<IBinder>, AutoPtr<IIMediaProjectionWatcherCallback> >::Iterator it = mWatcherCallbacks.Begin();
-        for (; it != mWatcherCallbacks.End(); ++it) {
-            AutoPtr<IIMediaProjectionWatcherCallback> callback = it->mSecond;
-            AutoPtr<IMediaRouterRouteInfo> info = projection->GetProjectionInfo();
+        HashMap<AutoPtr<IBinder>, AutoPtr<IIMediaProjectionWatcherCallback> >::Iterator it1 = mWatcherCallbacks.Begin();
+        for (; it1 != mWatcherCallbacks.End(); ++it1) {
+            AutoPtr<IIMediaProjectionWatcherCallback> callback = it1->mSecond;
+            AutoPtr<IMediaProjectionInfo> info = projection->GetProjectionInfo();
             AutoPtr<IRunnable> stopWatcher = (IRunnable*)new WatcherStopCallback(info, callback);
             Boolean result;
             mHandler->Post(stopWatcher, &result);
@@ -269,8 +275,8 @@ CAR_INTERFACE_IMPL(MediaProjectionManagerService, SystemService, IWatchdogMonito
 
 MediaProjectionManagerService::MediaProjectionManagerService(
     /* [in] */ IContext* context)
-    : SystemService(context)
 {
+    SystemService::constructor(context);
     mContext = context;
     mCallbackDelegate = new CallbackDelegate();
     AutoPtr<IInterface> service;
@@ -318,7 +324,6 @@ void MediaProjectionManagerService::StartProjectionLocked(
     mProjectionToken = IBinder::Probe(projection);
     mProjectionGrant = projection;
     DispatchStart(projection);
-    return NOERROR;
 }
 
 void MediaProjectionManagerService::StopProjectionLocked(
@@ -327,13 +332,12 @@ void MediaProjectionManagerService::StopProjectionLocked(
     mProjectionToken = NULL;
     mProjectionGrant = NULL;
     DispatchStop(projection);
-    return NOERROR;
 }
 
 void MediaProjectionManagerService::AddCallback(
     /* [in] */ IIMediaProjectionWatcherCallback* callback)
 {
-    AutoPtr<IProxyDeathRecipient> deathRecipient = new AddCallbackDeathRecipient(this);
+    AutoPtr<IProxyDeathRecipient> deathRecipient = new AddCallbackDeathRecipient(callback, this);
     synchronized (mLock) {
         mCallbackDelegate->Add(callback);
         LinkDeathRecipientLocked(callback, deathRecipient);
@@ -379,7 +383,10 @@ void MediaProjectionManagerService::UnlinkDeathRecipientLocked(
     }
     if (deathRecipient != NULL) {
         AutoPtr<IProxy> proxy = (IProxy*)token->Probe(EIID_IProxy);
-        if (proxy != NULL) proxy->UnlinkToDeath(deathRecipient, 0);
+        if (proxy != NULL) {
+            Boolean result;
+            proxy->UnlinkToDeath(deathRecipient, 0, &result);
+        }
     }
 }
 
@@ -410,11 +417,12 @@ Boolean MediaProjectionManagerService::IsValidMediaProjection(
 
 AutoPtr<IMediaProjectionInfo> MediaProjectionManagerService::GetActiveProjectionInfo()
 {
+    AutoPtr<IMediaProjectionInfo> info;
     synchronized (mLock) {
         if (mProjectionGrant == NULL) {
             return NULL;
         }
-        AutoPtr<IMediaProjectionInfo> info = mProjectionGrant->GetProjectionInfo();
+        info = mProjectionGrant->GetProjectionInfo();
     }
     return info;
 }

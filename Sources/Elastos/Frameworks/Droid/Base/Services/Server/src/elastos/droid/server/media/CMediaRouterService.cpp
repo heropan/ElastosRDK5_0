@@ -18,15 +18,19 @@ using Elastos::Droid::Media::IMediaRouter;
 using Elastos::Droid::Media::CMediaRouterClientState;
 using Elastos::Droid::Media::CMediaRouterClientStateRouteInfo;
 using Elastos::Droid::Media::IAudioSystem;
+using Elastos::Droid::Media::IMediaRouterRouteInfo;
+using Elastos::Droid::Media::EIID_IIMediaRouterService;
 using Elastos::Droid::Os::Binder;
-using Elastos::Droid::Os::IUserHandler;
 using Elastos::Droid::Os::IMessage;
 using Elastos::Droid::Os::SystemClock;
+using Elastos::Droid::Os::EIID_IBinder;
 using Elastos::Droid::Server::Watchdog;
+using Elastos::Droid::Server::EIID_IWatchdogMonitor;
 using Elastos::Droid::Text::TextUtils;
 using Elastos::Droid::Utility::CSparseArray;
 using Elastos::Core::StringUtils;
 using Elastos::Core::ICharSequence;
+using Elastos::Core::CString;
 using Elastos::Utility::CArrayList;
 using Elastos::Utility::IIterator;
 using Elastos::Utility::ICollections;
@@ -134,7 +138,43 @@ CMediaRouterService::UserHandler::UserHandler(
             (IHandler*)this, mUserRecord->mUserId);
 }
 
-CAR_INTERFACE_IMPL_2(CMediaRouterService::UserHandler, Handler, RemoteDisplayProviderWatcher::ICallback, RemoteDisplayProviderProxy::ICallback)
+PInterface CMediaRouterService::UserHandler::Probe(
+    /* [in] */ REIID riid)
+{
+    if (riid == EIID_IRemoteDisplayProviderWatcherCallback) {
+        return (RemoteDisplayProviderWatcher::ICallback*)this;
+    }
+    else if (riid == EIID_IRemoteDisplayProviderProxyCallback) {
+        return (RemoteDisplayProviderProxy::ICallback*)this;
+    }
+    else return Handler::Probe(riid);
+}
+
+UInt32 CMediaRouterService::UserHandler::AddRef()
+{
+    return Handler::AddRef();
+}
+
+UInt32 CMediaRouterService::UserHandler::Release()
+{
+    return Handler::Release();
+}
+
+ECode CMediaRouterService::UserHandler::GetInterfaceID(
+    /* [in] */ IInterface* object,
+    /* [out] */ InterfaceID* iid)
+{
+    VALIDATE_NOT_NULL(iid)
+    if (object == (RemoteDisplayProviderWatcher::ICallback*)this) {
+        *iid = EIID_IRemoteDisplayProviderWatcherCallback;
+        return NOERROR;
+    }
+    else if (object == (RemoteDisplayProviderProxy::ICallback*)this) {
+        *iid = EIID_IRemoteDisplayProviderProxyCallback;
+        return NOERROR;
+    }
+    else return Handler::GetInterfaceID(object, iid);
+}
 
 ECode CMediaRouterService::UserHandler::HandleMessage(
     /* [in] */ IMessage* msg)
@@ -191,7 +231,7 @@ ECode CMediaRouterService::UserHandler::HandleMessage(
             cs->ToString(&str);
             Int32 arg1;
             msg->GetArg1(&arg1);
-            RequestUpdateVolume((String)msg.obj, arg1);
+            RequestUpdateVolume(str, arg1);
             break;
         }
         case MSG_UPDATE_CLIENT_STATE: {
@@ -203,13 +243,14 @@ ECode CMediaRouterService::UserHandler::HandleMessage(
             break;
         }
     }
+    return NOERROR;
 }
 
 void CMediaRouterService::UserHandler::Start()
 {
     if (!mRunning) {
         mRunning = TRUE;
-        mWatcher->start(); // also starts all providers
+        mWatcher->Start(); // also starts all providers
     }
 }
 
@@ -227,7 +268,7 @@ void CMediaRouterService::UserHandler::UpdateDiscoveryRequest()
     Int32 routeTypes = 0;
     Boolean activeScan = FALSE;
     {
-        Autolock lock(mService->mLock);
+        AutoLock lock(mService->mLock);
         List<AutoPtr<ClientRecord> >::Iterator it = mUserRecord->mClientRecords.Begin();
         for (; it != mUserRecord->mClientRecords.End(); ++it) {
             AutoPtr<ClientRecord> clientRecord = *it;
@@ -320,7 +361,7 @@ void CMediaRouterService::UserHandler::RequestUpdateVolume(
     }
 }
 
-void CMediaRouterService::UserHandler::AddProvider(
+ECode CMediaRouterService::UserHandler::AddProvider(
     /* [in] */ RemoteDisplayProviderProxy* provider)
 {
     provider->SetCallback((RemoteDisplayProviderProxy::ICallback*)this);
@@ -333,9 +374,10 @@ void CMediaRouterService::UserHandler::AddProvider(
     providerRecord->UpdateDescriptor(rds);
 
     ScheduleUpdateClientState();
+    return NOERROR;
 }
 
-void CMediaRouterService::UserHandler::RemoveProvider(
+ECode CMediaRouterService::UserHandler::RemoveProvider(
     /* [in] */ RemoteDisplayProviderProxy* provider)
 {
     List<AutoPtr<ProviderRecord> >::Iterator it = FindProviderRecord(provider);
@@ -349,13 +391,15 @@ void CMediaRouterService::UserHandler::RemoveProvider(
         CheckGloballySelectedRouteState();
         ScheduleUpdateClientState();
     }
+    return NOERROR;
 }
 
-void CMediaRouterService::UserHandler::OnDisplayStateChanged(
+ECode CMediaRouterService::UserHandler::OnDisplayStateChanged(
     /* [in] */ RemoteDisplayProviderProxy* provider,
     /* [in] */ IRemoteDisplayState* state)
 {
     UpdateProvider(provider, state);
+    return NOERROR;
 }
 
 void CMediaRouterService::UserHandler::UpdateProvider(
@@ -517,13 +561,13 @@ void CMediaRouterService::UserHandler::UpdateClientState()
         AutoPtr<IArrayList> routes;
         untrustedState->GetRoutes((IArrayList**)&routes);
         AutoPtr<IMediaRouterClientStateRouteInfo> routeInfo;
-        trustedState->Getroute(globallySelectedRouteId, (IMediaRouterClientStateRouteInfo**)&routeInfo);
+        trustedState->GetRoute(globallySelectedRouteId, (IMediaRouterClientStateRouteInfo**)&routeInfo);
         routes->Add(routeInfo);
     }
 
     // try {
     {
-        Autolock lock(mService->mLock);
+        AutoLock lock(mService->mLock);
         // Update the UserRecord.
         mUserRecord->mTrustedState = trustedState;
         mUserRecord->mUntrustedState = untrustedState;
@@ -536,10 +580,10 @@ void CMediaRouterService::UserHandler::UpdateClientState()
     }
 
     // Notify all clients (outside of the lock).
-    List<AutoPtr<IIMediaRouterClient> >::Iterator it = mTempClients.Begin();
-    for (; it != mTempClients.End(); ++it) {
+    List<AutoPtr<IIMediaRouterClient> >::Iterator clientIt = mTempClients.Begin();
+    for (; clientIt != mTempClients.End(); ++clientIt) {
         // try {
-        (*it)->OnStateChanged();
+        (*clientIt)->OnStateChanged();
         // } catch (RemoteException ex) {
         //     // ignore errors, client probably died
         // }
@@ -551,7 +595,7 @@ void CMediaRouterService::UserHandler::UpdateClientState()
     mTempClients.Clear();
 }
 
-List<AutoPtr<ProviderRecord> >::Iterator CMediaRouterService::UserHandler::FindProviderRecord(
+List<AutoPtr<CMediaRouterService::UserHandler::ProviderRecord> >::Iterator CMediaRouterService::UserHandler::FindProviderRecord(
     /* [in] */ RemoteDisplayProviderProxy* provider)
 {
     List<AutoPtr<ProviderRecord> >::Iterator it = mProviderRecords.Begin();
@@ -564,7 +608,7 @@ List<AutoPtr<ProviderRecord> >::Iterator CMediaRouterService::UserHandler::FindP
     return mProviderRecords.End();
 }
 
-AutoPtr<RouteRecord> CMediaRouterService::UserHandler::FindRouteRecord(
+AutoPtr<CMediaRouterService::UserHandler::RouteRecord> CMediaRouterService::UserHandler::FindRouteRecord(
     /* [in] */ const String& uniqueId)
 {
     List<AutoPtr<ProviderRecord> >::Iterator it = mProviderRecords.Begin();
@@ -623,7 +667,7 @@ Boolean CMediaRouterService::UserHandler::ProviderRecord::UpdateDescriptor(
     /* [in] */ IRemoteDisplayState* descriptor)
 {
     Boolean changed = FALSE;
-    if (mDescriptor != descriptor) {
+    if (mDescriptor.Get() != descriptor) {
         mDescriptor = descriptor;
 
         // Update all existing routes and reorder them to match
@@ -637,9 +681,9 @@ Boolean CMediaRouterService::UserHandler::ProviderRecord::UpdateDescriptor(
                 AutoPtr<IIterator> iterator;
                 routeDescriptors->GetIterator((IIterator**)&iterator);
                 Boolean hasNext;
-                while (it->HasNext(&hasNext), hasNext) {
+                while (iterator->HasNext(&hasNext), hasNext) {
                     AutoPtr<IInterface> next;
-                    it->GetNext((IInterface**)&v);
+                    iterator->GetNext((IInterface**)&next);
                     AutoPtr<IRemoteDisplayStateRemoteDisplayInfo> routeDescriptor
                             = IRemoteDisplayStateRemoteDisplayInfo::Probe(next);
                     String descriptorId;
@@ -650,7 +694,7 @@ Boolean CMediaRouterService::UserHandler::ProviderRecord::UpdateDescriptor(
                         String uniqueId = AssignRouteUniqueId(descriptorId);
                         AutoPtr<RouteRecord> route =
                                 new RouteRecord(this, descriptorId, uniqueId);
-                        mRoutes->Add(targetIndex++, route);
+                        mRoutes->Add(targetIndex++, (IObject*)route.Get());
                         route->UpdateDescriptor(routeDescriptor);
                         changed = TRUE;
                     }
@@ -705,7 +749,7 @@ void CMediaRouterService::UserHandler::ProviderRecord::AppendClientState(
     }
 }
 
-AutoPtr<RouteRecord> CMediaRouterService::UserHandler::ProviderRecord::FindRouteByUniqueId(
+AutoPtr<CMediaRouterService::UserHandler::RouteRecord> CMediaRouterService::UserHandler::ProviderRecord::FindRouteByUniqueId(
     /* [in] */ const String& uniqueId)
 {
     Int32 routeCount;
@@ -771,7 +815,7 @@ AutoPtr<RemoteDisplayProviderProxy> CMediaRouterService::UserHandler::RouteRecor
     return mProviderRecord->GetProvider();
 }
 
-AutoPtr<ProviderRecord> CMediaRouterService::UserHandler::RouteRecord::GetProviderRecord()
+AutoPtr<CMediaRouterService::UserHandler::ProviderRecord> CMediaRouterService::UserHandler::RouteRecord::GetProviderRecord()
 {
     return mProviderRecord;
 }
@@ -819,7 +863,7 @@ Boolean CMediaRouterService::UserHandler::RouteRecord::UpdateDescriptor(
     /* [in] */ IRemoteDisplayStateRemoteDisplayInfo* descriptor)
 {
     Boolean changed = FALSE;
-    if (mDescriptor != descriptor) {
+    if (mDescriptor.Get() != descriptor) {
         mDescriptor = descriptor;
         if (descriptor != NULL) {
             String name = ComputeName(descriptor);
@@ -854,7 +898,7 @@ Boolean CMediaRouterService::UserHandler::RouteRecord::UpdateDescriptor(
                 mMutableInfo->SetStatusCode(statusCode);
                 changed = TRUE;
             }
-            Int32 playbackType = computePlaybackType(descriptor);\
+            Int32 playbackType = ComputePlaybackType(descriptor);
             Int32 infoPlaybackType;
             if (mMutableInfo->GetPlaybackType(&infoPlaybackType), infoPlaybackType != playbackType) {
                 mMutableInfo->SetPlaybackType(playbackType);
@@ -862,7 +906,7 @@ Boolean CMediaRouterService::UserHandler::RouteRecord::UpdateDescriptor(
             }
             Int32 playbackStream = ComputePlaybackStream(descriptor);
             Int32 infoPlaybackStream;
-            if (mMutableInfo->GetPlaybackStream(&playbackStream), playbackStream != playbackStream) {
+            if (mMutableInfo->GetPlaybackStream(&infoPlaybackStream), infoPlaybackStream != playbackStream) {
                 mMutableInfo->SetPlaybackStream(playbackStream);
                 changed = TRUE;
             }
@@ -1027,7 +1071,7 @@ Int32 CMediaRouterService::UserHandler::RouteRecord::ComputePresentationDisplayI
     // The MediaRouter class validates that the id corresponds to an extant
     // presentation display.  So all we do here is canonicalize the null case.
     Int32 displayId;
-    descriptor->GetPresentationDisplayId(displayId);
+    descriptor->GetPresentationDisplayId(&displayId);
     return displayId < 0 ? -1 : displayId;
 }
 
@@ -1044,7 +1088,7 @@ ECode CMediaRouterService::SystemRunningBroadReceiver::OnReceive(
     if (intent->GetAction(&action), action.Equals(IIntent::ACTION_USER_SWITCHED)) {
         mHost->SwitchUser();
     }
-    return NOERROR
+    return NOERROR;
 }
 
 ECode CMediaRouterService::SystemRunningBroadReceiver::ToString(
@@ -1087,7 +1131,7 @@ ECode CMediaRouterService::constructor(
 void CMediaRouterService::SystemRunning()
 {
     AutoPtr<IIntentFilter> filter;
-    CIntentFilter::(IIntent::ACTION_USER_SWITCHED, (IIntentFilter**)&filter);
+    CIntentFilter::New(IIntent::ACTION_USER_SWITCHED, (IIntentFilter**)&filter);
     AutoPtr<IBroadcastReceiver> receiver = (IBroadcastReceiver*)new SystemRunningBroadReceiver(this);
     AutoPtr<IIntent> intent;
     mContext->RegisterReceiver(receiver, filter, (IIntent**)&intent);
@@ -1116,12 +1160,12 @@ ECode CMediaRouterService::RegisterClientAsUser(
         return E_SECURITY_EXCEPTION;
     }
 
-    Int32 pid = Binder::getCallingPid();
+    Int32 pid = Binder::GetCallingPid();
     AutoPtr<IActivityManagerHelper> helper;
     CActivityManagerHelper::AcquireSingleton((IActivityManagerHelper**)&helper);
     Int32 resolvedUserId;
     helper->HandleIncomingUser(pid, uid, userId,
-            FALSE /*allowAll*/, TRUE /*requireFull*/, "registerClientAsUser", packageName, &resolvedUserId);
+            FALSE /*allowAll*/, TRUE /*requireFull*/, String("registerClientAsUser"), packageName, &resolvedUserId);
 
     Int32 perm;
     mContext->CheckCallingOrSelfPermission(
@@ -1292,19 +1336,19 @@ void CMediaRouterService::SwitchUser()
 
             AutoPtr<IInterface> value;
             mUserRecords->Get(oldUserId, (IInterface**)&value);
-            AutoPtr<UserRecord> oldUser = (UserRecord*)value.Get();
+            AutoPtr<UserRecord> oldUser = (UserRecord*)(IObject*)value.Get();
             if (oldUser != NULL) {
                 Boolean result;
-                oldUser->mHandler->SendEmptyMessage(IUserHandler::MSG_STOP, &result);
+                oldUser->mHandler->SendEmptyMessage(UserHandler::MSG_STOP, &result);
                 DisposeUserIfNeededLocked(oldUser); // since no longer current user
             }
 
             value = NULL;
             mUserRecords->Get(userId, (IInterface**)&value);
-            AutoPtr<UserRecord> newUser = (UserRecord*)value.Get();
+            AutoPtr<UserRecord> newUser = (UserRecord*)(IObject*)value.Get();
             if (newUser != NULL) {
                 Boolean result;
-                newUser->mHandler->SendEmptyMessage(IUserHandler::MSG_START, &result);
+                newUser->mHandler->SendEmptyMessage(UserHandler::MSG_START, &result);
             }
         }
     }
@@ -1318,7 +1362,7 @@ void CMediaRouterService::ClientDied(
     }
 }
 
-void CMediaRouterService::RegisterClientLocked(
+ECode CMediaRouterService::RegisterClientLocked(
     /* [in] */ IIMediaRouterClient* client,
     /* [in] */ Int32 pid,
     /* [in] */ const String& packageName,
@@ -1335,9 +1379,9 @@ void CMediaRouterService::RegisterClientLocked(
         Boolean newUser = FALSE;
         AutoPtr<IInterface> value;
         mUserRecords->Get(userId, (IInterface**)&value);
-        AutoPtr<UserRecord> userRecord = (UserRecord*)value.Get();
+        AutoPtr<UserRecord> userRecord = (UserRecord*)(IObject*)value.Get();
         if (userRecord == NULL) {
-            userRecord = new UserRecord(userId);
+            userRecord = new UserRecord(userId, this);
             newUser = TRUE;
         }
         clientRecord = new ClientRecord(userRecord, client, pid, packageName, trusted, this);
@@ -1363,6 +1407,7 @@ void CMediaRouterService::RegisterClientLocked(
         mAllClientRecords[binder] = clientRecord;
         InitializeClientLocked(clientRecord);
     }
+    return NOERROR;
 }
 
 void CMediaRouterService::UnregisterClientLocked(
@@ -1426,7 +1471,7 @@ void CMediaRouterService::SetDiscoveryRequestLocked(
             clientRecord->mActiveScan = activeScan;
             Boolean result;
             clientRecord->mUserRecord->mHandler->SendEmptyMessage(
-                    IUserHandler::MSG_UPDATE_DISCOVERY_REQUEST, &result);
+                    UserHandler::MSG_UPDATE_DISCOVERY_REQUEST, &result);
         }
     }
 }
@@ -1454,17 +1499,21 @@ void CMediaRouterService::SetSelectedRouteLocked(
             if (isExplicit) {
                 // Any app can disconnect from the globally selected route.
                 if (!oldRouteId.IsNull()) {
+                    AutoPtr<ICharSequence> cs;
+                    CString::New(oldRouteId, (ICharSequence**)&cs);
                     AutoPtr<IMessage> msg;
                     clientRecord->mUserRecord->mHandler->ObtainMessage(
-                            IUserHandler::MSG_UNSELECT_ROUTE, oldRouteId, (IMessage**)&msg);
+                            UserHandler::MSG_UNSELECT_ROUTE, cs, (IMessage**)&msg);
                     msg->SendToTarget();
                 }
                 // Only let the system connect to new global routes for now.
                 // A similar check exists in the display manager for wifi display.
                 if (!routeId.IsNull() && clientRecord->mTrusted) {
+                    AutoPtr<ICharSequence> cs;
+                    CString::New(routeId, (ICharSequence**)&cs);
                     AutoPtr<IMessage> msg;
                     clientRecord->mUserRecord->mHandler->ObtainMessage(
-                            IUserHandler::MSG_SELECT_ROUTE, routeId, (IMessage**)&msg);
+                            UserHandler::MSG_SELECT_ROUTE, cs, (IMessage**)&msg);
                     msg->SendToTarget();
                 }
             }
@@ -1484,9 +1533,11 @@ void CMediaRouterService::RequestSetVolumeLocked(
         clientRecord = it->mSecond;
     }
     if (clientRecord != NULL) {
+        AutoPtr<ICharSequence> cs;
+        CString::New(routeId, (ICharSequence**)&cs);
         AutoPtr<IMessage> msg;
         clientRecord->mUserRecord->mHandler->ObtainMessage(
-                IUserHandler::MSG_REQUEST_SET_VOLUME, volume, 0, routeId, (IMessage**)&msg);
+                UserHandler::MSG_REQUEST_SET_VOLUME, volume, 0, cs, (IMessage**)&msg);
         msg->SendToTarget();
     }
 }
@@ -1503,9 +1554,11 @@ void CMediaRouterService::RequestUpdateVolumeLocked(
         clientRecord = it->mSecond;
     }
     if (clientRecord != NULL) {
+        AutoPtr<ICharSequence> cs;
+        CString::New(routeId, (ICharSequence**)&cs);
         AutoPtr<IMessage> msg;
         clientRecord->mUserRecord->mHandler->ObtainMessage(
-                IUserHandler::MSG_REQUEST_UPDATE_VOLUME, direction, 0, routeId, (IMessage**)&msg);
+                UserHandler::MSG_REQUEST_UPDATE_VOLUME, direction, 0, cs, (IMessage**)&msg);
         msg->SendToTarget();
     }
 }
@@ -1518,7 +1571,7 @@ void CMediaRouterService::InitializeUserLocked(
     }
     if (userRecord->mUserId == mCurrentUserId) {
         Boolean result;
-        userRecord->mHandler->SendEmptyMessage(IUserHandler::MSG_START, &result);
+        userRecord->mHandler->SendEmptyMessage(UserHandler::MSG_START, &result);
     }
 }
 
@@ -1562,7 +1615,7 @@ void CMediaRouterService::DisposeClientLocked(
     if (clientRecord->mRouteTypes != 0 || clientRecord->mActiveScan) {
         Boolean result;
         clientRecord->mUserRecord->mHandler->SendEmptyMessage(
-                IUserHandler::MSG_UPDATE_DISCOVERY_REQUEST, &result);
+                UserHandler::MSG_UPDATE_DISCOVERY_REQUEST, &result);
     }
     clientRecord->Dispose();
 }
@@ -1586,6 +1639,13 @@ Boolean CMediaRouterService::ValidatePackageName(
         }
     }
     return FALSE;
+}
+
+ECode CMediaRouterService::ToString(
+    /* [out] */ String* str)
+{
+    VALIDATE_NOT_NULL(str)
+    return Object::ToString(str);
 }
 
 } // namespace Media

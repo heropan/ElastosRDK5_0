@@ -15,7 +15,7 @@ namespace Droid {
 namespace Server {
 namespace Media {
 
-extern "C" const InterfaceID EIID_IRemoteDisplayProviderWatcherCallbacks;
+extern "C" const InterfaceID EIID_IRemoteDisplayProviderWatcherCallback;
 
 /**
  * Watches for remote display provider services to be installed.
@@ -26,13 +26,14 @@ extern "C" const InterfaceID EIID_IRemoteDisplayProviderWatcherCallbacks;
 class RemoteDisplayProviderWatcher : public Object
 {
 public:
-    interface ICallbacks : public IInterface
+    interface ICallback : public IInterface
     {
     public:
         virtual CARAPI AddProvider(
-            /* [in] */ RemoteDisplayProviderWatcher* provider) = 0;
+            /* [in] */ RemoteDisplayProviderProxy* provider) = 0;
+
         virtual CARAPI RemoveProvider(
-            /* [in] */ RemoteDisplayProviderWatcher* provider) = 0;
+            /* [in] */ RemoteDisplayProviderProxy* provider) = 0;
     };
 
 private:

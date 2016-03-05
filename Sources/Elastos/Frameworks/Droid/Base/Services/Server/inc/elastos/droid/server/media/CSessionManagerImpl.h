@@ -3,17 +3,18 @@
 #define __ELASTOS_DROID_SERVER_MEDIA_CSESSIONMANAGERIMPL_H__
 
 #include "_Elastos_Droid_Server_Media_CSessionManagerImpl.h"
+#include <Elastos.CoreLibrary.Utility.h>
 #include "elastos/droid/server/media/MediaSessionService.h"
 #include "elastos/droid/server/media/CKeyEventWakeLockReceiver.h"
 #include "elastos/droid/content/BroadcastReceiver.h"
 
 using Elastos::Droid::Content::IComponentName;
 using Elastos::Droid::Content::BroadcastReceiver;
+using Elastos::Droid::Media::IIRemoteVolumeController;
 using Elastos::Droid::Media::Session::IISessionManager;
 using Elastos::Droid::Media::Session::IISessionCallback;
 using Elastos::Droid::Media::Session::IISession;
 using Elastos::Droid::Media::Session::IIActiveSessionsListener;
-using Elastos::Droid::Media::Session::IIRemoteVolumeController;
 using Elastos::Droid::Os::IBinder;
 using Elastos::Droid::View::IKeyEvent;
 using Elastos::Utility::IList;
@@ -22,6 +23,8 @@ namespace Elastos {
 namespace Droid {
 namespace Server {
 namespace Media {
+
+class MediaSessionRecord;
 
 CarClass(CSessionManagerImpl)
     , public Object
@@ -103,6 +106,9 @@ public:
         /* [out] */ Boolean* result);
 
     // public void dump(FileDescriptor fd, final PrintWriter pw, String[] args);
+
+    CARAPI ToString(
+        /* [out] */ String* str);
 
 private:
     CARAPI VerifySessionsRequest(

@@ -3,6 +3,9 @@
 #define __ELASTOS_DROID_SERVER_MEDIA_MEDIASESSIONSTACK_H__
 
 #include "elastos/droid/server/media/MediaSessionRecord.h"
+#include <elastos/utility/etl/List.h>
+
+using Elastos::Utility::Etl::List;
 
 namespace Elastos {
 namespace Droid {

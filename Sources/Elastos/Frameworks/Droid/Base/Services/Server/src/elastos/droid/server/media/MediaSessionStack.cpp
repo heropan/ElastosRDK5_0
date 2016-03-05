@@ -22,6 +22,7 @@ static AutoPtr<ArrayOf<Int32> > InitAlwaysPriorityStates()
     (*states)[1] = IPlaybackState::STATE_REWINDING;
     (*states)[2] = IPlaybackState::STATE_SKIPPING_TO_PREVIOUS;
     (*states)[3] = IPlaybackState::STATE_SKIPPING_TO_NEXT;
+    return states;
 }
 const AutoPtr<ArrayOf<Int32> > MediaSessionStack::ALWAYS_PRIORITY_STATES = InitAlwaysPriorityStates();
 
@@ -31,6 +32,7 @@ static AutoPtr<ArrayOf<Int32> > InitTransitionPriorityStates()
     (*states)[0] = IPlaybackState::STATE_BUFFERING;
     (*states)[1] = IPlaybackState::STATE_CONNECTING;
     (*states)[2] = IPlaybackState::STATE_PLAYING;
+    return states;
 }
 const AutoPtr<ArrayOf<Int32> > MediaSessionStack::TRANSITION_PRIORITY_STATES = InitTransitionPriorityStates();
 
@@ -66,7 +68,7 @@ Boolean MediaSessionStack::OnPlaystateChange(
         AutoPtr<IMediaSessionHelper> helper;
         CMediaSessionHelper::AcquireSingleton((IMediaSessionHelper**)&helper);
         Boolean isActiveState;
-        if (helper->IsActiveState(newState, &isActiveState). !isActiveState) {
+        if (helper->IsActiveState(newState, &isActiveState), !isActiveState) {
             // Just clear the volume cache when a state goes inactive
             mCachedVolumeDefault = NULL;
         }
@@ -158,8 +160,6 @@ AutoPtr<MediaSessionRecord> MediaSessionStack::GetDefaultVolumeSession(
 AutoPtr<MediaSessionRecord> MediaSessionStack::GetDefaultRemoteSession(
     /* [in] */ Int32 userId)
 {
-    AutoPtr<List<AutoPtr<MediaSessionRecord> > > records = GetPriorityListLocked(TRUE, 0, userId);
-
     AutoPtr<List<AutoPtr<MediaSessionRecord> > > records = GetPriorityListLocked(TRUE, 0, userId);
     List<AutoPtr<MediaSessionRecord> >::Iterator it = records->Begin();
     for (; it != records->End(); ++it) {

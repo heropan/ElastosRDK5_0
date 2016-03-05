@@ -27,7 +27,7 @@ namespace Os {
  * the system that your process needs to continue running), the connection will
  * break if your process goes away for any reason, etc.</p>
  */
-ECO_PUBLIC class ResultReceiver
+class ECO_PUBLIC ResultReceiver
     : public Object
     , public IResultReceiver
     , public IParcelable

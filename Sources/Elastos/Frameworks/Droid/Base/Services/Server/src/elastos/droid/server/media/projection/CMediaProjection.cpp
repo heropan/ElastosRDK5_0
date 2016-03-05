@@ -1,12 +1,16 @@
 
+#include <Elastos.Droid.Hardware.h>
 #include "elastos/droid/server/media/projection/CMediaProjection.h"
+#include "elastos/droid/server/media/projection/MediaProjectionManagerService.h"
 #include "elastos/droid/os/Binder.h"
 #include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Droid::Hardware::Display::IDisplayManager;
 using Elastos::Droid::Media::Projection::IMediaProjectionManager;
 using Elastos::Droid::Media::Projection::CMediaProjectionInfo;
+using Elastos::Droid::Media::Projection::EIID_IIMediaProjection;
 using Elastos::Droid::Os::Binder;
+using Elastos::Droid::Os::EIID_IBinder;
 using Elastos::Droid::Os::CUserHandleHelper;
 using Elastos::Droid::Os::IUserHandleHelper;
 using Elastos::Droid::Os::CUserHandle;
@@ -94,26 +98,26 @@ ECode CMediaProjection::ApplyVirtualDisplayFlags(
 {
     VALIDATE_NOT_NULL(result)
     if (mType == IMediaProjectionManager::TYPE_SCREEN_CAPTURE) {
-        mFlags &= ~IDisplayManager::VIRTUAL_DISPLAY_FLAG_OWN_CONTENT_ONLY;
-        mFlags |= IDisplayManager::VIRTUAL_DISPLAY_FLAG_AUTO_MIRROR
+        flags &= ~IDisplayManager::VIRTUAL_DISPLAY_FLAG_OWN_CONTENT_ONLY;
+        flags |= IDisplayManager::VIRTUAL_DISPLAY_FLAG_AUTO_MIRROR
                 | IDisplayManager::VIRTUAL_DISPLAY_FLAG_PRESENTATION;
-        *result = mFlags;
+        *result = flags;
         return NOERROR;
     }
     else if (mType == IMediaProjectionManager::TYPE_MIRRORING) {
-        mFlags &= ~(IDisplayManager::VIRTUAL_DISPLAY_FLAG_PUBLIC |
+        flags &= ~(IDisplayManager::VIRTUAL_DISPLAY_FLAG_PUBLIC |
                 IDisplayManager::VIRTUAL_DISPLAY_FLAG_AUTO_MIRROR);
-        mFlags |= IDisplayManager::VIRTUAL_DISPLAY_FLAG_OWN_CONTENT_ONLY |
+        flags |= IDisplayManager::VIRTUAL_DISPLAY_FLAG_OWN_CONTENT_ONLY |
                 IDisplayManager::VIRTUAL_DISPLAY_FLAG_PRESENTATION;
-        *result = mFlags;
+        *result = flags;
         return NOERROR;
     }
     else if (mType == IMediaProjectionManager::TYPE_PRESENTATION) {
-        mFlags &= ~IDisplayManager::VIRTUAL_DISPLAY_FLAG_OWN_CONTENT_ONLY;
-        mFlags |= IDisplayManager::VIRTUAL_DISPLAY_FLAG_PUBLIC |
+        flags &= ~IDisplayManager::VIRTUAL_DISPLAY_FLAG_OWN_CONTENT_ONLY;
+        flags |= IDisplayManager::VIRTUAL_DISPLAY_FLAG_PUBLIC |
                 IDisplayManager::VIRTUAL_DISPLAY_FLAG_PRESENTATION |
                 IDisplayManager::VIRTUAL_DISPLAY_FLAG_AUTO_MIRROR;
-        *result = mFlags;
+        *result = flags;
         return NOERROR;
     }
     else  {
@@ -126,7 +130,7 @@ ECode CMediaProjection::ApplyVirtualDisplayFlags(
 ECode CMediaProjection::Start(
     /* [in] */ IIMediaProjectionCallback* cb)
 {
-    if (callback == NULL) {
+    if (cb == NULL) {
         Slogger::E("CMediaProjection", "callback must not be null");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
@@ -135,7 +139,7 @@ ECode CMediaProjection::Start(
         Slogger::E("CMediaProjection", "Cannot start already started MediaProjection");
         return E_ILLEGAL_STATE_EXCEPTION;
     }
-    RegisterCallback(callback);
+    RegisterCallback(cb);
     // try {
     mToken = IBinder::Probe(cb);
     mDeathEater = (IProxyDeathRecipient*)new DeathEater(cb, this);
@@ -166,7 +170,7 @@ ECode CMediaProjection::Stop()
     }
     AutoPtr<IProxy> proxy = (IProxy*)mToken->Probe(EIID_IProxy);
     if (proxy != NULL) {
-        Int32 result;
+        Boolean result;
         proxy->UnlinkToDeath(mDeathEater, 0, &result);
     }
     mHost->StopProjectionLocked(this);
@@ -176,22 +180,22 @@ ECode CMediaProjection::Stop()
 ECode CMediaProjection::RegisterCallback(
     /* [in] */ IIMediaProjectionCallback* cb)
 {
-    if (callback == NULL) {
+    if (cb == NULL) {
         Slogger::E("CMediaProjection", "callback must not be null");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
-    mHost->mCallbackDelegate->Add(callback);
+    mHost->mCallbackDelegate->Add(cb);
     return NOERROR;
 }
 
 ECode CMediaProjection::UnregisterCallback(
     /* [in] */ IIMediaProjectionCallback* cb)
 {
-    if (callback == NULL) {
+    if (cb == NULL) {
         Slogger::E("CMediaProjection", "callback must not be null");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
-    mHost->mCallbackDelegate->Remove(callback);
+    mHost->mCallbackDelegate->Remove(cb);
     return NOERROR;
 }
 
@@ -200,6 +204,13 @@ AutoPtr<IMediaProjectionInfo> CMediaProjection::GetProjectionInfo()
     AutoPtr<IMediaProjectionInfo> info;
     CMediaProjectionInfo::New(mPackageName, mUserHandle, (IMediaProjectionInfo**)&info);
     return info;
+}
+
+ECode CMediaProjection::ToString(
+    /* [out] */ String* str)
+{
+    VALIDATE_NOT_NULL(str)
+    return Object::ToString(str);
 }
 
 } // namespace Projection

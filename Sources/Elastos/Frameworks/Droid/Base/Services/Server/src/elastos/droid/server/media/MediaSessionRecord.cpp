@@ -1,5 +1,7 @@
 
 #include "elastos/droid/server/media/MediaSessionRecord.h"
+#include "elastos/droid/server/media/MediaSessionService.h"
+#include "elastos/droid/server/LocalServices.h"
 #include "elastos/droid/os/SystemClock.h"
 #include <elastos/core/Math.h>
 #include <elastos/core/StringUtils.h>
@@ -10,17 +12,21 @@ using Elastos::Droid::Content::IIntent;
 using Elastos::Droid::Content::CIntent;
 using Elastos::Droid::Media::IAudioAttributesHelper;
 using Elastos::Droid::Media::CAudioAttributesHelper;
-using Elastos::Droid::Media::IAudioSystemHelper;
-using Elastos::Droid::Media::CAudioSystemHelper;
+using Elastos::Droid::Media::IAudioSystem;
+using Elastos::Droid::Media::CAudioSystem;
 using Elastos::Droid::Media::IVolumeProvider;
 using Elastos::Droid::Media::IAudioAttributesBuilder;
 using Elastos::Droid::Media::CAudioAttributesBuilder;
 using Elastos::Droid::Media::IMediaDescription;
+using Elastos::Droid::Media::EIID_IAudioManagerInternal;
 using Elastos::Droid::Media::Session::IMediaControllerPlaybackInfo;
 using Elastos::Droid::Media::Session::IMediaSession;
 using Elastos::Droid::Media::Session::IPlaybackStateBuilder;
 using Elastos::Droid::Media::Session::CPlaybackStateBuilder;
+using Elastos::Droid::Media::Session::IMediaSessionHelper;
+using Elastos::Droid::Media::Session::CMediaSessionHelper;
 using Elastos::Droid::Os::SystemClock;
+using Elastos::Droid::Server::LocalServices;
 using Elastos::Core::StringUtils;
 using Elastos::Utility::Logging::Slogger;
 
@@ -349,7 +355,7 @@ void MediaSessionRecord::MessageHandler::Post(
     /* [in] */ IObject* obj)
 {
     AutoPtr<IMessage> msg;
-    ObtainMessage(what, obj, (IInterface**)&msg);
+    ObtainMessage(what, obj, (IMessage**)&msg);
     msg->SendToTarget();
 }
 
@@ -376,6 +382,7 @@ ECode MediaSessionRecord::ClearOptimisticVolumeRunnable::Run()
     if (needUpdate) {
         mHost->PushVolumeUpdate();
     }
+    return NOERROR;
 }
 
 
@@ -384,9 +391,9 @@ ECode MediaSessionRecord::ClearOptimisticVolumeRunnable::Run()
 //==============================================================================
 
 const String MediaSessionRecord::TAG("MediaSessionRecord");
-static const boolean DEBUG;
-const Int32 MediaSessionRecord::MessageHandler::ACTIVE_BUFFER;
-const Int32 MediaSessionRecord::MessageHandler::OPTIMISTIC_VOLUME_TIMEOUT;
+const Boolean MediaSessionRecord::DEBUG;
+const Int32 MediaSessionRecord::ACTIVE_BUFFER;
+const Int32 MediaSessionRecord::OPTIMISTIC_VOLUME_TIMEOUT;
 
 CAR_INTERFACE_IMPL(MediaSessionRecord, Object, IProxyDeathRecipient)
 
@@ -504,10 +511,10 @@ void MediaSessionRecord::AdjustVolume(
         Int32 stream;
         helper->ToLegacyStreamType(mAudioAttrs, &stream);
         if (useSuggested) {
-            AutoPtr<IAudioSystemHelper> audioSysH;
-            CAudioSystemHelper::AcquireSingleton((IAudioSystemHelper**)&audioSysH);
+            AutoPtr<IAudioSystem> audioSys;
+            CAudioSystem::AcquireSingleton((IAudioSystem**)&audioSys);
             Boolean isStreamActive;
-            if (audioSysH->IsStreamActive(stream, 0, &isStreamActive), isStreamActive) {
+            if (audioSys->IsStreamActive(stream, 0, &isStreamActive), isStreamActive) {
                 mAudioManagerInternal->AdjustSuggestedStreamVolumeForUid(stream, direction,
                         flags, packageName, uid);
             }
@@ -597,7 +604,7 @@ Boolean MediaSessionRecord::IsPlaybackActive(
     AutoPtr<IMediaSessionHelper> helper;
     CMediaSessionHelper::AcquireSingleton((IMediaSessionHelper**)&helper);
     Boolean isActiveState;
-    if (MediaSession->IsActiveState(state, &isActiveState), isActiveState) {
+    if (helper->IsActiveState(state, &isActiveState), isActiveState) {
         return TRUE;
     }
     if (includeRecentlyActive && state == IPlaybackState::STATE_PAUSED) {
@@ -671,7 +678,8 @@ void MediaSessionRecord::SendMediaButton(
     /* [in] */ Int32 sequenceId,
     /* [in] */ IResultReceiver* cb)
 {
-    mSessionCb->SendMediaButton(ke, sequenceId, cb);
+    Boolean result;
+    mSessionCb->SendMediaButton(ke, sequenceId, cb, &result);
 }
 
 ECode MediaSessionRecord::ToString(
@@ -966,9 +974,9 @@ AutoPtr<IPlaybackState> MediaSessionRecord::GetStateWithUpdatedPosition()
             if (updateTime > 0) {
                 Float speed;
                 state->GetPlaybackSpeed(&speed);
-                Int64 position;
-                state->GetPosition(&position);
-                Int64 position = (Int64)(speed * (currentTime - updateTime)) + position;
+                Int64 pos;
+                state->GetPosition(&pos);
+                Int64 position = (Int64)(speed * (currentTime - updateTime)) + pos;
                 if (duration >= 0 && position > duration) {
                     position = duration;
                 }
@@ -990,7 +998,7 @@ List<AutoPtr<IISessionControllerCallback> >::Iterator MediaSessionRecord::GetCon
 {
     AutoPtr<IBinder> binder = IBinder::Probe(cb);
     List<AutoPtr<IISessionControllerCallback> >::ReverseIterator rit = mControllerCallbacks.RBegin();
-    for (; rit != mControllerCallbacks.End(); ++rit) {
+    for (; rit != mControllerCallbacks.REnd(); ++rit) {
         AutoPtr<IBinder> b = IBinder::Probe(*rit);
         Boolean equals;
         if (IObject::Probe(binder)->Equals(b, &equals), equals) {
