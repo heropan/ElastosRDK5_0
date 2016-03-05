@@ -237,8 +237,8 @@
 > Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/inputmethodservice
   Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/database/sqlite
 > Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/database
-#- Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/accounts
-- Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/telephony/cdma
+> Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/accounts
+> Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/telephony/cdma
 - Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/telephony/gsm
 - Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/telephony
 #- Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/statusbar
