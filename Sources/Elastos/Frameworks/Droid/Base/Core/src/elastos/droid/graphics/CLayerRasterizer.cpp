@@ -9,39 +9,11 @@ namespace Droid {
 namespace Graphics {
 
 CAR_OBJECT_IMPL(CLayerRasterizer);
+CAR_INTERFACE_IMPL(CLayerRasterizer, Rasterizer, ILayerRasterizer);
 ECode CLayerRasterizer::constructor()
 {
     mNativeInstance = NativeConstructor();
     return NOERROR;
-}
-
-PInterface CLayerRasterizer::Probe(
-    /* [in]  */ REIID riid)
-{
-    if (riid == EIID_Rasterizer) {
-        return reinterpret_cast<PInterface>((Rasterizer*)this);
-    }
-    else if (riid == EIID_ILayerRasterizer) {
-        return (ILayerRasterizer*)this;
-    }
-    return Rasterizer::Probe(riid);
-}
-
-UInt32 CLayerRasterizer::AddRef()
-{
-    return Rasterizer::AddRef();
-}
-
-UInt32 CLayerRasterizer::Release()
-{
-    return Rasterizer::Release();
-}
-
-ECode CLayerRasterizer::GetInterfaceID(
-    /* [in] */ IInterface* object,
-    /* [out] */ InterfaceID* iid)
-{
-    return Rasterizer::GetInterfaceID(object, iid);
 }
 
 ECode CLayerRasterizer::AddLayer(

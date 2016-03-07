@@ -558,7 +558,7 @@ ECode Paint::SetShader(
 {
     Int64 shaderNative = 0;
     if (shader != NULL) {
-        Shader* s = (Shader*)(IShader*)shader->Probe(EIID_Shader);
+        Shader* s = (Shader*)shader;
         assert(s != NULL);
         shaderNative = s->mNativeInstance;
     }
@@ -602,7 +602,7 @@ ECode Paint::SetXfermode(
 {
     Int64 xfermodeNative = 0;
     if (xfermode != NULL) {
-        Xfermode* x = (Xfermode*)(IXfermode*)xfermode->Probe(EIID_Xfermode);
+        Xfermode* x = (Xfermode*)xfermode;
         assert(x != NULL);
         xfermodeNative = x->mNativeInstance;
     }
@@ -624,7 +624,7 @@ ECode Paint::SetPathEffect(
 {
     Int64 effectNative = 0;
     if (effect != NULL) {
-        PathEffect* pe = (PathEffect*)(IPathEffect*)effect->Probe(EIID_PathEffect);
+        PathEffect* pe = (PathEffect*)effect;
         assert(pe != NULL);
         effectNative = pe->mNativeInstance;
     }
@@ -646,7 +646,7 @@ ECode Paint::SetMaskFilter(
 {
     Int64 maskfilterNative = 0;
     if (maskfilter != NULL) {
-        MaskFilter* mf = (MaskFilter*)(IMaskFilter*)maskfilter->Probe(EIID_MaskFilter);
+        MaskFilter* mf = (MaskFilter*)maskfilter;
         assert(mf != NULL);
         maskfilterNative = mf->mNativeInstance;
     }
@@ -689,7 +689,7 @@ ECode Paint::SetRasterizer(
 {
     Int64 rasterizerNative = 0;
     if (rasterizer != NULL) {
-        Rasterizer* r = (Rasterizer*)(IRasterizer*)rasterizer->Probe(EIID_Rasterizer);
+        Rasterizer* r = (Rasterizer*)rasterizer;
         assert(r != NULL);
         rasterizerNative = r->mNativeInstance;
     }

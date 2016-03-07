@@ -301,11 +301,13 @@ module
     interface Elastos.Droid.SystemUI.ISystemUI;
     interface Elastos.Droid.SystemUI.ISwipeHelperCallback;
     interface Elastos.Droid.SystemUI.Recents.Model.ITaskStack;
+    interface Elastos.Droid.SystemUI.StatusBar.IExpandableViewOnHeightChangedListener;
     interface Elastos.Droid.SystemUI.StatusBar.INotificationOverflowIconsView;
     interface Elastos.Droid.SystemUI.StatusBar.IStatusBarPanel;
     interface Elastos.Droid.SystemUI.StatusBar.Policy.IBatteryStateChangeCallback;
     interface Elastos.Droid.SystemUI.StatusBar.Policy.IClock;
     interface Elastos.Droid.SystemUI.StatusBar.Policy.INetworkControllerImplSignalCluster;
+    interface Elastos.Droid.SystemUI.StatusBar.Policy.IScrollAdapter;
     interface Elastos.Droid.SystemUI.StatusBar.Policy.ISecurityControllerCallback;
     interface Elastos.Droid.SystemUI.StatusBar.Phone.IIconMerger;
     interface Elastos.Droid.SystemUI.StatusBar.Phone.ISystemUIDialog;
@@ -1419,6 +1421,44 @@ module
             interface IKeyEventCallback;
             interface IAccessibilityEventSource;
         }
+
+        //===========================================================================
+        //                              Stack
+        //===========================================================================
+        namespace Stack {
+            class CNotificationStackScrollLayout {
+                constructor(
+                    [in] IContext* ctx);
+
+                constructor(
+                    [in] IContext* ctx,
+                    [in] IAttributeSet* attrs);
+
+                constructor(
+                    [in] IContext* ctx,
+                    [in] IAttributeSet* attrs,
+                    [in] Int32 defStyleAttr);
+
+                constructor(
+                    [in] IContext* ctx,
+                    [in] IAttributeSet* attrs,
+                    [in] Int32 defStyleAttr,
+                    [in] Int32 defStyleRes);
+
+                interface INotificationStackScrollLayout;
+                interface ISwipeHelperCallback;
+                interface IExpandHelperCallback;
+                interface IScrollAdapter;
+                interface IExpandableViewOnHeightChangedListener;
+                interface IViewGroup;
+                interface IView;
+                interface IViewParent;
+                interface IViewManager;
+                interface IDrawableCallback;
+                interface IKeyEventCallback;
+                interface IAccessibilityEventSource;
+            }
+        } // namespace Stack
 
         //===========================================================================
         //                              Policy
