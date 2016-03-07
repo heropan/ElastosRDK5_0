@@ -20,10 +20,12 @@ ECode HdmiCecMessageBuilder::Of(
     /* [in] */ ArrayOf<Byte>* body,
     /* [out] */ IHdmiCecMessage** result)
 {
+    VALIDATE_NOT_NULL(result)
+
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
-        byte opcode = body[0];
-        byte params[] = Arrays.copyOfRange(body, 1, body.length);
+        Byte opcode = (*body)[0];
+        Byte params[] = Arrays::CopyOfRange(body, 1, body->GetLength());
         return new HdmiCecMessage(src, dest, opcode, params);
 
 #endif
@@ -36,13 +38,15 @@ ECode HdmiCecMessageBuilder::BuildFeatureAbortCommand(
     /* [in] */ Int32 reason,
     /* [out] */ IHdmiCecMessage** result)
 {
+    VALIDATE_NOT_NULL(result)
+
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
-        byte[] params = new byte[] {
-                (byte) (originalOpcode & 0xFF),
-                (byte) (reason & 0xFF),
+        AutoPtr<ArrayOf<Byte> > params = new Byte[] {
+                (Byte) (originalOpcode & 0xFF),
+                (Byte) (reason & 0xFF),
         };
-        return buildCommand(src, dest, Constants::MESSAGE_FEATURE_ABORT, params);
+        return BuildCommand(src, dest, Constants::MESSAGE_FEATURE_ABORT, params);
 
 #endif
 }
@@ -52,9 +56,11 @@ ECode HdmiCecMessageBuilder::BuildGivePhysicalAddress(
     /* [in] */ Int32 dest,
     /* [out] */ IHdmiCecMessage** result)
 {
+    VALIDATE_NOT_NULL(result)
+
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
-        return buildCommand(src, dest, Constants::MESSAGE_GIVE_PHYSICAL_ADDRESS);
+        return BuildCommand(src, dest, Constants::MESSAGE_GIVE_PHYSICAL_ADDRESS);
 
 #endif
 }
@@ -64,9 +70,11 @@ ECode HdmiCecMessageBuilder::BuildGiveOsdNameCommand(
     /* [in] */ Int32 dest,
     /* [out] */ IHdmiCecMessage** result)
 {
+    VALIDATE_NOT_NULL(result)
+
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
-        return buildCommand(src, dest, Constants::MESSAGE_GIVE_OSD_NAME);
+        return BuildCommand(src, dest, Constants::MESSAGE_GIVE_OSD_NAME);
 
 #endif
 }
@@ -76,9 +84,11 @@ ECode HdmiCecMessageBuilder::BuildGiveDeviceVendorIdCommand(
     /* [in] */ Int32 dest,
     /* [out] */ IHdmiCecMessage** result)
 {
+    VALIDATE_NOT_NULL(result)
+
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
-        return buildCommand(src, dest, Constants::MESSAGE_GIVE_DEVICE_VENDOR_ID);
+        return BuildCommand(src, dest, Constants::MESSAGE_GIVE_DEVICE_VENDOR_ID);
 
 #endif
 }
@@ -88,20 +98,23 @@ ECode HdmiCecMessageBuilder::BuildSetMenuLanguageCommand(
     /* [in] */ const String& language,
     /* [out] */ IHdmiCecMessage** result)
 {
+    VALIDATE_NOT_NULL(result)
+
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
-        if (language.length() != 3) {
-            return NULL;
+        if (language.GetLength() != 3) {
+            *result = NULL;
+            return NOERROR;
         }
         // Hdmi CEC uses lower-cased ISO 639-2 (3 letters code).
-        String normalized = language.toLowerCase();
-        byte[] params = new byte[] {
-                (byte) (normalized.charAt(0) & 0xFF),
-                (byte) (normalized.charAt(1) & 0xFF),
-                (byte) (normalized.charAt(2) & 0xFF),
+        String normalized = language->ToLowerCase();
+        AutoPtr<ArrayOf<Byte> > params = new Byte[] {
+                (Byte) (normalized.charAt(0) & 0xFF),
+                (Byte) (normalized.charAt(1) & 0xFF),
+                (Byte) (normalized.charAt(2) & 0xFF),
         };
         // <Set Menu Language> is broadcast message.
-        return buildCommand(src, Constants::ADDR_BROADCAST,
+        return BuildCommand(src, Constants::ADDR_BROADCAST,
                 Constants::MESSAGE_SET_MENU_LANGUAGE, params);
 
 #endif
@@ -113,16 +126,19 @@ ECode HdmiCecMessageBuilder::BuildSetOsdNameCommand(
     /* [in] */ const String& name,
     /* [out] */ IHdmiCecMessage** result)
 {
+    VALIDATE_NOT_NULL(result)
+
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
-        int length = Math.min(name.length(), OSD_NAME_MAX_LENGTH);
-        byte[] params;
+        int length = Math::Min(name.GetLength(), OSD_NAME_MAX_LENGTH);
+        AutoPtr<ArrayOf<Byte> > params;
         try {
-            params = name.substring(0, length).getBytes("US-ASCII");
+            params = name->Substring(0, length).GetBytes("US-ASCII");
         } catch (UnsupportedEncodingException e) {
-            return NULL;
+            *result = NULL;
+            return NOERROR;
         }
-        return buildCommand(src, dest, Constants::MESSAGE_SET_OSD_NAME, params);
+        return BuildCommand(src, dest, Constants::MESSAGE_SET_OSD_NAME, params);
 
 #endif
 }
@@ -133,17 +149,19 @@ ECode HdmiCecMessageBuilder::BuildReportPhysicalAddressCommand(
     /* [in] */ Int32 deviceType,
     /* [out] */ IHdmiCecMessage** result)
 {
+    VALIDATE_NOT_NULL(result)
+
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
-        byte[] params = new byte[] {
+        AutoPtr<ArrayOf<Byte> > params = new Byte[] {
                 // Two bytes for physical address
-                (byte) ((address >> 8) & 0xFF),
-                (byte) (address & 0xFF),
+                (Byte) ((address >> 8) & 0xFF),
+                (Byte) (address & 0xFF),
                 // One byte device type
-                (byte) (deviceType & 0xFF)
+                (Byte) (deviceType & 0xFF)
         };
         // <Report Physical Address> is broadcast message.
-        return buildCommand(src, Constants::ADDR_BROADCAST,
+        return BuildCommand(src, Constants::ADDR_BROADCAST,
                 Constants::MESSAGE_REPORT_PHYSICAL_ADDRESS, params);
 
 #endif
@@ -154,15 +172,17 @@ ECode HdmiCecMessageBuilder::BuildDeviceVendorIdCommand(
     /* [in] */ Int32 vendorId,
     /* [out] */ IHdmiCecMessage** result)
 {
+    VALIDATE_NOT_NULL(result)
+
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
-        byte[] params = new byte[] {
-                (byte) ((vendorId >> 16) & 0xFF),
-                (byte) ((vendorId >> 8) & 0xFF),
-                (byte) (vendorId & 0xFF)
+        AutoPtr<ArrayOf<Byte> > params = new Byte[] {
+                (Byte) ((vendorId >> 16) & 0xFF),
+                (Byte) ((vendorId >> 8) & 0xFF),
+                (Byte) (vendorId & 0xFF)
         };
         // <Device Vendor Id> is broadcast message.
-        return buildCommand(src, Constants::ADDR_BROADCAST,
+        return BuildCommand(src, Constants::ADDR_BROADCAST,
                 Constants::MESSAGE_DEVICE_VENDOR_ID, params);
 
 #endif
@@ -174,12 +194,14 @@ ECode HdmiCecMessageBuilder::BuildCecVersion(
     /* [in] */ Int32 version,
     /* [out] */ IHdmiCecMessage** result)
 {
+    VALIDATE_NOT_NULL(result)
+
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
-        byte[] params = new byte[] {
-                (byte) (version & 0xFF)
+        AutoPtr<ArrayOf<Byte> > params = new Byte[] {
+                (Byte) (version & 0xFF)
         };
-        return buildCommand(src, dest, Constants::MESSAGE_CEC_VERSION, params);
+        return BuildCommand(src, dest, Constants::MESSAGE_CEC_VERSION, params);
 
 #endif
 }
@@ -189,9 +211,11 @@ ECode HdmiCecMessageBuilder::BuildRequestArcInitiation(
     /* [in] */ Int32 dest,
     /* [out] */ IHdmiCecMessage** result)
 {
+    VALIDATE_NOT_NULL(result)
+
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
-        return buildCommand(src, dest, Constants::MESSAGE_REQUEST_ARC_INITIATION);
+        return BuildCommand(src, dest, Constants::MESSAGE_REQUEST_ARC_INITIATION);
 
 #endif
 }
@@ -201,9 +225,11 @@ ECode HdmiCecMessageBuilder::BuildRequestArcTermination(
     /* [in] */ Int32 dest,
     /* [out] */ IHdmiCecMessage** result)
 {
+    VALIDATE_NOT_NULL(result)
+
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
-        return buildCommand(src, dest, Constants::MESSAGE_REQUEST_ARC_TERMINATION);
+        return BuildCommand(src, dest, Constants::MESSAGE_REQUEST_ARC_TERMINATION);
 
 #endif
 }
@@ -213,9 +239,11 @@ ECode HdmiCecMessageBuilder::BuildReportArcInitiated(
     /* [in] */ Int32 dest,
     /* [out] */ IHdmiCecMessage** result)
 {
+    VALIDATE_NOT_NULL(result)
+
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
-        return buildCommand(src, dest, Constants::MESSAGE_REPORT_ARC_INITIATED);
+        return BuildCommand(src, dest, Constants::MESSAGE_REPORT_ARC_INITIATED);
 
 #endif
 }
@@ -225,9 +253,11 @@ ECode HdmiCecMessageBuilder::BuildReportArcTerminated(
     /* [in] */ Int32 dest,
     /* [out] */ IHdmiCecMessage** result)
 {
+    VALIDATE_NOT_NULL(result)
+
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
-        return buildCommand(src, dest, Constants::MESSAGE_REPORT_ARC_TERMINATED);
+        return BuildCommand(src, dest, Constants::MESSAGE_REPORT_ARC_TERMINATED);
 
 #endif
 }
@@ -237,9 +267,11 @@ ECode HdmiCecMessageBuilder::BuildTextViewOn(
     /* [in] */ Int32 dest,
     /* [out] */ IHdmiCecMessage** result)
 {
+    VALIDATE_NOT_NULL(result)
+
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
-        return buildCommand(src, dest, Constants::MESSAGE_TEXT_VIEW_ON);
+        return BuildCommand(src, dest, Constants::MESSAGE_TEXT_VIEW_ON);
 
 #endif
 }
@@ -249,10 +281,12 @@ ECode HdmiCecMessageBuilder::BuildActiveSource(
     /* [in] */ Int32 physicalAddress,
     /* [out] */ IHdmiCecMessage** result)
 {
+    VALIDATE_NOT_NULL(result)
+
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
-        return buildCommand(src, Constants::ADDR_BROADCAST, Constants::MESSAGE_ACTIVE_SOURCE,
-                physicalAddressToParam(physicalAddress));
+        return BuildCommand(src, Constants::ADDR_BROADCAST, Constants::MESSAGE_ACTIVE_SOURCE,
+                PhysicalAddressToParam(physicalAddress));
 
 #endif
 }
@@ -262,10 +296,12 @@ ECode HdmiCecMessageBuilder::BuildInactiveSource(
     /* [in] */ Int32 physicalAddress,
     /* [out] */ IHdmiCecMessage** result)
 {
+    VALIDATE_NOT_NULL(result)
+
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
-        return buildCommand(src, Constants::ADDR_TV,
-                Constants::MESSAGE_INACTIVE_SOURCE, physicalAddressToParam(physicalAddress));
+        return BuildCommand(src, Constants::ADDR_TV,
+                Constants::MESSAGE_INACTIVE_SOURCE, PhysicalAddressToParam(physicalAddress));
 
 #endif
 }
@@ -275,10 +311,12 @@ ECode HdmiCecMessageBuilder::BuildSetStreamPath(
     /* [in] */ Int32 streamPath,
     /* [out] */ IHdmiCecMessage** result)
 {
+    VALIDATE_NOT_NULL(result)
+
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
-        return buildCommand(src, Constants::ADDR_BROADCAST,
-                Constants::MESSAGE_SET_STREAM_PATH, physicalAddressToParam(streamPath));
+        return BuildCommand(src, Constants::ADDR_BROADCAST,
+                Constants::MESSAGE_SET_STREAM_PATH, PhysicalAddressToParam(streamPath));
 
 #endif
 }
@@ -289,13 +327,15 @@ ECode HdmiCecMessageBuilder::BuildRoutingChange(
     /* [in] */ Int32 newPath,
     /* [out] */ IHdmiCecMessage** result)
 {
+    VALIDATE_NOT_NULL(result)
+
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
-        byte[] param = new byte[] {
-            (byte) ((oldPath >> 8) & 0xFF), (byte) (oldPath & 0xFF),
-            (byte) ((newPath >> 8) & 0xFF), (byte) (newPath & 0xFF)
+        AutoPtr<ArrayOf<Byte> > param = new Byte[] {
+            (Byte) ((oldPath >> 8) & 0xFF), (Byte) (oldPath & 0xFF),
+            (Byte) ((newPath >> 8) & 0xFF), (Byte) (newPath & 0xFF)
         };
-        return buildCommand(src, Constants::ADDR_BROADCAST, Constants::MESSAGE_ROUTING_CHANGE,
+        return BuildCommand(src, Constants::ADDR_BROADCAST, Constants::MESSAGE_ROUTING_CHANGE,
                 param);
 
 #endif
@@ -306,9 +346,11 @@ ECode HdmiCecMessageBuilder::BuildGiveDevicePowerStatus(
     /* [in] */ Int32 dest,
     /* [out] */ IHdmiCecMessage** result)
 {
+    VALIDATE_NOT_NULL(result)
+
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
-        return buildCommand(src, dest, Constants::MESSAGE_GIVE_DEVICE_POWER_STATUS);
+        return BuildCommand(src, dest, Constants::MESSAGE_GIVE_DEVICE_POWER_STATUS);
 
 #endif
 }
@@ -319,12 +361,14 @@ ECode HdmiCecMessageBuilder::BuildReportPowerStatus(
     /* [in] */ Int32 powerStatus,
     /* [out] */ IHdmiCecMessage** result)
 {
+    VALIDATE_NOT_NULL(result)
+
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
-        byte[] param = new byte[] {
-                (byte) (powerStatus & 0xFF)
+        AutoPtr<ArrayOf<Byte> > param = new Byte[] {
+                (Byte) (powerStatus & 0xFF)
         };
-        return buildCommand(src, dest, Constants::MESSAGE_REPORT_POWER_STATUS, param);
+        return BuildCommand(src, dest, Constants::MESSAGE_REPORT_POWER_STATUS, param);
 
 #endif
 }
@@ -335,12 +379,14 @@ ECode HdmiCecMessageBuilder::BuildReportMenuStatus(
     /* [in] */ Int32 menuStatus,
     /* [out] */ IHdmiCecMessage** result)
 {
+    VALIDATE_NOT_NULL(result)
+
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
-        byte[] param = new byte[] {
-                (byte) (menuStatus & 0xFF)
+        AutoPtr<ArrayOf<Byte> > param = new Byte[] {
+                (Byte) (menuStatus & 0xFF)
         };
-        return buildCommand(src, dest, Constants::MESSAGE_MENU_STATUS, param);
+        return BuildCommand(src, dest, Constants::MESSAGE_MENU_STATUS, param);
 
 #endif
 }
@@ -352,13 +398,15 @@ ECode HdmiCecMessageBuilder::BuildSystemAudioModeRequest(
     /* [in] */ Boolean enableSystemAudio,
     /* [out] */ IHdmiCecMessage** result)
 {
+    VALIDATE_NOT_NULL(result)
+
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
         if (enableSystemAudio) {
-            return buildCommand(src, avr, Constants::MESSAGE_SYSTEM_AUDIO_MODE_REQUEST,
-                    physicalAddressToParam(avrPhysicalAddress));
+            return BuildCommand(src, avr, Constants::MESSAGE_SYSTEM_AUDIO_MODE_REQUEST,
+                    PhysicalAddressToParam(avrPhysicalAddress));
         } else {
-            return buildCommand(src, avr, Constants::MESSAGE_SYSTEM_AUDIO_MODE_REQUEST);
+            return BuildCommand(src, avr, Constants::MESSAGE_SYSTEM_AUDIO_MODE_REQUEST);
         }
 
 #endif
@@ -369,9 +417,11 @@ ECode HdmiCecMessageBuilder::BuildGiveAudioStatus(
     /* [in] */ Int32 dest,
     /* [out] */ IHdmiCecMessage** result)
 {
+    VALIDATE_NOT_NULL(result)
+
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
-        return buildCommand(src, dest, Constants::MESSAGE_GIVE_AUDIO_STATUS);
+        return BuildCommand(src, dest, Constants::MESSAGE_GIVE_AUDIO_STATUS);
 
 #endif
 }
@@ -382,9 +432,11 @@ ECode HdmiCecMessageBuilder::BuildUserControlPressed(
     /* [in] */ Int32 uiCommand,
     /* [out] */ IHdmiCecMessage** result)
 {
+    VALIDATE_NOT_NULL(result)
+
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
-        return buildUserControlPressed(src, dest, new byte[] { (byte) (uiCommand & 0xFF) });
+        return BuildUserControlPressed(src, dest, new Byte[] { (Byte) (uiCommand & 0xFF) });
 
 #endif
 }
@@ -395,9 +447,11 @@ ECode HdmiCecMessageBuilder::BuildUserControlPressed(
     /* [in] */ ArrayOf<Byte>* commandParam,
     /* [out] */ IHdmiCecMessage** result)
 {
+    VALIDATE_NOT_NULL(result)
+
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
-        return buildCommand(src, dest, Constants::MESSAGE_USER_CONTROL_PRESSED, commandParam);
+        return BuildCommand(src, dest, Constants::MESSAGE_USER_CONTROL_PRESSED, commandParam);
 
 #endif
 }
@@ -407,9 +461,11 @@ ECode HdmiCecMessageBuilder::BuildUserControlReleased(
     /* [in] */ Int32 dest,
     /* [out] */ IHdmiCecMessage** result)
 {
+    VALIDATE_NOT_NULL(result)
+
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
-        return buildCommand(src, dest, Constants::MESSAGE_USER_CONTROL_RELEASED);
+        return BuildCommand(src, dest, Constants::MESSAGE_USER_CONTROL_RELEASED);
 
 #endif
 }
@@ -419,9 +475,11 @@ ECode HdmiCecMessageBuilder::BuildGiveSystemAudioModeStatus(
     /* [in] */ Int32 dest,
     /* [out] */ IHdmiCecMessage** result)
 {
+    VALIDATE_NOT_NULL(result)
+
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
-        return buildCommand(src, dest, Constants::MESSAGE_GIVE_SYSTEM_AUDIO_MODE_STATUS);
+        return BuildCommand(src, dest, Constants::MESSAGE_GIVE_SYSTEM_AUDIO_MODE_STATUS);
 
 #endif
 }
@@ -431,9 +489,11 @@ ECode HdmiCecMessageBuilder::BuildStandby(
     /* [in] */ Int32 dest,
     /* [out] */ IHdmiCecMessage** result)
 {
+    VALIDATE_NOT_NULL(result)
+
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
-        return buildCommand(src, dest, Constants::MESSAGE_STANDBY);
+        return BuildCommand(src, dest, Constants::MESSAGE_STANDBY);
 
 #endif
 }
@@ -444,9 +504,11 @@ ECode HdmiCecMessageBuilder::BuildVendorCommand(
     /* [in] */ ArrayOf<Byte>* params,
     /* [out] */ IHdmiCecMessage** result)
 {
+    VALIDATE_NOT_NULL(result)
+
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
-        return buildCommand(src, dest, Constants::MESSAGE_VENDOR_COMMAND, params);
+        return BuildCommand(src, dest, Constants::MESSAGE_VENDOR_COMMAND, params);
 
 #endif
 }
@@ -458,14 +520,16 @@ ECode HdmiCecMessageBuilder::BuildVendorCommandWithId(
     /* [in] */ ArrayOf<Byte>* operands,
     /* [out] */ IHdmiCecMessage** result)
 {
+    VALIDATE_NOT_NULL(result)
+
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
-        byte[] params = new byte[operands.length + 3];  // parameter plus len(vendorId)
-        params[0] = (byte) ((vendorId >> 16) & 0xFF);
-        params[1] = (byte) ((vendorId >> 8) & 0xFF);
-        params[2] = (byte) (vendorId & 0xFF);
-        System.arraycopy(operands, 0, params, 3, operands.length);
-        return buildCommand(src, dest, Constants::MESSAGE_VENDOR_COMMAND_WITH_ID, params);
+        AutoPtr<ArrayOf<Byte> > params = new Byte[operands->GetLength() + 3];  // parameter plus len(vendorId)
+        (*params)[0] = (Byte) ((vendorId >> 16) & 0xFF);
+        (*params)[1] = (Byte) ((vendorId >> 8) & 0xFF);
+        (*params)[2] = (Byte) (vendorId & 0xFF);
+        System::Arraycopy(operands, 0, params, 3, operands->GetLength());
+        return BuildCommand(src, dest, Constants::MESSAGE_VENDOR_COMMAND_WITH_ID, params);
 
 #endif
 }
@@ -476,9 +540,11 @@ ECode HdmiCecMessageBuilder::BuildRecordOn(
     /* [in] */ ArrayOf<Byte>* params,
     /* [out] */ IHdmiCecMessage** result)
 {
+    VALIDATE_NOT_NULL(result)
+
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
-        return buildCommand(src, dest, Constants::MESSAGE_RECORD_ON, params);
+        return BuildCommand(src, dest, Constants::MESSAGE_RECORD_ON, params);
 
 #endif
 }
@@ -488,9 +554,11 @@ ECode HdmiCecMessageBuilder::BuildRecordOff(
     /* [in] */ Int32 dest,
     /* [out] */ IHdmiCecMessage** result)
 {
+    VALIDATE_NOT_NULL(result)
+
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
-        return buildCommand(src, dest, Constants::MESSAGE_RECORD_OFF);
+        return BuildCommand(src, dest, Constants::MESSAGE_RECORD_OFF);
 
 #endif
 }
@@ -501,9 +569,11 @@ ECode HdmiCecMessageBuilder::BuildSetDigitalTimer(
     /* [in] */ ArrayOf<Byte>* params,
     /* [out] */ IHdmiCecMessage** result)
 {
+    VALIDATE_NOT_NULL(result)
+
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
-        return buildCommand(src, dest, Constants::MESSAGE_SET_DIGITAL_TIMER, params);
+        return BuildCommand(src, dest, Constants::MESSAGE_SET_DIGITAL_TIMER, params);
 
 #endif
 }
@@ -514,9 +584,11 @@ ECode HdmiCecMessageBuilder::BuildSetAnalogueTimer(
     /* [in] */ ArrayOf<Byte>* params,
     /* [out] */ IHdmiCecMessage** result)
 {
+    VALIDATE_NOT_NULL(result)
+
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
-        return buildCommand(src, dest, Constants::MESSAGE_SET_ANALOG_TIMER, params);
+        return BuildCommand(src, dest, Constants::MESSAGE_SET_ANALOG_TIMER, params);
 
 #endif
 }
@@ -527,9 +599,11 @@ ECode HdmiCecMessageBuilder::BuildSetExternalTimer(
     /* [in] */ ArrayOf<Byte>* params,
     /* [out] */ IHdmiCecMessage** result)
 {
+    VALIDATE_NOT_NULL(result)
+
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
-        return buildCommand(src, dest, Constants::MESSAGE_SET_EXTERNAL_TIMER, params);
+        return BuildCommand(src, dest, Constants::MESSAGE_SET_EXTERNAL_TIMER, params);
 
 #endif
 }
@@ -540,9 +614,11 @@ ECode HdmiCecMessageBuilder::BuildClearDigitalTimer(
     /* [in] */ ArrayOf<Byte>* params,
     /* [out] */ IHdmiCecMessage** result)
 {
+    VALIDATE_NOT_NULL(result)
+
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
-        return buildCommand(src, dest, Constants::MESSAGE_CLEAR_DIGITAL_TIMER, params);
+        return BuildCommand(src, dest, Constants::MESSAGE_CLEAR_DIGITAL_TIMER, params);
 
 #endif
 }
@@ -553,9 +629,11 @@ ECode HdmiCecMessageBuilder::BuildClearAnalogueTimer(
     /* [in] */ ArrayOf<Byte>* params,
     /* [out] */ IHdmiCecMessage** result)
 {
+    VALIDATE_NOT_NULL(result)
+
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
-        return buildCommand(src, dest, Constants::MESSAGE_CLEAR_ANALOG_TIMER, params);
+        return BuildCommand(src, dest, Constants::MESSAGE_CLEAR_ANALOG_TIMER, params);
 
 #endif
 }
@@ -566,9 +644,11 @@ ECode HdmiCecMessageBuilder::BuildClearExternalTimer(
     /* [in] */ ArrayOf<Byte>* params,
     /* [out] */ IHdmiCecMessage** result)
 {
+    VALIDATE_NOT_NULL(result)
+
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
-        return buildCommand(src, dest, Constants::MESSAGE_CLEAR_EXTERNAL_TIMER, params);
+        return BuildCommand(src, dest, Constants::MESSAGE_CLEAR_EXTERNAL_TIMER, params);
 
 #endif
 }
@@ -579,9 +659,11 @@ ECode HdmiCecMessageBuilder::BuildCommand(
     /* [in] */ Int32 opcode,
     /* [out] */ IHdmiCecMessage** result)
 {
+    VALIDATE_NOT_NULL(result)
+
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
-        return new HdmiCecMessage(src, dest, opcode, HdmiCecMessage.EMPTY_PARAM);
+        return new HdmiCecMessage(src, dest, opcode, HdmiCecMessage::EMPTY_PARAM);
 
 #endif
 }
@@ -593,6 +675,8 @@ ECode HdmiCecMessageBuilder::BuildCommand(
     /* [in] */ ArrayOf<Byte>* params,
     /* [out] */ IHdmiCecMessage** result)
 {
+    VALIDATE_NOT_NULL(result)
+
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
         return new HdmiCecMessage(src, dest, opcode, params);
@@ -605,9 +689,9 @@ AutoPtr<ArrayOf<Byte> > HdmiCecMessageBuilder::PhysicalAddressToParam(
 {
     AutoPtr<ArrayOf<Byte> > rev;
 #if 0 // TODO: Translate codes below
-        return new byte[] {
-                (byte) ((physicalAddress >> 8) & 0xFF),
-                (byte) (physicalAddress & 0xFF)
+        return new Byte[] {
+                (Byte) ((physicalAddress >> 8) & 0xFF),
+                (Byte) (physicalAddress & 0xFF)
         };
 
 #endif

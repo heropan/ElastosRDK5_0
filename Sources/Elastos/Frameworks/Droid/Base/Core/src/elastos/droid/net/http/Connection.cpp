@@ -149,7 +149,7 @@ ECode Connection::ProcessRequests(
     List<Request*> pipe;
 
     Int32 minPipe = MIN_PIPE;
-    Int32 maxPipe = MAX_PIPE;
+    UInt32 maxPipe = MAX_PIPE;
     Int32 state = SEND;
 
     while (state != DONE) {

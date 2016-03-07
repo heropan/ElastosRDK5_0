@@ -24,13 +24,20 @@ ECode HdmiCecMessageCache::GetMessage(
     /* [in] */ Int32 opcode,
     /* [out] */ IHdmiCecMessage** result)
 {
+    VALIDATE_NOT_NULL(result)
+
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
-        SparseArray<HdmiCecMessage> messages = mCache.get(address);
+        AutoPtr<IInterface> obj;
+        mCache->Get(address, (IInterface**)&obj);
+        SparseArray<HdmiCecMessage> messages = I::Probe(obj);
         if (messages == NULL) {
-            return NULL;
+            *result = NULL;
+            return NOERROR;
         }
-        return messages.get(opcode);
+        obj = NULL;
+        messages->Get(opcode, (IInterface**)&obj);
+        return I::Probe(obj);
 
 #endif
 }
@@ -40,7 +47,7 @@ ECode HdmiCecMessageCache::FlushMessagesFrom(
 {
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
-        mCache.remove(address);
+        mCache->Remove(address);
 
 #endif
 }
@@ -49,7 +56,7 @@ ECode HdmiCecMessageCache::FlushAll()
 {
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
-        mCache.clear();
+        mCache->Clear();
 
 #endif
 }
@@ -59,17 +66,21 @@ ECode HdmiCecMessageCache::CacheMessage(
 {
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
-        int opcode = message.getOpcode();
-        if (!isCacheable(opcode)) {
-            return;
+        Int32 opcode;
+        message->GetOpcode(&opcode);
+        if (!IsCacheable(opcode)) {
+            return NOERROR;
         }
-        int source = message.getSource();
-        SparseArray<HdmiCecMessage> messages = mCache.get(source);
+        Int32 source;
+        message->GetSource(&source);
+        AutoPtr<IInterface> obj;
+        mCache->Get(source, (IInterface**)&obj);
+        SparseArray<HdmiCecMessage> messages = I::Probe(obj);
         if (messages == NULL) {
             messages = new SparseArray<>();
-            mCache.put(source, messages);
+            mCache->Put(source, messages);
         }
-        messages.put(opcode, message);
+        messages->Put(opcode, message);
 
 #endif
 }
@@ -78,9 +89,11 @@ ECode HdmiCecMessageCache::IsCacheable(
     /* [in] */ Int32 opcode,
     /* [out] */ Boolean* result)
 {
+    VALIDATE_NOT_NULL(result)
+
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
-        return CACHEABLE_OPCODES.contains(opcode);
+        return CACHEABLE_OPCODES.Contains(opcode);
 
 #endif
 }
@@ -90,10 +103,10 @@ AutoPtr<IFastImmutableArraySet> HdmiCecMessageCache::InitCACHEABLE_OPCODES()
     AutoPtr<IFastImmutableArraySet> rev;
 #if 0 // TODO: Translate codes below
      = new FastImmutableArraySet<>(new Integer[] {
-                        Constants.MESSAGE_SET_OSD_NAME,
-                        Constants.MESSAGE_REPORT_PHYSICAL_ADDRESS,
-                        Constants.MESSAGE_DEVICE_VENDOR_ID,
-                        Constants.MESSAGE_CEC_VERSION,
+                        Constants::MESSAGE_SET_OSD_NAME,
+                        Constants::MESSAGE_REPORT_PHYSICAL_ADDRESS,
+                        Constants::MESSAGE_DEVICE_VENDOR_ID,
+                        Constants::MESSAGE_CEC_VERSION,
                 }
 #endif
     return rev;

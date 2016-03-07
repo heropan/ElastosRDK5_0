@@ -47,8 +47,12 @@ namespace Droid {
 namespace Server {
 namespace Hdmi {
 
+class UnmodifiableSparseInt32Array;
 class HdmiCecLocalDeviceTv;
 class HdmiCecLocalDevicePlayback;
+class UnmodifiableSparseArray;
+class HdmiMhlControllerStub;
+class HdmiCecController;
 /**
  * Provides a service for sending and processing HDMI control messages,
  * HDMI-CEC and MHL control command, and providing the information on both standard.
@@ -546,7 +550,7 @@ public:
         /* [out] */ IList** result);
 
     CARAPI GetServiceLock(
-        /* [out] */ IObject** result);
+        /* [out] */ IInterface** result);
 
     CARAPI SetAudioStatus(
         /* [in] */ Boolean mute,
@@ -585,7 +589,7 @@ public:
 
     CARAPI InvokeRecordRequestListener(
         /* [in] */ Int32 recorderAddress,
-        /* [out, callee] */ ArrayOf<Byte>* result);
+        /* [out, callee] */ ArrayOf<Byte>** result);
 
     CARAPI InvokeOneTouchRecordResult(
         /* [in] */ Int32 result);
@@ -709,7 +713,7 @@ private:
 
     CARAPI RegisterContentObserver();
 
-    static CARAPI ToInt(
+    static CARAPI ToInt32(
         /* [in] */ Boolean enabled,
         /* [out] */ Int32* result);
 
@@ -904,16 +908,14 @@ private:
     // from being modified.
     AutoPtr<IList> mPortInfo;
 
-#if 0
     // Map from path(physical address) to port ID.
-    AutoPtr<UnmodifiableSparseIntArray> mPortIdMap;
+    AutoPtr<UnmodifiableSparseInt32Array> mPortIdMap;
 
     // Map from port ID to HdmiPortInfo.
     AutoPtr<UnmodifiableSparseArray> mPortInfoMap;
 
     // Map from port ID to HdmiDeviceInfo.
     AutoPtr<UnmodifiableSparseArray> mPortDeviceMap;
-#endif
 
     AutoPtr<HdmiCecMessageValidator> mMessageValidator;
 
@@ -943,10 +945,8 @@ private:
     // @GuardedBy("mLock")
     AutoPtr<IList> mMhlDevices;
 
-#if 0
     // @Nullable
     AutoPtr<HdmiMhlControllerStub> mMhlController;
-#endif
 
     // Last input port before switching to the MHL port. Should switch back to this port
     // when the mobile device sends the request one touch play with off.
