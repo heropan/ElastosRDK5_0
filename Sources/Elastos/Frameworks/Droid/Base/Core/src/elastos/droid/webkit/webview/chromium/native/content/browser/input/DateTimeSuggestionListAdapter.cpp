@@ -2,12 +2,16 @@
 #include "Elastos.Droid.Content.h"
 #include "Elastos.Droid.View.h"
 #include "Elastos.Droid.Widget.h"
+#include "elastos/droid/view/LayoutInflater.h"
 #include "elastos/droid/webkit/webview/chromium/native/content/browser/input/DateTimeSuggestionListAdapter.h"
-// TODO #include "elastos/droid/view/CLayoutInflaterHelper.h"
+#include "elastos/droid/webkit/webview/chromium/native/content/browser/input/DateTimeSuggestion.h"
+#include "elastos/droid/webkit/webview/chromium/native/content/R_Content.h"
 
 using Elastos::Droid::View::ILayoutInflater;
 using Elastos::Droid::View::ILayoutInflaterHelper;
-// TODO using Elastos::Droid::View::CLayoutInflaterHelper;
+using Elastos::Droid::View::LayoutInflater;
+using Elastos::Droid::Webkit::Webview::Chromium::Content::R;
+using Elastos::Core::CString;
 
 namespace Elastos {
 namespace Droid {
@@ -23,9 +27,7 @@ DateTimeSuggestionListAdapter::DateTimeSuggestionListAdapter(
     /* [in] */ IList* objects)
     : mContext(context)
 {
-    assert(0);
-    // TODO
-    // super(context, R::layout::date_time_suggestion, objects);
+    ArrayAdapter::constructor(context, R::layout::date_time_suggestion, objects);
 }
 
 //@Override
@@ -39,43 +41,44 @@ ECode DateTimeSuggestionListAdapter::GetView(
 
     AutoPtr<IView> layout = convertView;
     if (convertView == NULL) {
-        AutoPtr<ILayoutInflaterHelper> helper;
-        assert(0);
-        // TODO
-        // CLayoutInflaterHelper::AcquireSingleton((ILayoutInflaterHelper**)&helper);
+        //AutoPtr<ILayoutInflaterHelper> helper;
+        //CLayoutInflaterHelper::AcquireSingleton((ILayoutInflaterHelper**)&helper);
         AutoPtr<ILayoutInflater> inflater;
-        helper->From(mContext, (ILayoutInflater**)&inflater);
-        assert(0);
-        // TODO
-        // inflater->Inflate(R::layout::date_time_suggestion, parent, false,
-        //     (ILayoutInflater**)&layout);
+        LayoutInflater::From(mContext, (ILayoutInflater**)&inflater);
+        inflater->Inflate(R::layout::date_time_suggestion, parent, FALSE,
+             (IView**)&layout);
     }
 
     AutoPtr<ITextView> labelView;
-    assert(0);
-    // TODO
-    // layout->FindViewById(R::id::date_time_suggestion_value, (IView**)&labelView);
+    layout->FindViewById(R::id::date_time_suggestion_value, (IView**)&labelView);
     AutoPtr<ITextView> sublabelView;
-    assert(0);
-    // TODO
-    // layout->FindViewById(R::id::date_time_suggestion_label, (IView**)&sublabelView);
+    layout->FindViewById(R::id::date_time_suggestion_label, (IView**)&sublabelView);
 
-    assert(0);
-    // TODO
-    // if (position == GetCount() - 1) {
-    //     AutoPtr<ICharSequence> text;
-    //     mContext->GetText(R::string::date_picker_dialog_other_button_label, (ICharSequence**)&text);
-    //     labelView->SetText(text);
-    //     sublabelView->SetText(String(""));
-    // }
-    // else {
-    //     labelView->SetText(GetItem(position)->LocalizedValue());
-    //     sublabelView->SetText(GetItem(position)->Label());
-    // }
+    Int32 count;
+    GetCount(&count);
+    if (position == count - 1) {
+        AutoPtr<ICharSequence> text;
+        mContext->GetText(R::string::date_picker_dialog_other_button_label, (ICharSequence**)&text);
+        labelView->SetText(text);
+        AutoPtr<ICharSequence> emptyCS;
+        CString::New(String(""), (ICharSequence**)&emptyCS);
+        sublabelView->SetText(emptyCS);
+    }
+    else {
+        AutoPtr<IInterface> obj;
+        GetItem(position, (IInterface**)&obj);
+        DateTimeSuggestion* dts = (DateTimeSuggestion*)(IObject::Probe(obj));
+        AutoPtr<ICharSequence> lvCS;
+        CString::New(dts->LocalizedValue(), (ICharSequence**)&lvCS);
+        labelView->SetText(lvCS);
+        AutoPtr<ICharSequence> svCS;
+        CString::New(dts->Label(), (ICharSequence**)&svCS);
+        sublabelView->SetText(svCS);
+    }
 
     *outView = layout;
 
-    return E_NOT_IMPLEMENTED;
+    return NOERROR;
 }
 
 //@Override
@@ -83,10 +86,9 @@ ECode DateTimeSuggestionListAdapter::GetCount(
     /* [out] */ Int32* count)
 {
     VALIDATE_NOT_NULL(count);
-    assert(0);
-    // TODO
-    // *count = super.getCount() + 1;
-    return E_NOT_IMPLEMENTED;
+    GetCount(count);
+    *count += 1;
+    return NOERROR;
 }
 
 } // namespace Input

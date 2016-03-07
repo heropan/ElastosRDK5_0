@@ -64,6 +64,10 @@ private:
             /* [in] */ IBundle* arguments,
             /* [in] */ Boolean* result);
 
+        CARAPI FindFocus(
+            /* [in] */ Int32 focus,
+            /* [out] */  IAccessibilityNodeInfo** info);
+
     private:
         JellyBeanBrowserAccessibilityManager* mOwner;
     };

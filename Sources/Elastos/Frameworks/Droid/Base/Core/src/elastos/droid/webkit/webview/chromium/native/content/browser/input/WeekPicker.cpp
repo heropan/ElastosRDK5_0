@@ -1,11 +1,18 @@
 
 #include <Elastos.CoreLibrary.Utility.h>
 #include "elastos/droid/webkit/webview/chromium/native/content/browser/input/WeekPicker.h"
+#include "elastos/droid/webkit/webview/chromium/native/content/R_Content.h"
 
+using Elastos::Droid::Webkit::Webview::Chromium::Content::R;
 using Elastos::Utility::ICalendarHelper;
+using Elastos::Utility::CCalendarHelper;
 using Elastos::Utility::IDate;
 using Elastos::Utility::EIID_IDate;
 using Elastos::Utility::ITimeZoneHelper;
+using Elastos::Utility::CTimeZoneHelper;
+using Elastos::Core::CString;
+using Elastos::Core::ISystem;
+using Elastos::Core::CSystem;
 
 namespace Elastos {
 namespace Droid {
@@ -22,29 +29,31 @@ WeekPicker::WeekPicker(
     /* [in] */ Double maxValue)
     : TwoFieldDatePicker(context, minValue, maxValue)
 {
-    assert(0);
-    // TODO
-    // GetPositionInYearSpinner()->SetContentDescription(
-    //         GetResources()->GetString(R::string::accessibility_date_picker_week));
+    AutoPtr<IResources> resources;
+    GetResources((IResources**)&resources);
+    String str;
+    resources->GetString(R::string::accessibility_date_picker_week, &str);
+    AutoPtr<ICharSequence> cs;
+    CString::New(str, (ICharSequence**)&cs);
+
+    IView::Probe(GetPositionInYearSpinner())->SetContentDescription(cs);
 
     // initialize to current date
     AutoPtr<ICalendarHelper> helper;
-    assert(0);
-    // TODO
-    // CCalendarHelper::AcquireSingleton((ICalendarHelper**)&helper);
+    CCalendarHelper::AcquireSingleton((ICalendarHelper**)&helper);
     AutoPtr<ICalendar> cal;
     AutoPtr<ITimeZoneHelper> timeZoneHelper;
-    assert(0);
-    // TODO
-    // CTimeZoneHelper::AcquireSingleton((ITimeZoneHelper**)&timeZoneHelper);
+    CTimeZoneHelper::AcquireSingleton((ITimeZoneHelper**)&timeZoneHelper);
     AutoPtr<ITimeZone> timeZome;
     timeZoneHelper->GetTimeZone(String("UTC"), (ITimeZone**)&timeZome);
     helper->GetInstance(timeZome, (ICalendar**)&cal);
     cal->SetFirstDayOfWeek(ICalendar::MONDAY);
     cal->SetMinimalDaysInFirstWeek(4);
-    assert(0);
-    // TODO
-    // cal->SetTimeInMillis(System::CurrentTimeMillis());
+    Int64 value;
+    AutoPtr<ISystem> system;
+    CSystem::AcquireSingleton((ISystem**)&system);
+    system->GetCurrentTimeMillis(&value);
+    cal->SetTimeInMillis(value);
     Init(GetISOWeekYearForDate(cal), GetWeekForDate(cal), NULL);
 }
 
@@ -56,14 +65,10 @@ AutoPtr<ICalendar> WeekPicker::CreateDateFromWeek(
     /* [in] */ Int32 week)
 {
     AutoPtr<ICalendarHelper> helper;
-    assert(0);
-    // TODO
-    // CCalendarHelper::AcquireSingleton((ICalendarHelper**)&helper);
+    CCalendarHelper::AcquireSingleton((ICalendarHelper**)&helper);
     AutoPtr<ICalendar> date;
     AutoPtr<ITimeZoneHelper> timeZoneHelper;
-    assert(0);
-    // TODO
-    // CTimeZoneHelper::AcquireSingleton((ITimeZoneHelper**)&timeZoneHelper);
+    CTimeZoneHelper::AcquireSingleton((ITimeZoneHelper**)&timeZoneHelper);
     AutoPtr<ITimeZone> timeZome;
     timeZoneHelper->GetTimeZone(String("UTC"), (ITimeZone**)&timeZome);
     helper->GetInstance(timeZome, (ICalendar**)&date);
@@ -83,14 +88,10 @@ AutoPtr<ICalendar> WeekPicker::CreateDateFromValue(
     /* [in] */ Double value)
 {
     AutoPtr<ICalendarHelper> helper;
-    assert(0);
-    // TODO
-    // CCalendarHelper::AcquireSingleton((ICalendarHelper**)&helper);
+    CCalendarHelper::AcquireSingleton((ICalendarHelper**)&helper);
     AutoPtr<ICalendar> date;
     AutoPtr<ITimeZoneHelper> timeZoneHelper;
-    assert(0);
-    // TODO
-    // CTimeZoneHelper::AcquireSingleton((ITimeZoneHelper**)&timeZoneHelper);
+    CTimeZoneHelper::AcquireSingleton((ITimeZoneHelper**)&timeZoneHelper);
     AutoPtr<ITimeZone> timeZome;
     timeZoneHelper->GetTimeZone(String("UTC"), (ITimeZone**)&timeZome);
     helper->GetInstance(timeZome, (ICalendar**)&date);
@@ -145,19 +146,13 @@ ECode WeekPicker::SetCurrentDate(
     AutoPtr<IDate> _date = IDate::Probe(date);
     _date->IsBefore(IDate::Probe(GetMinDate()), &bBefore);
     if (bBefore) {
-        assert(0);
-        // TODO
-        // SetCurrentDate(GetMinDate());
+        TwoFieldDatePicker::SetCurrentDate(GetMinDate());
     }
     else if (_date->IsAfter(IDate::Probe(GetMaxDate()), &bAfter), bAfter) {
-        assert(0);
-        // TODO
-        // SetCurrentDate(GetMaxDate());
+        TwoFieldDatePicker::SetCurrentDate(GetMaxDate());
     }
     else {
-        assert(0);
-        // TODO
-        // SetCurrentDate(date);
+        TwoFieldDatePicker::SetCurrentDate(date);
     }
 
     return NOERROR;

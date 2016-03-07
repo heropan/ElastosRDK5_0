@@ -19,25 +19,6 @@ using Elastos::Droid::View::Accessibility::IAccessibilityManager;
 using Elastos::Droid::View::Accessibility::IAccessibilityNodeInfo;
 using Elastos::Droid::Webkit::Webview::Chromium::Content::Browser::WebContentsObserverElastos;
 
-// import com.googlecode.eyesfree.braille.selfbraille.SelfBrailleClient;
-// import com.googlecode.eyesfree.braille.selfbraille.WriteData;
-
-// import org.apache.http.NameValuePair;
-// import org.apache.http.client.utils.URLEncodedUtils;
-// import org.chromium.base.CommandLine;
-// import org.chromium.content.browser.ContentViewCore;
-// import org.chromium.content.browser.JavascriptInterface;
-// import org.chromium.content.browser.WebContentsObserverAndroid;
-// import org.chromium.content.common.ContentSwitches;
-// import org.json.JSONException;
-// import org.json.JSONObject;
-
-// import java.net.URI;
-// import java.net.URISyntaxException;
-// import java.util.HashMap;
-// import java.util.Iterator;
-// import java.util.List;
-
 namespace Elastos {
 namespace Droid {
 namespace Webkit {
@@ -133,7 +114,8 @@ private:
 
     private:
         AutoPtr<ITextToSpeech> mTextToSpeech;
-//        AutoPtr<SelfBrailleClient> mSelfBrailleClient;
+        //depends on 3rd party software braille
+        //TODO AutoPtr<SelfBrailleClient> mSelfBrailleClient;
         AutoPtr<IView> mView;
     };
 
@@ -270,7 +252,7 @@ private:
     // The Java objects that are exposed to JavaScript
     AutoPtr<TextToSpeechWrapper> mTextToSpeech;
     AutoPtr<VibratorWrapper> mVibrator;
-    /*const*/ Boolean mHasVibratePermission;
+    Boolean mHasVibratePermission;
 
     // Lazily loaded helper objects.
     AutoPtr<IAccessibilityManager> mAccessibilityManager;

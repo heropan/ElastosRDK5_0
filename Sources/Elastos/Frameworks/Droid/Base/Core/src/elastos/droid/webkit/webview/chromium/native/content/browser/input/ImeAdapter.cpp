@@ -5,13 +5,16 @@
 #include "elastos/droid/webkit/webview/chromium/native/content/browser/input/ImeAdapter.h"
 #include "elastos/droid/webkit/webview/chromium/native/content/api/ImeAdapter_dec.h"
 #include "elastos/droid/webkit/webview/chromium/native/content/browser/input/InputDialogContainer.h"
-// TODO #include "os/CHandler.h"
 #include <elastos/utility/logging/Logger.h>
 
-// TODO using Elastos::Droid::Os::CHandler;
+using Elastos::Droid::Os::CHandler;
 using Elastos::Droid::Os::IBinder;
+using Elastos::Droid::Text::ISpanned;
 using Elastos::Droid::Text::EIID_ISpannableString;
+using Elastos::Droid::Text::Style::ICharacterStyle;
+using Elastos::Droid::Text::Style::EIID_ICharacterStyle;
 using Elastos::Droid::View::IInputEvent;
+using Elastos::Droid::View::CKeyEvent;
 using Elastos::Droid::View::EIID_IInputEvent;
 using Elastos::Utility::Logging::Logger;
 
@@ -106,9 +109,7 @@ ImeAdapter::ImeAdapter(
     , mViewEmbedder(embedder)
     , mTextInputType(0)
 {
-    assert(0);
-    // TODO
-    // CHandler::New((IHandler**)&mHandler);
+    CHandler::New((IHandler**)&mHandler);
 }
 
 /**
@@ -332,22 +333,17 @@ void ImeAdapter::SendKeyEventWithKeyCode(
 {
     Int64 eventTime = SystemClock::GetUptimeMillis();
     AutoPtr<IKeyEvent> event1;
-    assert(0);
-    assert(eventTime);//TODO remove warning for unused warning
-    // TODO
-    // CKeyEvent::New(eventTime, eventTime,
-    //         IKeyEvent::ACTION_DOWN, keyCode, 0, 0,
-    //         IKeyCharacterMap::VIRTUAL_KEYBOARD, 0,
-    //         flags, (IKeyEvent**)&event1);
+    CKeyEvent::New(eventTime, eventTime,
+             IKeyEvent::ACTION_DOWN, keyCode, 0, 0,
+             IKeyCharacterMap::VIRTUAL_KEYBOARD, 0,
+             flags, (IKeyEvent**)&event1);
     TranslateAndSendNativeEvents(event1);
 
     AutoPtr<IKeyEvent> event2;
-    assert(0);
-    // TODO
-    // CKeyEvent::New(SystemClock::UptimeMillis(), eventTime,
-    //         IKeyEvent::ACTION_UP, keyCode, 0, 0,
-    //         IKeyCharacterMap::VIRTUAL_KEYBOARD, 0,
-    //         flags, (IKeyEvent**)&event2);
+    CKeyEvent::New(SystemClock::GetUptimeMillis(), eventTime,
+             IKeyEvent::ACTION_UP, keyCode, 0, 0,
+             IKeyCharacterMap::VIRTUAL_KEYBOARD, 0,
+             flags, (IKeyEvent**)&event2);
     TranslateAndSendNativeEvents(event2);
 }
 
@@ -358,7 +354,7 @@ Boolean ImeAdapter::CheckCompositionQueueAndCallNative(
     /* [in] */ Int32 newCursorPosition,
     /* [in] */ Boolean isCommit)
 {
-    if (mNativeImeAdapterAndroid == 0) return false;
+    if (mNativeImeAdapterAndroid == 0) return FALSE;
     String textStr;
     text->ToString(&textStr);
 
@@ -615,21 +611,28 @@ void ImeAdapter::PopulateUnderlinesFromSpans(
 {
     if (ISpannableString::Probe(text) == NULL) return;
 
-    assert(0);
-    // TODO
-    // AutoPtr<ISpannableString> spannableString = ISpannableString::Probe(text);
-    // CharacterStyle spans[] =
-    //         spannableString.getSpans(0, text.length(), CharacterStyle.class);
-    // for (CharacterStyle span : spans) {
-    //     if (span instanceof BackgroundColorSpan) {
-    //         NativeAppendBackgroundColorSpan(underlines, spannableString.getSpanStart(span),
-    //                 spannableString.getSpanEnd(span),
-    //                 ((BackgroundColorSpan) span).getBackgroundColor());
-    //     } else if (span instanceof UnderlineSpan) {
-    //         nativeAppendUnderlineSpan(underlines, spannableString.getSpanStart(span),
-    //                 spannableString.getSpanEnd(span));
-    //     }
-    // }
+    AutoPtr<ISpannableString> spannableString = ISpannableString::Probe(text);
+    Int32 len;
+    text->GetLength(&len);
+    //CharacterStyle spans[] =
+    AutoPtr<ArrayOf<IInterface*> > spans;
+    ISpanned::Probe(spannableString)->GetSpans(0, len, EIID_ICharacterStyle, (ArrayOf<IInterface*>**)&spans);
+
+    for(Int32 i =0; i < spans->GetLength(); ++i) {
+        ICharacterStyle* span = ICharacterStyle::Probe((*spans)[i]);
+        if (IBackgroundColorSpan::Probe(span) != NULL) {
+            Int32 start, end, bgColor;
+            ISpanned::Probe(spannableString)->GetSpanStart((*spans)[i], &start);
+            ISpanned::Probe(spannableString)->GetSpanEnd((*spans)[i], &end);
+            IBackgroundColorSpan::Probe(span)->GetBackgroundColor(&bgColor);
+            NativeAppendBackgroundColorSpan(underlines, start, end, bgColor);
+        } else if (IUnderlineSpan::Probe(span) != NULL) {
+            Int32 start, end;
+            ISpanned::Probe(spannableString)->GetSpanStart((*spans)[i], &start);
+            ISpanned::Probe(spannableString)->GetSpanEnd((*spans)[i], &end);
+            NativeAppendUnderlineSpan(underlines, start, end);
+        }
+    }
 }
 
 //@CalledByNative

@@ -1,6 +1,9 @@
 
 #include "elastos/droid/webkit/webview/chromium/native/content/browser/input/WeekPickerDialog.h"
 #include "elastos/droid/webkit/webview/chromium/native/content/browser/input/WeekPicker.h"
+#include "elastos/droid/webkit/webview/chromium/native/content/R_Content.h"
+
+using Elastos::Droid::Webkit::Webview::Chromium::Content::R;
 
 namespace Elastos {
 namespace Droid {
@@ -25,9 +28,7 @@ WeekPickerDialog::WeekPickerDialog(
     /* [in] */ Double minValue,
     /* [in] */ Double maxValue)
 {
-    assert(0);
-    // TODO
-    // this(context, 0, callBack, year, weekOfYear, minValue, maxValue);
+    TwoFieldDatePickerDialog(context, 0, callBack, year, weekOfYear, minValue, maxValue);
 }
 
 /**
@@ -46,10 +47,8 @@ WeekPickerDialog::WeekPickerDialog(
     /* [in] */ Double minValue,
     /* [in] */ Double maxValue)
 {
-    assert(0);
-    // TODO
-    // super(context, theme, callBack, year, weekOfYear, minValue, maxValue);
-    // SetTitle(R.string.week_picker_dialog_title);
+    TwoFieldDatePickerDialog(context, theme, callBack, year, weekOfYear, minValue, maxValue);
+    SetTitle(R::string::week_picker_dialog_title);
 }
 
 //@Override
@@ -59,9 +58,7 @@ AutoPtr<TwoFieldDatePicker> WeekPickerDialog::CreatePicker(
     /* [in] */ Double maxValue)
 {
     AutoPtr<TwoFieldDatePicker> wp;
-    assert(0);
-    // TODO
-    // wp = new WeekPicker(context, minValue, maxValue);
+    wp = new WeekPicker(context, minValue, maxValue);
     return wp;
 }
 
@@ -72,10 +69,7 @@ AutoPtr<TwoFieldDatePicker> WeekPickerDialog::CreatePicker(
  */
 AutoPtr<WeekPicker> WeekPickerDialog::GetWeekPicker()
 {
-    assert(0);
-    // TODO
-    // return (WeekPicker*) mPicker;
-    return NULL;
+    return (WeekPicker*) mPicker.Get();
 }
 
 } // namespace Input

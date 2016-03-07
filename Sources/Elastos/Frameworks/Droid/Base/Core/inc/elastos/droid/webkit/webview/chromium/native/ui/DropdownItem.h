@@ -54,3 +54,4 @@ public:
 
 #endif // _ELASTOS_DROID_WEBKIT_WEBVIEW_CHROMIUM_UI_DROPDOWNITEM_H_
 
+DEFINE_CONVERSION_FOR(Elastos::Droid::Webkit::Webview::Chromium::Ui::DropdownItem, IInterface)

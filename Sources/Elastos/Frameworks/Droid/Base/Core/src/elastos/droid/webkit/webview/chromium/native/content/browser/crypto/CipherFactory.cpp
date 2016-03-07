@@ -5,26 +5,30 @@
 #include "elastos/droid/webkit/webview/chromium/native/content/browser/crypto/ByteArrayGenerator.h"
 #include "elastos/droid/os/AsyncTask.h"
 #include <elastos/core/AutoLock.h>
+#include "elastos/utility/Arrays.h"
 #include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Core::AutoLock;
 using Elastosx::Crypto::ICipherHelper;
-// TODO using Elastosx::Crypto::CCipherHelper;
+using Elastosx::Crypto::CCipherHelper;
 using Elastosx::Crypto::ISecretKey;
 using Elastosx::Crypto::IKeyGenerator;
 using Elastosx::Crypto::IKeyGeneratorHelper;
 using Elastosx::Crypto::CKeyGeneratorHelper;
 using Elastosx::Crypto::Spec::IIvParameterSpec;
-// TODO using Elastosx::Crypto::Spec::CIvParameterSpec;
+using Elastosx::Crypto::Spec::CIvParameterSpec;
+using Elastosx::Crypto::Spec::CSecretKeySpec;
+using Elastosx::Crypto::Spec::ISecretKeySpec;
 using Elastos::Droid::Os::AsyncTask;
 using Elastos::Security::EIID_IKey;
 using Elastos::Security::ISecureRandom;
 using Elastos::Security::ISecureRandomHelper;
-// TODO using Elastos::Security::CSecureRandomHelper;
+//TODO using Elastos::Security::CSecureRandomHelper;
 using Elastos::Security::Spec::IAlgorithmParameterSpec;
 using Elastos::Security::Spec::EIID_IAlgorithmParameterSpec;
-using Elastos::Utility::Logging::Slogger;
 using Elastos::Utility::Concurrent::EIID_ICallable;
+using Elastos::Utility::Arrays;
+using Elastos::Utility::Logging::Slogger;
 
 namespace Elastos {
 namespace Droid {
@@ -90,17 +94,13 @@ ECode CipherFactory::InnerCallable::Call(
         // shipped to everyone. Alternately, leave this in as a defense against other
         // bugs in SecureRandom.
         AutoPtr<ISecureRandomHelper> secureRandomHelper;
-        assert(0);
-        // TODO
-        // CSecureRandomHelper::AcquireSingleton((ISecureRandomHelper**)&secureRandomHelper);
+        //TODO CSecureRandomHelper::AcquireSingleton((ISecureRandomHelper**)&secureRandomHelper);
         AutoPtr<ISecureRandom> random;
         secureRandomHelper->GetInstance(String("SHA1PRNG"), (ISecureRandom**)&random);
         random->SetSeed(seed);
 
         AutoPtr<IKeyGeneratorHelper> keyGeneratorHelper;
-        assert(0);
-        // TODO
-        // CKeyGeneratorHelper::AcquireSingleton((IKeyGeneratorHelper**)&keyGeneratorHelper);
+        CKeyGeneratorHelper::AcquireSingleton((IKeyGeneratorHelper**)&keyGeneratorHelper);
         AutoPtr<IKeyGenerator> generator;
         keyGeneratorHelper->GetInstance(String("AES"), (IKeyGenerator**)&generator);
         generator->Init(128, random);
@@ -155,14 +155,10 @@ AutoPtr<ICipher> CipherFactory::GetCipher(
         // try {
             AutoPtr<ICipher> cipher;
             AutoPtr<ICipherHelper> helper;
-            assert(0);
-            // TODO
-            // CCipherHelper::AcquireSingleton((ICipherHelper**)&helper);
+            CCipherHelper::AcquireSingleton((ICipherHelper**)&helper);
             helper->GetInstance(String("AES/CBC/PKCS5Padding"), (ICipher**)&cipher);
             AutoPtr<IIvParameterSpec> ivParameterSpec;
-            assert(0);
-            // TODO
-            // CIvParameterSpec::New((IIvParameterSpec**)&ivParameterSpec);
+            CIvParameterSpec::New(data->iv, (IIvParameterSpec**)&ivParameterSpec);
             AutoPtr<IAlgorithmParameterSpec> algorithmParameterSpec =
                    IAlgorithmParameterSpec::Probe(ivParameterSpec);
             cipher->Init(opmode, data->key, algorithmParameterSpec);
@@ -289,18 +285,18 @@ Boolean CipherFactory::RestoreFromBundle(
     if (wrappedKey == NULL || iv == NULL) return FALSE;
 
     // try {
-        AutoPtr<IKey> bundledKey;
-        assert(0);
-        // TODO
-        // CSecretKeySpec(wrappedKey, String("AES"), (IKey**)&bundledKey);
+        AutoPtr<ISecretKeySpec> sks;
+        CSecretKeySpec::New(wrappedKey, String("AES"), (ISecretKeySpec**)&sks);
+        AutoPtr<IKey> bundledKey = IKey::Probe(sks);
 
         {
             AutoLock lock(mDataLock);
+            Boolean eq1;
             if (mData == NULL) {
                 mData = new CipherData(bundledKey, iv);
                 return TRUE;
             }
-            else if (/* TODO mData->key->Equals(bundledKey) && Arrays.equals(mData.iv, iv)*/FALSE) {
+            else if ((IObject::Probe(mData->key)->Equals(bundledKey, &eq1), eq1)  && Arrays::Equals(mData->iv, iv)) {
                 return TRUE;
             }
             else {

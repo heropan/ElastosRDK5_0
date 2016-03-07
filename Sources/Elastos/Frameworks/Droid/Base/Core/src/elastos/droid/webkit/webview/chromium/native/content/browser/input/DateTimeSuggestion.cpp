@@ -43,26 +43,27 @@ String DateTimeSuggestion::Label()
 
 //@Override
 ECode DateTimeSuggestion::Equals(
-    /* [in] */ Object& object,
+    /* [in] */ IInterface* object,
     /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result);
 
-    assert(0);
-    // TODO
+    // because this class is not CAR class, only use IObject to check
     // if (object.Probe(EIID_DateTimeSuggestion) == NULL) {
     //     *result = FALSE;
     //     return NOERROR;
     // }
+    if (IObject::Probe(object) == NULL) {
+        *result = FALSE;
+        return NOERROR;
+    }
 
-    assert(0);
-    // TODO
-    // const AutoPtr<DateTimeSuggestion> other = (DateTimeSuggestion*)object.Probe(EIID_DateTimeSuggestion);
-    // *result = mValue == other->mValue &&
-    //        mLocalizedValue == other->mLocalizedValue &&
-    //        mLabel == other->mLabel;
+    AutoPtr<DateTimeSuggestion> other = (DateTimeSuggestion*)(IObject::Probe(object));
+     *result = mValue == other->mValue &&
+            mLocalizedValue == other->mLocalizedValue &&
+            mLabel == other->mLabel;
 
-    return E_NOT_IMPLEMENTED;
+    return NOERROR;
 }
 
 //@Override

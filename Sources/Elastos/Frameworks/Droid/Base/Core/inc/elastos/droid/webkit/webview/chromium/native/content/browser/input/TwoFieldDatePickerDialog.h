@@ -6,8 +6,9 @@
 #include "Elastos.Droid.Content.h"
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/webkit/webview/chromium/native/content/browser/input/TwoFieldDatePicker.h"
+#include "elastos/droid/app/AlertDialog.h"
 
-using Elastos::Droid::App::IAlertDialog;
+using Elastos::Droid::App::AlertDialog;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Content::IDialogInterface;
 using Elastos::Droid::Content::IDialogInterfaceOnClickListener;
@@ -25,8 +26,7 @@ namespace Browser {
 namespace Input {
 
 class TwoFieldDatePickerDialog
-    //: public Object
-    : public IAlertDialog
+    : public AlertDialog
     , public IDialogInterfaceOnClickListener
     , public TwoFieldDatePicker::OnMonthOrWeekChangedListener
 {

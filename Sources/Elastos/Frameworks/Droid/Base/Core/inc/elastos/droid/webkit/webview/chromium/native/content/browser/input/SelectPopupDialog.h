@@ -149,8 +149,8 @@ private:
     // The dialog hosting the popup list view.
     AutoPtr<IAlertDialog> mListBoxPopup;
 
-    /*const*/ AutoPtr<ContentViewCore> mContentViewCore;
-    /*const*/ AutoPtr<IContext> mContext;
+    AutoPtr<ContentViewCore> mContentViewCore;
+    AutoPtr<IContext> mContext;
 };
 
 } // namespace Input

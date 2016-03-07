@@ -5,6 +5,7 @@
 #include "Elastos.Droid.Widget.h"
 #include "elastos/droid/ext/frameworkext.h"
 #include <elastos/core/Object.h>
+#include "elastos/droid/widget/ArrayAdapter.h"
 
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::View::IView;
@@ -12,6 +13,7 @@ using Elastos::Droid::View::IViewGroup;
 using Elastos::Droid::Widget::IArrayAdapter;
 using Elastos::Droid::Widget::ICheckedTextView;
 using Elastos::Droid::Widget::ITextView;
+using Elastos::Droid::Widget::ArrayAdapter;
 
 using Elastos::Utility::IArrayList;
 using Elastos::Utility::IList;
@@ -30,8 +32,7 @@ namespace Input {
  * OPTION_GROUP items.
  */
 class SelectPopupAdapter
-    : public Object
-    , public IArrayAdapter
+    : public ArrayAdapter
 {
 public:
     CAR_INTERFACE_DECL();

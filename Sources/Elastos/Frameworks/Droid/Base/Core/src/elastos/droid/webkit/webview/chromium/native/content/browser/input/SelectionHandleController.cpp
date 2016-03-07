@@ -178,10 +178,8 @@ void SelectionHandleController::BeginHandleFadeIn()
 void SelectionHandleController::SetHandleVisibility(
     /* [in] */ Int32 visibility)
 {
-    assert(0);
-    // TODO
-    // mStartHandle->SetVisibility(visibility);
-    // mEndHandle->SetVisibility(visibility);
+    mStartHandle->SetVisibility(visibility);
+    mEndHandle->SetVisibility(visibility);
 }
 
 /**

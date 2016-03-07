@@ -1,5 +1,6 @@
 
 #include "Elastos.Droid.Graphics.h"
+#include "Elastos.Droid.Os.h"
 #include "Elastos.Droid.Text.h"
 #include "elastos/droid/webkit/webview/chromium/native/content/browser/accessibility/BrowserAccessibilityManager.h"
 #include "elastos/droid/webkit/webview/chromium/native/content/api/BrowserAccessibilityManager_dec.h"
@@ -8,15 +9,23 @@
 #include "elastos/droid/os/Build.h"
 #include <elastos/utility/logging/Logger.h>
 
-using Elastos::Core::EIID_ICharSequence;
 using Elastos::Droid::Os::Build;
+using Elastos::Droid::Os::CBundle;
+using Elastos::Droid::Graphics::CRect;
 using Elastos::Droid::Text::ISpannable;
+using Elastos::Droid::Text::CSpannableString;
 using Elastos::Droid::Text::EIID_ISpannable;
+using Elastos::Droid::Text::Style::CURLSpan;
 using Elastos::Droid::View::Accessibility::IAccessibilityEventHelper;
 using Elastos::Droid::View::Accessibility::IAccessibilityNodeInfoHelper;
 using Elastos::Droid::View::Accessibility::IAccessibilityRecord;
+using Elastos::Droid::View::Accessibility::CAccessibilityNodeInfoHelper;
+using Elastos::Droid::View::Accessibility::CAccessibilityEventHelper;
 using Elastos::Droid::View::Accessibility::EIID_IAccessibilityRecord;
 using Elastos::Droid::View::EIID_IView;
+using Elastos::Core::CString;
+using Elastos::Core::EIID_ICharSequence;
+using Elastos::Utility::CArrayList;
 using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
@@ -130,18 +139,14 @@ AutoPtr<IAccessibilityNodeInfo> BrowserAccessibilityManager::CreateAccessibility
     }
 
     AutoPtr<IAccessibilityNodeInfoHelper> helper;
-    assert(0);
-    // TODO
-    // CAccessibilityNodeInfoHelper::AcquireSingleton((IAccessibilityNodeInfoHelper**)&helper);
+    CAccessibilityNodeInfoHelper::AcquireSingleton((IAccessibilityNodeInfoHelper**)&helper);
     AutoPtr<IAccessibilityNodeInfo> info;
     AutoPtr<IView> view = IView::Probe(mView);
     helper->Obtain(view, (IAccessibilityNodeInfo**)&info);
     String pkName;
     mContentViewCore->GetContext()->GetPackageName(&pkName);
     AutoPtr<ICharSequence> pkNameCS;
-    assert(0);
-    // TODO
-    // CString::New(pkName, (ICharSequence**)&pkNameCS);
+    CString::New(pkName, (ICharSequence**)&pkNameCS);
     info->SetPackageName(pkNameCS);
     info->SetSource(view, virtualViewId);
 
@@ -166,9 +171,7 @@ AutoPtr<IList> BrowserAccessibilityManager::FindAccessibilityNodeInfosByText(
     /* [in] */ Int32 virtualViewId)
 {
     AutoPtr<IList> list;
-    assert(0);
-    // TODO
-    // CArrayList::New((IList**)&list);
+    CArrayList::New((IList**)&list);
     return list;
 }
 
@@ -234,9 +237,7 @@ Boolean BrowserAccessibilityManager::PerformAction(
             if (elementType == NULL)
                 return FALSE;
 
-            assert(0);
-            // TODO
-            // elementType = elementType.ToUpperCase(ILocale::US);
+            elementType = elementType.ToUpperCase(/*ILocale::US*/);
             return JumpToElementType(elementType, TRUE);
         }
         case IAccessibilityNodeInfo::ACTION_PREVIOUS_HTML_ELEMENT: {
@@ -249,9 +250,7 @@ Boolean BrowserAccessibilityManager::PerformAction(
             if (elementType == NULL)
                 return FALSE;
 
-            assert(0);
-            // TODO
-            // elementType = elementType.ToUpperCase(ILocale::US);
+            elementType = elementType.ToUpperCase(/*ILocale::US*/);
             return JumpToElementType(elementType, FALSE);
         }
 
@@ -367,45 +366,33 @@ void BrowserAccessibilityManager::SendAccessibilityEvent(
     }
 
     AutoPtr<IAccessibilityEventHelper> accessibilityEventHelper;
-    assert(0);
-    // TODO
-    // CAccessibilityEventHelper::AcquireSingleton((IAccessibilityEventHelper**)&accessibilityEventHelper);
+    CAccessibilityEventHelper::AcquireSingleton((IAccessibilityEventHelper**)&accessibilityEventHelper);
     AutoPtr<IAccessibilityEvent> event;
     accessibilityEventHelper->Obtain(eventType, (IAccessibilityEvent**)&event);
     String packeName;
     mContentViewCore->GetContext()->GetPackageName(&packeName);
     AutoPtr<ICharSequence> packeNameCS;
-    assert(0);
-    // TODO
-    // CString::New(packeName, (ICharSequence**)&packeNameCS);
+    CString::New(packeName, (ICharSequence**)&packeNameCS);
     event->SetPackageName(packeNameCS);
-    assert(0);
-    // TODO
-    // event->SetSource(mView, virtualViewId);
+    IAccessibilityRecord::Probe(event)->SetSource(IView::Probe(mView), virtualViewId);
     if (!NativePopulateAccessibilityEvent(mNativeObj, event, virtualViewId, eventType)) {
-        assert(0);
-        // TODO
-        // event->Recycle();
+        IAccessibilityRecord::Probe(event)->Recycle();
         return;
     }
 
-    assert(0);
-    // TODO
-    // mView->RequestSendAccessibilityEvent(mView, event);
+    Boolean res;
+    IViewParent::Probe(mView)->RequestSendAccessibilityEvent(IView::Probe(mView), event, &res);
 }
 
 AutoPtr<IBundle> BrowserAccessibilityManager::GetOrCreateBundleForAccessibilityEvent(
     /* [in] */ IAccessibilityEvent* event)
 {
-    AutoPtr<IBundle> bundle;
-    assert(0);
-    // TODO
-    // event->GetParcelableData((IInterface**)&bundle);
+    AutoPtr<IParcelable> obj;
+    IAccessibilityRecord::Probe(event)->GetParcelableData((IParcelable**)&obj);
+    AutoPtr<IBundle> bundle = IBundle::Probe(obj);
     if (bundle == NULL) {
-        assert(0);
-        // TODO
-        // CBundle((IBundle**)&bundle);
-        // event->SetParcelableData(bundle);
+        CBundle::New((IBundle**)&bundle);
+        IAccessibilityRecord::Probe(event)->SetParcelableData(IParcelable::Probe(bundle));
     }
 
     return bundle;
@@ -417,9 +404,7 @@ AutoPtr<IAccessibilityNodeInfo> BrowserAccessibilityManager::CreateNodeForHost(
     // Since we don't want the parent to be focusable, but we can't remove
     // actions from a node, copy over the necessary fields.
     AutoPtr<IAccessibilityNodeInfoHelper> helper;
-    assert(0);
-    // TODO
-    // CAccessibilityNodeInfoHelper::AcquireSingleton((IAccessibilityNodeInfoHelper**)&helper);
+    CAccessibilityNodeInfoHelper::AcquireSingleton((IAccessibilityNodeInfoHelper**)&helper);
 
     AutoPtr<IAccessibilityNodeInfo> result;
     AutoPtr<IView> view = IView::Probe(mView);
@@ -430,9 +415,7 @@ AutoPtr<IAccessibilityNodeInfo> BrowserAccessibilityManager::CreateNodeForHost(
 
     // Copy over parent and screen bounds.
     AutoPtr<IRect> rect;
-    assert(0);
-    // TODO
-    // CRect::New((IRect**)&rect);
+    CRect::New((IRect**)&rect);
     source->GetBoundsInParent(rect);
     result->SetBoundsInParent(rect);
     source->GetBoundsInScreen(rect);
@@ -580,9 +563,7 @@ void BrowserAccessibilityManager::AnnounceLiveRegionText(
     /* [in] */ const String& text)
 {
     AutoPtr<ICharSequence> textCS;
-    assert(0);
-    // TODO
-    // CString::New(text, (ICharSequence**)&textCS);
+    CString::New(text, (ICharSequence**)&textCS);
     AutoPtr<IView> view = IView::Probe(mView);
     view->AnnounceForAccessibility(textCS);
 }
@@ -663,9 +644,7 @@ void BrowserAccessibilityManager::SetAccessibilityNodeInfoClassName(
     /* [in] */ const String& className)
 {
     AutoPtr<ICharSequence> classNameCS;
-    assert(0);
-    // TODO
-    // CString::New(className, (ICharSequence**)&classNameCS);
+    CString::New(className, (ICharSequence**)&classNameCS);
     node->SetClassName(classNameCS);
 }
 
@@ -677,13 +656,11 @@ void BrowserAccessibilityManager::SetAccessibilityNodeInfoContentDescription(
 {
     if (annotateAsLink) {
         AutoPtr<ISpannableString> spannable;
-        assert(0);
-        // TODO
-        // CSpannableString::New(contentDescription, (ISpannableString**)&spannable);
+        AutoPtr<ICharSequence> cdCS;
+        CString::New(contentDescription, (ICharSequence**)&cdCS);
+        CSpannableString::New(cdCS, (ISpannableString**)&spannable);
         AutoPtr<IURLSpan> URLSpan;
-        assert(0);
-        // TODO
-        // CURLSpan::New(String(""), (IURLSpan**)&URLSpan);
+        CURLSpan::New(String(""), (IURLSpan**)&URLSpan);
         Int32 length;
         (ICharSequence::Probe(spannable))->GetLength(&length);
         (ISpannable::Probe(spannable))->SetSpan(URLSpan, 0, length, 0);
@@ -691,9 +668,7 @@ void BrowserAccessibilityManager::SetAccessibilityNodeInfoContentDescription(
     }
     else {
         AutoPtr<ICharSequence> contentDescriptionCS;
-        assert(0);
-        // TODO
-        // CString::New(contentDescription, (ICharSequence**)&contentDescriptionCS);
+        CString::New(contentDescription, (ICharSequence**)&contentDescriptionCS);
         node->SetContentDescription(contentDescriptionCS);
     }
 }
@@ -711,10 +686,8 @@ void BrowserAccessibilityManager::SetAccessibilityNodeInfoLocation(
 {
     // First set the bounds in parent.
     AutoPtr<IRect> boundsInParent;
-    assert(0);
-    // TODO
-    // CRect::New(parentRelativeLeft, parentRelativeTop,
-    //         parentRelativeLeft + width, parentRelativeTop + height, (IRect**)&boundsInParent);
+    CRect::New(parentRelativeLeft, parentRelativeTop,
+             parentRelativeLeft + width, parentRelativeTop + height, (IRect**)&boundsInParent);
     if (isRootNode) {
         // Offset of the web content relative to the View.
         boundsInParent->Offset(0, (Int32) mRenderCoordinates->GetContentOffsetYPix());
@@ -724,9 +697,7 @@ void BrowserAccessibilityManager::SetAccessibilityNodeInfoLocation(
 
     // Now set the absolute rect, which requires several transformations.
     AutoPtr<IRect> rect;
-    assert(0);
-    // TODO
-    // CRect::New(absoluteLeft, absoluteTop, absoluteLeft + width, absoluteTop + height, (IRect**)&rect);
+    CRect::New(absoluteLeft, absoluteTop, absoluteLeft + width, absoluteTop + height, (IRect**)&rect);
 
     // Offset by the scroll position.
     rect->Offset(-(Int32) mRenderCoordinates->GetScrollX(),
@@ -753,9 +724,7 @@ void BrowserAccessibilityManager::SetAccessibilityNodeInfoLocation(
     // Finally offset by the location of the view within the screen.
     AutoPtr< ArrayOf<Int32> > viewLocation = ArrayOf<Int32>::Alloc(2);
     AutoPtr<IView> view = IView::Probe(mView);
-    assert(0);
-    // TODO
-    // view->GetLocationOnScreen(viewLocation);
+    view->GetLocationOnScreen(viewLocation);
     rect->Offset((*viewLocation)[0], (*viewLocation)[1]);
 
     node->SetBoundsInScreen(rect);
@@ -829,9 +798,7 @@ void BrowserAccessibilityManager::SetAccessibilityEventClassName(
 {
     AutoPtr<IAccessibilityRecord> record = IAccessibilityRecord::Probe(event);
     AutoPtr<ICharSequence> classNameCS;
-    assert(0);
-    // TODO
-    // CString::New(className, (ICharSequence**)&classNameCS);
+    CString::New(className, (ICharSequence**)&classNameCS);
     record->SetClassName(classNameCS);
 }
 
@@ -875,16 +842,12 @@ void BrowserAccessibilityManager::SetAccessibilityEventTextChangedAttrs(
     record->SetAddedCount(addedCount);
     record->SetRemovedCount(removedCount);
     AutoPtr<ICharSequence> beforeTextCS;
-    assert(0);
-    // TODO
-    // CString::New(beforeText, (ICharSequence**)&beforeTextCS);
+    CString::New(beforeText, (ICharSequence**)&beforeTextCS);
     record->SetBeforeText(beforeTextCS);
     AutoPtr<IList> container;
     record->GetText((IList**)&container);
     AutoPtr<ICharSequence> textCS;
-    assert(0);
-    // TODO
-    // CString::New(text, (ICharSequence**)&textCS);
+    CString::New(text, (ICharSequence**)&textCS);
     container->Add(textCS);
 }
 
@@ -903,9 +866,7 @@ void BrowserAccessibilityManager::SetAccessibilityEventSelectionAttrs(
     AutoPtr<IList> container;
     record->GetText((IList**)&container);
     AutoPtr<ICharSequence> textCS;
-    assert(0);
-    // TODO
-    // CString::New(text, (ICharSequence**)&textCS);
+    CString::New(text, (ICharSequence**)&textCS);
     container->Add(textCS);
 }
 

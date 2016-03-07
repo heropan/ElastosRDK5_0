@@ -41,7 +41,7 @@ public:
 
     //@Override
     CARAPI Equals(
-        /* [in] */ Object& object,
+        /* [in] */ IInterface* object,
         /* [out] */ Boolean* result);
 
     //@Override

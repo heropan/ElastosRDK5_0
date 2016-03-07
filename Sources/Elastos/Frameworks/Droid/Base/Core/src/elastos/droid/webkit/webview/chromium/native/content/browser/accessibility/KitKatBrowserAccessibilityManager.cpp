@@ -4,6 +4,13 @@
 
 using Elastos::Droid::View::Accessibility::IAccessibilityNodeInfoCollectionInfo;
 using Elastos::Droid::View::Accessibility::IAccessibilityNodeInfoCollectionInfoHelper;
+using Elastos::Droid::View::Accessibility::CAccessibilityNodeInfoCollectionInfoHelper;
+using Elastos::Droid::View::Accessibility::IAccessibilityNodeInfoRangeInfo;
+using Elastos::Droid::View::Accessibility::IAccessibilityNodeInfoRangeInfoHelper;
+using Elastos::Droid::View::Accessibility::CAccessibilityNodeInfoRangeInfoHelper;
+using Elastos::Droid::View::Accessibility::IAccessibilityNodeInfoCollectionItemInfo;
+using Elastos::Droid::View::Accessibility::IAccessibilityNodeInfoCollectionItemInfoHelper;
+using Elastos::Droid::View::Accessibility::CAccessibilityNodeInfoCollectionItemInfoHelper;
 
 namespace Elastos {
 namespace Droid {
@@ -36,9 +43,7 @@ void KitKatBrowserAccessibilityManager::SetAccessibilityNodeInfoKitKatAttributes
     node->SetDismissable(contentInvalid);
     node->SetMultiLine(multiLine);
     node->SetInputType(inputType);
-    assert(0);
-    // TODO
-    // node->SetLiveRegion(liveRegion);
+    node->SetLiveRegion(liveRegion);
 }
 
 //@Override
@@ -50,10 +55,8 @@ void KitKatBrowserAccessibilityManager::SetAccessibilityNodeInfoCollectionInfo(
 {
     AutoPtr<IAccessibilityNodeInfoCollectionInfo> info;
     AutoPtr<IAccessibilityNodeInfoCollectionInfoHelper> help;
-    assert(0);
-    // TODO
-    // CAccessibilityNodeInfoCollectionInfoHelper::AcquireSingleton((IAccessibilityNodeInfoCollectionInfoHelper**)&help);
-    // help->Obtain(rowCount, columnCount, hierarchical, (IAccessibilityNodeInfoCollectionInfo**)&info);
+    CAccessibilityNodeInfoCollectionInfoHelper::AcquireSingleton((IAccessibilityNodeInfoCollectionInfoHelper**)&help);
+    help->Obtain(rowCount, columnCount, hierarchical, (IAccessibilityNodeInfoCollectionInfo**)&info);
     node->SetCollectionInfo(info);
 }
 
@@ -66,13 +69,11 @@ void KitKatBrowserAccessibilityManager::SetAccessibilityNodeInfoCollectionItemIn
     /* [in] */ Int32 columnSpan,
     /* [in] */ Boolean heading)
 {
-    AutoPtr<IAccessibilityNodeInfoCollectionInfo> info;
-    AutoPtr<IAccessibilityNodeInfoCollectionInfoHelper> help;
-    assert(0);
-    // TODO
-    // CAccessibilityNodeInfoCollectionInfoHelper::AcquireSingleton((IAccessibilityNodeInfoCollectionInfoHelper**)&help);
-    // help->Obtain(rowIndex, rowSpan, columnIndex, columnSpan, heading, (IAccessibilityNodeInfoCollectionInfo**)&info);
-    // node->SetCollectionItemInfo(info);
+    AutoPtr<IAccessibilityNodeInfoCollectionItemInfo> info;
+    AutoPtr<IAccessibilityNodeInfoCollectionItemInfoHelper> help;
+    CAccessibilityNodeInfoCollectionItemInfoHelper::AcquireSingleton((IAccessibilityNodeInfoCollectionItemInfoHelper**)&help);
+    help->Obtain(rowIndex, rowSpan, columnIndex, columnSpan, heading, (IAccessibilityNodeInfoCollectionItemInfo**)&info);
+    node->SetCollectionItemInfo(info);
 }
 
 //@Override
@@ -83,13 +84,11 @@ void KitKatBrowserAccessibilityManager::SetAccessibilityNodeInfoRangeInfo(
     /* [in] */ Float max,
     /* [in] */ Float current)
 {
-    AutoPtr<IAccessibilityNodeInfoCollectionInfo> info;
-    AutoPtr<IAccessibilityNodeInfoCollectionInfoHelper> help;
-    assert(0);
-    // TODO
-    // CAccessibilityNodeInfoCollectionInfoHelper::AcquireSingleton((IAccessibilityNodeInfoCollectionInfoHelper**)&help);
-    // help->Obtain(rangeType, min, max, current, (IAccessibilityNodeInfoCollectionInfo**)&info);
-    // node->SetRangeInfo(info);
+    AutoPtr<IAccessibilityNodeInfoRangeInfo> info;
+    AutoPtr<IAccessibilityNodeInfoRangeInfoHelper> help;
+    CAccessibilityNodeInfoRangeInfoHelper::AcquireSingleton((IAccessibilityNodeInfoRangeInfoHelper**)&help);
+    help->Obtain(rangeType, min, max, current, (IAccessibilityNodeInfoRangeInfo**)&info);
+    node->SetRangeInfo(info);
 }
 
 //@Override

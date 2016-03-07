@@ -7,17 +7,8 @@
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Os::IBundle;
 using Elastos::Droid::View::Accessibility::IAccessibilityNodeInfo;
-using Elastosx::Security::Auth::Callback::ICallbackHandler;
-
-// import org.chromium.content.browser.ContentViewCore;
-// import org.chromium.content.browser.JavascriptInterface;
-// import org.json.JSONException;
-// import org.json.JSONObject;
-
-// import java.util.Iterator;
-// import java.util.Locale;
-// import java.util.concurrent.atomic.AtomicInteger;
 using Elastos::Utility::Concurrent::Atomic::IAtomicInteger32;
+using Org::Json::IJSONObject;
 
 namespace Elastos {
 namespace Droid {
@@ -37,6 +28,7 @@ class JellyBeanAccessibilityInjector : public AccessibilityInjector
     friend class AccessibilityInjector;
 private:
     class CallbackHandler
+        : public Object
     {
         friend class JellyBeanAccessibilityInjector;
     public:
@@ -146,8 +138,8 @@ private:
         /* [in] */ IBundle* arguments);
 
 private:
-    AutoPtr<ICallbackHandler> mCallback;
-    // AutoPtr<IJSONObject> mAccessibilityJSONObject;
+    AutoPtr<CallbackHandler> mCallback;
+    AutoPtr<IJSONObject> mAccessibilityJSONObject;
 
     static const String ALIAS_TRAVERSAL_JS_INTERFACE;
 
