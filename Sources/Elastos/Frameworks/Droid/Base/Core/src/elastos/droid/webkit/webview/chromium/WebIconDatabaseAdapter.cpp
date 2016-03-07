@@ -21,7 +21,6 @@ ECode WebIconDatabaseAdapter::Open(
     // ==================before translated======================
     // AwContents.setShouldDownloadFavicons();
 
-    assert(0); // parm is unused, is that ok?
     AwContents::SetShouldDownloadFavicons();
     return NOERROR;
 }

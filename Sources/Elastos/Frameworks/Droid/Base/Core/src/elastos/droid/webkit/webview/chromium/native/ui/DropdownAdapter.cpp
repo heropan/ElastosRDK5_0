@@ -51,7 +51,6 @@ DropdownAdapter::DropdownAdapter(
     // mContext = context;
     // mAreAllItemsEnabled = checkAreAllItemsEnabled();
 
-    assert(0);
     ArrayAdapter::constructor(context, R::layout::dropdown_item, items);
     mAreAllItemsEnabled = CheckAreAllItemsEnabled();
 }
@@ -70,7 +69,6 @@ DropdownAdapter::DropdownAdapter(
     // mContext = context;
     // mAreAllItemsEnabled = checkAreAllItemsEnabled();
 
-    assert(0);
     AutoPtr< ArrayOf<IInterface*> > itemsTmp = ArrayOf<IInterface*>::Alloc(items->GetLength());
     for (Int32 idx=0; idx<items->GetLength(); ++idx) {
         itemsTmp->Set(idx, TO_IINTERFACE((*items)[idx]));
@@ -135,7 +133,6 @@ AutoPtr<IView> DropdownAdapter::GetView(
     //
     // return layout;
 
-    assert(0);
     AutoPtr<IView> layout = convertView;
     if (NULL == convertView) {
         AutoPtr<IInterface> interfaceTmp;

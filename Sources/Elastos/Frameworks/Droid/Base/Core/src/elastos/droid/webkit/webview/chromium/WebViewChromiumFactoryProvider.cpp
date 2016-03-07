@@ -935,7 +935,6 @@ ECode WebViewChromiumFactoryProvider::SetWebContentsDebuggingEnabled(
     // }
     // mDevToolsServer.setRemoteDebuggingEnabled(enable);
 
-    assert(0);
     AutoPtr<ILooper> looper;
     AutoPtr<ILooperHelper> helper;
     CLooperHelper::AcquireSingleton((ILooperHelper**)&helper);

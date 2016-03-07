@@ -64,7 +64,6 @@ ECode ProxyChangeListener::ProxyReceiver::OnReceive(
     // }
 
     assert(NULL != mOwner);
-    assert(0);
     String action;
     intent->GetAction(&action);
     if (action.Equals(IProxy::PROXY_CHANGE_ACTION)) {
@@ -225,7 +224,6 @@ String ProxyChangeListener::GetProperty(
     // ==================before translated======================
     // return System.getProperty(property);
 
-    assert(0);
     String result;
     AutoPtr<ISystem> sys;
     CSystem::AcquireSingleton((ISystem**)&sys);
@@ -288,7 +286,6 @@ ECode ProxyChangeListener::ProxySettingsChanged(
     //     nativeProxySettingsChanged(mNativePtr);
     // }
 
-    assert(0);
     if (!sEnabled) {
         return NOERROR;
     }
@@ -320,7 +317,6 @@ ECode ProxyChangeListener::RegisterReceiver()
     // mProxyReceiver = new ProxyReceiver();
     // mContext.getApplicationContext().registerReceiver(mProxyReceiver, filter);
 
-    assert(0);
     if (mProxyReceiver != NULL) {
         return NOERROR;
     }

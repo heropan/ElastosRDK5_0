@@ -80,7 +80,6 @@ ECode ColorPickerSimple::Init(
     // adapter.setOnColorSuggestionClickListener(this);
     // setAdapter(adapter);
 
-    assert(0);
     mOnColorChangedListener = onColorChangedListener;
     if (NULL == suggestions) {
         //tye is ColorSuggestion

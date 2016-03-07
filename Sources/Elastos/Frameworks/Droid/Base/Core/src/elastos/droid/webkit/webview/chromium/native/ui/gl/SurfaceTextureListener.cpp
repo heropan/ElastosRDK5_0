@@ -48,7 +48,6 @@ ECode SurfaceTextureListener::Finalize()
     //     super.finalize();
     // }
 
-    assert(0);
     //try {
         NativeDestroy(mNativeSurfaceTextureListener);
     //}

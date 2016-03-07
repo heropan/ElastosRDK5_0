@@ -108,7 +108,6 @@ String NetStringUtil::ConvertToUnicodeWithSubstitutions(
     //     return null;
     // }
 
-    assert(0);
     //try {
         AutoPtr<ICharset> charset;
         AutoPtr<ICharsetHelper> helper;

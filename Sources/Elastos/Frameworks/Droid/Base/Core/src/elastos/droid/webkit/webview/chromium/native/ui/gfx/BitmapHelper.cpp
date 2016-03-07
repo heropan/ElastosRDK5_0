@@ -123,7 +123,6 @@ Int32 BitmapHelper::CalculateInSampleSize(
     //
     // return inSampleSize;
 
-    assert(0);
     Int32 height = 0;
     options->GetOutHeight(&height);
     Int32 width = 0;

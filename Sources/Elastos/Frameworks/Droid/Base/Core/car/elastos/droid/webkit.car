@@ -40,13 +40,6 @@ module
     merge("webkit/WebViewFactory.car");
     merge("webkit/WebViewFactoryProvider.car");
 
-    //merge("webkit/webview/chromium/WebViewChromiumFactoryProvider.car");
-    //merge("webkit/webview/chromium/native/ui/OnColorChangedListener.car");
-    //merge("webkit/webview/chromium/native/ui/ColorSuggestionListAdapter.car");
-    //merge("webkit/webview/chromium/native/net/IRemoteElastosKeyStore.car");
-    //merge("webkit/webview/chromium/native/net/IRemoteElastosKeyStoreCallbacks.car");
-    //merge("webkit/webview/chromium/native/net/IRemoteElastosKeyStoreInterface.car");
-
     using interface Elastos.IO.IInputStream;
     using interface Elastos.Utility.IMap;
 

@@ -75,7 +75,6 @@ WindowElastos::WindowElastos(
     // mIntentErrors = new HashMap<Integer, String>();
     // mVSyncMonitor = new VSyncMonitor(context, mVSyncListener);
 
-    assert(0);
     AutoPtr<IContext> applicationContext;
     context->GetApplicationContext((IContext**)&applicationContext);
     assert (context == applicationContext);
@@ -161,7 +160,6 @@ Boolean WindowElastos::RemoveIntentCallback(
     // mIntentErrors.remove(requestCode);
     // return true;
 
-    assert(0);
     IInterface* interfaceTmp = TO_IINTERFACE(callback);
     Int32 requestCode = 0;
     mOutstandingIntents->IndexOfValue(interfaceTmp, &requestCode);

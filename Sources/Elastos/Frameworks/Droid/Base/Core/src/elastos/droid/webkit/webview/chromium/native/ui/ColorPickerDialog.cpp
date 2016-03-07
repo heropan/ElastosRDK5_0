@@ -211,7 +211,6 @@ ColorPickerDialog::ColorPickerDialog(
     //
     // updateCurrentColor(mInitialColor);
 
-    assert(0);
     AlertDialog::constructor(context, 0);
     // Initialize title
     AutoPtr<IInterface> interfaceTmp;

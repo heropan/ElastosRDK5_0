@@ -121,7 +121,6 @@ AutoPtr<IList> X509Util::X509TrustManagerIceCreamSandwich::CheckServerTrusted(
     // mTrustManager.checkServerTrusted(chain, authType);
     // return Collections.<X509Certificate>emptyList();
 
-    assert(0);
     AutoPtr< ArrayOf<ICertificate*> > chainTmp = ArrayOf<ICertificate*>::Alloc(chain->GetLength());
     for (Int32 idx=0; idx<chain->GetLength(); ++idx) {
         AutoPtr<IX509Certificate> itemTmp = (*chain)[idx];
@@ -144,7 +143,6 @@ X509Util::X509TrustManagerJellyBean::X509TrustManagerJellyBean(
     // ==================before translated======================
     // mTrustManagerExtensions = new X509TrustManagerExtensions(trustManager);
 
-    assert(0);
     CX509TrustManagerExtensions::New(trustManager, (IX509TrustManagerExtensions**)&mTrustManagerExtensions);
 }
 
@@ -241,7 +239,6 @@ ECode X509Util::ClearTestRootCertificates()
     //     }
     // }
 
-    assert(0);
     EnsureInitialized();
     AutoLock lock(sLock);
     //try {
@@ -280,7 +277,6 @@ Boolean X509Util::VerifyKeyUsage(
     //
     // return false;
 
-    assert(0);
     AutoPtr<IList> ekuOids;
     //try {
         certificate->GetExtendedKeyUsage((IList**)&ekuOids);
@@ -393,7 +389,6 @@ AutoPtr<ElastosCertVerifyResult> X509Util::VerifyServerCertificates(
     //                                        isIssuedByKnownRoot, verifiedChain);
     // }
 
-    assert(0);
 
     // old if expression has throw, use assert instead temporary
     assert(NULL != certChain);
@@ -625,7 +620,6 @@ AutoPtr<X509Util::X509TrustManagerImplementation> X509Util::CreateTrustManager(
     // Log.e(TAG, "Could not find suitable trust manager");
     // return null;
 
-    assert(0);
     AutoPtr<ITrustManagerFactoryHelper> helper;
     CTrustManagerFactoryHelper::AcquireSingleton((ITrustManagerFactoryHelper**)&helper);
     String algorithm;
@@ -798,7 +792,6 @@ Boolean X509Util::IsKnownRoot(
     //
     // return false;
 
-    assert(0);
     // Could not find the system key store. Conservatively report false.
     if (sSystemKeyStore == NULL)
         return FALSE;

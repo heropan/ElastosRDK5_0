@@ -133,7 +133,6 @@ ECode ColorSuggestionListAdapter::GetView(
     // }
     // return layout;
 
-    assert(0);
     AutoPtr<ILinearLayout> layout;
     ILinearLayout* maybelinear = ILinearLayout::Probe(convertView);
     if (NULL != convertView && NULL != maybelinear) {
@@ -244,7 +243,6 @@ ECode ColorSuggestionListAdapter::SetUpColorButton(
     // button.setContentDescription(description);
     // button.setOnClickListener(this);
 
-    assert(0);
     IView* viewTmp = IView::Probe(button);
     if (index >= mSuggestions->GetLength()) {
         viewTmp->SetTag(NULL);

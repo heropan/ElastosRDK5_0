@@ -64,7 +64,6 @@ Int32 ActivityWindowElastos::ShowCancelableIntent(
     // storeCallbackData(requestCode, callback, errorId);
     // return requestCode;
 
-    assert(0);
     AutoPtr<IInterface> activityTmp;
     mActivityRef->Resolve(EIID_IInterface, (IInterface**)&activityTmp);
     IActivity* activity = IActivity::Probe(activityTmp);
@@ -107,7 +106,6 @@ Int32 ActivityWindowElastos::ShowCancelableIntent(
     // storeCallbackData(requestCode, callback, errorId);
     // return requestCode;
 
-    assert(0);
     AutoPtr<IInterface> activityTmp;
     mActivityRef->Resolve(EIID_IInterface, (IInterface**)&activityTmp);
     IActivity* activity = IActivity::Probe(activityTmp);
@@ -165,7 +163,6 @@ Boolean ActivityWindowElastos::OnActivityResult(
     // }
     // return false;
 
-    assert(0);
     AutoPtr<IInterface> interfaceTmp;
     mOutstandingIntents->Get(requestCode, (IInterface**)&interfaceTmp);
     IObject* objectTmp = IObject::Probe(interfaceTmp);
@@ -235,7 +232,6 @@ ECode ActivityWindowElastos::StoreCallbackData(
     // mOutstandingIntents.put(requestCode, callback);
     // mIntentErrors.put(requestCode, mApplicationContext.getString(errorId));
 
-    assert(0);
     IInterface* callbackTmp = TO_IINTERFACE(callback);
     mOutstandingIntents->Put(requestCode, callbackTmp);
 

@@ -52,7 +52,6 @@ ColorPickerAdvancedComponent::ColorPickerAdvancedComponent(
     //                     .getIntrinsicWidth();
     // mSeekBar.setThumbOffset(offset / 2);
 
-    assert(0);
     rootView->FindViewById(R::id::gradient, (IView**)&mGradientView);
     IView* viewTmp = IView::Probe(mText);
     rootView->FindViewById(R::id::text, (IView**)&viewTmp);

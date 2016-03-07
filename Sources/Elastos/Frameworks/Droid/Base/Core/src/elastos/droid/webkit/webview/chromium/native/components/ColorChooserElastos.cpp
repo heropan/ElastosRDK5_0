@@ -98,7 +98,6 @@ ECode ColorChooserElastos::OpenColorChooser()
     // ==================before translated======================
     // mDialog.show();
 
-    assert(0);
     mDialog->Show();
     return NOERROR;
 }

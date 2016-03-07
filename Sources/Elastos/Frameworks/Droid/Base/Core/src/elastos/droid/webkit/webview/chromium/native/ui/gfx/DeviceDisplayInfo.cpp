@@ -95,7 +95,6 @@ Int32 DeviceDisplayInfo::GetBitsPerPixel()
     // PixelFormat.getPixelFormatInfo(format, info);
     // return info.bitsPerPixel;
 
-    assert(0);
     Int32 format = GetPixelFormat();
     AutoPtr<IPixelFormat> info;
     CPixelFormat::AcquireSingleton((IPixelFormat**)&info);
@@ -167,7 +166,6 @@ Double DeviceDisplayInfo::GetDIPScale()
     // getDisplay().getMetrics(mTempMetrics);
     // return mTempMetrics.density;
 
-    assert(0);
     GetDisplay()->GetMetrics(mTempMetrics);
     Float density = 0.0f;
     mTempMetrics->GetDensity(&density);
@@ -208,7 +206,6 @@ DeviceDisplayInfo::DeviceDisplayInfo(
     // mAppContext = context.getApplicationContext();
     // mWinManager = (WindowManager) mAppContext.getSystemService(Context.WINDOW_SERVICE);
 
-    assert(0);
     AutoPtr<IContext> applicationContext;
     context->GetApplicationContext((IContext**)&applicationContext);
     mAppContext = applicationContext;
@@ -306,7 +303,6 @@ ECode DeviceDisplayInfo::NativeUpdateSharedDeviceDisplayInfo(
     /* [in] */ Int32 smallestDIPWidth,
     /* [in] */ Int32 rotationDegrees)
 {
-    assert(0);
     Elastos_DeviceDisplayInfo_nativeUpdateSharedDeviceDisplayInfo(THIS_PROBE(IInterface), displayHeight, displayWidth, physicalDisplayHeight, physicalDisplayWidth, bitsPerPixel, bitsPerComponent, dipScale, smallestDIPWidth, rotationDegrees);
     return NOERROR;
 }

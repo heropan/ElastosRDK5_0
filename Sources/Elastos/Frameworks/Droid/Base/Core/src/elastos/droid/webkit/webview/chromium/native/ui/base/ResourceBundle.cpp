@@ -31,7 +31,6 @@ Boolean ResourceBundle::AssetContainedInApk(
     //     return false;
     // }
 
-    assert(0);
     //try {
         AutoPtr<IAssetManager> am;
         ctx->GetAssets((IAssetManager**)&am);

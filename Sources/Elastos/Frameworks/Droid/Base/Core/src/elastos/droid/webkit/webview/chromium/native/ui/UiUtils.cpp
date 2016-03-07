@@ -112,7 +112,6 @@ Boolean UiUtils::IsKeyboardShowing(
     // final float bottomMarginDp = Math.abs(rootView.getHeight() - appRect.height()) / density;
     // return bottomMarginDp > KEYBOARD_DETECT_BOTTOM_THRESHOLD_DP;
 
-    assert(0);
     if (NULL != sKeyboardShowingDelegate && sKeyboardShowingDelegate->DisableKeyboardCheck(context, view)) {
         return FALSE;
     }

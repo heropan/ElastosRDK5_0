@@ -84,7 +84,6 @@ Boolean LocalizationUtils::IsLayoutRtl()
     //
     // return sIsLayoutRtl.booleanValue();
 
-    assert(0);
     if (FALSE == sIsLayoutRtl) {
         AutoPtr<IContext> context = ApplicationStatus::GetApplicationContext();
         AutoPtr<IResources> resources;

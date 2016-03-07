@@ -69,7 +69,6 @@ ECode AutofillPopup::FilterAndShow(
     // setAdapter(new DropdownAdapter(mContext, cleanedData, separators));
     // show();
 
-    assert(0);
     CArrayList::New((IList**)&mSuggestions);
     for (Int32 idx=0; idx<suggestions->GetLength(); ++idx) {
         AutoPtr<IInterface> interfaceTmp = (*suggestions)[idx];
@@ -141,7 +140,6 @@ ECode AutofillPopup::OnItemClick(
     // assert listIndex > -1;
     // mAutofillCallback.suggestionSelected(listIndex);
 
-    assert(0);
     AutoPtr<IAdapter> adapterTmp;
     parent->GetAdapter((IAdapter**)&adapterTmp);
     DropdownAdapter* adapter = (DropdownAdapter*)adapterTmp.Get();

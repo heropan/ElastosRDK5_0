@@ -41,7 +41,6 @@ AutoPtr<IUri> PersonalAutofillPopulator::ProfileQuery::MiddleInitProfiledataUri(
     //                  ContactsContract.Contacts.Data.CONTENT_DIRECTORY
     // ->WWZ_SIGN: FUNC_CALL_END }
 
-    assert(0);
     AutoPtr<IContactsContractProfile> profile;
     CContactsContractProfile::AcquireSingleton((IContactsContractProfile**)&profile);
     AutoPtr<IUri> contentUri;

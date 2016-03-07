@@ -120,7 +120,6 @@ AutoPtr< ArrayOf<Byte> > DefaultElastosKeyStore::GetDSAKeyParamQ(
     // Log.w(TAG, "Not a DSAKey instance!");
     // return null;
 
-    assert(0);
     AutoPtr<IPrivateKey> javaKey = ((DefaultElastosPrivateKey*)key)->GetJavaKey();
     IDSAKey* dsaKey = IDSAKey::Probe(javaKey);
     if (dsaKey != NULL) {
@@ -152,7 +151,6 @@ AutoPtr< ArrayOf<Byte> > DefaultElastosKeyStore::GetECKeyOrder(
     // Log.w(TAG, "Not an ECKey instance!");
     // return null;
 
-    assert(0);
     AutoPtr<IPrivateKey> javaKey = ((DefaultElastosPrivateKey*)key)->GetJavaKey();
     IECKey* eckkey = IECKey::Probe(javaKey);
     if (eckkey != NULL) {
@@ -179,7 +177,6 @@ AutoPtr< ArrayOf<Byte> > DefaultElastosKeyStore::GetPrivateKeyEncodedBytes(
     // PrivateKey javaKey = ((DefaultAndroidPrivateKey) key).getJavaKey();
     // return javaKey.getEncoded();
 
-    assert(0);
     AutoPtr<IPrivateKey> javaKey = ((DefaultElastosPrivateKey*)key)->GetJavaKey();
     AutoPtr< ArrayOf<Byte> > result;
     IKey::Probe(javaKey)->GetEncoded((ArrayOf<Byte>**)&result);
@@ -288,7 +285,6 @@ Int32 DefaultElastosKeyStore::GetPrivateKeyType(
     // else
     //     return PrivateKeyType.INVALID;
 
-    assert(0);
     AutoPtr<IPrivateKey> javaKey = ((DefaultElastosPrivateKey*)key)->GetJavaKey();
     IRSAPrivateKey* rsakey = IRSAPrivateKey::Probe(javaKey);
     IDSAPrivateKey* dsakey = IDSAPrivateKey::Probe(javaKey);

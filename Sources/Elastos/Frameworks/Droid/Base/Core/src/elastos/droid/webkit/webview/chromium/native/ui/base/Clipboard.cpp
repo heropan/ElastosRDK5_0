@@ -33,7 +33,6 @@ Clipboard::Clipboard(
     // mClipboardManager = (ClipboardManager)
     //         context.getSystemService(Context.CLIPBOARD_SERVICE);
 
-    assert(0);
     AutoPtr<IInterface> tmp;
     context->GetSystemService(IContext::CLIPBOARD_SERVICE, (IInterface**)&tmp);
     mClipboardManager = IClipboardManager::Probe(tmp);
@@ -46,7 +45,6 @@ ECode Clipboard::SetText(
     // ==================before translated======================
     // setPrimaryClipNoException(ClipData.newPlainText(label, text));
 
-    assert(0);
     AutoPtr<IClipDataHelper> helper;
     CClipDataHelper::AcquireSingleton((IClipDataHelper**)&helper);
 
@@ -81,7 +79,6 @@ ECode Clipboard::SetHTMLText(
     //     setPrimaryClipNoException(ClipData.newHtmlText(label, text, html));
     // }
 
-    assert(0);
     if (IsHTMLClipboardSupported()) {
         AutoPtr<IClipDataHelper> helper;
         CClipDataHelper::AcquireSingleton((IClipDataHelper**)&helper);
@@ -131,7 +128,6 @@ String Clipboard::GetCoercedText()
     // }
     // return null;
 
-    assert(0);
     AutoPtr<IClipData> clip;
     mClipboardManager->GetPrimaryClip((IClipData**)&clip);
 
@@ -163,7 +159,6 @@ String Clipboard::GetHTMLText()
     // }
     // return null;
 
-    assert(0);
     if (IsHTMLClipboardSupported()) {
         AutoPtr<IClipData> clip;
         mClipboardManager->GetPrimaryClip((IClipData**)&clip);

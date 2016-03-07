@@ -142,7 +142,6 @@ DropdownPopupWindow::DropdownPopupWindow(
     //
     // setAnchorView(mAnchorView);
 
-    assert(0);
     ListPopupWindow::constructor(context, NULL, 0, R::style::DropdownPopupWindow);
     mAnchorView->SetId(R::id::dropdown_popup_window);
     mAnchorView->SetTag(TO_IINTERFACE(this));
@@ -217,7 +216,6 @@ ECode DropdownPopupWindow::Show()
     // super.show();
     // getListView().setDividerHeight(0);
 
-    assert(0);
     // An ugly hack to keep the popup from expanding on top of the keyboard.
     SetInputMethodMode(INPUT_METHOD_NEEDED);
     Int32 contentWidth = MeasureContentWidth();

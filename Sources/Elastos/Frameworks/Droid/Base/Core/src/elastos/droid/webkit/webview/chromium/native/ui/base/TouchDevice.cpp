@@ -44,7 +44,6 @@ Int32 TouchDevice::MaxTouchPoints(
     //     return 0;
     // }
 
-    assert(0);
     AutoPtr<IPackageManager> packageManager;
     context->GetPackageManager((IPackageManager**)&packageManager);
 

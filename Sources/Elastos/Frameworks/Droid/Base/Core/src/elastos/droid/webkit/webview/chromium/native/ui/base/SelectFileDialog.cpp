@@ -79,7 +79,6 @@ ECode SelectFileDialog::GetDisplayNameTask::DoInBackground(
     // }
     // return displayNames;
 
-    assert(0);
     *result = NULL;
     mFilePaths = ArrayOf<String>::Alloc(params->GetLength());
     AutoPtr<IList> dispalyNames;
@@ -180,7 +179,6 @@ ECode SelectFileDialog::OnIntentCompleted(
     // onFileNotSelected();
     // window.showError(R.string.opening_file_error);
 
-    assert(0);
     if (resultCode != IActivity::RESULT_OK) {
         OnFileNotSelected();
         return NOERROR;
@@ -300,7 +298,6 @@ ECode SelectFileDialog::SelectFile(
     //     onFileNotSelected();
     // }
 
-    assert(0);
     Arrays::AsList(fileTypes, (IList**)&mFileTypes);
     mCapture = capture;
 
@@ -371,7 +368,7 @@ ECode SelectFileDialog::SelectFile(
 
     AutoPtr< ArrayOf<IInterface*> > toArray;
     extraIntents->ToArray((ArrayOf<IInterface*>**)&toArray);
-    assert(0);
+
     AutoPtr< ArrayOf<IParcelable*> > parcelableArrayTmp = ArrayOf<IParcelable*>::Alloc(toArray->GetLength());
     for (Int32 idx=0; idx<toArray->GetLength(); ++idx) {
         AutoPtr<IInterface> interfaceTmp = (*toArray)[idx];
@@ -401,7 +398,6 @@ AutoPtr<IFile> SelectFileDialog::GetFileForImageCapture()
     //         File.separator + System.currentTimeMillis() + ".jpg");
     // return photoFile;
 
-    assert(0);
     AutoPtr<IEnvironment> environment;
     CEnvironment::AcquireSingleton((IEnvironment**)&environment);
     AutoPtr<IFile> externalDataDir;
@@ -458,7 +454,6 @@ Boolean SelectFileDialog::NoSpecificType()
     // // specified, in which case we'll try to satisfy that first.
     // return mFileTypes.size() != 1 || mFileTypes.contains(ANY_TYPES);
 
-    assert(0);
     Int32 size = 0;
     mFileTypes->GetSize(&size);
     AutoPtr<ICharSequence> charSequence;

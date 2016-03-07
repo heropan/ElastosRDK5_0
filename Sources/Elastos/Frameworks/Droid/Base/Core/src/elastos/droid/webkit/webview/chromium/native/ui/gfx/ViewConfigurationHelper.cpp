@@ -47,7 +47,6 @@ ECode ViewConfigurationHelper::InnerComponentCallbacks::OnConfigurationChanged(
 
 ECode ViewConfigurationHelper::InnerComponentCallbacks::OnLowMemory()
 {
-    assert(0);
     return NOERROR;
 }
 
@@ -235,7 +234,6 @@ Int32 ViewConfigurationHelper::GetScaledMinScalingSpan()
     //             res.getDisplayMetrics());
     // }
 
-    assert(0);
     AutoPtr<IResources> res;
     mAppContext->GetResources((IResources**)&res);
 
@@ -270,7 +268,6 @@ Int32 ViewConfigurationHelper::GetScaledMinScalingTouchMajor()
     //             MIN_SCALING_TOUCH_MAJOR_DIP, res.getDisplayMetrics());
     // }
 
-    assert(0);
     AutoPtr<IResources> res;
     mAppContext->GetResources((IResources**)&res);
 

@@ -93,7 +93,6 @@ Boolean NetworkChangeNotifierAutoDetect::ConnectivityManagerDelegate::ActiveNetw
     // ==================before translated======================
     // return mConnectivityManager.getActiveNetworkInfo() != null;
 
-    assert(0);
     AutoPtr<INetworkInfo> info;
     mConnectivityManager->GetActiveNetworkInfo((INetworkInfo**)&info);
     return Boolean(info != NULL);
@@ -104,7 +103,6 @@ Boolean NetworkChangeNotifierAutoDetect::ConnectivityManagerDelegate::IsConnecte
     // ==================before translated======================
     // return mConnectivityManager.getActiveNetworkInfo().isConnected();
 
-    assert(0);
     AutoPtr<INetworkInfo> info;
     mConnectivityManager->GetActiveNetworkInfo((INetworkInfo**)&info);
     Boolean isConntected = FALSE;
@@ -117,7 +115,6 @@ Int32 NetworkChangeNotifierAutoDetect::ConnectivityManagerDelegate::GetNetworkTy
     // ==================before translated======================
     // return mConnectivityManager.getActiveNetworkInfo().getType();
 
-    assert(0);
     AutoPtr<INetworkInfo> info;
     mConnectivityManager->GetActiveNetworkInfo((INetworkInfo**)&info);
     Int32 type = 0;
@@ -130,7 +127,6 @@ Int32 NetworkChangeNotifierAutoDetect::ConnectivityManagerDelegate::GetNetworkSu
     // ==================before translated======================
     // return mConnectivityManager.getActiveNetworkInfo().getSubtype();
 
-    assert(0);
     AutoPtr<INetworkInfo> info;
     mConnectivityManager->GetActiveNetworkInfo((INetworkInfo**)&info);
     Int32 type = 0;
@@ -170,7 +166,6 @@ String NetworkChangeNotifierAutoDetect::WifiManagerDelegate::GetWifiSSID()
     // String ssid = wifiInfo.getSSID();
     // return ssid == null ? "" : ssid;
 
-    assert(0);
     AutoPtr<IWifiInfo> wifiInfo;
     mWifiManager->GetConnectionInfo((IWifiInfo**)&wifiInfo);
     if (wifiInfo == NULL)
@@ -373,7 +368,6 @@ void NetworkChangeNotifierAutoDetect::OnApplicationStateChange(
     //     unregisterReceiver();
     // }
 
-    assert(0);
     if (newState == ApplicationState::HAS_RUNNING_ACTIVITIES) {
         ConnectionTypeChanged();
         RegisterReceiver();

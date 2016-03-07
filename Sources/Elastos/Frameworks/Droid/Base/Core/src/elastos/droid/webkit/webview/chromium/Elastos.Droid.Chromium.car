@@ -11,6 +11,11 @@ module
     merge("../../../../../../car/elastos/droid/webkit/webview/chromium/native/net/IRemoteElastosKeyStore.car");
     merge("../../../../../../car/elastos/droid/webkit/webview/chromium/native/net/IRemoteElastosKeyStoreCallbacks.car");
     merge("../../../../../../car/elastos/droid/webkit/webview/chromium/native/net/IRemoteElastosKeyStoreInterface.car");
+
+    merge("../../../../../../car/elastos/droid/webkit/webview/chromium/native/content/common/IChildProcessCallback.car");
+    merge("../../../../../../car/elastos/droid/webkit/webview/chromium/native/content/common/IChildProcessService.car");
+    merge("../../../../../../car/elastos/droid/webkit/webview/chromium/native/content/common/SurfaceWrapper.car");
+    merge("../../../../../../car/elastos/droid/webkit/webview/chromium/native/content/common/Common.car");
     }
 
     submodule Elastos.Droid.Webkit.Webview {

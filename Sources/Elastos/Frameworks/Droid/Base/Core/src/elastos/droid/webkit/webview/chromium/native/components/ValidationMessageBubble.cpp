@@ -62,7 +62,6 @@ ValidationMessageBubble::ValidationMessageBubble(
     // mPopup.showAtLocation(
     //         contentViewCore.getContainerView(), Gravity.NO_GRAVITY, origin.x, origin.y);
 
-    assert(0);
     AutoPtr<IView> view;
     Elastos::Droid::View::View::Inflate(contentViewCore->GetContext(), R::layout::validation_message_bubble, NULL, (IView**)&view);
     IViewGroup* root = IViewGroup::Probe(view);

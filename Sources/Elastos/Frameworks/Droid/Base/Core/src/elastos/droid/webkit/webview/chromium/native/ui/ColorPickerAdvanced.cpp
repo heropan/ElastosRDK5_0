@@ -99,7 +99,6 @@ AutoPtr<ColorPickerAdvancedComponent> ColorPickerAdvanced::CreateAndAddNewGradie
     //         seekBarMax,
     //         seekBarListener);
 
-    assert(0);
     AutoPtr<IContext> content;
     GetContext((IContext**)&content);
 
@@ -231,7 +230,6 @@ ECode ColorPickerAdvanced::Init()
     //         VALUE_SEEK_BAR_MAX, this);
     // refreshGradientComponents();
 
-    assert(0);
     SetOrientation(ILinearLayout::VERTICAL);
 
     mHueDetails = CreateAndAddNewGradient(R::string::color_picker_hue,

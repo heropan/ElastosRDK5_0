@@ -407,7 +407,6 @@ String ElastosNetworkLibrary::GetNetworkCountryIso(
     // }
     // return "";
 
-    assert(0);
     AutoPtr<IInterface> telephonyManagerTmp;
     context->GetSystemService(IContext::TELEPHONY_SERVICE, (IInterface**)&telephonyManagerTmp);
     ITelephonyManager* telephonyManager = ITelephonyManager::Probe(telephonyManagerTmp);
@@ -430,7 +429,6 @@ String ElastosNetworkLibrary::GetNetworkOperator(
     // }
     // return "";
 
-    assert(0);
     AutoPtr<IInterface> telephonyManagerTmp;
     context->GetSystemService(IContext::TELEPHONY_SERVICE, (IInterface**)&telephonyManagerTmp);
     ITelephonyManager* telephonyManager = ITelephonyManager::Probe(telephonyManagerTmp);
