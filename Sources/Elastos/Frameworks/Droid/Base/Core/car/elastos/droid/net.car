@@ -223,6 +223,12 @@ module
         interface IEthernetManager;
     }
 
+    class CHierarchicalUri {
+        interface IParcelable;
+        interface IComparable;
+        interface IUri;
+    }
+
     class CInterfaceConfiguration {
         constructor();
 
@@ -667,6 +673,12 @@ module
         interface INetworkUtils;
     }
 
+    class COpaqueUri {
+        interface IParcelable;
+        interface IComparable;
+        interface IUri;
+    }
+
     class CPacProxySelector {
         constructor();
 
@@ -834,6 +846,12 @@ module
 
         interface IStaticIpConfiguration;
         interface IParcelable;
+    }
+
+    class CStringUri {
+        interface IParcelable;
+        interface IComparable;
+        interface IUri;
     }
 
     singleton class CTrafficStats {

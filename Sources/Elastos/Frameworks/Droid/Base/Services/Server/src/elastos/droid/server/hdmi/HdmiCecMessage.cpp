@@ -29,7 +29,7 @@ ECode HdmiCecMessage::constructor(
         mSource = source;
         mDestination = destination;
         mOpcode = opcode & 0xFF;
-        mParams = Arrays.copyOf(params, params.length);
+        mParams = Arrays::CopyOf(params, params->GetLength());
 
 #endif
 }
@@ -37,6 +37,8 @@ ECode HdmiCecMessage::constructor(
 ECode HdmiCecMessage::GetSource(
     /* [out] */ Int32* result)
 {
+    VALIDATE_NOT_NULL(result)
+
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
         return mSource;
@@ -47,6 +49,8 @@ ECode HdmiCecMessage::GetSource(
 ECode HdmiCecMessage::GetDestination(
     /* [out] */ Int32* result)
 {
+    VALIDATE_NOT_NULL(result)
+
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
         return mDestination;
@@ -57,6 +61,8 @@ ECode HdmiCecMessage::GetDestination(
 ECode HdmiCecMessage::GetOpcode(
     /* [out] */ Int32* result)
 {
+    VALIDATE_NOT_NULL(result)
+
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
         return mOpcode;
@@ -65,7 +71,7 @@ ECode HdmiCecMessage::GetOpcode(
 }
 
 ECode HdmiCecMessage::GetParams(
-    /* [out, callee] */ ArrayOf<Byte>* result)
+    /* [out, callee] */ ArrayOf<Byte>** result)
 {
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
@@ -77,18 +83,20 @@ ECode HdmiCecMessage::GetParams(
 ECode HdmiCecMessage::ToString(
     /* [out] */ String* result)
 {
+    VALIDATE_NOT_NULL(result)
+
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
         StringBuffer s = new StringBuffer();
-        s.append(String.format("<%s> src: %d, dst: %d",
-                opcodeToString(mOpcode), mSource, mDestination));
-        if (mParams.length > 0) {
-            s.append(", params:");
-            for (byte data : mParams) {
-                s.append(String.format(" %02X", data));
+        s.Append(String::Format("<%s> src: %d, dst: %d",
+                OpcodeToString(mOpcode), mSource, mDestination));
+        if (mParams->GetLength() > 0) {
+            s.Append(", params:");
+            for (Byte data : mParams) {
+                s.Append(String::Format(" %02X", data));
             }
         }
-        return s.toString();
+        return s.ToString();
 
 #endif
 }
@@ -97,6 +105,8 @@ ECode HdmiCecMessage::OpcodeToString(
     /* [in] */ Int32 opcode,
     /* [out] */ String* result)
 {
+    VALIDATE_NOT_NULL(result)
+
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
         switch (opcode) {
@@ -243,7 +253,7 @@ ECode HdmiCecMessage::OpcodeToString(
             case Constants::MESSAGE_ABORT:
                 return "Abort";
             default:
-                return String.format("Opcode: %02X", opcode);
+                return String::Format("Opcode: %02X", opcode);
         }
 
 #endif

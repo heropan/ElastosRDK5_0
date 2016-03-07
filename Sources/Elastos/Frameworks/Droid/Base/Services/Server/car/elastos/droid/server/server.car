@@ -35,9 +35,11 @@ module
     merge("display/RampAnimator.car");
 
     merge("hdmi/DeviceDiscoveryAction.car");
+    merge("hdmi/EmptyInterfaces.car");
     merge("hdmi/HdmiCecController.car");
     merge("hdmi/HdmiCecFeatureAction.car");
     merge("hdmi/HdmiCecLocalDevice.car");
+    merge("hdmi/HdmiCecLocalDeviceTv.car");
     merge("hdmi/HdmiCecMessage.car");
     merge("hdmi/HdmiCecMessageValidator.car");
     merge("hdmi/HdmiCecStandbyModeHandler.car");
@@ -138,6 +140,8 @@ module
     using interface Elastos.Droid.Hardware.IISerialManager;
     using interface Elastos.Droid.Hardware.IIConsumerIrService;
     using interface Elastos.Droid.Hardware.Display.IIDisplayManager;
+    using interface Elastos.Droid.Hardware.Hdmi.IHdmiDeviceInfo;
+    using interface Elastos.Droid.Hardware.Hdmi.IIHdmiControlCallback;
     using interface Elastos.Droid.Hardware.Hdmi.IIHdmiControlService;
     using interface Elastos.Droid.Hardware.Input.IIInputManager;
     using interface Elastos.Droid.Hardware.Location.IIFusedLocationHardware;
@@ -1746,30 +1750,171 @@ module
     namespace Server {
     namespace Hdmi {
 
-//    class CHdmiCecLocalDevice {
-//        constructor(
-//            [in] IHdmiControlService* service,
-//            [in] Int32 deviceType);
+    // // all class of action in this directory should have car class to use car object in this package
+    class CDeviceDiscoveryAction {
+        constructor(
+            [in] IHdmiCecLocalDevice* source,
+            [in] IDeviceDiscoveryActionDeviceDiscoveryCallback* ddCallback);
 
-//        interface IHdmiCecLocalDevice;
-//    }
+        interface IDeviceDiscoveryAction;
+    }
 
-//    [deprecated]
-//    class CHdmiCecMessage {
-//        constructor(
-//            [in] Int32 source,
-//            [in] Int32 destination,
-//            [in] Int32 opcode,
-//            [in] ArrayOf<Byte>* params);
+    class CDevicePowerStatusAction {
+        interface IDevicePowerStatusAction;
+    }
 
-//        interface IHdmiCecMessage;
-//    }
+    class CDeviceSelectAction {
+        constructor(
+            [in] IHdmiCecLocalDeviceTv* source,
+            [in] IHdmiDeviceInfo* target,
+            [in] IIHdmiControlCallback* hcCallback);
+
+        interface IDeviceSelectAction;
+    }
 
     class CHdmiControlServiceBinderService {
         constructor();
 
         interface IBinder;
         interface IIHdmiControlService;
+    }
+
+    class CHotplugDetectionAction {
+        constructor(
+            [in] IHdmiCecLocalDevice* source);
+
+        interface IHotplugDetectionAction;
+    }
+
+    class CNewDeviceAction {
+        constructor(
+            [in] IHdmiCecLocalDevice* source,
+            [in] Int32 deviceLogicalAddress,
+            [in] Int32 devicePhysicalAddress);
+
+        interface INewDeviceAction;
+    }
+
+    class COneTouchPlayAction {
+        interface IOneTouchPlayAction;
+    }
+
+    [deprecated]
+    class COneTouchRecordAction {
+        constructor(
+            [in] IHdmiCecLocalDevice* source,
+            [in] Int32 recorderAddress,
+            [in] ArrayOf<Byte>* recordSource);
+
+        interface IOneTouchRecordAction;
+    }
+
+    class CPowerStatusMonitorAction {
+        constructor(
+            [in] IHdmiCecLocalDevice* source);
+
+        interface IPowerStatusMonitorAction;
+    }
+
+    class CRequestArcInitiationAction {
+        constructor(
+            [in] IHdmiCecLocalDevice* source,
+            [in] Int32 avrAddress);
+
+        interface IRequestArcInitiationAction;
+    }
+
+    class CRequestArcTerminationAction {
+        constructor(
+            [in] IHdmiCecLocalDevice* source,
+            [in] Int32 avrAddress);
+
+        interface IRequestArcTerminationAction;
+    }
+
+    class CRoutingControlAction {
+        constructor(
+            [in] IHdmiCecLocalDevice* localDevice,
+            [in] Int32 path,
+            [in] Boolean queryDevicePowerStatus,
+            [in] IIHdmiControlCallback* hcCallback);
+
+        interface IRoutingControlAction;
+    }
+
+    class CSendKeyAction {
+        constructor(
+            [in] IHdmiCecLocalDevice* source,
+            [in] Int32 targetAddress,
+            [in] Int32 keycode);
+
+        interface ISendKeyAction;
+    }
+
+    class CSetArcTransmissionStateAction {
+        constructor(
+            [in] IHdmiCecLocalDevice* source,
+            [in] Int32 avrAddress,
+            [in] Boolean enabled);
+
+        interface ISetArcTransmissionStateAction;
+    }
+
+    class CSystemAudioActionFromAvr {
+        constructor(
+            [in] IHdmiCecLocalDevice* source,
+            [in] Int32 avrAddress,
+            [in] Boolean targetStatus,
+            [in] IIHdmiControlCallback* hcCallback);
+
+        interface ISystemAudioActionFromAvr;
+    }
+
+    class CSystemAudioActionFromTv {
+        constructor(
+            [in] IHdmiCecLocalDevice* sourceAddress,
+            [in] Int32 avrAddress,
+            [in] Boolean targetStatus,
+            [in] IIHdmiControlCallback* hcCallback);
+
+        interface ISystemAudioActionFromTv;
+    }
+
+    class CSystemAudioAutoInitiationAction {
+        constructor(
+            [in] IHdmiCecLocalDevice* source,
+            [in] Int32 avrAddress);
+
+        interface ISystemAudioAutoInitiationAction;
+    }
+
+    class CSystemAudioStatusAction {
+        constructor(
+            [in] IHdmiCecLocalDevice* source,
+            [in] Int32 avrAddress,
+            [in] IIHdmiControlCallback* hcCallback);
+
+        interface ISystemAudioStatusAction;
+    }
+
+    [deprecated]
+    class CTimerRecordingAction {
+        constructor(
+            [in] IHdmiCecLocalDevice* source,
+            [in] Int32 recorderAddress,
+            [in] Int32 sourceType,
+            [in] ArrayOf<Byte>* recordSource);
+
+        interface ITimerRecordingAction;
+    }
+
+    class CVolumeControlAction {
+        constructor(
+            [in] IHdmiCecLocalDevice* source,
+            [in] Int32 avrAddress,
+            [in] Boolean isVolumeUp);
+
+        interface IVolumeControlAction;
     }
 
     } // namespace Elastos

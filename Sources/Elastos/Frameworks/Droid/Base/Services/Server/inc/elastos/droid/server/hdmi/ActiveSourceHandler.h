@@ -41,7 +41,7 @@ public:
      * @param newActive new active source information
      */
     CARAPI Process(
-        /* [in] */ HdmiCecLocalDevice::ActiveSource* newActive);
+        /* [in] */ IHdmiCecLocalDeviceActiveSource* newActive);
 
 private:
     ActiveSourceHandler(
@@ -57,9 +57,9 @@ private:
 private:
     static const String TAG;
 
-    // AutoPtr<HdmiCecLocalDeviceTv> mSource;
+    AutoPtr<HdmiCecLocalDeviceTv> mSource;
 
-    // AutoPtr<HdmiControlService> mService;
+    AutoPtr<IHdmiControlService> mService;
 
     // @Nullable
     AutoPtr<IIHdmiControlCallback> mCallback;

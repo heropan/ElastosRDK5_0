@@ -31,9 +31,11 @@ ECode HdmiCecMessageValidator::FixedLengthValidator::IsValid(
     /* [in] */ ArrayOf<Byte>* params,
     /* [out] */ Boolean* result)
 {
+    VALIDATE_NOT_NULL(result)
+
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
-                return params.length == mLength;
+                return params->GetLength() == mLength;
 
 #endif
 }
@@ -54,9 +56,11 @@ ECode HdmiCecMessageValidator::VariableLengthValidator::IsValid(
     /* [in] */ ArrayOf<Byte>* params,
     /* [out] */ Boolean* result)
 {
+    VALIDATE_NOT_NULL(result)
+
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
-                return params.length >= mMinLength && params.length <= mMaxLength;
+                return params->GetLength() >= mMinLength && params->GetLength() <= mMaxLength;
 
 #endif
 }
@@ -70,12 +74,15 @@ ECode HdmiCecMessageValidator::PhysicalAddressValidator::IsValid(
     /* [in] */ ArrayOf<Byte>* params,
     /* [out] */ Boolean* result)
 {
+    VALIDATE_NOT_NULL(result)
+
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
-                if (params.length != 2) {
-                    return false;
+                if (params->GetLength() != 2) {
+                    *result = FALSE;
+                    return NOERROR;
                 }
-                return isValidPhysicalAddress(params, 0);
+                return IsValidPhysicalAddress(params, 0);
 
 #endif
 }
@@ -89,12 +96,15 @@ ECode HdmiCecMessageValidator::ReportPhysicalAddressValidator::IsValid(
     /* [in] */ ArrayOf<Byte>* params,
     /* [out] */ Boolean* result)
 {
+    VALIDATE_NOT_NULL(result)
+
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
-                if (params.length != 3) {
-                    return false;
+                if (params->GetLength() != 3) {
+                    *result = FALSE;
+                    return NOERROR;
                 }
-                return isValidPhysicalAddress(params, 0) && isValidType(params[2]);
+                return IsValidPhysicalAddress(params, 0) && IsValidType((*params)[2]);
 
 #endif
 }
@@ -108,12 +118,15 @@ ECode HdmiCecMessageValidator::RoutingChangeValidator::IsValid(
     /* [in] */ ArrayOf<Byte>* params,
     /* [out] */ Boolean* result)
 {
+    VALIDATE_NOT_NULL(result)
+
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
-                if (params.length != 4) {
-                    return false;
+                if (params->GetLength() != 4) {
+                    *result = FALSE;
+                    return NOERROR;
                 }
-                return isValidPhysicalAddress(params, 0) && isValidPhysicalAddress(params, 2);
+                return IsValidPhysicalAddress(params, 0) && IsValidPhysicalAddress(params, 2);
 
 #endif
 }
@@ -146,105 +159,105 @@ ECode HdmiCecMessageValidator::constructor(
         mService = service;
         // Messages related to the physical address.
         PhysicalAddressValidator physicalAddressValidator = new PhysicalAddressValidator();
-        addValidationInfo(Constants::MESSAGE_ACTIVE_SOURCE,
+        AddValidationInfo(Constants::MESSAGE_ACTIVE_SOURCE,
                 physicalAddressValidator, DEST_BROADCAST | SRC_UNREGISTERED);
-        addValidationInfo(Constants::MESSAGE_INACTIVE_SOURCE, physicalAddressValidator, DEST_DIRECT);
-        addValidationInfo(Constants::MESSAGE_REPORT_PHYSICAL_ADDRESS,
+        AddValidationInfo(Constants::MESSAGE_INACTIVE_SOURCE, physicalAddressValidator, DEST_DIRECT);
+        AddValidationInfo(Constants::MESSAGE_REPORT_PHYSICAL_ADDRESS,
                 new ReportPhysicalAddressValidator(), DEST_BROADCAST | SRC_UNREGISTERED);
-        addValidationInfo(Constants::MESSAGE_ROUTING_CHANGE,
+        AddValidationInfo(Constants::MESSAGE_ROUTING_CHANGE,
                 new RoutingChangeValidator(), DEST_BROADCAST | SRC_UNREGISTERED);
-        addValidationInfo(Constants::MESSAGE_ROUTING_INFORMATION,
+        AddValidationInfo(Constants::MESSAGE_ROUTING_INFORMATION,
                 physicalAddressValidator, DEST_BROADCAST | SRC_UNREGISTERED);
-        addValidationInfo(Constants::MESSAGE_SET_STREAM_PATH,
+        AddValidationInfo(Constants::MESSAGE_SET_STREAM_PATH,
                 physicalAddressValidator, DEST_BROADCAST);
-        addValidationInfo(Constants::MESSAGE_SYSTEM_AUDIO_MODE_REQUEST,
+        AddValidationInfo(Constants::MESSAGE_SYSTEM_AUDIO_MODE_REQUEST,
                 physicalAddressValidator, DEST_DIRECT);
         // Messages have no parameter.
         FixedLengthValidator noneValidator = new FixedLengthValidator(0);
-        addValidationInfo(Constants::MESSAGE_ABORT, noneValidator, DEST_DIRECT);
-        addValidationInfo(Constants::MESSAGE_GET_CEC_VERSION, noneValidator, DEST_DIRECT);
-        addValidationInfo(Constants::MESSAGE_GET_MENU_LANGUAGE,
+        AddValidationInfo(Constants::MESSAGE_ABORT, noneValidator, DEST_DIRECT);
+        AddValidationInfo(Constants::MESSAGE_GET_CEC_VERSION, noneValidator, DEST_DIRECT);
+        AddValidationInfo(Constants::MESSAGE_GET_MENU_LANGUAGE,
                 noneValidator, DEST_DIRECT | SRC_UNREGISTERED);
-        addValidationInfo(Constants::MESSAGE_GIVE_AUDIO_STATUS, noneValidator, DEST_DIRECT);
-        addValidationInfo(Constants::MESSAGE_GIVE_DEVICE_POWER_STATUS, noneValidator, DEST_DIRECT);
-        addValidationInfo(Constants::MESSAGE_GIVE_DEVICE_VENDOR_ID,
+        AddValidationInfo(Constants::MESSAGE_GIVE_AUDIO_STATUS, noneValidator, DEST_DIRECT);
+        AddValidationInfo(Constants::MESSAGE_GIVE_DEVICE_POWER_STATUS, noneValidator, DEST_DIRECT);
+        AddValidationInfo(Constants::MESSAGE_GIVE_DEVICE_VENDOR_ID,
                 noneValidator, DEST_DIRECT | SRC_UNREGISTERED);
-        addValidationInfo(Constants::MESSAGE_GIVE_OSD_NAME, noneValidator, DEST_DIRECT);
-        addValidationInfo(Constants::MESSAGE_GIVE_PHYSICAL_ADDRESS,
+        AddValidationInfo(Constants::MESSAGE_GIVE_OSD_NAME, noneValidator, DEST_DIRECT);
+        AddValidationInfo(Constants::MESSAGE_GIVE_PHYSICAL_ADDRESS,
                 noneValidator, DEST_DIRECT | SRC_UNREGISTERED);
-        addValidationInfo(Constants::MESSAGE_GIVE_SYSTEM_AUDIO_MODE_STATUS,
+        AddValidationInfo(Constants::MESSAGE_GIVE_SYSTEM_AUDIO_MODE_STATUS,
                 noneValidator, DEST_DIRECT);
-        addValidationInfo(Constants::MESSAGE_IMAGE_VIEW_ON, noneValidator, DEST_DIRECT);
-        addValidationInfo(Constants::MESSAGE_INITIATE_ARC, noneValidator, DEST_DIRECT);
-        addValidationInfo(Constants::MESSAGE_RECORD_OFF, noneValidator, DEST_DIRECT);
-        addValidationInfo(Constants::MESSAGE_RECORD_TV_SCREEN, noneValidator, DEST_DIRECT);
-        addValidationInfo(Constants::MESSAGE_REPORT_ARC_INITIATED, noneValidator, DEST_DIRECT);
-        addValidationInfo(Constants::MESSAGE_REPORT_ARC_TERMINATED, noneValidator, DEST_DIRECT);
-        addValidationInfo(Constants::MESSAGE_REQUEST_ARC_INITIATION, noneValidator, DEST_DIRECT);
-        addValidationInfo(Constants::MESSAGE_REQUEST_ARC_TERMINATION, noneValidator, DEST_DIRECT);
-        addValidationInfo(Constants::MESSAGE_REQUEST_ACTIVE_SOURCE,
+        AddValidationInfo(Constants::MESSAGE_IMAGE_VIEW_ON, noneValidator, DEST_DIRECT);
+        AddValidationInfo(Constants::MESSAGE_INITIATE_ARC, noneValidator, DEST_DIRECT);
+        AddValidationInfo(Constants::MESSAGE_RECORD_OFF, noneValidator, DEST_DIRECT);
+        AddValidationInfo(Constants::MESSAGE_RECORD_TV_SCREEN, noneValidator, DEST_DIRECT);
+        AddValidationInfo(Constants::MESSAGE_REPORT_ARC_INITIATED, noneValidator, DEST_DIRECT);
+        AddValidationInfo(Constants::MESSAGE_REPORT_ARC_TERMINATED, noneValidator, DEST_DIRECT);
+        AddValidationInfo(Constants::MESSAGE_REQUEST_ARC_INITIATION, noneValidator, DEST_DIRECT);
+        AddValidationInfo(Constants::MESSAGE_REQUEST_ARC_TERMINATION, noneValidator, DEST_DIRECT);
+        AddValidationInfo(Constants::MESSAGE_REQUEST_ACTIVE_SOURCE,
                 noneValidator, DEST_BROADCAST | SRC_UNREGISTERED);
-        addValidationInfo(Constants::MESSAGE_STANDBY, noneValidator, DEST_ALL | SRC_UNREGISTERED);
-        addValidationInfo(Constants::MESSAGE_TERMINATE_ARC, noneValidator, DEST_DIRECT);
-        addValidationInfo(Constants::MESSAGE_TEXT_VIEW_ON, noneValidator, DEST_DIRECT);
-        addValidationInfo(Constants::MESSAGE_TUNER_STEP_DECREMENT, noneValidator, DEST_DIRECT);
-        addValidationInfo(Constants::MESSAGE_TUNER_STEP_INCREMENT, noneValidator, DEST_DIRECT);
-        addValidationInfo(Constants::MESSAGE_USER_CONTROL_RELEASED, noneValidator, DEST_DIRECT);
-        addValidationInfo(Constants::MESSAGE_VENDOR_REMOTE_BUTTON_UP, noneValidator, DEST_ALL);
+        AddValidationInfo(Constants::MESSAGE_STANDBY, noneValidator, DEST_ALL | SRC_UNREGISTERED);
+        AddValidationInfo(Constants::MESSAGE_TERMINATE_ARC, noneValidator, DEST_DIRECT);
+        AddValidationInfo(Constants::MESSAGE_TEXT_VIEW_ON, noneValidator, DEST_DIRECT);
+        AddValidationInfo(Constants::MESSAGE_TUNER_STEP_DECREMENT, noneValidator, DEST_DIRECT);
+        AddValidationInfo(Constants::MESSAGE_TUNER_STEP_INCREMENT, noneValidator, DEST_DIRECT);
+        AddValidationInfo(Constants::MESSAGE_USER_CONTROL_RELEASED, noneValidator, DEST_DIRECT);
+        AddValidationInfo(Constants::MESSAGE_VENDOR_REMOTE_BUTTON_UP, noneValidator, DEST_ALL);
         // TODO: Validate more than length for the following messages.
         // Messages for the One Touch Record.
         FixedLengthValidator oneByteValidator = new FixedLengthValidator(1);
-        addValidationInfo(Constants::MESSAGE_RECORD_ON,
+        AddValidationInfo(Constants::MESSAGE_RECORD_ON,
                 new VariableLengthValidator(1, 8), DEST_DIRECT);
-        addValidationInfo(Constants::MESSAGE_RECORD_STATUS, oneByteValidator, DEST_DIRECT);
+        AddValidationInfo(Constants::MESSAGE_RECORD_STATUS, oneByteValidator, DEST_DIRECT);
         // TODO: Handle messages for the Timer Programming.
         // Messages for the System Information.
-        addValidationInfo(Constants::MESSAGE_CEC_VERSION, oneByteValidator, DEST_DIRECT);
-        addValidationInfo(Constants::MESSAGE_SET_MENU_LANGUAGE,
+        AddValidationInfo(Constants::MESSAGE_CEC_VERSION, oneByteValidator, DEST_DIRECT);
+        AddValidationInfo(Constants::MESSAGE_SET_MENU_LANGUAGE,
                 new FixedLengthValidator(3), DEST_BROADCAST);
         // TODO: Handle messages for the Deck Control.
         // TODO: Handle messages for the Tuner Control.
         // Messages for the Vendor Specific Commands.
         VariableLengthValidator maxLengthValidator = new VariableLengthValidator(0, 14);
-        addValidationInfo(Constants::MESSAGE_DEVICE_VENDOR_ID,
+        AddValidationInfo(Constants::MESSAGE_DEVICE_VENDOR_ID,
                 new FixedLengthValidator(3), DEST_BROADCAST);
         // Allow unregistered source for all vendor specific commands, because we don't know
         // how to use the commands at this moment.
-        addValidationInfo(Constants::MESSAGE_VENDOR_COMMAND,
+        AddValidationInfo(Constants::MESSAGE_VENDOR_COMMAND,
                 maxLengthValidator, DEST_DIRECT | SRC_UNREGISTERED);
-        addValidationInfo(Constants::MESSAGE_VENDOR_COMMAND_WITH_ID,
+        AddValidationInfo(Constants::MESSAGE_VENDOR_COMMAND_WITH_ID,
                 maxLengthValidator, DEST_ALL | SRC_UNREGISTERED);
-        addValidationInfo(Constants::MESSAGE_VENDOR_REMOTE_BUTTON_DOWN,
+        AddValidationInfo(Constants::MESSAGE_VENDOR_REMOTE_BUTTON_DOWN,
                 maxLengthValidator, DEST_ALL | SRC_UNREGISTERED);
         // Messages for the OSD.
-        addValidationInfo(Constants::MESSAGE_SET_OSD_STRING, maxLengthValidator, DEST_DIRECT);
-        addValidationInfo(Constants::MESSAGE_SET_OSD_NAME, maxLengthValidator, DEST_DIRECT);
+        AddValidationInfo(Constants::MESSAGE_SET_OSD_STRING, maxLengthValidator, DEST_DIRECT);
+        AddValidationInfo(Constants::MESSAGE_SET_OSD_NAME, maxLengthValidator, DEST_DIRECT);
         // Messages for the Device Menu Control.
-        addValidationInfo(Constants::MESSAGE_MENU_REQUEST, oneByteValidator, DEST_DIRECT);
-        addValidationInfo(Constants::MESSAGE_MENU_STATUS, oneByteValidator, DEST_DIRECT);
+        AddValidationInfo(Constants::MESSAGE_MENU_REQUEST, oneByteValidator, DEST_DIRECT);
+        AddValidationInfo(Constants::MESSAGE_MENU_STATUS, oneByteValidator, DEST_DIRECT);
         // Messages for the Remote Control Passthrough.
         // TODO: Parse the first parameter and determine if it can have the next parameter.
-        addValidationInfo(Constants::MESSAGE_USER_CONTROL_PRESSED,
+        AddValidationInfo(Constants::MESSAGE_USER_CONTROL_PRESSED,
                 new VariableLengthValidator(1, 2), DEST_DIRECT);
         // Messages for the Power Status.
-        addValidationInfo(Constants::MESSAGE_REPORT_POWER_STATUS, oneByteValidator, DEST_DIRECT);
+        AddValidationInfo(Constants::MESSAGE_REPORT_POWER_STATUS, oneByteValidator, DEST_DIRECT);
         // Messages for the General Protocol.
-        addValidationInfo(Constants::MESSAGE_FEATURE_ABORT,
+        AddValidationInfo(Constants::MESSAGE_FEATURE_ABORT,
                 new FixedLengthValidator(2), DEST_DIRECT);
         // Messages for the System Audio Control.
-        addValidationInfo(Constants::MESSAGE_REPORT_AUDIO_STATUS, oneByteValidator, DEST_DIRECT);
-        addValidationInfo(Constants::MESSAGE_REPORT_SHORT_AUDIO_DESCRIPTOR,
+        AddValidationInfo(Constants::MESSAGE_REPORT_AUDIO_STATUS, oneByteValidator, DEST_DIRECT);
+        AddValidationInfo(Constants::MESSAGE_REPORT_SHORT_AUDIO_DESCRIPTOR,
                 new FixedLengthValidator(3), DEST_DIRECT);
-        addValidationInfo(Constants::MESSAGE_REQUEST_SHORT_AUDIO_DESCRIPTOR,
+        AddValidationInfo(Constants::MESSAGE_REQUEST_SHORT_AUDIO_DESCRIPTOR,
                 oneByteValidator, DEST_DIRECT);
-        addValidationInfo(Constants::MESSAGE_SET_SYSTEM_AUDIO_MODE, oneByteValidator, DEST_ALL);
-        addValidationInfo(Constants::MESSAGE_SYSTEM_AUDIO_MODE_STATUS,
+        AddValidationInfo(Constants::MESSAGE_SET_SYSTEM_AUDIO_MODE, oneByteValidator, DEST_ALL);
+        AddValidationInfo(Constants::MESSAGE_SYSTEM_AUDIO_MODE_STATUS,
                 oneByteValidator, DEST_DIRECT);
         // Messages for the Audio Rate Control.
-        addValidationInfo(Constants::MESSAGE_SET_AUDIO_RATE, oneByteValidator, DEST_DIRECT);
+        AddValidationInfo(Constants::MESSAGE_SET_AUDIO_RATE, oneByteValidator, DEST_DIRECT);
         // All Messages for the ARC have no parameters.
         // Messages for the Capability Discovery and Control.
-        addValidationInfo(Constants::MESSAGE_CDC_MESSAGE, maxLengthValidator,
+        AddValidationInfo(Constants::MESSAGE_CDC_MESSAGE, maxLengthValidator,
                 DEST_BROADCAST | SRC_UNREGISTERED);
 
 #endif
@@ -257,7 +270,7 @@ ECode HdmiCecMessageValidator::AddValidationInfo(
 {
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
-        mValidationInfo.append(opcode, new ValidationInfo(validator, addrType));
+        mValidationInfo->Append(opcode, new ValidationInfo(validator, addrType));
 
 #endif
 }
@@ -266,35 +279,46 @@ ECode HdmiCecMessageValidator::IsValid(
     /* [in] */ IHdmiCecMessage* message,
     /* [out] */ Int32* result)
 {
+    VALIDATE_NOT_NULL(result)
+
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
-        int opcode = message.getOpcode();
-        ValidationInfo info = mValidationInfo.get(opcode);
+        Int32 opcode;
+        message->GetOpcode(&opcode);
+        AutoPtr<IInterface> obj;
+        mValidationInfo->Get(opcode, (IInterface**)&obj);
+        ValidationInfo info = I::Probe(obj);
         if (info == NULL) {
-            HdmiLogger.warning("No validation information for the message: " + message);
+            HdmiLogger::Warning("No validation information for the message: " + message);
             return OK;
         }
         // Check the source field.
-        if (message.getSource() == Constants::ADDR_UNREGISTERED &&
-                (info.addressType & SRC_UNREGISTERED) == 0) {
-            HdmiLogger.warning("Unexpected source: " + message);
+        Int32 srcAddr;
+        message->GetSource(&srcAddr);
+        if (srcAddr == Constants::ADDR_UNREGISTERED &&
+                (info->mAddressType & SRC_UNREGISTERED) == 0) {
+            HdmiLogger::Warning("Unexpected source: " + message);
             return ERROR_SOURCE;
         }
         // Check the destination field.
-        if (message.getDestination() == Constants::ADDR_BROADCAST) {
-            if ((info.addressType & DEST_BROADCAST) == 0) {
-                HdmiLogger.warning("Unexpected broadcast message: " + message);
+        Int32 dest;
+        message->GetDestination(&dest);
+        if (dest == Constants::ADDR_BROADCAST) {
+            if ((info->mAddressType & DEST_BROADCAST) == 0) {
+                HdmiLogger::Warning("Unexpected broadcast message: " + message);
                 return ERROR_DESTINATION;
             }
         } else {  // Direct addressing.
-            if ((info.addressType & DEST_DIRECT) == 0) {
-                HdmiLogger.warning("Unexpected direct message: " + message);
+            if ((info->mAddressType & DEST_DIRECT) == 0) {
+                HdmiLogger::Warning("Unexpected direct message: " + message);
                 return ERROR_DESTINATION;
             }
         }
         // Check the parameter type.
-        if (!info.parameterValidator.isValid(message.getParams())) {
-            HdmiLogger.warning("Unexpected parameters: " + message);
+        AutoPtr<ArrayOf<Byte> > params;
+        message->GetParams((ArrayOf<Byte>**)&params);
+        if (!info->mParameterValidator->IsValid(params)) {
+            HdmiLogger::Warning("Unexpected parameters: " + message);
             return ERROR_PARAMETER;
         }
         return OK;
@@ -307,22 +331,33 @@ ECode HdmiCecMessageValidator::IsValidPhysicalAddress(
     /* [in] */ Int32 offset,
     /* [out] */ Boolean* result)
 {
+    VALIDATE_NOT_NULL(result)
+
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
         // TODO: Add more logic like validating 1.0.1.0.
-        if (!mService.isTvDevice()) {
+        Boolean isTvDevice;
+        mService->IsTvDevice(&isTvDevice);
+        if (!isTvDevice) {
             // If the device is not TV, we can't convert path to port-id, so stop here.
-            return true;
+            *result = TRUE;
+            return NOERROR;
         }
-        int path = HdmiUtils.twoBytesToInt(params, offset);
-        if (path != Constants::INVALID_PHYSICAL_ADDRESS && path == mService.getPhysicalAddress()) {
-            return true;
+        Int32 path = HdmiUtils::TwoBytesToInt32(params, offset);
+        Int32 physicalAddr;
+        mService->GetPhysicalAddress(&physicalAddr);
+        if (path != Constants::INVALID_PHYSICAL_ADDRESS && path == physicalAddr) {
+            *result = TRUE;
+            return NOERROR;
         }
-        int portId = mService.pathToPortId(path);
+        Int32 portId;
+        mService->PathToPortId(path, &portId);
         if (portId == Constants::INVALID_PORT_ID) {
-            return false;
+            *result = FALSE;
+            return NOERROR;
         }
-        return true;
+        *result = TRUE;
+        return NOERROR;
 
 #endif
 }
@@ -331,11 +366,13 @@ ECode HdmiCecMessageValidator::IsValidType(
     /* [in] */ Int32 type,
     /* [out] */ Boolean* result)
 {
+    VALIDATE_NOT_NULL(result)
+
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
-        return (HdmiDeviceInfo.DEVICE_TV <= type
-                && type <= HdmiDeviceInfo.DEVICE_VIDEO_PROCESSOR)
-                && type != HdmiDeviceInfo.DEVICE_RESERVED;
+        return (IHdmiDeviceInfo::DEVICE_TV <= type
+                && type <= IHdmiDeviceInfo::DEVICE_VIDEO_PROCESSOR)
+                && type != IHdmiDeviceInfo::DEVICE_RESERVED;
 
 #endif
 }

@@ -733,6 +733,8 @@ class StringUri
     : public AbstractHierarchicalUri
 {
 public:
+    StringUri();
+
     static CARAPI ReadFrom(
         /* [in] */ IParcel* parcel,
         /* [out] */ IUri** uri);
@@ -816,8 +818,6 @@ public:
         /* [out] */ IUriBuilder** result);
 
 private:
-    StringUri();
-
     CARAPI constructor(
         /* [in] */ const String& uriString);
 
@@ -970,15 +970,11 @@ private:
 class HierarchicalUri
     : public AbstractHierarchicalUri
 {
+    friend class UriBuilder;
+    friend class Uri;
+
 public:
     HierarchicalUri();
-
-    CARAPI constructor(
-        /* [in] */ const String& scheme,
-        /* [in] */ Uri::Part* authority,
-        /* [in] */ Uri::PathPart* path,
-        /* [in] */ Uri::Part* query,
-        /* [in] */ Uri::Part* fragment);
 
     static CARAPI ReadFrom(
         /* [in] */ IParcel* parcel,
@@ -1040,6 +1036,13 @@ public:
         /* [out] */ IUriBuilder** builder);
 
 private:
+    CARAPI constructor(
+        /* [in] */ const String& scheme,
+        /* [in] */ Uri::Part* authority,
+        /* [in] */ Uri::PathPart* path,
+        /* [in] */ Uri::Part* query,
+        /* [in] */ Uri::Part* fragment);
+
     CARAPI_(AutoPtr<Part>) GetSsp();
 
     /**

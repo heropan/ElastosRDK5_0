@@ -143,7 +143,7 @@ ECode StringUri::IsHierarchical(
         return NOERROR;
     }
 
-    if (mUriString.GetLength() == (UInt32)(ssi + 1)) {
+    if (mUriString.GetLength() == (ssi + 1)) {
         // No ssp.
         *isHierarchical = FALSE;
         return NOERROR;
@@ -313,7 +313,7 @@ String StringUri::ParsePath()
     if (ssi > -1) {
         AutoPtr<ArrayOf<Char32> > charArray = uriString.GetChars();
         // Is there anything after the ':'?
-        Boolean schemeOnly = (UInt32)(ssi + 1) == charArray->GetLength();
+        Boolean schemeOnly = (ssi + 1) == charArray->GetLength();
         if (schemeOnly) {
             // Opaque URI.
             return String(NULL);

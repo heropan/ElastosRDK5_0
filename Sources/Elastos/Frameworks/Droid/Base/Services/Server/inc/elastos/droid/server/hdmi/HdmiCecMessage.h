@@ -70,7 +70,7 @@ public:
      * @return parameter
      */
     CARAPI GetParams(
-        /* [out, callee] */ ArrayOf<Byte>* result);
+        /* [out, callee] */ ArrayOf<Byte>** result);
 
     // @Override
     CARAPI ToString(
