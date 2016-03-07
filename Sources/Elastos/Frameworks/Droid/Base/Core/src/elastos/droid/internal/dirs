@@ -3,6 +3,7 @@ DIRS += content
 DIRS += database
 DIRS += http
 DIRS += inputmethod
+DIRS += location
 DIRS += net
 DIRS += os
 DIRS += policy
