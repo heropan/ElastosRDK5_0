@@ -1642,10 +1642,10 @@ ECode CActivityThread::InstallSystemApplicationInfo(
     /* [in] */ IApplicationInfo* info,
     /* [in] */ IClassLoader* classLoader)
 {
-    Slogger::D(TAG, " > TODO: CActivityThread::InstallSystemApplicationInfo");
+    Slogger::D(TAG, " > TODO: CActivityThread::InstallSystemApplicationInfo: %s", TO_CSTR(info));
 
     synchronized(this) {
-#if 1
+#if 0
         AutoPtr<IContextImpl> ctx;
         GetSystemContext((IContextImpl**)&ctx);
         CContextImpl* cctx = (CContextImpl*)ctx.Get();

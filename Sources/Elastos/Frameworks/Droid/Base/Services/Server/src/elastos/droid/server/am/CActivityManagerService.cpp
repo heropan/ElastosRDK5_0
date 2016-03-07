@@ -2768,8 +2768,8 @@ ECode CActivityManagerService::SetSystemProcess()
 //    try {
     AutoPtr<IServiceManager> sm;
     CServiceManager::AcquireSingleton((IServiceManager**)&sm);
-    sm->AddService(IContext::ACTIVITY_SERVICE, (IIActivityManager*)this, TRUE);
-    sm->AddService(IProcessStats::SERVICE_NAME, (IIProcessStats*)mProcessStats.Get());
+    sm->AddService(IContext::ACTIVITY_SERVICE, TO_IINTERFACE(this), TRUE);
+    sm->AddService(IProcessStats::SERVICE_NAME, TO_IINTERFACE(mProcessStats));
     // sm->AddService("meminfo", new MemBinder(this));
     // sm->AddService("gfxinfo", new GraphicsBinder(this));
     // sm->AddService("dbinfo", new DbBinder(this));

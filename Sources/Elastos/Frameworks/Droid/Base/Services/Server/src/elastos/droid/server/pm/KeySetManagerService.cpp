@@ -99,7 +99,7 @@ ECode KeySetManagerService::AddDefinedKeySetToPackageLPw(
     /* [in] */ const String& alias)
 {
     if ((packageName.IsNull()) || (keys == NULL) || (alias.IsNull())) {
-        Slogger::W(TAG, "Got null argument for a defined keyset, ignoring!");
+        // Slogger::W(TAG, "Got null argument for a defined keyset, ignoring!");
         return NOERROR;
     }
     AutoPtr<PackageSetting> pkg;
@@ -124,7 +124,7 @@ ECode KeySetManagerService::AddUpgradeKeySetToPackageLPw(
     /* [in] */ const String& alias)
 {
     if (packageName.IsNull() || alias.IsNull()) {
-        Slogger::W(TAG, "Got null argument for a defined keyset, ignoring!");
+        // Slogger::W(TAG, "Got null argument for a defined keyset, ignoring!");
         return NOERROR;
     }
     AutoPtr<PackageSetting> pkg;
@@ -145,7 +145,7 @@ ECode KeySetManagerService::AddSigningKeySetToPackageLPw(
     /* [in] */ IArraySet* signingKeys)
 {
     if (packageName.IsNull() || signingKeys == NULL) {
-        Slogger::W(TAG, "Got null argument for a defined keyset, ignoring!");
+        // Slogger::W(TAG, "Got null argument for a defined keyset, ignoring!");
         return NOERROR;
     }
     // add the signing KeySet

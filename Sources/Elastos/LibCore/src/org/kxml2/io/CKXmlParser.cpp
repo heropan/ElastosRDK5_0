@@ -273,9 +273,7 @@ AutoPtr< ArrayOf<String> > CKXmlParser::EnsureCapacity(
         return arr;
     }
     AutoPtr< ArrayOf<String> > bigger = ArrayOf<String>::Alloc(required + 16);
-    for (Int32 i = 0; i < arr->GetLength(); i++) {
-        (*bigger)[i] = (*arr)[i];
-    }
+    bigger->Copy(arr);
     return bigger;
 }
 
@@ -313,6 +311,7 @@ ECode CKXmlParser::Next(
 
     if (mReader == NULL) {
         Logger::E("CKXmlParser", "setInput() must be called first.");
+        assert(0 && "TODO");
         return E_XML_PULL_PARSER_EXCEPTION;
     }
 

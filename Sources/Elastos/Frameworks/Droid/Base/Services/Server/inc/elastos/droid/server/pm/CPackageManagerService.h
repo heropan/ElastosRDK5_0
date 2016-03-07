@@ -936,6 +936,39 @@ public:/* package */
         AutoPtr<SharedUserSetting> mSharedUser;
     };
 
+    struct ResolvePrioritySorterFunc
+    {
+        Int32 operator()(
+            /* [in] */ AutoPtr<IResolveInfo>& r1,
+            /* [in] */ AutoPtr<IResolveInfo>& r2);
+    };
+
+    class ResolvePrioritySorter
+        : public Object
+        , public IComparator
+    {
+    public:
+        CAR_INTERFACE_DECL()
+
+        CARAPI Compare(
+            /* [in] */ IInterface* lhs,
+            /* [in] */ IInterface* rhs,
+            /* [out] */ Int32* result);
+    };
+
+    class ProviderInitOrderSorter
+        : public Object
+        , public IComparator
+    {
+    public:
+        CAR_INTERFACE_DECL()
+
+        CARAPI Compare(
+            /* [in] */ IInterface* lhs,
+            /* [in] */ IInterface* rhs,
+            /* [out] */ Int32* result);
+    };
+
 private:
     class PackageUsage : public Object
     {
@@ -1183,32 +1216,6 @@ private:
         AutoPtr<IIntentSender> mPi;
     };
 
-    class ResolvePrioritySorter
-        : public Object
-        , public IComparator
-    {
-    public:
-        CAR_INTERFACE_DECL()
-
-        CARAPI Compare(
-            /* [in] */ IInterface* lhs,
-            /* [in] */ IInterface* rhs,
-            /* [out] */ Int32* result);
-    };
-
-    class ProviderInitOrderSorter
-        : public Object
-        , public IComparator
-    {
-    public:
-        CAR_INTERFACE_DECL()
-
-        CARAPI Compare(
-            /* [in] */ IInterface* lhs,
-            /* [in] */ IInterface* rhs,
-            /* [out] */ Int32* result);
-    };
-
     class PackageComparator
         : public Object
         , public IComparator
@@ -1377,10 +1384,6 @@ public:
         /* [in] */ Handle64 installer,
         /* [in] */ Boolean factoryTest,
         /* [in] */ Boolean onlyCore);
-
-    static CARAPI_(AutoPtr<IComparator>) InitResolvePrioritySorter();
-
-    static CARAPI_(AutoPtr<IComparator>) InitProviderInitOrderSorter();
 
     CARAPI_(AutoPtr<IBundle>) ExtrasForInstallResult(
         /* [in] */ PackageInstalledInfo* res);
@@ -3177,9 +3180,10 @@ private:
 
     AutoPtr<PackageUsage> mPackageUsage;
 
+    static const ResolvePrioritySorterFunc sResolvePrioritySorterFunc;
     static AutoPtr<IComparator> sResolvePrioritySorter;
-
     static AutoPtr<IComparator> sProviderInitOrderSorter;
+
 
     Boolean mMediaMounted;
 

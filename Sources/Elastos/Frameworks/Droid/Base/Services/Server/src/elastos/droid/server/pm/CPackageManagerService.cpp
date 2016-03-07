@@ -518,6 +518,9 @@ ECode CPackageManagerService::PackageUsage::ReadToken(
     /* [in] */ Char32 endOfToken,
     /* [out] */ String* token)
 {
+    VALIDATE_NOT_NULL(token)
+    *token = NULL;
+
     sb.SetLength(0);
     while (TRUE) {
         Int32 ch;
@@ -1372,7 +1375,7 @@ AutoPtr<IResolveInfo> CPackageManagerService::ActivityIntentResolver::NewResult(
 void CPackageManagerService::ActivityIntentResolver::SortResults(
     /* [in] */ List<AutoPtr<IResolveInfo> >* results)
 {
-//      Collections.sort(results, sResolvePrioritySorter);
+    results->Sort(sResolvePrioritySorterFunc);
 }
 
 void CPackageManagerService::ActivityIntentResolver::DumpFilter(
@@ -1615,7 +1618,7 @@ AutoPtr<IResolveInfo> CPackageManagerService::ServiceIntentResolver::NewResult(
 void CPackageManagerService::ServiceIntentResolver::SortResults(
     /* [in] */ List< AutoPtr<IResolveInfo> >* results)
 {
-//      Collections.sort(results, sResolvePrioritySorter);
+    results->Sort(sResolvePrioritySorterFunc);
 }
 
 void CPackageManagerService::ServiceIntentResolver::DumpFilter(
@@ -1857,7 +1860,7 @@ AutoPtr<IResolveInfo> CPackageManagerService::ProviderIntentResolver::NewResult(
 void CPackageManagerService::ProviderIntentResolver::SortResults(
     /* [in] */ List< AutoPtr<IResolveInfo> >* results)
 {
-    // Collections.sort(results, sResolvePrioritySorter);
+    results->Sort(sResolvePrioritySorterFunc);
 }
 
 void CPackageManagerService::ProviderIntentResolver::DumpFilter(
@@ -1878,6 +1881,44 @@ void CPackageManagerService::ProviderIntentResolver::DumpFilter(
 //                  CPackageManagerService::ResolvePrioritySorter
 //==============================================================================
 
+Int32 CPackageManagerService::ResolvePrioritySorterFunc::operator()(
+    /* [in] */ AutoPtr<IResolveInfo>& r1,
+    /* [in] */ AutoPtr<IResolveInfo>& r2)
+{
+    Int32 v1, v2;
+    r1->GetPriority(&v1);
+    r2->GetPriority(&v2);
+    if (v1 != v2) {
+        return (v1 > v2) ? -1 : 1;
+    }
+
+    r1->GetPreferredOrder(&v1);
+    r2->GetPreferredOrder(&v2);
+    if (v1 != v2) {
+        return (v1 > v2) ? -1 : 1;
+    }
+
+    Boolean b1, b2;
+    r1->GetIsDefault(&b1);
+    r2->GetIsDefault(&b2);
+    if (b1 != b2) {
+        return b1 ? -1 : 1;
+    }
+
+    r1->GetMatch(&v1);
+    r2->GetMatch(&v2);
+    if (v1 != v2) {
+        return (v1 > v2) ? -1 : 1;
+    }
+
+    r1->GetSystem(&b1);
+    r2->GetSystem(&b2);
+    if (b1 != b2) {
+        return b1 ? -1 : 1;
+    }
+    return 0;
+}
+
 CAR_INTERFACE_IMPL(CPackageManagerService::ResolvePrioritySorter, Object, IComparator)
 
 ECode CPackageManagerService::ResolvePrioritySorter::Compare(
@@ -1889,41 +1930,9 @@ ECode CPackageManagerService::ResolvePrioritySorter::Compare(
 
     AutoPtr<IResolveInfo> r1 = IResolveInfo::Probe(lhs);
     AutoPtr<IResolveInfo> r2 = IResolveInfo::Probe(rhs);
-    Int32 v1, v2;
-    r1->GetPriority(&v1);
-    r2->GetPriority(&v2);
-    //System.out.println("Comparing: q1=" + q1 + " q2=" + q2);
-    if (v1 != v2) {
-        *result = (v1 > v2) ? -1 : 1;
-        return NOERROR;
-    }
-    r1->GetPreferredOrder(&v1);
-    r2->GetPreferredOrder(&v2);
-    if (v1 != v2) {
-        *result = (v1 > v2) ? -1 : 1;
-        return NOERROR;
-    }
-    Boolean b1, b2;
-    r1->GetIsDefault(&b1);
-    r2->GetIsDefault(&b2);
-    if (b1 != b2) {
-        *result = b1 ? -1 : 1;
-        return NOERROR;
-    }
-    r1->GetMatch(&v1);
-    r2->GetMatch(&v2);
-    //System.out.println("Comparing: m1=" + m1 + " m2=" + m2);
-    if (v1 != v2) {
-        *result = (v1 > v2) ? -1 : 1;
-        return NOERROR;
-    }
-    r1->GetSystem(&b1);
-    r2->GetSystem(&b2);
-    if (b1 != b2) {
-        *result = b1 ? -1 : 1;
-        return NOERROR;
-    }
-    *result = 0;
+
+    ResolvePrioritySorterFunc func;
+    *result = func(r1, r2);
     return NOERROR;
 }
 
@@ -1949,7 +1958,6 @@ ECode CPackageManagerService::ProviderInitOrderSorter::Compare(
     *result = (v1 > v2) ? -1 : ((v1 < v2) ? 1 : 0);
     return NOERROR;
 }
-
 
 //==============================================================================
 //                  CPackageManagerService::ProcessPendingInstallRunnable
@@ -3968,19 +3976,19 @@ ECode CPackageManagerService::RemoveUnusedPackagesRunnable::Run()
 
 const String CPackageManagerService::TAG("CPackageManagerService");
 const Boolean CPackageManagerService::DEBUG_SETTINGS = TRUE;
-const Boolean CPackageManagerService::DEBUG_PREFERRED = TRUE;
-const Boolean CPackageManagerService::DEBUG_UPGRADE = TRUE;
-const Boolean CPackageManagerService::DEBUG_INSTALL = TRUE;
-const Boolean CPackageManagerService::DEBUG_REMOVE = TRUE;
-const Boolean CPackageManagerService::DEBUG_BROADCASTS = TRUE;
-const Boolean CPackageManagerService::DEBUG_SHOW_INFO = TRUE;
-const Boolean CPackageManagerService::DEBUG_PACKAGE_INFO = TRUE;
-const Boolean CPackageManagerService::DEBUG_INTENT_MATCHING = TRUE;
-const Boolean CPackageManagerService::DEBUG_PACKAGE_SCANNING = TRUE;
-const Boolean CPackageManagerService::DEBUG_VERIFY = TRUE;
-const Boolean CPackageManagerService::DEBUG_DEXOPT = TRUE;
-const Boolean CPackageManagerService::DEBUG_ABI_SELECTION = TRUE;
-const Boolean CPackageManagerService::DEBUG_SD_INSTALL = TRUE;
+const Boolean CPackageManagerService::DEBUG_PREFERRED = FALSE;
+const Boolean CPackageManagerService::DEBUG_UPGRADE = FALSE;
+const Boolean CPackageManagerService::DEBUG_INSTALL = FALSE;
+const Boolean CPackageManagerService::DEBUG_REMOVE = FALSE;
+const Boolean CPackageManagerService::DEBUG_BROADCASTS = FALSE;
+const Boolean CPackageManagerService::DEBUG_SHOW_INFO = FALSE;
+const Boolean CPackageManagerService::DEBUG_PACKAGE_INFO = FALSE;
+const Boolean CPackageManagerService::DEBUG_INTENT_MATCHING = FALSE;
+const Boolean CPackageManagerService::DEBUG_PACKAGE_SCANNING = FALSE;
+const Boolean CPackageManagerService::DEBUG_VERIFY = FALSE;
+const Boolean CPackageManagerService::DEBUG_DEXOPT = FALSE;
+const Boolean CPackageManagerService::DEBUG_ABI_SELECTION = FALSE;
+const Boolean CPackageManagerService::DEBUG_SD_INSTALL = FALSE;
 
 const Int32 CPackageManagerService::RADIO_UID;
 const Int32 CPackageManagerService::LOG_UID;
@@ -4050,17 +4058,19 @@ const Int32 CPackageManagerService::UPDATE_PERMISSIONS_REPLACE_ALL;
 
 Int32 CPackageManagerService::sLastScanError = 0;
 
-AutoPtr<IComparator> CPackageManagerService::InitResolvePrioritySorter()
+
+static AutoPtr<IComparator> InitResolvePrioritySorter()
 {
     return (IComparator*)new CPackageManagerService::ResolvePrioritySorter();
 }
-AutoPtr<IComparator> CPackageManagerService::sResolvePrioritySorter = CPackageManagerService::InitResolvePrioritySorter();
-
-AutoPtr<IComparator> CPackageManagerService::InitProviderInitOrderSorter()
+static AutoPtr<IComparator> InitProviderInitOrderSorter()
 {
     return (IComparator*)new CPackageManagerService::ProviderInitOrderSorter();
 }
-AutoPtr<IComparator> CPackageManagerService::sProviderInitOrderSorter = CPackageManagerService::InitProviderInitOrderSorter();
+AutoPtr<IComparator> CPackageManagerService::sResolvePrioritySorter = InitResolvePrioritySorter();
+AutoPtr<IComparator> CPackageManagerService::sProviderInitOrderSorter = InitProviderInitOrderSorter();
+const CPackageManagerService::ResolvePrioritySorterFunc CPackageManagerService::sResolvePrioritySorterFunc;
+
 const String CPackageManagerService::SD_ENCRYPTION_KEYSTORE_NAME("AppsOnSD");
 const String CPackageManagerService::SD_ENCRYPTION_ALGORITHM("AES");
 
@@ -4183,6 +4193,7 @@ ECode CPackageManagerService::constructor(
     /* [in] */ Boolean factoryTest,
     /* [in] */ Boolean onlyCore)
 {
+    Logger::I(TAG, ">>>>>>>>>>>>>> CPackageManagerService::constructor");
 //     EventLog.writeEvent(EventLogTags.BOOT_PROGRESS_PMS_START,
 //             SystemClock.uptimeMillis());
 
@@ -4294,8 +4305,8 @@ ECode CPackageManagerService::constructor(
                 os->Chmod(path, OsConstants::_S_IRWXU | OsConstants::_S_IRWXG | OsConstants::_S_IRWXO);
             }
 
-            CUserManagerService::NewByFriend(context, (IIPackageManager*)this,
-                    &mInstallLock, &mPackagesLock, (CUserManagerService**)&sUserManager);
+            CUserManagerService::NewByFriend(context, this,
+                &mInstallLock, &mPackagesLock, (CUserManagerService**)&sUserManager);
 
             // Propagate permission configuration in to package manager.
             AutoPtr<HashMap<String, AutoPtr<SystemConfig::PermissionEntry> > > permConfig
@@ -4325,7 +4336,8 @@ ECode CPackageManagerService::constructor(
 
             AutoPtr<IList> users;
             sUserManager->GetUsers(FALSE, (IList**)&users);
-            mRestoredSettings = mSettings->ReadLPw(this, users, mSdkVersion, mOnlyCore);
+            // assert(0 && "TODO");
+            // mRestoredSettings = mSettings->ReadLPw(this, users, mSdkVersion, mOnlyCore);
 
             AutoPtr<IResourcesHelper> resH;
             CResourcesHelper::AcquireSingleton((IResourcesHelper**)&resH);
@@ -4333,10 +4345,7 @@ ECode CPackageManagerService::constructor(
             resH->GetSystem((IResources**)&res);
             String customResolverActivity;
             res->GetString(R::string::config_customResolverActivity, &customResolverActivity);
-            if (TextUtils::IsEmpty(customResolverActivity)) {
-                customResolverActivity = String(NULL);
-            }
-            else {
+            if (!customResolverActivity.IsNull()) {
                 AutoPtr<IComponentNameHelper> cnHelper;
                 CComponentNameHelper::AcquireSingleton((IComponentNameHelper**)&cnHelper);
                 mCustomResolverComponentName = NULL;
@@ -4543,7 +4552,7 @@ ECode CPackageManagerService::constructor(
             // Collect all OEM packages.
             AutoPtr<IFile> oemDir = Environment::GetOemDirectory();
             AutoPtr<IFile> oemAppDir;
-            CFile::New(oemDir, String("app"), (IFile**)&oemDir);
+            CFile::New(oemDir, String("app"), (IFile**)&oemAppDir);
             ScanDirLI(oemAppDir, PackageParser::PARSE_IS_SYSTEM | PackageParser::PARSE_IS_SYSTEM_DIR,
                     scanFlags, 0, readBuffer);
 
@@ -4795,8 +4804,9 @@ ECode CPackageManagerService::constructor(
             // All the changes are done during package scanning.
             mSettings->UpdateInternalDatabaseVersion();
 
+            //assert(0 && "TODO");
             // can downgrade to reader
-            mSettings->WriteLPr();
+            // mSettings->WriteLPr();
 
 //         EventLog.writeEvent(EventLogTags.BOOT_PROGRESS_PMS_READY,
 //                 SystemClock.uptimeMillis());
@@ -4812,6 +4822,7 @@ ECode CPackageManagerService::constructor(
     // tidy.
     // Runtime.getRuntime().gc();
 
+    Logger::I(TAG, "<<<<<<<<<<<<<< CPackageManagerService::constructor");
     return NOERROR;
 }
 
@@ -5452,7 +5463,9 @@ ECode CPackageManagerService::GetApplicationInfo(
     VALIDATE_NOT_NULL(appInfo)
     *appInfo = NULL;
 
+    Slogger::D(TAG, " >> GetApplicationInfo %s, userId %d", packageName.string(), userId);
     if (!sUserManager->Exists(userId)) {
+        Slogger::D(TAG, " >> GetApplicationInfo %d", __LINE__);
         return NOERROR;
     }
 
@@ -5467,7 +5480,8 @@ ECode CPackageManagerService::GetApplicationInfo(
                 p = it->mSecond;
             }
         }
-        if (DEBUG_PACKAGE_INFO) Logger::V(TAG, "getApplicationInfo %s: %p", packageName.string(), p.Get());
+        // if (DEBUG_PACKAGE_INFO)
+        Slogger::V(TAG, "getApplicationInfo %s: %s", packageName.string(), TO_CSTR(p));
         if (p != NULL) {
             AutoPtr<PackageSetting> ps;
             HashMap<String, AutoPtr<PackageSetting> >::Iterator pit =
@@ -5476,28 +5490,33 @@ ECode CPackageManagerService::GetApplicationInfo(
                 ps = pit->mSecond;
             }
             if (ps == NULL) {
+        Slogger::D(TAG, " >> GetApplicationInfo %d", __LINE__);
                 return NOERROR;
             }
             // Note: isEnabledLP() does not apply here - always return info
             AutoPtr<IApplicationInfo> info = PackageParser::GenerateApplicationInfo(
                     p, flags, ps->ReadUserState(userId), userId);
+        Slogger::D(TAG, " >> GetApplicationInfo %d", __LINE__);
             *appInfo = info;
             REFCOUNT_ADD(*appInfo)
             return NOERROR;
         }
 
         if (packageName.Equals("android") || packageName.Equals("system")) {
+        Slogger::D(TAG, " >> GetApplicationInfo %d", __LINE__);
             *appInfo = mElastosApplication;
             REFCOUNT_ADD(*appInfo)
             return NOERROR;
         }
         if((flags & IPackageManager::GET_UNINSTALLED_PACKAGES) != 0) {
+        Slogger::D(TAG, " >> GetApplicationInfo %d", __LINE__);
             AutoPtr<IApplicationInfo> info = GenerateApplicationInfoFromSettingsLPw(packageName, flags, userId);
             *appInfo = info;
             REFCOUNT_ADD(*appInfo)
             return NOERROR;
         }
     }
+    Slogger::D(TAG, " >> GetApplicationInfo %d", __LINE__);
     return NOERROR;
 }
 
@@ -8726,9 +8745,6 @@ ECode CPackageManagerService::CollectCertificatesLI(
         Slogger::W(TAG, "PackageSetting for %s is missing signatures. Collecting certs again to recover them.",
                 ps->mName.string());
     }
-    else {
-        Logger::I(TAG, "%s changed; collecting certs", TO_CSTR(srcFile));
-    }
 
     // try {
     if (FAILED(pp->CollectCertificates(pkg, parseFlags, readBuffer))) {
@@ -8783,7 +8799,6 @@ ECode CPackageManagerService::ScanPackageLI(
     AutoPtr<PackageSetting> updatedPkg;
     // reader
     synchronized (mPackagesLock) {
-        Logger::I(TAG, " >>> find %s in %d", pkg->mPackageName.string(), mSettings->mRenamedPackages.GetSize());
         // Look to see if we already know about this package.
         String oldName;
         HashMap<String, String>::Iterator it = mSettings->mRenamedPackages.Find(pkg->mPackageName);
@@ -10143,14 +10158,17 @@ ECode CPackageManagerService::ScanPackageDirtyLI(
         synchronized (mPackagesLock) {
             if (mElastosApplication != NULL) {
                 Slogger::W(TAG, "*************************************************");
-                Slogger::W(TAG, "Core android package being redefined.  Skipping.");
-                // Slogger::W(TAG, " file=" + scanFile);
+                Slogger::W(TAG, "Core android package being redefined.  Skipping %s.", TO_CSTR(scanFile));
                 Slogger::W(TAG, "*************************************************");
                 sLastScanError = IPackageManager::INSTALL_FAILED_DUPLICATE_PACKAGE;
                 Slogger::E(TAG, "%s Core android package being redefined.  Skipping. %d"
                         , IPackageManager::INSTALL_FAILED_DUPLICATE_PACKAGE);
                 return E_PACKAGE_MANAGER_EXCEPTION;
             }
+
+            Slogger::W(TAG, "*************************************************");
+            Slogger::W(TAG, "Core android package being scanned %s.", TO_CSTR(scanFile));
+            Slogger::W(TAG, "*************************************************");
 
             // Set up information for our fall-back user intent resolution activity.
             mPlatformPackage = pkg;
@@ -10303,9 +10321,6 @@ ECode CPackageManagerService::ScanPackageDirtyLI(
         pkg->mApplicationInfo->GetSecondaryCpuAbi(&secondaryCpuAbi);
         Int32 flags;
         pkg->mApplicationInfo->GetFlags(&flags);
-
-        Logger::I(TAG, " package: %s application info: primaryCpuAbi:%s, secondaryCpuAbi:%s",
-            pkg->mPackageName.string(), primaryCpuAbi.string(), secondaryCpuAbi.string());
 
         pkgSetting = mSettings->GetPackageLPw(pkg, origPackage, realName, suid, destCodeFile,
                 destResourceFile, nativeLibraryRootDir, primaryCpuAbi, secondaryCpuAbi, flags, user, FALSE);
@@ -11101,8 +11116,7 @@ ECode CPackageManagerService::ScanPackageDirtyLI(
                 if (me->GetValue((IInterface**)&value), value != NULL) {
                     AutoPtr<IInterface> key;
                     me->GetKey((IInterface**)&key);
-                    String keyStr;
-                    ICharSequence::Probe(key)->ToString(&keyStr);
+                    String keyStr = Object::ToString(key);
                     ksms->AddDefinedKeySetToPackageLPw(pkg->mPackageName, IArraySet::Probe(value), keyStr);
                 }
             }
@@ -11113,8 +11127,7 @@ ECode CPackageManagerService::ScanPackageDirtyLI(
                 while (keySetIt->HasNext(&hasNext), hasNext) {
                     AutoPtr<IInterface> keyset;
                     keySetIt->GetNext((IInterface**)&keyset);
-                    String upgradeAlias;
-                    ICharSequence::Probe(keyset)->ToString(&upgradeAlias);
+                    String upgradeAlias = Object::ToString(keyset);
                     ksms->AddUpgradeKeySetToPackageLPw(pkg->mPackageName, upgradeAlias);
                 }
             }

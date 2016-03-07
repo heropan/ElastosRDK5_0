@@ -157,7 +157,6 @@ ECode SystemServer::NativeInit()
 
 ECode SystemServer::Run()
 {
-    Slogger::I(TAG, " === SystemServer::Run() ===");
     ECode ec = NOERROR;
 
     // If a device's clock is before 1970 (before 0), a lot of
@@ -382,14 +381,14 @@ ECode SystemServer::StartBootstrapServices()
     mPackageManagerService->IsFirstBoot(&mFirstBoot);
     mSystemContext->GetPackageManager((IPackageManager**)&mPackageManager);
 
-    Slogger::I(TAG, "User Service");
-    service = (ISystemService*)CUserManagerService::GetInstance().Get();
-    ServiceManager::AddService(IContext::USER_SERVICE, service.Get());
+    Slogger::I(TAG, "    start User Service");
+    AutoPtr<IInterface> svrObj = (IIUserManager*)CUserManagerService::GetInstance().Get();
+    ServiceManager::AddService(IContext::USER_SERVICE, svrObj.Get());
 
     // Initialize attribute cache used to cache resources from packages.
     AttributeCache::Init(mSystemContext);
 
-    Slogger::I(TAG, "    start Activity manager SetSystemProcess");
+    Slogger::I(TAG, "    set up the Application instance for the system process and get started.");
     // Set up the Application instance for the system process and get started.
     ec = mActivityManagerService->SetSystemProcess();
     if (FAILED(ec)) Slogger::E(TAG, "Failed to start the Application instance for the system process.");
@@ -419,11 +418,11 @@ ECode SystemServer::StartCoreServices()
     // AutoPtr<IInterface> usm = LocalServices::GetService(EIID_IUsageStatsManagerInternal);
     // mActivityManagerService->SetUsageStatsManager(IUsageStatsManagerInternal::Probe(usm));
 
-    // // Tracks whether the updatable WebView is in a ready state and watches for update installs.
-    Slogger::I(TAG, "WebView Update Service");
-    AutoPtr<WebViewUpdateService> wvus = new WebViewUpdateService();
-    wvus->constructor(mSystemContext);
-    mSystemServiceManager->StartService(wvus.Get());
+    // Tracks whether the updatable WebView is in a ready state and watches for update installs.
+    Slogger::I(TAG, "WebView Update Service todo");
+    // AutoPtr<WebViewUpdateService> wvus = new WebViewUpdateService();
+    // wvus->constructor(mSystemContext);
+    // mSystemServiceManager->StartService(wvus.Get());
     return NOERROR;
 }
 
@@ -487,27 +486,27 @@ ECode SystemServer::StartOtherServices()
     Slogger::I(TAG, "Reading configuration...");
     SystemConfig::GetInstance();
 
-    Slogger::I(TAG, "Scheduling Policy");
-    AutoPtr<IISchedulingPolicyService> sps;
-    ec = CSchedulingPolicyService::New((IISchedulingPolicyService**)&sps);
-    if (FAILED(ec)) Slogger::E(TAG, "failed to start Scheduling Policy service");
-    ServiceManager::AddService(String("scheduling_policy"), sps.Get());
+    Slogger::I(TAG, "Scheduling Policy todo");
+    // AutoPtr<IISchedulingPolicyService> sps;
+    // ec = CSchedulingPolicyService::New((IISchedulingPolicyService**)&sps);
+    // if (FAILED(ec)) Slogger::E(TAG, "failed to start Scheduling Policy service");
+    // ServiceManager::AddService(String("scheduling_policy"), sps.Get());
 
-    Slogger::I(TAG, "Telephony Registry");
-    AutoPtr<IITelephonyRegistry> telephonyRegistry;
-    ec = CTelephonyRegistry::New(context, (IITelephonyRegistry**)&telephonyRegistry);
-    if (FAILED(ec)) Slogger::E(TAG, "failed to start Telephony Registry");
-    ServiceManager::AddService(String("telephony.registry"), telephonyRegistry.Get());
+    Slogger::I(TAG, "Telephony Registry todo");
+    // AutoPtr<IITelephonyRegistry> telephonyRegistry;
+    // ec = CTelephonyRegistry::New(context, (IITelephonyRegistry**)&telephonyRegistry);
+    // if (FAILED(ec)) Slogger::E(TAG, "failed to start Telephony Registry");
+    // ServiceManager::AddService(String("telephony.registry"), telephonyRegistry.Get());
 
-    Slogger::I(TAG, "Entropy Mixer");
-    AutoPtr<EntropyMixer> em = new EntropyMixer(context);
-    ServiceManager::AddService(String("entropy"), TO_IINTERFACE(em));
+    Slogger::I(TAG, "Entropy Mixer todo");
+    // AutoPtr<EntropyMixer> em = new EntropyMixer(context);
+    // ServiceManager::AddService(String("entropy"), TO_IINTERFACE(em));
 
     context->GetContentResolver((IContentResolver**)&mContentResolver);
 
     // The AccountManager must come before the ContentService
     // TODO: seems like this should be disable-able, but req'd by ContentService
-    Slogger::I(TAG, "Account Manager");
+    Slogger::I(TAG, "Account Manager todo");
     // AutoPtr<IIAccountManager> accountManager;
     // ec = CAccountManagerService::New(context, (IIAccountManager**)&accountManager);
     // if (FAILED(ec)) Slogger::E(TAG, "failed to start Account Manager service");
@@ -522,19 +521,19 @@ ECode SystemServer::StartOtherServices()
     ec = mActivityManagerService->InstallSystemProviders();
     if (FAILED(ec)) Slogger::E(TAG, "failed to isntall System Content Providers");
 
-    Slogger::I(TAG, "Vibrator Service");
-    AutoPtr<IIVibratorService> vs;
-    ec = CVibratorService::New(context, (IIVibratorService**)&vs);
-    if (FAILED(ec)) Slogger::E(TAG, "failed to start Vibrator service");
-    ServiceManager::AddService(String("vibrator"), vs.Get());
-    vibrator = (CVibratorService*)vs.Get();
+    Slogger::I(TAG, "Vibrator Service todo");
+    // AutoPtr<IIVibratorService> vs;
+    // ec = CVibratorService::New(context, (IIVibratorService**)&vs);
+    // if (FAILED(ec)) Slogger::E(TAG, "failed to start Vibrator service");
+    // ServiceManager::AddService(String("vibrator"), vs.Get());
+    // vibrator = (CVibratorService*)vs.Get();
 
-    Slogger::I(TAG, "Consumer IR Service");
-    AutoPtr<IIConsumerIrService> cirs;
-    ec = CConsumerIrService::New(context, (IIConsumerIrService**)&cirs);
-    if (FAILED(ec)) Slogger::E(TAG, "failed to start Consumer IR service");
-    ServiceManager::AddService(IContext::CONSUMER_IR_SERVICE, cirs.Get());
-    consumerIr = (CConsumerIrService*)cirs.Get();
+    Slogger::I(TAG, "Consumer IR Service todo");
+    // AutoPtr<IIConsumerIrService> cirs;
+    // ec = CConsumerIrService::New(context, (IIConsumerIrService**)&cirs);
+    // if (FAILED(ec)) Slogger::E(TAG, "failed to start Consumer IR service");
+    // ServiceManager::AddService(IContext::CONSUMER_IR_SERVICE, cirs.Get());
+    // consumerIr = (CConsumerIrService*)cirs.Get();
 
     Slogger::I(TAG, "Alarm Manager Service");
     AutoPtr<AlarmManagerService> alarmMgr = new AlarmManagerService();

@@ -341,6 +341,19 @@ ECode CAtomicFile::Exists(
     return NOERROR;
 }
 
+ECode CAtomicFile::ToString(
+    /* [out] */ String* str)
+{
+    VALIDATE_NOT_NULL(str)
+    if (mBaseName != NULL) {
+        *str = Object::ToString(mBaseName);
+    }
+    else {
+        *str = Object::ToString(mBackupName);
+    }
+    return NOERROR;
+}
+
 }
 }
 }

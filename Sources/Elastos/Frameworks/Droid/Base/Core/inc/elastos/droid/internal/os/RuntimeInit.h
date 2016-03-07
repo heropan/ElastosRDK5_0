@@ -44,14 +44,14 @@ public:
          * @throws IllegalArgumentException
          */
         Arguments(
-            /* [in] */ const ArrayOf<String>& args);
+            /* [in] */ ArrayOf<String>* args);
 
     private:
         /**
          * Parses the commandline arguments intended for the Runtime.
          */
         CARAPI ParseArgs(
-            /* [in] */ const ArrayOf<String>& args);
+            /* [in] */ ArrayOf<String>* args);
 
     public:
         /** first non-option argument */

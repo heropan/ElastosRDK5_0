@@ -47,7 +47,7 @@ using Elastos::Droid::App::IIActivityManager;
 using Elastos::Core::StringUtils;
 using Elastos::Core::IBlockGuard;
 using Elastos::Core::CBlockGuard;
-using Elastos::Core::IBlockGuardPolicy;
+using Elastos::Core::EIID_IBlockGuardPolicy;
 using Elastos::Core::ICloseGuard;
 using Elastos::Core::CCloseGuard;
 using Elastos::Core::EIID_ICloseGuardReporter;
@@ -82,6 +82,19 @@ static pthread_key_t InitSViolationsBeingTimed()
     return key;
 }
 
+static void ThreadAndroidPolicyDestructor(void* st)
+{
+    ICharSequence* callingPackage = static_cast<ICharSequence*>(st);
+    if (callingPackage) {
+        REFCOUNT_RELEASE(callingPackage)
+    }
+}
+
+static void ThreadAndroidPolicyMakeKey()
+{
+    ASSERT_TRUE(pthread_key_create(&CStrictMode::sThreadAndroidPolicyKey, ThreadAndroidPolicyDestructor) == 0);
+}
+
 const String CStrictMode::TAG("StrictMode");
 const Boolean CStrictMode::LOG_V = Logger::IsLoggable(TAG, Logger::VERBOSE);
 const Boolean CStrictMode::IS_USER_BUILD = String("user").Equals(Build::TYPE);
@@ -114,6 +127,9 @@ pthread_key_t CStrictMode::sThisThreadSpanStateKey;
 Boolean CStrictMode::sHaveThisThreadSpanStateKey = FALSE;
 pthread_key_t CStrictMode::sThreadHandlerKey;
 Boolean CStrictMode::sHaveThreadHandlerKey = FALSE;
+
+pthread_key_t CStrictMode::sThreadAndroidPolicyKey;
+pthread_once_t CStrictMode::sThreadAndroidPolicyKeyOnce = PTHREAD_ONCE_INIT;
 
 CAR_INTERFACE_IMPL(CStrictMode::ThreadPolicy, Object, IStrictModeThreadPolicy);
 
@@ -205,9 +221,17 @@ void CStrictMode::SetBlockGuardPolicy(
         androidPolicy = IAndroidBlockGuardPolicy::Probe(policy);
     }
     else {
-        assert(0 && "TODO");
-        //androidPolicy = ThreadAndroidPolicy.get();
-        helper->SetThreadPolicy(policy);
+
+        pthread_once(&sThreadAndroidPolicyKeyOnce, ThreadAndroidPolicyMakeKey);
+
+        androidPolicy = (IAndroidBlockGuardPolicy*)pthread_getspecific(sThreadAndroidPolicyKey);
+        if (androidPolicy == NULL) {
+            androidPolicy = new AndroidBlockGuardPolicy(0);
+
+            ASSERT_TRUE(pthread_setspecific(sThreadAndroidPolicyKey, androidPolicy.Get()) == 0);
+            androidPolicy->AddRef();
+        }
+        helper->SetThreadPolicy(IBlockGuardPolicy::Probe(androidPolicy));
     }
     androidPolicy->SetPolicyMask(policyMask);
 }
@@ -310,6 +334,7 @@ ECode CStrictMode::AllowThreadDiskWrites(
 ECode CStrictMode::AllowThreadDiskReads(
     /* [out] */ IStrictModeThreadPolicy** policy)
 {
+    VALIDATE_NOT_NULL(policy)
     Int32 oldPolicyMask;
     GetThreadPolicyMask(&oldPolicyMask);
     Int32 newPolicyMask = oldPolicyMask & ~(IStrictMode::DETECT_DISK_READ);
@@ -492,7 +517,7 @@ Boolean CStrictMode::TooManyViolationsThisLoop()
     return violations->GetSize() >= MAX_OFFENSES_PER_LOOP;
 }
 
-CAR_INTERFACE_IMPL(CStrictMode::AndroidBlockGuardPolicy, Object, IAndroidBlockGuardPolicy);
+CAR_INTERFACE_IMPL_2(CStrictMode::AndroidBlockGuardPolicy, Object, IAndroidBlockGuardPolicy, IBlockGuardPolicy);
 
 CStrictMode::AndroidBlockGuardPolicy::AndroidBlockGuardPolicy(
     /* [in] */ Int32 policyMask)

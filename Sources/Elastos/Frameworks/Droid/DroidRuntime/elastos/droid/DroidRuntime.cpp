@@ -160,7 +160,13 @@ ECode DroidRuntime::CallMain(
         return ec;
     }
 
-    argumentList->SetInputArgumentOfCarArray(0, args);
+    ec = argumentList->SetInputArgumentOfCarArray(0, *args);
+    if (FAILED(ec)) {
+        Logger::E(TAG, "Set Input Argument of Car array in \"%s/%s\" \"Main\" method failed!\n",
+            moduleName.string(), className.string());
+        return ec;
+    }
+
     ec = methodInfo->Invoke(object, argumentList);
     if (FAILED(ec)) {
         Logger::E(TAG, "Invoke \"%s/%s\" \"Main\" method failed!\n",

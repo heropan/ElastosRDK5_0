@@ -1046,14 +1046,14 @@ private:
 
     static CARAPI_(String) BuildCompoundName(
         /* [in] */ const String& pkg,
-        /* [in] */ ICharSequence* procSeq,
+        /* [in] */ const String& procSeq,
         /* [in] */ const String& type,
         /* [out] */ ArrayOf<String>* outError);
 
     static CARAPI_(String) BuildProcessName(
         /* [in] */ const String& pkg,
         /* [in] */ const String& defProc,
-        /* [in] */ ICharSequence* procSeq,
+        /* [in] */ const String& procSeq,
         /* [in] */ Int32 flags,
         /* [in] */ ArrayOf<String>* separateProcesses,
         /* [out] */ ArrayOf<String>* outError);
@@ -1061,7 +1061,7 @@ private:
     static CARAPI_(String) BuildTaskAffinityName(
         /* [in] */ const String& pkg,
         /* [in] */ const String& defProc,
-        /* [in] */ ICharSequence* procSeq,
+        /* [in] */ const String& procSeq,
         /* [out] */ ArrayOf<String>* outError);
 
     CARAPI ParseKeySets(
@@ -1401,22 +1401,18 @@ PackageParser::Component<II>::Component(
     }
 
     if (args->mProcessRes != 0) {
-        AutoPtr<ICharSequence> pname;
+        String pname;
         Int32 targetSdkVersion;
         mOwner->mApplicationInfo->GetTargetSdkVersion(&targetSdkVersion);
         if (targetSdkVersion >= Build::VERSION_CODES::FROYO) {
-            String sname;
             args->mSa->GetNonConfigurationString(args->mProcessRes,
-                IConfiguration::NATIVE_CONFIG_VERSION, &sname);
-            CString::New(sname, (ICharSequence**)&pname);
+                IConfiguration::NATIVE_CONFIG_VERSION, &pname);
         }
         else {
             // Some older apps have been seen to use a resource reference
             // here that on older builds was ignored (with a warning).  We
             // need to continue to do this for them so they don't break.
-            String sname;
-            args->mSa->GetNonResourceString(args->mProcessRes, &sname);
-            CString::New(sname, (ICharSequence**)&pname);
+            args->mSa->GetNonResourceString(args->mProcessRes, &pname);
         }
         String appPackageName;
         String appProcName;

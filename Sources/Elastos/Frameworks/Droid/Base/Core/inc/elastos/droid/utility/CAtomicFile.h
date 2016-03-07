@@ -120,6 +120,9 @@ public:
     CARAPI Exists(
         /* [out] */ Boolean* result);
 
+    CARAPI ToString(
+        /* [out] */ String* str);
+
 public:
     AutoPtr<IFile> mBaseName;
     AutoPtr<IFile> mBackupName;

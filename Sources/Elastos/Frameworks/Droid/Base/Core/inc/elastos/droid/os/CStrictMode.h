@@ -12,14 +12,15 @@ using Elastos::Droid::Os::IStrictModeSpan;
 using Elastos::Droid::Os::IStrictModeThreadPolicy;
 using Elastos::Droid::Os::IStrictModeVmPolicy;
 using Elastos::Droid::View::IIWindowManager;
-using Elastos::Utility::Etl::List;
-using Elastos::Utility::Etl::HashMap;
-using Elastos::Utility::Concurrent::Atomic::IAtomicInteger32;
 using Elastos::Core::Thread;
 using Elastos::Core::IThrowable;
 using Elastos::Core::IInteger32;
 using Elastos::Core::CInteger32;
 using Elastos::Core::ICloseGuardReporter;
+using Elastos::Core::IBlockGuardPolicy;
+using Elastos::Utility::Etl::List;
+using Elastos::Utility::Etl::HashMap;
+using Elastos::Utility::Concurrent::Atomic::IAtomicInteger32;
 
 #ifndef DEFINE_HASH_FUNC_FOR_PTR_USING_ADDR
 #define DEFINE_HASH_FUNC_FOR_PTR_USING_ADDR(TypeName) \
@@ -159,6 +160,7 @@ private:
     class AndroidBlockGuardPolicy
         : public Object
         , public IAndroidBlockGuardPolicy
+        , public IBlockGuardPolicy
     {
     public:
         CAR_INTERFACE_DECL();
@@ -487,6 +489,10 @@ private:
 
     static CARAPI_(AutoPtr<ThreadSpanState>) GetThisThreadSpanState();
 
+public:
+    static pthread_once_t sThreadAndroidPolicyKeyOnce;
+    static pthread_key_t sThreadAndroidPolicyKey; //
+
 private:
     friend class CStrictModeThreadPolicyBuilder;
     friend class CStrictModeVmPolicyBuilder;
@@ -570,17 +576,6 @@ private:
 
     static pthread_key_t sThreadHandlerKey;
     static Boolean sHaveThreadHandlerKey;
-
-    // static pthread_once_t sKeyOnce;
-    // static pthread_key_t sThreadAndroidPolicyKey;
-
-    // private static final ThreadLocal<AndroidBlockGuardPolicy>
-    //         threadAndroidPolicy = new ThreadLocal<AndroidBlockGuardPolicy>() {
-    //     @Override
-    //     protected AndroidBlockGuardPolicy initialValue() {
-    //         return new AndroidBlockGuardPolicy(0);
-    //     }
-    // };
 
     static pthread_key_t sGatheredViolations;
     static pthread_key_t sViolationsBeingTimed;

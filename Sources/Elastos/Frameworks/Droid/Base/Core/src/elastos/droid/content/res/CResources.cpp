@@ -371,7 +371,7 @@ CResources::StaticInitializer::StaticInitializer()
 
 
 const String CResources::TAG("CResources");
-const Boolean CResources::DEBUG_LOAD = TRUE;
+const Boolean CResources::DEBUG_LOAD = FALSE;
 const Boolean CResources::DEBUG_CONFIG = FALSE;
 const Boolean CResources::TRACE_FOR_PRELOAD = FALSE;
 const Boolean CResources::TRACE_FOR_MISS_PRELOAD = FALSE;

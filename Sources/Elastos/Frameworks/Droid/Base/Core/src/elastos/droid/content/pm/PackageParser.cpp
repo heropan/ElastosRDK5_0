@@ -98,9 +98,9 @@ namespace Droid {
 namespace Content {
 namespace Pm {
 
-const Boolean PackageParser::DEBUG_JAR = TRUE;
-const Boolean PackageParser::DEBUG_PARSER = TRUE;
-const Boolean PackageParser::DEBUG_BACKUP = TRUE;
+const Boolean PackageParser::DEBUG_JAR = FALSE;
+const Boolean PackageParser::DEBUG_PARSER = FALSE;
+const Boolean PackageParser::DEBUG_BACKUP = FALSE;
 
 const String PackageParser::TAG("PackageParser");
 
@@ -1298,8 +1298,6 @@ ECode PackageParser::ParseClusterPackageLite(
     for (Int32 i = 0; i < files->GetLength(); ++i) {
         IFile* file = (*files)[i];
         if (IsApkFile(file)) {
-            Logger::I(TAG, " >> ParseClusterPackageLite sub apk file %d : %s", i, TO_CSTR(file));
-
             AutoPtr<ApkLite> lite;
             FAIL_RETURN(ParseApkLite(file, flags, readBuffer, (ApkLite**)&lite))
 
@@ -1343,7 +1341,7 @@ ECode PackageParser::ParseClusterPackageLite(
     AutoPtr<IInterface> old;
     apks->Remove(NULL, (IInterface**)&old);
     if (old == NULL) {
-        Logger::W(TAG, "INSTALL_PARSE_FAILED_BAD_MANIFEST : Missing base APK in %s", TO_CSTR(packageDir));
+        // Logger::W(TAG, "INSTALL_PARSE_FAILED_BAD_MANIFEST : Missing base APK in %s", TO_CSTR(packageDir));
         return E_PACKAGE_PARSER_EXCEPTION;
     }
 
@@ -1842,8 +1840,8 @@ ECode PackageParser::CollectCertificates(
     // assert(readBuffer != NULL && readBuffer->GetLength() >= 8192);
     assert(pkg != NULL);
 
-    Int64 startTime = SystemClock::GetUptimeMillis();
-    Int64 endTime, cost;
+    // Int64 startTime = SystemClock::GetUptimeMillis();
+    // Int64 endTime, cost;
 
     pkg->mCertificates = NULL;
     pkg->mSignatures = NULL;
@@ -1862,9 +1860,9 @@ ECode PackageParser::CollectCertificates(
         }
     }
 
-    endTime = SystemClock::GetUptimeMillis();
-    cost = endTime - startTime;
-    Slogger::D(TAG, " >> Elastos CollectCertificates %s cost: %lld ms", pkg->mPackageName.string(), cost);
+    // endTime = SystemClock::GetUptimeMillis();
+    // cost = endTime - startTime;
+    // Logger::D(TAG, " >> Elastos CollectCertificates %s cost: %lld ms", pkg->mPackageName.string(), cost);
     return NOERROR;
 }
 
@@ -2323,7 +2321,6 @@ ECode PackageParser::ParseBaseApk(
     /* [in] */ ArrayOf<String>* outError,
     /* [out] */ Package** result)
 {
-    Logger::I(TAG, " >>> ParseBaseApk ==============");
     VALIDATE_NOT_NULL(result)
     *result = NULL;
 
@@ -2368,8 +2365,6 @@ ECode PackageParser::ParseBaseApk(
     Int32 size = ArraySize(R::styleable::AndroidManifest);
     AutoPtr<ArrayOf<Int32> > layout = ArrayOf<Int32>::Alloc(size);
     layout->Copy(R::styleable::AndroidManifest, size);
-
-    Logger::I(TAG, " pkgName %s, splitName %s, size %d", pkgName.string(), splitName.string(), size);
 
     AutoPtr<ITypedArray> sa;
     ASSERT_SUCCEEDED(res->ObtainAttributes(attrs, layout, (ITypedArray**)&sa));
@@ -2445,7 +2440,6 @@ ECode PackageParser::ParseBaseApk(
 
         String tagName;
         parser->GetName(&tagName);
-        Logger::I(TAG, " current tag name %s", tagName.string());
         if (tagName.Equals("application")) {
             if (foundApp) {
                 if (RIGID_PARSER) {
@@ -2978,8 +2972,8 @@ ECode PackageParser::ParseBaseApk(
             pkg->mRequestedPermissionsRequired.PushBack(TRUE);
         }
     }
-    if (implicitPerms != NULL) {
-        Slogger::I(TAG, implicitPerms->ToString());
+    if (DEBUG_PARSER && implicitPerms != NULL) {
+        Logger::I(TAG, implicitPerms->ToString());
     }
 
     const Int32 NS = SPLIT_PERMISSIONS->GetLength();
@@ -3053,7 +3047,6 @@ ECode PackageParser::ParseBaseApk(
         }
     }
 
-    Logger::I(TAG, " <<< ParseBaseApk ==============");
     *result = pkg;
     REFCOUNT_ADD(*result)
     return NOERROR;
@@ -3211,12 +3204,10 @@ String PackageParser::BuildClassName(
 
 String PackageParser::BuildCompoundName(
     /* [in] */ const String& pkg,
-    /* [in] */ ICharSequence* procSeq,
+    /* [in] */ const String& proc,
     /* [in] */ const String& type,
     /* [in] */ ArrayOf<String>* outError)
 {
-    String proc;
-    procSeq->ToString(&proc);
     Char32 c = proc.GetChar(0);
     if (!pkg.IsNull() && c == ':') {
         if (proc.GetLength() < 2) {
@@ -3266,25 +3257,23 @@ String PackageParser::BuildCompoundName(
 String PackageParser::BuildProcessName(
     /* [in] */ const String& pkg,
     /* [in] */ const String& defProc,
-    /* [in] */ ICharSequence* procSeq,
+    /* [in] */ const String& procSeq,
     /* [in] */ Int32 flags,
     /* [in] */ ArrayOf<String>* separateProcesses,
     /* [in] */ ArrayOf<String>* outError)
 {
-    String sprocSeq;
-    if (procSeq != NULL) procSeq->ToString(&sprocSeq);
-    if ((flags & PARSE_IGNORE_PROCESSES) != 0 && !sprocSeq.Equals("system")) {
+    if ((flags & PARSE_IGNORE_PROCESSES) != 0 && !procSeq.Equals("system")) {
         return !defProc.IsNull() ? defProc : pkg;
     }
     if (separateProcesses != NULL) {
         for (Int32 i = separateProcesses->GetLength() - 1; i >= 0; i--) {
             String sp = (*separateProcesses)[i];
-            if (sp.Equals(pkg) || sp.Equals(defProc) || sp.Equals(sprocSeq)) {
+            if (sp.Equals(pkg) || sp.Equals(defProc) || sp.Equals(procSeq)) {
                 return pkg;
             }
         }
     }
-    if (sprocSeq.IsNullOrEmpty()) {
+    if (procSeq.IsNullOrEmpty()) {
         return defProc;
     }
     return BuildCompoundName(pkg, procSeq, String("process"), outError);
@@ -3293,14 +3282,14 @@ String PackageParser::BuildProcessName(
 String PackageParser::BuildTaskAffinityName(
     /* [in] */ const String& pkg,
     /* [in] */ const String& defProc,
-    /* [in] */ ICharSequence* procSeq,
+    /* [in] */ const String& procSeq,
     /* [in] */ ArrayOf<String>* outError)
 {
     if (procSeq == NULL) {
         return defProc;
     }
-    Int32 len;
-    if (procSeq->GetLength(&len), len <= 0) {
+
+    if (procSeq.IsEmpty()) {
         return String(NULL);
     }
     return BuildCompoundName(pkg, procSeq, String("taskAffinity"), outError);
@@ -3901,8 +3890,8 @@ Boolean PackageParser::ParseBaseApplication(
         IConfiguration::NATIVE_CONFIG_VERSION,
         &manageSpaceActivity);
     if (!manageSpaceActivity.IsNull()) {
-        String name = BuildClassName(pkgName, manageSpaceActivity, outError);
-        ai->SetManageSpaceActivityName(name);
+        String clsName = BuildClassName(pkgName, manageSpaceActivity, outError);
+        ai->SetManageSpaceActivityName(clsName);
     }
 
     Int32 aiFlags;
@@ -4112,7 +4101,7 @@ Boolean PackageParser::ParseBaseApplication(
     sa->GetNonConfigurationString(
         R::styleable::AndroidManifestApplication_permission,
         IConfiguration::NATIVE_CONFIG_VERSION, &str);
-    ai->SetPermission((!str.IsNullOrEmpty()) ? str : String(NULL));
+    ai->SetPermission(!str.IsNullOrEmpty() ? str : String(NULL));
 
     Int32 ownerSdkVersion;
     owner->mApplicationInfo->GetTargetSdkVersion(&ownerSdkVersion);
@@ -4127,9 +4116,7 @@ Boolean PackageParser::ParseBaseApplication(
         sa->GetNonResourceString(
             R::styleable::AndroidManifestApplication_taskAffinity, &str);
     }
-    AutoPtr<ICharSequence> cStr;
-    CString::New(str, (ICharSequence**)&cStr);
-    String aiTask = BuildTaskAffinityName(pkgName, pkgName, cStr, outError);
+    String aiTask = BuildTaskAffinityName(pkgName, pkgName, str, outError);
     ai->SetTaskAffinity(aiTask);
 
     if ((*outError)[0].IsNull()) {
@@ -4147,9 +4134,7 @@ Boolean PackageParser::ParseBaseApplication(
                 R::styleable::AndroidManifestApplication_process,
                 &pname);
         }
-        AutoPtr<ICharSequence> cpname;
-        CString::New(pname, (ICharSequence**)&cpname);
-        String aiPName = BuildProcessName(pkgName, pkgName/*String(NULL)*/, cpname,
+        String aiPName = BuildProcessName(pkgName, pkgName/*String(NULL)*/, pname,
                 flags, mSeparateProcesses, outError);
         ai->SetProcessName(aiPName);
 
@@ -4709,12 +4694,10 @@ AutoPtr<PackageParser::Activity> PackageParser::ParseActivity(
     sa->GetNonConfigurationString(
         R::styleable::AndroidManifestActivity_taskAffinity,
         IConfiguration::NATIVE_CONFIG_VERSION, &str);
-    AutoPtr<ICharSequence> cStr;
-    CString::New(str, (ICharSequence**)&cStr);
     String ownerPName, ownerTaskAffinity;
     IPackageItemInfo::Probe(owner->mApplicationInfo)->GetPackageName(&ownerPName);
     owner->mApplicationInfo->GetTaskAffinity(&ownerTaskAffinity);
-    String taName = BuildTaskAffinityName(ownerPName, ownerTaskAffinity, cStr, outError);
+    String taName = BuildTaskAffinityName(ownerPName, ownerTaskAffinity, str, outError);
     a->mInfo->SetTaskAffinity(taName);
 
     a->mInfo->SetFlags(0);
@@ -4943,8 +4926,6 @@ AutoPtr<PackageParser::Activity> PackageParser::ParseActivity(
         return NULL;
     }
 
-    String dinfo = Object::ToString(a->mInfo);
-    Logger::D(TAG, " >>>>>>> parse activity %s in %s", dinfo.string(), mArchiveSourcePath.string());
     Int32 outerDepth;
     parser->GetDepth(&outerDepth);
 
@@ -4960,9 +4941,6 @@ AutoPtr<PackageParser::Activity> PackageParser::ParseActivity(
         String name;
         parser->GetName(&name);
         if (name.Equals("intent-filter")) {
-            String des;
-            parser->GetPositionDescription(&des);
-            Slogger::W(TAG, " >> parse intent filter at %s", des.string());
             AutoPtr<ActivityIntentInfo> intent = new ActivityIntentInfo(a);
             if (!ParseIntent(res, parser, attrs, TRUE, intent, outError)) {
                 return NULL;
@@ -6078,7 +6056,6 @@ Boolean PackageParser::ParseIntent(
     /* [in] */ IntentInfo* outInfo,
     /* [in] */ ArrayOf<String>* outError)
 {
-    Logger::I(TAG, "=== ParseIntent in %s", mArchiveSourcePath.string());
     Int32 size = ArraySize(R::styleable::AndroidManifestIntentFilter);
     AutoPtr<ArrayOf<Int32> > layout = ArrayOf<Int32>::Alloc(size);
     layout->Copy(R::styleable::AndroidManifestIntentFilter, size);
@@ -6087,7 +6064,6 @@ Boolean PackageParser::ParseIntent(
     res->ObtainAttributes(attrs, layout, (ITypedArray**)&sa);
     if (sa == NULL) {
         Logger::E(TAG, "=== error: FAILED to ParseIntent in %s", mArchiveSourcePath.string());
-        // return FALSE;
     }
 
     Int32 priority = 0;

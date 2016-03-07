@@ -2845,7 +2845,7 @@ ECode CContextImpl::CheckPermission(
     *result = IPackageManager::PERMISSION_DENIED;
 
     if (permission.IsNull()) {
-//        throw new IllegalArgumentException("permission is NULL");
+        Logger::E(TAG, "permission is NULL");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
 
@@ -2854,7 +2854,11 @@ ECode CContextImpl::CheckPermission(
     AutoPtr<IIActivityManager> am = ActivityManagerNative::GetDefault();
     if (am != NULL) {
         ec = am->CheckPermission(permission, pid, uid, result);
-        if (FAILED(ec)) *result = IPackageManager::PERMISSION_DENIED;
+        if (FAILED(ec)) {
+            *result = IPackageManager::PERMISSION_DENIED;
+            Logger::W(TAG, " CheckPermission for %s, pid %d uid %d, DENIED!",
+                permission.string(), pid, uid);
+        }
     }
     return ec;
 //    } catch (RemoteException e) {
@@ -2870,7 +2874,7 @@ ECode CContextImpl::CheckCallingPermission(
     *value = 0;
 
     if (permission.IsNull()) {
-//        throw new IllegalArgumentException("permission is NULL");
+        Logger::E(TAG, "permission is NULL");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
 
@@ -2890,7 +2894,7 @@ ECode CContextImpl::CheckCallingOrSelfPermission(
     *perm = 0;
 
     if (permission.IsNull()) {
-//        throw new IllegalArgumentException("permission is NULL");
+        Logger::E(TAG, "permission is NULL");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
 
@@ -3403,9 +3407,7 @@ AutoPtr<CContextImpl> CContextImpl::CreateSystemContext(
     ci->mResourcesManager->GetConfiguration((IConfiguration**)&config);
     AutoPtr<IDisplayMetrics> dm;
     ci->mResourcesManager->GetDisplayMetricsLocked(IDisplay::DEFAULT_DISPLAY, (IDisplayMetrics**)&dm);
-    Logger::I(TAG, " === TODO CContextImpl::CreateSystemContext UpdateConfiguration >>>>>");
     ci->mResources->UpdateConfiguration(config, dm);
-    Logger::I(TAG, " === TODO CContextImpl::CreateSystemContext UpdateConfiguration <<<<<");
     return ci;
 }
 

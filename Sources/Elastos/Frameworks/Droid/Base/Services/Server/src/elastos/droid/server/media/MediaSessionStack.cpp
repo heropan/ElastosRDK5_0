@@ -28,7 +28,7 @@ const AutoPtr<ArrayOf<Int32> > MediaSessionStack::ALWAYS_PRIORITY_STATES = InitA
 
 static AutoPtr<ArrayOf<Int32> > InitTransitionPriorityStates()
 {
-    AutoPtr<ArrayOf<Int32> > states = ArrayOf<Int32>::Alloc(2);
+    AutoPtr<ArrayOf<Int32> > states = ArrayOf<Int32>::Alloc(3);
     (*states)[0] = IPlaybackState::STATE_BUFFERING;
     (*states)[1] = IPlaybackState::STATE_CONNECTING;
     (*states)[2] = IPlaybackState::STATE_PLAYING;
