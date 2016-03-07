@@ -4,14 +4,14 @@
 
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/os/Build.h"
-#include <elrefbase.h>
+#include <elastos/core/Object.h>
 
 using Elastos::Droid::View::IInputDevice;
 using Elastos::Droid::View::IMotionRange;
 using Elastos::Droid::View::IKeyEvent;
 using Elastos::Droid::View::IMotionEvent;
 
-using Elastos::ElRefBase;
+//using Elastos::ElRefBase;
 
 // import java.util.Arrays;
 // import java.util.List;
@@ -28,7 +28,7 @@ namespace Input {
 /**
  * Manages information related to each connected gamepad device.
  */
-class GamepadDevice : public ElRefBase
+class GamepadDevice : public Object
 {
 public:
     GamepadDevice(
@@ -136,4 +136,5 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
+DEFINE_CONVERSION_FOR(Elastos::Droid::Webkit::Webview::Chromium::Content::Browser::Input::GamepadDevice, IInterface);
 #endif//__ELASTOS_DROID_WEBKIT_WEBVIEW_CHROMIUM_CONTENT_BROWSER_INPUT_GAMEPADDEVICE_H__

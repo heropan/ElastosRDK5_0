@@ -1,9 +1,12 @@
 
 #include <Elastos.CoreLibrary.IO.h>
 #include "elastos/droid/webkit/webview/chromium/native/content/browser/crypto/ByteArrayGenerator.h"
+#include <elastos/utility/logging/Logger.h>
 
 using Elastos::IO::IInputStream;
+using Elastos::IO::CFileInputStream;
 using Elastos::IO::EIID_IInputStream;
+using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
 namespace Droid {
@@ -24,18 +27,16 @@ AutoPtr< ArrayOf<Byte> > ByteArrayGenerator::GetBytes(
 {
     AutoPtr<IFileInputStream> fis;
     // try {
-        assert(0);
-        // TODO
-        // CFileInputStream::New(String("/dev/urandom"), (IFileInputStream**)&fis);
+        CFileInputStream::New(String("/dev/urandom"), (IFileInputStream**)&fis);
         AutoPtr< ArrayOf<Byte> > bytes = ArrayOf<Byte>::Alloc(numBytes);
         Int32 readLen;
         AutoPtr<IInputStream> inputStream = IInputStream::Probe(fis);
         inputStream->Read(bytes, &readLen);
         if (bytes->GetLength() != readLen) {
             //throw new GeneralSecurityException("Not enough random data available");
+            Logger::E("ByteArrayGenerator::GetBytes", "Not enough random data available");
             assert(0);
         }
-    //    return bytes;
     // } finally {
         if (fis != NULL) {
             inputStream->Close();

@@ -113,8 +113,8 @@ public:
     CARAPI_(void) Hide();
 
 private:
-    /*const*/ AutoPtr<ContentViewCore> mContentViewCore;
-    /*const*/ AutoPtr<IContext> mContext;
+    AutoPtr<ContentViewCore> mContentViewCore;
+    AutoPtr<IContext> mContext;
 
     AutoPtr<DropdownPopupWindow> mDropdownPopupWindow;
     Int32 mInitialSelection;

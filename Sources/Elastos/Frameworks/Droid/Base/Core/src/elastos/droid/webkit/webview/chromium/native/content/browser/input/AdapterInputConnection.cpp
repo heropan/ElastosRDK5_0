@@ -1,9 +1,10 @@
 
 #include "Elastos.Droid.View.h"
+#include "Elastos.Droid.Text.h"
 #include "elastos/droid/webkit/webview/chromium/native/content/browser/input/AdapterInputConnection.h"
 #include "elastos/droid/webkit/webview/chromium/native/content/browser/input/ImeAdapter.h"
-// TODO #include "elastos/droid/text/CSelection.h"
 #include "elastos/droid/text/TextUtils.h"
+#include "elastos/droid/R.h"
 #include <elastos/core/Math.h>
 #include <elastos/core/StringUtils.h>
 #include <elastos/utility/logging/Slogger.h>
@@ -11,11 +12,14 @@
 using Elastos::Core::IString;
 using Elastos::Core::ICharSequence;
 using Elastos::Core::EIID_ICharSequence;
-using Elastos::Core::StringUtils;
 using Elastos::Droid::Text::ISpannable;
 using Elastos::Droid::Text::EIID_ISpannable;
 using Elastos::Droid::Text::TextUtils;
-// TODO using Elastos::Droid::Webkit::Text::CSelection;
+using Elastos::Droid::Text::CSelection;
+using Elastos::Droid::View::InputMethod::CExtractedText;
+using Elastos::Droid::R;
+using Elastos::Core::CString;
+using Elastos::Core::StringUtils;
 using Elastos::Utility::Logging::Slogger;
 
 namespace Elastos {
@@ -64,7 +68,6 @@ AdapterInputConnection::AdapterInputConnection(
     /* [in] */ ImeAdapter* imeAdapter,
     /* [in] */ IEditable* editable,
     /* [in] */ IEditorInfo* outAttrs)
-    // TODO : BaseInputConnection(view, TRUE)
     : mInternalView(view)
     , mImeAdapter(imeAdapter)
     , mEditable(editable)
@@ -75,29 +78,24 @@ AdapterInputConnection::AdapterInputConnection(
     , mLastUpdateCompositionStart(INVALID_COMPOSITION)
     , mLastUpdateCompositionEnd(INVALID_COMPOSITION)
 {
+    BaseInputConnection::constructor(view, TRUE);
     mImeAdapter->SetInputConnection(this);
 
     // The editable passed in might have been in use by a prior keyboard and could have had
     // prior composition spans set.  To avoid keyboard conflicts, remove all composing spans
     // when taking ownership of an existing Editable.
-    assert(0);
-    // TODO
-    // RemoveComposingSpans(mEditable);
+    RemoveComposingSpans(ISpannable::Probe(mEditable));
     mSingleLine = TRUE;
     outAttrs->SetImeOptions(IEditorInfo::IME_FLAG_NO_FULLSCREEN
             | IEditorInfo::IME_FLAG_NO_EXTRACT_UI);
-    assert(0);
-    // TODO
-    // outAttrs->SetInputType(IEditorInfo::TYPE_CLASS_TEXT
-    //         | IEditorInfo::TYPE_TEXT_VARIATION_WEB_EDIT_TEXT);
+    outAttrs->SetInputType(IInputType::TYPE_CLASS_TEXT
+             | IInputType::TYPE_TEXT_VARIATION_WEB_EDIT_TEXT);
 
     if (imeAdapter->GetTextInputType() == ImeAdapter::sTextInputTypeText) {
         // Normal text field
         Int32 inputType;
         outAttrs->GetInputType(&inputType);
-        assert(0);
-        // TODO
-        // inputType |= IEditorInfo::TYPE_TEXT_FLAG_AUTO_CORRECT;
+        inputType |= IInputType::TYPE_TEXT_FLAG_AUTO_CORRECT;
         outAttrs->SetInputType(inputType);
         Int32 imeOptions;
         outAttrs->GetImeOptions(&imeOptions);
@@ -109,11 +107,9 @@ AdapterInputConnection::AdapterInputConnection(
         // TextArea or contenteditable.
         Int32 inputType;
         outAttrs->GetInputType(&inputType);
-        assert(0);
-        // TODO
-        // inputType |= IEditorInfo::TYPE_TEXT_FLAG_MULTI_LINE
-        //         | IEditorInfo::TYPE_TEXT_FLAG_CAP_SENTENCES
-        //         | IEditorInfo::TYPE_TEXT_FLAG_AUTO_CORRECT;
+        inputType |= IInputType::TYPE_TEXT_FLAG_MULTI_LINE
+                 | IInputType::TYPE_TEXT_FLAG_CAP_SENTENCES
+                 | IInputType::TYPE_TEXT_FLAG_AUTO_CORRECT;
         outAttrs->SetInputType(inputType);
         Int32 imeOptions;
         outAttrs->GetImeOptions(&imeOptions);
@@ -192,9 +188,7 @@ AdapterInputConnection::AdapterInputConnection(
     }
 
     AutoPtr<ISelection> selection;
-    assert(0);
-    // TODO
-    // CSelection::AcquireSingleton((ISelection**)&selection);
+    CSelection::AcquireSingleton((ISelection**)&selection);
     Int32 start, end;
     AutoPtr<ICharSequence> editableCS = ICharSequence::Probe(mEditable);
     selection->GetSelectionStart(editableCS, &start);
@@ -204,13 +198,11 @@ AdapterInputConnection::AdapterInputConnection(
     mLastUpdateSelectionStart = start;
     mLastUpdateSelectionEnd = end;
 
-    Int32 initialSelStart, initialSelEnd;
-    assert(0);
-    // TODO
-    // selection->GetinitialSelStart(&initialSelStart);
-    // selection->GetinitialSelEnd(&initialSelEnd)
+    //Int32 initialSelStart, initialSelEnd;
+    //selection->GetinitialSelStart(&initialSelStart);
+    //selection->GetinitialSelEnd(&initialSelEnd);
     AutoPtr<ISpannable> spannable = ISpannable::Probe(mEditable);
-    selection->SetSelection(spannable, initialSelStart, initialSelEnd);
+    selection->SetSelection(spannable, start, end);
     UpdateSelectionIfRequired();
 }
 
@@ -233,13 +225,14 @@ AdapterInputConnection::AdapterInputConnection(
  */
 //@VisibleForTesting
 void AdapterInputConnection::UpdateState(
-    /* [in] */ const String& text,
+    /* [in] */ const String& _text,
     /* [in] */ Int32 selectionStart,
     /* [in] */ Int32 selectionEnd,
     /* [in] */ Int32 compositionStart,
     /* [in] */ Int32 compositionEnd,
     /* [in] */ Boolean isNonImeChange)
 {
+    String text = _text;
     if (DEBUG) {
         String log("updateState [");
         log += text;
@@ -261,9 +254,7 @@ void AdapterInputConnection::UpdateState(
     if (!isNonImeChange) return;
 
     // Non-breaking spaces can cause the IME to get confused. Replace with normal spaces.
-    assert(0);
-    // TODO
-    // text = text.Replace('\u00A0', ' ');
+    text = text.Replace('\u00A0', ' ');
 
     selectionStart = Elastos::Core::Math::Min(selectionStart, text.GetLength());
     selectionEnd = Elastos::Core::Math::Min(selectionEnd, text.GetLength());
@@ -271,33 +262,27 @@ void AdapterInputConnection::UpdateState(
     compositionEnd = Elastos::Core::Math::Min(compositionEnd, text.GetLength());
 
     String prevText;
-    assert(0);
-    // TODO
-    // mEditable->ToString(&prevText);
+    IObject::Probe(mEditable)->ToString(&prevText);
     Boolean textUnchanged = prevText.Equals(text);
 
     if (!textUnchanged) {
-        assert(0);
-        // TODO
-        // mEditable->Replace(0, mEditable.GetLength(), text);
+        AutoPtr<ICharSequence> cs;
+        CString::New(text, (ICharSequence**)&cs);
+        Int32 len;
+        mEditable->Replace(0, (ICharSequence::Probe(mEditable)->GetLength(&len), len), cs);
     }
 
     AutoPtr<ISelection> selection;
-    assert(0);
-    // TODO
-    // CSelection::AcquireSingleton((ISelection**)&selection);
+    CSelection::AcquireSingleton((ISelection**)&selection);
     AutoPtr<ISpannable> spannable = ISpannable::Probe(mEditable);
     selection->SetSelection(spannable, selectionStart, selectionEnd);
 
     if (compositionStart == compositionEnd) {
-        assert(0);
-        // TODO
-        // RemoveComposingSpans(mEditable);
+        RemoveComposingSpans(ISpannable::Probe(mEditable));
     }
     else {
-        assert(0);
-        // TODO
-        // BaseInputConnection::SetComposingRegion(compositionStart, compositionEnd);
+        Boolean res;
+        BaseInputConnection::SetComposingRegion(compositionStart, compositionEnd, &res);
     }
 
     UpdateSelectionIfRequired();
@@ -324,18 +309,14 @@ void AdapterInputConnection::UpdateSelectionIfRequired()
     if (mNumNestedBatchEdits != 0) return;
 
     AutoPtr<ISelection> selection;
-    assert(0);
-    // TODO
-    // CSelection::AcquireSingleton((ISelection**)&selection);
+    CSelection::AcquireSingleton((ISelection**)&selection);
     Int32 selectionStart;
     AutoPtr<ICharSequence> editableCS = ICharSequence::Probe(mEditable);
     selection->GetSelectionStart(editableCS, &selectionStart);
     Int32 selectionEnd;
     selection->GetSelectionEnd(editableCS, &selectionEnd);
-    assert(0);
-    // TODO
-    Int32 compositionStart;// TODO = GetComposingSpanStart(mEditable);
-    Int32 compositionEnd;// TODO = GetComposingSpanEnd(mEditable);
+    Int32 compositionStart = GetComposingSpanStart(ISpannable::Probe(mEditable));
+    Int32 compositionEnd = GetComposingSpanEnd(ISpannable::Probe(mEditable));
     // Avoid sending update if we sent an exact update already previously.
     if (mLastUpdateSelectionStart == selectionStart &&
             mLastUpdateSelectionEnd == selectionEnd &&
@@ -392,9 +373,8 @@ ECode AdapterInputConnection::SetComposingText(
         *result = TRUE;
         return NOERROR;
     }
-    assert(0);
-    // TODO
-    // BaseInputConnection::SetComposingText(text, newCursorPosition);
+    Boolean res;
+    BaseInputConnection::SetComposingText(text, newCursorPosition, &res);
     UpdateSelectionIfRequired();
     *result = mImeAdapter->CheckCompositionQueueAndCallNative(text, newCursorPosition, false);
     return NOERROR;
@@ -425,9 +405,8 @@ ECode AdapterInputConnection::CommitText(
         *result = TRUE;
         return NOERROR;
     }
-    assert(0);
-    // TODO
-    // BaseInputConnection::CommitText(text, newCursorPosition);
+    Boolean res;
+    BaseInputConnection::CommitText(text, newCursorPosition, &res);
     UpdateSelectionIfRequired();
     Int32 length;
     text->GetLength(&length);
@@ -488,23 +467,21 @@ ECode AdapterInputConnection::PerformContextMenuAction(
         Slogger::W(TAG, log);
     }
 
-    assert(0);
-    // TODO
-    // switch (id) {
-    //     case android::R::id::selectAll:
-    //         return mImeAdapter->SelectAll();
-    //     case android::R::id::cut:
-    //         return mImeAdapter->Cut();
-    //     case android::R::id::copy:
-    //         return mImeAdapter->Copy();
-    //     case android::R::id::paste:
-    //         return mImeAdapter->Paste();
-    //     default:
-    //         *result = FALSE;
-    //         return NOERROR;
-    // }
+    switch (id) {
+        case R::id::selectAll:
+            return mImeAdapter->SelectAll();
+        case R::id::cut:
+            return mImeAdapter->Cut();
+        case R::id::copy:
+            return mImeAdapter->Copy();
+        case R::id::paste:
+            return mImeAdapter->Paste();
+        default:
+            *result = FALSE;
+            return NOERROR;
+    }
 
-    return E_NOT_IMPLEMENTED;
+    return NOERROR;
 }
 
 /**
@@ -524,18 +501,14 @@ ECode AdapterInputConnection::GetExtractedText(
     }
 
     AutoPtr<IExtractedText> et;
-    assert(0);
-    // TODO
-    // CExtractedText::New((IExtractedText**)&et);
+    CExtractedText::New((IExtractedText**)&et);
     AutoPtr<ICharSequence> editableCS = ICharSequence::Probe(mEditable);
     et->SetText(editableCS);
     Int32 length;
     editableCS->GetLength(&length);
     et->SetPartialEndOffset(length);
     AutoPtr<ISelection> selection;
-    assert(0);
-    // TODO
-    // CSelection::AcquireSingleton((ISelection**)&selection);
+    CSelection::AcquireSingleton((ISelection**)&selection);
     Int32 start;
     selection->GetSelectionStart(editableCS, &start);
     et->SetSelectionStart(start);
@@ -620,9 +593,7 @@ ECode AdapterInputConnection::DeleteSurroundingText(
     }
 
     AutoPtr<ISelection> selection;
-    assert(0);
-    // TODO
-    // CSelection::AcquireSingleton((ISelection**)&selection);
+    CSelection::AcquireSingleton((ISelection**)&selection);
     Int32 availableBefore;
     AutoPtr<ICharSequence> editableCS = ICharSequence::Probe(mEditable);
     selection->GetSelectionStart(editableCS, &availableBefore);
@@ -633,10 +604,9 @@ ECode AdapterInputConnection::DeleteSurroundingText(
     Int32 availableAfter = length - end;
     beforeLength = Elastos::Core::Math::Min(beforeLength, availableBefore);
     afterLength = Elastos::Core::Math::Min(afterLength, availableAfter);
-    assert(0);
-    // TODO
-    // BaseInputConnection::DeleteSurroundingText(beforeLength, afterLength);
-    // UpdateSelectionIfRequired();
+    Boolean res;
+    BaseInputConnection::DeleteSurroundingText(beforeLength, afterLength, &res);
+    UpdateSelectionIfRequired();
 
     *result = mImeAdapter->DeleteSurroundingText(beforeLength, afterLength);
 
@@ -691,9 +661,7 @@ ECode AdapterInputConnection::SendKeyEvent(
             event->GetUnicodeChar(&unicodeChar);
             if (unicodeChar != 0) {
                 AutoPtr<ISelection> selection;
-                assert(0);
-                // TODO
-                // CSelection::AcquireSingleton((ISelection**)&selection);
+                CSelection::AcquireSingleton((ISelection**)&selection);
                 Int32 selectionStart;
                 AutoPtr<ICharSequence> editableCS = ICharSequence::Probe(mEditable);
                 selection->GetSelectionStart(editableCS, &selectionStart);
@@ -706,9 +674,7 @@ ECode AdapterInputConnection::SendKeyEvent(
                 }
 
                 AutoPtr<IString> iString;
-                assert(0);
-                // TODO
-                // CString::New(StringUtils::ToString(unicodeChar), (IString**)&iString);
+                CString::New(StringUtils::ToString(unicodeChar), (IString**)&iString);
                 AutoPtr<ICharSequence> strCS = ICharSequence::Probe(iString);
                 mEditable->Replace(selectionStart, selectionEnd, strCS);
             }
@@ -759,16 +725,13 @@ ECode AdapterInputConnection::FinishComposingText(
         Slogger::W(TAG, "finishComposingText");
     }
 
-    assert(0);
-    // TODO
-    // if (GetComposingSpanStart(mEditable) == GetComposingSpanEnd(mEditable)) {
-    //     return TRUE;
-    // }
+    if (GetComposingSpanStart(ISpannable::Probe(mEditable)) == GetComposingSpanEnd(ISpannable::Probe(mEditable))) {
+         return TRUE;
+    }
 
-    assert(0);
-    // TODO
-    // BaseInputConnection::FinishComposingText();
-    // UpdateSelectionIfRequired();
+    Boolean res;
+    BaseInputConnection::FinishComposingText(&res);
+    UpdateSelectionIfRequired();
     mImeAdapter->FinishComposingText();
 
     *result = TRUE;
@@ -803,10 +766,9 @@ ECode AdapterInputConnection::SetSelection(
         *result = TRUE;
         return NOERROR;
     }
-    assert(0);
-    // TODO
-    // BaseInputConnection::SetSelection(start, end);
-    // UpdateSelectionIfRequired();
+    Boolean res;
+    BaseInputConnection::SetSelection(start, end, &res);
+    UpdateSelectionIfRequired();
     *result = mImeAdapter->SetEditableSelectionOffsets(start, end);
     return NOERROR;
 }
@@ -856,14 +818,11 @@ ECode AdapterInputConnection::SetComposingRegion(
     if (b > textLength) b = textLength;
 
     if (a == b) {
-        assert(0);
-        // TODO
-        // RemoveComposingSpans(mEditable);
+        RemoveComposingSpans(ISpannable::Probe(mEditable));
     }
     else {
-        assert(0);
-        // TODO
-        // BaseInputConnection::SetComposingRegion(a, b);
+        Boolean res;
+        BaseInputConnection::SetComposingRegion(a, b, &res);
     }
 
     UpdateSelectionIfRequired();
@@ -896,17 +855,14 @@ Boolean AdapterInputConnection::MaybePerformEmptyCompositionWorkaround(
     /* [in] */ ICharSequence* text)
 {
     AutoPtr<ISelection> sel;
-    assert(0);
-    // TODO
-    // CSelection::AcquireSingleton((ISelection**)&sel);
+    CSelection::AcquireSingleton((ISelection**)&sel);
     AutoPtr<ICharSequence> editableCS = ICharSequence::Probe(mEditable);
     Int32 selectionStart;
     sel->GetSelectionStart(editableCS, &selectionStart);
     Int32 selectionEnd;
     sel->GetSelectionEnd(editableCS, &selectionEnd);
-    assert(0);
-    Int32 compositionStart;// TODO = GetComposingSpanStart(mEditable);
-    Int32 compositionEnd;// TODO = GetComposingSpanEnd(mEditable);
+    Int32 compositionStart = GetComposingSpanStart(ISpannable::Probe(mEditable));
+    Int32 compositionEnd = GetComposingSpanEnd(ISpannable::Probe(mEditable));
     if (TextUtils::IsEmpty(text) && (selectionStart == selectionEnd)
             && compositionStart != INVALID_COMPOSITION
             && compositionEnd != INVALID_COMPOSITION) {
@@ -937,9 +893,8 @@ AutoPtr<AdapterInputConnection::ImeState> AdapterInputConnection::GetImeStateFor
     selection->GetSelectionStart(editableCS, &selectionStart);
     Int32 selectionEnd;
     selection->GetSelectionEnd(editableCS, &selectionEnd);
-    assert(0);
-    Int32 compositionStart;// TODO = GetComposingSpanStart(mEditable);
-    Int32 compositionEnd;// TODO = GetComposingSpanEnd(mEditable);
+    Int32 compositionStart = GetComposingSpanStart(ISpannable::Probe(mEditable));
+    Int32 compositionEnd = GetComposingSpanEnd(ISpannable::Probe(mEditable));
     AutoPtr<ImeState> imeState = new ImeState(text, selectionStart, selectionEnd, compositionStart, compositionEnd);
     return imeState;
 }

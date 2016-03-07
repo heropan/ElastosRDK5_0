@@ -61,6 +61,15 @@ ECode JellyBeanBrowserAccessibilityManager::InnerAccessibilityNodeProvider::Perf
     return NOERROR;
 }
 
+ECode JellyBeanBrowserAccessibilityManager::InnerAccessibilityNodeProvider::FindFocus(
+    /* [in] */ Int32 focus,
+    /* [out] */  IAccessibilityNodeInfo** info)
+{
+    VALIDATE_NOT_NULL(info);
+    *info = NULL;
+    return NOERROR;
+}
+
 //===============================================================
 //             JellyBeanBrowserAccessibilityManager
 //===============================================================
@@ -70,9 +79,7 @@ JellyBeanBrowserAccessibilityManager::JellyBeanBrowserAccessibilityManager(
     /* [in] */ ContentViewCore* contentViewCore)
     : BrowserAccessibilityManager(nativeBrowserAccessibilityManagerAndroid, contentViewCore)
 {
-    assert(0);
-    // TODO
-    // mAccessibilityNodeProvider = new InnerAccessibilityNodeProvider(this);
+    mAccessibilityNodeProvider = new InnerAccessibilityNodeProvider(this);
 }
 
 //@Override

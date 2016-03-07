@@ -7,7 +7,7 @@
 #include "elastos/droid/os/SystemClock.h"
 //#include "elastos/droid/webkit/webview/chromium/native/content/browser/input/ImeAdapter.h"
 #include "elastos/droid/webkit/webview/chromium/native/content/browser/input/InputMethodManagerWrapper.h"
-// TODO #include "elastos/droid/view/inputmethod/BaseInputConnection.h"
+#include "elastos/droid/view/inputmethod/BaseInputConnection.h"
 #include <elastos/core/Object.h>
 
 using Elastos::Core::ICharSequence;
@@ -16,16 +16,13 @@ using Elastos::Droid::Text::IEditable;
 using Elastos::Droid::Text::IInputType;
 using Elastos::Droid::Text::ISelection;
 using Elastos::Droid::Text::ITextUtils;
-// import android.util.Log;
 using Elastos::Droid::View::IKeyEvent;
 using Elastos::Droid::View::IView;
-// TODO using Elastos::Droid::View::InputMethod::BaseInputConnection;
+using Elastos::Droid::View::InputMethod::BaseInputConnection;
 using Elastos::Droid::View::InputMethod::IBaseInputConnection;
 using Elastos::Droid::View::InputMethod::IEditorInfo;
 using Elastos::Droid::View::InputMethod::IExtractedText;
 using Elastos::Droid::View::InputMethod::IExtractedTextRequest;
-
-// import com.google.common.annotations.VisibleForTesting;
 
 namespace Elastos {
 namespace Droid {
@@ -43,7 +40,7 @@ class ImeAdapter;
  * It then adapts android's IME to chrome's RenderWidgetHostView using the
  * native ImeAdapterAndroid via the class ImeAdapter.
  */
-class AdapterInputConnection : public Object// TODO : public BaseInputConnection
+class AdapterInputConnection : public BaseInputConnection
 {
 public:
     //@VisibleForTesting

@@ -7,8 +7,9 @@
 #include "Elastos.Droid.Widget.h"
 #include "elastos/droid/ext/frameworkext.h"
 #include <elastos/core/Object.h>
+#include "elastos/droid/app/AlertDialog.h"
 
-using Elastos::Droid::App::IAlertDialog;
+using Elastos::Droid::App::AlertDialog;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Content::IDialogInterface;
 using Elastos::Droid::Content::IDialogInterfaceOnClickListener;
@@ -40,8 +41,7 @@ namespace Input {
  * The second picker is not displayed if step >= MINUTE_IN_MILLIS.
  */
 class MultiFieldTimePickerDialog
-    : public Object
-    , public IAlertDialog
+    : public AlertDialog
     , public IDialogInterfaceOnClickListener
 {
 public:
@@ -100,14 +100,14 @@ private:
     CARAPI_(void) NotifyDateSet();
 
 private:
-    /*const*/ AutoPtr<INumberPicker> mHourSpinner;
-    /*const*/ AutoPtr<INumberPicker> mMinuteSpinner;
-    /*const*/ AutoPtr<INumberPicker> mSecSpinner;
-    /*const*/ AutoPtr<INumberPicker> mMilliSpinner;
-    /*const*/ AutoPtr<INumberPicker> mAmPmSpinner;
-    /*const*/ AutoPtr<OnMultiFieldTimeSetListener> mListener;
+    AutoPtr<INumberPicker> mHourSpinner;
+    AutoPtr<INumberPicker> mMinuteSpinner;
+    AutoPtr<INumberPicker> mSecSpinner;
+    AutoPtr<INumberPicker> mMilliSpinner;
+    AutoPtr<INumberPicker> mAmPmSpinner;
+    AutoPtr<OnMultiFieldTimeSetListener> mListener;
     const Int32 mStep;
-    /*const*/ Int32 mBaseMilli;
+    Int32 mBaseMilli;
     const Boolean mIs24hourFormat;
 
     static const Int32 SECOND_IN_MILLIS = 1000;

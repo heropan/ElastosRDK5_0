@@ -4,8 +4,10 @@
 
 #include "elastos/droid/ext/frameworkext.h"
 #include <elastos/core/Object.h>
+#include "elastos/droid/app/DatePickerDialog.h"
 
 using Elastos::Droid::App::IDatePickerDialog;
+using Elastos::Droid::App::DatePickerDialog;
 using Elastos::Droid::App::IDatePickerDialogOnDateSetListener;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Content::IDialogInterface;
@@ -27,8 +29,7 @@ namespace Input {
  * BUTTON_POSITIVE has been clicked.
  */
 class ChromeDatePickerDialog
-    : public Object
-    // TODO , public IDatePickerDialog;
+    : public DatePickerDialog
 {
 public:
     ChromeDatePickerDialog(

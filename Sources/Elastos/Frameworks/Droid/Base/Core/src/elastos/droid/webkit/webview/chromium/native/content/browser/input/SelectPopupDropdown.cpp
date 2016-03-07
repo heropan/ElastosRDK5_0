@@ -86,25 +86,25 @@ SelectPopupDropdown::SelectPopupDropdown(
     mDropdownPopupWindow = new DropdownPopupWindow(mContext,
             mContentViewCore->GetViewAndroidDelegate());
     AutoPtr<IAdapterViewOnItemClickListener> clickListener =  new InnerAdapterViewOnItemClickListener(this);
-    assert(0);
-    // TODO
-    // mDropdownPopupWindow->SetOnItemClickListener(clickListener);
+    mDropdownPopupWindow->SetOnItemClickListener(clickListener);
     if (selected->GetLength() > 0) {
         mInitialSelection = (*selected)[0];
     }
 
-    assert(0);
-    // TODO
-    // AutoPtr< ArrayOf<DropdownItem*> > dropdownItems;
-    // Int32 size;
-    // items->GetSize(&size);
-    // AutoPtr< ArrayOf<DropdownItem*> > list = ArrayOf<DropdownItem*>::Alloc(size);
-    // items->ToArray(list, (ArrayOf<DropdownItem*>**)&dropdownItems);
-    // AutoPtr<DropdownAdapter> adapter = new DropdownAdapter(mContext, dropdownItems, NULL);
+    //Int32 size;
+    //items->GetSize(&size);
+    //AutoPtr< ArrayOf<DropdownItem*> > list = ArrayOf<DropdownItem*>::Alloc(size);
+    AutoPtr<ArrayOf<IInterface*> > list;
+    items->ToArray((ArrayOf<IInterface*>**)&list);
+    Int32 size = list->GetLength();
+    AutoPtr< ArrayOf<DropdownItem*> > dropdownItems = ArrayOf<DropdownItem*>::Alloc(size);
+    for(Int32 i = 0; i < size; ++i) {
+        dropdownItems->Set(i, (DropdownItem*)(IObject::Probe((*list)[i])));
+    }
+
+    AutoPtr<DropdownAdapter> adapter = new DropdownAdapter(mContext, dropdownItems, NULL);
     AutoPtr<IListAdapter> listView;
-    assert(0);
-    // TODO
-    // listView = IListAdapter::Probe(adapter);
+    listView = IListAdapter::Probe(adapter);
     mDropdownPopupWindow->SetAdapter(listView);
     AutoPtr<RenderCoordinates> renderCoordinates = mContentViewCore->GetRenderCoordinates();
     Int32 left;
@@ -133,18 +133,16 @@ void SelectPopupDropdown::Show()
 {
     mDropdownPopupWindow->Show();
     if (mInitialSelection >= 0) {
-        assert(0);
-        // TODO
-        // mDropdownPopupWindow->GetListView()->SetSelection(mInitialSelection);
+        AutoPtr<IListView> listView;
+        mDropdownPopupWindow->GetListView((IListView**)&listView);
+        IAdapterView::Probe(listView)->SetSelection(mInitialSelection);
     }
 }
 
 //@Override
 void SelectPopupDropdown::Hide()
 {
-    assert(0);
-    // TODO
-    // mDropdownPopupWindow->Dismiss();
+    mDropdownPopupWindow->Dismiss();
 }
 
 } // namespace Input

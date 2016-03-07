@@ -7,8 +7,9 @@
 #include "Elastos.Droid.Widget.h"
 #include "elastos/droid/ext/frameworkext.h"
 #include <elastos/core/Object.h>
+#include "elastos/droid/app/AlertDialog.h"
 
-using Elastos::Droid::App::IAlertDialog;
+using Elastos::Droid::App::AlertDialog;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Content::IDialogInterface;
 using Elastos::Droid::Content::IDialogInterfaceOnClickListener;
@@ -32,8 +33,7 @@ namespace Browser {
 namespace Input {
 
 class DateTimePickerDialog
-    : public Object
-    , public IAlertDialog
+    : public AlertDialog
     , public IDialogInterfaceOnClickListener
     , public IDatePickerOnDateChangedListener
     , public ITimePickerOnTimeChangedListener

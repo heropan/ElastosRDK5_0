@@ -5,17 +5,15 @@
 #include "elastos/droid/webkit/webview/chromium/native/content/api/GamepadList_dec.h"
 #include "elastos/droid/webkit/webview/chromium/native/base/ThreadUtils.h"
 #include "elastos/droid/os/Build.h"
-// TODO #include "elastos/droid/view/CInputDeviceHelper.h"
-// TODO #include "elastos/droid/view/CKeyEventHelper.h"
 #include <elastos/core/AutoLock.h>
 
 using Elastos::Core::AutoLock;
 using Elastos::Droid::Hardware::Input::EIID_IInputDeviceListener;
 using Elastos::Droid::Os::Build;
 using Elastos::Droid::View::IInputDeviceHelper;
-// TODO using Elastos::Droid::View::CInputDeviceHelper;
+//TODO using Elastos::Droid::View::CInputDeviceHelper;
 using Elastos::Droid::View::IKeyEventHelper;
-// TODO using Elastos::Droid::View::CKeyEventHelper;
+using Elastos::Droid::View::CKeyEventHelper;
 using Elastos::Droid::View::EIID_IInputEvent;
 using Elastos::Droid::Webkit::Webview::Chromium::Base::ThreadUtils;
 
@@ -92,9 +90,7 @@ void GamepadList::InitializeDevices()
     AutoPtr< ArrayOf<Int32> > deviceIds;
     mInputManager->GetInputDeviceIds((ArrayOf<Int32>**)&deviceIds);
     AutoPtr<IInputDeviceHelper> helper;
-    assert(0);
-    // TODO
-    // CInputDeviceHelper::AcquireSingleton((IInputDeviceHelper**)&helper);
+    //TODO CInputDeviceHelper::AcquireSingleton((IInputDeviceHelper**)&helper);
     for (Int32 i = 0; i < deviceIds->GetLength(); i++) {
         AutoPtr<IInputDevice> inputDevice;
         helper->GetDevice((*deviceIds)[i], (IInputDevice**)&inputDevice);
@@ -181,9 +177,7 @@ void GamepadList::OnInputDeviceAddedImpl(
     /* [in] */ Int32 deviceId)
 {
     AutoPtr<IInputDeviceHelper> helper;
-    assert(0);
-    // TODO
-    // CInputDeviceHelper::AcquireSingleton((IInputDeviceHelper**)&helper);
+    //TODO CInputDeviceHelper::AcquireSingleton((IInputDeviceHelper**)&helper);
     AutoPtr<IInputDevice> inputDevice;
     helper->GetDevice(deviceId, (IInputDevice**)&helper);
     if (!IsGamepadDevice(inputDevice)) return;
@@ -377,9 +371,7 @@ Boolean GamepadList::IsGamepadEvent(
             return TRUE;
         default: {
             AutoPtr<IKeyEventHelper> helper;
-            assert(0);
-            // TODO
-            // CKeyEventHelper::AcquireSingleton((IKeyEventHelper**)&helper);
+            CKeyEventHelper::AcquireSingleton((IKeyEventHelper**)&helper);
             Boolean bFlag;
             helper->IsGamepadButton(keyCode, &bFlag);
             return bFlag;

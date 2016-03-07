@@ -2,16 +2,25 @@
 #include <Elastos.CoreLibrary.Text.h>
 #include <Elastos.CoreLibrary.Utility.h>
 #include "elastos/droid/webkit/webview/chromium/native/content/browser/input/MonthPicker.h"
+#include "elastos/droid/webkit/webview/chromium/native/content/R_Content.h"
 #include <elastos/core/Math.h>
+#include "elastos/utility/Arrays.h"
 
+using Elastos::Droid::Webkit::Webview::Chromium::Content::R;
 using Elastos::Text::IDateFormatSymbols;
 using Elastos::Text::IDateFormatSymbolsHelper;
+using Elastos::Text::CDateFormatSymbolsHelper;
+using Elastos::Utility::Arrays;
 using Elastos::Utility::ITimeZoneHelper;
-// TODO using Elastos::Utility::CTimeZoneHelper;
+using Elastos::Utility::CTimeZoneHelper;
 using Elastos::Utility::ICalendar;
 using Elastos::Utility::ICalendarHelper;
+using Elastos::Utility::CCalendarHelper;
 using Elastos::Utility::ILocale;
 using Elastos::Utility::ILocaleHelper;
+using Elastos::Utility::CLocaleHelper;
+using Elastos::Core::CString;
+using Elastos::Core::ICharSequence;
 
 namespace Elastos {
 namespace Droid {
@@ -30,36 +39,31 @@ MonthPicker::MonthPicker(
     /* [in] */ Double maxValue)
     : TwoFieldDatePicker(context, minValue, maxValue)
 {
-    assert(0);
-    // TODO
-    // GetPositionInYearSpinner()->SetContentDescription(
-    //         GetResources()->GetString(R::string::accessibility_date_picker_month));
+    AutoPtr<IResources> resources;
+    GetResources((IResources**)&resources);
+    String str;
+    resources->GetString(R::string::accessibility_date_picker_month, &str);
+    AutoPtr<ICharSequence> cs;
+    CString::New(str, (ICharSequence**)&cs);
+    IView::Probe(GetPositionInYearSpinner())->SetContentDescription(cs);
 
     // initialization based on locale
     AutoPtr<ILocaleHelper> localeHelper;
-    assert(0);
-    // TODO
-    // CLocaleHelper::AcquireSingleton((ILocaleHelper**)&localeHelper);
+    CLocaleHelper::AcquireSingleton((ILocaleHelper**)&localeHelper);
     AutoPtr<ILocale> locale;
     localeHelper->GetDefault((ILocale**)&locale);
     AutoPtr<IDateFormatSymbolsHelper> dfsHelper;
-    assert(0);
-    // TODO
-    // CDateFormatSymbolsHelper::AcquireSingleton((IDateFormatSymbolsHelper**)&dfsHelper);
+    CDateFormatSymbolsHelper::AcquireSingleton((IDateFormatSymbolsHelper**)&dfsHelper);
     AutoPtr<IDateFormatSymbols> symbols;
     dfsHelper->GetInstance(locale, (IDateFormatSymbols**)&symbols);
     symbols->GetShortMonths((ArrayOf<String>**)&mShortMonths);
 
     // initialize to current date
     AutoPtr<ICalendarHelper> calendarHelper;
-    assert(0);
-    // TODO
-    // CCalendarHelper::AcquireSingleton((ICalendarHelper**)&calendarHelper);
+    CCalendarHelper::AcquireSingleton((ICalendarHelper**)&calendarHelper);
     AutoPtr<ICalendar> cal;
     AutoPtr<ITimeZoneHelper> timeZoneHelper;
-    assert(0);
-    // TODO
-    // CTimeZoneHelper::AcquireSingleton((ITimeZoneHelper**)&timeZoneHelper);
+    CTimeZoneHelper::AcquireSingleton((ITimeZoneHelper**)&timeZoneHelper);
     AutoPtr<ITimeZone> timeZone;
     timeZoneHelper->GetTimeZone(String("UTC"), (ITimeZone**)&timeZone);
     calendarHelper->GetInstance(timeZone, (ICalendar**)&cal);
@@ -78,14 +82,10 @@ AutoPtr<ICalendar> MonthPicker::CreateDateFromValue(
     Int32 year = (Int32) Elastos::Core::Math::Min((Int32)(value / 12 + 1970), Elastos::Core::Math::INT32_MIN_VALUE);
     Int32 month = (Int32) ((Int32)value % 12);
     AutoPtr<ICalendarHelper> calendarHelper;
-    assert(0);
-    // TODO
-    // CCalendarHelper::AcquireSingleton((ICalendarHelper**)&calendarHelper);
+    CCalendarHelper::AcquireSingleton((ICalendarHelper**)&calendarHelper);
     AutoPtr<ICalendar> cal;
     AutoPtr<ITimeZoneHelper> timeZoneHelper;
-    assert(0);
-    // TODO
-    // CTimeZoneHelper::AcquireSingleton((ITimeZoneHelper**)&timeZoneHelper);
+    CTimeZoneHelper::AcquireSingleton((ITimeZoneHelper**)&timeZoneHelper);
     AutoPtr<ITimeZone> timeZone;
     timeZoneHelper->GetTimeZone(String("UTC"), (ITimeZone**)&timeZone);
     calendarHelper->GetInstance(timeZone, (ICalendar**)&cal);
@@ -107,32 +107,22 @@ ECode MonthPicker::SetCurrentDate(
     /* [in] */ Int32 month)
 {
     AutoPtr<ICalendarHelper> calendarHelper;
-    assert(0);
-    // TODO
-    // CCalendarHelper::AcquireSingleton((ICalendarHelper**)&calendarHelper);
+    CCalendarHelper::AcquireSingleton((ICalendarHelper**)&calendarHelper);
     AutoPtr<ICalendar> date;
     AutoPtr<ITimeZoneHelper> timeZoneHelper;
-    assert(0);
-    // TODO
-    // CTimeZoneHelper::AcquireSingleton((ITimeZoneHelper**)&timeZoneHelper);
+    CTimeZoneHelper::AcquireSingleton((ITimeZoneHelper**)&timeZoneHelper);
     AutoPtr<ITimeZone> timeZone;
     calendarHelper->GetInstance(timeZone, (ICalendar**)&date);
     date->Set(year, month, 1);
     Boolean bFlag;
     if (date->IsBefore(GetMinDate(), &bFlag), bFlag) {
-        assert(0);
-        // TODO
-        // SetCurrentDate(GetMinDate());
+        TwoFieldDatePicker::SetCurrentDate(GetMinDate());
     }
     else if (date->IsAfter(GetMaxDate(), &bFlag), bFlag) {
-        assert(0);
-        // TODO
-        // SetCurrentDate(GetMaxDate());
+        TwoFieldDatePicker::SetCurrentDate(GetMaxDate());
     }
     else {
-        assert(0);
-        // TODO
-        // SetCurrentDate(date);
+        TwoFieldDatePicker::SetCurrentDate(date);
     }
 
     return NOERROR;
@@ -146,12 +136,13 @@ void MonthPicker::UpdateSpinners()
     // make sure the month names are a zero based array
     // with the months in the month spinner
     AutoPtr< ArrayOf<String> > displayedValues;
-    assert(0);
-    // TODO
-    // Arrays<String>::CopyOfRange(mShortMonths,
-    //         GetPositionInYearSpinner()->GetMinValue(),
-    //         GetPositionInYearSpinner()->GetMaxValue() + 1,
-    //         (ArrayOf<String>**)&displayedValues);
+    Int32 minValue, maxValue;
+    GetPositionInYearSpinner()->GetMinValue(&minValue);
+    GetPositionInYearSpinner()->GetMaxValue(&maxValue);
+    Arrays::CopyOfRange(mShortMonths,
+             minValue,
+             maxValue + 1,
+             (ArrayOf<String>**)&displayedValues);
     GetPositionInYearSpinner()->SetDisplayedValues(displayedValues);
 }
 

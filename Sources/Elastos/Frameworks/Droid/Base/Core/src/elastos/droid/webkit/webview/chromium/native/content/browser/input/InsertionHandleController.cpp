@@ -3,16 +3,22 @@
 #include "Elastos.Droid.Graphics.h"
 #include "Elastos.Droid.Utility.h"
 #include "Elastos.Droid.Widget.h"
+#include "elastos/droid/view/View.h"
 #include "elastos/droid/webkit/webview/chromium/native/content/browser/input/InsertionHandleController.h"
 #include "elastos/droid/webkit/webview/chromium/native/content/browser/input/HandleView.h"
+#include "elastos/droid/R.h"
 #include <elastos/core/Math.h>
-// TODO #include "elastos/droid/view/View.h"
-// TODO #include "elastos/droid/view/CView.h"
+#include <elastos/utility/logging/Logger.h>
 
 using Elastos::Droid::Content::Res::IResources;
-// TODO using Elastos::Droid::View::View;
-// TODO using Elastos::Droid::View::CView;
+using Elastos::Droid::View::EIID_IViewOnClickListener;
+using Elastos::Droid::View::View;
+using Elastos::Droid::View::CView;
+using Elastos::Droid::View::CViewGroupLayoutParams;
+using Elastos::Droid::Widget::CPopupWindow;
+using Elastos::Droid::R;
 using Elastos::Droid::Utility::IDisplayMetrics;
+using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
 namespace Droid {
@@ -26,6 +32,7 @@ namespace Input {
 //==================================================================
 //            InsertionHandleController::PastePopupMenu
 //==================================================================
+CAR_INTERFACE_IMPL(InsertionHandleController::PastePopupMenu, Object, IViewOnClickListener);
 
 InsertionHandleController::PastePopupMenu::PastePopupMenu(
     /* [in] */ InsertionHandleController* owner)
@@ -33,11 +40,9 @@ InsertionHandleController::PastePopupMenu::PastePopupMenu(
     , mPositionX(0)
     , mPositionY(0)
 {
-    assert(0);
-    // TODO
-    // CPopupWindow::New(mContext, NULL,
-    //         android::R::attr::textSelectHandleWindowStyle,
-    //         (IPopupWindow**)&mContainer);
+    CPopupWindow::New(mOwner->mContext, NULL,
+             R::attr::textSelectHandleWindowStyle,
+             (IPopupWindow**)&mContainer);
     mContainer->SetSplitTouchEnabled(TRUE);
     mContainer->SetClippingEnabled(FALSE);
 
@@ -45,20 +50,16 @@ InsertionHandleController::PastePopupMenu::PastePopupMenu(
     mContainer->SetHeight(IViewGroupLayoutParams::WRAP_CONTENT);
 
     AutoPtr< ArrayOf<Int32> > POPUP_LAYOUT_ATTRS = ArrayOf<Int32>::Alloc(4);
-    assert(0);
-    // TODO
-    // (*POPUP_LAYOUT_ATTRS)[0] = android::R::attr::textEditPasteWindowLayout;
-    // (*POPUP_LAYOUT_ATTRS)[1] = android::R::attr::textEditNoPasteWindowLayout;
-    // (*POPUP_LAYOUT_ATTRS)[2] = android::R::attr::textEditSidePasteWindowLayout;
-    // (*POPUP_LAYOUT_ATTRS)[3] = android::R::attr::textEditSideNoPasteWindowLayout;
+    (*POPUP_LAYOUT_ATTRS)[0] = R::attr::textEditPasteWindowLayout;
+    (*POPUP_LAYOUT_ATTRS)[1] = R::attr::textEditNoPasteWindowLayout;
+    (*POPUP_LAYOUT_ATTRS)[2] = R::attr::textEditSidePasteWindowLayout;
+    (*POPUP_LAYOUT_ATTRS)[3] = R::attr::textEditSideNoPasteWindowLayout;
 
     Int32 length = POPUP_LAYOUT_ATTRS->GetLength();
     mPasteViews = ArrayOf<IView*>::Alloc(length);
     for (Int32 i = 0; i < length; ++i) {
-        AutoPtr<IView> view;
-        assert(0);
-        // TODO
-        // CView::New((IView**)&view);
+        AutoPtr<IView> view = new View::View();
+        //CView::New((IView**)&view);
         (*mPasteViews)[i] = view;
     }
 
@@ -100,16 +101,15 @@ void InsertionHandleController::PastePopupMenu::UpdateContent(
 
         if (view == NULL) {
 //            throw new IllegalArgumentException("Unable to inflate TextEdit paste window");
+            Logger::E("InsertionHandleController", "PastePopupMenu::UpdateContent");
             assert(0);
         }
 
-        const Int32 size = -1;// TODO = View::MeasureSpec::MakeMeasureSpec(0, View::MeasureSpec::UNSPECIFIED);
+        const Int32 size = View::View::MeasureSpec::MakeMeasureSpec(0, View::View::MeasureSpec::UNSPECIFIED);
         AutoPtr<IViewGroupLayoutParams> params;
-        assert(0);
-        // TODO
-        // CViewGroupLayoutParams::New(IViewGroupLayoutParams::WRAP_CONTENT,
-        //         IViewGroupLayoutParams::WRAP_CONTENT,
-        //         (IViewGroupLayoutParams**)&params);
+        CViewGroupLayoutParams::New(IViewGroupLayoutParams::WRAP_CONTENT,
+                 IViewGroupLayoutParams::WRAP_CONTENT,
+                 (IViewGroupLayoutParams**)&params);
         view->SetLayoutParams(params);
         view->Measure(size, size);
 
@@ -168,9 +168,7 @@ void InsertionHandleController::PastePopupMenu::PositionAtCursor()
     mPositionY = y - height - lineHeight;
 
     const AutoPtr< ArrayOf<Int32> > coords = ArrayOf<Int32>::Alloc(2);
-    assert(0);
-    // TODO
-    // mOwner->mParent->GetLocationInWindow(coords);
+    mOwner->mParent->GetLocationInWindow(coords);
     (*coords)[0] += mPositionX;
     (*coords)[1] += mPositionY;
 
@@ -308,9 +306,7 @@ void InsertionHandleController::BeginHandleFadeIn()
 void InsertionHandleController::SetHandleVisibility(
     /* [in] */ Int32 visibility)
 {
-    assert(0);
-    // TODO
-    // mHandle->SetVisibility(visibility);
+    mHandle->SetVisibility(visibility);
 }
 
 Int32 InsertionHandleController::GetHandleX()

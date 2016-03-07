@@ -5,12 +5,13 @@
 #include "Elastos.Droid.Widget.h"
 #include "elastos/droid/ext/frameworkext.h"
 #include <elastos/core/Object.h>
+#include "elastos/droid/widget/FrameLayout.h"
 
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Text::Format::IDateUtils;
 using Elastos::Droid::View::ILayoutInflater;
 using Elastos::Droid::View::Accessibility::IAccessibilityEvent;
-using Elastos::Droid::Widget::IFrameLayout;
+using Elastos::Droid::Widget::FrameLayout;
 using Elastos::Droid::Widget::INumberPicker;
 using Elastos::Droid::Widget::INumberPickerOnValueChangeListener;
 
@@ -32,16 +33,26 @@ namespace Input {
  * This class is heavily based on android.widget.DatePicker.
  */
 class TwoFieldDatePicker
-    : public Object
-    , public IFrameLayout
+    : public FrameLayout
 {
 public:
     /**
      * The callback used to indicate the user changes\d the date.
      */
-    class OnMonthOrWeekChangedListener : public Object
+    class OnMonthOrWeekChangedListener
     {
     public:
+        virtual CARAPI_(UInt32) AddRef() = 0;
+
+        virtual CARAPI_(UInt32) Release() = 0;
+
+        virtual CARAPI_(PInterface) Probe(
+            /* [in] */ REIID riid) = 0;
+
+        virtual CARAPI GetInterfaceID(
+            /* [in] */ IInterface* object,
+            /* [out] */ InterfaceID* iid) = 0;
+
         /**
          * Called upon a date change.
          *
@@ -76,7 +87,6 @@ private:
     };
 
 public:
-    CAR_INTERFACE_DECL();
 
     TwoFieldDatePicker(
         /* [in] */ IContext* context,
@@ -180,9 +190,9 @@ protected:
     virtual CARAPI_(void) NotifyDateChanged();
 
 private:
-    const AutoPtr<INumberPicker> mPositionInYearSpinner;
+    AutoPtr<INumberPicker> mPositionInYearSpinner;
 
-    const AutoPtr<INumberPicker> mYearSpinner;
+    AutoPtr<INumberPicker> mYearSpinner;
 
     AutoPtr<OnMonthOrWeekChangedListener> mMonthOrWeekChangedListener;
 

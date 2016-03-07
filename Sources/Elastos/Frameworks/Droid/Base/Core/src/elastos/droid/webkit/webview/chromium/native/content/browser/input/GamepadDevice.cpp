@@ -7,10 +7,12 @@
 #include "elastos/droid/webkit/webview/chromium/native/content/browser/input/CanonicalAxisIndex.h"
 #include "elastos/droid/webkit/webview/chromium/native/content/browser/input/CanonicalButtonIndex.h"
 #include "elastos/droid/os/SystemClock.h"
+#include "elastos/utility/Arrays.h"
 
 using Elastos::Droid::Os::SystemClock;
 using Elastos::Droid::View::IInputEvent;
 using Elastos::Droid::View::EIID_IInputEvent;
+using Elastos::Utility::Arrays;
 using Elastos::Utility::IList;
 using Elastos::Utility::IIterator;
 using Elastos::Utility::EIID_IIterator;
@@ -132,12 +134,10 @@ AutoPtr< ArrayOf<Float> > GamepadDevice::GetButtons()
  */
 void GamepadDevice::ClearData()
 {
-    assert(0);
-    // TODO
-    // Arrays::Fill(mAxisValues, 0);
-    // Arrays::Fill(mRawAxes, 0);
-    // Arrays::Fill(mButtonsValues, 0);
-    // Arrays::Fill(mRawButtons, 0);
+    Arrays::Fill(mAxisValues, (Float)0);
+    Arrays::Fill(mRawAxes, (Float)0);
+    Arrays::Fill(mButtonsValues, (Float)0);
+    Arrays::Fill(mRawButtons, (Float)0);
 }
 
 /**

@@ -2,11 +2,11 @@
 #include <Elastos.CoreLibrary.Utility.h>
 #include "Elastos.Droid.Widget.h"
 #include "elastos/droid/webkit/webview/chromium/native/content/browser/input/DateDialogNormalizer.h"
-// TODO #include <elastos/utility/TimeZone.h>
 
-// TODO using Elastos::Utility::CCalendarHelper;
+using Elastos::Utility::CCalendarHelper;
 using Elastos::Utility::ICalendarHelper;
-// TODO using Elastos::Utility::TimeZone;
+using Elastos::Utility::CTimeZoneHelper;
+using Elastos::Utility::ITimeZoneHelper;
 
 namespace Elastos {
 namespace Droid {
@@ -66,20 +66,19 @@ void DateDialogNormalizer::SetLimits(
 AutoPtr<ICalendar> DateDialogNormalizer::TrimToDate(
     /* [in] */ Int64 time)
 {
+    AutoPtr<ITimeZoneHelper> tzHelper;
+    CTimeZoneHelper::AcquireSingleton((ITimeZoneHelper**)&tzHelper);
+    AutoPtr<ITimeZone> gmtTZ;
+    tzHelper->GetTimeZone(String("GMT"), (ITimeZone**)&gmtTZ);
+
     AutoPtr<ICalendarHelper> helper;
-    assert(0);
-    // TODO
-    // CCalendarHelper::AcquireSingleton((ICalendarHelper**)&helper);
+    CCalendarHelper::AcquireSingleton((ICalendarHelper**)&helper);
     AutoPtr<ICalendar> cal;
-    assert(0);
-    // TODO
-    // helper->GetInstance(TimeZone::GetTimeZone(String("GMT")), (ICalendar**)&cal);
+    helper->GetInstance(gmtTZ, (ICalendar**)&cal);
     cal->Clear();
     cal->SetTimeInMillis(time);
     AutoPtr<ICalendar> result;
-    assert(0);
-    // TODO
-    // helper->GetInstance(TimeZone::GetTimeZone(String("GMT")), (ICalendar**)&result);
+    helper->GetInstance(gmtTZ, (ICalendar**)&result);
     result->Clear();
     Int32 year, month, dayOfMonth;
     cal->Get(ICalendar::YEAR, &year);
@@ -105,14 +104,15 @@ void DateDialogNormalizer::Normalize(
     /* [in] */ Int64 minMillis,
     /* [in] */ Int64 maxMillis)
 {
+    AutoPtr<ITimeZoneHelper> tzHelper;
+    CTimeZoneHelper::AcquireSingleton((ITimeZoneHelper**)&tzHelper);
+    AutoPtr<ITimeZone> gmtTZ;
+    tzHelper->GetTimeZone(String("GMT"), (ITimeZone**)&gmtTZ);
+
     AutoPtr<ICalendarHelper> helper;
-    assert(0);
-    // TODO
-    // CCalendarHelper::AcquireSingleton((ICalendarHelper**)&helper);
+    CCalendarHelper::AcquireSingleton((ICalendarHelper**)&helper);
     AutoPtr<ICalendar> calendar;
-    assert(0);
-    // TODO
-    // helper->GetInstance(TimeZone::GetTimeZone(String("GMT")), (ICalendar**)&calendar);
+    helper->GetInstance(gmtTZ, (ICalendar**)&calendar);
     calendar->Clear();
     calendar->Set(year, month, day, hour, minute, 0);
     Int64 timeInMillis;

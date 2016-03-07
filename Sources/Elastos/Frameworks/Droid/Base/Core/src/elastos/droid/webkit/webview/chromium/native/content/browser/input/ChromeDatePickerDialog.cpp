@@ -17,9 +17,9 @@ ChromeDatePickerDialog::ChromeDatePickerDialog(
     /* [in] */ Int32 year,
     /* [in] */ Int32 monthOfYear,
     /* [in] */ Int32 dayOfMonth)
-    // TODO : DatePickerDialog(context, 0, callBack, year, monthOfYear, dayOfMonth)
     : mCallBack(callBack)
 {
+    DatePickerDialog::constructor(context, 0, callBack, year, monthOfYear, dayOfMonth);
 }
 
 /**
@@ -31,20 +31,19 @@ ECode ChromeDatePickerDialog::OnClick(
     /* [in] */ IDialogInterface* dialog,
     /* [in] */ Int32 which)
 {
-    assert(0);
-    // TODO
-    // if (which == BUTTON_POSITIVE && mCallBack != NULL) {
-    //     AutoPtr<IDatePicker> datePicker = GetDatePicker();
-    //     datePicker->ClearFocus();
-    //     Int32 year, month, dayOfMonth;
-    //     datePicker->GetYear(&year);
-    //     datePicker->GetMonth(&month);
-    //     datePicker->GetDayOfMonth(&dayOfMonth);
-    //     mCallBack->OnDateSet(datePicker, year,
-    //             month, dayOfMonth);
-    // }
+    if (which == BUTTON_POSITIVE && mCallBack != NULL) {
+        AutoPtr<IDatePicker> datePicker;
+        GetDatePicker((IDatePicker**)&datePicker);
+        IView::Probe(datePicker)->ClearFocus();
+        Int32 year, month, dayOfMonth;
+        datePicker->GetYear(&year);
+        datePicker->GetMonth(&month);
+        datePicker->GetDayOfMonth(&dayOfMonth);
+        mCallBack->OnDateSet(datePicker, year,
+                month, dayOfMonth);
+    }
 
-    return E_NOT_IMPLEMENTED;
+    return NOERROR;
 }
 
 } // namespace Input

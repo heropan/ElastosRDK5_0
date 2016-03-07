@@ -3,15 +3,19 @@
 #include "Elastos.Droid.View.h"
 #include "elastos/droid/webkit/webview/chromium/native/content/browser/input/DateTimePickerDialog.h"
 #include "elastos/droid/webkit/webview/chromium/native/content/browser/input/DateDialogNormalizer.h"
+#include "elastos/droid/webkit/webview/chromium/native/content/R_Content.h"
+#include "elastos/droid/R.h"
 
-using Elastos::Core::ICharSequence;
 using Elastos::Droid::App::EIID_IAlertDialog;
 using Elastos::Droid::Content::EIID_IDialogInterfaceOnClickListener;
 using Elastos::Droid::Os::IMessage;
+using Elastos::Droid::Text::Format::CTime;
 using Elastos::Droid::View::IView;
 using Elastos::Droid::View::EIID_IView;
+using Elastos::Droid::Webkit::Webview::Chromium::Content::R;
 using Elastos::Droid::Widget::EIID_ITimePickerOnTimeChangedListener;
 using Elastos::Droid::Widget::EIID_IDatePickerOnDateChangedListener;
+using Elastos::Core::ICharSequence;
 
 namespace Elastos {
 namespace Droid {
@@ -22,7 +26,7 @@ namespace Content {
 namespace Browser {
 namespace Input {
 
-CAR_INTERFACE_IMPL_4(DateTimePickerDialog, Object, IAlertDialog,
+CAR_INTERFACE_IMPL_3(DateTimePickerDialog, AlertDialog,
         IDialogInterfaceOnClickListener, IDatePickerOnDateChangedListener, ITimePickerOnTimeChangedListener);
 
 /**
@@ -43,48 +47,36 @@ DateTimePickerDialog::DateTimePickerDialog(
     /* [in] */ Boolean is24HourView,
     /* [in] */ Double min,
     /* [in] */ Double max)
-    // TODO : AlertDialog(context, 0)
     : mCallBack(callBack)
     , mMinTimeMillis((Int64)min)
     , mMaxTimeMillis((Int64)max)
 {
+    AlertDialog::constructor(context, 0);
     AutoPtr<ICharSequence> setCS;
-    assert(0);
-    // TODO
-    // context->GetText(
-    //         R::string::date_picker_dialog_set, (ICharSequence**)&setCS);
-    // SetButton(IDialogInterface::BUTTON_POSITIVE, setCS, this);
+    context->GetText(
+             R::string::date_picker_dialog_set, (ICharSequence**)&setCS);
+     SetButton(IDialogInterface::BUTTON_POSITIVE, setCS, this);
     AutoPtr<ICharSequence> cancelCS;
-    assert(0);
-    // TODO
-    // context->GetText(android::R::string::cancel, (ICharSequence**)&cancelCS);
-    // SetButton(IDialogInterface::BUTTON_NEGATIVE, cancelCS,
-    //         (IMessage*)NULL);
-    // SetIcon(0);
+    context->GetText(Elastos::Droid::R::string::cancel, (ICharSequence**)&cancelCS);
+    SetButton(IDialogInterface::BUTTON_NEGATIVE, cancelCS,
+             (IMessage*)NULL);
+    SetIcon(0);
     AutoPtr<ICharSequence> titleCS;
-    assert(0);
-    // TODO
-    // context->GetText(R::string::date_time_picker_dialog_title, (ICharSequence**)&titleCS);
-    // SetTitle(titleCS);
+    context->GetText(R::string::date_time_picker_dialog_title, (ICharSequence**)&titleCS);
+    SetTitle(titleCS);
 
     AutoPtr<ILayoutInflater> inflater;
     AutoPtr<IInterface> obj;
     context->GetSystemService(IContext::LAYOUT_INFLATER_SERVICE, (IInterface**)&obj);
     inflater = ILayoutInflater::Probe(obj);
     AutoPtr<IView> view;
-    assert(0);
-    // TODO
-    // inflater->Inflate(R::layout::date_time_picker_dialog, NULL, (IView**)&view);
-    // SetView(view);
-    assert(0);
-    // TODO
-    // view->FindViewById(R::id::date_picker, (IView**)&mDatePicker);
+    inflater->Inflate(R::layout::date_time_picker_dialog, NULL, (IView**)&view);
+    SetView(view);
+    view->FindViewById(R::id::date_picker, (IView**)&mDatePicker);
     DateDialogNormalizer::Normalize(mDatePicker, this,
         year, monthOfYear, dayOfMonth, hourOfDay, minute, mMinTimeMillis, mMaxTimeMillis);
 
-    assert(0);
-    // TODO
-    // view->FindViewById(R::id::time_picker, (IView**)&mTimePicker);
+    view->FindViewById(R::id::time_picker, (IView**)&mTimePicker);
     mTimePicker->SetIs24HourView(is24HourView);
     mTimePicker->SetCurrentHour(hourOfDay);
     mTimePicker->SetCurrentMinute(minute);
@@ -147,9 +139,7 @@ ECode DateTimePickerDialog::OnTimeChanged(
     /* [in] */ Int32 minute)
 {
     AutoPtr<ITime> time;
-    assert(0);
-    // TODO
-    // CTime::New((ITime**)&time);
+    CTime::New((ITime**)&time);
     Int32 currentMinute, currentHour, dayOfMonth, month, year;
     mTimePicker->GetCurrentMinute(&currentMinute);
     mTimePicker->GetCurrentHour(&currentHour);

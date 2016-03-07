@@ -7,6 +7,7 @@
 #include "elastos/droid/webkit/webview/chromium/native/content/browser/PositionObserver.h"
 #include "elastos/droid/webkit/webview/chromium/native/content/browser/input/CursorController.h"
 #include "elastos/droid/webkit/webview/chromium/native/content/browser/input/InsertionHandleController.h"
+#include "elastos/droid/view/View.h"
 #include <elastos/core/Object.h>
 
 using Elastos::Droid::Content::IContext;
@@ -18,6 +19,7 @@ using Elastos::Droid::Os::SystemClock;
 // import android.util.TypedValue;
 using Elastos::Droid::View::IMotionEvent;
 using Elastos::Droid::View::IView;
+using Elastos::Droid::View::View;
 using Elastos::Droid::View::IViewConfiguration;
 using Elastos::Droid::View::IViewParent;
 using Elastos::Droid::View::Animation::IAnimationUtils;
@@ -41,8 +43,7 @@ namespace Input {
  * hierarchy.
  *
  */
-class HandleView : public Object
-    //: public View
+class HandleView : public Elastos::Droid::View::View
 {
 private:
     class InnerListener
@@ -143,12 +144,12 @@ public:
 
 protected:
     //@Override
-    CARAPI OnMeasure(
+    CARAPI_(void) OnMeasure(
         /* [in] */ Int32 widthMeasureSpec,
         /* [in] */ Int32 heightMeasureSpec);
 
     //@Override
-    CARAPI OnDraw(
+    CARAPI_(void) OnDraw(
         /* [in] */ ICanvas* c);
 
 private:

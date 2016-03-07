@@ -4,8 +4,11 @@
 #include "elastos/droid/webkit/webview/chromium/native/content/browser/input/SelectPopupDialog.h"
 #include "elastos/droid/webkit/webview/chromium/native/content/browser/input/SelectPopupAdapter.h"
 #include "elastos/droid/webkit/webview/chromium/native/content/browser/ContentViewCore.h"
+#include "elastos/droid/webkit/webview/chromium/native/content/R_Content.h"
+#include "elastos/droid/R.h"
 
 using Elastos::Droid::App::IAlertDialogBuilder;
+using Elastos::Droid::App::CAlertDialogBuilder;
 using Elastos::Droid::App::IDialog;
 using Elastos::Droid::App::EIID_IDialog;
 using Elastos::Droid::Content::IDialogInterface;
@@ -13,8 +16,10 @@ using Elastos::Droid::Content::EIID_IDialogInterface;
 using Elastos::Droid::Content::EIID_IDialogInterfaceOnCancelListener;
 using Elastos::Droid::Content::EIID_IDialogInterfaceOnClickListener;
 using Elastos::Droid::Widget::IAbsListView;
+using Elastos::Droid::Widget::CListView;
 using Elastos::Droid::Widget::EIID_IAbsListView;
 using Elastos::Droid::Widget::EIID_IAdapterViewOnItemClickListener;
+using Elastos::Droid::Webkit::Webview::Chromium::Content::R;
 using Elastos::Droid::Webkit::Webview::Chromium::Content::Browser::ContentViewCore;
 using Elastos::Droid::View::IView;
 using Elastos::Droid::View::EIID_IView;
@@ -123,9 +128,8 @@ ECode SelectPopupDialog::InnerDialogInterfaceOnCancelListener::OnCancel(
 static AutoPtr< ArrayOf<Int32> > SELECT_DIALOG_ATTRS_Init()
 {
     AutoPtr< ArrayOf<Int32> > array = ArrayOf<Int32>::Alloc(2);
-    // TODO
-    // (*array)[0] = R::attr::select_dialog_multichoice;
-    // (*array)[1] = R::attr::select_dialog_singlechoice;
+    (*array)[0] = R::attr::select_dialog_multichoice;
+    (*array)[1] = R::attr::select_dialog_singlechoice;
     return array;
 }
 
@@ -140,15 +144,11 @@ SelectPopupDialog::SelectPopupDialog(
     , mContext(mContentViewCore->GetContext())
 {
     AutoPtr<IListView> listView;
-    assert(0);
-    // TODO
-    // CListView::New(mContext, (IListView**)&listView);
+    CListView::New(mContext, (IListView**)&listView);
     AutoPtr<IAbsListView> absListView = IAbsListView::Probe(listView);
     absListView->SetCacheColorHint(0);
     AutoPtr<IAlertDialogBuilder> b;
-    assert(0);
-    // TODO
-    // CAlertDialogBuilder::New(mContext, (IAlertDialogBuilder**)&b);
+    CAlertDialogBuilder::New(mContext, (IAlertDialogBuilder**)&b);
     AutoPtr<IView> _view = IView::Probe(listView);
     b->SetView(_view);
     b->SetCancelable(TRUE);
@@ -156,22 +156,16 @@ SelectPopupDialog::SelectPopupDialog(
 
     if (multiple) {
         AutoPtr<IDialogInterfaceOnClickListener> okListener =  new OkDialogInterfaceOnClickListener(this, listView);
-        assert(0);
-        // TODO
-        // b->SetPositiveButton(android::R::string::ok, okListener);
+        b->SetPositiveButton(Elastos::Droid::R::string::ok, okListener);
         AutoPtr<IDialogInterfaceOnClickListener> cancelListener = new CancelDialogInterfaceOnClickListener(this);
-        assert(0);
-        // TODO
-        // b->SetNegativeButton(android::R::string::cancel, cancelListener);
+        b->SetNegativeButton(Elastos::Droid::R::string::cancel, cancelListener);
     }
 
     b->Create((IAlertDialog**)&mListBoxPopup);
-    const AutoPtr<SelectPopupAdapter> adapter;// TODO = new SelectPopupAdapter(
-            // mContext, GetSelectDialogLayout(multiple), items);
-    assert(0);
-    // TODO
-    // listView->SetAdapter(adapter);
-    // listView->SetFocusableInTouchMode(TRUE);
+    AutoPtr<SelectPopupAdapter> adapter= new SelectPopupAdapter(
+            mContext, GetSelectDialogLayout(multiple), items);
+    IAdapterView::Probe(listView)->SetAdapter(adapter);
+    IView::Probe(listView)->SetFocusableInTouchMode(TRUE);
 
     if (multiple) {
         AutoPtr<IAbsListView> absListView = IAbsListView::Probe(listView);
@@ -184,14 +178,10 @@ SelectPopupDialog::SelectPopupDialog(
         AutoPtr<IAbsListView> absListView = IAbsListView::Probe(listView);
         absListView->SetChoiceMode(IAbsListView::CHOICE_MODE_SINGLE);
         AutoPtr<IAdapterViewOnItemClickListener> listener = new InnerAdapterViewOnItemClickListener(this, listView);
-        assert(0);
-        // TODO
-        // listView->SetOnItemClickListener(listener);
+        IAdapterView::Probe(listView)->SetOnItemClickListener(listener);
         if (selected->GetLength() > 0) {
-            assert(0);
-            // TODO
-            // listView->SetSelection((*selected)[0]);
-            // listView->SetItemChecked((*selected)[0], TRUE);
+            IAdapterView::Probe(listView)->SetSelection((*selected)[0]);
+            IAbsListView::Probe(listView)->SetItemChecked((*selected)[0], TRUE);
         }
     }
 
@@ -205,11 +195,9 @@ Int32 SelectPopupDialog::GetSelectDialogLayout(
 {
     Int32 resourceId;
     AutoPtr<ITypedArray> styledAttributes;
-    assert(0);
-    // TODO
-    // mContext->ObtainStyledAttributes(
-    //         R::style::SelectPopupDialog, SELECT_DIALOG_ATTRS,
-    //         (ITypedArray**)&styledAttributes);
+    mContext->ObtainStyledAttributes(
+             R::style::SelectPopupDialog, SELECT_DIALOG_ATTRS,
+             (ITypedArray**)&styledAttributes);
     styledAttributes->GetResourceId(isMultiChoice ? 0 : 1, 0, &resourceId);
     styledAttributes->Recycle();
 
@@ -221,9 +209,7 @@ AutoPtr< ArrayOf<Int32> > SelectPopupDialog::GetSelectedIndices(
 {
     AutoPtr<ISparseBooleanArray> sparseArray;
     AutoPtr<IAbsListView> absListView = IAbsListView::Probe(listView);
-    assert(0);
-    // TODO
-    // absListView->GetCheckedItemPositions((ISparseBooleanArray**)&sparseArray);
+    absListView->GetCheckedItemPositions((ISparseBooleanArray**)&sparseArray);
     Int32 selectedCount = 0;
     Int32 size;
     sparseArray->GetSize(&size);

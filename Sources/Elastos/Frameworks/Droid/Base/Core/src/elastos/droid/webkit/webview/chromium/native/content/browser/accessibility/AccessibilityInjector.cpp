@@ -1,22 +1,43 @@
-
+#include "Elastos.CoreLibrary.Utility.h"
+#include "Elastos.CoreLibrary.Net.h"
 #include "Elastos.Droid.Speech.h"
+#include "Elastos.Droid.AccessibilityService.h"
+#include "Elastos.CoreLibrary.External.h"
+#include "Elastos.CoreLibrary.Apache.h"
 #include "elastos/droid/webkit/webview/chromium/native/content/browser/accessibility/AccessibilityInjector.h"
 #include "elastos/droid/webkit/webview/chromium/native/content/browser/accessibility/JellyBeanAccessibilityInjector.h"
 #include "elastos/droid/webkit/webview/chromium/native/content/browser/ContentViewCore.h"
 #include "elastos/droid/webkit/webview/chromium/native/content/common/ContentSwitches.h"
 #include "elastos/droid/webkit/webview/chromium/native/base/CommandLine.h"
+#include "elastos/droid/Manifest.h"
 #include <elastos/core/Math.h>
 #include <elastos/core/StringUtils.h>
+#include "elastos/core/CoreUtils.h"
+//TODO #include "org/apache/http/client/utils/URLEncodedUtils.h"
 
-// TODO using Elastos::Net::CURI;
+using Elastos::Net::CURI;
 using Elastos::Net::IURI;
-using Elastos::Core::StringUtils;
 using Elastos::Utility::IHashMap;
-// TODO using Elastos::Droid::Accessibilityservice::IAccessibilityServiceInfo;
+using Elastos::Droid::AccessibilityService::IAccessibilityServiceInfo;
+using Elastos::Droid::Speech::Tts::CTextToSpeech;
+using Elastos::Droid::Manifest;
 using Elastos::Droid::Webkit::Webview::Chromium::Content::Common::ContentSwitches;
 using Elastos::Droid::Webkit::Webview::Chromium::Content::Browser::ContentViewCore;
 using Elastos::Droid::Webkit::Webview::Chromium::Base::CommandLine;
 using Elastos::Droid::View::EIID_IView;
+using Elastos::Core::StringUtils;
+using Elastos::Core::CoreUtils;
+using Elastos::Core::CString;
+using Elastos::Core::ICharSequence;
+using Elastos::Utility::IIterator;
+using Elastos::Utility::CHashMap;
+
+using Org::Json::IJSONObject;
+using Org::Json::IJSONArray;
+using Org::Json::CJSONObject;
+//TODO using Org::Apache::Http::Client::Utils::CURLEncodedUtilsHelper;
+//TODO using Org::Apache::Http::Client::Utils::IURLEncodedUtilsHelper;
+using Org::Apache::Http::INameValuePair;
 
 namespace Elastos {
 namespace Droid {
@@ -90,13 +111,10 @@ AccessibilityInjector::TextToSpeechWrapper::TextToSpeechWrapper(
     /* [in] */ IContext* context)
 {
     mView = view;
-    assert(0);
-    // TODO
-    // CTextToSpeech::New(context, NULL, NULL, (ITextToSpeech**)&mTextToSpeech);
+    CTextToSpeech::New(context, NULL, String(NULL), (ITextToSpeech**)&mTextToSpeech);
 
-    assert(0);
-    // TODO
-    // mSelfBrailleClient = new SelfBrailleClient(context, CommandLine::GetInstance()::HasSwitch(
+    //TODO depend 3rd software braill
+    //mSelfBrailleClient = new SelfBrailleClient(context, CommandLine::GetInstance()::HasSwitch(
     //         ContentSwitches::ACCESSIBILITY_DEBUG_BRAILLE_SERVICE));
 }
 
@@ -116,34 +134,49 @@ Int32 AccessibilityInjector::TextToSpeechWrapper::Speak(
     /* [in] */ Int32 queueMode,
     /* [in] */ const String& jsonParams)
 {
-    assert(0);
-    // TODO
     // // Try to pull the params from the JSON string.
-    // AutoPtr<IHashMap> params;
-    // // try {
-    //     if (jsonParams != NULL) {
-    //         params = new HashMap<String, String>();
-    //         JSONObject json = new JSONObject(jsonParams);
+    AutoPtr<IHashMap> params;
+    // try {
+        if (!jsonParams.IsNullOrEmpty()) {
+            //params = new HashMap<String, String>();
+            CHashMap::New((IHashMap**)&params);
+            AutoPtr<IJSONObject> json;
+            CJSONObject::New(jsonParams, (IJSONObject**)&json);
 
-    //         // Using legacy API here.
-    //         //@SuppressWarnings("unchecked")
-    //         Iterator<String> keyIt = json.keys();
+            // Using legacy API here.
+            //@SuppressWarnings("unchecked")
+            AutoPtr<IIterator> keyIt;
+            json->GetKeys((IIterator**)&keyIt);
 
-    //         while (keyIt.hasNext()) {
-    //             String key = keyIt.next();
-    //             // Only add parameters that are raw data types.
-    //             if (json.optJSONObject(key) == null && json.optJSONArray(key) == null) {
-    //                 params.put(key, json.getString(key));
-    //             }
-    //         }
-    //     }
-    // // } catch (JSONException e) {
-    // //     params = null;
-    // // }
+            Boolean hasNext;
+            while (keyIt->HasNext(&hasNext), hasNext) {
+                AutoPtr<IInterface> obj;
+                keyIt->GetNext((IInterface**)&obj);
+                ICharSequence* ics = ICharSequence::Probe(obj);
+                String key;
+                ics->ToString(&key);
+                // Only add parameters that are raw data types.
+                AutoPtr<IJSONObject> jsonObj;
+                json->OptJSONObject(key, (IJSONObject**)&jsonObj);
+                AutoPtr<IJSONArray> jsonArray;
+                json->OptJSONArray(key, (IJSONArray**)&jsonArray);
+                if (jsonObj == NULL && jsonArray == NULL) {
+                    //params.put(key, json.getString(key));
+                    String str;
+                    json->GetString(key, &str);
+                    AutoPtr<ICharSequence> cs;
+                    CString::New(str, (ICharSequence**)&cs);
+                    params->Put(obj, TO_IINTERFACE(cs));
+                }
+            }
+        }
+    // } catch (JSONException e) {
+    //     params = null;
+    // }
 
-    // return mTextToSpeech->Speak(text, queueMode, params);
-
-    return -1;
+    Int32 ret;
+    mTextToSpeech->Speak(text, queueMode, params, &ret);
+    return ret;
 }
 
 //@JavascriptInterface
@@ -160,23 +193,23 @@ Int32 AccessibilityInjector::TextToSpeechWrapper::Stop()
 void AccessibilityInjector::TextToSpeechWrapper::Braille(
     /* [in] */ const String& jsonString)
 {
-    assert(0);
-    // TODO
     // // try {
-    //     AutoPtr<IJSONObject> jsonObj;
-    //     CJSONObject::New(jsonString, (IJSONObject**)&jsonObj);
+         AutoPtr<IJSONObject> jsonObj;
+         CJSONObject::New(jsonString, (IJSONObject**)&jsonObj);
 
-    //     AutoPtr<WriteData> data = WriteData::ForView(mView);
-    //     String text;
-    //     jsonObj->GetString(String("text"), &text);
-    //     data->SetText(text);
-    //     Int32 startIndex;
-    //     jsonObj->GetInt32(String("startIndex"), &startIndex);
-    //     data->SetSelectionStart(startIndex);
-    //     Int32 endIndex;
-    //     jsonObj->GetInt32(String("endIndex"), &endIndex);
-    //     data->SetSelectionEnd(endIndex);
-    //     mSelfBrailleClient->Write(data);
+         Logger::E("AccessibilityInjector::TextToSpeechWrapper::Braille" , "not support now, becase of braill not implemented");
+         //braill
+         //TODO AutoPtr<WriteData> data = WriteData::ForView(mView);
+         String text;
+         jsonObj->GetString(String("text"), &text);
+         //data->SetText(text);
+         Int32 startIndex;
+         jsonObj->GetInt32(String("startIndex"), &startIndex);
+         //data->SetSelectionStart(startIndex);
+         Int32 endIndex;
+         jsonObj->GetInt32(String("endIndex"), &endIndex);
+         //data->SetSelectionEnd(endIndex);
+         //mSelfBrailleClient->Write(data);
     // // } catch (JSONException ex) {
     // //     Log.w(TAG, "Error parsing JS JSON object", ex);
     // // }
@@ -186,8 +219,7 @@ void AccessibilityInjector::TextToSpeechWrapper::Braille(
 void AccessibilityInjector::TextToSpeechWrapper::ShutdownInternal()
 {
     mTextToSpeech->Shutdown();
-    assert(0);
-    // TODO
+    // TODO braill
     // mSelfBrailleClient->Shutdown();
 }
 
@@ -241,10 +273,8 @@ AccessibilityInjector::AccessibilityInjector(
 {
     AutoPtr<IContext> context = mContentViewCore->GetContext();
     Int32 permission;
-    assert(0);
-    // TODO
-    // context->CheckCallingOrSelfPermission(
-    //         android::Manifest::permission::VIBRATE, &permission);
+    context->CheckCallingOrSelfPermission(
+             Manifest::permission::VIBRATE, &permission);
     mHasVibratePermission = (permission == IPackageManager::PERMISSION_GRANTED);
 }
 
@@ -330,11 +360,9 @@ Boolean AccessibilityInjector::AccessibilityIsAvailable()
     // try {
         // Check that there is actually a service running that requires injecting this script.
         AutoPtr<IList> services;
-        assert(0);
-        // TODO
-        // GetAccessibilityManager()->GetEnabledAccessibilityServiceList(
-        //                 FEEDBACK_BRAILLE | IAccessibilityServiceInfo::FEEDBACK_SPOKEN,
-        //                 (IList**)&services);
+        GetAccessibilityManager()->GetEnabledAccessibilityServiceList(
+                         FEEDBACK_BRAILLE | IAccessibilityServiceInfo::FEEDBACK_SPOKEN,
+                         (IList**)&services);
         Int32 size;
         services->GetSize(&size);
         return size > 0;
@@ -358,11 +386,14 @@ void AccessibilityInjector::SetScriptEnabled(
 
     mInjectedScriptEnabled = enabled;
     if (mContentViewCore->IsAlive()) {
-        assert(0);
-        // TODO
-        // String js = String.format(TOGGLE_CHROME_VOX_JAVASCRIPT, Boolean.toString(
-        //         mInjectedScriptEnabled));
-        // mContentViewCore->EvaluateJavaScript(js, NULL);
+        String arg = StringUtils::BooleanToString(mInjectedScriptEnabled);
+        AutoPtr<ICharSequence> cs;
+        CString::New(arg, (ICharSequence**)&cs);
+        AutoPtr<ArrayOf<IInterface*> > args = ArrayOf<IInterface*>::Alloc(1);
+        args->Set(0, TO_IINTERFACE(cs));
+
+        String js = StringUtils::Format(TOGGLE_CHROME_VOX_JAVASCRIPT, args);
+        mContentViewCore->EvaluateJavaScript(js, NULL);
 
         if (!mInjectedScriptEnabled) {
             // Stop any TTS/Vibration right now.
@@ -490,28 +521,30 @@ Int32 AccessibilityInjector::GetAxsUrlParameterValue()
     if (mContentViewCore->GetUrl() == NULL) return ACCESSIBILITY_SCRIPT_INJECTION_UNDEFINED;
 
     // try {
-        assert(0);
-        // TODO
-        // AutoPtr<IURI> uri;
-        // CURI::New(mContentViewCore->GetUrl(), (IURI**)&uri)
-        // AutoPtr<IList> params = URLEncodedUtils::Parse(uri,
-        //         NULL);
+        AutoPtr<IURI> uri;
+        CURI::New(mContentViewCore->GetUrl(), (IURI**)&uri);
+        AutoPtr<IList> params;
+        //TODO
+        //AutoPtr<IURLEncodedUtilsHelper> urleuHelper;
+        //CURLEncodedUtilsHelper::AcquireSingleton((IURLEncodedUtilsHelper**)&urleuHelper);
+        //urleuHelper->Parse(uri, NULL, (IList**)&params);
 
-        // AutoPtr<IIterable> iterable = IIterable::Probe(params);
-        // AutoPtr<IIterator> iter;
-        // iterable->GetIIterator((IIterator**)&iter);
-        // AutoPtr<INameValuePair> param;
-        // Boolean bNext;
-        // for (iter->HasNext(&bNext); bNext; iter->HasNext(&bNext)) {
-        //     iter->GetNext((IInterface**)&param);
-        //     String name;
-        //     param->GetName(&name);
-        //     if (String("axs").Equals(name)) {
-        //         String value;
-        //         param->GetValue(&value);
-        //         return StringUtils::ParseInt32(value);
-        //     }
-        // }
+        //AutoPtr<IIterable> iterable = IIterable::Probe(params);
+        AutoPtr<IIterator> iter;
+        params->GetIterator((IIterator**)&iter);
+        Boolean bNext;
+        for (iter->HasNext(&bNext); bNext; iter->HasNext(&bNext)) {
+            AutoPtr<IInterface> obj;
+            iter->GetNext((IInterface**)&obj);
+            INameValuePair* param = INameValuePair::Probe(obj);
+            String name;
+            param->GetName(&name);
+            if (String("axs").Equals(name)) {
+                String value;
+                param->GetValue(&value);
+                return StringUtils::ParseInt32(value);
+            }
+        }
     // } catch (URISyntaxException ex) {
     // } catch (NumberFormatException ex) {
     // } catch (IllegalArgumentException ex) {
@@ -522,11 +555,12 @@ Int32 AccessibilityInjector::GetAxsUrlParameterValue()
 
 String AccessibilityInjector::GetScreenReaderInjectingJs()
 {
-    assert(0);
-    // TODO
-    // return String.format(ACCESSIBILITY_SCREEN_READER_JAVASCRIPT_TEMPLATE,
-    //         mAccessibilityScreenReaderUrl);
-    return String(NULL);
+    AutoPtr<ICharSequence> cs;
+    CString::New(mAccessibilityScreenReaderUrl, (ICharSequence**)&cs);
+
+    AutoPtr<ArrayOf<IInterface*> > args = ArrayOf<IInterface*>::Alloc(1);
+    args->Set(0, TO_IINTERFACE(cs));
+    return StringUtils::Format(ACCESSIBILITY_SCREEN_READER_JAVASCRIPT_TEMPLATE, args);
 }
 
 AutoPtr<IAccessibilityManager> AccessibilityInjector::GetAccessibilityManager()

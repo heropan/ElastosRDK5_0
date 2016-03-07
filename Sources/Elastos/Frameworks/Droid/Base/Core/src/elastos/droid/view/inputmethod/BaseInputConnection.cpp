@@ -17,6 +17,7 @@
 #include "elastos/droid/os/SystemClock.h"
 #include "elastos/droid/R.h"
 //#include "utils/ArrayUtils.h"
+#include "elastos/droid/view/CKeyCharacterMap.h"
 
 #include <elastos/utility/logging/Logger.h>
 
@@ -35,6 +36,7 @@ using Elastos::Droid::Text::ISpannableStringBuilder;
 using Elastos::Droid::Text::Method::MetaKeyKeyListener;
 using Elastos::Droid::Text::Method::IMetaKeyKeyListener;
 using Elastos::Droid::View::InputMethod::CInputMethodManager;
+using Elastos::Droid::View::CKeyCharacterMap;
 
 using Elastos::Core::CString;
 using Elastos::Utility::Logging::Logger;
