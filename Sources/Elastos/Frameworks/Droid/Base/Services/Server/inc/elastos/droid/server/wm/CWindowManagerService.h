@@ -55,6 +55,7 @@ using Elastos::Droid::Graphics::IRect;
 using Elastos::Droid::Graphics::IPoint;
 using Elastos::Droid::Hardware::Display::IDisplayManagerInternal;
 using Elastos::Droid::Hardware::Display::IDisplayManager;
+using Elastos::Droid::Hardware::Input::IIInputManager;
 using Elastos::Droid::Internal::App::IIBatteryStats;
 using Elastos::Droid::Internal::View::IInputMethodClient;
 using Elastos::Droid::Internal::View::IIInputMethodManager;
@@ -67,6 +68,7 @@ using Elastos::Droid::Os::ILooper;
 using Elastos::Droid::Os::IPowerManagerInternal;
 using Elastos::Droid::Os::Runnable;
 using Elastos::Droid::Os::ILowPowerModeListener;
+using Elastos::Droid::Server::IWatchdogMonitor;
 using Elastos::Droid::Server::Display::CDisplayManagerService;
 using Elastos::Droid::Server::Input::CInputManagerService;
 using Elastos::Droid::Utility::IArraySet;
@@ -134,6 +136,8 @@ CarClass(CWindowManagerService)
     , public Object
     , public IIWindowManager
     , public IWindowManagerPolicyWindowManagerFuncs
+    , public IWatchdogMonitor
+    , public IBinder
 {
 public:
     class RotationWatcher : public Object
@@ -318,7 +322,7 @@ private:
     public:
         WindowManagerServiceCreator(
             /* [in] */ IContext* context,
-            /* [in] */ CInputManagerService* im,
+            /* [in] */ IIInputManager* im,
             /* [in] */ Boolean haveInputMethods,
             /* [in] */ Boolean showBootMsgs,
             /* [in] */ Boolean onlyCore);
@@ -327,7 +331,7 @@ private:
 
     public:
         AutoPtr<IContext> mContext;
-        AutoPtr<CInputManagerService> mIm;
+        AutoPtr<IIInputManager> mIm;
         Boolean mHaveInputMethods;
         Boolean mShowBootMsgs;
         Boolean mOnlyCore;
@@ -465,14 +469,14 @@ public:
 
     static AutoPtr<CWindowManagerService> Main(
         /* [in] */ IContext* context,
-        /* [in] */ CInputManagerService* im,
+        /* [in] */ IIInputManager* im,
         /* [in] */ Boolean haveInputMethods,
         /* [in] */ Boolean showBootMsgs,
         /* [in] */ Boolean onlyCore);
 
     CARAPI constructor(
         /* [in] */ IContext* context,
-        /* [in] */ Handle64 inputManager,
+        /* [in] */ IIInputManager* inputManager,
         /* [in] */ Boolean haveInputMethods,
         /* [in] */ Boolean showBootMsgs,
         /* [in] */ Boolean onlyCore);

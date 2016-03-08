@@ -1077,21 +1077,21 @@ void testWriteXmlParser()
         ec = serializer->WriteStartTag(nullStr, String("packages"));
         if (FAILED(ec)) break;
 
-        // {
-        //     Int32 mInternalSdkPlatform = 21;
-        //     Int32 mExternalSdkPlatform = 9;
-        //     String mFingerprint("Actions/bubble_gum_v1_0/bubble_gum_v1_0:5.0.2/LRX22G/");
-        //     ec = serializer->WriteStartTag(nullStr, String("last-platform-version"));
-        //     if (FAILED(ec)) break;
-        //     ec = serializer->WriteAttribute(nullStr, String("internal"), StringUtils::ToString(mInternalSdkPlatform));
-        //     if (FAILED(ec)) break;
-        //     ec = serializer->WriteAttribute(nullStr, String("external"), StringUtils::ToString(mExternalSdkPlatform));
-        //     if (FAILED(ec)) break;
-        //     ec = serializer->WriteAttribute(nullStr, String("fingerprint"), mFingerprint);
-        //     if (FAILED(ec)) break;
-        //     ec = serializer->WriteEndTag(nullStr, String("last-platform-version"));
-        //     if (FAILED(ec)) break;
-        // }
+        {
+            Int32 mInternalSdkPlatform = 21;
+            Int32 mExternalSdkPlatform = 9;
+            String mFingerprint("Actions/bubble_gum_v1_0/bubble_gum_v1_0:5.0.2/LRX22G/");
+            ec = serializer->WriteStartTag(nullStr, String("last-platform-version"));
+            if (FAILED(ec)) break;
+            ec = serializer->WriteAttribute(nullStr, String("internal"), StringUtils::ToString(mInternalSdkPlatform));
+            if (FAILED(ec)) break;
+            ec = serializer->WriteAttribute(nullStr, String("external"), StringUtils::ToString(mExternalSdkPlatform));
+            if (FAILED(ec)) break;
+            ec = serializer->WriteAttribute(nullStr, String("fingerprint"), mFingerprint);
+            if (FAILED(ec)) break;
+            ec = serializer->WriteEndTag(nullStr, String("last-platform-version"));
+            if (FAILED(ec)) break;
+        }
 
         ec = serializer->WriteEndTag(nullStr, String("packages"));
         if (FAILED(ec)) break;

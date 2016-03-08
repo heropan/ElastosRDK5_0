@@ -2476,6 +2476,9 @@ ECode CActivityManagerService::AppTaskImpl::ToString(
 
 CAR_INTERFACE_IMPL_4(CActivityManagerService, Object, IIActivityManager,
     IWatchdogMonitor, IBatteryCallback, IBinder)
+
+CAR_OBJECT_IMPL(CActivityManagerService)
+
 CActivityManagerService::CActivityManagerService()
     : mLastAddedTaskUid(0)
     , mNextIsolatedProcessUid(0)
@@ -2768,8 +2771,8 @@ ECode CActivityManagerService::SetSystemProcess()
 //    try {
     AutoPtr<IServiceManager> sm;
     CServiceManager::AcquireSingleton((IServiceManager**)&sm);
-    sm->AddService(IContext::ACTIVITY_SERVICE, TO_IINTERFACE(this), TRUE);
-    sm->AddService(IProcessStats::SERVICE_NAME, TO_IINTERFACE(mProcessStats));
+    FAIL_RETURN(sm->AddService(IContext::ACTIVITY_SERVICE, TO_IINTERFACE(this), TRUE))
+    FAIL_RETURN(sm->AddService(IProcessStats::SERVICE_NAME, TO_IINTERFACE(mProcessStats)))
     // sm->AddService("meminfo", new MemBinder(this));
     // sm->AddService("gfxinfo", new GraphicsBinder(this));
     // sm->AddService("dbinfo", new DbBinder(this));
@@ -2785,6 +2788,7 @@ ECode CActivityManagerService::SetSystemProcess()
     mContext->GetPackageManager((IPackageManager**)&pm);
     AutoPtr<IApplicationInfo> info;
     pm->GetApplicationInfo(String("android"), STOCK_PM_FLAGS, (IApplicationInfo**)&info);
+    assert(info != NULL);
     mSystemThread->InstallSystemApplicationInfo(info, NULL);
 
     {
@@ -2792,8 +2796,7 @@ ECode CActivityManagerService::SetSystemProcess()
 
         String processName;
         info->GetProcessName(&processName);
-        AutoPtr<ProcessRecord> app = NewProcessRecordLocked(
-                info, processName, FALSE, 0);
+        AutoPtr<ProcessRecord> app = NewProcessRecordLocked(info, processName, FALSE, 0);
         app->mPersistent = TRUE;
         app->mPid = MY_PID;
         app->mMaxAdj = ProcessList::SYSTEM_ADJ;
@@ -12493,6 +12496,7 @@ ECode CActivityManagerService::InstallSystemProviders()
 
     mCoreSettingsObserver = new CoreSettingsObserver(this);
 
+    // TODO
     // mUsageStatsService->MonitorPackages();
     return NOERROR;
 }
@@ -12513,8 +12517,9 @@ ECode CActivityManagerService::GetProviderMimeType(
     /* [in] */ Int32 userId,
     /* [out] */ String* type)
 {
-    VALIDATE_NOT_NULL(uri);
     VALIDATE_NOT_NULL(type);
+    *type = NULL;
+    VALIDATE_NOT_NULL(uri);
 
     String nullStr;
     String funcName("getProviderMimeType");
@@ -19216,7 +19221,9 @@ ECode CActivityManagerService::RegisterReceiver(
     // the client.
     AutoPtr<IIntent> sticky = allSticky != NULL ? (*allSticky)[0] : NULL;
 
-    if (DEBUG_BROADCAST) Slogger::V(TAG, "Register receiver %p: %p", receiver, sticky.Get());
+    if (DEBUG_BROADCAST) {
+        Slogger::V(TAG, "Register receiver %s: %s", TO_CSTR(receiver), TO_CSTR(sticky));
+    }
 
     if (receiver == NULL) {
         *intent = sticky;

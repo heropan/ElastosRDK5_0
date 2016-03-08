@@ -168,36 +168,43 @@ ECode LoadedPkg::ReceiverDispatcher::Args::Run()
 //==============================================================================
 CAR_INTERFACE_IMPL(LoadedPkg::ReceiverDispatcher, Object, IReceiverDispatcher)
 
-LoadedPkg::ReceiverDispatcher::ReceiverDispatcher(
-    /* [in] */ IBroadcastReceiver* receiver,
-    /* [in] */ IContext* context,
-    /* [in] */ IHandler* activityThread,
-    /* [in] */ IInstrumentation* instrumentation,
-    /* [in] */ Boolean registered)
+LoadedPkg::ReceiverDispatcher::ReceiverDispatcher()
     : mIIntentReceiver(NULL)
-    , mReceiver(receiver)
-    , mContext(context)
-    , mActivityThread(activityThread)
-    , mInstrumentation(instrumentation)
-    , mRegistered(registered)
+    , mRegistered(FALSE)
     , mForgotten(FALSE)
     , mHasUsed(FALSE)
-{
-
-    // if (activityThread == null) {
-    //     throw new NullPointerException("Handler must not be null");
-    // }
-    assert(activityThread != NULL);
-    CInnerReceiver::New((IReceiverDispatcher*)this, !registered, &mIIntentReceiver);
-    // mLocation = new IntentReceiverLeaked(null);
-    // mLocation.fillInStackTrace();
-}
+{}
 
 LoadedPkg::ReceiverDispatcher::~ReceiverDispatcher()
 {
     if (mRegistered && mIIntentReceiver != NULL) {
         mIIntentReceiver->Release();
     }
+}
+
+ECode LoadedPkg::ReceiverDispatcher::constructor(
+    /* [in] */ IBroadcastReceiver* receiver,
+    /* [in] */ IContext* context,
+    /* [in] */ IHandler* activityThread,
+    /* [in] */ IInstrumentation* instrumentation,
+    /* [in] */ Boolean registered)
+{
+    if (activityThread == NULL) {
+        Slogger::E("LoadedPkg::ReceiverDispatcher", "Handler must not be null!");
+        assert(activityThread != NULL);
+        return E_NULL_POINTER_EXCEPTION;
+    }
+
+    mReceiver = receiver;
+    mContext = context;
+    mActivityThread = activityThread;
+    mInstrumentation = instrumentation;
+    mRegistered = registered;
+
+    CInnerReceiver::New(this, !registered, (IIntentReceiver**)&mIIntentReceiver);
+    // mLocation = new IntentReceiverLeaked(null);
+    // mLocation.fillInStackTrace();
+    return NOERROR;
 }
 
 ECode LoadedPkg::ReceiverDispatcher::Validate(
@@ -1288,7 +1295,8 @@ ECode LoadedPkg::GetReceiverDispatcher(
     }
 
     if (rd == NULL){
-        rd = new ReceiverDispatcher(r, context, handler, instrumentation, registered);
+        rd = new ReceiverDispatcher();
+        FAIL_RETURN(rd->constructor(r, context, handler, instrumentation, registered))
         if (registered) {
             if (map == NULL) {
                 map = new ReceiverMap();

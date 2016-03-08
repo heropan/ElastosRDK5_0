@@ -2032,6 +2032,8 @@ ECode Intent::FillIn(
     /* [out] */ Int32* result)
 {
     VALIDATE_NOT_NULL(result)
+    *result = 0;
+
     ECode ec = NOERROR;
     assert(other != NULL);
 

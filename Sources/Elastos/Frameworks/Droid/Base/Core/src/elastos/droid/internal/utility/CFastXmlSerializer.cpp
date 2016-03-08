@@ -86,21 +86,20 @@ ECode CFastXmlSerializer::Append(
     /* [in] */ Int32 i,
     /* [in] */ Int32 length)
 {
-    ECode ec = NOERROR;
     Int32 pos;
     StringBuilder sb;
     if (length > BUFFER_LEN) {
         Int32 end = i + length;
         while (i < end) {
             Int32 next = i + BUFFER_LEN;
-            FAIL_GOTO(Append(str, i, next<end ? BUFFER_LEN : (end-i)), _EXIT_);
+            FAIL_RETURN(Append(str, i, next<end ? BUFFER_LEN : (end-i)));
             i = next;
         }
         return NOERROR;
     }
     pos = mPos;
     if ((pos + length) > BUFFER_LEN) {
-        FAIL_GOTO(Flush(), _EXIT_);
+        FAIL_RETURN(Flush());
         pos = mPos;
     }
 
@@ -108,17 +107,7 @@ ECode CFastXmlSerializer::Append(
     sb.GetChars(i, i + length, mText, pos);
     mPos = pos + length;
 
-    printf("After append [%s], text:\n\n", str.string());
-    for (Int32 i = 0; i < mPos; ++i) {
-        printf("%c", (*mText)[i]);
-    }
-    printf("\n\n");
-_EXIT_:
-    if (FAILED(ec)) {
-        printf("failed to Append %s, start %d, length %d\n",
-            str.string(), i, length);
-    }
-    return ec;
+    return NOERROR;
 }
 
 ECode CFastXmlSerializer::Append(
@@ -264,28 +253,24 @@ ECode CFastXmlSerializer::WriteEndTag(
     ECode ec = NOERROR;
     mNesting--;
     if (mInTag) {
-        FAIL_GOTO(Append(String(" />\n")), _EXIT_);
+        FAIL_RETURN((Append(String(" />\n"))));
     }
     else {
         if (mIndent && mLineStart) {
-            FAIL_GOTO(AppendIndent(mNesting), _EXIT_);
+            FAIL_RETURN(AppendIndent(mNesting));
         }
-        FAIL_GOTO(Append(String("</")), _EXIT_);
+        FAIL_RETURN(Append(String("</")));
         if (!ns.IsNull()) {
-            FAIL_GOTO(Append(ns), _EXIT_);
-            FAIL_GOTO(Append(':'), _EXIT_);
+            FAIL_RETURN(Append(ns));
+            FAIL_RETURN(Append(':'));
         }
-        FAIL_GOTO(Append(name), _EXIT_);
-        FAIL_GOTO(Append(String(">\n")), _EXIT_);
+        FAIL_RETURN(Append(name));
+        FAIL_RETURN(Append(String(">\n")));
     }
+
     mLineStart = TRUE;
     mInTag = FALSE;
-
-_EXIT_:
-    if (FAILED(ec)) {
-        printf("failed to WriteEndTag %s, %s", ns.string(), name.string());
-    }
-    return ec;
+    return NOERROR;
 }
 
 ECode CFastXmlSerializer::WriteEntityRef(
@@ -298,19 +283,11 @@ ECode CFastXmlSerializer::FlushBytes()
 {
     Int32 position;
     IBuffer::Probe(mBytes)->GetPosition(&position);
-    printf(" FlushBytes position %d : \n", position);
+
     if (position > 0) {
         FAIL_RETURN(IBuffer::Probe(mBytes)->Flip());
         AutoPtr<ArrayOf<Byte> > bytes;
         mBytes->GetArray((ArrayOf<Byte>**)&bytes);
-
-        if (bytes != NULL) {
-            printf("\n[");
-            for (Int32 i = 0; i < bytes->GetLength(); ++i) {
-                printf("%c", (*bytes)[i]);
-            }
-            printf("]\n");
-        }
 
         FAIL_RETURN(mOutputStream->Write(bytes, 0, position));
         FAIL_RETURN(IBuffer::Probe(mBytes)->Clear());

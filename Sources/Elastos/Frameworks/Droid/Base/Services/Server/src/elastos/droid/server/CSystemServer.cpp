@@ -71,6 +71,7 @@ using Elastos::Droid::View::IIWindowManager;
 using Elastos::Droid::Hardware::Input::IIInputManager;
 using Elastos::Droid::Webkit::IWebViewFactory;
 using Elastos::Droid::Webkit::CWebViewFactory;
+using Elastos::Droid::Utility::CDisplayMetrics;
 using Elastos::Droid::Server::Content::CContentService;
 using Elastos::Droid::Server::Lights::LightsService;
 using Elastos::Droid::Server::Os::CSchedulingPolicyService;
@@ -323,7 +324,7 @@ ECode SystemServer::StartBootstrapServices()
     mInstaller = new Installer(mSystemContext);
     mSystemServiceManager->StartService(mInstaller.Get());
 
-    Slogger::I(TAG, "    start Activity manager");
+    Slogger::I(TAG, "Activity manager");
     // Activity manager runs the show.
     AutoPtr<CActivityManagerService::Lifecycle> am = new CActivityManagerService::Lifecycle();
     ECode ec = am->constructor(mSystemContext);
@@ -332,7 +333,7 @@ ECode SystemServer::StartBootstrapServices()
     mActivityManagerService = am->GetService();
     mActivityManagerService->SetSystemServiceManager(mSystemServiceManager);
 
-    Slogger::I(TAG, "    start Power manager");
+    Slogger::I(TAG, "Power manager");
     // Power manager needs to be started early because other services need it.
     // Native daemons may be watching for it to be registered so it must be ready
     // to handle incoming binder calls immediately (including being able to verify
@@ -347,7 +348,7 @@ ECode SystemServer::StartBootstrapServices()
     // initialize power management features.
     mActivityManagerService->InitPowerManagement();
 
-    Slogger::I(TAG, "    start Display manager");
+    Slogger::I(TAG, "Display manager");
     // Display manager is needed to provide display metrics before package manager
     // starts up.
     service = NULL;
@@ -373,7 +374,7 @@ ECode SystemServer::StartBootstrapServices()
         mOnlyCore = TRUE;
     }
 
-    Slogger::I(TAG, "    start Package manager");
+    Slogger::I(TAG, "Package manager");
     // Start the package manager.
     AutoPtr<IIPackageManager> pm = CPackageManagerService::Main(mSystemContext, mInstaller,
             mFactoryTestMode != FactoryTest::FACTORY_TEST_OFF, mOnlyCore);
@@ -381,14 +382,14 @@ ECode SystemServer::StartBootstrapServices()
     mPackageManagerService->IsFirstBoot(&mFirstBoot);
     mSystemContext->GetPackageManager((IPackageManager**)&mPackageManager);
 
-    Slogger::I(TAG, "    start User Service");
+    Slogger::I(TAG, "User Service");
     AutoPtr<IInterface> svrObj = (IIUserManager*)CUserManagerService::GetInstance().Get();
     ServiceManager::AddService(IContext::USER_SERVICE, svrObj.Get());
 
     // Initialize attribute cache used to cache resources from packages.
     AttributeCache::Init(mSystemContext);
 
-    Slogger::I(TAG, "    set up the Application instance for the system process and get started.");
+    Slogger::I(TAG, "set up the Application instance for the system process and get started.");
     // Set up the Application instance for the system process and get started.
     ec = mActivityManagerService->SetSystemProcess();
     if (FAILED(ec)) Slogger::E(TAG, "Failed to start the Application instance for the system process.");
@@ -467,6 +468,7 @@ ECode SystemServer::StartOtherServices()
 
     AutoPtr<ISystemProperties> systemProperties;
     CSystemProperties::AcquireSingleton((ISystemProperties**)&systemProperties);
+    AutoPtr<IInterface> service;
 
     Boolean disableStorage, disableMedia, disableBluetooth, disableTelephony;
     Boolean disableLocation, disableSystemUI, disableNonCoreServices, disableNetwork;
@@ -517,9 +519,9 @@ ECode SystemServer::StartOtherServices()
             mFactoryTestMode == FactoryTest::FACTORY_TEST_LOW_LEVEL);
     contentService = (CContentService*)cs.Get();
 
-    Slogger::I(TAG, "System Content Providers");
-    ec = mActivityManagerService->InstallSystemProviders();
-    if (FAILED(ec)) Slogger::E(TAG, "failed to isntall System Content Providers");
+    Slogger::I(TAG, "System Content Providers todo");
+    // ec = mActivityManagerService->InstallSystemProviders();
+    // if (FAILED(ec)) Slogger::E(TAG, "failed to isntall System Content Providers");
 
     Slogger::I(TAG, "Vibrator Service todo");
     // AutoPtr<IIVibratorService> vs;
@@ -553,7 +555,7 @@ ECode SystemServer::StartOtherServices()
     inputManager = (CInputManagerService*)inputMgr.Get();
 
     Slogger::I(TAG, "Window Manager");
-    wm = CWindowManagerService::Main(context, inputManager,
+    wm = CWindowManagerService::Main(context, inputMgr,
             mFactoryTestMode != FactoryTest::FACTORY_TEST_LOW_LEVEL,
             !mFirstBoot, mOnlyCore);
     ServiceManager::AddService(IContext::WINDOW_SERVICE, IIWindowManager::Probe(wm));
@@ -1022,16 +1024,15 @@ ECode SystemServer::StartOtherServices()
 
     // Before things start rolling, be sure we have decided whether
     // we are in safe mode.
-    Boolean safeMode = FALSE;
-    // wm->DetectSafeMode(&safeMode);
-    // if (safeMode) {
-    //     mActivityManagerService.enterSafeMode();
+    Boolean safeMode = wm->DetectSafeMode();
+    if (safeMode) {
+        mActivityManagerService->EnterSafeMode();
     //     // Disable the JIT for the system_server process
     //     VMRuntime.getRuntime().disableJitCompilation();
-    // } else {
+    } else {
     //     // Enable the JIT for the system_server process
     //     VMRuntime.getRuntime().startJitCompilation();
-    // }
+    }
 
     // // MMS service broker
     // mmsService = mSystemServiceManager->StartService(MmsServiceBroker.class);
@@ -1062,18 +1063,23 @@ ECode SystemServer::StartOtherServices()
         ReportWtf("making Window Manager Service ready", ec);
     }
 
-    // if (safeMode) {
-    //     mActivityManagerService.showSafeModeOverlay();
-    // }
+    if (safeMode) {
+        mActivityManagerService->ShowSafeModeOverlay();
+    }
 
-    // // Update the configuration for this context by hand, because we're going
-    // // to start using it before the config change done in wm->SystemReady() will
-    // // propagate to it.
-    // Configuration config = wm.computeNewConfiguration();
-    // DisplayMetrics metrics = new DisplayMetrics();
-    // WindowManager w = (WindowManager)context.getSystemService(Context.WINDOW_SERVICE);
-    // w.getDefaultDisplay().getMetrics(metrics);
-    // context.getResources().updateConfiguration(config, metrics);
+    // Update the configuration for this context by hand, because we're going
+    // to start using it before the config change done in wm->SystemReady() will
+    // propagate to it.
+    AutoPtr<IConfiguration> config = wm->ComputeNewConfiguration();
+    AutoPtr<IDisplayMetrics> metrics;
+    CDisplayMetrics::New((IDisplayMetrics**)&metrics);
+    service = NULL;
+    context->GetSystemService(IContext::WINDOW_SERVICE, (IInterface**)&service);
+    AutoPtr<IWindowManager> w = IWindowManager::Probe(service);
+    AutoPtr<IDisplay> display;
+    w->GetDefaultDisplay((IDisplay**)&display);
+    display->GetMetrics(metrics);
+    res->UpdateConfiguration(config, metrics);
 
     // try {
     //     // TODO: use boot phase
@@ -1168,15 +1174,16 @@ ECode SystemServer::SystemReadyRunnable::Run()
         mHost->ReportWtf("observing native crashes", ec);
     }
 
-    Slogger::I(SystemServer::TAG, "WebViewFactory preparation");
-    AutoPtr<IWebViewFactory> webViewFactory;
-    CWebViewFactory::AcquireSingleton((IWebViewFactory**)&webViewFactory);
-    webViewFactory->PrepareWebViewInSystemServer();
+    Slogger::I(SystemServer::TAG, "WebViewFactory preparation todo");
+    // AutoPtr<IWebViewFactory> webViewFactory;
+    // CWebViewFactory::AcquireSingleton((IWebViewFactory**)&webViewFactory);
+    // webViewFactory->PrepareWebViewInSystemServer();
 
-    ec = StartSystemUi(mHost->mSystemContext);
-    if (FAILED(ec)) {
-        mHost->ReportWtf("starting System UI", ec);
-    }
+    Slogger::I(SystemServer::TAG, "start system ui　todo");
+    // ec = StartSystemUi(mHost->mSystemContext);
+    // if (FAILED(ec)) {
+    //     mHost->ReportWtf("starting System UI", ec);
+    // }
 
     // if (mServiceBundle->mMountServiceF != NULL) {
     //     ec = mServiceBundle->mMountServiceF->SystemReady();

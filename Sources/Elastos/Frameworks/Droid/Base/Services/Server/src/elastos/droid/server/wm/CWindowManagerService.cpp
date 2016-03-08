@@ -8,6 +8,7 @@
 #include "elastos/droid/server/wm/InputMonitor.h"
 #include "elastos/droid/server/wm/FakeWindowImpl.h"
 #include "elastos/droid/server/wm/DisplayContent.h"
+#include "elastos/droid/server/Watchdog.h"
 #include "elastos/droid/server/DisplayThread.h"
 #include "elastos/droid/server/UiThread.h"
 #include "elastos/droid/server/LocalServices.h"
@@ -73,6 +74,8 @@ using Elastos::Droid::Internal::Os::ISomeArgsHelper;
 using Elastos::Droid::Internal::Os::CSomeArgsHelper;
 using Elastos::Droid::Internal::Policy::IPolicyManager;
 using Elastos::Droid::Internal::Policy::CPolicyManager;
+using Elastos::Droid::Internal::View::IWindowManagerPolicyThread;
+using Elastos::Droid::Internal::View::CWindowManagerPolicyThread;
 using Elastos::Droid::Internal::Utility::IFastPrintWriter;
 using Elastos::Droid::Internal::Utility::CFastPrintWriter;
 using Elastos::Droid::Os::Looper;
@@ -95,6 +98,7 @@ using Elastos::Droid::Os::IWorkSource;
 using Elastos::Droid::Os::ISystemService;
 using Elastos::Droid::Os::CSystemService;
 using Elastos::Droid::Os::IWorkSource;
+using Elastos::Droid::Os::IStrictMode;
 // using Elastos::Droid::Os::CTrace;
 using Elastos::Droid::Provider::ISettingsGlobal;
 using Elastos::Droid::Provider::ISettingsSecure;
@@ -102,6 +106,8 @@ using Elastos::Droid::Provider::Settings;
 using Elastos::Droid::Server::DisplayThread;
 using Elastos::Droid::Server::UiThread;
 using Elastos::Droid::Server::LocalServices;
+using Elastos::Droid::Server::Watchdog;
+using Elastos::Droid::Server::EIID_IWatchdogMonitor;
 using Elastos::Droid::Server::Am::CActivityManagerService;
 using Elastos::Droid::Server::Am::CBatteryStatsService;
 using Elastos::Droid::Server::Power::ShutdownThread;
@@ -157,6 +163,7 @@ using Elastos::Droid::View::Animation::CScaleAnimation;
 using Elastos::Droid::View::Animation::IDecelerateInterpolator;
 using Elastos::Droid::View::Animation::CDecelerateInterpolator;
 using Elastos::Droid::View::Animation::EIID_IAnimation;
+
 using Elastos::Core::CString;
 using Elastos::Core::StringUtils;
 using Elastos::Core::IBoolean;
@@ -384,12 +391,12 @@ ECode DragInputEventReceiver::OnInputEvent(
 
 CWindowManagerService::WindowManagerServiceCreator::WindowManagerServiceCreator(
     /* [in] */ IContext* context,
-    /* [in] */ CInputManagerService* im,
+    /* [in] */ IIInputManager* im,
     /* [in] */ Boolean haveInputMethods,
     /* [in] */ Boolean showBootMsgs,
     /* [in] */ Boolean onlyCore)
     : mContext(context)
-    // , mIm(im)
+    , mIm(im)
     , mHaveInputMethods(haveInputMethods)
     , mShowBootMsgs(showBootMsgs)
     , mOnlyCore(onlyCore)
@@ -397,8 +404,7 @@ CWindowManagerService::WindowManagerServiceCreator::WindowManagerServiceCreator(
 
 ECode CWindowManagerService::WindowManagerServiceCreator::Run()
 {
-    //TODO: CInputManagerService
-    return CWindowManagerService::NewByFriend(mContext, 0/*(Handle64)mIm.Get()*/,
+    return CWindowManagerService::NewByFriend(mContext, mIm,
             mHaveInputMethods, mShowBootMsgs, mOnlyCore, (CWindowManagerService**)&mInstance);
 }
 
@@ -414,19 +420,17 @@ CWindowManagerService::PolicyInitializer::PolicyInitializer(
 
 ECode CWindowManagerService::PolicyInitializer::Run()
 {
-    // TODO:
-    // WindowManagerPolicyThread.set(Thread::GetCurrentThread(), Looper::GetMyLooper());
+    AutoPtr<IWindowManagerPolicyThread> wmpt;
+    CWindowManagerPolicyThread::AcquireSingleton((IWindowManagerPolicyThread**)&wmpt);
+    wmpt->Set(Thread::GetCurrentThread(), Looper::GetMyLooper());
 
     FAIL_RETURN(mHost->mPolicy->Init(mHost->mContext,
-            (IIWindowManager*)mHost->Probe(EIID_IIWindowManager),
-            (IWindowManagerPolicyWindowManagerFuncs*)mHost->Probe(EIID_IWindowManagerPolicyWindowManagerFuncs)));
+        (IIWindowManager*)mHost, (IWindowManagerPolicyWindowManagerFuncs*)mHost))
     Int32 layer;
     mHost->mPolicy->GetAboveUniverseLayer(&layer);
-    mHost->mAnimator->mAboveUniverseLayer = layer * TYPE_LAYER_MULTIPLIER
-            + TYPE_LAYER_OFFSET;
+    mHost->mAnimator->mAboveUniverseLayer = layer * TYPE_LAYER_MULTIPLIER + TYPE_LAYER_OFFSET;
     return NOERROR;
 }
-
 
 //==============================================================================
 //                  CWindowManagerService::RotationWatcherDeathRecipint
@@ -719,7 +723,7 @@ const String CWindowManagerService::TAG("CWindowManagerService");
 const Boolean CWindowManagerService::DEBUG = TRUE;
 const Boolean CWindowManagerService::DEBUG_ADD_REMOVE = FALSE;
 const Boolean CWindowManagerService::DEBUG_FOCUS = FALSE;
-const Boolean CWindowManagerService::DEBUG_FOCUS_LIGHT = DEBUG_FOCUS || FALSE;
+const Boolean CWindowManagerService::DEBUG_FOCUS_LIGHT = DEBUG_FOCUS;
 const Boolean CWindowManagerService::DEBUG_ANIM = FALSE;
 const Boolean CWindowManagerService::DEBUG_LAYOUT = FALSE;
 const Boolean CWindowManagerService::DEBUG_RESIZE = FALSE;
@@ -736,7 +740,7 @@ const Boolean CWindowManagerService::DEBUG_APP_TRANSITIONS = FALSE;
 const Boolean CWindowManagerService::DEBUG_STARTING_WINDOW = TRUE;
 const Boolean CWindowManagerService::DEBUG_REORDER = FALSE;
 const Boolean CWindowManagerService::DEBUG_WALLPAPER = FALSE;
-const Boolean CWindowManagerService::DEBUG_WALLPAPER_LIGHT = FALSE || DEBUG_WALLPAPER;
+const Boolean CWindowManagerService::DEBUG_WALLPAPER_LIGHT = DEBUG_WALLPAPER;
 const Boolean CWindowManagerService::DEBUG_DRAG = FALSE;
 const Boolean CWindowManagerService::DEBUG_SCREEN_ON = FALSE;
 const Boolean CWindowManagerService::DEBUG_SCREENSHOT = FALSE;
@@ -749,7 +753,7 @@ const Boolean CWindowManagerService::DEBUG_STACK = FALSE;
 const Boolean CWindowManagerService::DEBUG_DISPLAY = FALSE;
 const Boolean CWindowManagerService::SHOW_SURFACE_ALLOC = FALSE;
 const Boolean CWindowManagerService::SHOW_TRANSACTIONS = FALSE;
-const Boolean CWindowManagerService::SHOW_LIGHT_TRANSACTIONS = FALSE || SHOW_TRANSACTIONS;
+const Boolean CWindowManagerService::SHOW_LIGHT_TRANSACTIONS = SHOW_TRANSACTIONS;
 const Boolean CWindowManagerService::HIDE_STACK_CRAWLS = TRUE;
 const Int32 CWindowManagerService::LAYOUT_REPEAT_THRESHOLD;
 const Boolean CWindowManagerService::PROFILE_ORIENTATION;
@@ -803,6 +807,10 @@ static List< AutoPtr<WindowState> >::Iterator Find(
     return it;
 }
 
+CAR_INTERFACE_IMPL_4(CWindowManagerService, Object, IIWindowManager, \
+    IWindowManagerPolicyWindowManagerFuncs, IWatchdogMonitor, IBinder)
+
+CAR_OBJECT_IMPL(CWindowManagerService)
 
 CWindowManagerService::CWindowManagerService()
     : mCurrentUserId(0)
@@ -869,6 +877,38 @@ CWindowManagerService::CWindowManagerService()
     , mEventDispatchingEnabled(FALSE)
     , mInLayout(FALSE)
 {
+}
+
+AutoPtr<CWindowManagerService> CWindowManagerService::Main(
+    /* [in] */ IContext* context,
+    /* [in] */ IIInputManager* im,
+    /* [in] */ Boolean haveInputMethods,
+    /* [in] */ Boolean showBootMsgs,
+    /* [in] */ Boolean onlyCore)
+{
+    AutoPtr<WindowManagerServiceCreator> runnable = new WindowManagerServiceCreator(
+        context, im, haveInputMethods, showBootMsgs, onlyCore);
+    Boolean result;
+    DisplayThread::GetHandler()->RunWithScissors(runnable.Get(), 0, &result);
+    return runnable->mInstance;
+}
+
+void CWindowManagerService::InitPolicy()
+{
+    AutoPtr<IRunnable> runnable = new PolicyInitializer(this);
+    Boolean result;
+    UiThread::GetHandler()->RunWithScissors(runnable, 0, &result);
+}
+
+ECode CWindowManagerService::constructor(
+    /* [in] */ IContext* context,
+    /* [in] */ IIInputManager* inputManager,
+    /* [in] */ Boolean haveInputMethods,
+    /* [in] */ Boolean showBootMsgs,
+    /* [in] */ Boolean onlyCore)
+{
+    Slogger::D(TAG, " >>>>>>>>>>>>>>>>>>>>>>>> CWindowManagerService::constructor");
+
     mCurrentProfileIds = ArrayOf<Int32>::Alloc(1);
     (*mCurrentProfileIds)[0] = IUserHandle::USER_OWNER;
 
@@ -885,16 +925,15 @@ CWindowManagerService::CWindowManagerService()
 
     AutoPtr<IPolicyManager> pm;
     CPolicyManager::AcquireSingleton((IPolicyManager**)&pm);
-    ASSERT_SUCCEEDED(pm->MakeNewWindowManager((IWindowManagerPolicy**)&mPolicy));
+    FAIL_RETURN(pm->MakeNewWindowManager((IWindowManagerPolicy**)&mPolicy))
 
     mPendingRemoveTmp = ArrayOf<WindowState*>::Alloc(20);
     mRebuildTmp = ArrayOf<WindowState*>::Alloc(20);
     mTmpFloats = ArrayOf<Float>::Alloc(9);
 
-    CRect::New((IRect**)&mTmpContentRect);
-
     CConfiguration::New((IConfiguration**)&mCurConfiguration);
 
+    CRect::New((IRect**)&mTmpContentRect);
     CRect::New((IRect**)&mScreenRect);
 
     CDisplayMetrics::New((IDisplayMetrics**)&mDisplayMetrics);
@@ -912,40 +951,7 @@ CWindowManagerService::CWindowManagerService()
 
     CConfiguration::New((IConfiguration**)&mTempConfiguration);
     mInputMonitor = new InputMonitor(this);
-}
 
-CAR_INTERFACE_IMPL_3(CWindowManagerService, Object, IIWindowManager, IWindowManagerPolicyWindowManagerFuncs, IBinder)
-
-CAR_OBJECT_IMPL(CWindowManagerService)
-
-AutoPtr<CWindowManagerService> CWindowManagerService::Main(
-    /* [in] */ IContext* context,
-    /* [in] */ CInputManagerService* im,
-    /* [in] */ Boolean haveInputMethods,
-    /* [in] */ Boolean showBootMsgs,
-    /* [in] */ Boolean onlyCore)
-{
-    AutoPtr<WindowManagerServiceCreator> runnable =
-            new WindowManagerServiceCreator(context, im, haveInputMethods, showBootMsgs, onlyCore);
-    Boolean result;
-    DisplayThread::GetHandler()->RunWithScissors((IRunnable*)runnable.Get(), 0, &result);
-    return runnable->mInstance;
-}
-
-void CWindowManagerService::InitPolicy()
-{
-    AutoPtr<IRunnable> runnable = new PolicyInitializer(this);
-    Boolean result;
-    UiThread::GetHandler()->RunWithScissors(runnable, 0, &result);
-}
-
-ECode CWindowManagerService::constructor(
-    /* [in] */ IContext* context,
-    /* [in] */ Handle64 inputManager,
-    /* [in] */ Boolean haveInputMethods,
-    /* [in] */ Boolean showBootMsgs,
-    /* [in] */ Boolean onlyCore)
-{
     mContext = context;
     mHaveInputMethods = haveInputMethods;
     mAllowBootMessages = showBootMsgs;
@@ -953,10 +959,10 @@ ECode CWindowManagerService::constructor(
 
     AutoPtr<IInterface> service;
     AutoPtr<IResources> resources;
-    ASSERT_SUCCEEDED(mContext->GetResources((IResources**)&resources))
+    FAIL_RETURN(mContext->GetResources((IResources**)&resources))
     resources->GetBoolean(Elastos::Droid::R::bool_::config_sf_limitedAlpha, &mLimitedAlphaCompositing);
     resources->GetBoolean(Elastos::Droid::R::bool_::config_hasPermanentDpad, &mHasPermanentDpad);
-    mInputManager = (CInputManagerService*)inputManager; // Must be before createDisplayContentLocked.
+    mInputManager = (CInputManagerService*)inputManager;
     service = LocalServices::GetService(EIID_IDisplayManagerInternal);
     mDisplayManagerInternal = IDisplayManagerInternal::Probe(service);
     mDisplaySettings = new DisplaySettings(context);
@@ -964,12 +970,11 @@ ECode CWindowManagerService::constructor(
 
     LocalServices::AddService(EIID_IWindowManagerPolicy, mPolicy);
 
-
     AutoPtr<IInputChannel> inputChannel;
     mInputManager->MonitorInput(TAG, (IInputChannel**)&inputChannel);
     mPointerEventDispatcher = new PointerEventDispatcher(inputChannel);
 
-    ASSERT_SUCCEEDED(CSurfaceSession::New((ISurfaceSession**)&mFxSession))
+    FAIL_RETURN(CSurfaceSession::New((ISurfaceSession**)&mFxSession))
     service = NULL;
     context->GetSystemService(IContext::DISPLAY_SERVICE, (IInterface**)&service);
     mDisplayManager = IDisplayManager::Probe(service);
@@ -1039,7 +1044,7 @@ ECode CWindowManagerService::constructor(
     InitPolicy();
 
     // Add ourself to the Watchdog monitors.
-    // Watchdog.getInstance().addMonitor(this);
+    Watchdog::GetInstance()->AddMonitor(this);
 
     AutoPtr<ISurfaceControlHelper> scHelper;
     CSurfaceControlHelper::AcquireSingleton((ISurfaceControlHelper**)&scHelper);
@@ -1055,6 +1060,7 @@ ECode CWindowManagerService::constructor(
     ShowCircularDisplayMaskIfNeeded();
     ShowEmulatorDisplayOverlayIfNeeded();
 
+    Slogger::D(TAG, " <<<<<<<<<<<<<<<<<<<<< CWindowManagerService::constructor");
     return NOERROR;
 }
 
@@ -1721,7 +1727,6 @@ void CWindowManagerService::LogWindowList(
     Int32 i = 0;
     for (rit = windows.RBegin(); rit != windows.REnd(); ++rit, ++i) {
        Slogger::V(TAG, "%s#: %d, %p", prefix.string(), i, (*rit).Get());
-       PFL_EX("%s#: %d, %p", prefix.string(), i, (*rit).Get());
     }
 }
 
@@ -7063,7 +7068,7 @@ ECode CWindowManagerService::SetStrictModeVisualIndicatorPreference(
 {
     AutoPtr<ISystemProperties> sysProp;
     CSystemProperties::AcquireSingleton((ISystemProperties**)&sysProp);
-    sysProp->Set(String("persist.sys.strictmode.visual")/*TODO: StrictMode::VISUAL_PROPERTY*/, value);
+    sysProp->Set(IStrictMode::VISUAL_PROPERTY, value);
     return NOERROR;
 }
 
@@ -9623,12 +9628,11 @@ ECode CWindowManagerService::OpenSession(
     *session = NULL;
 
     if (client == NULL || inputContext == NULL) {
+        Slogger::E(TAG, "NULL client or NULL inputContext.");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
-        // throw new IllegalArgumentException("NULL client");
-        // throw new IllegalArgumentException("NULL inputContext");
     }
 
-    return CSession::New((Handle64)this, callback, client, inputContext, session);
+    return CSession::New(this, callback, client, inputContext, session);
 }
 
 ECode CWindowManagerService::InputMethodClientHasFocus(
@@ -10362,8 +10366,7 @@ void CWindowManagerService::PerformLayoutAndPlaceSurfacesLockedLoop()
         //         + Debug.getCallers(3));
         return;
     }
-    // TODO: CActivityManagerService::UpdateConfigurationLocked ScheduleConfigurationChanged
-    //
+
     if (mWaitingForConfig) {
         // Our configuration has changed (most likely rotation), but we
         // don't yet have the complete configuration to report to

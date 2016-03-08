@@ -1501,8 +1501,8 @@ ECode CContextImpl::SendOrderedBroadcast(
                 scheduler = mMainThread->GetHandler();
             }
             AutoPtr<IContext> ctx = GetOuterContext();
-            LoadedPkg::ReceiverDispatcher* dispatcher = new LoadedPkg::ReceiverDispatcher(
-                    resultReceiver, ctx, scheduler, NULL, FALSE);
+            AutoPtr<LoadedPkg::ReceiverDispatcher> dispatcher = new LoadedPkg::ReceiverDispatcher();
+            FAIL_RETURN(dispatcher->constructor(resultReceiver, ctx, scheduler, NULL, FALSE))
             rd = dispatcher->GetIIntentReceiver();
         }
     }
@@ -1617,8 +1617,8 @@ ECode CContextImpl::SendOrderedBroadcastAsUser(
                 scheduler = mMainThread->GetHandler();
             }
             AutoPtr<IContext> ctx = GetOuterContext();
-            LoadedPkg::ReceiverDispatcher* dispatcher = new LoadedPkg::ReceiverDispatcher(
-                    resultReceiver, ctx, scheduler, NULL, FALSE);
+            AutoPtr<LoadedPkg::ReceiverDispatcher> dispatcher = new LoadedPkg::ReceiverDispatcher();
+            FAIL_RETURN(dispatcher->constructor(resultReceiver, ctx, scheduler, NULL, FALSE))
             rd = dispatcher->GetIIntentReceiver();
         }
     }
@@ -1692,8 +1692,8 @@ ECode CContextImpl::SendStickyOrderedBroadcast(
                 scheduler = mMainThread->GetHandler();
             }
             AutoPtr<IContext> ctx = GetOuterContext();
-            LoadedPkg::ReceiverDispatcher* dispatcher = new LoadedPkg::ReceiverDispatcher(
-                    resultReceiver, ctx, scheduler, NULL, FALSE);
+            AutoPtr<LoadedPkg::ReceiverDispatcher> dispatcher = new LoadedPkg::ReceiverDispatcher();
+            FAIL_RETURN(dispatcher->constructor(resultReceiver, ctx, scheduler, NULL, FALSE))
             rd = dispatcher->GetIIntentReceiver();
         }
     }
@@ -1795,8 +1795,8 @@ ECode CContextImpl::SendStickyOrderedBroadcastAsUser(
                 scheduler = mMainThread->GetHandler();
             }
             AutoPtr<IContext> ctx = GetOuterContext();
-            LoadedPkg::ReceiverDispatcher* dispatcher = new LoadedPkg::ReceiverDispatcher(
-                    resultReceiver, ctx, scheduler, NULL, FALSE);
+            AutoPtr<LoadedPkg::ReceiverDispatcher> dispatcher = new LoadedPkg::ReceiverDispatcher();
+            FAIL_RETURN(dispatcher->constructor(resultReceiver, ctx, scheduler, NULL, FALSE))
             rd = dispatcher->GetIIntentReceiver();
         }
     }
@@ -1911,8 +1911,8 @@ ECode CContextImpl::RegisterReceiverInternal(
             if (scheduler == NULL) {
                 scheduler = mMainThread->GetHandler();
             }
-            AutoPtr<LoadedPkg::ReceiverDispatcher> dispatcher = new LoadedPkg::ReceiverDispatcher(
-                    receiver, context, scheduler, NULL, TRUE);
+            AutoPtr<LoadedPkg::ReceiverDispatcher> dispatcher = new LoadedPkg::ReceiverDispatcher();
+            FAIL_RETURN(dispatcher->constructor(receiver, context, scheduler, NULL, TRUE))
             rd = dispatcher->GetIIntentReceiver();
         }
     }

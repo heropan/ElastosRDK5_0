@@ -3975,7 +3975,7 @@ ECode CPackageManagerService::RemoveUnusedPackagesRunnable::Run()
 //==============================================================================
 
 const String CPackageManagerService::TAG("CPackageManagerService");
-const Boolean CPackageManagerService::DEBUG_SETTINGS = TRUE;
+const Boolean CPackageManagerService::DEBUG_SETTINGS = FALSE;
 const Boolean CPackageManagerService::DEBUG_PREFERRED = FALSE;
 const Boolean CPackageManagerService::DEBUG_UPGRADE = FALSE;
 const Boolean CPackageManagerService::DEBUG_INSTALL = FALSE;
@@ -4305,6 +4305,7 @@ ECode CPackageManagerService::constructor(
                 os->Chmod(path, OsConstants::_S_IRWXU | OsConstants::_S_IRWXG | OsConstants::_S_IRWXO);
             }
 
+            Logger::I(TAG, " create CUserManagerService");
             CUserManagerService::NewByFriend(context, this,
                 &mInstallLock, &mPackagesLock, (CUserManagerService**)&sUserManager);
 
@@ -4336,8 +4337,7 @@ ECode CPackageManagerService::constructor(
 
             AutoPtr<IList> users;
             sUserManager->GetUsers(FALSE, (IList**)&users);
-            // assert(0 && "TODO");
-            // mRestoredSettings = mSettings->ReadLPw(this, users, mSdkVersion, mOnlyCore);
+            mRestoredSettings = mSettings->ReadLPw(this, users, mSdkVersion, mOnlyCore);
 
             AutoPtr<IResourcesHelper> resH;
             CResourcesHelper::AcquireSingleton((IResourcesHelper**)&resH);
@@ -4804,9 +4804,8 @@ ECode CPackageManagerService::constructor(
             // All the changes are done during package scanning.
             mSettings->UpdateInternalDatabaseVersion();
 
-            //assert(0 && "TODO");
             // can downgrade to reader
-            // mSettings->WriteLPr();
+            mSettings->WriteLPr();
 
 //         EventLog.writeEvent(EventLogTags.BOOT_PROGRESS_PMS_READY,
 //                 SystemClock.uptimeMillis());
@@ -5463,9 +5462,9 @@ ECode CPackageManagerService::GetApplicationInfo(
     VALIDATE_NOT_NULL(appInfo)
     *appInfo = NULL;
 
-    Slogger::D(TAG, " >> GetApplicationInfo %s, userId %d", packageName.string(), userId);
+    Slogger::D(TAG, " >> GetApplicationInfo [%s], userId %d", packageName.string(), userId);
     if (!sUserManager->Exists(userId)) {
-        Slogger::D(TAG, " >> GetApplicationInfo %d", __LINE__);
+        Slogger::D(TAG, " >> GetApplicationInfo %d, userId %d not exists.", __LINE__, userId);
         return NOERROR;
     }
 
@@ -5481,7 +5480,7 @@ ECode CPackageManagerService::GetApplicationInfo(
             }
         }
         // if (DEBUG_PACKAGE_INFO)
-        Slogger::V(TAG, "getApplicationInfo %s: %s", packageName.string(), TO_CSTR(p));
+        Slogger::V(TAG, "getApplicationInfo [%s]: %s", packageName.string(), TO_CSTR(p));
         if (p != NULL) {
             AutoPtr<PackageSetting> ps;
             HashMap<String, AutoPtr<PackageSetting> >::Iterator pit =
@@ -5490,27 +5489,27 @@ ECode CPackageManagerService::GetApplicationInfo(
                 ps = pit->mSecond;
             }
             if (ps == NULL) {
-        Slogger::D(TAG, " >> GetApplicationInfo %d", __LINE__);
+                Slogger::D(TAG, " >> GetApplicationInfo %d", __LINE__);
                 return NOERROR;
             }
             // Note: isEnabledLP() does not apply here - always return info
             AutoPtr<IApplicationInfo> info = PackageParser::GenerateApplicationInfo(
                     p, flags, ps->ReadUserState(userId), userId);
-        Slogger::D(TAG, " >> GetApplicationInfo %d", __LINE__);
+            Slogger::D(TAG, " >> GetApplicationInfo %d : %s", __LINE__, TO_CSTR(info));
             *appInfo = info;
             REFCOUNT_ADD(*appInfo)
             return NOERROR;
         }
 
         if (packageName.Equals("android") || packageName.Equals("system")) {
-        Slogger::D(TAG, " >> GetApplicationInfo %d", __LINE__);
+            Slogger::D(TAG, " >> GetApplicationInfo %d, %s", __LINE__, TO_CSTR(mElastosApplication));
             *appInfo = mElastosApplication;
             REFCOUNT_ADD(*appInfo)
             return NOERROR;
         }
         if((flags & IPackageManager::GET_UNINSTALLED_PACKAGES) != 0) {
-        Slogger::D(TAG, " >> GetApplicationInfo %d", __LINE__);
             AutoPtr<IApplicationInfo> info = GenerateApplicationInfoFromSettingsLPw(packageName, flags, userId);
+            Slogger::D(TAG, " >> GetApplicationInfo %d : %s", __LINE__, TO_CSTR(info));
             *appInfo = info;
             REFCOUNT_ADD(*appInfo)
             return NOERROR;
@@ -8742,8 +8741,8 @@ ECode CPackageManagerService::CollectCertificatesLI(
             return NOERROR;
         }
 
-        Slogger::W(TAG, "PackageSetting for %s is missing signatures. Collecting certs again to recover them.",
-                ps->mName.string());
+        // Slogger::W(TAG, "PackageSetting for %s is missing signatures. Collecting certs again to recover them.",
+        //         ps->mName.string());
     }
 
     // try {
@@ -10149,9 +10148,11 @@ ECode CPackageManagerService::ScanPackageDirtyLI(
     }
 
     String packageName;
-    if (mCustomResolverComponentName != NULL &&
-            (mCustomResolverComponentName->GetPackageName(&packageName), packageName.Equals(pkg->mPackageName))) {
-        SetUpCustomResolverActivity(pkg);
+    if (mCustomResolverComponentName != NULL) {
+        mCustomResolverComponentName->GetPackageName(&packageName);
+        if (packageName.Equals(pkg->mPackageName)) {
+            SetUpCustomResolverActivity(pkg);
+        }
     }
 
     if (pkg->mPackageName.Equals("android")) {
@@ -10166,14 +10167,15 @@ ECode CPackageManagerService::ScanPackageDirtyLI(
                 return E_PACKAGE_MANAGER_EXCEPTION;
             }
 
-            Slogger::W(TAG, "*************************************************");
-            Slogger::W(TAG, "Core android package being scanned %s.", TO_CSTR(scanFile));
-            Slogger::W(TAG, "*************************************************");
-
             // Set up information for our fall-back user intent resolution activity.
             mPlatformPackage = pkg;
             pkg->mVersionCode = mSdkVersion;
             mElastosApplication = pkg->mApplicationInfo;
+
+            Slogger::W(TAG, "*************************************************");
+            Slogger::W(TAG, "Core android package being scanned %s", TO_CSTR(scanFile));
+            Slogger::W(TAG, "ElastosApplication %s", TO_CSTR(mElastosApplication));
+            Slogger::W(TAG, "*************************************************");
 
             if (!mResolverReplaced) {
                 AutoPtr<IComponentInfo> ci = IComponentInfo::Probe(mResolveActivity);

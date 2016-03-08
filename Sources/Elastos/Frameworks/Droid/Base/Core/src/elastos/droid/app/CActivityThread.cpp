@@ -1645,7 +1645,6 @@ ECode CActivityThread::InstallSystemApplicationInfo(
     Slogger::D(TAG, " > TODO: CActivityThread::InstallSystemApplicationInfo: %s", TO_CSTR(info));
 
     synchronized(this) {
-#if 0
         AutoPtr<IContextImpl> ctx;
         GetSystemContext((IContextImpl**)&ctx);
         CContextImpl* cctx = (CContextImpl*)ctx.Get();
@@ -1657,7 +1656,7 @@ ECode CActivityThread::InstallSystemApplicationInfo(
         AutoPtr<IWeakReference> wr;
         wrs->GetWeakReference((IWeakReference**)&wr);
         mPackages[String("android")] = wr;
-#endif
+
         // give ourselves a default profiler
         mProfiler = new Profiler();
     }
