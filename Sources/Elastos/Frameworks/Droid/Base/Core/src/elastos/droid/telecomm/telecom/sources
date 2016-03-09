@@ -13,3 +13,8 @@ INCLUDES += $(MAKEDIR)/../../../../../inc/
 C_DEFINES += -DDROID_CORE
 
 SOURCES = AudioState.cpp
+SOURCES += Call.cpp
+SOURCES += CCallState.cpp
+SOURCES += CameraCapabilities.cpp
+SOURCES += Conference.cpp
+SOURCES += Connection.cpp

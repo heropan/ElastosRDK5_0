@@ -1,5 +1,5 @@
-#ifndef __ELASTOS_DROID_TELECOM_AUDIOSTATE_H__
-#define __ELASTOS_DROID_TELECOM_AUDIOSTATE_H__
+#ifndef __ELASTOS_DROID_TELECOMM_TELECOM_AUDIOSTATE_H__
+#define __ELASTOS_DROID_TELECOMM_TELECOM_AUDIOSTATE_H__
 
 #include "Elastos.Droid.Telecomm.h"
 
@@ -20,6 +20,8 @@ class AudioState
     , public IParcelable
 {
 public:
+    CAR_INTERFACE_DECL()
+
     AudioState();
 
     CARAPI constructor();
@@ -34,7 +36,7 @@ public:
 
     CARAPI Equals(
         /* [in] */ IInterface* obj,
-        /* [in] */ Boolean* res);
+        /* [out] */ Boolean* res);
 
     CARAPI ToString(
         /* [out] */ String* str);
@@ -50,7 +52,7 @@ public:
 
 private:
     static CARAPI_(void) ListAppend(
-        /* [in] */ StringBuffer buffer,
+        /* [in] */ StringBuffer* buffer,
         /* [in] */ const String& str);
 
 public:
@@ -68,4 +70,5 @@ public:
 } // namespace Telecomm
 } // namespace Droid
 } // namespace Elastos
-#endif
+
+#endif //__ELASTOS_DROID_TELECOMM_TELECOM_AUDIOSTATE_H__

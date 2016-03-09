@@ -147,7 +147,7 @@ ECode ChooseTypeAndAccountActivity::OnCreate(
         // show is as pre-selected.
         AutoPtr<IParcelable> parcel;
         intent->GetParcelableExtra(EXTRA_SELECTED_ACCOUNT, (IParcelable**)&parcel);
-        AutoPtr<IAccount> selectedAccount = (IAccount*)parcel->Probe(EIID_IAccount);
+        AutoPtr<IAccount> selectedAccount = IAccount::Probe(parcel);
         if (selectedAccount != NULL) {
             mSelectedAccountName = ((CAccount*)selectedAccount.Get())->mName;
         }

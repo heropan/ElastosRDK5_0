@@ -9,6 +9,7 @@ module
     merge("telecomm/telecom/Phone.car");
     merge("telecomm/telecom/InCallService.car");
     merge("telecomm/telecom/Call.car");
+    merge("telecomm/telecom/CallProperties.car");
     merge("telecomm/telecom/VideoProfile.car");
     merge("telecomm/telecom/CallState.car");
     merge("telecomm/telecom/CameraCapabilities.car");
@@ -40,4 +41,19 @@ module
     merge("telecomm/internal/IVideoCallback.car");
     merge("telecomm/internal/IVideoProvider.car");
     merge("telecomm/internal/RemoteServiceCallback.car");
+
+    namespace Elastos {
+    namespace Droid {
+    namespace Telecomm {
+    namespace Telecom {
+
+    singleton class CCallState {
+        interface ICallState;
+    }
+
+    } // namespace Telecom
+    } // namespace Telecomm
+    } // namespace Droid
+    } // namespace Elastos
+
 }

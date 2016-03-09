@@ -25,8 +25,7 @@ ECode AccountAuthenticatorActivity::OnCreate(
     FAIL_RETURN(GetIntent((IIntent**)&intent));
     FAIL_RETURN(intent->GetParcelableExtra(
             IAccountManager::KEY_ACCOUNT_AUTHENTICATOR_RESPONSE, (IParcelable**)&parcelable));
-    mAccountAuthenticatorResponse = (IAccountAuthenticatorResponse*)
-            parcelable->Probe(EIID_IAccountAuthenticatorResponse);
+    mAccountAuthenticatorResponse = IAccountAuthenticatorResponse::Probe(parcelable);
     if (mAccountAuthenticatorResponse != NULL) {
         return mAccountAuthenticatorResponse->OnRequestContinued();
     }

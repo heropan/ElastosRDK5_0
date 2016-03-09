@@ -8,10 +8,8 @@
 #include <elastos/utility/logging/Logger.h>
 
 using Elastos::Droid::Os::CBundle;
-using Elastos::Droid::Content::EIID_IContext;
 using Elastos::Droid::Content::Res::IResources;
 using Elastos::Droid::Widget::IAdapter;
-using Elastos::Droid::Widget::EIID_IAdapter;
 using Elastos::Droid::Widget::IAbsListView;
 using Elastos::Droid::Widget::EIID_IAdapterViewOnItemClickListener;
 using Elastos::Core::CString;
@@ -95,8 +93,7 @@ ECode ChooseAccountActivity::AdapterViewOnItemClickListener::OnItemClick(
     /* [in] */ Int32 position,
     /* [in] */ Int64 id)
 {
-    AutoPtr<IListView> parentView = (IListView*)parent->Probe(
-            Elastos::Droid::Widget::EIID_IListView);
+    AutoPtr<IListView> parentView = IListView::Probe(parent);
     return mHost->OnListItemClick(parentView, view, position, id);
 }
 

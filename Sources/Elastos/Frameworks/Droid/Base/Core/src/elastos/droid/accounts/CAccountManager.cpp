@@ -38,7 +38,6 @@ using Elastos::Droid::Content::CIntentFilter;
 using Elastos::Droid::Content::IComponentNameHelper;
 using Elastos::Droid::Content::CComponentNameHelper;
 using Elastos::Droid::Content::IComponentName;
-using Elastos::Droid::Content::EIID_IBroadcastReceiver;
 using Elastos::Droid::Content::Pm::IApplicationInfo;
 using Elastos::Droid::Content::Res::IResourcesHelper;
 using Elastos::Droid::Content::Res::CResourcesHelper;
