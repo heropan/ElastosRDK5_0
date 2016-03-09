@@ -942,7 +942,6 @@ ECode CWindowManagerService::constructor(
     CDisplayMetrics::New((IDisplayMetrics**)&mCompatDisplayMetrics);
 
     mH = new H(this);
-
     AutoPtr<IChoreographerHelper> helper;
     CChoreographerHelper::AcquireSingleton((IChoreographerHelper**)&helper);
     helper->GetInstance((IChoreographer**)&mChoreographer);
@@ -977,6 +976,7 @@ ECode CWindowManagerService::constructor(
     FAIL_RETURN(CSurfaceSession::New((ISurfaceSession**)&mFxSession))
     service = NULL;
     context->GetSystemService(IContext::DISPLAY_SERVICE, (IInterface**)&service);
+
     mDisplayManager = IDisplayManager::Probe(service);
     AutoPtr< ArrayOf<IDisplay*> > displays;
     mDisplayManager->GetDisplays((ArrayOf<IDisplay*>**)&displays);
@@ -1002,15 +1002,20 @@ ECode CWindowManagerService::constructor(
 
     mAppTransition = new AppTransition(context, mH);
 
+    Slogger::D(TAG, " >> 3");
+
     mActivityManager = ActivityManagerNative::GetDefault();
     mBatteryStats = CBatteryStatsService::GetService();
     service = NULL;
     context->GetSystemService(IContext::APP_OPS_SERVICE, (IInterface**)&service);
-    mAppOps = IAppOpsManager::Probe(service);
-    AutoPtr<IAppOpsManagerOnOpChangedListener> opListener = new MyAppOpsManagerOnOpChangedListener(this);
-    mAppOps->StartWatchingMode(IAppOpsManager::OP_SYSTEM_ALERT_WINDOW, String(NULL), opListener);
-    mAppOps->StartWatchingMode(IAppOpsManager::OP_TOAST_WINDOW, String(NULL), opListener);
+    if (mAppOps != NULL) {
+        mAppOps = IAppOpsManager::Probe(service);
+        AutoPtr<IAppOpsManagerOnOpChangedListener> opListener = new MyAppOpsManagerOnOpChangedListener(this);
+        mAppOps->StartWatchingMode(IAppOpsManager::OP_SYSTEM_ALERT_WINDOW, String(NULL), opListener);
+        mAppOps->StartWatchingMode(IAppOpsManager::OP_TOAST_WINDOW, String(NULL), opListener);
+    }
 
+    Slogger::D(TAG, " >> 4");
     // Get persisted window scale setting
     AutoPtr<IContentResolver> resolver;
     context->GetContentResolver((IContentResolver**)&resolver);
@@ -1023,6 +1028,7 @@ ECode CWindowManagerService::constructor(
             mAnimatorDurationScaleSetting, &scaleSetting);
     SetAnimatorDurationScale(scaleSetting);
 
+    Slogger::D(TAG, " >> 5");
     // Track changes to DevicePolicyManager state so we can enable/disable keyguard.
     AutoPtr<IIntentFilter> filter;
     CIntentFilter::New((IIntentFilter**)&filter);
@@ -1039,6 +1045,7 @@ ECode CWindowManagerService::constructor(
 
     mAnimator = new WindowAnimator(this);
 
+    Slogger::D(TAG, " >> 6");
     AutoPtr<IWindowManagerInternal> wmInternal = new LocalService(this);
     LocalServices::AddService(EIID_IWindowManagerInternal, wmInternal);
     InitPolicy();
@@ -1057,6 +1064,7 @@ ECode CWindowManagerService::constructor(
     scHelper->CloseTransaction();
     // }
 
+    Slogger::D(TAG, " >> 7");
     ShowCircularDisplayMaskIfNeeded();
     ShowEmulatorDisplayOverlayIfNeeded();
 

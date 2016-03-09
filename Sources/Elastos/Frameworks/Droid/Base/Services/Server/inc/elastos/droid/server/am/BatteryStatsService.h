@@ -87,7 +87,7 @@ public:
         /* [in] */ IFile* systemDir,
         /* [in] */ IHandler* handler);
 
-    CARAPI_(void) Publish(
+    CARAPI Publish(
         /* [in] */ IContext* context);
 
     /**

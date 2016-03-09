@@ -6,9 +6,11 @@
 #include <utils/Log.h>
 #include "elastos/droid/os/CServiceManager.h"
 #include "elastos/droid/os/Process.h"
-#include <elastos/utility/logging/Slogger.h>
 #include <elastos/core/AutoLock.h>
+#include <elastos/utility/logging/Slogger.h>
+#include <elastos/utility/etl/List.h>
 
+using Elastos::Utility::Etl::List;
 using Elastos::Utility::Logging::Slogger;
 
 #define ELASTOS_SERVICEMGR_NAME "elastos.servicemanager"
@@ -21,6 +23,8 @@ enum {
     ADD_SERVICE = android::IBinder::FIRST_CALL_TRANSACTION,
     GET_SERVICE,
     REMOVE_SERVICE,
+    CHECK_SERVICE,
+    LIST_SERVICES,
 };
 
 // come from marshal.h
@@ -192,10 +196,43 @@ ECode CServiceManager::CheckService(
     return NOERROR;
 }
 
+static String String16ToString(const android::String16& str16)
+{
+    Int32 size = str16.size();
+    const char16_t* p = str16.string();
+    AutoPtr<ArrayOf<Char32> > buf = ArrayOf<Char32>::Alloc(size);
+    for (Int32 i = 0; i < size; ++i) {
+        buf->Set(i, (Char32)(*(p + i)));
+    }
+    String str(*buf);
+    return str;
+}
+
 ECode CServiceManager::ListServices(
     /* [out, callee] */ ArrayOf<String>** services)
 {
-    assert(0);
+    VALIDATE_NOT_NULL(services)
+
+    AutoPtr< ArrayOf<String> > array;
+
+    android::Parcel data, reply;
+    android::status_t ret = get_service_manager()->transact(LIST_SERVICES, data, &reply);
+    if (ret != android::NO_ERROR) {
+        array = ArrayOf<String>::Alloc(0);
+        *services = array;
+        REFCOUNT_ADD(*services)
+        return E_REMOTE_EXCEPTION;
+    }
+
+    Int32 size = reply.readInt32();
+    array = ArrayOf<String>::Alloc(size);
+    for (Int32 i = 0; i < size; ++i) {
+        android::String16 str16 = reply.readString16();
+        array->Set(i, String16ToString(str16));
+    }
+
+    *services = array;
+    REFCOUNT_ADD(*services)
     return NOERROR;
 }
 

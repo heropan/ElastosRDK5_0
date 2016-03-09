@@ -326,7 +326,7 @@ const Int32 AlarmManagerService::TYPE_NONWAKEUP_MASK = 0x1; // low bit => non-wa
 
 const String AlarmManagerService::TAG("AlarmManagerService");
 const String AlarmManagerService::ClockReceiver_TAG("ClockReceiver");
-const Boolean AlarmManagerService::localLOGV = TRUE;
+const Boolean AlarmManagerService::localLOGV = FALSE;
 const Boolean AlarmManagerService::DEBUG_BATCH = AlarmManagerService::localLOGV;
 const Boolean AlarmManagerService::DEBUG_VALIDATE = AlarmManagerService::localLOGV;
 const Boolean AlarmManagerService::DEBUG_ALARM_CLOCK = AlarmManagerService::localLOGV;
@@ -761,7 +761,7 @@ ECode AlarmManagerService::Batch::ToString(
     if (mStandalone) {
         b.Append(" STANDALONE");
     }
-    b.Append('}');
+    b.AppendChar('}');
     *result = b.ToString();
     return NOERROR;
 }
@@ -1436,7 +1436,7 @@ ECode AlarmManagerService::Alarm::ToString(
     String pkg;
     mOperation->GetTargetPackage(&pkg);
     sb.Append(pkg);
-    sb.Append('}');
+    sb.Append("}");
     *str = sb.ToString();
     return NOERROR;
 }

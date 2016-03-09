@@ -93,8 +93,8 @@ const Int32 Settings::DatabaseVersion::SIGNATURE_MALFORMED_RECOVER;
 
 const String Settings::TAG("Pm::Settings");
 const Int32 Settings::CURRENT_DATABASE_VERSION;
-const Boolean Settings::DEBUG_STOPPED;
-const Boolean Settings::DEBUG_MU;
+const Boolean Settings::DEBUG_STOPPED = FALSE;
+const Boolean Settings::DEBUG_MU = FALSE;
 const String Settings::TAG_READ_EXTERNAL_STORAGE("read-external-storage");
 const String Settings::ATTR_ENFORCEMENT("enforcement");
 const String Settings::TAG_ITEM("item");
@@ -1598,8 +1598,9 @@ void Settings::WritePackageRestrictionsLPr(
                 || ustate->mBlockUninstall) {
             serializer->WriteStartTag(String(NULL), TAG_PACKAGE);
             serializer->WriteAttribute(String(NULL), ATTR_NAME, pkg->mName);
-            if (DEBUG_MU) Slogger::I(TAG, String("  pkg=") + pkg->mName + String(", state= %d"), ustate->mEnabled);
-
+            if (DEBUG_MU) {
+                Slogger::I(TAG, "  pkg=%s, state=%d", pkg->mName.string(), ustate->mEnabled);
+            }
             if (!ustate->mInstalled) {
                 serializer->WriteAttribute(String(NULL), ATTR_INSTALLED, String("false"));
             }
@@ -3536,13 +3537,9 @@ ECode Settings::ReadPackageLPw(
         packageSetting = AddPackageLPw(name, realName, codePath,
                 resourcePath, legacyNativeLibraryPathStr, primaryCpuAbiString,
                 secondaryCpuAbiString, cpuAbiOverrideString, userId, versionCode, pkgFlags);
-       if (CPackageManagerService::DEBUG_SETTINGS)
-            sb += "Reading package ";
-            sb += name;
-            sb += ": userId=";
-            sb += userId;
-            sb += " pkg=";
-            Slogger::I(TAG, sb.ToString());
+       if (CPackageManagerService::DEBUG_SETTINGS) {
+            Slogger::I(TAG, "Reading package %s: userId=%d", name.string(), userId);
+        }
         if (packageSetting == NULL) {
             sb += "Failure adding uid ";
             sb += userId;
@@ -3569,13 +3566,9 @@ ECode Settings::ReadPackageLPw(
             packageSetting->mFirstInstallTime = firstInstallTime;
             packageSetting->mLastUpdateTime = lastUpdateTime;
             mPendingPackages.PushBack((PendingPackage*)packageSetting.Get());
-           if (CPackageManagerService::DEBUG_SETTINGS)
-                sb += "Reading package ";
-                sb += name;
-                sb += ": sharedUserId=";
-                sb += userId;
-                sb += " pkg=";
-               Slogger::I(TAG, sb.ToString());
+           if (CPackageManagerService::DEBUG_SETTINGS) {
+                Slogger::I(TAG, "Reading package %s: sharedUserId=%d", name.string(), userId);
+            }
         }
         else {
             sb += "Error in package manager settings: package ";

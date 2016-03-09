@@ -2938,7 +2938,7 @@ public:
     CARAPI_(void) HandleCollectPssBgMsg();
 
 private:
-    CARAPI_(void) Start();
+    CARAPI Start();
 
     /**
      * Initialize the application bind args. These are passed to each

@@ -54,6 +54,7 @@
 #include <elastos/droid/os/SELinux.h>
 #include <elastos/droid/os/SystemClock.h>
 #include <elastos/droid/os/UserHandle.h>
+#include <elastos/droid/os/ServiceManager.h>
 #include <elastos/droid/view/LayoutInflater.h>
 #include <elastos/droid/utility/TimeUtils.h>
 #include <elastos/droid/utility/Xml.h>
@@ -179,8 +180,7 @@ using Elastos::Droid::Os::IProcess;
 using Elastos::Droid::Os::IPatternMatcher;
 using Elastos::Droid::Os::CRemoteCallbackList;
 using Elastos::Droid::Os::IRemoteCallback;
-using Elastos::Droid::Os::CServiceManager;
-using Elastos::Droid::Os::IServiceManager;
+using Elastos::Droid::Os::ServiceManager;
 using Elastos::Droid::Os::ISystemProperties;
 using Elastos::Droid::Os::CSystemProperties;
 using Elastos::Droid::Os::CStrictMode;
@@ -1979,10 +1979,7 @@ ECode CActivityManagerService::MainHandler::HandleMessage(
         break;
         case SEND_LOCALE_TO_MOUNT_DAEMON_MSG: {
             AutoPtr<ILocale> l = ILocale::Probe(obj);
-            AutoPtr<IServiceManager> sm;
-            CServiceManager::AcquireSingleton((IServiceManager**)&sm);
-            AutoPtr<IInterface> service;
-            sm->GetService(String("mount"), (IInterface**)&service);
+            AutoPtr<IInterface> service = ServiceManager::GetService(String("mount"));
             AutoPtr<IIMountService> mountService = IIMountService::Probe(service);
             String tag;
             l->ToLanguageTag(&tag);
@@ -2179,8 +2176,7 @@ ECode CActivityManagerService::Lifecycle::constructor(
 // @Override
 ECode CActivityManagerService::Lifecycle::OnStart()
 {
-    mService->Start();
-    return NOERROR;
+    return mService->Start();
 }
 
 AutoPtr<CActivityManagerService> CActivityManagerService::Lifecycle::GetService()
@@ -2769,26 +2765,23 @@ AutoPtr<BroadcastRecord> CActivityManagerService::BroadcastRecordForReceiverLock
 ECode CActivityManagerService::SetSystemProcess()
 {
 //    try {
-    AutoPtr<IServiceManager> sm;
-    CServiceManager::AcquireSingleton((IServiceManager**)&sm);
-    FAIL_RETURN(sm->AddService(IContext::ACTIVITY_SERVICE, TO_IINTERFACE(this), TRUE))
-    FAIL_RETURN(sm->AddService(IProcessStats::SERVICE_NAME, TO_IINTERFACE(mProcessStats)))
-    // sm->AddService("meminfo", new MemBinder(this));
-    // sm->AddService("gfxinfo", new GraphicsBinder(this));
-    // sm->AddService("dbinfo", new DbBinder(this));
+    FAIL_RETURN(ServiceManager::AddService(IContext::ACTIVITY_SERVICE, TO_IINTERFACE(this), TRUE))
+    FAIL_RETURN(ServiceManager::AddService(IProcessStats::SERVICE_NAME, TO_IINTERFACE(mProcessStats)))
+    // ServiceManager::AddService("meminfo", new MemBinder(this));
+    // ServiceManager::AddService("gfxinfo", new GraphicsBinder(this));
+    // ServiceManager::AddService("dbinfo", new DbBinder(this));
     // if (MONITOR_CPU_USAGE) {
-    //     sm->AddService("cpuinfo", new CpuBinder(this));
+    //     ServiceManager::AddService("cpuinfo", new CpuBinder(this));
     // }
 
     AutoPtr<IPermissionController> permissionController;
     CPermissionController::New(this, (IPermissionController**)&permissionController);
-    sm->AddService(String("permission"), permissionController.Get());
+    FAIL_RETURN(ServiceManager::AddService(String("permission"), permissionController.Get()))
 
     AutoPtr<IPackageManager> pm;
     mContext->GetPackageManager((IPackageManager**)&pm);
     AutoPtr<IApplicationInfo> info;
     pm->GetApplicationInfo(String("android"), STOCK_PM_FLAGS, (IApplicationInfo**)&info);
-    assert(info != NULL);
     mSystemThread->InstallSystemApplicationInfo(info, NULL);
 
     {
@@ -2932,15 +2925,15 @@ void CActivityManagerService::SetSystemServiceManager(
     mSystemServiceManager = mgr;
 }
 
-void CActivityManagerService::Start()
+ECode CActivityManagerService::Start()
 {
     Process::RemoveAllProcessGroups();
     mProcessCpuThread->Start();
 
-    mBatteryStatsService->Publish(mContext);
-    mAppOpsService->Publish(mContext);
+    FAIL_RETURN(mBatteryStatsService->Publish(mContext))
+    FAIL_RETURN(mAppOpsService->Publish(mContext))
     AutoPtr<LocalService> localService = new LocalService(this);
-    LocalServices::AddService(EIID_IActivityManagerInternal, localService->Probe(EIID_IInterface));
+    return LocalServices::AddService(EIID_IActivityManagerInternal, localService->Probe(EIID_IInterface));
 }
 
 void CActivityManagerService::InitPowerManagement()
@@ -3126,17 +3119,13 @@ AutoPtr<IHashMap> CActivityManagerService::GetCommonServicesLocked()
         AutoPtr<IInterface> keyPm = CoreUtils::Convert(String("package"));
         AutoPtr<IInterface> keyWm = CoreUtils::Convert(String("window"));
         AutoPtr<IInterface> keySm = CoreUtils::Convert(IContext::ALARM_SERVICE);
-        AutoPtr<IServiceManager> sm;
-        CServiceManager::AcquireSingleton((IServiceManager**)&sm);
-        AutoPtr<IInterface> packageManager;
-        sm->GetService(String("package"), (IInterface**)&packageManager);
-        AutoPtr<IInterface> windowManager;
-        sm->GetService(String("window"), (IInterface**)&windowManager);
-        AutoPtr<IInterface> serviceManager;
-        sm->GetService(IContext::ALARM_SERVICE, (IInterface**)&serviceManager);
+
+        AutoPtr<IInterface> packageManager = ServiceManager::GetService(String("package"));
+        AutoPtr<IInterface> windowManager = ServiceManager::GetService(String("window"));
+        AutoPtr<IInterface> alarmService = ServiceManager::GetService(IContext::ALARM_SERVICE);
         mAppBindArgs->Put(keyPm, packageManager);
         mAppBindArgs->Put(keyWm, windowManager);
-        mAppBindArgs->Put(keySm, serviceManager);
+        mAppBindArgs->Put(keySm, alarmService);
     }
 
     return mAppBindArgs;
@@ -7652,10 +7641,7 @@ ECode CActivityManagerService::ProcessStartTimedOutLocked(
         if (mBackupTarget != NULL && mBackupTarget->mApp->mPid == pid) {
             Slogger::W(TAG, "Unattached app died before backup, skipping");
             // try {
-            AutoPtr<IServiceManager> sm;
-            CServiceManager::AcquireSingleton((IServiceManager**)&sm);
-            AutoPtr<IInterface> backupService;
-            sm->GetService(IContext::BACKUP_SERVICE, (IInterface**)&backupService);
+            AutoPtr<IInterface> backupService = ServiceManager::GetService(IContext::BACKUP_SERVICE);
             AutoPtr<IIBackupManager> bm = IIBackupManager::Probe(backupService);
             String pkgName;
             IPackageItemInfo::Probe(app->mInfo)->GetPackageName(&pkgName);
@@ -8815,9 +8801,9 @@ ECode CActivityManagerService::SetProcessForeground(
     return NOERROR;
 }
 
-//// =========================================================
-//// PERMISSIONS
-//// =========================================================
+//=========================================================
+// PERMISSIONS
+//=========================================================
 
 Int32 CActivityManagerService::CheckComponentPermission(
     /* [in] */ const String& permission,
@@ -8831,12 +8817,7 @@ Int32 CActivityManagerService::CheckComponentPermission(
     // client identity accordingly before proceeding.
     AutoPtr<Identity> tlsIdentity = (Identity*)pthread_getspecific(sCallerIdentity);
     if (tlsIdentity != NULL) {
-        StringBuilder sb("  adjusting {pid,uid} to {");
-        sb += tlsIdentity->mPid;
-        sb += ",";
-        sb += tlsIdentity->mUid;
-        sb += "}";
-        Slogger::D(TAG, sb.ToString().string());
+        Slogger::D(TAG, "  adjusting {pid,uid} to {%d, %d}", tlsIdentity->mPid, tlsIdentity->mUid);
 
         uid = tlsIdentity->mUid;
         pid = tlsIdentity->mPid;
@@ -8864,8 +8845,7 @@ ECode CActivityManagerService::CheckPermission(
         *result = IPackageManager::PERMISSION_DENIED;
     }
     else {
-        *result = CheckComponentPermission(permission,
-                pid, UserHandle::GetAppId(uid), -1, TRUE);
+        *result = CheckComponentPermission(permission, pid, UserHandle::GetAppId(uid), -1, TRUE);
     }
 
     return NOERROR;
@@ -8886,8 +8866,7 @@ ECode CActivityManagerService::EnforceCallingPermission(
     /* [in] */ const String& permission,
     /* [in] */ const String& func)
 {
-    if (CheckCallingPermission(permission)
-            == IPackageManager::PERMISSION_GRANTED) {
+    if (CheckCallingPermission(permission) == IPackageManager::PERMISSION_GRANTED) {
         return NOERROR;
     }
 
@@ -18244,10 +18223,7 @@ Boolean CActivityManagerService::CleanUpApplicationRecordLocked(
             Slogger::D(TAG, "App %s died during backup", aiDes.string());
         }
         // try {
-        AutoPtr<IServiceManager> sm;
-        CServiceManager::AcquireSingleton((IServiceManager**)&sm);
-        AutoPtr<IInterface> service;
-        sm->GetService(IContext::BACKUP_SERVICE, (IInterface**)&service);
+        AutoPtr<IInterface> service = ServiceManager::GetService(IContext::BACKUP_SERVICE);
         AutoPtr<IIBackupManager> bm = IIBackupManager::Probe(service);
         String appCName;
         IPackageItemInfo::Probe(app->mInfo)->GetPackageName(&appCName);
@@ -18994,10 +18970,7 @@ ECode CActivityManagerService::BackupAgentCreated(
 
     Int64 oldIdent = Binder::ClearCallingIdentity();
     // try {
-    AutoPtr<IServiceManager> sm;
-    CServiceManager::AcquireSingleton((IServiceManager**)&sm);
-    AutoPtr<IInterface> service;
-    sm->GetService(IContext::BACKUP_SERVICE, (IInterface**)&service);
+    AutoPtr<IInterface> service = ServiceManager::GetService(IContext::BACKUP_SERVICE);
     AutoPtr<IIBackupManager> bm = IIBackupManager::Probe(service);
     bm->AgentConnected(agentPackageName, agent);
     // } catch (RemoteException e) {
@@ -23929,10 +23902,7 @@ AutoPtr< ArrayOf<Int32> > CActivityManagerService::GetUsersLocked()
 AutoPtr<CUserManagerService> CActivityManagerService::GetUserManagerLocked()
 {
    if (mUserManager == NULL) {
-        AutoPtr<IServiceManager> sm;
-        CServiceManager::AcquireSingleton((IServiceManager**)&sm);
-        AutoPtr<IInterface> iface;
-        sm->GetService(IContext::USER_SERVICE, (IInterface**)&iface);
+        AutoPtr<IInterface> iface = ServiceManager::GetService(IContext::USER_SERVICE);
         mUserManager = (CUserManagerService*)IIUserManager::Probe(iface);
    }
    return mUserManager;

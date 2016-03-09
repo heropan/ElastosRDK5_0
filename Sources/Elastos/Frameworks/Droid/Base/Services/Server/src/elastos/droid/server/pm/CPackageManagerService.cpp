@@ -5871,6 +5871,8 @@ ECode CPackageManagerService::CheckPermission(
     /* [out] */ Int32* result)
 {
     VALIDATE_NOT_NULL(result)
+    *result = IPackageManager::PERMISSION_DENIED;
+
     synchronized (mPackagesLock) {
         AutoPtr<PackageParser::Package> p;
         HashMap<String, AutoPtr<PackageParser::Package> >::Iterator it = mPackages.Find(pkgName);
@@ -5893,7 +5895,7 @@ ECode CPackageManagerService::CheckPermission(
             }
         }
     }
-    *result = IPackageManager::PERMISSION_DENIED;
+
     return NOERROR;
 }
 
@@ -5903,6 +5905,7 @@ ECode CPackageManagerService::CheckUidPermission(
     /* [out] */ Int32* result)
 {
     VALIDATE_NOT_NULL(result);
+    *result = IPackageManager::PERMISSION_DENIED;
 
     synchronized (mPackagesLock) {
         AutoPtr<IInterface> obj = mSettings->GetUserIdLPr(UserHandle::GetAppId(uid));
@@ -5935,7 +5938,7 @@ ECode CPackageManagerService::CheckUidPermission(
             }
         }
     }
-    *result = IPackageManager::PERMISSION_DENIED;
+
     return NOERROR;
 }
 

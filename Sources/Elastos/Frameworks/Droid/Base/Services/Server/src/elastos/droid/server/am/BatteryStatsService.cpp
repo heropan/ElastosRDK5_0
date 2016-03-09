@@ -296,7 +296,7 @@ ECode BatteryStatsService::constructor(
     return NOERROR;
 }
 
-void BatteryStatsService::Publish(
+ECode BatteryStatsService::Publish(
     /* [in] */ IContext* context)
 {
     mContext = context;
@@ -314,6 +314,7 @@ void BatteryStatsService::Publish(
     resources->GetInteger(
             R::integer::config_radioScanningTimeout, &value);
     //mStats->SetRadioScanningTimeout(value * 1000L);
+    return NOERROR;
 }
 
 void BatteryStatsService::InitPowerManagement()

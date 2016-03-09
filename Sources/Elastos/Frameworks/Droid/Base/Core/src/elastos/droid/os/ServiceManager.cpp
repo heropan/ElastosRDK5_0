@@ -36,24 +36,24 @@ AutoPtr<IInterface> ServiceManager::GetService(
 //    }
 }
 
-void ServiceManager::AddService(
+ECode ServiceManager::AddService(
     /* [in] */ const String& name,
     /* [in] */ IInterface* service)
 {
 //    try {
-    GetIServiceManager()->AddService(name, service, FALSE);
+    return GetIServiceManager()->AddService(name, service, FALSE);
 //    } catch (RemoteException e) {
 //        Log.e(TAG, "error in addService", e);
 //    }
 }
 
-void ServiceManager::AddService(
+ECode ServiceManager::AddService(
     /* [in] */ const String& name,
     /* [in] */ IInterface* service,
     /* [in] */ Boolean allowIsolated)
 {
     // try {
-    GetIServiceManager()->AddService(name, service, allowIsolated);
+    return GetIServiceManager()->AddService(name, service, allowIsolated);
     // } catch (RemoteException e) {
     //     Log.e(TAG, "error in addService", e);
     // }
@@ -73,9 +73,9 @@ AutoPtr<IInterface> ServiceManager::CheckService(
 //        Log.e(TAG, "error in checkService", e);
 //        return null;
 //    }
-    // assert(0);
-    PRINT_FILE_LINE_EX("TODO::ServiceManager::CheckService()");
-    return NULL;
+    AutoPtr<IInterface> obj;
+    GetIServiceManager()->GetService(name, (IInterface**)&obj);
+    return obj;
 }
 
 AutoPtr< ArrayOf<String> > ServiceManager::ListServices()
@@ -86,8 +86,9 @@ AutoPtr< ArrayOf<String> > ServiceManager::ListServices()
 //        Log.e(TAG, "error in listServices", e);
 //        return null;
 //    }
-    assert(0);
-    return NULL;
+    AutoPtr< ArrayOf<String> > services;
+    GetIServiceManager()->ListServices((ArrayOf<String>**)&services);
+    return services;
 }
 
 } // namespace Os

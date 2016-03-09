@@ -320,8 +320,7 @@ ECode CAppOpsService::Publish(
     /* [in] */ IContext* context)
 {
     mContext = context;
-    ServiceManager::AddService(IContext::APP_OPS_SERVICE, TO_IINTERFACE(this));
-    return NOERROR;
+    return ServiceManager::AddService(IContext::APP_OPS_SERVICE, TO_IINTERFACE(this));
 }
 
 ECode CAppOpsService::SystemReady()

@@ -392,7 +392,7 @@ String IntentFirewall::JoinPackages(
         // but it's not critical.
         if (sb->Length() + pkg->Length() + 1 < LOG_PACKAGES_MAX_LENGTH) {
             if (!first) {
-                sb->Append(',');
+                sb->Append(",");
             } else {
                 first = FALSE;
             }

@@ -2148,14 +2148,14 @@ ECode Uri::ToSafeString(
                 || scheme.EqualsIgnoreCase("mailto")) {
             StringBuilder builder(64);
             builder.Append(scheme);
-            builder.Append(':');
+            builder.AppendChar(':');
             if (ssp != NULL) {
                 for (Int32 i=0; i<ssp.GetLength(); i++) {
                     Char32 c = ssp.GetChar(i);
                     if (c == '-' || c == '@' || c == '.') {
                         builder.AppendChar(c);
                     } else {
-                        builder.Append('x');
+                        builder.AppendChar('x');
                     }
                 }
             }
@@ -2168,7 +2168,7 @@ ECode Uri::ToSafeString(
     StringBuilder builder(64);
     if (scheme != NULL) {
         builder.Append(scheme);
-        builder.Append(':');
+        builder.AppendChar(':');
     }
     if (ssp != NULL) {
         builder.Append(ssp);

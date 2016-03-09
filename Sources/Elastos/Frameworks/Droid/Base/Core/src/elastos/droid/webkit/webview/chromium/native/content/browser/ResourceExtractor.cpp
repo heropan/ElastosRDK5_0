@@ -151,7 +151,7 @@ ECode ResourceExtractor::ExtractTask::DoInBackground(
         String mandatoryPak = (*sMandatoryPaks)[i];
         Int32 len;
         p->GetLength(&len);
-        if (len > 0) p->Append('|');
+        if (len > 0) p->AppendChar32('|');
         p->Append("\\Q");
         p->Append(mandatoryPak);
         p->Append("\\E");
@@ -160,7 +160,7 @@ ECode ResourceExtractor::ExtractTask::DoInBackground(
     if (sExtractImplicitLocalePak) {
         Int32 len;
         p->GetLength(&len);
-        if (len > 0) p->Append('|');
+        if (len > 0) p->AppendChar32('|');
         // As well as the minimum required set of .paks above, we'll also add all .paks that
         // we have for the user's currently selected language.
 

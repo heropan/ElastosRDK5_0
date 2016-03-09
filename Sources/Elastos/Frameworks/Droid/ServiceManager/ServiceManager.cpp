@@ -86,6 +86,7 @@ android::status_t ServiceManager::onTransact(
             }
             return android::NO_ERROR;
         } break;
+
         case GET_SERVICE: {
             InterfacePack ip;
             name = data.readCString();
@@ -100,12 +101,40 @@ android::status_t ServiceManager::onTransact(
             }
             return android::NO_ERROR;
         } break;
+
         case REMOVE_SERVICE: {
             name = data.readCString();
             ec = RemoveService(String(name));
             reply->writeInt32((int32_t)ec);
             return android::NO_ERROR;
         } break;
+
+        case CHECK_SERVICE: {
+            InterfacePack ip;
+            name = data.readCString();
+            ALOGD(" >> CHECK_SERVICE %s", name);
+            ec = GetService(String(name), &ip);
+            reply->writeInt32((int32_t)ec);
+            if (SUCCEEDED(ec)) {
+                int32_t size = sizeof(InterfacePack);
+                reply->writeInt32((int32_t)size);
+                reply->writeStrongBinder(ip.m_pBinder);
+                ip.m_pBinder = NULL;
+                reply->write((const void *)&ip, (int32_t)size);
+            }
+            return android::NO_ERROR;
+        } break;
+
+        case LIST_SERVICES: {
+            int32_t size = mServices.GetSize();
+            reply->writeInt32((int32_t)size);
+            HashMap<String, InterfacePack*>::Iterator it = mServices.Begin();
+            for (; it != mServices.End(); ++it) {
+                reply->writeCString(it->mFirst.string());
+            }
+            return android::NO_ERROR;
+        } break;
+
         default:
             return android::BBinder::onTransact(code, data, reply, flags);
     }
@@ -150,5 +179,19 @@ ECode ServiceManager::RemoveService(
         ip->m_pBinder = NULL;
         free(ip);
     }
+    return NOERROR;
+}
+
+ECode ServiceManager::CheckService(
+    /* [in] */ const String& name,
+    /* [out] */ InterfacePack * pIp)
+{
+    HashMap<String, InterfacePack*>::Iterator it = mServices.Find(name);
+    if (it == mServices.End()) return E_FAIL;
+    InterfacePack * ip = it->mSecond;
+    memset(pIp, 0, sizeof(InterfacePack));
+    pIp->m_clsid = ip->m_clsid;
+    pIp->m_uIndex = ip->m_uIndex;
+    pIp->m_pBinder = ip->m_pBinder;
     return NOERROR;
 }

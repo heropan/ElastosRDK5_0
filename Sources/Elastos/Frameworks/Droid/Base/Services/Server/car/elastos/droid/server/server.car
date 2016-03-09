@@ -8,6 +8,7 @@ module
     merge("Watchdog.car");
     merge("NativeDaemonConnector.car");
     merge("MountServiceIdler.car");
+    merge("EntropyMixer.car");
 
     merge("accessibility/EventStreamTransformation.car");
     merge("accessibility/ScreenMagnifier.car");
@@ -228,6 +229,21 @@ module
     namespace Droid {
     namespace Server {
 
+    class CPersistentDataBlockService {
+        constructor(
+            [in] IContext* ctx);
+
+        interface ISystemService;
+    }
+
+    class CEntropyMixer {
+        constructor(
+            [in] IContext* ctx);
+
+        interface IEntropyMixer;
+        interface IBinder;
+    }
+
     class CAppOpsService {
         constructor(
             [in] IFile* storagePath,
@@ -277,7 +293,7 @@ module
 
     class CNetworkScoreService {
         constructor(
-            [in] IContext* context);
+            [in] IContext* ctx);
 
         interface IINetworkScoreService;
         interface IBinder;
@@ -285,7 +301,7 @@ module
 
     class CNsdService {
         constructor(
-            [in] IContext* context);
+            [in] IContext* ctx);
 
         interface IINsdManager;
         interface IBinder;
@@ -563,7 +579,7 @@ module
 
 //     class CDevicePolicyManagerService {
 //         constructor(
-//             [in] IContext* context);
+//             [in] IContext* ctx);
 
 //         interface IIDevicePolicyManager;
 //     }
@@ -1008,6 +1024,13 @@ module
     namespace Server {
     namespace Pm {
 
+    class CLauncherAppsService {
+        constructor(
+            [in] IContext* ctx);
+
+        interface ISystemService;
+    }
+
     class CPackageManagerService {
         constructor(
             [in] IContext* ctx,
@@ -1056,7 +1079,7 @@ module
     [local]
     class CLauncherAppsImpl {
         constructor(
-            [in] IContext* context);
+            [in] IContext* ctx);
 
         interface IILauncherApps;
         interface IBinder;
@@ -1610,7 +1633,7 @@ module
 
     class CInputManagerService {
         constructor(
-            [in] IContext* context);
+            [in] IContext* ctx);
 
         interface IIInputManager;
         interface IWatchdogMonitor;
@@ -1634,6 +1657,13 @@ module
     namespace Droid {
     namespace Server {
     namespace Notification {
+
+    class CNotificationManagerService {
+        constructor(
+            [in] IContext* ctx);
+
+        interface ISystemService;
+    }
 
     class CNotificationManagerBinderService {
         constructor(
@@ -1689,7 +1719,7 @@ module
 
     class CAppWidgetServiceImpl {
          constructor(
-             [in] IContext* context);
+             [in] IContext* ctx);
 
          interface IIAppWidgetService;
          interface IWidgetBackupProvider;

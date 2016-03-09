@@ -106,7 +106,7 @@ String PepperPluginManager::GetPlugins(
         }
 
         if (ret->GetLength() > 0) {
-            ret->Append(',');
+            ret->AppendChar32(',');
         }
 
         ret->Append(plugin);
@@ -159,7 +159,7 @@ String PepperPluginManager::GetPluginDescription(
         }
     }
 
-    plugin->Append(';');
+    plugin->AppendChar32(';');
     plugin->Append(mimetype);
 
     return plugin->ToString();
