@@ -447,9 +447,11 @@ module
     // class CISerializableNative{
     //     constructor();
 
-    //     constructor(
-    //         [in] String pkgPath,
-    //         [in] ArrayOf<Byte>* obj);
+        // constructor(
+        //     [in] Boolean isDexClassLoader,
+        //     [in] String pkgPath,
+        //     [in] String optimizedDirectory,
+        //     [in] ArrayOf<Byte>* obj);
 
     //     interface ISerializable;
     //     interface IParcelable;

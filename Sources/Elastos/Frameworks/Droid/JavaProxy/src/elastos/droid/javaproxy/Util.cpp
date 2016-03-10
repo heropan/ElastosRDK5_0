@@ -11,9 +11,13 @@
 #include <unistd.h>
 
 #include "Elastos.Droid.App.h"
+#include "Elastos.Droid.AppWidget.h"
 #include "Elastos.Droid.Content.h"
+#include "Elastos.Droid.Database.h"
 #include "Elastos.Droid.Graphics.h"
+#include "Elastos.Droid.Hardware.h"
 #include "Elastos.Droid.Internal.h"
+#include "Elastos.Droid.Media.h"
 #include "Elastos.Droid.Net.h"
 #include "Elastos.Droid.Os.h"
 #include "Elastos.Droid.Location.h"
@@ -22,6 +26,8 @@
 #include "Elastos.Droid.Widget.h"
 #include "Elastos.Droid.Wifi.h"
 #include "Elastos.CoreLibrary.Core.h"
+#include "Elastos.CoreLibrary.Extensions.h"
+#include "Elastos.CoreLibrary.Net.h"
 #include "Elastos.CoreLibrary.IO.h"
 #include "Elastos.CoreLibrary.Security.h"
 #include "Elastos.CoreLibrary.Utility.h"
@@ -37,12 +43,12 @@ using Elastos::Droid::Os::CUserHandle;
 using Elastos::Droid::Os::IBinder;
 using Elastos::Droid::Os::IIMessenger;
 using Elastos::Droid::Os::IPatternMatcher;
-// using Elastos::Droid::Net::ECLSID_CStringUri;
-// using Elastos::Droid::Net::ECLSID_CHierarchicalUri;
-// using Elastos::Droid::Net::ECLSID_COpaqueUri;
-// using Elastos::Droid::Net::CStringUri;
-// using Elastos::Droid::Net::CHierarchicalUri;
-// using Elastos::Droid::Net::COpaqueUri;
+using Elastos::Droid::Net::ECLSID_CStringUri;
+using Elastos::Droid::Net::ECLSID_CHierarchicalUri;
+using Elastos::Droid::Net::ECLSID_COpaqueUri;
+using Elastos::Droid::Net::CStringUri;
+using Elastos::Droid::Net::CHierarchicalUri;
+using Elastos::Droid::Net::COpaqueUri;
 using Elastos::Droid::Net::NetworkInfoState;
 using Elastos::Droid::Net::NetworkInfoDetailedState;
 using Elastos::Droid::Wifi::IWifiConfiguration;
@@ -59,22 +65,22 @@ using Elastos::Droid::Content::Pm::CApplicationInfo;
 using Elastos::Droid::Content::Pm::CPathPermission;
 using Elastos::Droid::Content::Pm::CPackageInfoLite;
 using Elastos::Droid::Content::Pm::CProviderInfo;
-// using Elastos::Droid::Content::Pm::CVerifierInfo;
+using Elastos::Droid::Content::Pm::CVerifierInfo;
 using Elastos::Droid::Content::Pm::IPathPermission;
 using Elastos::Droid::Content::Res::CAssetFileDescriptor;
 using Elastos::Droid::Content::Res::CObbInfo;
 using Elastos::Droid::Graphics::CBitmap;
-using Elastos::Droid::Graphics::CBitmapFactory;
-using Elastos::Droid::Graphics::IBitmapFactory;
 using Elastos::Droid::Graphics::CRect;
+using Elastos::Droid::Hardware::Display::IWifiDisplayStatus;
 using Elastos::Droid::Internal::View::IIInputContext;
 using Elastos::Droid::Internal::View::IIInputMethodSession;
-using Elastos::Droid::Location::CProviderProperties;
+using Elastos::Droid::Internal::Location::CProviderProperties;
 using Elastos::Droid::Text::TextUtils;
+using Elastos::Droid::View::IInputEvent;
 using Elastos::Droid::View::InputMethod::IInputConnection;
 using Elastos::Droid::Widget::CRemoteViews;
 using Elastos::Droid::Widget::CRemoteViewsBitmapCache;
-using Elastos::Droid::Widget::IRemoteViewsBitmapCache;
+using Elastos::Droid::Widget::IBitmapCache;
 using Elastos::Core::IByte;
 using Elastos::Core::IInteger16;
 using Elastos::Core::IInteger32;
@@ -84,11 +90,17 @@ using Elastos::Core::IDouble;
 using Elastos::Core::IBoolean;
 using Elastos::Core::IArrayOf;
 using Elastos::Core::ICharSequence;
+using Elastos::Core::CString;
 using Elastos::IO::CFileDescriptor;
 using Elastos::IO::ISerializable;
 using Elastos::Security::IPublicKey;
+using Elastos::Utility::CArrayList;
+using Elastos::Utility::IArrayList;
+using Elastos::Utility::ICollection;
 using Elastos::Utility::ILocaleHelper;
 using Elastos::Utility::CLocaleHelper;
+using Elastos::Utility::IList;
+using Elastos::Utility::ISet;
 using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
@@ -152,7 +164,7 @@ ECode Util::CheckErrorAndLog(
 
 ECode Util::CheckErrorAndLog(
     /* [in] */ JNIEnv* env,
-    /* [in] */ const String& tag,
+    /* [in] */ const char* tag,
     /* [in] */ const char* errlog,
     /* [in] */ int line)
 {
@@ -166,6 +178,15 @@ ECode Util::CheckErrorAndLog(
         return ec;
     }
     return NOERROR;
+}
+
+ECode Util::CheckErrorAndLog(
+    /* [in] */ JNIEnv* env,
+    /* [in] */ const String& tag,
+    /* [in] */ const char* errlog,
+    /* [in] */ int line)
+{
+    return CheckErrorAndLog(env, tag.string(), errlog, line);
 }
 
 ECode Util::CheckErrorAndLog(
@@ -195,10 +216,10 @@ String Util::GetJavaToStringResult(
     CheckErrorAndLog(env, "GetJavaToStringResult", "FindClass: Object", __LINE__);
 
     jmethodID m = env->GetMethodID(c, "toString", "()Ljava/lang/String;");
-    CheckErrorAndLog(env, "GetJavaToStringResult", String("GetMethodID: toString"), __LINE__);
+    CheckErrorAndLog(env, "GetJavaToStringResult", "GetMethodID: toString", __LINE__);
 
     jstring jstr = (jstring)env->CallObjectMethod(obj, m);
-    CheckErrorAndLog(env, "GetJavaToStringResult", String("CallVoidMethod: toString"), __LINE__);
+    CheckErrorAndLog(env, "GetJavaToStringResult", "CallVoidMethod: toString", __LINE__);
 
     String str = Util::GetElString(env, jstr);
 
@@ -507,7 +528,7 @@ jobject Util::ToJavaIntent(
 
     String mAction;
     intent->GetAction(&mAction);
-    if(!mAction.IsNull()) {
+    if (!mAction.IsNull()) {
         jfieldID f = env->GetFieldID(intentKlass, "mAction", "Ljava/lang/String;");
         Util::CheckErrorAndLog(env, "ToJavaIntent", "GetFieldID: mAction %d", __LINE__);
 
@@ -573,7 +594,8 @@ jobject Util::ToJavaIntent(
             env->SetObjectField(jIntent, f, jComponentName);
             Util::CheckErrorAndLog(env, "ToJavaIntent", "Fail SetObjectField: jComponent %d", __LINE__);
             env->DeleteLocalRef(jComponentName);
-        } else {
+        }
+        else {
             LOGGERD("ToJavaIntent", "Error: jComponentName is NULL!");
         }
     }
@@ -589,7 +611,8 @@ jobject Util::ToJavaIntent(
             env->SetObjectField(jIntent, f, jmSourceBounds);
             Util::CheckErrorAndLog(env, "ToJavaIntent", "SetObjectField jmSourceBounds %d", __LINE__);
             env->DeleteLocalRef(jmSourceBounds);
-        } else {
+        }
+        else {
             LOGGERD("ToJavaIntent", "Error: jmSourceBounds is NULL!");
         }
     }
@@ -623,7 +646,8 @@ jobject Util::ToJavaIntent(
             env->SetObjectField(jIntent, f, jselector);
             Util::CheckErrorAndLog(env, "ToJavaIntent", "SetObjectField jselector %d", __LINE__);
             env->DeleteLocalRef(jselector);
-        } else {
+        }
+        else {
             LOGGERD("ToJavaIntent", "Error: jselector is NULL!");
         }
     }
@@ -638,10 +662,19 @@ jobject Util::ToJavaIntent(
             env->SetObjectField(jIntent, f, jclipData);
             Util::CheckErrorAndLog(env, "ToJavaIntent", "SetObjectField jclipData %d", __LINE__);
             env->DeleteLocalRef(jclipData);
-        } else {
+        }
+        else {
             LOGGERD("ToJavaIntent", "Error: jclipData is NULL!");
         }
     }
+
+    Int32 contentUserHint;
+    intent->GetContentUserHint(&contentUserHint);
+    f = env->GetFieldID(intentKlass, "mContentUserHint", "I");
+    Util::CheckErrorAndLog(env, "ToJavaIntent", "GetFieldID: mContentUserHint %d", __LINE__);
+
+    env->SetIntField(jIntent, f, (jint)contentUserHint);
+    Util::CheckErrorAndLog(env, "ToJavaIntent", "SetIntField: mContentUserHint %d", __LINE__);
 
     AutoPtr<IBundle> extras;
     intent->GetExtras((IBundle**)&extras);
@@ -653,7 +686,8 @@ jobject Util::ToJavaIntent(
             env->SetObjectField(jIntent, f, jExtras);
             Util::CheckErrorAndLog(env, "ToJavaIntent", "Fail SetObjectField: jExtras %d", __LINE__);
             env->DeleteLocalRef(jExtras);
-        } else {
+        }
+        else {
             LOGGERD("ToJavaIntent", "Error: jExtras is NULL!");
         }
     }
@@ -775,6 +809,30 @@ jobject Util::ToJavaApplicationInfo(
     env->SetIntField(jAppInfo, f, tempInt);
     Util::CheckErrorAndLog(env, "ToJavaApplicationInfo", "Fail SetIntField: largestWidthLimitDp %d", __LINE__);
 
+    String scanSourceDir;
+    appInfo->GetScanSourceDir(&scanSourceDir);
+    jstring jscanSourceDir = Util::ToJavaString(env, scanSourceDir);
+    if (jscanSourceDir != NULL) {
+        jfieldID f = env->GetFieldID(appInfoKlass, "scanSourceDir", "Ljava/lang/String;");
+        Util::CheckErrorAndLog(env, "ToJavaApplicationInfo", "Fail GetFieldID: scanSourceDir %d", __LINE__);
+
+        env->SetObjectField(jAppInfo, f, jscanSourceDir);
+        Util::CheckErrorAndLog(env, "ToJavaApplicationInfo", "Fail SetIntField: jscanSourceDir %d", __LINE__);
+        env->DeleteLocalRef(jscanSourceDir);
+    }
+
+    String scanPublicSourceDir;
+    appInfo->GetScanPublicSourceDir(&scanPublicSourceDir);
+    jstring jscanPublicSourceDir = Util::ToJavaString(env, scanPublicSourceDir);
+    if (jscanPublicSourceDir != NULL) {
+        jfieldID f = env->GetFieldID(appInfoKlass, "scanPublicSourceDir", "Ljava/lang/String;");
+        Util::CheckErrorAndLog(env, "ToJavaApplicationInfo", "Fail GetFieldID: scanPublicSourceDir %d", __LINE__);
+
+        env->SetObjectField(jAppInfo, f, jscanPublicSourceDir);
+        Util::CheckErrorAndLog(env, "ToJavaApplicationInfo", "Fail SetIntField: jscanPublicSourceDir %d", __LINE__);
+        env->DeleteLocalRef(jscanPublicSourceDir);
+    }
+
     String sourceDir;
     appInfo->GetSourceDir(&sourceDir);
     jstring jsourceDir = Util::ToJavaString(env, sourceDir);
@@ -799,6 +857,34 @@ jobject Util::ToJavaApplicationInfo(
         env->DeleteLocalRef(jpublicSourceDir);
     }
 
+    AutoPtr<ArrayOf<String> > splitSourceDirs;
+    appInfo->GetSplitSourceDirs((ArrayOf<String>**)&splitSourceDirs);
+    if (splitSourceDirs != NULL) {
+        jobjectArray jsplitSourceDirs = Util::ToJavaStringArray(env, splitSourceDirs);
+        if (jsplitSourceDirs != NULL) {
+            jfieldID f = env->GetFieldID(appInfoKlass, "splitSourceDirs", "[Ljava/lang/String;");
+            Util::CheckErrorAndLog(env, "ToJavaApplicationInfo", "Fail GetFieldID: splitSourceDirs %d", __LINE__);
+
+            env->SetObjectField(jAppInfo, f, jsplitSourceDirs);
+            Util::CheckErrorAndLog(env, "ToJavaApplicationInfo", "Fail SetIntField: jsplitSourceDirs %d", __LINE__);
+            env->DeleteLocalRef(jsplitSourceDirs);
+        }
+    }
+
+    AutoPtr<ArrayOf<String> > splitPublicSourceDirs;
+    appInfo->GetSplitPublicSourceDirs((ArrayOf<String>**)&splitPublicSourceDirs);
+    if (splitPublicSourceDirs != NULL) {
+        jobjectArray jsplitPublicSourceDirs = Util::ToJavaStringArray(env, splitPublicSourceDirs);
+        if (jsplitPublicSourceDirs != NULL) {
+            jfieldID f = env->GetFieldID(appInfoKlass, "splitPublicSourceDirs", "[Ljava/lang/String;");
+            Util::CheckErrorAndLog(env, "ToJavaApplicationInfo", "Fail GetFieldID: splitPublicSourceDirs %d", __LINE__);
+
+            env->SetObjectField(jAppInfo, f, jsplitPublicSourceDirs);
+            Util::CheckErrorAndLog(env, "ToJavaApplicationInfo", "Fail SetIntField: jsplitPublicSourceDirs %d", __LINE__);
+            env->DeleteLocalRef(jsplitPublicSourceDirs);
+        }
+    }
+
     String nativeLibraryDir;
     appInfo->GetNativeLibraryDir(&nativeLibraryDir);
     jstring jnativeLibraryDir = Util::ToJavaString(env, nativeLibraryDir);
@@ -809,6 +895,62 @@ jobject Util::ToJavaApplicationInfo(
         env->SetObjectField(jAppInfo, f, jnativeLibraryDir);
         Util::CheckErrorAndLog(env, "ToJavaApplicationInfo", "Fail SetIntField: jnativeLibraryDir %d", __LINE__);
         env->DeleteLocalRef(jnativeLibraryDir);
+    }
+
+    String secondaryNativeLibraryDir;
+    appInfo->GetSecondaryNativeLibraryDir(&secondaryNativeLibraryDir);
+    jstring jsecondaryNativeLibraryDir = Util::ToJavaString(env, secondaryNativeLibraryDir);
+    if (jsecondaryNativeLibraryDir != NULL) {
+        jfieldID f = env->GetFieldID(appInfoKlass, "secondaryNativeLibraryDir", "Ljava/lang/String;");
+        Util::CheckErrorAndLog(env, "ToJavaApplicationInfo", "Fail GetFieldID: secondaryNativeLibraryDir %d", __LINE__);
+
+        env->SetObjectField(jAppInfo, f, jsecondaryNativeLibraryDir);
+        Util::CheckErrorAndLog(env, "ToJavaApplicationInfo", "Fail SetIntField: jsecondaryNativeLibraryDir %d", __LINE__);
+        env->DeleteLocalRef(jsecondaryNativeLibraryDir);
+    }
+
+    String nativeLibraryRootDir;
+    appInfo->GetNativeLibraryRootDir(&nativeLibraryRootDir);
+    jstring jnativeLibraryRootDir = Util::ToJavaString(env, nativeLibraryRootDir);
+    if (jnativeLibraryRootDir != NULL) {
+        jfieldID f = env->GetFieldID(appInfoKlass, "nativeLibraryRootDir", "Ljava/lang/String;");
+        Util::CheckErrorAndLog(env, "ToJavaApplicationInfo", "Fail GetFieldID: nativeLibraryRootDir %d", __LINE__);
+
+        env->SetObjectField(jAppInfo, f, jnativeLibraryRootDir);
+        Util::CheckErrorAndLog(env, "ToJavaApplicationInfo", "Fail SetIntField: jnativeLibraryRootDir %d", __LINE__);
+        env->DeleteLocalRef(jnativeLibraryRootDir);
+    }
+
+    Boolean nativeLibraryRootRequiresIsa;
+    appInfo->GetNativeLibraryRootRequiresIsa(&nativeLibraryRootRequiresIsa);
+    f = env->GetFieldID(appInfoKlass, "nativeLibraryRootRequiresIsa", "Z");
+    Util::CheckErrorAndLog(env, "ToJavaApplicationInfo", "Fail GetFieldID: nativeLibraryRootRequiresIsa %d", __LINE__);
+
+    env->SetBooleanField(jAppInfo, f, nativeLibraryRootRequiresIsa);
+    Util::CheckErrorAndLog(env, "ToJavaApplicationInfo", "Fail SetIntField: nativeLibraryRootRequiresIsa %d", __LINE__);
+
+    String primaryCpuAbi;
+    appInfo->GetPrimaryCpuAbi(&primaryCpuAbi);
+    jstring jprimaryCpuAbi = Util::ToJavaString(env, primaryCpuAbi);
+    if (jprimaryCpuAbi != NULL) {
+        jfieldID f = env->GetFieldID(appInfoKlass, "primaryCpuAbi", "Ljava/lang/String;");
+        Util::CheckErrorAndLog(env, "ToJavaApplicationInfo", "Fail GetFieldID: primaryCpuAbi %d", __LINE__);
+
+        env->SetObjectField(jAppInfo, f, jprimaryCpuAbi);
+        Util::CheckErrorAndLog(env, "ToJavaApplicationInfo", "Fail SetIntField: jprimaryCpuAbi %d", __LINE__);
+        env->DeleteLocalRef(jprimaryCpuAbi);
+    }
+
+    String secondaryCpuAbi;
+    appInfo->GetSecondaryCpuAbi(&secondaryCpuAbi);
+    jstring jsecondaryCpuAbi = Util::ToJavaString(env, secondaryCpuAbi);
+    if (jsecondaryCpuAbi != NULL) {
+        jfieldID f = env->GetFieldID(appInfoKlass, "secondaryCpuAbi", "Ljava/lang/String;");
+        Util::CheckErrorAndLog(env, "ToJavaApplicationInfo", "Fail GetFieldID: secondaryCpuAbi %d", __LINE__);
+
+        env->SetObjectField(jAppInfo, f, jsecondaryCpuAbi);
+        Util::CheckErrorAndLog(env, "ToJavaApplicationInfo", "Fail SetIntField: jsecondaryCpuAbi %d", __LINE__);
+        env->DeleteLocalRef(jsecondaryCpuAbi);
     }
 
     AutoPtr<ArrayOf<String> > resourceDirs;
@@ -823,6 +965,18 @@ jobject Util::ToJavaApplicationInfo(
             Util::CheckErrorAndLog(env, "ToJavaApplicationInfo", "Fail SetIntField: jresourceDirs %d", __LINE__);
             env->DeleteLocalRef(jresourceDirs);
         }
+    }
+
+    String seinfo;
+    appInfo->GetSeinfo(&seinfo);
+    jstring jseinfo = Util::ToJavaString(env, seinfo);
+    if (jseinfo != NULL) {
+        jfieldID f = env->GetFieldID(appInfoKlass, "seinfo", "Ljava/lang/String;");
+        Util::CheckErrorAndLog(env, "ToJavaApplicationInfo", "Fail GetFieldID: seinfo %d", __LINE__);
+
+        env->SetObjectField(jAppInfo, f, jseinfo);
+        Util::CheckErrorAndLog(env, "ToJavaApplicationInfo", "Fail SetIntField: jseinfo %d", __LINE__);
+        env->DeleteLocalRef(jseinfo);
     }
 
     AutoPtr<ArrayOf<String> > sharedLibraryFiles;
@@ -865,6 +1019,13 @@ jobject Util::ToJavaApplicationInfo(
     env->SetIntField(jAppInfo, f, tempInt);
     Util::CheckErrorAndLog(env, "ToJavaApplicationInfo", "Fail SetIntField: targetSdkVersion %d", __LINE__);
 
+    appInfo->GetVersionCode(&tempInt);
+    f = env->GetFieldID(appInfoKlass, "versionCode", "I");
+    Util::CheckErrorAndLog(env, "ToJavaApplicationInfo", "Fail GetFieldID: versionCode %d", __LINE__);
+
+    env->SetIntField(jAppInfo, f, tempInt);
+    Util::CheckErrorAndLog(env, "ToJavaApplicationInfo", "Fail SetIntField: versionCode %d", __LINE__);
+
     Boolean enabled;
     appInfo->GetEnabled(&enabled);
     f = env->GetFieldID(appInfoKlass, "enabled", "Z");
@@ -899,6 +1060,18 @@ jobject Util::ToJavaApplicationInfo(
         env->DeleteLocalRef(jmanageSpaceActivityName);
     }
 
+    String backupAgentName;
+    appInfo->GetBackupAgentName(&backupAgentName);
+    jstring jbackupAgentName = Util::ToJavaString(env, backupAgentName);
+    if (jbackupAgentName != NULL) {
+        jfieldID f = env->GetFieldID(appInfoKlass, "backupAgentName", "Ljava/lang/String;");
+        Util::CheckErrorAndLog(env, "ToJavaApplicationInfo", "Fail GetFieldID: backupAgentName %d", __LINE__);
+
+        env->SetObjectField(jAppInfo, f, jbackupAgentName);
+        Util::CheckErrorAndLog(env, "ToJavaApplicationInfo", "Fail SetIntField: jbackupAgentName %d", __LINE__);
+        env->DeleteLocalRef(jbackupAgentName);
+    }
+
     appInfo->GetDescriptionRes(&tempInt);
     f = env->GetFieldID(appInfoKlass, "descriptionRes", "I");
     Util::CheckErrorAndLog(env, "ToJavaApplicationInfo", "Fail GetFieldID: descriptionRes %d", __LINE__);
@@ -913,96 +1086,26 @@ jobject Util::ToJavaApplicationInfo(
     env->SetIntField(jAppInfo, f, tempInt);
     Util::CheckErrorAndLog(env, "ToJavaApplicationInfo", "Fail SetIntField: uiOptions %d", __LINE__);
 
-    String backupAgentName;
-    appInfo->GetBackupAgentName(&backupAgentName);
-    jstring jbackupAgentName = Util::ToJavaString(env, backupAgentName);
-    if (jbackupAgentName != NULL) {
-        jfieldID f = env->GetFieldID(appInfoKlass, "backupAgentName", "Ljava/lang/String;");
-        Util::CheckErrorAndLog(env, "ToJavaApplicationInfo", "Fail GetFieldID: backupAgentName %d", __LINE__);
+    // TODO: CM12
+    // Boolean protect;
+    // appInfo->GetProtect(&protect);
+    // f = env->GetFieldID(appInfoKlass, "protect", "Z");
+    // Util::CheckErrorAndLog(env, "ToJavaApplicationInfo", "Fail GetFieldID: protect %d", __LINE__);
 
-        env->SetObjectField(jAppInfo, f, jbackupAgentName);
-        Util::CheckErrorAndLog(env, "ToJavaApplicationInfo", "Fail SetIntField: jbackupAgentName %d", __LINE__);
-        env->DeleteLocalRef(jbackupAgentName);
-    }
+    // env->SetBooleanField(jAppInfo, f, protect);
+    // Util::CheckErrorAndLog(env, "ToJavaApplicationInfo", "Fail SetIntField: protect %d", __LINE__);
+
+    // Boolean isThemeable;
+    // appInfo->GetIsThemeable(&isThemeable);
+    // f = env->GetFieldID(appInfoKlass, "isThemeable", "Z");
+    // Util::CheckErrorAndLog(env, "ToJavaApplicationInfo", "Fail GetFieldID: isThemeable %d", __LINE__);
+
+    // env->SetBooleanField(jAppInfo, f, isThemeable);
+    // Util::CheckErrorAndLog(env, "ToJavaApplicationInfo", "Fail SetIntField: isThemeable %d", __LINE__);
 
     // ----------------------------------- PackageItemInfo ---------------------------------------------------
-
-    String name;
-    appInfo->GetName(&name);
-    jstring jname = Util::ToJavaString(env, name);
-    if (jname != NULL) {
-        jfieldID f = env->GetFieldID(appInfoKlass, "name", "Ljava/lang/String;");
-        Util::CheckErrorAndLog(env, "ToJavaApplicationInfo", "Fail GetFieldID: name %d", __LINE__);
-
-        env->SetObjectField(jAppInfo, f, jname);
-        Util::CheckErrorAndLog(env, "ToJavaApplicationInfo", "Fail SetIntField: jname %d", __LINE__);
-        env->DeleteLocalRef(jname);
-    }
-
-    String packageName;
-    appInfo->GetPackageName(&packageName);
-    jstring jpackageName = Util::ToJavaString(env, packageName);
-    if (jpackageName != NULL) {
-        jfieldID f = env->GetFieldID(appInfoKlass, "packageName", "Ljava/lang/String;");
-        Util::CheckErrorAndLog(env, "ToJavaApplicationInfo", "Fail GetFieldID: packageName %d", __LINE__);
-
-        env->SetObjectField(jAppInfo, f, jpackageName);
-        Util::CheckErrorAndLog(env, "ToJavaApplicationInfo", "Fail SetIntField: jpackageName %d", __LINE__);
-        env->DeleteLocalRef(jpackageName);
-    }
-
-    appInfo->GetUiOptions(&tempInt);
-    f = env->GetFieldID(appInfoKlass, "labelRes", "I");
-    Util::CheckErrorAndLog(env, "ToJavaApplicationInfo", "Fail GetFieldID: labelRes %d", __LINE__);
-
-    env->SetIntField(jAppInfo, f, tempInt);
-    Util::CheckErrorAndLog(env, "ToJavaApplicationInfo", "Fail SetIntField: labelRes %d", __LINE__);
-
-    AutoPtr<ICharSequence> nonLocalizedLabel;
-    appInfo->GetNonLocalizedLabel((ICharSequence**)&nonLocalizedLabel);
-    if (nonLocalizedLabel != NULL) {
-        String snonLocalizedLabel;
-        nonLocalizedLabel->ToString(&snonLocalizedLabel);
-        jstring jnonLocalizedLabel = Util::ToJavaString(env, snonLocalizedLabel);
-
-        f = env->GetFieldID(appInfoKlass, "nonLocalizedLabel", "Ljava/lang/CharSequence;");
-        Util::CheckErrorAndLog(env, "ToJavaProviderInfo", "Fail GetFieldID: CharSequence %d", __LINE__);
-
-        env->SetObjectField(jAppInfo, f, jnonLocalizedLabel);
-        Util::CheckErrorAndLog(env, "ToJavaProviderInfo", "Fail SetObjectField: jnonLocalizedLabel", __LINE__);
-        env->DeleteLocalRef(jnonLocalizedLabel);
-    }
-
-    appInfo->GetUiOptions(&tempInt);
-    f = env->GetFieldID(appInfoKlass, "icon", "I");
-    Util::CheckErrorAndLog(env, "ToJavaApplicationInfo", "Fail GetFieldID: icon %d", __LINE__);
-
-    env->SetIntField(jAppInfo, f, tempInt);
-    Util::CheckErrorAndLog(env, "ToJavaApplicationInfo", "Fail SetIntField: icon %d", __LINE__);
-
-    appInfo->GetUiOptions(&tempInt);
-    f = env->GetFieldID(appInfoKlass, "logo", "I");
-    Util::CheckErrorAndLog(env, "ToJavaApplicationInfo", "Fail GetFieldID: logo %d", __LINE__);
-
-    env->SetIntField(jAppInfo, f, tempInt);
-    Util::CheckErrorAndLog(env, "ToJavaApplicationInfo", "Fail SetIntField: logo %d", __LINE__);
-
-    AutoPtr<IBundle> metaData;
-    appInfo->GetMetaData((IBundle**)&metaData);
-    if (metaData != NULL) {
-        jobject jmetaData = Util::ToJavaBundle(env, metaData);
-        if (jmetaData != NULL) {
-            jfieldID f = env->GetFieldID(appInfoKlass, "metaData", "Landroid/os/Bundle;");
-            Util::CheckErrorAndLog(env, "ToJavaApplicationInfo", "Fail GetFieldID: metaData %d", __LINE__);
-
-            env->SetObjectField(jAppInfo, f, jmetaData);
-            Util::CheckErrorAndLog(env, "ToJavaApplicationInfo", "Fail SetObjectField: jmetaData %d", __LINE__);
-            env->DeleteLocalRef(jmetaData);
-        } else {
-            LOGGERD("ToJavaApplicationInfo", "Error: jmetaData is NULL!");
-        }
-    }
-
+    AutoPtr<IPackageItemInfo> pkgInfo = IPackageItemInfo::Probe(appInfo);
+    SetPackageItemInfo(env, appInfoKlass, jAppInfo, pkgInfo);
     env->DeleteLocalRef(appInfoKlass);
 
     return jAppInfo;
@@ -1126,6 +1229,20 @@ jobject Util::ToJavaActivityInfo(
         env->DeleteLocalRef(jparentActivityName);
     }
 
+    actInfo->GetPersistableMode(&tempInt);
+    f = env->GetFieldID(actInfoKlass, "persistableMode", "I");
+    Util::CheckErrorAndLog(env, "ToJavaActivityInfo", "Fail GetFieldID: persistableMode %d", __LINE__);
+
+    env->SetIntField(jactInfo, f, tempInt);
+    Util::CheckErrorAndLog(env, "ToJavaActivityInfo", "Fail SetIntField: persistableMode %d", __LINE__);
+
+    actInfo->GetMaxRecents(&tempInt);
+    f = env->GetFieldID(actInfoKlass, "maxRecents", "I");
+    Util::CheckErrorAndLog(env, "ToJavaActivityInfo", "Fail GetFieldID: maxRecents %d", __LINE__);
+
+    env->SetIntField(jactInfo, f, tempInt);
+    Util::CheckErrorAndLog(env, "ToJavaActivityInfo", "Fail SetIntField: maxRecents %d", __LINE__);
+
     AutoPtr<IComponentInfo> comInfo = IComponentInfo::Probe(actInfo);
     SetComponentInfo(env, actInfoKlass, jactInfo, comInfo);
 
@@ -1143,26 +1260,57 @@ jobject Util::ToJavaBundle(
         return NULL;
     }
 
-    jobject jBundle = NULL;
-
     jclass bundleKlass = env->FindClass("android/os/Bundle");
     Util::CheckErrorAndLog(env, "ToJavaBundle", "Fail FindClass: Bundle %d", __LINE__);
 
     jmethodID m = env->GetMethodID(bundleKlass, "<init>", "()V");
     Util::CheckErrorAndLog(env, "ToJavaBundle", "Fail GetMethodID: bundleKlass %d", __LINE__);
 
-    jBundle = env->NewObject(bundleKlass, m);
+    jobject jBundle = env->NewObject(bundleKlass, m);
     Util::CheckErrorAndLog(env, "ToJavaBundle", "Fail NewObject: bundleKlass %d", __LINE__);
 
-    AutoPtr<IObjectContainer> keys;
-    bundle->KeySet((IObjectContainer**)&keys);
+    AutoPtr<ArrayOf<Byte> > data;
+    bundle->GetJavaData((ArrayOf<Byte>**)&data);
+    if (data != NULL) {
+        jclass parcelClass = env->FindClass("android/os/Parcel");
+        Util::CheckErrorAndLog(env, "ToJavaBundle", "FindClass: Parcel : %d", __LINE__);
 
-    AutoPtr<IObjectEnumerator> keyIt;
-    keys->GetObjectEnumerator((IObjectEnumerator**)&keyIt);
-    Boolean hasNext;
-    while (keyIt->MoveNext(&hasNext), hasNext) {
-        AutoPtr<IInterface> key;
-        keyIt->Current((IInterface**)&key);
+        m = env->GetStaticMethodID(parcelClass, "obtain", "(J)Landroid/os/Parcel;");
+        Util::CheckErrorAndLog(env, "ToJavaBundle", "GetStaticMethodID: obtain : %d", __LINE__);
+
+        jobject jparcel = env->CallStaticObjectMethod(parcelClass, m, 0);
+        Util::CheckErrorAndLog(env, "ToJavaBundle", "GetStaticMethodID: obtain : %d", __LINE__);
+
+        Int32 nativePtr = Util::GetJavaIntField(env, parcelClass, jparcel, "mNativePtr", "ToJavaBundle");
+        android::Parcel* parcel =  reinterpret_cast< android::Parcel*>(nativePtr);
+        assert(parcel);
+        Int32 length = data->GetLength() * sizeof(Byte);
+        parcel->setDataSize(length);
+        parcel->setDataPosition(0);
+
+        void* raw = parcel->writeInplace(length);
+        memcpy(raw, data->GetPayload(), length);
+        parcel->setDataPosition(0);
+
+        m = env->GetMethodID(bundleKlass, "readFromParcel", "(Landroid/os/Parcel;)V");
+        CheckErrorAndLog(env, "ToJavaBundle", "GetMethodID readFromParcel : %d!\n", __LINE__);
+
+        env->CallVoidMethod(jBundle, m, jparcel);
+        CheckErrorAndLog(env, "ToJavaBundle", "Bundle readFromParcel : %d!\n", __LINE__);
+
+        env->DeleteLocalRef(parcelClass);
+        env->DeleteLocalRef(jparcel);
+        env->DeleteLocalRef(bundleKlass);
+
+        return jBundle;
+    }
+
+    AutoPtr<ISet> keySet;
+    bundle->GetKeySet((ISet**)&keySet);
+    AutoPtr<ArrayOf<IInterface*> > keys;
+    keySet->ToArray((ArrayOf<IInterface*>**)&keys);
+    for (Int32 i = 0; i < keys->GetLength(); i++) {
+        AutoPtr<IInterface> key = (*keys)[i];
         assert(key != NULL && ICharSequence::Probe(key) != NULL);
         String keyStr;
         ICharSequence::Probe(key)->ToString(&keyStr);
@@ -1170,7 +1318,7 @@ jobject Util::ToJavaBundle(
         AutoPtr<IInterface> value;
         bundle->Get(keyStr, (IInterface**)&value);
         if (value != NULL) {
-            if(IByte::Probe(value) != NULL){
+            if (IByte::Probe(value) != NULL){
                 Byte bv;
                 IByte::Probe(value)->GetValue(&bv);
 
@@ -1241,18 +1389,18 @@ jobject Util::ToJavaBundle(
                 env->CallVoidMethod(jBundle, m, jKey, jbundle);
                 env->DeleteLocalRef(jbundle);
             }
-            else if(IArrayOf::Probe(value) != NULL){
+            else if (IArrayOf::Probe(value) != NULL){
                 AutoPtr<IArrayOf> array = IArrayOf::Probe(value);
                 Int32 size = 0;
                 array->GetLength(&size);
                 LOGGERD("ToJavaBundle", "ToJavaBundle() found ArrayOf type! key is: %s, size = %d", keyStr.string(), size);
 
                 // Check size
-                if(size > 0){
+                if (size > 0){
                     AutoPtr<IInterface> firstItem;
                     array->Get(0, (IInterface**)&firstItem); // Get first item to check the type of the interface
 
-                    if(firstItem != NULL){
+                    if (firstItem != NULL){
                         if (IIntent::Probe(firstItem) != NULL) { // It's an intent array
                             jclass intentKlass = env->FindClass("android/content/Intent");
                             jobjectArray jintentArray = env->NewObjectArray(size, intentKlass, NULL);
@@ -1276,7 +1424,7 @@ jobject Util::ToJavaBundle(
                             env->DeleteLocalRef(jintentArray);
                             Logger::D("ToJavaBundle", "ToJavaBundle() Intent array set into bundle for key:%s", keyStr.string());
                         }
-                        else if(IInteger32::Probe(firstItem) != NULL){
+                        else if (IInteger32::Probe(firstItem) != NULL){
                             jintArray jarr = env->NewIntArray(size);
                             CheckErrorAndLog(env, "ToJavaBundle", "NewIntArray failed  %d", __LINE__);
 
@@ -1297,7 +1445,7 @@ jobject Util::ToJavaBundle(
                             env->DeleteLocalRef(jarr);
                             Logger::D("ToJavaBundle", "ToJavaBundle() int array set into bundle for key:%s", keyStr.string());
                         }
-                        else if(IByte::Probe(firstItem) != NULL){
+                        else if (IByte::Probe(firstItem) != NULL){
                             jbyteArray jarr = env->NewByteArray(size);
                             CheckErrorAndLog(env, "ToJavaBundle", "NewByteArray failed  %d", __LINE__);
 
@@ -1321,10 +1469,12 @@ jobject Util::ToJavaBundle(
                         else {
                             LOGGERE("ToJavaBundle", "ArrayOf item is not implemented!!!");
                         }
-                    } else {
+                    }
+                    else {
                         LOGGERE("ToJavaBundle", "ToJavaBundle()  ArrayOf item is Unknown!");
                     }
-                } else {
+                }
+                else {
                     LOGGERE("ToJavaBundle", "ToJavaBundle()  ArrayOf type first item is NULL!");
                 }
             }
@@ -1476,8 +1626,8 @@ jobject Util::ToJavaBundle(
                 env->CallVoidMethod(jBundle, m, jKey, jpDataObj);
                 env->DeleteLocalRef(jpDataObj);
             }
-            else if (IObjectContainer::Probe(value) != NULL) {
-                AutoPtr<IObjectContainer> container = IObjectContainer::Probe(value);
+            else if (IList::Probe(value) != NULL) {
+                AutoPtr<IList> list = IList::Probe(value);
 
                 jclass listKlass = env->FindClass("java/util/ArrayList");
                 Util::CheckErrorAndLog(env, "ToJavaBundle", "FindClass: ArrayList %d", __LINE__);
@@ -1489,24 +1639,17 @@ jobject Util::ToJavaBundle(
                 Util::CheckErrorAndLog(env, "ToJavaBundle", "NewObject: ArrayList %d", __LINE__);
 
                 Int32 count = 0;
-                container->GetObjectCount(&count);
+                list->GetSize(&count);
                 if (count > 0) {
                     jmethodID mAdd = env->GetMethodID(listKlass, "add", "(Ljava/lang/Object;)Z");
                     Util::CheckErrorAndLog(env, "ToJavaBundle", "GetMethodID: add %d", __LINE__);
 
-                    AutoPtr<IObjectEnumerator> it;
-                    container->GetObjectEnumerator((IObjectEnumerator**)&it);
-
-                    Boolean hasNext;
-                    while (it->MoveNext(&hasNext), hasNext) {
+                    for (Int32 j = 0; j < count; j++) {
                         AutoPtr<IInterface> item;
-                        it->Current((IInterface**)&item);
-
-                        AutoPtr<IObject> object = (IObject*)item->Probe(EIID_IObject);
-
+                        list->Get(i, (IInterface**)&item);
                         ClassID clsid;
-                        object->GetClassID(&clsid);
-                        if (ECLSID_CStringWrapper == clsid) {
+                        IObject::Probe(item)->GetClassID(&clsid);
+                        if (ICharSequence::Probe(item)) {
                             AutoPtr<ICharSequence> csitem = ICharSequence::Probe(item);
                             String sitem;
                             csitem->ToString(&sitem);
@@ -1522,7 +1665,8 @@ jobject Util::ToJavaBundle(
                                 CheckErrorAndLog(env, "GetJavaInputDevice Fail CallObjectMethod: mAdd : %d!\n", __LINE__);
 
                                 env->DeleteLocalRef(jitem);
-                            } else {
+                            }
+                            else {
                                 LOGGERE("ToJavaBundle", "IObjectContainer Unknown type!");
                             }
                         } */else {
@@ -1541,19 +1685,11 @@ jobject Util::ToJavaBundle(
                 }
             }
             else if (ISerializable::Probe(value) != NULL) {
-                AutoPtr<IObject> object = (IObject*)value->Probe(EIID_IObject);
                 ClassID clsid;
-                object->GetClassID(&clsid);
+                IObject::Probe(value)->GetClassID(&clsid);
 
                 /*if (ECLSID_CISerializableNative == clsid) {
-                    CISerializableNative* snative = (CISerializableNative*)ISerializable::Probe(value);
-
-                    AutoPtr<ArrayOf<Byte> > obj;
-                    snative->GetObject((ArrayOf<Byte>**)&obj);
-
-                    String path = snative->GetPackagePath();
-
-                    jobject jserializable = Util::ElByteArrayToJavaObject(env, obj, path);
+                    jobject jserializable = Util::ElByteArrayToJavaObject(env, ISerializable::Probe(value));
                     LOGGERD("ToJavaBundle", "ISerializable jserializable: %p");
 
                     jmethodID m = env->GetMethodID(bundleKlass, "putSerializable", "(Ljava/lang/String;Ljava/io/Serializable;)V");
@@ -1563,13 +1699,14 @@ jobject Util::ToJavaBundle(
                     Util::CheckErrorAndLog(env, "ToJavaBundle", "CallVoidMethod: putSerializable %d", __LINE__);
 
                     env->DeleteLocalRef(jserializable);
-                } */else {
+                }
+                else*/ {
                     LOGGERE("ToJavaBundle", "ToJavaBundle() Unknown ISerializable type not implemented! key is:%s\n", keyStr.string());
                     DUMP_CLSID(clsid, "ToJavaBundle");
                 }
             }
-            else if(IParcelable::Probe(value) != NULL){
-                AutoPtr<IObject> object = (IObject*)value->Probe(EIID_IObject);
+            else if (IParcelable::Probe(value) != NULL){
+                AutoPtr<IObject> object = IObject::Probe(value);
                 ClassID clsid;
                 object->GetClassID(&clsid);
 
@@ -1581,24 +1718,27 @@ jobject Util::ToJavaBundle(
 
                         env->CallVoidMethod(jBundle, m, jKey, jparcelable);
                         Util::CheckErrorAndLog(env, "ToJavaBundle", "CallVoidMethod: putParcelable %d", __LINE__);
-                    } else {
+                    }
+                    else {
                         LOGGERE("ToJavaBundle", "ToJavaParcelable fail!");
                     }
-                } else*/ {
+                }
+                else*/ {
                     LOGGERE("ToJavaBundle", "ToJavaBundle() Unknown IParcelable type not implemented! key is:%s\n", keyStr.string());
                     DUMP_CLSID(clsid, "ToJavaBundle");
                 }
             }
             else{
                 LOGGERE("ToJavaBundle", "ToJavaBundle() Unsupported type! key is:%s\n", keyStr.string());
-                AutoPtr<IObject> object = (IObject*)value->Probe(EIID_IObject);
+                AutoPtr<IObject> object = IObject::Probe(value);
                 ClassID clsid;
                 object->GetClassID(&clsid);
                 DUMP_CLSID(clsid, "ToJavaBundle");
             }
 
             env->DeleteLocalRef(jKey);
-        } else {
+        }
+        else {
             jmethodID m = env->GetMethodID(bundleKlass, "putParcelable", "(Ljava/lang/String;Landroid/os/Parcelable;)V");
             Util::CheckErrorAndLog(env, "ToJavaBundle", "Fail GetMethodID: putParcelable %d", __LINE__);
 
@@ -1616,189 +1756,96 @@ Boolean Util::GetElBitmap(
     /* [in] */ jobject jbitmap,
     /* [out] */ IBitmap** bitmap)
 {
-    if(bitmap == NULL){
+    if (bitmap == NULL){
         Logger::E("GetElBitmap", "GetElBitmap() INVALID params");
         return FALSE;
     }
 
     *bitmap = NULL;
 
-    if(jbitmap == NULL){
+    if (jbitmap == NULL){
         Logger::W("GetElBitmap", "GetElBitmap() input jbitmap null");
         return TRUE;
     }
 
+    jclass parcelClass = env->FindClass("android/os/Parcel");
+    CheckErrorAndLog(env, "FindClass: Parcel : %d!\n", __LINE__);
+
+    jmethodID m = env->GetStaticMethodID(parcelClass, "obtain", "()Landroid/os/Parcel;");
+    CheckErrorAndLog(env, "GetMethodID: obtain : %d!\n", __LINE__);
+
+    jobject jparcel = env->CallStaticObjectMethod(parcelClass, m);
+    CheckErrorAndLog(env, "CallStaticObjectMethod: obtain : %d!\n", __LINE__);
+
     jclass bitmapClass = env->FindClass("android/graphics/Bitmap");
-    CheckErrorAndLog(env, "GetElBitmap Fail FindClass: Bitmap : %d!\n", __LINE__);
+    CheckErrorAndLog(env, "ToJavaBitmap", "FindClass: Bitmap : %d!\n", __LINE__);
 
-    Int32 density = GetJavaIntField(env, bitmapClass, jbitmap, "mDensity", "GetElBitmap");
+    m = env->GetMethodID(bitmapClass, "writeToParcel", "(Landroid/os/Parcel;I)V");
+    CheckErrorAndLog(env, "GetMethodID: writeToParcel : %d!\n", __LINE__);
 
-    jmethodID method = env->GetMethodID(bitmapClass, "getWidth", "()I");
-    CheckErrorAndLog(env, "Util::GetElRemoteViews()", "GetElRemoteViews(): FindMethod: getWidth: %d!\n", __LINE__);
-    jint width = env->CallIntMethod(jbitmap, method);
-    CheckErrorAndLog(env, "Util::GetElRemoteViews()", "GetElRemoteViews: call method getWidth: %d!\n", __LINE__);
-    method = env->GetMethodID(bitmapClass, "getHeight", "()I");
-    CheckErrorAndLog(env, "Util::GetElRemoteViews()", "GetElRemoteViews(): FindMethod: getWidth: %d!\n", __LINE__);
-    jint height = env->CallIntMethod(jbitmap, method);
-    CheckErrorAndLog(env, "Util::GetElRemoteViews()", "GetElRemoteViews: call method getWidth: %d!\n", __LINE__);
+    env->CallVoidMethod(jbitmap, m, jparcel, 0);
+    CheckErrorAndLog(env, "CallVoidMethod: writeToParcel : %d!\n", __LINE__);
 
-    AutoPtr<IBitmapFactory> factory;
-    CBitmapFactory::AcquireSingleton((IBitmapFactory**)&factory);
+    Int32 nativePtr = GetJavaIntField(env, parcelClass, jparcel, "mNativePtr", "GetElBitmap");
+    android::Parcel* source = reinterpret_cast< android::Parcel*>(nativePtr);
 
-    // TODO: Check config, here we temporary use BitmapConfig_ARGB_8888 instead
-    ECode ec = factory->CreateBitmapEx3(width, height, Elastos::Droid::Graphics::BitmapConfig_ARGB_8888, bitmap);
-    LOGGERE(TAG, "Util::GetElRemoteViews(): CreateBitmapEx3, ec = %0x", ec);
+    AutoPtr<IParcel> parcel;
+    CParcel::New((IParcel**)&parcel);
 
-    (*bitmap)->SetDensity(density);
+    android::Parcel* dest;
+    parcel->GetElementPayload((Handle32*)&dest);
 
-    // Copy Pixels
-    Int32 size = width * height;
-    AutoPtr<ArrayOf<Int32> > buffer = ArrayOf<Int32>::Alloc(size);
-    jintArray jbuf = env->NewIntArray((jsize)size);
-    CheckErrorAndLog(env, "Util", "ToJavaIntArray, NewIntArray failed", __LINE__);
+    dest->appendFrom(source, 0, source->dataSize());
+    dest->setDataPosition(0);
 
-    jmethodID mGetPixels = env->GetMethodID(bitmapClass, "getPixels", "([IIIIIII)V");
-    CheckErrorAndLog(env, "Util::GetElRemoteViews()", "GetElRemoteViews(): FindMethod: getPixels: %d!\n", __LINE__);
-    env->CallVoidMethod(jbitmap, mGetPixels, jbuf, 0, width, 0, 0, width, height);
-    CheckErrorAndLog(env, "Util::GetElRemoteViews()", "GetElRemoteViews: call method getPixels: %d!\n", __LINE__);
+    CBitmap::New(bitmap);
+    IParcelable::Probe(*bitmap)->ReadFromParcel(parcel);
 
-    env->GetIntArrayRegion(jbuf, 0, size, buffer->GetPayload());
-    (*bitmap)->SetPixels(*buffer, 0, width, 0, 0, width, height);
-    env->DeleteLocalRef(jbuf);
-
-    // Set ninePatchChunk
-    AutoPtr<ArrayOf<Byte> > ninePatchChunk;
-    jfieldID field = env->GetFieldID(bitmapClass, "mNinePatchChunk", "[B");
-    CheckErrorAndLog(env, "%s: Fail get jbyteArray field id:%s  : %d!\n", "GetElBitmap", "mNinePatchChunk", __LINE__);
-    jbyteArray jarray = (jbyteArray)env->GetObjectField(jbitmap, field);
-    CheckErrorAndLog(env, "%s: Fail get jbyteArray field: %s : %d!\n", "GetElBitmap", "mNinePatchChunk", __LINE__);
-
-    if (jarray != NULL) {
-        jint size = env->GetArrayLength(jarray);
-        CheckErrorAndLog(env, "GetArrayLength:(): %d!\n", __LINE__);
-
-        jbyte* jpayload = (jbyte*)malloc(size);
-        env->GetByteArrayRegion(jarray, 0, size, jpayload);
-        CheckErrorAndLog(env, "GetByteArrayRegion:(): %d!\n", __LINE__);
-        ninePatchChunk = ArrayOf<Byte>::Alloc(size);
-        ninePatchChunk->Copy((Byte*)jpayload, size);
-        free(jpayload);
-        env->DeleteLocalRef(jarray);
-        (*bitmap)->SetNinePatchChunk(ninePatchChunk.Get());
-    }
-
-    AutoPtr<ArrayOf<Int32> > layoutBounds;
-    field = env->GetFieldID(bitmapClass, "mLayoutBounds", "[I");
-    CheckErrorAndLog(env, "%s: Fail get jbyteArray field id:%s  : %d!\n", "GetElBitmap", "mLayoutBounds", __LINE__);
-    jintArray jlayoutBounds = (jintArray)env->GetObjectField(jbitmap, field);
-    CheckErrorAndLog(env, "%s: Fail get jbyteArray field: %s : %d!\n", "GetElBitmap", "mLayoutBounds", __LINE__);
-
-    if (jlayoutBounds != NULL) {
-        jint size = env->GetArrayLength(jlayoutBounds);
-        CheckErrorAndLog(env, "GetArrayLength:(): %d!\n", __LINE__);
-
-        jint* jpayload = (jint*)malloc(size * sizeof(Int32));
-
-        env->GetIntArrayRegion(jlayoutBounds, 0, size, jpayload);
-        CheckErrorAndLog(env, "GetIntArrayRegion:(): %d!\n", __LINE__);
-        layoutBounds = ArrayOf<Int32>::Alloc(size);
-        layoutBounds->Copy((Int32*)jpayload, size);
-        free(jpayload);
-        env->DeleteLocalRef(jlayoutBounds);
-        (*bitmap)->SetLayoutBounds(layoutBounds.Get());
-    }
-
+    env->DeleteLocalRef(parcelClass);
+    env->DeleteLocalRef(jparcel);
     env->DeleteLocalRef(bitmapClass);
 
     return TRUE;
 }
 
-jobject Util::ToJavaBitmap(JNIEnv* env, IBitmap* bitmap)
+jobject Util::ToJavaBitmap(
+    /* [in] */ JNIEnv* env,
+    /* [in] */ IBitmap* bitmap)
 {
-    if(env == NULL || bitmap == NULL){
+    if (env == NULL || bitmap == NULL){
         Logger::E("Util", "ToJavaBitmap() INVALID params");
         return NULL;
     }
 
+    AutoPtr<IParcel> parcel;
+    CParcel::New((IParcel**)&parcel);
+
+    IParcelable::Probe(bitmap)->ReadFromParcel(parcel);
+    parcel->SetDataPosition(0);
+    Handle32 source;
+    parcel->GetElementPayload(&source);
+
+    jclass parcelClass = env->FindClass("android/os/Parcel");
+    CheckErrorAndLog(env, "FindClass: Parcel : %d!\n", __LINE__);
+
+    jmethodID m = env->GetStaticMethodID(parcelClass, "obtain", "(J)Landroid/os/Parcel;");
+    CheckErrorAndLog(env, "GetMethodID: obtain : %d!\n", __LINE__);
+
+    jobject jparcel = env->CallStaticObjectMethod(parcelClass, m, (Int64)source);
+    CheckErrorAndLog(env, "CallStaticObjectMethod: obtain : %d!\n", __LINE__);
+
     jclass bitmapClass = env->FindClass("android/graphics/Bitmap");
     CheckErrorAndLog(env, "ToJavaBitmap", "FindClass: Bitmap : %d!\n", __LINE__);
 
-    Int32 density = 0;
-    bitmap->GetDensity(&density);
-    // Boolean isMutable = FALSE;
-    // bitmap->IsMutable(&isMutable);
+    m = env->GetStaticMethodID(bitmapClass, "nativeCreateFromParcel", "(Landroid/os/Parcel;)Landroid/graphics/Bitmap;");
+    CheckErrorAndLog(env, "GetMethodID: nativeCreateFromParcel : %d!\n", __LINE__);
 
-    AutoPtr<ArrayOf<Byte> > ninePatchChunk;
-    bitmap->GetNinePatchChunk((ArrayOf<Byte> **)&ninePatchChunk);
+    jobject jbitmap = env->CallStaticObjectMethod(bitmapClass, m, jparcel);
+    CheckErrorAndLog(env, "CallStaticObjectMethod: nativeCreateFromParcel : %d!\n", __LINE__);
 
-    AutoPtr<ArrayOf<Int32> > layoutBounds;
-    bitmap->GetLayoutBounds((ArrayOf<Int32> **)&layoutBounds);
-
-    jbyteArray jninePatchChunk = ToJavaByteArray(env, ninePatchChunk);
-    jintArray jlayoutBounds = ToJavaIntArray(env, layoutBounds);
-
-    jobject jbitmap = NULL;
-
-    // createBitmap
-    Int32 width = 0;
-    Int32 height = 0;
-    bitmap->GetWidth(&width);
-    bitmap->GetHeight(&height);
-
-    jclass configKlass = env->FindClass("android/graphics/Bitmap$Config");
-    CheckErrorAndLog(env, "ToJavaBitmap", "FindClass: Bitmap$Config : %d!\n", __LINE__);
-
-    jfieldID f = env->GetStaticFieldID(configKlass, "ARGB_8888", "Landroid/graphics/Bitmap$Config;");
-    CheckErrorAndLog(env, "ToJavaBitmap", "GetStaticFieldID: ARGB_8888 : %d!\n", __LINE__);
-
-    jobject jconfig = env->GetStaticObjectField(configKlass, f);
-    CheckErrorAndLog(env, "ToJavaBitmap", "GetStaticObjectField: : %d!\n", __LINE__);
-
-    jmethodID m = env->GetStaticMethodID(bitmapClass, "createBitmap", "(IILandroid/graphics/Bitmap$Config;)Landroid/graphics/Bitmap;");
-    CheckErrorAndLog(env, "ToJavaBitmap", "GetMethodID: Bitmap.createBitmap : %d!\n", __LINE__);
-    jbitmap = env->CallStaticObjectMethod(bitmapClass, m, width, height, jconfig);
-    CheckErrorAndLog(env, "ToJavaBitmap", "call Bitmap createBitmap : %d!\n", __LINE__);
-
-    env->DeleteLocalRef(configKlass);
-    env->DeleteLocalRef(jconfig);
-
-    // Copy Pixels
-    Int32 size = width * height;
-    AutoPtr<ArrayOf<Int32> > buffer = ArrayOf<Int32>::Alloc(size);
-    bitmap->GetPixels(*buffer, 0, width, 0, 0, width, height);
-
-    jintArray jbuf = ToJavaIntArray(env, buffer);
-    jmethodID mSetColor = env->GetMethodID(bitmapClass, "setPixels", "([IIIIIII)V");
-    CheckErrorAndLog(env, "ToJavaBitmap", "GetMethodID: Bitmap.setPixel : %d!\n", __LINE__);
-    env->CallVoidMethod(jbitmap, mSetColor, jbuf, 0, width, 0, 0, width, height);
-    CheckErrorAndLog(env, "ToJavaBitmap", "Call method: Bitmap.setPixel : %d!\n", __LINE__);
-    env->DeleteLocalRef(jbuf);
-
-    // Set density
-    jmethodID mSetDensity = env->GetMethodID(bitmapClass, "setDensity", "(I)V");
-    CheckErrorAndLog(env, "ToJavaBitmap", "GetMethodID: Bitmap.setDensity : %d!\n", __LINE__);
-    env->CallVoidMethod(jbitmap, mSetDensity, density);
-    CheckErrorAndLog(env, "ToJavaBitmap", "Call method: Bitmap.setDensity : %d!\n", __LINE__);
-
-    // Set ninePatchChunk
-    if(jninePatchChunk != NULL){
-        jmethodID msetNinePatchChunk = env->GetMethodID(bitmapClass, "setNinePatchChunk", "([B)V");
-        CheckErrorAndLog(env, "ToJavaBitmap", "GetMethodID: Bitmap.setNinePatchChunk : %d!\n", __LINE__);
-        env->CallVoidMethod(jbitmap, msetNinePatchChunk, jninePatchChunk);
-        CheckErrorAndLog(env, "ToJavaBitmap", "Call method: Bitmap.setNinePatchChunk : %d!\n", __LINE__);
-    }
-
-    // Set density
-    if(jlayoutBounds != NULL){
-        jmethodID msetLayoutBounds = env->GetMethodID(bitmapClass, "setLayoutBounds", "([I)V");
-        CheckErrorAndLog(env, "ToJavaBitmap", "GetMethodID: Bitmap.setLayoutBounds : %d!\n", __LINE__);
-        env->CallVoidMethod(jbitmap, msetLayoutBounds, jlayoutBounds);
-        CheckErrorAndLog(env, "ToJavaBitmap", "Call method: Bitmap.setLayoutBounds : %d!\n", __LINE__);
-    }
-
+    env->DeleteLocalRef(parcelClass);
+    env->DeleteLocalRef(jparcel);
     env->DeleteLocalRef(bitmapClass);
-    env->DeleteLocalRef(jninePatchChunk);
-    env->DeleteLocalRef(jlayoutBounds);
 
     return jbitmap;
 }
@@ -1857,7 +1904,8 @@ jobject Util::ToJavaConfiguration(
         env->SetObjectField(jConfiguration, f, jLocale);
         Util::CheckErrorAndLog(env, "ToJavaConfiguration", "Fail SetObjectField: locale %d", __LINE__);
         env->DeleteLocalRef(jLocale);
-    } else {
+    }
+    else {
         // TODO: Eric locale is NULL ?
         LOGGERE("Eric", "ToJavaConfiguration() locale is NULL");
         jclass localKlass = env->FindClass("java/util/Locale");
@@ -1879,7 +1927,7 @@ jobject Util::ToJavaConfiguration(
     }
 
     Boolean tempBool;
-    configuration->GetUserSetLocale(&tempBool);
+    configuration->IsUserSetLocale(&tempBool);
     f = env->GetFieldID(configKlass, "userSetLocale", "Z");
     Util::CheckErrorAndLog(env, "ToJavaConfiguration", "Fail GetFieldID: userSetLocale %d", __LINE__);
 
@@ -2005,6 +2053,8 @@ jobject Util::ToJavaConfiguration(
     env->SetIntField(jConfiguration, f, tempInt);
     Util::CheckErrorAndLog(env, "ToJavaConfiguration", "Fail SetIntField: seq %d", __LINE__);
 
+    //TODO:CM12 themeConfig
+
     env->DeleteLocalRef(configKlass);
 
     return jConfiguration;
@@ -2034,67 +2084,87 @@ jobject Util::ToJavaLocale(
     if ((localeHelp->GetSIMPLIFIED_CHINESE((ILocale**)&slocale), slocale->Equals(locale, &result), result)) {
         f = env->GetStaticFieldID(localKlass, "SIMPLIFIED_CHINESE", "Ljava/util/Locale;");
         Util::CheckErrorAndLog(env, "ToJavaLocale", "Fail GetStaticFieldID: SIMPLIFIED_CHINESE : %d", __LINE__);
-    } else if((localeHelp->GetTRADITIONAL_CHINESE((ILocale**)&slocale), slocale->Equals(locale, &result), result)) {
+    }
+    else if ((localeHelp->GetTRADITIONAL_CHINESE((ILocale**)&slocale), slocale->Equals(locale, &result), result)) {
         f = env->GetStaticFieldID(localKlass, "TRADITIONAL_CHINESE", "Ljava/util/Locale;");
         Util::CheckErrorAndLog(env, "ToJavaLocale", "Fail GetStaticFieldID: TRADITIONAL_CHINESE : %d", __LINE__);
-    } else if((localeHelp->GetUS((ILocale**)&slocale), slocale->Equals(locale, &result), result)) {
+    }
+    else if ((localeHelp->GetUS((ILocale**)&slocale), slocale->Equals(locale, &result), result)) {
         f = env->GetStaticFieldID(localKlass, "US", "Ljava/util/Locale;");
         Util::CheckErrorAndLog(env, "ToJavaLocale", "Fail GetStaticFieldID: US : %d", __LINE__);
-    }  else if((localeHelp->GetUK((ILocale**)&slocale), slocale->Equals(locale, &result), result)) {
+    }  else if ((localeHelp->GetUK((ILocale**)&slocale), slocale->Equals(locale, &result), result)) {
         f = env->GetStaticFieldID(localKlass, "UK", "Ljava/util/Locale;");
         Util::CheckErrorAndLog(env, "ToJavaLocale", "Fail GetStaticFieldID: UK : %d", __LINE__);
-    } else if((localeHelp->GetCANADA((ILocale**)&slocale), slocale->Equals(locale, &result), result)) {
+    }
+    else if ((localeHelp->GetCANADA((ILocale**)&slocale), slocale->Equals(locale, &result), result)) {
         f = env->GetStaticFieldID(localKlass, "CANADA", "Ljava/util/Locale;");
         Util::CheckErrorAndLog(env, "ToJavaLocale", "Fail GetStaticFieldID: CANADA : %d", __LINE__);
-    } else if((localeHelp->GetCANADA_FRENCH((ILocale**)&slocale), slocale->Equals(locale, &result), result)) {
+    }
+    else if ((localeHelp->GetCANADA_FRENCH((ILocale**)&slocale), slocale->Equals(locale, &result), result)) {
         f = env->GetStaticFieldID(localKlass, "CANADA_FRENCH", "Ljava/util/Locale;");
         Util::CheckErrorAndLog(env, "ToJavaLocale", "Fail GetStaticFieldID: CANADA_FRENCH : %d", __LINE__);
-    } else if((localeHelp->GetCHINA((ILocale**)&slocale), slocale->Equals(locale, &result), result)) {
+    }
+    else if ((localeHelp->GetCHINA((ILocale**)&slocale), slocale->Equals(locale, &result), result)) {
         f = env->GetStaticFieldID(localKlass, "CHINA", "Ljava/util/Locale;");
         Util::CheckErrorAndLog(env, "ToJavaLocale", "Fail GetStaticFieldID: CHINA : %d", __LINE__);
-    } else if((localeHelp->GetCHINESE((ILocale**)&slocale), slocale->Equals(locale, &result), result)) {
+    }
+    else if ((localeHelp->GetCHINESE((ILocale**)&slocale), slocale->Equals(locale, &result), result)) {
         f = env->GetStaticFieldID(localKlass, "CHINESE", "Ljava/util/Locale;");
         Util::CheckErrorAndLog(env, "ToJavaLocale", "Fail GetStaticFieldID: CHINESE : %d", __LINE__);
-    } else if((localeHelp->GetENGLISH((ILocale**)&slocale), slocale->Equals(locale, &result), result)) {
+    }
+    else if ((localeHelp->GetENGLISH((ILocale**)&slocale), slocale->Equals(locale, &result), result)) {
         f = env->GetStaticFieldID(localKlass, "ENGLISH", "Ljava/util/Locale;");
         Util::CheckErrorAndLog(env, "ToJavaLocale", "Fail GetStaticFieldID: ENGLISH : %d", __LINE__);
-    } else if((localeHelp->GetFRANCE((ILocale**)&slocale), slocale->Equals(locale, &result), result)) {
+    }
+    else if ((localeHelp->GetFRANCE((ILocale**)&slocale), slocale->Equals(locale, &result), result)) {
         f = env->GetStaticFieldID(localKlass, "FRANCE", "Ljava/util/Locale;");
         Util::CheckErrorAndLog(env, "ToJavaLocale", "Fail GetStaticFieldID: FRANCE : %d", __LINE__);
-    } else if((localeHelp->GetGERMAN((ILocale**)&slocale), slocale->Equals(locale, &result), result)) {
+    }
+    else if ((localeHelp->GetGERMAN((ILocale**)&slocale), slocale->Equals(locale, &result), result)) {
         f = env->GetStaticFieldID(localKlass, "GERMAN", "Ljava/util/Locale;");
         Util::CheckErrorAndLog(env, "ToJavaLocale", "Fail GetStaticFieldID: GERMAN : %d", __LINE__);
-    } else if((localeHelp->GetGERMANY((ILocale**)&slocale), slocale->Equals(locale, &result), result)) {
+    }
+    else if ((localeHelp->GetGERMANY((ILocale**)&slocale), slocale->Equals(locale, &result), result)) {
         f = env->GetStaticFieldID(localKlass, "GERMANY", "Ljava/util/Locale;");
         Util::CheckErrorAndLog(env, "ToJavaLocale", "Fail GetStaticFieldID: GERMANY : %d", __LINE__);
-    } else if((localeHelp->GetITALIAN((ILocale**)&slocale), slocale->Equals(locale, &result), result)) {
+    }
+    else if ((localeHelp->GetITALIAN((ILocale**)&slocale), slocale->Equals(locale, &result), result)) {
         f = env->GetStaticFieldID(localKlass, "ITALIAN", "Ljava/util/Locale;");
         Util::CheckErrorAndLog(env, "ToJavaLocale", "Fail GetStaticFieldID: ITALIAN : %d", __LINE__);
-    } else if((localeHelp->GetITALY((ILocale**)&slocale), slocale->Equals(locale, &result), result)) {
+    }
+    else if ((localeHelp->GetITALY((ILocale**)&slocale), slocale->Equals(locale, &result), result)) {
         f = env->GetStaticFieldID(localKlass, "ITALY", "Ljava/util/Locale;");
         Util::CheckErrorAndLog(env, "ToJavaLocale", "Fail GetStaticFieldID: ITALY : %d", __LINE__);
-    } else if((localeHelp->GetJAPAN((ILocale**)&slocale), slocale->Equals(locale, &result), result)) {
+    }
+    else if ((localeHelp->GetJAPAN((ILocale**)&slocale), slocale->Equals(locale, &result), result)) {
         f = env->GetStaticFieldID(localKlass, "JAPAN", "Ljava/util/Locale;");
         Util::CheckErrorAndLog(env, "ToJavaLocale", "Fail GetStaticFieldID: JAPAN : %d", __LINE__);
-    } else if((localeHelp->GetJAPANESE((ILocale**)&slocale), slocale->Equals(locale, &result), result)) {
+    }
+    else if ((localeHelp->GetJAPANESE((ILocale**)&slocale), slocale->Equals(locale, &result), result)) {
         f = env->GetStaticFieldID(localKlass, "JAPANESE", "Ljava/util/Locale;");
         Util::CheckErrorAndLog(env, "ToJavaLocale", "Fail GetStaticFieldID: JAPANESE : %d", __LINE__);
-    } else if((localeHelp->GetKOREA((ILocale**)&slocale), slocale->Equals(locale, &result), result)) {
+    }
+    else if ((localeHelp->GetKOREA((ILocale**)&slocale), slocale->Equals(locale, &result), result)) {
         f = env->GetStaticFieldID(localKlass, "KOREA", "Ljava/util/Locale;");
         Util::CheckErrorAndLog(env, "ToJavaLocale", "Fail GetStaticFieldID: KOREA : %d", __LINE__);
-    } else if((localeHelp->GetKOREAN((ILocale**)&slocale), slocale->Equals(locale, &result), result)) {
+    }
+    else if ((localeHelp->GetKOREAN((ILocale**)&slocale), slocale->Equals(locale, &result), result)) {
         f = env->GetStaticFieldID(localKlass, "KOREAN", "Ljava/util/Locale;");
         Util::CheckErrorAndLog(env, "ToJavaLocale", "Fail GetStaticFieldID: KOREAN : %d", __LINE__);
-    } else if((localeHelp->GetPRC((ILocale**)&slocale), slocale->Equals(locale, &result), result)) {
+    }
+    else if ((localeHelp->GetPRC((ILocale**)&slocale), slocale->Equals(locale, &result), result)) {
         f = env->GetStaticFieldID(localKlass, "PRC", "Ljava/util/Locale;");
         Util::CheckErrorAndLog(env, "ToJavaLocale", "Fail GetStaticFieldID: PRC : %d", __LINE__);
-    } else if((localeHelp->GetROOT((ILocale**)&slocale), slocale->Equals(locale, &result), result)) {
+    }
+    else if ((localeHelp->GetROOT((ILocale**)&slocale), slocale->Equals(locale, &result), result)) {
         f = env->GetStaticFieldID(localKlass, "ROOT", "Ljava/util/Locale;");
         Util::CheckErrorAndLog(env, "ToJavaLocale", "Fail GetStaticFieldID: ROOT : %d", __LINE__);
-    } else if((localeHelp->GetTAIWAN((ILocale**)&slocale), slocale->Equals(locale, &result), result)) {
+    }
+    else if ((localeHelp->GetTAIWAN((ILocale**)&slocale), slocale->Equals(locale, &result), result)) {
         f = env->GetStaticFieldID(localKlass, "TAIWAN", "Ljava/util/Locale;");
         Util::CheckErrorAndLog(env, "ToJavaLocale", "Fail GetStaticFieldID: TAIWAN : %d", __LINE__);
-    } else {
+    }
+    else {
         LOGGERE("ToJavaLocale", "Unknown Locale!");
         assert(0);
     }
@@ -2207,7 +2277,7 @@ jobject Util::ToJavaProviderInfo(
 
     AutoPtr<ArrayOf<IPatternMatcher*> > uriPermissionPatterns;
     providerInfo->GetUriPermissionPatterns((ArrayOf<IPatternMatcher*>**)&uriPermissionPatterns);
-    if(uriPermissionPatterns != NULL) {
+    if (uriPermissionPatterns != NULL) {
         jclass pmerKlass = env->FindClass("android/os/PatternMatcher");
         Util::CheckErrorAndLog(env, "ToJavaProviderInfo", "Fail FindClass: PatternMatcher %d", __LINE__);
 
@@ -2248,7 +2318,7 @@ jobject Util::ToJavaProviderInfo(
 
     AutoPtr<ArrayOf<IPathPermission*> > pathPermissions;
     providerInfo->GetPathPermissions((ArrayOf<IPathPermission*>**)&pathPermissions);
-    if(pathPermissions != NULL) {
+    if (pathPermissions != NULL) {
         jclass ppmissionsKlass = env->FindClass("android/content/pm/PathPermission");
         Util::CheckErrorAndLog(env, "ToJavaProviderInfo", "Fail FindClass: PathPermission %d", __LINE__);
 
@@ -2259,10 +2329,10 @@ jobject Util::ToJavaProviderInfo(
         for (Int32 i = 0; i < count; i++) {
             AutoPtr<IPathPermission> permission = (*pathPermissions)[i];
             String path;
-            permission->GetPath(&path);
+            IPatternMatcher::Probe(permission)->GetPath(&path);
             jstring jpath = Util::ToJavaString(env, path);
             Int32 type;
-            permission->GetType(&type);
+            IPatternMatcher::Probe(permission)->GetType(&type);
             String readPermission;
             permission->GetReadPermission(&readPermission);
             jstring jreadPermission = Util::ToJavaString(env, readPermission);
@@ -2317,124 +2387,15 @@ jobject Util::ToJavaProviderInfo(
     env->SetIntField(jproviderInfo, f, tempInt);
     Util::CheckErrorAndLog(env, "ToJavaApplicationInfo", "Fail SetIntField: flags %d", __LINE__);
 
-    AutoPtr<IApplicationInfo> applicationInfo;
-    providerInfo->GetApplicationInfo((IApplicationInfo**)&applicationInfo);
-    if (applicationInfo != NULL) {
-        jobject japplicationInfo = Util::ToJavaApplicationInfo(env, applicationInfo);
-
-        f = env->GetFieldID(piKlass, "applicationInfo", "Landroid/content/pm/ApplicationInfo;");
-        Util::CheckErrorAndLog(env, "ToJavaProviderInfo", "Fail GetFieldID: ApplicationInfo %d", __LINE__);
-
-        env->SetObjectField(jproviderInfo, f, japplicationInfo);
-        Util::CheckErrorAndLog(env, "ToJavaProviderInfo", "Fail SetObjectField: japplicationInfo %d", __LINE__);
-        env->DeleteLocalRef(japplicationInfo);
-    }
-
-    String processName;
-    providerInfo->GetProcessName(&processName);
-    jstring jprocessName = Util::ToJavaString(env, processName);
-    if (jprocessName != NULL) {
-        f = env->GetFieldID(piKlass, "processName", "Ljava/lang/String;");
-        Util::CheckErrorAndLog(env, "ToJavaProviderInfo", "Fail GetFieldID: processNamen %d", __LINE__);
-
-        env->SetObjectField(jproviderInfo, f, jprocessName);
-        Util::CheckErrorAndLog(env, "ToJavaProviderInfo", "Fail SetIntField: jwritePermission %d", __LINE__);
-        env->DeleteLocalRef(jprocessName);
-    }
-
-    providerInfo->GetDescriptionRes(&tempInt);
-    f = env->GetFieldID(piKlass, "descriptionRes", "I");
-    Util::CheckErrorAndLog(env, "ToJavaApplicationInfo", "Fail GetFieldID: descriptionRes %d", __LINE__);
-
-    env->SetIntField(jproviderInfo, f, tempInt);
-    Util::CheckErrorAndLog(env, "ToJavaApplicationInfo", "Fail SetIntField: descriptionRes %d", __LINE__);
-
-    providerInfo->GetEnabled(&tempBool);
-    f = env->GetFieldID(piKlass, "enabled", "Z");
-    Util::CheckErrorAndLog(env, "ToJavaProviderInfo", "Fail GetFieldID: enabled %d", __LINE__);
+    providerInfo->GetIsSyncable(&tempBool);
+    f = env->GetFieldID(piKlass, "isSyncable", "Z");
+    Util::CheckErrorAndLog(env, "ToJavaProviderInfo", "Fail GetFieldID: isSyncable %d", __LINE__);
 
     env->SetBooleanField(jproviderInfo, f, (jboolean)tempBool);
-    Util::CheckErrorAndLog(env, "ToJavaProviderInfo", "Fail SetBooleanField: enabled %d", __LINE__);
+    Util::CheckErrorAndLog(env, "ToJavaProviderInfo", "Fail SetBooleanField: isSyncable %d", __LINE__);
 
-    providerInfo->GetExported(&tempBool);
-    f = env->GetFieldID(piKlass, "exported", "Z");
-    Util::CheckErrorAndLog(env, "ToJavaProviderInfo", "Fail GetFieldID: exported %d", __LINE__);
-
-    env->SetBooleanField(jproviderInfo, f, (jboolean)tempBool);
-    Util::CheckErrorAndLog(env, "ToJavaProviderInfo", "Fail SetBooleanField: exported %d", __LINE__);
-
-    String name;
-    providerInfo->GetName(&name);
-    jstring jname = Util::ToJavaString(env, name);
-    if (jname != NULL) {
-        f = env->GetFieldID(piKlass, "name", "Ljava/lang/String;");
-        Util::CheckErrorAndLog(env, "ToJavaProviderInfo", "Fail GetFieldID: name %d", __LINE__);
-
-        env->SetObjectField(jproviderInfo, f, jname);
-        Util::CheckErrorAndLog(env, "ToJavaProviderInfo", "Fail SetObjectField: jname %d", __LINE__);
-        env->DeleteLocalRef(jname);
-    }
-
-    String packageName;
-    providerInfo->GetPackageName(&packageName);
-    jstring jpackageName = Util::ToJavaString(env, packageName);
-    if (jpackageName != NULL) {
-        f = env->GetFieldID(piKlass, "packageName", "Ljava/lang/String;");
-        Util::CheckErrorAndLog(env, "ToJavaProviderInfo", "Fail GetFieldID: packageName %d", __LINE__);
-
-        env->SetObjectField(jproviderInfo, f, jpackageName);
-        Util::CheckErrorAndLog(env, "ToJavaProviderInfo", "Fail SetObjectField: jpackageName %d", __LINE__);
-        env->DeleteLocalRef(jpackageName);
-    }
-
-    providerInfo->GetLabelRes(&tempInt);
-    f = env->GetFieldID(piKlass, "labelRes", "I");
-    Util::CheckErrorAndLog(env, "ToJavaProviderInfo", "Fail GetFieldID: labelRes %d", __LINE__);
-
-    env->SetIntField(jproviderInfo, f, tempInt);
-    Util::CheckErrorAndLog(env, "ToJavaProviderInfo", "Fail SetIntField: labelRes %d", __LINE__);
-
-    AutoPtr<ICharSequence> nonLocalizedLabel;
-    providerInfo->GetNonLocalizedLabel((ICharSequence**)&nonLocalizedLabel);
-    if (nonLocalizedLabel != NULL) {
-        String snonLocalizedLabel;
-        nonLocalizedLabel->ToString(&snonLocalizedLabel);
-        jstring jnonLocalizedLabel = Util::ToJavaString(env, snonLocalizedLabel);
-
-        f = env->GetFieldID(piKlass, "nonLocalizedLabel", "Ljava/lang/CharSequence;");
-        Util::CheckErrorAndLog(env, "ToJavaProviderInfo", "Fail GetFieldID: CharSequence %d", __LINE__);
-
-        env->SetObjectField(jproviderInfo, f, jnonLocalizedLabel);
-        Util::CheckErrorAndLog(env, "ToJavaProviderInfo", "Fail SetObjectField: jnonLocalizedLabel %d", __LINE__);
-        env->DeleteLocalRef(jnonLocalizedLabel);
-    }
-
-    providerInfo->GetIcon(&tempInt);
-    f = env->GetFieldID(piKlass, "icon", "I");
-    Util::CheckErrorAndLog(env, "ToJavaProviderInfo", "Fail GetFieldID: icon %d", __LINE__);
-
-    env->SetIntField(jproviderInfo, f, tempInt);
-    Util::CheckErrorAndLog(env, "ToJavaProviderInfo", "Fail SetIntField: icon %d", __LINE__);
-
-    providerInfo->GetLogo(&tempInt);
-    f = env->GetFieldID(piKlass, "logo", "I");
-    Util::CheckErrorAndLog(env, "ToJavaProviderInfo", "Fail GetFieldID: logo %d", __LINE__);
-
-    env->SetIntField(jproviderInfo, f, tempInt);
-    Util::CheckErrorAndLog(env, "ToJavaProviderInfo", "Fail SetIntField: logo %d", __LINE__);
-
-    AutoPtr<IBundle> metaData;
-    providerInfo->GetMetaData((IBundle**)&metaData);
-    if (metaData != NULL) {
-        jobject jmetaData = Util::ToJavaBundle(env, metaData);
-
-        f = env->GetFieldID(piKlass, "metaData", "Landroid/os/Bundle;");
-        Util::CheckErrorAndLog(env, "ToJavaProviderInfo", "Fail GetFieldID: metaData %d", __LINE__);
-
-        env->SetObjectField(jproviderInfo, f, jmetaData);
-        Util::CheckErrorAndLog(env, "ToJavaProviderInfo", "Fail SetObjectField: jmetaData %d", __LINE__);
-        env->DeleteLocalRef(jmetaData);
-    }
+    AutoPtr<IComponentInfo> comInfo = IComponentInfo::Probe(providerInfo);
+    SetComponentInfo(env, piKlass, jproviderInfo, comInfo);
 
     env->DeleteLocalRef(piKlass);
 
@@ -2480,7 +2441,7 @@ Boolean Util::GetElCharSequence(
     CheckErrorAndLog(env, "CallObjectMethod toString : %d!\n", __LINE__);
 
     if (jtmpString != NULL) {
-        if(NOERROR != CStringWrapper::New(GetElString(env, jtmpString), elCs)) {
+        if (NOERROR != CString::New(GetElString(env, jtmpString), elCs)) {
             LOGGERE(TAG, "GetElCharSequence: create CConfiguration fail!");
             *elCs = NULL;
             return false;
@@ -2502,7 +2463,7 @@ Boolean Util::GetElApplicationInfo(
         return FALSE;
     }
 
-    if(NOERROR != CApplicationInfo::New(appInfo)) {
+    if (NOERROR != CApplicationInfo::New(appInfo)) {
         LOGGERE("GetElApplicationInfo", "Create CApplicationInfo fail!");
         return FALSE;
     }
@@ -2589,6 +2550,28 @@ Boolean Util::GetElApplicationInfo(
     Util::CheckErrorAndLog(env, "GetElApplicationInfo", "Fail GetIntField: largestWidthLimitDp %d", __LINE__);
     (*appInfo)->SetLargestWidthLimitDp((Int32)jlargestWidthLimitDp);
 
+    f = env->GetFieldID(appInfoKlass, "scanSourceDir", "Ljava/lang/String;");
+    Util::CheckErrorAndLog(env, "GetElApplicationInfo", "Fail GetFieldID: scanSourceDir %d", __LINE__);
+
+    jstring jscanSourceDir = (jstring)env->GetObjectField(jappInfo, f);
+    Util::CheckErrorAndLog(env, "GetElApplicationInfo", "Fail GetObjectField: jscanSourceDir %d", __LINE__);
+    if (jscanSourceDir != NULL) {
+        String scanSourceDir = Util::GetElString(env, jscanSourceDir);
+        env->DeleteLocalRef(jscanSourceDir);
+        (*appInfo)->SetScanSourceDir(scanSourceDir);
+    }
+
+    f = env->GetFieldID(appInfoKlass, "scanPublicSourceDir", "Ljava/lang/String;");
+    Util::CheckErrorAndLog(env, "GetElApplicationInfo", "Fail GetFieldID: scanPublicSourceDir %d", __LINE__);
+
+    jstring jscanPublicSourceDir = (jstring)env->GetObjectField(jappInfo, f);
+    Util::CheckErrorAndLog(env, "GetElApplicationInfo", "Fail GetObjectField: jscanPublicSourceDir %d", __LINE__);
+    if (jscanPublicSourceDir != NULL) {
+        String scanPublicSourceDir = Util::GetElString(env, jscanPublicSourceDir);
+        env->DeleteLocalRef(jscanPublicSourceDir);
+        (*appInfo)->SetScanPublicSourceDir(scanPublicSourceDir);
+    }
+
     f = env->GetFieldID(appInfoKlass, "sourceDir", "Ljava/lang/String;");
     Util::CheckErrorAndLog(env, "GetElApplicationInfo", "Fail GetFieldID: sourceDir %d", __LINE__);
 
@@ -2611,6 +2594,36 @@ Boolean Util::GetElApplicationInfo(
         (*appInfo)->SetPublicSourceDir(publicSourceDir);
     }
 
+    f = env->GetFieldID(appInfoKlass, "splitSourceDirs", "[Ljava/lang/String;");
+    Util::CheckErrorAndLog(env, "GetElApplicationInfo", "Fail GetFieldID: splitSourceDirs %d", __LINE__);
+
+    jobjectArray jsplitSourceDirs = (jobjectArray)env->GetObjectField(jappInfo, f);
+    Util::CheckErrorAndLog(env, "GetElApplicationInfo", "Fail GetObjectField: jsplitSourceDirs %d", __LINE__);
+    if (jsplitSourceDirs != NULL) {
+        AutoPtr<ArrayOf<String> > splitSourceDirs;
+        GetElStringArray(env, jsplitSourceDirs, (ArrayOf<String>**)&splitSourceDirs);
+        if (splitSourceDirs != NULL) {
+            (*appInfo)->SetSplitSourceDirs(splitSourceDirs);
+        }
+
+        env->DeleteLocalRef(jsplitSourceDirs);
+    }
+
+    f = env->GetFieldID(appInfoKlass, "splitPublicSourceDirs", "[Ljava/lang/String;");
+    Util::CheckErrorAndLog(env, "GetElApplicationInfo", "Fail GetFieldID: splitPublicSourceDirs %d", __LINE__);
+
+    jobjectArray jsplitPublicSourceDirs = (jobjectArray)env->GetObjectField(jappInfo, f);
+    Util::CheckErrorAndLog(env, "GetElApplicationInfo", "Fail GetObjectField: jsplitPublicSourceDirs %d", __LINE__);
+    if (jsplitPublicSourceDirs != NULL) {
+        AutoPtr<ArrayOf<String> > splitPublicSourceDirs;
+        GetElStringArray(env, jsplitPublicSourceDirs, (ArrayOf<String>**)&splitPublicSourceDirs);
+        if (splitPublicSourceDirs != NULL) {
+            (*appInfo)->SetSplitPublicSourceDirs(splitPublicSourceDirs);
+        }
+
+        env->DeleteLocalRef(jsplitPublicSourceDirs);
+    }
+
     f = env->GetFieldID(appInfoKlass, "nativeLibraryDir", "Ljava/lang/String;");
     Util::CheckErrorAndLog(env, "GetElApplicationInfo", "Fail GetFieldID: nativeLibraryDir %d", __LINE__);
 
@@ -2620,6 +2633,57 @@ Boolean Util::GetElApplicationInfo(
         String nativeLibraryDir = Util::GetElString(env, jnativeLibraryDir);
         env->DeleteLocalRef(jnativeLibraryDir);
         (*appInfo)->SetPublicSourceDir(nativeLibraryDir);
+    }
+
+    f = env->GetFieldID(appInfoKlass, "secondaryNativeLibraryDir", "Ljava/lang/String;");
+    Util::CheckErrorAndLog(env, "GetElApplicationInfo", "Fail GetFieldID: secondaryNativeLibraryDir %d", __LINE__);
+
+    jstring jsecondaryNativeLibraryDir = (jstring)env->GetObjectField(jappInfo, f);
+    Util::CheckErrorAndLog(env, "GetElApplicationInfo", "Fail GetObjectField: jsecondaryNativeLibraryDir %d", __LINE__);
+    if (jsecondaryNativeLibraryDir != NULL) {
+        String secondaryNativeLibraryDir = Util::GetElString(env, jsecondaryNativeLibraryDir);
+        env->DeleteLocalRef(jsecondaryNativeLibraryDir);
+        (*appInfo)->SetSecondaryNativeLibraryDir(secondaryNativeLibraryDir);
+    }
+
+    f = env->GetFieldID(appInfoKlass, "nativeLibraryRootDir", "Ljava/lang/String;");
+    Util::CheckErrorAndLog(env, "GetElApplicationInfo", "Fail GetFieldID: nativeLibraryRootDir %d", __LINE__);
+
+    jstring jnativeLibraryRootDir = (jstring)env->GetObjectField(jappInfo, f);
+    Util::CheckErrorAndLog(env, "GetElApplicationInfo", "Fail GetObjectField: jnativeLibraryRootDir %d", __LINE__);
+    if (jnativeLibraryRootDir != NULL) {
+        String nativeLibraryRootDir = Util::GetElString(env, jnativeLibraryRootDir);
+        env->DeleteLocalRef(jnativeLibraryRootDir);
+        (*appInfo)->SetNativeLibraryRootDir(nativeLibraryRootDir);
+    }
+
+    f = env->GetFieldID(appInfoKlass, "nativeLibraryRootRequiresIsa", "Z");
+    Util::CheckErrorAndLog(env, "GetElApplicationInfo", "Fail GetFieldID: nativeLibraryRootRequiresIsa %d", __LINE__);
+
+    jboolean jnativeLibraryRootRequiresIsa = env->GetBooleanField(jappInfo, f);
+    Util::CheckErrorAndLog(env, "GetElApplicationInfo", "Fail GetIntField: nativeLibraryRootRequiresIsa %d", __LINE__);
+    (*appInfo)->SetNativeLibraryRootRequiresIsa((Boolean)jnativeLibraryRootRequiresIsa);
+
+    f = env->GetFieldID(appInfoKlass, "primaryCpuAbi", "Ljava/lang/String;");
+    Util::CheckErrorAndLog(env, "GetElApplicationInfo", "Fail GetFieldID: primaryCpuAbi %d", __LINE__);
+
+    jstring jprimaryCpuAbi = (jstring)env->GetObjectField(jappInfo, f);
+    Util::CheckErrorAndLog(env, "GetElApplicationInfo", "Fail GetObjectField: jprimaryCpuAbi %d", __LINE__);
+    if (jprimaryCpuAbi != NULL) {
+        String primaryCpuAbi = Util::GetElString(env, jprimaryCpuAbi);
+        env->DeleteLocalRef(jprimaryCpuAbi);
+        (*appInfo)->SetPrimaryCpuAbi(primaryCpuAbi);
+    }
+
+    f = env->GetFieldID(appInfoKlass, "secondaryCpuAbi", "Ljava/lang/String;");
+    Util::CheckErrorAndLog(env, "GetElApplicationInfo", "Fail GetFieldID: secondaryCpuAbi %d", __LINE__);
+
+    jstring jsecondaryCpuAbi = (jstring)env->GetObjectField(jappInfo, f);
+    Util::CheckErrorAndLog(env, "GetElApplicationInfo", "Fail GetObjectField: jsecondaryCpuAbi %d", __LINE__);
+    if (jsecondaryCpuAbi != NULL) {
+        String secondaryCpuAbi = Util::GetElString(env, jsecondaryCpuAbi);
+        env->DeleteLocalRef(jsecondaryCpuAbi);
+        (*appInfo)->SetSecondaryCpuAbi(secondaryCpuAbi);
     }
 
     f = env->GetFieldID(appInfoKlass, "resourceDirs", "[Ljava/lang/String;");
@@ -2644,6 +2708,17 @@ Boolean Util::GetElApplicationInfo(
         }
 
         env->DeleteLocalRef(jresourceDirs);
+    }
+
+    f = env->GetFieldID(appInfoKlass, "seinfo", "Ljava/lang/String;");
+    Util::CheckErrorAndLog(env, "GetElApplicationInfo", "Fail GetFieldID: seinfo %d", __LINE__);
+
+    jstring jseinfo = (jstring)env->GetObjectField(jappInfo, f);
+    Util::CheckErrorAndLog(env, "GetElApplicationInfo", "Fail GetObjectField: jseinfo %d", __LINE__);
+    if (jseinfo != NULL) {
+        String seinfo = Util::GetElString(env, jseinfo);
+        env->DeleteLocalRef(jseinfo);
+        (*appInfo)->SetSeinfo(seinfo);
     }
 
     f = env->GetFieldID(appInfoKlass, "sharedLibraryFiles", "[Ljava/lang/String;");
@@ -2694,6 +2769,13 @@ Boolean Util::GetElApplicationInfo(
     jint jtargetSdkVersion = env->GetIntField(jappInfo, f);
     Util::CheckErrorAndLog(env, "GetElApplicationInfo", "Fail GetIntField: targetSdkVersion %d", __LINE__);
     (*appInfo)->SetTargetSdkVersion((Int32)jtargetSdkVersion);
+
+    f = env->GetFieldID(appInfoKlass, "versionCode", "I");
+    Util::CheckErrorAndLog(env, "GetElApplicationInfo", "Fail GetFieldID: versionCode %d", __LINE__);
+
+    jint jversionCode = env->GetIntField(jappInfo, f);
+    Util::CheckErrorAndLog(env, "GetElApplicationInfo", "Fail GetIntField: versionCode %d", __LINE__);
+    (*appInfo)->SetVersionCode((Int32)jversionCode);
 
     f = env->GetFieldID(appInfoKlass, "enabled", "Z");
     Util::CheckErrorAndLog(env, "GetElApplicationInfo", "Fail GetFieldID: enabled %d", __LINE__);
@@ -2752,8 +2834,24 @@ Boolean Util::GetElApplicationInfo(
         (*appInfo)->SetBackupAgentName(backupAgentName);
     }
 
+    // TODO: CM12
+    // f = env->GetFieldID(appInfoKlass, "protect", "Z");
+    // Util::CheckErrorAndLog(env, "GetElApplicationInfo", "Fail GetFieldID: protect %d", __LINE__);
+
+    // jboolean jprotect = env->GetBooleanField(jappInfo, f);
+    // Util::CheckErrorAndLog(env, "GetElApplicationInfo", "Fail GetIntField: protect %d", __LINE__);
+    // (*appInfo)->SetProtect((Boolean)jprotect);
+
+    // f = env->GetFieldID(appInfoKlass, "isThemeable", "Z");
+    // Util::CheckErrorAndLog(env, "GetElApplicationInfo", "Fail GetFieldID: isThemeable %d", __LINE__);
+
+    // jboolean jisThemeable = env->GetBooleanField(jappInfo, f);
+    // Util::CheckErrorAndLog(env, "GetElApplicationInfo", "Fail GetIntField: isThemeable %d", __LINE__);
+    // (*appInfo)->SetIsThemeable((Boolean)jisThemeable);
+
     // ----------------------------------- PackageItemInfo ---------------------------------------------------
 
+    IPackageItemInfo* pkgInfo = IPackageItemInfo::Probe(*appInfo);
     f = env->GetFieldID(appInfoKlass, "name", "Ljava/lang/String;");
     Util::CheckErrorAndLog(env, "GetElApplicationInfo", "Fail GetFieldID: name %d", __LINE__);
 
@@ -2762,7 +2860,7 @@ Boolean Util::GetElApplicationInfo(
     if (jname != NULL) {
         String name = Util::GetElString(env, jname);
         env->DeleteLocalRef(jname);
-        (*appInfo)->SetName(name);
+        pkgInfo->SetName(name);
     }
 
     f = env->GetFieldID(appInfoKlass, "packageName", "Ljava/lang/String;");
@@ -2773,7 +2871,7 @@ Boolean Util::GetElApplicationInfo(
     if (jpackageName != NULL) {
         String packageName = Util::GetElString(env, jpackageName);
         env->DeleteLocalRef(jpackageName);
-        (*appInfo)->SetPackageName(packageName);
+        pkgInfo->SetPackageName(packageName);
     }
 
     f = env->GetFieldID(appInfoKlass, "labelRes", "I");
@@ -2781,7 +2879,7 @@ Boolean Util::GetElApplicationInfo(
 
     jint jlabelRes = env->GetIntField(jappInfo, f);
     Util::CheckErrorAndLog(env, "GetElApplicationInfo", "Fail GetIntField: labelRes %d", __LINE__);
-    (*appInfo)->SetUiOptions((Int32)jlabelRes);
+    pkgInfo->SetLabelRes((Int32)jlabelRes);
 
     f = env->GetFieldID(appInfoKlass, "nonLocalizedLabel", "Ljava/lang/CharSequence;");
     Util::CheckErrorAndLog(env, "GetElApplicationInfo", "Fail GetFieldID: CharSequence %d", __LINE__);
@@ -2801,9 +2899,9 @@ Boolean Util::GetElApplicationInfo(
         String snonLocalizedLabel = Util::GetElString(env, jnonLocalizedLabel);
         env->DeleteLocalRef(jnonLocalizedLabel);
         AutoPtr<ICharSequence> nonLocalizedLabel;
-        CStringWrapper::New(snonLocalizedLabel, (ICharSequence**)&nonLocalizedLabel);
+        CString::New(snonLocalizedLabel, (ICharSequence**)&nonLocalizedLabel);
 
-        (*appInfo)->SetNonLocalizedLabel(nonLocalizedLabel);
+        pkgInfo->SetNonLocalizedLabel(nonLocalizedLabel);
 
         env->DeleteLocalRef(csClass);
         env->DeleteLocalRef(jcsnonLocalizedLabel);
@@ -2814,14 +2912,14 @@ Boolean Util::GetElApplicationInfo(
 
     jint jicon = env->GetIntField(jappInfo, f);
     Util::CheckErrorAndLog(env, "GetElApplicationInfo", "Fail GetIntField: icon %d", __LINE__);
-    (*appInfo)->SetUiOptions((Int32)jicon);
+    pkgInfo->SetIcon((Int32)jicon);
 
     f = env->GetFieldID(appInfoKlass, "logo", "I");
     Util::CheckErrorAndLog(env, "GetElApplicationInfo", "Fail GetFieldID: logo %d", __LINE__);
 
     jint jlogo = env->GetIntField(jappInfo, f);
     Util::CheckErrorAndLog(env, "GetElApplicationInfo", "Fail GetIntField: logo %d", __LINE__);
-    (*appInfo)->SetUiOptions((Int32)jlogo);
+    pkgInfo->SetLogo((Int32)jlogo);
 
     f = env->GetFieldID(appInfoKlass, "metaData", "Landroid/os/Bundle;");
     Util::CheckErrorAndLog(env, "GetElApplicationInfo", "Fail GetFieldID: metaData %d", __LINE__);
@@ -2830,14 +2928,37 @@ Boolean Util::GetElApplicationInfo(
     Util::CheckErrorAndLog(env, "GetElApplicationInfo", "Fail GetObjectField: jmetaData %d", __LINE__);
     if (jmetaData != NULL) {
         AutoPtr<IBundle> metaData;
-        if(Util::GetElBundle(env, jmetaData, (IBundle**)&metaData)) {
-            (*appInfo)->SetMetaData(metaData);
-        } else {
+        if (Util::GetElBundle(env, jmetaData, (IBundle**)&metaData)) {
+            pkgInfo->SetMetaData(metaData);
+        }
+        else {
             LOGGERE("GetElApplicationInfo", "GetElProviderInfo() GetElBundle fail!");
         }
 
         env->DeleteLocalRef(jmetaData);
     }
+
+    f = env->GetFieldID(appInfoKlass, "banner", "I");
+    Util::CheckErrorAndLog(env, "GetElApplicationInfo", "Fail GetFieldID: banner %d", __LINE__);
+
+    jint jbanner = env->GetIntField(jappInfo, f);
+    Util::CheckErrorAndLog(env, "GetElApplicationInfo", "Fail GetIntField: banner %d", __LINE__);
+    pkgInfo->SetBanner((Int32)jbanner);
+
+    f = env->GetFieldID(appInfoKlass, "showUserIcon", "I");
+    Util::CheckErrorAndLog(env, "GetElApplicationInfo", "Fail GetFieldID: showUserIcon %d", __LINE__);
+
+    jint jshowUserIcon = env->GetIntField(jappInfo, f);
+    Util::CheckErrorAndLog(env, "GetElApplicationInfo", "Fail GetIntField: showUserIcon %d", __LINE__);
+    pkgInfo->SetShowUserIcon((Int32)jshowUserIcon);
+
+    // TODO:CM12
+    // f = env->GetFieldID(appInfoKlass, "themedIcon", "I");
+    // Util::CheckErrorAndLog(env, "GetElApplicationInfo", "Fail GetFieldID: themedIcon %d", __LINE__);
+
+    // jint jthemedIcon = env->GetIntField(jappInfo, f);
+    // Util::CheckErrorAndLog(env, "GetElApplicationInfo", "Fail GetIntField: themedIcon %d", __LINE__);
+    // pkgInfo->SetThemedIcon((Int32)jthemedIcon);
 
     env->DeleteLocalRef(appInfoKlass);
     return TRUE;
@@ -2863,226 +2984,226 @@ Boolean Util::GetElUri(
 
     *elUri = NULL;
 
-    // if (env->IsInstanceOf(jUri, suriKlass)) {
-    //     jclass uriKlass = env->FindClass("android/net/Uri");
-    //     CheckErrorAndLog(env, "GetElUri", "Fail FindClass: Uri : %d!\n", __LINE__);
+    if (env->IsInstanceOf(jUri, suriKlass)) {
+        jclass uriKlass = env->FindClass("android/net/Uri");
+        CheckErrorAndLog(env, "GetElUri", "Fail FindClass: Uri : %d!\n", __LINE__);
 
-    //     jmethodID m = env->GetMethodID(uriKlass, "toString", "()Ljava/lang/String;");
-    //     CheckErrorAndLog(env, "GetElUri", "Fail GetMethodID: toString : %d!\n", __LINE__);
+        jmethodID m = env->GetMethodID(uriKlass, "toString", "()Ljava/lang/String;");
+        CheckErrorAndLog(env, "GetElUri", "Fail GetMethodID: toString : %d!\n", __LINE__);
 
-    //     jstring jStrUri = (jstring)env->CallObjectMethod(jUri, m);
-    //     CheckErrorAndLog(env, "GetElUri", "Fail CallObjectMethod: toString : %d!\n", __LINE__);
+        jstring jStrUri = (jstring)env->CallObjectMethod(jUri, m);
+        CheckErrorAndLog(env, "GetElUri", "Fail CallObjectMethod: toString : %d!\n", __LINE__);
 
-    //     String strUri = GetElString(env, jStrUri);
-    //     CStringUri::New(strUri, elUri);
+        String strUri = GetElString(env, jStrUri);
+        CStringUri::New(strUri, elUri);
 
-    //     env->DeleteLocalRef(uriKlass);
-    //     env->DeleteLocalRef(jStrUri);
-    // }
-    // else if (env->IsInstanceOf(jUri, ouriKlass)) {
-    //     const char* tag = "UriToElUri() OpaqueUri";
-    //     String NOT_CACHED("NOT CACHED"); // Uri::NOT_CACHED
+        env->DeleteLocalRef(uriKlass);
+        env->DeleteLocalRef(jStrUri);
+    }
+    else if (env->IsInstanceOf(jUri, ouriKlass)) {
+        const char* tag = "UriToElUri() OpaqueUri";
+        String NOT_CACHED("NOT CACHED"); // Uri::NOT_CACHED
 
-    //     AutoPtr<IParcel> parcel;
-    //     Elastos::Droid::Os::CParcel::New((IParcel**)&parcel);
-    //     parcel->WriteInt32(2); //OpaqueUri::TYPE_ID
+        AutoPtr<IParcel> parcel;
+        Elastos::Droid::Os::CParcel::New((IParcel**)&parcel);
+        parcel->WriteInt32(2); //OpaqueUri::TYPE_ID
 
-    //     jclass uriKlass = env->FindClass("android/net/Uri$OpaqueUri");
-    //     CheckErrorAndLog(env, "GetElUri", "Fail FindClass: OpaqueUri : %d!\n", __LINE__);
+        jclass uriKlass = env->FindClass("android/net/Uri$OpaqueUri");
+        CheckErrorAndLog(env, "GetElUri", "Fail FindClass: OpaqueUri : %d!\n", __LINE__);
 
-    //     String scheme = GetJavaStringField(env, uriKlass, jUri, "scheme", tag);
-    //     parcel->WriteString(scheme);
+        String scheme = GetJavaStringField(env, uriKlass, jUri, "scheme", tag);
+        parcel->WriteString(scheme);
 
-    //     jfieldID f = env->GetFieldID(uriKlass, "ssp", "Landroid/net/Uri$Part;");
-    //     CheckErrorAndLog(env, "%s: Fail get ssp fieldid: %s : %d!\n", "UriToElUri", "ssp", __LINE__);
-    //     jobject jssp = env->GetObjectField(jUri, f);
-    //     CheckErrorAndLog(env, "%s: Fail get path field: %s : %d!\n", "UriToElUri", "ssp", __LINE__);
+        jfieldID f = env->GetFieldID(uriKlass, "ssp", "Landroid/net/Uri$Part;");
+        CheckErrorAndLog(env, "%s: Fail get ssp fieldid: %s : %d!\n", "UriToElUri", "ssp", __LINE__);
+        jobject jssp = env->GetObjectField(jUri, f);
+        CheckErrorAndLog(env, "%s: Fail get path field: %s : %d!\n", "UriToElUri", "ssp", __LINE__);
 
-    //     jclass partKlass = env->FindClass("android/net/Uri$AbstractPart");
-    //     String encoded = GetJavaStringField(env, partKlass, jssp, "encoded", tag);
-    //     String decoded = GetJavaStringField(env, partKlass, jssp, "decoded", tag);
-    //     Boolean hasEncoded = !encoded.Equals(NOT_CACHED);
-    //     Boolean hasDecoded = !decoded.Equals(NOT_CACHED);
-    //     if (hasEncoded && hasDecoded) {
-    //         parcel->WriteInt32(0/*Representation.BOTH*/);
-    //         parcel->WriteString(encoded);
-    //         parcel->WriteString(decoded);
-    //     }
-    //     else if (hasEncoded) {
-    //         parcel->WriteInt32(1/*Representation.ENCODED*/);
-    //         parcel->WriteString(encoded);
-    //     }
-    //     else if (hasDecoded) {
-    //         parcel->WriteInt32(2/*Representation.DECODED*/);
-    //         parcel->WriteString(decoded);
-    //     }
-    //     else {
-    //         assert(0);
-    //     }
+        jclass partKlass = env->FindClass("android/net/Uri$AbstractPart");
+        String encoded = GetJavaStringField(env, partKlass, jssp, "encoded", tag);
+        String decoded = GetJavaStringField(env, partKlass, jssp, "decoded", tag);
+        Boolean hasEncoded = !encoded.Equals(NOT_CACHED);
+        Boolean hasDecoded = !decoded.Equals(NOT_CACHED);
+        if (hasEncoded && hasDecoded) {
+            parcel->WriteInt32(0/*Representation.BOTH*/);
+            parcel->WriteString(encoded);
+            parcel->WriteString(decoded);
+        }
+        else if (hasEncoded) {
+            parcel->WriteInt32(1/*Representation.ENCODED*/);
+            parcel->WriteString(encoded);
+        }
+        else if (hasDecoded) {
+            parcel->WriteInt32(2/*Representation.DECODED*/);
+            parcel->WriteString(decoded);
+        }
+        else {
+            assert(0);
+        }
 
-    //     f = env->GetFieldID(uriKlass, "fragment", "Landroid/net/Uri$Part;");
-    //     CheckErrorAndLog(env, "%s: Fail get fragment fieldid: %s : %d!\n", "UriToElUri", "fragment", __LINE__);
-    //     jobject jfragment = env->GetObjectField(jUri, f);
-    //     CheckErrorAndLog(env, "%s: Fail get path field: %s : %d!\n", "UriToElUri", "fragment", __LINE__);
+        f = env->GetFieldID(uriKlass, "fragment", "Landroid/net/Uri$Part;");
+        CheckErrorAndLog(env, "%s: Fail get fragment fieldid: %s : %d!\n", "UriToElUri", "fragment", __LINE__);
+        jobject jfragment = env->GetObjectField(jUri, f);
+        CheckErrorAndLog(env, "%s: Fail get path field: %s : %d!\n", "UriToElUri", "fragment", __LINE__);
 
-    //     encoded = GetJavaStringField(env, partKlass, jfragment, "encoded", tag);
-    //     decoded = GetJavaStringField(env, partKlass, jfragment, "decoded", tag);
-    //     hasEncoded = !encoded.Equals(NOT_CACHED);
-    //     hasDecoded = !decoded.Equals(NOT_CACHED);
-    //     if (hasEncoded && hasDecoded) {
-    //         parcel->WriteInt32(0/*Representation.BOTH*/);
-    //         parcel->WriteString(encoded);
-    //         parcel->WriteString(decoded);
-    //     }
-    //     else if (hasEncoded) {
-    //         parcel->WriteInt32(1/*Representation.ENCODED*/);
-    //         parcel->WriteString(encoded);
-    //     }
-    //     else if (hasDecoded) {
-    //         parcel->WriteInt32(2/*Representation.DECODED*/);
-    //         parcel->WriteString(decoded);
-    //     }
+        encoded = GetJavaStringField(env, partKlass, jfragment, "encoded", tag);
+        decoded = GetJavaStringField(env, partKlass, jfragment, "decoded", tag);
+        hasEncoded = !encoded.Equals(NOT_CACHED);
+        hasDecoded = !decoded.Equals(NOT_CACHED);
+        if (hasEncoded && hasDecoded) {
+            parcel->WriteInt32(0/*Representation.BOTH*/);
+            parcel->WriteString(encoded);
+            parcel->WriteString(decoded);
+        }
+        else if (hasEncoded) {
+            parcel->WriteInt32(1/*Representation.ENCODED*/);
+            parcel->WriteString(encoded);
+        }
+        else if (hasDecoded) {
+            parcel->WriteInt32(2/*Representation.DECODED*/);
+            parcel->WriteString(decoded);
+        }
 
-    //     COpaqueUri::New(elUri);
-    //     parcel->SetDataPosition(0);
-    //     IParcelable::Probe(*elUri)->ReadFromParcel(parcel);
+        COpaqueUri::New(elUri);
+        parcel->SetDataPosition(0);
+        IParcelable::Probe(*elUri)->ReadFromParcel(parcel);
 
-    //     env->DeleteLocalRef(uriKlass);
-    //     env->DeleteLocalRef(partKlass);
-    //     env->DeleteLocalRef(jssp);
-    //     env->DeleteLocalRef(jfragment);
-    // }
-    // else if (env->IsInstanceOf(jUri, huriKlass)) {
-    //     const char* tag = "UriToElUri() HierarchicalUri";
-    //     String NOT_CACHED("NOT CACHED"); // Uri::NOT_CACHED
+        env->DeleteLocalRef(uriKlass);
+        env->DeleteLocalRef(partKlass);
+        env->DeleteLocalRef(jssp);
+        env->DeleteLocalRef(jfragment);
+    }
+    else if (env->IsInstanceOf(jUri, huriKlass)) {
+        const char* tag = "UriToElUri() HierarchicalUri";
+        String NOT_CACHED("NOT CACHED"); // Uri::NOT_CACHED
 
-    //     AutoPtr<IParcel> parcel;
-    //     Elastos::Droid::Os::CParcel::New((IParcel**)&parcel);
-    //     parcel->WriteInt32(3); //HierarchicalUri::TYPE_ID
+        AutoPtr<IParcel> parcel;
+        Elastos::Droid::Os::CParcel::New((IParcel**)&parcel);
+        parcel->WriteInt32(3); //HierarchicalUri::TYPE_ID
 
-    //     jclass uriKlass = env->FindClass("android/net/Uri$HierarchicalUri");
-    //     CheckErrorAndLog(env, "GetElUri", "Fail FindClass: HierarchicalUri : %d!\n", __LINE__);
+        jclass uriKlass = env->FindClass("android/net/Uri$HierarchicalUri");
+        CheckErrorAndLog(env, "GetElUri", "Fail FindClass: HierarchicalUri : %d!\n", __LINE__);
 
-    //     String scheme = GetJavaStringField(env, uriKlass, jUri, "scheme", tag);
-    //     parcel->WriteString(scheme);
+        String scheme = GetJavaStringField(env, uriKlass, jUri, "scheme", tag);
+        parcel->WriteString(scheme);
 
-    //     jfieldID f = env->GetFieldID(uriKlass, "authority", "Landroid/net/Uri$Part;");
-    //     CheckErrorAndLog(env, "%s: Fail get authority fieldid: %s : %d!\n", "UriToElUri", "authority", __LINE__);
-    //     jobject jauthority = env->GetObjectField(jUri, f);
-    //     CheckErrorAndLog(env, "%s: Fail get path field: %s : %d!\n", "UriToElUri", "authority", __LINE__);
+        jfieldID f = env->GetFieldID(uriKlass, "authority", "Landroid/net/Uri$Part;");
+        CheckErrorAndLog(env, "%s: Fail get authority fieldid: %s : %d!\n", "UriToElUri", "authority", __LINE__);
+        jobject jauthority = env->GetObjectField(jUri, f);
+        CheckErrorAndLog(env, "%s: Fail get path field: %s : %d!\n", "UriToElUri", "authority", __LINE__);
 
-    //     jclass partKlass = env->FindClass("android/net/Uri$AbstractPart");
-    //     String encoded = GetJavaStringField(env, partKlass, jauthority, "encoded", tag);
-    //     String decoded = GetJavaStringField(env, partKlass, jauthority, "decoded", tag);
-    //     Boolean hasEncoded = !encoded.Equals(NOT_CACHED);
-    //     Boolean hasDecoded = !decoded.Equals(NOT_CACHED);
-    //     if (hasEncoded && hasDecoded) {
-    //         parcel->WriteInt32(0/*Representation.BOTH*/);
-    //         parcel->WriteString(encoded);
-    //         parcel->WriteString(decoded);
-    //     }
-    //     else if (hasEncoded) {
-    //         parcel->WriteInt32(1/*Representation.ENCODED*/);
-    //         parcel->WriteString(encoded);
-    //     }
-    //     else if (hasDecoded) {
-    //         parcel->WriteInt32(2/*Representation.DECODED*/);
-    //         parcel->WriteString(decoded);
-    //     }
-    //     else {
-    //         assert(0);
-    //     }
+        jclass partKlass = env->FindClass("android/net/Uri$AbstractPart");
+        String encoded = GetJavaStringField(env, partKlass, jauthority, "encoded", tag);
+        String decoded = GetJavaStringField(env, partKlass, jauthority, "decoded", tag);
+        Boolean hasEncoded = !encoded.Equals(NOT_CACHED);
+        Boolean hasDecoded = !decoded.Equals(NOT_CACHED);
+        if (hasEncoded && hasDecoded) {
+            parcel->WriteInt32(0/*Representation.BOTH*/);
+            parcel->WriteString(encoded);
+            parcel->WriteString(decoded);
+        }
+        else if (hasEncoded) {
+            parcel->WriteInt32(1/*Representation.ENCODED*/);
+            parcel->WriteString(encoded);
+        }
+        else if (hasDecoded) {
+            parcel->WriteInt32(2/*Representation.DECODED*/);
+            parcel->WriteString(decoded);
+        }
+        else {
+            assert(0);
+        }
 
-    //     f = env->GetFieldID(uriKlass, "path", "Landroid/net/Uri$PathPart;");
-    //     CheckErrorAndLog(env, "%s: Fail get path fieldid: %s : %d!\n", "UriToElUri", "path", __LINE__);
-    //     jobject jpath = env->GetObjectField(jUri, f);
-    //     CheckErrorAndLog(env, "%s: Fail get path field: %s : %d!\n", "UriToElUri", "path", __LINE__);
-    //     encoded = GetJavaStringField(env, partKlass, jpath, "encoded", tag);
-    //     decoded = GetJavaStringField(env, partKlass, jpath, "decoded", tag);
-    //     hasEncoded = !encoded.Equals(NOT_CACHED);
-    //     hasDecoded = !decoded.Equals(NOT_CACHED);
-    //     if (hasEncoded && hasDecoded) {
-    //         parcel->WriteInt32(0/*Representation.BOTH*/);
-    //         parcel->WriteString(encoded);
-    //         parcel->WriteString(decoded);
-    //     }
-    //     else if (hasEncoded) {
-    //         parcel->WriteInt32(1/*Representation.ENCODED*/);
-    //         parcel->WriteString(encoded);
-    //     }
-    //     else if (hasDecoded) {
-    //         parcel->WriteInt32(2/*Representation.DECODED*/);
-    //         parcel->WriteString(decoded);
-    //     }
-    //     else {
-    //         assert(0);
-    //     }
+        f = env->GetFieldID(uriKlass, "path", "Landroid/net/Uri$PathPart;");
+        CheckErrorAndLog(env, "%s: Fail get path fieldid: %s : %d!\n", "UriToElUri", "path", __LINE__);
+        jobject jpath = env->GetObjectField(jUri, f);
+        CheckErrorAndLog(env, "%s: Fail get path field: %s : %d!\n", "UriToElUri", "path", __LINE__);
+        encoded = GetJavaStringField(env, partKlass, jpath, "encoded", tag);
+        decoded = GetJavaStringField(env, partKlass, jpath, "decoded", tag);
+        hasEncoded = !encoded.Equals(NOT_CACHED);
+        hasDecoded = !decoded.Equals(NOT_CACHED);
+        if (hasEncoded && hasDecoded) {
+            parcel->WriteInt32(0/*Representation.BOTH*/);
+            parcel->WriteString(encoded);
+            parcel->WriteString(decoded);
+        }
+        else if (hasEncoded) {
+            parcel->WriteInt32(1/*Representation.ENCODED*/);
+            parcel->WriteString(encoded);
+        }
+        else if (hasDecoded) {
+            parcel->WriteInt32(2/*Representation.DECODED*/);
+            parcel->WriteString(decoded);
+        }
+        else {
+            assert(0);
+        }
 
-    //     f = env->GetFieldID(uriKlass, "query", "Landroid/net/Uri$Part;");
-    //     CheckErrorAndLog(env, "%s: Fail get query fieldid: %s : %d!\n", "UriToElUri", "query", __LINE__);
-    //     jobject jquery = env->GetObjectField(jUri, f);
-    //     CheckErrorAndLog(env, "%s: Fail get path field: %s : %d!\n", "UriToElUri", "query", __LINE__);
+        f = env->GetFieldID(uriKlass, "query", "Landroid/net/Uri$Part;");
+        CheckErrorAndLog(env, "%s: Fail get query fieldid: %s : %d!\n", "UriToElUri", "query", __LINE__);
+        jobject jquery = env->GetObjectField(jUri, f);
+        CheckErrorAndLog(env, "%s: Fail get path field: %s : %d!\n", "UriToElUri", "query", __LINE__);
 
-    //     encoded = GetJavaStringField(env, partKlass, jquery, "encoded", tag);
-    //     decoded = GetJavaStringField(env, partKlass, jquery, "decoded", tag);
-    //     hasEncoded = !encoded.Equals(NOT_CACHED);
-    //     hasDecoded = !decoded.Equals(NOT_CACHED);
-    //     if (hasEncoded && hasDecoded) {
-    //         parcel->WriteInt32(0/*Representation.BOTH*/);
-    //         parcel->WriteString(encoded);
-    //         parcel->WriteString(decoded);
-    //     }
-    //     else if (hasEncoded) {
-    //         parcel->WriteInt32(1/*Representation.ENCODED*/);
-    //         parcel->WriteString(encoded);
-    //     }
-    //     else if (hasDecoded) {
-    //         parcel->WriteInt32(2/*Representation.DECODED*/);
-    //         parcel->WriteString(decoded);
-    //     }
-    //     else {
-    //         assert(0);
-    //     }
+        encoded = GetJavaStringField(env, partKlass, jquery, "encoded", tag);
+        decoded = GetJavaStringField(env, partKlass, jquery, "decoded", tag);
+        hasEncoded = !encoded.Equals(NOT_CACHED);
+        hasDecoded = !decoded.Equals(NOT_CACHED);
+        if (hasEncoded && hasDecoded) {
+            parcel->WriteInt32(0/*Representation.BOTH*/);
+            parcel->WriteString(encoded);
+            parcel->WriteString(decoded);
+        }
+        else if (hasEncoded) {
+            parcel->WriteInt32(1/*Representation.ENCODED*/);
+            parcel->WriteString(encoded);
+        }
+        else if (hasDecoded) {
+            parcel->WriteInt32(2/*Representation.DECODED*/);
+            parcel->WriteString(decoded);
+        }
+        else {
+            assert(0);
+        }
 
-    //     f = env->GetFieldID(uriKlass, "fragment", "Landroid/net/Uri$Part;");
-    //     CheckErrorAndLog(env, "%s: Fail get fragment fieldid: %s : %d!\n", "UriToElUri", "fragment", __LINE__);
-    //     jobject jfragment = env->GetObjectField(jUri, f);
-    //     CheckErrorAndLog(env, "%s: Fail get path field: %s : %d!\n", "UriToElUri", "fragment", __LINE__);
+        f = env->GetFieldID(uriKlass, "fragment", "Landroid/net/Uri$Part;");
+        CheckErrorAndLog(env, "%s: Fail get fragment fieldid: %s : %d!\n", "UriToElUri", "fragment", __LINE__);
+        jobject jfragment = env->GetObjectField(jUri, f);
+        CheckErrorAndLog(env, "%s: Fail get path field: %s : %d!\n", "UriToElUri", "fragment", __LINE__);
 
-    //     encoded = GetJavaStringField(env, partKlass, jfragment, "encoded", tag);
-    //     decoded = GetJavaStringField(env, partKlass, jfragment, "decoded", tag);
-    //     hasEncoded = !encoded.Equals(NOT_CACHED);
-    //     hasDecoded = !decoded.Equals(NOT_CACHED);
-    //     if (hasEncoded && hasDecoded) {
-    //         parcel->WriteInt32(0/*Representation.BOTH*/);
-    //         parcel->WriteString(encoded);
-    //         parcel->WriteString(decoded);
-    //     }
-    //     else if (hasEncoded) {
-    //         parcel->WriteInt32(1/*Representation.ENCODED*/);
-    //         parcel->WriteString(encoded);
-    //     }
-    //     else if (hasDecoded) {
-    //         parcel->WriteInt32(2/*Representation.DECODED*/);
-    //         parcel->WriteString(decoded);
-    //     }
+        encoded = GetJavaStringField(env, partKlass, jfragment, "encoded", tag);
+        decoded = GetJavaStringField(env, partKlass, jfragment, "decoded", tag);
+        hasEncoded = !encoded.Equals(NOT_CACHED);
+        hasDecoded = !decoded.Equals(NOT_CACHED);
+        if (hasEncoded && hasDecoded) {
+            parcel->WriteInt32(0/*Representation.BOTH*/);
+            parcel->WriteString(encoded);
+            parcel->WriteString(decoded);
+        }
+        else if (hasEncoded) {
+            parcel->WriteInt32(1/*Representation.ENCODED*/);
+            parcel->WriteString(encoded);
+        }
+        else if (hasDecoded) {
+            parcel->WriteInt32(2/*Representation.DECODED*/);
+            parcel->WriteString(decoded);
+        }
 
-    //     CHierarchicalUri::New(elUri);
-    //     parcel->SetDataPosition(0);
-    //     IParcelable::Probe(*elUri)->ReadFromParcel(parcel);
+        CHierarchicalUri::New(elUri);
+        parcel->SetDataPosition(0);
+        IParcelable::Probe(*elUri)->ReadFromParcel(parcel);
 
-    //     env->DeleteLocalRef(uriKlass);
-    //     env->DeleteLocalRef(partKlass);
-    //     env->DeleteLocalRef(jauthority);
-    //     env->DeleteLocalRef(jpath);
-    //     env->DeleteLocalRef(jquery);
-    //     env->DeleteLocalRef(jfragment);
-    // } else {
-    //     LOGGERE("GetElUri", "others type Uri!\n");
-    //     assert(0);
-    // }
+        env->DeleteLocalRef(uriKlass);
+        env->DeleteLocalRef(partKlass);
+        env->DeleteLocalRef(jauthority);
+        env->DeleteLocalRef(jpath);
+        env->DeleteLocalRef(jquery);
+        env->DeleteLocalRef(jfragment);
+    }
+    else {
+        LOGGERE("GetElUri", "others type Uri!\n");
+        assert(0);
+    }
 
-    assert(0);
     env->DeleteLocalRef(suriKlass);
     env->DeleteLocalRef(ouriKlass);
     env->DeleteLocalRef(huriKlass);
@@ -3126,7 +3247,7 @@ Boolean Util::GetElComponentName(
         env->DeleteLocalRef(jclassname);
     }
 
-    if(NOERROR != CComponentName::New(pakcage, classname, elcomponentName)) {
+    if (NOERROR != CComponentName::New(pakcage, classname, elcomponentName)) {
         LOGGERE("GetElComponentName", "create CComponentName fail!");
         return FALSE;
     }
@@ -3145,7 +3266,7 @@ Boolean Util::GetElIntent(
         return FALSE;
     }
 
-    if(NOERROR != CIntent::New(elIntent)) {
+    if (NOERROR != CIntent::New(elIntent)) {
         LOGGERE("GetElIntent", "create CIntent fail!");
         *elIntent = NULL;
         return FALSE;
@@ -3160,7 +3281,7 @@ Boolean Util::GetElIntent(
     jstring jaction = (jstring)env->GetObjectField(jintent, f);
     Util::CheckErrorAndLog(env, "GetElIntent", "GetObjectField: jaction %d", __LINE__);
 
-    if(jaction != NULL) {
+    if (jaction != NULL) {
         String action = GetElString(env, jaction);
         env->DeleteLocalRef(jaction);
         (*elIntent)->SetAction(action);
@@ -3174,7 +3295,7 @@ Boolean Util::GetElIntent(
 
     AutoPtr<IUri> data;
     if (jdata != NULL)  {
-        if(!GetElUri(env, jdata, (IUri**)&data)) {
+        if (!GetElUri(env, jdata, (IUri**)&data)) {
             LOGGERE("GetElIntent", "GetElIntent fail %d", __LINE__);
         }
 
@@ -3223,9 +3344,10 @@ Boolean Util::GetElIntent(
 
     if (jComponent != NULL) {
         AutoPtr<IComponentName> elcomponentName;
-        if(GetElComponentName(env, jComponent, (IComponentName**)&elcomponentName)) {
+        if (GetElComponentName(env, jComponent, (IComponentName**)&elcomponentName)) {
             (*elIntent)->SetComponent(elcomponentName);
-        } else {
+        }
+        else {
             LOGGERE("GetElIntent", "ComponentNameToElComponentName fail %d", __LINE__);
         }
         env->DeleteLocalRef(jComponent);
@@ -3238,15 +3360,15 @@ Boolean Util::GetElIntent(
     Util::CheckErrorAndLog(env, "GetElIntent", "GetObjectField jflags %d", __LINE__);
     (*elIntent)->SetFlags((Int32)jflags);
 
-    f = env->GetFieldID(intentKlass, "mCategories", "Ljava/util/HashSet;");
+    f = env->GetFieldID(intentKlass, "mCategories", "Ljava/util/ArraySet;");
     Util::CheckErrorAndLog(env, "GetElIntent", "GetFieldID: mFlags %d", __LINE__);
 
     jobject jcategories = env->GetObjectField(jintent, f);
     Util::CheckErrorAndLog(env, "GetElIntent", "GetObjectField jcategories %d", __LINE__);
 
     if (jcategories != NULL) {
-        jclass setKlass = env->FindClass("java/util/HashSet");
-        Util::CheckErrorAndLog(env, "GetElIntent", "GetElIntent FindClass: HashSet fail %d", __LINE__);
+        jclass setKlass = env->FindClass("java/util/ArraySet");
+        Util::CheckErrorAndLog(env, "GetElIntent", "GetElIntent FindClass: ArraySet fail %d", __LINE__);
 
         jmethodID m = env->GetMethodID(setKlass, "size", "()I");
         Util::CheckErrorAndLog(env, "GetElIntent", "GetJavaBundle Fail GetMethodID: size %d", __LINE__);
@@ -3254,7 +3376,7 @@ Boolean Util::GetElIntent(
         jint size = env->CallIntMethod(jcategories, m);
         Util::CheckErrorAndLog(env, "GetElIntent", "GetJavaBundle Fail CallObjectMethod: size %d", __LINE__);
 
-        if(size > 0) {
+        if (size > 0) {
             m = env->GetMethodID(setKlass, "iterator", "()Ljava/util/Iterator;");
             Util::CheckErrorAndLog(env, "GetElIntent", "GetJavaBundle Fail GetMethodID: iterator %d", __LINE__);
 
@@ -3262,7 +3384,7 @@ Boolean Util::GetElIntent(
             Util::CheckErrorAndLog(env, "GetElIntent", "GetJavaBundle Fail CallObjectMethod: size %d", __LINE__);
 
             jclass iterKlass = env->FindClass("java/util/Iterator");
-            Util::CheckErrorAndLog(env, "GetElIntent", "GetElIntent FindClass: HashSet fail %d", __LINE__);
+            Util::CheckErrorAndLog(env, "GetElIntent", "GetElIntent FindClass: Iterator fail %d", __LINE__);
 
             m = env->GetMethodID(iterKlass, "hasNext", "()Z");
             Util::CheckErrorAndLog(env, "GetElIntent", "GetJavaBundle Fail GetMethodID: iterator %d", __LINE__);
@@ -3273,7 +3395,7 @@ Boolean Util::GetElIntent(
             jmethodID mnext = env->GetMethodID(iterKlass, "next", "()Ljava/lang/Object;");
             Util::CheckErrorAndLog(env, "GetElIntent", "GetJavaBundle Fail GetMethodID: iterator %d", __LINE__);
 
-            do {
+            while (jhasNext) {
                 jstring jCategorie = (jstring)env->CallObjectMethod(jiterator, mnext);
                 Util::CheckErrorAndLog(env, "GetElIntent", "GetJavaBundle Fail CallObjectMethod: size %d", __LINE__);
 
@@ -3283,7 +3405,7 @@ Boolean Util::GetElIntent(
 
                 jhasNext = env->CallBooleanMethod(jiterator, m);
                 Util::CheckErrorAndLog(env, "GetElIntent", "GetJavaBundle Fail CallBooleanMethod: jhasNext %d", __LINE__);
-            } while (jhasNext);
+            }
 
             env->DeleteLocalRef(iterKlass);
             env->DeleteLocalRef(jiterator);
@@ -3301,9 +3423,10 @@ Boolean Util::GetElIntent(
 
     if (jBundle != NULL) {
         AutoPtr<IBundle> elBundle;
-        if(GetElBundle(env, jBundle, (IBundle**)&elBundle)) {
-            (*elIntent)->PutExtrasEx(elBundle);
-        } else {
+        if (GetElBundle(env, jBundle, (IBundle**)&elBundle)) {
+            (*elIntent)->PutExtras(elBundle);
+        }
+        else {
             LOGGERE("GetElIntent", "BundleToElBundle(jBundle) fail %d", __LINE__);
         }
         env->DeleteLocalRef(jBundle);
@@ -3317,9 +3440,10 @@ Boolean Util::GetElIntent(
 
     if (jsourceBounds != NULL) {
         AutoPtr<IRect> sourceBounds;
-        if(GetElRect(env, jsourceBounds, (IRect**)&sourceBounds)) {
+        if (GetElRect(env, jsourceBounds, (IRect**)&sourceBounds)) {
             (*elIntent)->SetSourceBounds(sourceBounds);
-        } else {
+        }
+        else {
             LOGGERE("GetElIntent", "RectToElRect() fail %d", __LINE__);
         }
 
@@ -3334,9 +3458,10 @@ Boolean Util::GetElIntent(
 
     if (jselector != NULL) {
         AutoPtr<IIntent> intent;
-        if(GetElIntent(env, jselector, (IIntent**)&intent)) {
+        if (GetElIntent(env, jselector, (IIntent**)&intent)) {
             (*elIntent)->SetSelector(intent);
-        } else {
+        }
+        else {
             LOGGERE("GetElIntent", "GetElIntent(jselector) fail %d", __LINE__);
         }
 
@@ -3351,14 +3476,22 @@ Boolean Util::GetElIntent(
 
     if (jclipData != NULL) {
         AutoPtr<IClipData> clipData;
-        if(Util::GetElClipData(env, jclipData, (IClipData**)&clipData)) {
+        if (Util::GetElClipData(env, jclipData, (IClipData**)&clipData)) {
             (*elIntent)->SetClipData(clipData);
-        } else {
+        }
+        else {
             LOGGERE("GetElIntent", "GetElClipData() fail %d", __LINE__);
         }
 
         env->DeleteLocalRef(jclipData);
     }
+
+    f = env->GetFieldID(intentKlass, "mContentUserHint", "I");
+    Util::CheckErrorAndLog(env, "GetElIntent", "GetFieldID: mContentUserHint %d", __LINE__);
+
+    jint jcontentUserHint = env->GetIntField(jintent, f);
+    Util::CheckErrorAndLog(env, "GetElIntent", "GetObjectField mContentUserHint %d", __LINE__);
+    (*elIntent)->SetContentUserHint((Int32)jcontentUserHint);
 
     env->DeleteLocalRef(intentKlass);
     return TRUE;
@@ -3374,7 +3507,7 @@ Boolean Util::GetElBundle(
         return FALSE;
     }
 
-    if(NOERROR != CBundle::New(bundle)) {
+    if (NOERROR != CBundle::New(bundle)) {
         LOGGERE("GetElBundle", "Create CBundle fail!");
         return FALSE;
     }
@@ -3392,7 +3525,7 @@ Boolean Util::GetElBundle(
         return FALSE;
     }
 
-    jclass bundleKlass = env->FindClass("android/os/Bundle");
+    jclass bundleKlass = env->FindClass("android/os/BaseBundle");
     Util::CheckErrorAndLog(env, "GetElBundle", "FindClass: android/os/Bundle %d", __LINE__);
 
     jmethodID m = env->GetMethodID(bundleKlass, "keySet", "()Ljava/util/Set;");
@@ -3441,30 +3574,33 @@ Boolean Util::GetElBundle(
                     if (objClassName.Equals("java.lang.String")) {
                         String value = Util::GetElString(env, (jstring)jValue);
                         bundle->PutString(key, value);
-                    } else if (objClassName.Equals("java.lang.Boolean")) {
+                    }
+                    else if (objClassName.Equals("java.lang.Boolean")) {
                         jboolean value = GetJavaBoolField(env, jValue, "value", "GetElBundle()");
                         bundle->PutBoolean(key, value);
-                    } else if (objClassName.Equals("java.lang.Integer")) {
+                    }
+                    else if (objClassName.Equals("java.lang.Integer")) {
                         jclass c = env->GetObjectClass(jValue);
                         jint value = GetJavaIntField(env, c, jValue, "value", "GetElBundle");
                         env->DeleteLocalRef(c);
                         bundle->PutInt32(key, value);
-                    } else if (objClassName.Equals("android.content.Intent")) {
+                    }
+                    else if (objClassName.Equals("android.content.Intent")) {
                         AutoPtr<IIntent> intent;
                         Util::GetElIntent(env, jValue, (IIntent**)&intent);
                         AutoPtr<IParcelable> pracelable = IParcelable::Probe(intent);
                         bundle->PutParcelable(key, pracelable);
                     }
-                    else if(objClassName.Equals("java.lang.Long")){
+                    else if (objClassName.Equals("java.lang.Long")){
                         jlong jlongValue = GetJavalongField(env, jValue, "value", "GetElBundle()");
                         bundle->PutInt64(key, (Int64)jlongValue);
                     }
-                    else if(objClassName.Equals("android.os.Bundle")){
+                    else if (objClassName.Equals("android.os.Bundle")){
                         AutoPtr<IBundle> bundleItem;
                         GetElBundle(env, jValue, (IBundle**)&bundleItem);
                         bundle->PutBundle(key, bundleItem);
                     }
-                    else if(objClassName.Equals("[Landroid.os.Parcelable;")){
+                    else if (objClassName.Equals("[Landroid.os.Parcelable;")){
                         jobjectArray jArrayValue = (jobjectArray)jValue;
                         jsize arraySize = env->GetArrayLength(jArrayValue);
                         AutoPtr<ArrayOf<IParcelable*> > parcelableArray = ArrayOf<IParcelable*>::Alloc(arraySize);
@@ -3474,7 +3610,7 @@ Boolean Util::GetElBundle(
                             String itemClassName = GetClassName(env, jParcelItem);
                             // Logger::E("GetElBundle", String("GetElBundle(); item in arrayOf type:") + itemClassName);
 
-                            if(String("android.content.Intent").Equals(itemClassName)){
+                            if (String("android.content.Intent").Equals(itemClassName)){
                                 AutoPtr<IIntent> intent;
                                 Util::GetElIntent(env, jParcelItem, (IIntent**)&intent);
                                 AutoPtr<IParcelable> pracelable = IParcelable::Probe(intent);
@@ -3496,7 +3632,8 @@ Boolean Util::GetElBundle(
                     }
 
                     env->DeleteLocalRef(jValue);
-                } else {
+                }
+                else {
                     bundle->PutParcelable(key, NULL);
                 }
 
@@ -3524,7 +3661,7 @@ Boolean Util::GetElProviderInfo(
         return FALSE;
     }
 
-    if(NOERROR != CProviderInfo::New(providerInfo)) {
+    if (NOERROR != CProviderInfo::New(providerInfo)) {
         LOGGERE("GetElProviderInfo", "Create CProviderInfo fail!");
         return FALSE;
     }
@@ -3577,7 +3714,7 @@ Boolean Util::GetElProviderInfo(
 
     jobjectArray juriPermissionPatterns = (jobjectArray)env->GetObjectField(jproviderInfo, f);
     Util::CheckErrorAndLog(env, "GetElProviderInfo", "Fail GetObjectField: juriPermissionPatterns %d", __LINE__);
-    if(juriPermissionPatterns != NULL) {
+    if (juriPermissionPatterns != NULL) {
         jint jcount = env->GetArrayLength(juriPermissionPatterns);
         if (jcount > 0) {
             jclass pmerKlass = env->FindClass("android/os/PatternMatcher");
@@ -3623,7 +3760,7 @@ Boolean Util::GetElProviderInfo(
 
     jobjectArray jpathPermissions = (jobjectArray)env->GetObjectField(jproviderInfo, f);
     Util::CheckErrorAndLog(env, "GetElProviderInfo", "Fail GetObjectField: pathPermissions %d", __LINE__);
-    if(jpathPermissions != NULL) {
+    if (jpathPermissions != NULL) {
         jint jcount = env->GetArrayLength(jpathPermissions);
         if (jcount > 0) {
             jclass ppmnKlass = env->FindClass("android/content/pm/PathPermission");
@@ -3704,13 +3841,15 @@ Boolean Util::GetElProviderInfo(
     f = env->GetFieldID(piKlass, "applicationInfo", "Landroid/content/pm/ApplicationInfo;");
     Util::CheckErrorAndLog(env, "GetElProviderInfo", "Fail GetFieldID: ApplicationInfo %d", __LINE__);
 
+    IComponentInfo* comInfo = IComponentInfo::Probe(*providerInfo);
     jobject japplicationInfo = env->GetObjectField(jproviderInfo, f);
     Util::CheckErrorAndLog(env, "GetElProviderInfo", "Fail GetObjectField: japplicationInfo %d", __LINE__);
     if (japplicationInfo != NULL) {
         AutoPtr<IApplicationInfo> appInfo;
-        if(Util::GetElApplicationInfo(env, japplicationInfo, (IApplicationInfo**)&appInfo)) {
-            (*providerInfo)->SetApplicationInfo(appInfo);
-        } else {
+        if (Util::GetElApplicationInfo(env, japplicationInfo, (IApplicationInfo**)&appInfo)) {
+            comInfo->SetApplicationInfo(appInfo);
+        }
+        else {
             LOGGERE("GetElProviderInfo", "GetElProviderInfo() GetElApplicationInfo fail!");
         }
 
@@ -3725,7 +3864,7 @@ Boolean Util::GetElProviderInfo(
     if (jprocessName != NULL) {
         String processName = Util::GetElString(env, jprocessName);
         env->DeleteLocalRef(jprocessName);
-        (*providerInfo)->SetProcessName(processName);
+        comInfo->SetProcessName(processName);
     }
 
     f = env->GetFieldID(piKlass, "descriptionRes", "I");
@@ -3733,31 +3872,32 @@ Boolean Util::GetElProviderInfo(
 
     jint jdescriptionRes = env->GetIntField(jproviderInfo, f);
     Util::CheckErrorAndLog(env, "ToJavaApplicationInfo", "Fail GetIntField: descriptionRes %d", __LINE__);
-    (*providerInfo)->SetDescriptionRes((Int32)jdescriptionRes);
+    comInfo->SetDescriptionRes((Int32)jdescriptionRes);
 
     f = env->GetFieldID(piKlass, "enabled", "Z");
     Util::CheckErrorAndLog(env, "GetElProviderInfo", "Fail GetFieldID: enabled %d", __LINE__);
 
     jboolean jenabled = env->GetBooleanField(jproviderInfo, f);
     Util::CheckErrorAndLog(env, "GetElProviderInfo", "Fail GetBooleanField: enabled %d", __LINE__);
-    (*providerInfo)->SetEnabled((Boolean)jenabled);
+    comInfo->SetEnabled((Boolean)jenabled);
 
     f = env->GetFieldID(piKlass, "exported", "Z");
     Util::CheckErrorAndLog(env, "GetElProviderInfo", "Fail GetFieldID: exported %d", __LINE__);
 
     jboolean jexported = env->GetBooleanField(jproviderInfo, f);
     Util::CheckErrorAndLog(env, "GetElProviderInfo", "Fail GetBooleanField: exported %d", __LINE__);
-    (*providerInfo)->SetExported((Boolean)jexported);
+    comInfo->SetExported((Boolean)jexported);
 
     f = env->GetFieldID(piKlass, "name", "Ljava/lang/String;");
     Util::CheckErrorAndLog(env, "GetElProviderInfo", "Fail GetFieldID: name %d", __LINE__);
 
+    IPackageItemInfo* pkgInfo = IPackageItemInfo::Probe(comInfo);
     jstring jname = (jstring)env->GetObjectField(jproviderInfo, f);
     Util::CheckErrorAndLog(env, "GetElProviderInfo", "Fail GetObjectField: jname %d", __LINE__);
     if (jname != NULL) {
         String name = Util::GetElString(env, jname);
         env->DeleteLocalRef(jname);
-        (*providerInfo)->SetName(name);
+        pkgInfo->SetName(name);
     }
 
     f = env->GetFieldID(piKlass, "packageName", "Ljava/lang/String;");
@@ -3768,7 +3908,7 @@ Boolean Util::GetElProviderInfo(
     if (jpackageName != NULL) {
         String packageName = Util::GetElString(env, jpackageName);
         env->DeleteLocalRef(jpackageName);
-        (*providerInfo)->SetPackageName(packageName);
+        pkgInfo->SetPackageName(packageName);
     }
 
     f = env->GetFieldID(piKlass, "labelRes", "I");
@@ -3776,7 +3916,7 @@ Boolean Util::GetElProviderInfo(
 
     jint jlabelRes = env->GetIntField(jproviderInfo, f);
     Util::CheckErrorAndLog(env, "GetElProviderInfo", "Fail GetIntField: labelRes %d", __LINE__);
-    (*providerInfo)->SetLabelRes((Int32)jlabelRes);
+    pkgInfo->SetLabelRes((Int32)jlabelRes);
 
     f = env->GetFieldID(piKlass, "nonLocalizedLabel", "Ljava/lang/CharSequence;");
     Util::CheckErrorAndLog(env, "GetElProviderInfo", "Fail GetFieldID: CharSequence %d", __LINE__);
@@ -3797,9 +3937,9 @@ Boolean Util::GetElProviderInfo(
         env->DeleteLocalRef(jnonLocalizedLabel);
 
         AutoPtr<ICharSequence> nonLocalizedLabel;
-        CStringWrapper::New(snonLocalizedLabel, (ICharSequence**)&nonLocalizedLabel);
+        CString::New(snonLocalizedLabel, (ICharSequence**)&nonLocalizedLabel);
 
-        (*providerInfo)->SetNonLocalizedLabel(nonLocalizedLabel);
+        pkgInfo->SetNonLocalizedLabel(nonLocalizedLabel);
 
         env->DeleteLocalRef(csClass);
         env->DeleteLocalRef(jcsnonLocalizedLabel);
@@ -3810,14 +3950,14 @@ Boolean Util::GetElProviderInfo(
 
     jint jicon = env->GetIntField(jproviderInfo, f);
     Util::CheckErrorAndLog(env, "GetElProviderInfo", "Fail GetIntField: icon %d", __LINE__);
-    (*providerInfo)->SetIcon((Int32)jicon);
+    pkgInfo->SetIcon((Int32)jicon);
 
     f = env->GetFieldID(piKlass, "logo", "I");
     Util::CheckErrorAndLog(env, "GetElProviderInfo", "Fail GetFieldID: logo %d", __LINE__);
 
     jint jlogo = env->GetIntField(jproviderInfo, f);
     Util::CheckErrorAndLog(env, "GetElProviderInfo", "Fail GetIntField: logo %d", __LINE__);
-    (*providerInfo)->SetLogo((Int32)jlogo);
+    pkgInfo->SetLogo((Int32)jlogo);
 
     f = env->GetFieldID(piKlass, "metaData", "Landroid/os/Bundle;");
     Util::CheckErrorAndLog(env, "GetElProviderInfo", "Fail GetFieldID: metaData %d", __LINE__);
@@ -3826,14 +3966,37 @@ Boolean Util::GetElProviderInfo(
     Util::CheckErrorAndLog(env, "GetElProviderInfo", "Fail GetObjectField: jmetaData %d", __LINE__);
     if (jmetaData != NULL) {
         AutoPtr<IBundle> metaData;
-        if(Util::GetElBundle(env, jmetaData, (IBundle**)&metaData)) {
-            (*providerInfo)->SetMetaData(metaData);
-        } else {
+        if (Util::GetElBundle(env, jmetaData, (IBundle**)&metaData)) {
+            pkgInfo->SetMetaData(metaData);
+        }
+        else {
             LOGGERE("GetElProviderInfo", "GetElProviderInfo() GetElBundle fail!");
         }
 
         env->DeleteLocalRef(jmetaData);
     }
+
+    f = env->GetFieldID(piKlass, "banner", "I");
+    Util::CheckErrorAndLog(env, "GetElProviderInfo", "Fail GetFieldID: banner %d", __LINE__);
+
+    jint jbanner = env->GetIntField(jproviderInfo, f);
+    Util::CheckErrorAndLog(env, "GetElProviderInfo", "Fail GetIntField: banner %d", __LINE__);
+    pkgInfo->SetBanner((Int32)jbanner);
+
+    f = env->GetFieldID(piKlass, "showUserIcon", "I");
+    Util::CheckErrorAndLog(env, "GetElProviderInfo", "Fail GetFieldID: showUserIcon %d", __LINE__);
+
+    jint jshowUserIcon = env->GetIntField(jproviderInfo, f);
+    Util::CheckErrorAndLog(env, "GetElProviderInfo", "Fail GetIntField: showUserIcon %d", __LINE__);
+    pkgInfo->SetShowUserIcon((Int32)jshowUserIcon);
+
+    // TODO:CM12
+    // f = env->GetFieldID(piKlass, "themedIcon", "I");
+    // Util::CheckErrorAndLog(env, "GetElProviderInfo", "Fail GetFieldID: themedIcon %d", __LINE__);
+
+    // jint jthemedIcon = env->GetIntField(jproviderInfo, f);
+    // Util::CheckErrorAndLog(env, "GetElProviderInfo", "Fail GetIntField: themedIcon %d", __LINE__);
+    // pkgInfo->SetThemedIcon((Int32)jthemedIcon);
 
     env->DeleteLocalRef(piKlass);
 
@@ -3851,313 +4014,312 @@ jobject Util::ToJavaUri(
 
     jobject juri = NULL;
 
-    // AutoPtr<IObject> object = (IObject*)uri->Probe(EIID_IObject);
+    AutoPtr<IObject> object = IObject::Probe(uri);
 
-    // ClassID clsid;
-    // object->GetClassID(&clsid);
-    // if (ECLSID_CStringUri == clsid) {
-    //     jclass suriKlass = env->FindClass("android/net/Uri$StringUri");
-    //     Util::CheckErrorAndLog(env, "ToJavaUri", "Fail FindClass: Intent %d", __LINE__);
+    ClassID clsid;
+    object->GetClassID(&clsid);
+    if (ECLSID_CStringUri == clsid) {
+        jclass suriKlass = env->FindClass("android/net/Uri$StringUri");
+        Util::CheckErrorAndLog(env, "ToJavaUri", "Fail FindClass: Intent %d", __LINE__);
 
-    //     jmethodID m = env->GetMethodID(suriKlass, "<init>", "(Ljava/lang/String;)V");
-    //     Util::CheckErrorAndLog(env, "ToJavaUri", "Fail GetMethodID: intentKlass %d", __LINE__);
+        jmethodID m = env->GetMethodID(suriKlass, "<init>", "(Ljava/lang/String;)V");
+        Util::CheckErrorAndLog(env, "ToJavaUri", "Fail GetMethodID: intentKlass %d", __LINE__);
 
-    //     String suri;
-    //     uri->ToString(&suri);
-    //     jstring jsuri = Util::ToJavaString(env, suri);
+        String suri;
+        IObject::Probe(uri)->ToString(&suri);
+        jstring jsuri = Util::ToJavaString(env, suri);
 
-    //     juri = env->NewObject(suriKlass, m, jsuri);
-    //     Util::CheckErrorAndLog(env, "ToJavaUri", "Fail NewObject: intentKlass %d", __LINE__);
+        juri = env->NewObject(suriKlass, m, jsuri);
+        Util::CheckErrorAndLog(env, "ToJavaUri", "Fail NewObject: intentKlass %d", __LINE__);
 
-    //     env->DeleteLocalRef(suriKlass);
-    //     env->DeleteLocalRef(jsuri);
-    // }
-    // else if (ECLSID_CHierarchicalUri == clsid) {
-    //     AutoPtr<IParcel> parcel;
-    //     Elastos::Droid::Os::CParcel::New((IParcel**)&parcel);
-    //     IParcelable::Probe(uri)->WriteToParcel(parcel);
-    //     parcel->SetDataPosition(0);
+        env->DeleteLocalRef(suriKlass);
+        env->DeleteLocalRef(jsuri);
+    }
+    else if (ECLSID_CHierarchicalUri == clsid) {
+        AutoPtr<IParcel> parcel;
+        Elastos::Droid::Os::CParcel::New((IParcel**)&parcel);
+        IParcelable::Probe(uri)->WriteToParcel(parcel);
+        parcel->SetDataPosition(0);
 
-    //     Int32 id;
-    //     parcel->ReadInt32(&id);
-    //     String scheme;
-    //     parcel->ReadString(&scheme);
+        Int32 id;
+        parcel->ReadInt32(&id);
+        String scheme;
+        parcel->ReadString(&scheme);
 
-    //     jstring jscheme = ToJavaString(env, scheme);
+        jstring jscheme = ToJavaString(env, scheme);
 
-    //     jclass uriKlass = env->FindClass("android/net/Uri");
-    //     CheckErrorAndLog(env, "ToJavaUri", "Fail FindClass: Uri : %d!\n", __LINE__);
+        jclass uriKlass = env->FindClass("android/net/Uri");
+        CheckErrorAndLog(env, "ToJavaUri", "Fail FindClass: Uri : %d!\n", __LINE__);
 
-    //     jfieldID fid = env->GetStaticFieldID(uriKlass, "NOT_CACHED", "Ljava/lang/String;");
-    //     CheckErrorAndLog(env, "ToJavaUri", "GetStaticFieldID: %d!\n", __LINE__);
+        jfieldID fid = env->GetStaticFieldID(uriKlass, "NOT_CACHED", "Ljava/lang/String;");
+        CheckErrorAndLog(env, "ToJavaUri", "GetStaticFieldID: %d!\n", __LINE__);
 
-    //     jstring jNOT_CACHED = (jstring)env->GetStaticObjectField(uriKlass, fid);
-    //     CheckErrorAndLog(env, "ToJavaNetworkInfo", "GetStaticObjectField: %d!\n", __LINE__);
+        jstring jNOT_CACHED = (jstring)env->GetStaticObjectField(uriKlass, fid);
+        CheckErrorAndLog(env, "ToJavaNetworkInfo", "GetStaticObjectField: %d!\n", __LINE__);
 
-    //     Int32 representation;
-    //     parcel->ReadInt32(&representation);
-    //     String encode, decode;
-    //     jstring jencode, jdecode;
-    //     switch (representation) {
-    //         case 0/*Representation::BOTH*/:
-    //             parcel->ReadString(&encode);
-    //             jencode = ToJavaString(env, encode);
-    //             parcel->ReadString(&decode);
-    //             jdecode = ToJavaString(env, decode);
-    //             break;
+        Int32 representation;
+        parcel->ReadInt32(&representation);
+        String encode, decode;
+        jstring jencode, jdecode;
+        switch (representation) {
+            case 0/*Representation::BOTH*/:
+                parcel->ReadString(&encode);
+                jencode = ToJavaString(env, encode);
+                parcel->ReadString(&decode);
+                jdecode = ToJavaString(env, decode);
+                break;
 
-    //         case 1/*Representation::ENCODED*/:
-    //             parcel->ReadString(&encode);
-    //             jencode = ToJavaString(env, encode);
-    //             jdecode = jNOT_CACHED;
-    //             break;
+            case 1/*Representation::ENCODED*/:
+                parcel->ReadString(&encode);
+                jencode = ToJavaString(env, encode);
+                jdecode = jNOT_CACHED;
+                break;
 
-    //         case 2/*Representation::DECODED*/:
-    //             jencode = jNOT_CACHED;
-    //             parcel->ReadString(&decode);
-    //             jdecode = ToJavaString(env, decode);
-    //             break;
-    //         default:
-    //             assert(0);
-    //     }
+            case 2/*Representation::DECODED*/:
+                jencode = jNOT_CACHED;
+                parcel->ReadString(&decode);
+                jdecode = ToJavaString(env, decode);
+                break;
+            default:
+                assert(0);
+        }
 
-    //     jclass partKlass = env->FindClass("android/net/Uri$Part");
-    //     CheckErrorAndLog(env, "ToJavaUri", "Fail FindClass: Part %d", __LINE__);
+        jclass partKlass = env->FindClass("android/net/Uri$Part");
+        CheckErrorAndLog(env, "ToJavaUri", "Fail FindClass: Part %d", __LINE__);
 
-    //     jmethodID mid = env->GetStaticMethodID(partKlass, "from", "(Ljava/lang/String;Ljava/lang/String;)Landroid/net/Uri$Part;");
-    //     CheckErrorAndLog(env, "ToJavaUri", "Fail GetMethodID: partKlass %d", __LINE__);
+        jmethodID mid = env->GetStaticMethodID(partKlass, "from", "(Ljava/lang/String;Ljava/lang/String;)Landroid/net/Uri$Part;");
+        CheckErrorAndLog(env, "ToJavaUri", "Fail GetMethodID: partKlass %d", __LINE__);
 
-    //     jobject jauthority = env->CallStaticObjectMethod(partKlass, mid, jencode, jdecode);
-    //     CheckErrorAndLog(env, "ToJavaUri", "Fail call static method from() %d", __LINE__);
+        jobject jauthority = env->CallStaticObjectMethod(partKlass, mid, jencode, jdecode);
+        CheckErrorAndLog(env, "ToJavaUri", "Fail call static method from() %d", __LINE__);
 
-    //     if (jencode != jNOT_CACHED) env->DeleteLocalRef(jencode);
-    //     if (jdecode != jNOT_CACHED) env->DeleteLocalRef(jdecode);
+        if (jencode != jNOT_CACHED) env->DeleteLocalRef(jencode);
+        if (jdecode != jNOT_CACHED) env->DeleteLocalRef(jdecode);
 
-    //     parcel->ReadInt32(&representation);
-    //     switch (representation) {
-    //         case 0/*Representation::BOTH*/:
-    //             parcel->ReadString(&encode);
-    //             jencode = ToJavaString(env, encode);
-    //             parcel->ReadString(&decode);
-    //             jdecode = ToJavaString(env, decode);
-    //             break;
+        parcel->ReadInt32(&representation);
+        switch (representation) {
+            case 0/*Representation::BOTH*/:
+                parcel->ReadString(&encode);
+                jencode = ToJavaString(env, encode);
+                parcel->ReadString(&decode);
+                jdecode = ToJavaString(env, decode);
+                break;
 
-    //         case 1/*Representation::ENCODED*/:
-    //             parcel->ReadString(&encode);
-    //             jencode = ToJavaString(env, encode);
-    //             jdecode = jNOT_CACHED;
-    //             break;
+            case 1/*Representation::ENCODED*/:
+                parcel->ReadString(&encode);
+                jencode = ToJavaString(env, encode);
+                jdecode = jNOT_CACHED;
+                break;
 
-    //         case 2/*Representation::DECODED*/:
-    //             jencode = jNOT_CACHED;
-    //             parcel->ReadString(&decode);
-    //             jdecode = ToJavaString(env, decode);
-    //             break;
-    //         default:
-    //             assert(0);
-    //     }
+            case 2/*Representation::DECODED*/:
+                jencode = jNOT_CACHED;
+                parcel->ReadString(&decode);
+                jdecode = ToJavaString(env, decode);
+                break;
+            default:
+                assert(0);
+        }
 
-    //     jclass pathPartKlass = env->FindClass("android/net/Uri$PathPart");
-    //     CheckErrorAndLog(env, "ToJavaUri", "Fail FindClass: PathPart %d", __LINE__);
+        jclass pathPartKlass = env->FindClass("android/net/Uri$PathPart");
+        CheckErrorAndLog(env, "ToJavaUri", "Fail FindClass: PathPart %d", __LINE__);
 
-    //     jmethodID mid2 = env->GetStaticMethodID(pathPartKlass, "from", "(Ljava/lang/String;Ljava/lang/String;)Landroid/net/Uri$PathPart;");
-    //     CheckErrorAndLog(env, "ToJavaUri", "Fail GetMethodID: pathPartKlass %d", __LINE__);
+        jmethodID mid2 = env->GetStaticMethodID(pathPartKlass, "from", "(Ljava/lang/String;Ljava/lang/String;)Landroid/net/Uri$PathPart;");
+        CheckErrorAndLog(env, "ToJavaUri", "Fail GetMethodID: pathPartKlass %d", __LINE__);
 
-    //     jobject jpath = env->CallStaticObjectMethod(pathPartKlass, mid2, jencode, jdecode);
-    //     CheckErrorAndLog(env, "ToJavaUri", "Fail call static method from() %d", __LINE__);
-    //     if (jencode != jNOT_CACHED) env->DeleteLocalRef(jencode);
-    //     if (jdecode != jNOT_CACHED) env->DeleteLocalRef(jdecode);
+        jobject jpath = env->CallStaticObjectMethod(pathPartKlass, mid2, jencode, jdecode);
+        CheckErrorAndLog(env, "ToJavaUri", "Fail call static method from() %d", __LINE__);
+        if (jencode != jNOT_CACHED) env->DeleteLocalRef(jencode);
+        if (jdecode != jNOT_CACHED) env->DeleteLocalRef(jdecode);
 
-    //     parcel->ReadInt32(&representation);
-    //     switch (representation) {
-    //         case 0/*Representation::BOTH*/:
-    //             parcel->ReadString(&encode);
-    //             jencode = ToJavaString(env, encode);
-    //             parcel->ReadString(&decode);
-    //             jdecode = ToJavaString(env, decode);
-    //             break;
+        parcel->ReadInt32(&representation);
+        switch (representation) {
+            case 0/*Representation::BOTH*/:
+                parcel->ReadString(&encode);
+                jencode = ToJavaString(env, encode);
+                parcel->ReadString(&decode);
+                jdecode = ToJavaString(env, decode);
+                break;
 
-    //         case 1/*Representation::ENCODED*/:
-    //             parcel->ReadString(&encode);
-    //             jencode = ToJavaString(env, encode);
-    //             jdecode = jNOT_CACHED;
-    //             break;
+            case 1/*Representation::ENCODED*/:
+                parcel->ReadString(&encode);
+                jencode = ToJavaString(env, encode);
+                jdecode = jNOT_CACHED;
+                break;
 
-    //         case 2/*Representation::DECODED*/:
-    //             jencode = jNOT_CACHED;
-    //             parcel->ReadString(&decode);
-    //             jdecode = ToJavaString(env, decode);
-    //             break;
-    //         default:
-    //             assert(0);
-    //     }
+            case 2/*Representation::DECODED*/:
+                jencode = jNOT_CACHED;
+                parcel->ReadString(&decode);
+                jdecode = ToJavaString(env, decode);
+                break;
+            default:
+                assert(0);
+        }
 
-    //     jobject jquery = env->CallStaticObjectMethod(partKlass, mid, jencode, jdecode);
-    //     CheckErrorAndLog(env, "ToJavaUri", "Fail call static method from() %d", __LINE__);
-    //     if (jencode != jNOT_CACHED) env->DeleteLocalRef(jencode);
-    //     if (jdecode != jNOT_CACHED) env->DeleteLocalRef(jdecode);
+        jobject jquery = env->CallStaticObjectMethod(partKlass, mid, jencode, jdecode);
+        CheckErrorAndLog(env, "ToJavaUri", "Fail call static method from() %d", __LINE__);
+        if (jencode != jNOT_CACHED) env->DeleteLocalRef(jencode);
+        if (jdecode != jNOT_CACHED) env->DeleteLocalRef(jdecode);
 
-    //     parcel->ReadInt32(&representation);
-    //     switch (representation) {
-    //         case 0/*Representation::BOTH*/:
-    //             parcel->ReadString(&encode);
-    //             jencode = ToJavaString(env, encode);
-    //             parcel->ReadString(&decode);
-    //             jdecode = ToJavaString(env, decode);
-    //             break;
+        parcel->ReadInt32(&representation);
+        switch (representation) {
+            case 0/*Representation::BOTH*/:
+                parcel->ReadString(&encode);
+                jencode = ToJavaString(env, encode);
+                parcel->ReadString(&decode);
+                jdecode = ToJavaString(env, decode);
+                break;
 
-    //         case 1/*Representation::ENCODED*/:
-    //             parcel->ReadString(&encode);
-    //             jencode = ToJavaString(env, encode);
-    //             jdecode = jNOT_CACHED;
-    //             break;
+            case 1/*Representation::ENCODED*/:
+                parcel->ReadString(&encode);
+                jencode = ToJavaString(env, encode);
+                jdecode = jNOT_CACHED;
+                break;
 
-    //         case 2/*Representation::DECODED*/:
-    //             jencode = jNOT_CACHED;
-    //             parcel->ReadString(&decode);
-    //             jdecode = ToJavaString(env, decode);
-    //             break;
-    //         default:
-    //             assert(0);
-    //     }
+            case 2/*Representation::DECODED*/:
+                jencode = jNOT_CACHED;
+                parcel->ReadString(&decode);
+                jdecode = ToJavaString(env, decode);
+                break;
+            default:
+                assert(0);
+        }
 
-    //     jobject jfragment = env->CallStaticObjectMethod(partKlass, mid, jencode, jdecode);
-    //     CheckErrorAndLog(env, "ToJavaUri", "Fail call static method from() %d", __LINE__);
-    //     if (jencode != jNOT_CACHED) env->DeleteLocalRef(jencode);
-    //     if (jdecode != jNOT_CACHED) env->DeleteLocalRef(jdecode);
+        jobject jfragment = env->CallStaticObjectMethod(partKlass, mid, jencode, jdecode);
+        CheckErrorAndLog(env, "ToJavaUri", "Fail call static method from() %d", __LINE__);
+        if (jencode != jNOT_CACHED) env->DeleteLocalRef(jencode);
+        if (jdecode != jNOT_CACHED) env->DeleteLocalRef(jdecode);
 
-    //     jclass huriKlass = env->FindClass("android/net/Uri$HierarchicalUri");
-    //     CheckErrorAndLog(env, "ToJavaUri", "Fail FindClass: HierarchicalUri %d", __LINE__);
+        jclass huriKlass = env->FindClass("android/net/Uri$HierarchicalUri");
+        CheckErrorAndLog(env, "ToJavaUri", "Fail FindClass: HierarchicalUri %d", __LINE__);
 
-    //     jmethodID m = env->GetMethodID(huriKlass, "<init>", "(Ljava/lang/String;Landroid/net/Uri$Part;Landroid/net/Uri$PathPart;Landroid/net/Uri$Part;Landroid/net/Uri$Part;)V");
-    //     CheckErrorAndLog(env, "ToJavaUri", "Fail GetMethodID: huriKlass %d", __LINE__);
+        jmethodID m = env->GetMethodID(huriKlass, "<init>", "(Ljava/lang/String;Landroid/net/Uri$Part;Landroid/net/Uri$PathPart;Landroid/net/Uri$Part;Landroid/net/Uri$Part;)V");
+        CheckErrorAndLog(env, "ToJavaUri", "Fail GetMethodID: huriKlass %d", __LINE__);
 
-    //     juri = env->NewObject(huriKlass, m, jscheme, jauthority, jpath, jquery, jfragment);
-    //     CheckErrorAndLog(env, "ToJavaUri", "Fail NewObject: huriKlass %d", __LINE__);
+        juri = env->NewObject(huriKlass, m, jscheme, jauthority, jpath, jquery, jfragment);
+        CheckErrorAndLog(env, "ToJavaUri", "Fail NewObject: huriKlass %d", __LINE__);
 
-    //     env->DeleteLocalRef(partKlass);
-    //     env->DeleteLocalRef(pathPartKlass);
-    //     env->DeleteLocalRef(huriKlass);
-    //     env->DeleteLocalRef(uriKlass);
+        env->DeleteLocalRef(partKlass);
+        env->DeleteLocalRef(pathPartKlass);
+        env->DeleteLocalRef(huriKlass);
+        env->DeleteLocalRef(uriKlass);
 
-    //     env->DeleteLocalRef(jscheme);
-    //     env->DeleteLocalRef(jauthority);
-    //     env->DeleteLocalRef(jpath);
-    //     env->DeleteLocalRef(jquery);
-    //     env->DeleteLocalRef(jfragment);
-    //     env->DeleteLocalRef(jNOT_CACHED);
-    // }
-    // else if (ECLSID_COpaqueUri == clsid) {
-    //     AutoPtr<IParcel> parcel;
-    //     Elastos::Droid::Os::CParcel::New((IParcel**)&parcel);
-    //     IParcelable::Probe(uri)->WriteToParcel(parcel);
-    //     parcel->SetDataPosition(0);
+        env->DeleteLocalRef(jscheme);
+        env->DeleteLocalRef(jauthority);
+        env->DeleteLocalRef(jpath);
+        env->DeleteLocalRef(jquery);
+        env->DeleteLocalRef(jfragment);
+        env->DeleteLocalRef(jNOT_CACHED);
+    }
+    else if (ECLSID_COpaqueUri == clsid) {
+        AutoPtr<IParcel> parcel;
+        Elastos::Droid::Os::CParcel::New((IParcel**)&parcel);
+        IParcelable::Probe(uri)->WriteToParcel(parcel);
+        parcel->SetDataPosition(0);
 
-    //     Int32 id;
-    //     parcel->ReadInt32(&id);
-    //     String scheme;
-    //     parcel->ReadString(&scheme);
+        Int32 id;
+        parcel->ReadInt32(&id);
+        String scheme;
+        parcel->ReadString(&scheme);
 
-    //     jstring jscheme = ToJavaString(env, scheme);
+        jstring jscheme = ToJavaString(env, scheme);
 
-    //     jclass uriKlass = env->FindClass("android/net/Uri");
-    //     CheckErrorAndLog(env, "ToJavaUri", "Fail FindClass: Uri : %d!\n", __LINE__);
+        jclass uriKlass = env->FindClass("android/net/Uri");
+        CheckErrorAndLog(env, "ToJavaUri", "Fail FindClass: Uri : %d!\n", __LINE__);
 
-    //     jfieldID fid = env->GetStaticFieldID(uriKlass, "NOT_CACHED", "Ljava/lang/String;");
-    //     CheckErrorAndLog(env, "ToJavaUri", "GetStaticFieldID: %d!\n", __LINE__);
+        jfieldID fid = env->GetStaticFieldID(uriKlass, "NOT_CACHED", "Ljava/lang/String;");
+        CheckErrorAndLog(env, "ToJavaUri", "GetStaticFieldID: %d!\n", __LINE__);
 
-    //     jstring jNOT_CACHED = (jstring)env->GetStaticObjectField(uriKlass, fid);
-    //     CheckErrorAndLog(env, "ToJavaNetworkInfo", "GetStaticObjectField: %d!\n", __LINE__);
+        jstring jNOT_CACHED = (jstring)env->GetStaticObjectField(uriKlass, fid);
+        CheckErrorAndLog(env, "ToJavaNetworkInfo", "GetStaticObjectField: %d!\n", __LINE__);
 
-    //     Int32 representation;
-    //     parcel->ReadInt32(&representation);
-    //     String encode, decode;
-    //     jstring jencode, jdecode;
-    //     switch (representation) {
-    //         case 0/*Representation::BOTH*/:
-    //             parcel->ReadString(&encode);
-    //             jencode = ToJavaString(env, encode);
-    //             parcel->ReadString(&decode);
-    //             jdecode = ToJavaString(env, decode);
-    //             break;
+        Int32 representation;
+        parcel->ReadInt32(&representation);
+        String encode, decode;
+        jstring jencode, jdecode;
+        switch (representation) {
+            case 0/*Representation::BOTH*/:
+                parcel->ReadString(&encode);
+                jencode = ToJavaString(env, encode);
+                parcel->ReadString(&decode);
+                jdecode = ToJavaString(env, decode);
+                break;
 
-    //         case 1/*Representation::ENCODED*/:
-    //             parcel->ReadString(&encode);
-    //             jencode = ToJavaString(env, encode);
-    //             jdecode = jNOT_CACHED;
-    //             break;
+            case 1/*Representation::ENCODED*/:
+                parcel->ReadString(&encode);
+                jencode = ToJavaString(env, encode);
+                jdecode = jNOT_CACHED;
+                break;
 
-    //         case 2/*Representation::DECODED*/:
-    //             jencode = jNOT_CACHED;
-    //             parcel->ReadString(&decode);
-    //             jdecode = ToJavaString(env, decode);
-    //             break;
-    //         default:
-    //             assert(0);
-    //     }
+            case 2/*Representation::DECODED*/:
+                jencode = jNOT_CACHED;
+                parcel->ReadString(&decode);
+                jdecode = ToJavaString(env, decode);
+                break;
+            default:
+                assert(0);
+        }
 
-    //     jclass partKlass = env->FindClass("android/net/Uri$Part");
-    //     CheckErrorAndLog(env, "ToJavaUri", "Fail FindClass: Part %d", __LINE__);
+        jclass partKlass = env->FindClass("android/net/Uri$Part");
+        CheckErrorAndLog(env, "ToJavaUri", "Fail FindClass: Part %d", __LINE__);
 
-    //     jmethodID mid = env->GetStaticMethodID(partKlass, "from", "(Ljava/lang/String;Ljava/lang/String;)Landroid/net/Uri$Part;");
-    //     CheckErrorAndLog(env, "ToJavaUri", "Fail GetMethodID: partKlass %d", __LINE__);
+        jmethodID mid = env->GetStaticMethodID(partKlass, "from", "(Ljava/lang/String;Ljava/lang/String;)Landroid/net/Uri$Part;");
+        CheckErrorAndLog(env, "ToJavaUri", "Fail GetMethodID: partKlass %d", __LINE__);
 
-    //     jobject jssp = env->CallStaticObjectMethod(partKlass, mid, jencode, jdecode);
-    //     CheckErrorAndLog(env, "ToJavaUri", "Fail call static method from() %d", __LINE__);
-    //     if (jencode != jNOT_CACHED) env->DeleteLocalRef(jencode);
-    //     if (jdecode != jNOT_CACHED) env->DeleteLocalRef(jdecode);
+        jobject jssp = env->CallStaticObjectMethod(partKlass, mid, jencode, jdecode);
+        CheckErrorAndLog(env, "ToJavaUri", "Fail call static method from() %d", __LINE__);
+        if (jencode != jNOT_CACHED) env->DeleteLocalRef(jencode);
+        if (jdecode != jNOT_CACHED) env->DeleteLocalRef(jdecode);
 
-    //     parcel->ReadInt32(&representation);
-    //     switch (representation) {
-    //         case 0/*Representation::BOTH*/:
-    //             parcel->ReadString(&encode);
-    //             jencode = ToJavaString(env, encode);
-    //             parcel->ReadString(&decode);
-    //             jdecode = ToJavaString(env, decode);
-    //             break;
+        parcel->ReadInt32(&representation);
+        switch (representation) {
+            case 0/*Representation::BOTH*/:
+                parcel->ReadString(&encode);
+                jencode = ToJavaString(env, encode);
+                parcel->ReadString(&decode);
+                jdecode = ToJavaString(env, decode);
+                break;
 
-    //         case 1/*Representation::ENCODED*/:
-    //             parcel->ReadString(&encode);
-    //             jencode = ToJavaString(env, encode);
-    //             jdecode = jNOT_CACHED;
-    //             break;
+            case 1/*Representation::ENCODED*/:
+                parcel->ReadString(&encode);
+                jencode = ToJavaString(env, encode);
+                jdecode = jNOT_CACHED;
+                break;
 
-    //         case 2/*Representation::DECODED*/:
-    //             jencode = jNOT_CACHED;
-    //             parcel->ReadString(&decode);
-    //             jdecode = ToJavaString(env, decode);
-    //             break;
-    //         default:
-    //             assert(0);
-    //     }
+            case 2/*Representation::DECODED*/:
+                jencode = jNOT_CACHED;
+                parcel->ReadString(&decode);
+                jdecode = ToJavaString(env, decode);
+                break;
+            default:
+                assert(0);
+        }
 
-    //     jobject jfragment = env->CallStaticObjectMethod(partKlass, mid, jencode, jdecode);
-    //     CheckErrorAndLog(env, "ToJavaUri", "Fail call static method from() %d", __LINE__);
+        jobject jfragment = env->CallStaticObjectMethod(partKlass, mid, jencode, jdecode);
+        CheckErrorAndLog(env, "ToJavaUri", "Fail call static method from() %d", __LINE__);
 
-    //     if (jencode != jNOT_CACHED) env->DeleteLocalRef(jencode);
-    //     if (jdecode != jNOT_CACHED) env->DeleteLocalRef(jdecode);
+        if (jencode != jNOT_CACHED) env->DeleteLocalRef(jencode);
+        if (jdecode != jNOT_CACHED) env->DeleteLocalRef(jdecode);
 
-    //     jclass opaqueKlass = env->FindClass("android/net/Uri$OpaqueUri");
-    //     CheckErrorAndLog(env, "ToJavaUri", "Fail FindClass: OpaqueUri %d", __LINE__);
+        jclass opaqueKlass = env->FindClass("android/net/Uri$OpaqueUri");
+        CheckErrorAndLog(env, "ToJavaUri", "Fail FindClass: OpaqueUri %d", __LINE__);
 
-    //     jmethodID m = env->GetMethodID(opaqueKlass, "<init>", "(Ljava/lang/String;Landroid/net/Uri$Part;Landroid/net/Uri$Part;)V");
-    //     CheckErrorAndLog(env, "ToJavaUri", "Fail GetMethodID: opaqueKlass %d", __LINE__);
+        jmethodID m = env->GetMethodID(opaqueKlass, "<init>", "(Ljava/lang/String;Landroid/net/Uri$Part;Landroid/net/Uri$Part;)V");
+        CheckErrorAndLog(env, "ToJavaUri", "Fail GetMethodID: opaqueKlass %d", __LINE__);
 
-    //     juri = env->NewObject(opaqueKlass, m, jscheme, jssp, jfragment);
-    //     CheckErrorAndLog(env, "ToJavaUri", "Fail NewObject: opaqueKlass %d", __LINE__);
+        juri = env->NewObject(opaqueKlass, m, jscheme, jssp, jfragment);
+        CheckErrorAndLog(env, "ToJavaUri", "Fail NewObject: opaqueKlass %d", __LINE__);
 
-    //     env->DeleteLocalRef(partKlass);
-    //     env->DeleteLocalRef(opaqueKlass);
-    //     env->DeleteLocalRef(uriKlass);
-    //     env->DeleteLocalRef(jscheme);
-    //     env->DeleteLocalRef(jssp);
-    //     env->DeleteLocalRef(jfragment);
-    //     env->DeleteLocalRef(jNOT_CACHED);
-    // }
-    // else {
-    //     LOGGERE("ToJavaUri", "ToJavaUri() others type uri!");
-    // }
-    assert(0);
+        env->DeleteLocalRef(partKlass);
+        env->DeleteLocalRef(opaqueKlass);
+        env->DeleteLocalRef(uriKlass);
+        env->DeleteLocalRef(jscheme);
+        env->DeleteLocalRef(jssp);
+        env->DeleteLocalRef(jfragment);
+        env->DeleteLocalRef(jNOT_CACHED);
+    }
+    else {
+        LOGGERE("ToJavaUri", "ToJavaUri() others type uri!");
+    }
 
     return juri;
 }
@@ -4249,7 +4411,7 @@ jobject Util::ToJavaClipDescription(
     AutoPtr<ICharSequence> label;
     clipDesc->GetLabel((ICharSequence**)&label);
     jobject jlabel = NULL;
-    if(label != NULL){
+    if (label != NULL){
         String slabel;
         label->ToString(&slabel);
         jlabel = Util::ToJavaString(env, slabel);
@@ -4339,11 +4501,13 @@ jobject Util::ToJavaInputBindResult(
     }
 
     AutoPtr<IIInputMethodSession> method;
+    AutoPtr<IInputChannel> channel;
     String id;
-    Int32 sequence;
-    result->GetIIMSession((IIInputMethodSession**)&method);
+    Int32 sequence, userActionNotificationSequenceNumber;
+    result->GetMethod((IIInputMethodSession**)&method);
     result->GetId(&id);
     result->GetSequence(&sequence);
+    result->GetUserActionNotificationSequenceNumber(&userActionNotificationSequenceNumber);
 
     jobject jIms = NULL;
     if (method != NULL) {
@@ -4360,21 +4524,74 @@ jobject Util::ToJavaInputBindResult(
         env->DeleteLocalRef(imsKlass);
     }
 
+    jobject jchannel = NULL;
+    if (channel != NULL) {
+        jchannel = ToJavaInputChannel(env, channel);
+    }
+
     jstring jid = Util::ToJavaString(env, id);
 
     jclass ibrKlass = env->FindClass("com/android/internal/view/InputBindResult");
     Util::CheckErrorAndLog(env, "ToJavaInputBindResult", "FindClass: InputBindResult  %d", __LINE__);
 
-    jmethodID m = env->GetMethodID(ibrKlass, "<init>", "(Lcom/android/internal/view/IInputMethodSession;Ljava/lang/String;I)V");
+    jmethodID m = env->GetMethodID(ibrKlass, "<init>", "(Lcom/android/internal/view/IInputMethodSession;Landroid/view/InputChannel;Ljava/lang/String;II)V");
     Util::CheckErrorAndLog(env, "ToJavaInputBindResult", "GetMethodID: InputBindResult  %d", __LINE__);
 
-    jobject jres = env->NewObject(ibrKlass, m, jIms, jid, (jint)sequence);
+    jobject jres = env->NewObject(ibrKlass, m, jIms, jchannel, jid, (jint)sequence, (jint)userActionNotificationSequenceNumber);
     Util::CheckErrorAndLog(env, "ToJavaInputBindResult", "GetMethodID: InputBindResult  %d", __LINE__);
     env->DeleteLocalRef(ibrKlass);
     env->DeleteLocalRef(jid);
     env->DeleteLocalRef(jIms);
 
     return jres;
+}
+
+jobject Util::ToJavaInputChannel(
+    /* [in] */ JNIEnv* env,
+    /* [in] */ IInputChannel* channel)
+{
+    if (env == NULL || channel == NULL){
+        Logger::E("Util", "ToJavaInputChannel() INVALID params");
+        return NULL;
+    }
+
+    AutoPtr<IParcel> parcel;
+    CParcel::New((IParcel**)&parcel);
+
+    IParcelable::Probe(channel)->ReadFromParcel(parcel);
+    parcel->SetDataPosition(0);
+    Handle32 source;
+    parcel->GetElementPayload(&source);
+
+    jclass parcelClass = env->FindClass("android/os/Parcel");
+    CheckErrorAndLog(env, "FindClass: Parcel : %d!\n", __LINE__);
+
+    jmethodID m = env->GetStaticMethodID(parcelClass, "obtain", "(J)Landroid/os/Parcel;");
+    CheckErrorAndLog(env, "GetMethodID: obtain : %d!\n", __LINE__);
+
+    jobject jparcel = env->CallStaticObjectMethod(parcelClass, m, (Int64)source);
+    CheckErrorAndLog(env, "CallStaticObjectMethod: obtain : %d!\n", __LINE__);
+
+    jclass inputChannelClass = env->FindClass("android/view/InputChannel");
+    CheckErrorAndLog(env, "ToJavaInputChannel", "FindClass: InputChannel : %d!\n", __LINE__);
+
+    m = env->GetMethodID(inputChannelClass, "<init>", "()V");
+    Util::CheckErrorAndLog(env, "ToJavaInputChannel", "Fail GetMethodID: InputChannel %d", __LINE__);
+
+    jobject jchannel = env->NewObject(inputChannelClass, m);
+    Util::CheckErrorAndLog(env, "ToJavaInputChannel", "Fail NewObject: InputChannel %d", __LINE__);
+
+    m = env->GetMethodID(inputChannelClass, "readFromParcel", "(Landroid/os/Parcel;)V");
+    CheckErrorAndLog(env, "GetMethodID: readFromParcel : %d!\n", __LINE__);
+
+    env->CallVoidMethod(jchannel, m, jparcel);
+    CheckErrorAndLog(env, "CallVoidMethod: readFromParcel : %d!\n", __LINE__);
+
+    env->DeleteLocalRef(parcelClass);
+    env->DeleteLocalRef(jparcel);
+    env->DeleteLocalRef(inputChannelClass);
+
+    return jchannel;
 }
 
 Boolean Util::GetElRect(
@@ -4390,7 +4607,7 @@ Boolean Util::GetElRect(
     jclass rectKlass = env->FindClass("android/graphics/Rect");
     Util::CheckErrorAndLog(env, "GetElRect", "Fail FindClass: Rect  %d", __LINE__);
 
-    if(NOERROR != CRect::New(elRect)) {
+    if (NOERROR != CRect::New(elRect)) {
         LOGGERE("GetElRect", "create CRect fail!");
         return FALSE;
     }
@@ -4448,15 +4665,16 @@ jobject Util::ToJavaKeyEvent(
     jkeyEvent = env->NewObject(eventKlass, m);
     Util::CheckErrorAndLog(env, "ToJavaKeyEvent", "Fail NewObject: KeyEvent %d", __LINE__);
 
+    IInputEvent* inputEvent = IInputEvent::Probe(keyEvent);
     Int32 tempInt;
-    keyEvent->GetDeviceId(&tempInt);
+    inputEvent->GetDeviceId(&tempInt);
     jfieldID f = env->GetFieldID(eventKlass, "mDeviceId", "I");
     Util::CheckErrorAndLog(env, "ToJavaKeyEvent", "Fail GetFieldID: mDeviceId %d", __LINE__);
 
     env->SetIntField(jkeyEvent, f, tempInt);
     Util::CheckErrorAndLog(env, "ToJavaKeyEvent", "Fail SetIntField: mDeviceId %d", __LINE__);
 
-    keyEvent->GetSource(&tempInt);
+    inputEvent->GetSource(&tempInt);
     f = env->GetFieldID(eventKlass, "mSource", "I");
     Util::CheckErrorAndLog(env, "ToJavaKeyEvent", "Fail GetFieldID: mSource %d", __LINE__);
 
@@ -4513,7 +4731,7 @@ jobject Util::ToJavaKeyEvent(
     env->SetLongField(jkeyEvent, f, tempLong);
     Util::CheckErrorAndLog(env, "ToJavaKeyEvent", "Fail SetLongField: mDownTime %d", __LINE__);
 
-    keyEvent->GetEventTime(&tempLong);
+    inputEvent->GetEventTime(&tempLong);
     f = env->GetFieldID(eventKlass, "mEventTime", "J");
     Util::CheckErrorAndLog(env, "ToJavaKeyEvent", "Fail GetFieldID: mEventTime %d", __LINE__);
 
@@ -4546,7 +4764,8 @@ void Util::SetComponentInfo(
             env->SetObjectField(jparent, f, jAppInfo);
             Util::CheckErrorAndLog(env, "ToJavaActivityInfo", "Fail SetObjectField: jAppInfo %d", __LINE__);
             env->DeleteLocalRef(jAppInfo);
-        } else {
+        }
+        else {
             LOGGERD("ToJavaActivityInfo", "Error: jExtras is NULL!");
         }
     }
@@ -4673,10 +4892,33 @@ void Util::SetPackageItemInfo(
             env->SetObjectField(jparent, f, jmetaData);
             Util::CheckErrorAndLog(env, "ToJavaActivityInfo", "Fail SetObjectField: jmetaData %d", __LINE__);
             env->DeleteLocalRef(jmetaData);
-        } else {
+        }
+        else {
             LOGGERD("ToJavaActivityInfo", "Error: jmetaData is NULL!");
         }
     }
+
+    pkgInfo->GetBanner(&tempInt);
+    f = env->GetFieldID(parentClass, "banner", "I");
+    Util::CheckErrorAndLog(env, "ToJavaApplicationInfo", "Fail GetFieldID: banner %d", __LINE__);
+
+    env->SetIntField(jparent, f, tempInt);
+    Util::CheckErrorAndLog(env, "ToJavaApplicationInfo", "Fail SetIntField: banner %d", __LINE__);
+
+    pkgInfo->GetShowUserIcon(&tempInt);
+    f = env->GetFieldID(parentClass, "showUserIcon", "I");
+    Util::CheckErrorAndLog(env, "ToJavaApplicationInfo", "Fail GetFieldID: showUserIcon %d", __LINE__);
+
+    env->SetIntField(jparent, f, tempInt);
+    Util::CheckErrorAndLog(env, "ToJavaApplicationInfo", "Fail SetIntField: showUserIcon %d", __LINE__);
+
+    // TODO:CM12
+    // pkgInfo->GetThemedIcon(&tempInt);
+    // f = env->GetFieldID(parentClass, "themedIcon", "I");
+    // Util::CheckErrorAndLog(env, "ToJavaApplicationInfo", "Fail GetFieldID: themedIcon %d", __LINE__);
+
+    // env->SetIntField(jparent, f, tempInt);
+    // Util::CheckErrorAndLog(env, "ToJavaApplicationInfo", "Fail SetIntField: themedIcon %d", __LINE__);
 }
 
 jobject Util::ToJavaServiceInfo(
@@ -4799,20 +5041,31 @@ jobject Util::ToJavaCompatibilityInfo(
     env->SetFloatField(jcInfo, f, tmpFloat);
     Util::CheckErrorAndLog(env, "ToJavaCompatibilityInfo", "SetFloatField: applicationInvertedScale %d", __LINE__);
 
+    //TODO: CM12
+    // Boolean isThemeable;
+    // cInfo->GetIsThemeable(&isThemeable);
+    // f = env->GetFieldID(cInfoKlass, "isThemeable", "Z");
+    // Util::CheckErrorAndLog(env, "ToJavaCompatibilityInfo", "GetFieldID: isThemeable %d", __LINE__);
+
+    // env->SetBooleanField(jcInfo, f, isThemeable);
+    // Util::CheckErrorAndLog(env, "ToJavaCompatibilityInfo", "SetBooleanField: isThemeable %d", __LINE__);
+
     env->DeleteLocalRef(cInfoKlass);
     return jcInfo;
 }
 
-jint Util::GetJavaIntegerField(JNIEnv* env, jclass klass, jobject jobj, const char* fieldName, jint defaultInt, const char* tag)
+jint Util::GetJavaIntegerField(
+    /* [in] */ JNIEnv* env,
+    /* [in] */ jclass klass, jobject jobj, const char* fieldName, jint defaultInt, const char* tag)
 {
-    if(env == NULL || klass == NULL || jobj == NULL || fieldName == NULL){
+    if (env == NULL || klass == NULL || jobj == NULL || fieldName == NULL){
         LOGGERE("%s: GetJavaIntegerField() invalid param while get field:%s  : %d!\n", tag, fieldName, __LINE__);
     }
     jfieldID integerField = env->GetFieldID(klass, fieldName, "Ljava/lang/Integer;");
     CheckErrorAndLog(env, "%s: Fail get integer fieldid: %s : %d!\n", tag, fieldName, __LINE__);
     jobject jIntegerValue = env->GetObjectField(jobj ,integerField);
 
-    if(jIntegerValue == NULL){
+    if (jIntegerValue == NULL){
         LOGGERW("Util::GetJavaIntegerField integer field is null, name:%s", fieldName);
         return defaultInt;
     }
@@ -4831,9 +5084,11 @@ jint Util::GetJavaIntegerField(JNIEnv* env, jclass klass, jobject jobj, const ch
 }
 
 
-jfloat Util::GetJavafloatField(JNIEnv* env, jclass klass, jobject jobj, const char* fieldName, const char* tag)
+jfloat Util::GetJavafloatField(
+    /* [in] */ JNIEnv* env,
+    /* [in] */ jclass klass, jobject jobj, const char* fieldName, const char* tag)
 {
-    if(env == NULL || klass == NULL || jobj == NULL || fieldName == NULL){
+    if (env == NULL || klass == NULL || jobj == NULL || fieldName == NULL){
         LOGGERE(TAG, "%s: GetJavafloatField() invalid param while get field:%s  : %d!\n", tag, fieldName, __LINE__);
         return 0.0f;
     }
@@ -4845,9 +5100,11 @@ jfloat Util::GetJavafloatField(JNIEnv* env, jclass klass, jobject jobj, const ch
     return value;
 }
 
-jdouble Util::GetJavadoubleField(JNIEnv* env, jclass klass, jobject jobj, const char* fieldName, const char* tag)
+jdouble Util::GetJavadoubleField(
+    /* [in] */ JNIEnv* env,
+    /* [in] */ jclass klass, jobject jobj, const char* fieldName, const char* tag)
 {
-    if(env == NULL || klass == NULL || jobj == NULL || fieldName == NULL){
+    if (env == NULL || klass == NULL || jobj == NULL || fieldName == NULL){
         LOGGERE(TAG, "%s: GetJavadoubleField() invalid param while get field:%s  : %d!\n", tag, fieldName, __LINE__);
         return 0.0;
     }
@@ -4859,9 +5116,11 @@ jdouble Util::GetJavadoubleField(JNIEnv* env, jclass klass, jobject jobj, const 
     return value;
 }
 
-jshort Util::GetJavaShortField(JNIEnv* env, jclass klass, jobject jobj, const char* fieldName, const char* tag)
+jshort Util::GetJavaShortField(
+    /* [in] */ JNIEnv* env,
+    /* [in] */ jclass klass, jobject jobj, const char* fieldName, const char* tag)
 {
-    if(env == NULL || klass == NULL || jobj == NULL || fieldName == NULL){
+    if (env == NULL || klass == NULL || jobj == NULL || fieldName == NULL){
         LOGGERE(TAG, "%s: GetJavabyteField() invalid param while get field:%s  : %d!\n", tag, fieldName, __LINE__);
         return 0;
     }
@@ -4873,9 +5132,11 @@ jshort Util::GetJavaShortField(JNIEnv* env, jclass klass, jobject jobj, const ch
     return jvalue;
 }
 
-jchar Util::GetJavaCharField(JNIEnv* env, jclass klass, jobject jobj, const char* fieldName, const char* tag)
+jchar Util::GetJavaCharField(
+    /* [in] */ JNIEnv* env,
+    /* [in] */ jclass klass, jobject jobj, const char* fieldName, const char* tag)
 {
-    if(env == NULL || klass == NULL || jobj == NULL || fieldName == NULL){
+    if (env == NULL || klass == NULL || jobj == NULL || fieldName == NULL){
         LOGGERE(TAG, "%s: GetJavabyteField() invalid param while get field:%s  : %d!\n", tag, fieldName, __LINE__);
         return 0;
     }
@@ -4887,9 +5148,11 @@ jchar Util::GetJavaCharField(JNIEnv* env, jclass klass, jobject jobj, const char
     return jvalue;
 }
 
-jint Util::GetJavaIntField(JNIEnv* env, jclass klass, jobject jobj, const char* fieldName, const char* tag)
+jint Util::GetJavaIntField(
+    /* [in] */ JNIEnv* env,
+    /* [in] */ jclass klass, jobject jobj, const char* fieldName, const char* tag)
 {
-    if(env == NULL || klass == NULL || jobj == NULL || fieldName == NULL){
+    if (env == NULL || klass == NULL || jobj == NULL || fieldName == NULL){
         LOGGERE("%s: GetJavaIntField() invalid param while get field:%s  : %d!\n", tag, fieldName, __LINE__);
     }
     jfieldID intField = env->GetFieldID(klass, fieldName, "I");
@@ -4899,9 +5162,11 @@ jint Util::GetJavaIntField(JNIEnv* env, jclass klass, jobject jobj, const char* 
     return intValue;
 }
 
-jlong Util::GetJavalongField(JNIEnv* env, jobject jobj, const char* fieldName, const char* tag)
+jlong Util::GetJavalongField(
+    /* [in] */ JNIEnv* env,
+    /* [in] */ jobject jobj, const char* fieldName, const char* tag)
 {
-    if(env == NULL || jobj == NULL || fieldName == NULL){
+    if (env == NULL || jobj == NULL || fieldName == NULL){
         LOGGERE("%s: GetJavalongField() invalid param while get field:%s  : %d!\n", tag, fieldName, __LINE__);
     }
 
@@ -4916,9 +5181,11 @@ jlong Util::GetJavalongField(JNIEnv* env, jobject jobj, const char* fieldName, c
 }
 
 /**get byte field of java object*/
-jbyte Util::GetJavabyteField(JNIEnv* env, jclass klass, jobject jobj, const char* fieldName, const char* tag)
+jbyte Util::GetJavabyteField(
+    /* [in] */ JNIEnv* env,
+    /* [in] */ jclass klass, jobject jobj, const char* fieldName, const char* tag)
 {
-    if(env == NULL || klass == NULL || jobj == NULL || fieldName == NULL){
+    if (env == NULL || klass == NULL || jobj == NULL || fieldName == NULL){
         LOGGERE("%s: GetJavabyteField() invalid param while get field:%s  : %d!\n", tag, fieldName, __LINE__);
     }
     jfieldID byteField = env->GetFieldID(klass, fieldName, "B");
@@ -4928,9 +5195,11 @@ jbyte Util::GetJavabyteField(JNIEnv* env, jclass klass, jobject jobj, const char
     return byteValue;
 }
 
-jboolean Util::GetJavaBoolField(JNIEnv* env, jobject jobj, const char* fieldName, const char* tag)
+jboolean Util::GetJavaBoolField(
+    /* [in] */ JNIEnv* env,
+    /* [in] */ jobject jobj, const char* fieldName, const char* tag)
 {
-    if(env == NULL || jobj == NULL || fieldName == NULL){
+    if (env == NULL || jobj == NULL || fieldName == NULL){
         LOGGERE("%s: GetJavaBoolField() invalid param while get field:%s  : %d!\n", tag, fieldName, __LINE__);
         return JNI_FALSE;
     }
@@ -4946,9 +5215,11 @@ jboolean Util::GetJavaBoolField(JNIEnv* env, jobject jobj, const char* fieldName
 }
 
 
-String Util::GetJavaStringField(JNIEnv* env, jclass klass, jobject jobj, const char* fieldName, const char* tag)
+String Util::GetJavaStringField(
+    /* [in] */ JNIEnv* env,
+    /* [in] */ jclass klass, jobject jobj, const char* fieldName, const char* tag)
 {
-    if(env == NULL || klass == NULL || jobj == NULL || fieldName == NULL){
+    if (env == NULL || klass == NULL || jobj == NULL || fieldName == NULL){
         LOGGERE("%s: GetJavaStringField() invalid param while get field:%s  : %d!\n", tag, fieldName, __LINE__);
     }
 
@@ -4969,7 +5240,7 @@ bool Util::SetJavaIntegerField(
     /* [in] */ const char* fieldName,
     /* [in] */ const char* tag)
 {
-    if(env == NULL || klass == NULL || jobj == NULL || fieldName == NULL){
+    if (env == NULL || klass == NULL || jobj == NULL || fieldName == NULL){
         LOGGERE("%s: SetJavaIntegerField() invalid param while set field:%s  : %d!\n", tag, fieldName, __LINE__);
     }
     jclass jintegerCls = env->FindClass("java/lang/Integer");
@@ -4996,7 +5267,7 @@ bool Util::SetJavaIntField(
     /* [in] */ const char* fieldName,
     /* [in] */ const char* tag)
 {
-    if(env == NULL || klass == NULL || jobj == NULL || fieldName == NULL){
+    if (env == NULL || klass == NULL || jobj == NULL || fieldName == NULL){
         LOGGERE("%s: SetJavaIntField() invalid param while set field:%s  : %d!\n", tag, fieldName, __LINE__);
     }
     jfieldID intField = env->GetFieldID(klass, fieldName, "I");
@@ -5014,7 +5285,7 @@ bool Util::SetJavabyteField(
     /* [in] */ const char* fieldName,
     /* [in] */ const char* tag)
 {
-    if(env == NULL || klass == NULL || jobj == NULL || fieldName == NULL){
+    if (env == NULL || klass == NULL || jobj == NULL || fieldName == NULL){
         LOGGERE("%s: SetJavabyteField() invalid param while set field:%s  : %d!\n", tag, fieldName, __LINE__);
     }
     jfieldID byteField = env->GetFieldID(klass, fieldName, "B");
@@ -5032,7 +5303,7 @@ bool Util::SetJavalongField(
     /* [in] */ const char* fieldName,
     /* [in] */ const char* tag)
 {
-    if(env == NULL || klass == NULL || jobj == NULL || fieldName == NULL){
+    if (env == NULL || klass == NULL || jobj == NULL || fieldName == NULL){
         LOGGERE("%s: SetJavalongField() invalid param while set field:%s  : %d!\n", tag, fieldName, __LINE__);
         return false;
     }
@@ -5052,7 +5323,7 @@ bool Util::SetJavaBoolField(
     /* [in] */ const char* fieldName,
     /* [in] */ const char* tag)
 {
-    if(env == NULL || klass == NULL || jobj == NULL || fieldName == NULL){
+    if (env == NULL || klass == NULL || jobj == NULL || fieldName == NULL){
         LOGGERE("Util", "%s: SetJavaBoolField() invalid param while set field:%s  : %d!\n", tag, fieldName, __LINE__);
         return false;
     }
@@ -5071,7 +5342,7 @@ bool Util::SetJavafloatField(
     /* [in] */ const char* fieldName,
     /* [in] */ const char* tag)
 {
-    if(env == NULL || klass == NULL || jobj == NULL || fieldName == NULL){
+    if (env == NULL || klass == NULL || jobj == NULL || fieldName == NULL){
         LOGGERE("Util", "%s: SetJavafloatField() invalid param while set field:%s  : %d!\n", tag, fieldName, __LINE__);
         return false;
     }
@@ -5091,7 +5362,7 @@ bool Util::SetJavadoubleField(
     /* [in] */ const char* fieldName,
     /* [in] */ const char* tag)
 {
-    if(env == NULL || klass == NULL || jobj == NULL || fieldName == NULL){
+    if (env == NULL || klass == NULL || jobj == NULL || fieldName == NULL){
         LOGGERE("Util", "%s: SetJavadoubleField() invalid param while set field:%s  : %d!\n", tag, fieldName, __LINE__);
         return false;
     }
@@ -5111,7 +5382,7 @@ bool Util::SetJavaStringField(
     /* [in] */ const char* fieldName,
     /* [in] */ const char* tag)
 {
-    if(env == NULL || klass == NULL || jobj == NULL || fieldName == NULL){
+    if (env == NULL || klass == NULL || jobj == NULL || fieldName == NULL){
         LOGGERE("Util", "%s: SetJavaStringField() invalid param while set field:%s  : %d!\n", tag, fieldName, __LINE__);
     }
     jstring jvalue = ToJavaString(env, strValue);
@@ -5123,7 +5394,9 @@ bool Util::SetJavaStringField(
     return true;
 }
 
-String Util::GetClassName(JNIEnv* env, jobject obj)
+String Util::GetClassName(
+    /* [in] */ JNIEnv* env,
+    /* [in] */ jobject obj)
 {
     jclass cls, clsobj;
     jmethodID getName;
@@ -5180,21 +5453,21 @@ jobject Util::ToJavaMessage(
 
     Int32 tempInt;
     msg->GetWhat(&tempInt);
-    env->SetIntField(jmsg, f, (Int32)tempInt);
+    env->SetIntField(jmsg, f, (jint)tempInt);
     Util::CheckErrorAndLog(env, "ToJavaMessage", "SetIntField what : %d!\n", __LINE__);
 
     f = env->GetFieldID(msgKlass, "arg1", "I");
     Util::CheckErrorAndLog(env, "ToJavaMessage", "GetFieldID: arg1 : %d!\n", __LINE__);
 
     msg->GetArg1(&tempInt);
-    env->SetIntField(jmsg, f, (Int32)tempInt);
+    env->SetIntField(jmsg, f, (jint)tempInt);
     Util::CheckErrorAndLog(env, "ToJavaMessage", "SetIntField arg1 : %d!\n", __LINE__);
 
     f = env->GetFieldID(msgKlass, "arg2", "I");
     Util::CheckErrorAndLog(env, "ToJavaMessage", "GetFieldID: arg2 : %d!\n", __LINE__);
 
     msg->GetArg2(&tempInt);
-    env->SetIntField(jmsg, f, (Int32)tempInt);
+    env->SetIntField(jmsg, f, (jint)tempInt);
     Util::CheckErrorAndLog(env, "ToJavaMessage", "SetIntField arg2 : %d!\n", __LINE__);
 
     AutoPtr<IInterface> obj;
@@ -5211,7 +5484,8 @@ jobject Util::ToJavaMessage(
             Util::CheckErrorAndLog(env, "ToJavaMessage", "GetObjectField obj : %d!\n", __LINE__);
 
             env->DeleteLocalRef(jconfig);
-        } else if (IWifiP2pDeviceList::Probe(obj) != NULL) {
+        }
+        else if (IWifiP2pDeviceList::Probe(obj) != NULL) {
             AutoPtr<IWifiP2pDeviceList> info = IWifiP2pDeviceList::Probe(obj);
 
             jobject jinfo = Util::ToJavaWifiP2pDeviceList(env, info);
@@ -5219,7 +5493,8 @@ jobject Util::ToJavaMessage(
             Util::CheckErrorAndLog(env, "ToJavaMessage", "GetObjectField obj : %d!\n", __LINE__);
 
             env->DeleteLocalRef(jinfo);
-        } else if (IWifiP2pGroup::Probe(obj) != NULL) {
+        }
+        else if (IWifiP2pGroup::Probe(obj) != NULL) {
             AutoPtr<IWifiP2pGroup> group = IWifiP2pGroup::Probe(obj);
 
             jobject jgroup = Util::ToJavaWifiP2pGroup(env, group);
@@ -5227,8 +5502,9 @@ jobject Util::ToJavaMessage(
             Util::CheckErrorAndLog(env, "ToJavaMessage", "GetObjectField obj : %d!\n", __LINE__);
 
             env->DeleteLocalRef(jgroup);
-        } else {
-            AutoPtr<IObject> object = (IObject*)obj->Probe(EIID_IObject);
+        }
+        else {
+            AutoPtr<IObject> object = IObject::Probe(obj);
             ClassID clsid;
             object->GetClassID(&clsid);
             DUMP_CLSID(clsid, "ToJavaMessage");
@@ -5249,13 +5525,9 @@ jobject Util::ToJavaMessage(
         Util::CheckErrorAndLog(env, "ToJavaMessage", "SetObjectField: %d!\n", __LINE__);
     }
 
-    // TODO:
-    // msg->GetFlags(&tempInt);
-    // Util::SetJavaIntField(env, msgKlass, jmsg, tempInt, "flags", "ToJavaMessage");
-
-    // Int64 when;
-    // msg->GetWhen(&when);
-    // Util::SetJavalongField(env, msgKlass, jmsg, when, "when", "ToJavaMessage");
+    Int64 when;
+    msg->GetWhen(&when);
+    Util::SetJavalongField(env, msgKlass, jmsg, when, "when", "ToJavaMessage");
 
     AutoPtr<IBundle> data;
     msg->GetData((IBundle**)&data);
@@ -5268,6 +5540,13 @@ jobject Util::ToJavaMessage(
         Util::CheckErrorAndLog(env, "ToJavaMessage", "SetObjectField data : %d!\n", __LINE__);
         env->DeleteLocalRef(jdata);
     }
+
+    f = env->GetFieldID(msgKlass, "sendingUid", "I");
+    Util::CheckErrorAndLog(env, "ToJavaMessage", "GetFieldID: sendingUid : %d!\n", __LINE__);
+
+    msg->GetSendingUid(&tempInt);
+    env->SetIntField(jmsg, f, (jint)tempInt);
+    Util::CheckErrorAndLog(env, "ToJavaMessage", "SetIntField sendingUid : %d!\n", __LINE__);
 
     env->DeleteLocalRef(msgKlass);
     return jmsg;
@@ -5296,7 +5575,9 @@ jobject Util::ToJavaIntentReceiver(
     return jreceiver;
 }
 
-jobject Util::ToJavaLocation(JNIEnv* env, ILocation* location)
+jobject Util::ToJavaLocation(
+    /* [in] */ JNIEnv* env,
+    /* [in] */ ILocation* location)
 {
     jclass locationKlass = env->FindClass("android/location/Location");
     CheckErrorAndLog(env, "ToJavaLocation", "Error FindClass: Location : %d!\n", __LINE__);
@@ -5318,8 +5599,9 @@ jobject Util::ToJavaLocation(JNIEnv* env, ILocation* location)
     Boolean mHasAccuracy = FALSE;
     Float mAccuracy = 0.0f;
     AutoPtr<IBundle> mExtras;
+    Boolean mIsFromMockProvider = FALSE;
 
-    if(location != NULL){
+    if (location != NULL){
         location->GetProvider(&mProvider);
         location->GetTime(&mTime);
         location->GetElapsedRealtimeNanos(&mElapsedRealtimeNanos);
@@ -5334,7 +5616,9 @@ jobject Util::ToJavaLocation(JNIEnv* env, ILocation* location)
         location->HasAccuracy(&mHasAccuracy);
         location->GetAccuracy(&mAccuracy);
         location->GetExtras((IBundle**)&mExtras);
-    }else{
+        location->IsFromMockProvider(&mIsFromMockProvider);
+    }
+    else {
         LOGGERE("ToJavaLocation()", "ILocation is null!");
     }
 
@@ -5355,6 +5639,7 @@ jobject Util::ToJavaLocation(JNIEnv* env, ILocation* location)
     SetJavafloatField(env, locationKlass, jlocation, mBearing, "mBearing", "ToJavaLocation");
     SetJavaBoolField(env, locationKlass, jlocation, mHasAccuracy, "mHasAccuracy", "ToJavaLocation");
     SetJavafloatField(env, locationKlass, jlocation, mAccuracy, "mAccuracy", "ToJavaLocation");
+    SetJavaBoolField(env, locationKlass, jlocation, mIsFromMockProvider, "mIsFromMockProvider", "ToJavaLocation");
 
     jobject jextras = ToJavaBundle(env, mExtras);
     if (jextras != NULL) {
@@ -5364,7 +5649,8 @@ jobject Util::ToJavaLocation(JNIEnv* env, ILocation* location)
         env->SetObjectField(jlocation, f, jextras);
         CheckErrorAndLog(env, "ToJavaLocation", "Fail SetObjectField: jextras : %d!\n", __LINE__);
         env->DeleteLocalRef(jextras);
-    } else {
+    }
+    else {
         LOGGERD("Util", "ToJavaLocation Error: jextras is NULL!");
     }
 
@@ -5393,22 +5679,16 @@ jobject Util::ToJavaInputBinding(
     Int32 pid;
     binding->GetPid(&pid);
 
-    AutoPtr<IInputConnection> conn;
-    binding->GetConnection((IInputConnection**)&conn);
-    jobject jconn = NULL;
-    if (conn != NULL) {
-        LOGGERE("ToJavaInputBinding()", "GetConnection() IInputConnection not NULL!");
-    }
-
     AutoPtr<IBinder> connToken;
     binding->GetConnectionToken((IBinder**)&connToken);
     jobject jconnToken = NULL;
     if (connToken != NULL) {
-        AutoPtr<IObject> object = (IObject*)connToken->Probe(EIID_IObject);
+        AutoPtr<IObject> object = IObject::Probe(connToken);
 
         ClassID clsid;
         object->GetClassID(&clsid);
-        if (clsid == /*Elastos::Droid::JavaProxy::*/ECLSID_CInputContextNative ||
+        assert(0);
+        if (/*clsid == ECLSID_CInputContextNative ||*/
             clsid == Elastos::Droid::View::InputMethod::ECLSID_CControlledInputConnectionWrapper) {
             jclass conKlass = env->FindClass("com/android/internal/view/ElIInputContextProxy");
             Util::CheckErrorAndLog(env, "ToJavaInputBinding", "FindClass: ElIInputContextProxy line: %d", __LINE__);
@@ -5421,16 +5701,16 @@ jobject Util::ToJavaInputBinding(
             connToken->AddRef();
 
             env->DeleteLocalRef(conKlass);
-        } else {
+        }
+        else {
             LOGGERE("ToJavaInputBinding()", "connToken is Unknown!");
             DUMP_CLSID(clsid, "Eric");
         }
     }
 
-    jobject jbinding = env->NewObject(ibKlass, m, jconn, jconnToken, (jint)uid, (jint)pid);
+    jobject jbinding = env->NewObject(ibKlass, m, NULL, jconnToken, (jint)uid, (jint)pid);
     Util::CheckErrorAndLog(env, "ToJavaIntentReceiver", "NewObject: InputBinding line: %d", __LINE__);
     env->DeleteLocalRef(ibKlass);
-    env->DeleteLocalRef(jconn);
     env->DeleteLocalRef(jconnToken);
     return jbinding;
 }
@@ -5543,7 +5823,8 @@ jobject Util::ToJavaEditorInfo(
             env->SetObjectField(jinfo, f, jextras);
             CheckErrorAndLog(env, "ToJavaEditorInfo", "SetObjectField: jextras : %d!\n", __LINE__);
             env->DeleteLocalRef(jextras);
-        } else {
+        }
+        else {
             LOGGERE("ToJavaEditorInfo()", "jextras is NULL!");
         }
     }
@@ -5790,6 +6071,9 @@ jobject Util::ToJavaNetworkInfo(
     info->IsRoaming(&booleanTemp);
     Util::SetJavaBoolField(env, netInfoKlass, jinfo, booleanTemp, "mIsRoaming", "GetJavaNetworkInfo");
 
+    info->IsConnectedToProvisioningNetwork(&booleanTemp);
+    Util::SetJavaBoolField(env, netInfoKlass, jinfo, booleanTemp, "mIsConnectedToProvisioningNetwork", "GetJavaNetworkInfo");
+
     String reason;
     info->GetReason(&reason);
     if (!reason.IsNull()) {
@@ -5842,32 +6126,23 @@ jobject Util::ToJavaWifiInfo(
 
     Int32 tempInt;
     info->GetNetworkId(&tempInt);
-    jfieldID f = env->GetFieldID(wiinfoKlass, "mNetworkId", "I");
-    Util::CheckErrorAndLog(env, "ToJavaWifiInfo", "GetFieldID: mNetworkId : %d!\n", __LINE__);
-
-    env->SetIntField(jinfo, f, tempInt);
-    Util::CheckErrorAndLog(env, "ToJavaWifiInfo", "SetIntField: mNetworkId : %d!\n", __LINE__);
+    Util::SetJavaIntField(env, wiinfoKlass, jinfo, tempInt, "mNetworkId", "ToJavaWifiInfo");
 
     info->GetRssi(&tempInt);
-    f = env->GetFieldID(wiinfoKlass, "mRssi", "I");
-    Util::CheckErrorAndLog(env, "ToJavaWifiInfo", "GetFieldID: mRssi : %d!\n", __LINE__);
-
-    env->SetIntField(jinfo, f, tempInt);
-    Util::CheckErrorAndLog(env, "ToJavaWifiInfo", "SetIntField: mRssi : %d!\n", __LINE__);
+    Util::SetJavaIntField(env, wiinfoKlass, jinfo, tempInt, "mRssi", "ToJavaWifiInfo");
 
     info->GetLinkSpeed(&tempInt);
-    f = env->GetFieldID(wiinfoKlass, "mLinkSpeed", "I");
-    Util::CheckErrorAndLog(env, "ToJavaWifiInfo", "GetFieldID: mLinkSpeed : %d!\n", __LINE__);
+    Util::SetJavaIntField(env, wiinfoKlass, jinfo, tempInt, "mLinkSpeed", "ToJavaWifiInfo");
 
-    env->SetIntField(jinfo, f, tempInt);
-    Util::CheckErrorAndLog(env, "ToJavaWifiInfo", "SetIntField: mLinkSpeed : %d!\n", __LINE__);
+    info->GetFrequency(&tempInt);
+    Util::SetJavaIntField(env, wiinfoKlass, jinfo, tempInt, "mFrequency", "ToJavaWifiInfo");
 
     Int32 iaddress = 0;
     info->GetIpAddress(&iaddress);
     if (iaddress != 0) {
         jobject jaddress = Util::ToJavaInetAddress(env, 0, iaddress, String(NULL));
 
-        f = env->GetFieldID(wiinfoKlass, "mIpAddress", "Ljava/net/InetAddress;");
+        jfieldID f = env->GetFieldID(wiinfoKlass, "mIpAddress", "Ljava/net/InetAddress;");
         Util::CheckErrorAndLog(env, "ToJavaWifiInfo", "GetFieldID: InetAddress : %d!\n", __LINE__);
 
         env->SetObjectField(jinfo, f, jaddress);
@@ -5880,7 +6155,7 @@ jobject Util::ToJavaWifiInfo(
     if (wiSsid != NULL) {
         jobject jwiSsid = Util::ToJavaWifiSsid(env, wiSsid);
 
-        f = env->GetFieldID(wiinfoKlass, "mWifiSsid", "Landroid/net/wifi/WifiSsid;");
+        jfieldID f = env->GetFieldID(wiinfoKlass, "mWifiSsid", "Landroid/net/wifi/WifiSsid;");
         Util::CheckErrorAndLog(env, "ToJavaWifiInfo", "GetFieldID: WifiSsid : %d!\n", __LINE__);
 
         env->SetObjectField(jinfo, f, jwiSsid);
@@ -5914,16 +6189,34 @@ jobject Util::ToJavaWifiInfo(
 
     Boolean hint;
     info->GetMeteredHint(&hint);
-    f = env->GetFieldID(wiinfoKlass, "mMeteredHint", "Z");
-    Util::CheckErrorAndLog(env, "ToJavaWifiInfo", "GetFieldID: mMeteredHint : %d!\n", __LINE__);
+    Util::SetJavaBoolField(env, wiinfoKlass, jinfo, hint, "mMeteredHint", "ToJavaWifiInfo");
 
-    env->SetBooleanField(jinfo, f, tempInt);
-    Util::CheckErrorAndLog(env, "ToJavaWifiInfo", "SetBooleanField: mMeteredHint : %d!\n", __LINE__);
+    info->GetScore(&tempInt);
+    Util::SetJavaIntField(env, wiinfoKlass, jinfo, tempInt, "score", "ToJavaWifiInfo");
 
-    SupplicantState state;
-    info->GetSupplicantState(&state);
+    Double tempDouble;
+    info->GetTxSuccessRate(&tempDouble);
+    Util::SetJavadoubleField(env, wiinfoKlass, jinfo, tempDouble, "txSuccessRate", "ToJavaWifiInfo");
+
+    info->GetTxRetriesRate(&tempDouble);
+    Util::SetJavadoubleField(env, wiinfoKlass, jinfo, tempDouble, "txRetriesRate", "ToJavaWifiInfo");
+
+    info->GetTxBadRate(&tempDouble);
+    Util::SetJavadoubleField(env, wiinfoKlass, jinfo, tempDouble, "txBadRate", "ToJavaWifiInfo");
+
+    info->GetRxSuccessRate(&tempDouble);
+    Util::SetJavadoubleField(env, wiinfoKlass, jinfo, tempDouble, "rxSuccessRate", "ToJavaWifiInfo");
+
+    info->GetBadRssiCount(&tempInt);
+    Util::SetJavaIntField(env, wiinfoKlass, jinfo, tempInt, "badRssiCount", "ToJavaWifiInfo");
+
+    info->GetLowRssiCount(&tempInt);
+    Util::SetJavaIntField(env, wiinfoKlass, jinfo, tempInt, "lowRssiCount", "ToJavaWifiInfo");
+
+    AutoPtr<ISupplicantState> state;
+    info->GetSupplicantState((ISupplicantState**)&state);
     jobject jstate = Util::ToJavaSupplicantState(env, state);
-    f = env->GetFieldID(wiinfoKlass, "mSupplicantState", "Landroid/net/wifi/SupplicantState;");
+    jfieldID f = env->GetFieldID(wiinfoKlass, "mSupplicantState", "Landroid/net/wifi/SupplicantState;");
     Util::CheckErrorAndLog(env, "ToJavaWifiInfo", "GetFieldID: mSupplicantState : %d!\n", __LINE__);
 
     env->SetObjectField(jinfo, f, jstate);
@@ -5946,27 +6239,19 @@ jobject Util::ToJavaInetAddress(
 
     AutoPtr<ArrayOf<Byte> > baddress;
     address->GetAddress((ArrayOf<Byte>**)&baddress);
-    if (baddress == NULL) {
-        return NULL;
-    }
+    String hostName;
+    address->GetHostName(&hostName);
 
-    Int32 count = baddress->GetLength();
-
-    jbyteArray jbArray = env->NewByteArray((jsize)count);
-    Util::CheckErrorAndLog(env, "ToJavaInetAddress", "NewByteArray: %d!\n", __LINE__);
-
-    Byte* bpayload = baddress->GetPayload();
-
-    env->SetByteArrayRegion(jbArray, 0, count, (jbyte *)bpayload);
-    Util::CheckErrorAndLog(env, "ToJavaInetAddress", "SetByteArrayRegion: %d!\n", __LINE__);
+    jbyteArray jbArray = Util::ToJavaByteArray(env, baddress);
+    jstring jhostName = Util::ToJavaString(env, hostName);
 
     jclass inaddKlass = env->FindClass("java/net/InetAddress");
     Util::CheckErrorAndLog(env, "ToJavaInetAddress", "FindClass: InetAddress : %d!\n", __LINE__);
 
-    jmethodID m = env->GetStaticMethodID(inaddKlass, "getByAddress", "([B)Ljava/net/InetAddress;");
+    jmethodID m = env->GetStaticMethodID(inaddKlass, "getByAddress", "(Ljava/lang/String;[B)Ljava/net/InetAddress;");
     Util::CheckErrorAndLog(env, "ToJavaInetAddress", "GetStaticMethodID: getByAddress : %d!\n", __LINE__);
 
-    jaddress = env->CallStaticObjectMethod(inaddKlass, m, jbArray);
+    jaddress = env->CallStaticObjectMethod(inaddKlass, m, jhostName, jbArray);
     Util::CheckErrorAndLog(env, "ToJavaInetAddress", "CallStaticObjectMethod: getByAddress(): %d!\n", __LINE__);
     env->DeleteLocalRef(jbArray);
     env->DeleteLocalRef(inaddKlass);
@@ -6095,55 +6380,55 @@ jobject Util::ToJavaSupplicantState(
     jfieldID f = NULL;
 
     switch(state) {
-        case Elastos::Droid::Net::Wifi::SupplicantState_DISCONNECTED: {
+        case Elastos::Droid::Wifi::SupplicantState_DISCONNECTED: {
             f = env->GetStaticFieldID(supsKlass, "DISCONNECTED", "Landroid/net/wifi/SupplicantState;");
             break;
         }
-        case Elastos::Droid::Net::Wifi::SupplicantState_INTERFACE_DISABLED: {
+        case Elastos::Droid::Wifi::SupplicantState_INTERFACE_DISABLED: {
             f = env->GetStaticFieldID(supsKlass, "INTERFACE_DISABLED", "Landroid/net/wifi/SupplicantState;");
             break;
         }
-        case Elastos::Droid::Net::Wifi::SupplicantState_INACTIVE: {
+        case Elastos::Droid::Wifi::SupplicantState_INACTIVE: {
             f = env->GetStaticFieldID(supsKlass, "INACTIVE", "Landroid/net/wifi/SupplicantState;");
             break;
         }
-        case Elastos::Droid::Net::Wifi::SupplicantState_SCANNING: {
+        case Elastos::Droid::Wifi::SupplicantState_SCANNING: {
             f = env->GetStaticFieldID(supsKlass, "SCANNING", "Landroid/net/wifi/SupplicantState;");
             break;
         }
-        case Elastos::Droid::Net::Wifi::SupplicantState_AUTHENTICATING: {
+        case Elastos::Droid::Wifi::SupplicantState_AUTHENTICATING: {
             f = env->GetStaticFieldID(supsKlass, "AUTHENTICATING", "Landroid/net/wifi/SupplicantState;");
             break;
         }
-        case Elastos::Droid::Net::Wifi::SupplicantState_ASSOCIATING: {
+        case Elastos::Droid::Wifi::SupplicantState_ASSOCIATING: {
             f = env->GetStaticFieldID(supsKlass, "ASSOCIATING", "Landroid/net/wifi/SupplicantState;");
             break;
         }
-        case Elastos::Droid::Net::Wifi::SupplicantState_ASSOCIATED: {
+        case Elastos::Droid::Wifi::SupplicantState_ASSOCIATED: {
             f = env->GetStaticFieldID(supsKlass, "ASSOCIATED", "Landroid/net/wifi/SupplicantState;");
             break;
         }
-        case Elastos::Droid::Net::Wifi::SupplicantState_FOUR_WAY_HANDSHAKE: {
+        case Elastos::Droid::Wifi::SupplicantState_FOUR_WAY_HANDSHAKE: {
             f = env->GetStaticFieldID(supsKlass, "FOUR_WAY_HANDSHAKE", "Landroid/net/wifi/SupplicantState;");
             break;
         }
-        case Elastos::Droid::Net::Wifi::SupplicantState_GROUP_HANDSHAKE: {
+        case Elastos::Droid::Wifi::SupplicantState_GROUP_HANDSHAKE: {
             f = env->GetStaticFieldID(supsKlass, "GROUP_HANDSHAKE", "Landroid/net/wifi/SupplicantState;");
             break;
         }
-        case Elastos::Droid::Net::Wifi::SupplicantState_COMPLETED: {
+        case Elastos::Droid::Wifi::SupplicantState_COMPLETED: {
             f = env->GetStaticFieldID(supsKlass, "COMPLETED", "Landroid/net/wifi/SupplicantState;");
             break;
         }
-        case Elastos::Droid::Net::Wifi::SupplicantState_DORMANT: {
+        case Elastos::Droid::Wifi::SupplicantState_DORMANT: {
             f = env->GetStaticFieldID(supsKlass, "DORMANT", "Landroid/net/wifi/SupplicantState;");
             break;
         }
-        case Elastos::Droid::Net::Wifi::SupplicantState_UNINITIALIZED: {
+        case Elastos::Droid::Wifi::SupplicantState_UNINITIALIZED: {
             f = env->GetStaticFieldID(supsKlass, "UNINITIALIZED", "Landroid/net/wifi/SupplicantState;");
             break;
         }
-        case Elastos::Droid::Net::Wifi::SupplicantState_INVALID: {
+        case Elastos::Droid::Wifi::SupplicantState_INVALID: {
             f = env->GetStaticFieldID(supsKlass, "INVALID", "Landroid/net/wifi/SupplicantState;");
             break;
         }
@@ -6195,7 +6480,7 @@ jobject Util::ToJavaLinkProperties(
 
     String ifaceName;
     properties->GetInterfaceName(&ifaceName);
-    if(!ifaceName.IsNull()) {
+    if (!ifaceName.IsNull()) {
         jfieldID f = env->GetFieldID(lProtiesKlass, "mIfaceName", "Ljava/lang/String;");
         Util::CheckErrorAndLog(env, "ToJavaLinkProperties", "GetFieldID: mIfaceName : %d!\n", __LINE__);
 
@@ -6205,45 +6490,28 @@ jobject Util::ToJavaLinkProperties(
         env->DeleteLocalRef(jifaceName);
     }
 
-    AutoPtr<IObjectContainer> addresses;
-    properties->GetLinkAddresses((IObjectContainer**)&addresses);
+    AutoPtr<IList> addresses;
+    properties->GetLinkAddresses((IList**)&addresses);
     if (addresses != NULL) {
         Int32 count = 0;
-        addresses->GetObjectCount(&count);
+        addresses->GetSize(&count);
         if (count > 0) {
-            jmethodID mAdd = env->GetMethodID(lProtiesKlass, "addLinkAddress", "(Landroid/net/LinkAddress;)V");
+            jmethodID mAdd = env->GetMethodID(lProtiesKlass, "addLinkAddress", "(Landroid/net/LinkAddress;)Z");
             Util::CheckErrorAndLog(env, "ToJavaLinkProperties", "GetMethodID: addLinkAddress : %d!\n", __LINE__);
 
             jclass laddrKlass = env->FindClass("android/net/LinkAddress");
             Util::CheckErrorAndLog(env, "ToJavaLinkProperties", "FindClass: LinkAddress : %d!\n", __LINE__);
 
-            m = env->GetMethodID(laddrKlass, "<init>", "(Ljava/net/InetAddress;I)V");
+            m = env->GetMethodID(laddrKlass, "<init>", "(Ljava/net/InetAddress;III)Z");
             Util::CheckErrorAndLog(env, "ToJavaLinkProperties", "GetMethodID: appInfoKlass : %d!\n", __LINE__);
 
-            AutoPtr<IObjectEnumerator> it;
-            addresses->GetObjectEnumerator((IObjectEnumerator**)&it);
-
-            Boolean hasNext;
-            while (it->MoveNext(&hasNext), hasNext) {
+            for (Int32 i = 0; i < count; i++) {
                 AutoPtr<IInterface> obj;
-                it->Current((IInterface**)&obj);
-                AutoPtr<ILinkAddress> laddr = ILinkAddress::Probe(obj);
+                addresses->Get(i, (IInterface**)&obj);
+                jobject jladdr = ToJavaLinkAddress(env, ILinkAddress::Probe(obj));
 
-                Int32 prefixLength;
-                laddr->GetNetworkPrefixLength(&prefixLength);
-
-                AutoPtr<IInetAddress> addr;
-                laddr->GetAddress((IInetAddress**)&addr);
-
-                jobject jaddr = Util::ToJavaInetAddress(env, addr);
-
-                jobject jladdr = env->NewObject(laddrKlass, m, jaddr, (Int32)prefixLength);
-                Util::CheckErrorAndLog(env, "ToJavaLinkProperties", "NewObject: LinkAddress : %d!\n", __LINE__);
-
-                env->CallVoidMethod(jproperties, mAdd, jladdr);
-                Util::CheckErrorAndLog(env, "ToJavaLinkProperties", "CallVoidMethod: addLinkAddress : %d!\n", __LINE__);
-
-                env->DeleteLocalRef(jaddr);
+                env->CallBooleanMethod(jproperties, mAdd, jladdr);
+                Util::CheckErrorAndLog(env, "ToJavaLinkProperties", "CallBooleanMethod: addLinkAddress : %d!\n", __LINE__);
                 env->DeleteLocalRef(jladdr);
             }
 
@@ -6251,74 +6519,102 @@ jobject Util::ToJavaLinkProperties(
         }
     }
 
-    AutoPtr<IObjectContainer> dnses;
-    properties->GetDnses((IObjectContainer**)&dnses);
+    AutoPtr<IList> dnses;
+    properties->GetDnsServers((IList**)&dnses);
     if (dnses != NULL) {
         Int32 count = 0;
-        dnses->GetObjectCount(&count);
+        dnses->GetSize(&count);
         if (count > 0) {
-            jmethodID mAdd = env->GetMethodID(lProtiesKlass, "addDns", "(Ljava/net/InetAddress;)V");
+            jmethodID mAdd = env->GetMethodID(lProtiesKlass, "addDns", "(Ljava/net/InetAddress;)Z");
             Util::CheckErrorAndLog(env, "ToJavaLinkProperties", "GetMethodID: addDns : %d!\n", __LINE__);
 
-            AutoPtr<IObjectEnumerator> it;
-            dnses->GetObjectEnumerator((IObjectEnumerator**)&it);
-
-            Boolean hasNext;
-            while (it->MoveNext(&hasNext), hasNext) {
+            for (Int32 i = 0; i < count; i++) {
                 AutoPtr<IInterface> obj;
-                it->Current((IInterface**)&obj);
+                dnses->Get(i, (IInterface**)&obj);
                 AutoPtr<IInetAddress> iaddr = IInetAddress::Probe(obj);
 
                 jobject jiaddr = Util::ToJavaInetAddress(env, iaddr);
 
-                env->CallVoidMethod(jproperties, mAdd, jiaddr);
-                Util::CheckErrorAndLog(env, "ToJavaLinkProperties", "CallVoidMethod: addDns : %d!\n", __LINE__);
+                env->CallBooleanMethod(jproperties, mAdd, jiaddr);
+                Util::CheckErrorAndLog(env, "ToJavaLinkProperties", "CallBooleanMethod: addDns : %d!\n", __LINE__);
 
                 env->DeleteLocalRef(jiaddr);
             }
         }
     }
 
-    AutoPtr<IObjectContainer> routes;
-    properties->GetRoutes((IObjectContainer**)&routes);
+    String str;
+    properties->GetDomains(&str);
+    Util::SetJavaStringField(env, lProtiesKlass, jproperties, str, "mDomains", "ToJavaLinkProperties");
+
+    Int32 mtu;
+    properties->GetMtu(&mtu);
+    Util::SetJavaIntField(env, lProtiesKlass, jproperties, mtu, "mMtu", "ToJavaLinkProperties");
+
+    properties->GetTcpBufferSizes(&str);
+    Util::SetJavaStringField(env, lProtiesKlass, jproperties, str, "mTcpBufferSizes", "ToJavaLinkProperties");
+
+    AutoPtr<IList> routes;
+    properties->GetRoutes((IList**)&routes);
     if (routes != NULL) {
         Int32 count = 0;
-        routes->GetObjectCount(&count);
+        routes->GetSize(&count);
         if (count > 0) {
-            jmethodID mAdd = env->GetMethodID(lProtiesKlass, "addRoute", "(Landroid/net/RouteInfo;)V");
+            jmethodID mAdd = env->GetMethodID(lProtiesKlass, "addRoute", "(Landroid/net/RouteInfo;)Z");
             Util::CheckErrorAndLog(env, "ToJavaLinkProperties", "GetMethodID: addRoute : %d!\n", __LINE__);
 
-            AutoPtr<IObjectEnumerator> it;
-            routes->GetObjectEnumerator((IObjectEnumerator**)&it);
-
-            Boolean hasNext;
-            while (it->MoveNext(&hasNext), hasNext) {
+            for (Int32 i = 0; i < count; i++) {
                 AutoPtr<IInterface> obj;
-                it->Current((IInterface**)&obj);
+                routes->Get(i, (IInterface**)&obj);
                 AutoPtr<IRouteInfo> route = IRouteInfo::Probe(obj);
 
                 jobject jroute = Util::ToJavaRouteInfo(env, route);
 
-                env->CallVoidMethod(jproperties, mAdd, jroute);
-                Util::CheckErrorAndLog(env, "ToJavaLinkProperties", "CallVoidMethod: addRoute : %d!\n", __LINE__);
+                env->CallBooleanMethod(jproperties, mAdd, jroute);
+                Util::CheckErrorAndLog(env, "ToJavaLinkProperties", "CallBooleanMethod: addRoute : %d!\n", __LINE__);
 
                 env->DeleteLocalRef(jroute);
             }
         }
     }
 
-    AutoPtr<IProxyProperties> pproperties;
-    properties->GetHttpProxy((IProxyProperties**)&pproperties);
-    if (pproperties != NULL) {
-        jobject jpproperties = Util::ToJavaProxyProperties(env, pproperties);
+    AutoPtr<IProxyInfo> httpProxy;
+    properties->GetHttpProxy((IProxyInfo**)&httpProxy);
+    if (httpProxy != NULL) {
+        jobject jhttpProxy = Util::ToJavaProxyInfo(env, httpProxy);
 
-        jmethodID m = env->GetMethodID(lProtiesKlass, "setHttpProxy", "(Landroid/net/ProxyProperties;)V");
+        jmethodID m = env->GetMethodID(lProtiesKlass, "setHttpProxy", "(Landroid/net/ProxyInfo;)V");
         Util::CheckErrorAndLog(env, "ToJavaLinkProperties", "GetMethodID: setHttpProxy : %d!\n", __LINE__);
 
-        env->CallVoidMethod(jproperties, m, jpproperties);
+        env->CallVoidMethod(jproperties, m, jhttpProxy);
         Util::CheckErrorAndLog(env, "ToJavaLinkProperties", "CallVoidMethod: setHttpProxy : %d!\n", __LINE__);
-        env->DeleteLocalRef(jpproperties);
+        env->DeleteLocalRef(jhttpProxy);
     }
+
+    AutoPtr<IList> stackedLinks;
+    properties->GetStackedLinks((IList**)&stackedLinks);
+    if (stackedLinks != NULL) {
+        Int32 count = 0;
+        stackedLinks->GetSize(&count);
+        if (count > 0) {
+            jmethodID mAdd = env->GetMethodID(lProtiesKlass, "addStackedLink", "(Landroid/net/LinkProperties;)Z");
+            Util::CheckErrorAndLog(env, "ToJavaLinkProperties", "GetMethodID: addStackedLink : %d!\n", __LINE__);
+
+            for (Int32 i = 0; i < count; i++) {
+                AutoPtr<IInterface> obj;
+                stackedLinks->Get(i, (IInterface**)&obj);
+                AutoPtr<ILinkProperties> lps = ILinkProperties::Probe(obj);
+
+                jobject jlps = Util::ToJavaLinkProperties(env, lps);
+
+                env->CallBooleanMethod(jproperties, mAdd, jlps);
+                Util::CheckErrorAndLog(env, "ToJavaLinkProperties", "CallBooleanMethod: addStackedLink : %d!\n", __LINE__);
+
+                env->DeleteLocalRef(jlps);
+            }
+        }
+    }
+
     env->DeleteLocalRef(lProtiesKlass);
     return jproperties;
 }
@@ -6327,7 +6623,7 @@ jobject Util::ToJavaRouteInfo(
     /* [in] */ JNIEnv* env,
     /* [in] */ IRouteInfo* info)
 {
-    if(env == NULL || info == NULL){
+    if (env == NULL || info == NULL){
         LOGGERE("ToJavaRouteInfo()", "Invalid argumenet!");
         return NULL;
     }
@@ -6335,14 +6631,14 @@ jobject Util::ToJavaRouteInfo(
     jclass riKlass = env->FindClass("android/net/RouteInfo");
     CheckErrorAndLog(env, "ToJavaRouteInfo", "FindClass: RouteInfo : %d!\n", __LINE__);
 
-    jmethodID m = env->GetMethodID(riKlass, "<init>", "(Landroid/net/LinkAddress;Ljava/net/InetAddress;)V");
+    jmethodID m = env->GetMethodID(riKlass, "<init>", "(Landroid/net/IpPrefix;Ljava/net/InetAddress;Ljava/lang/String;I)V");
     CheckErrorAndLog(env, "ToJavaRouteInfo", "GetMethodID: RouteInfo : %d!\n", __LINE__);
 
-    AutoPtr<ILinkAddress> destination;
-    info->GetDestination((ILinkAddress**)&destination);
+    AutoPtr<IIpPrefix> destination;
+    info->GetDestination((IIpPrefix**)&destination);
     jobject jdestination = NULL;
     if (destination != NULL) {
-        jdestination = Util::ToJavaLinkAddress(env, destination);
+        jdestination = Util::ToJavaIpPrefix(env, destination);
     }
 
     AutoPtr<IInetAddress> gateway;
@@ -6352,11 +6648,50 @@ jobject Util::ToJavaRouteInfo(
         jgateway = Util::ToJavaInetAddress(env, gateway);
     }
 
-    jobject jinfo = env->NewObject(riKlass, m, jdestination, jgateway);
+    String iface;
+    info->GetInterface(&iface);
+    jstring jiface = Util::ToJavaString(env, iface);
+
+    Int32 type;
+    info->GetType(&type);
+
+    jobject jinfo = env->NewObject(riKlass, m, jdestination, jgateway, jiface, (jint)type);
     CheckErrorAndLog(env, "ToJavaRouteInfo", "NewObject: RouteInfo : %d!\n", __LINE__);
 
     env->DeleteLocalRef(riKlass);
     return jinfo;
+}
+
+jobject Util::ToJavaIpPrefix(
+    /* [in] */ JNIEnv* env,
+    /* [in] */ IIpPrefix* ipPrefix)
+{
+    if (env == NULL || ipPrefix == NULL) {
+        ALOGE("ToJavaIpPrefix() Invalid argumenet!");
+        return NULL;
+    }
+
+    jclass ipKlass = env->FindClass("android/net/IpPrefix");
+    CheckErrorAndLog(env, "ToJavaIpPrefix", "FindClass: IpPrefix : %d!\n", __LINE__);
+
+    jmethodID m = env->GetMethodID(ipKlass, "<init>", "([BI)V");
+    CheckErrorAndLog(env, "ToJavaIpPrefix", "GetMethodID: IpPrefix : %d!\n", __LINE__);
+
+    AutoPtr<ArrayOf<Byte> > address;
+    ipPrefix->GetRawAddress((ArrayOf<Byte>**)&address);
+    jobject jaddress = NULL;
+    if (address != NULL) {
+        jaddress = Util::ToJavaByteArray(env, address);
+    }
+
+    Int32 prefixLength = 0;
+    ipPrefix->GetPrefixLength(&prefixLength);
+
+    jobject jipPrefix = env->NewObject(ipKlass, m, jaddress, (jint)prefixLength);
+    CheckErrorAndLog(env, "ToJavaIpPrefix", "NewObject: IpPrefix : %d!\n", __LINE__);
+
+    env->DeleteLocalRef(ipKlass);
+    return jipPrefix;
 }
 
 jobject Util::ToJavaLinkAddress(
@@ -6371,7 +6706,7 @@ jobject Util::ToJavaLinkAddress(
     jclass laKlass = env->FindClass("android/net/LinkAddress");
     CheckErrorAndLog(env, "ToJavaLinkAddress", "FindClass: LinkAddress : %d!\n", __LINE__);
 
-    jmethodID m = env->GetMethodID(laKlass, "<init>", "(Ljava/net/InetAddress;I)V");
+    jmethodID m = env->GetMethodID(laKlass, "<init>", "(Ljava/net/InetAddress;III)Z");
     CheckErrorAndLog(env, "ToJavaLinkAddress", "GetMethodID: LinkAddress : %d!\n", __LINE__);
 
     AutoPtr<IInetAddress> address;
@@ -6381,12 +6716,15 @@ jobject Util::ToJavaLinkAddress(
         jaddress = Util::ToJavaInetAddress(env, address);
     }
 
-    Int32 prefixLength = 0;
+    Int32 prefixLength, flags, scope;
     info->GetNetworkPrefixLength(&prefixLength);
+    info->GetFlags(&flags);
+    info->GetScope(&scope);
 
-    jobject jinfo = env->NewObject(laKlass, m, jaddress, (jint)prefixLength);
+    jobject jinfo = env->NewObject(laKlass, m, jaddress, (jint)prefixLength, (jint)flags, (jint)scope);
     CheckErrorAndLog(env, "ToJavaLinkAddress", "NewObject: LinkAddress : %d!\n", __LINE__);
 
+    env->DeleteLocalRef(jaddress);
     env->DeleteLocalRef(laKlass);
     return jinfo;
 }
@@ -6395,7 +6733,7 @@ jobject Util::ToJavaProxyProperties(
     /* [in] */ JNIEnv* env,
     /* [in] */ IProxyProperties* pproperties)
 {
-    if(env == NULL || pproperties == NULL){
+    if (env == NULL || pproperties == NULL){
         LOGGERE("ToJavaProxyProperties()", "Invalid argumenet!");
         return NULL;
     }
@@ -6431,6 +6769,60 @@ jobject Util::ToJavaProxyProperties(
     return jpproperties;
 }
 
+jobject Util::ToJavaProxyInfo(
+    /* [in] */ JNIEnv* env,
+    /* [in] */ IProxyInfo* proxyInfo)
+{
+    if (env == NULL || proxyInfo == NULL){
+        LOGGERE("ToJavaProxyInfo()", "Invalid argumenet!");
+        return NULL;
+    }
+
+    jclass piKlass = env->FindClass("android/net/ProxyInfo");
+    Util::CheckErrorAndLog(env, "ToJavaProxyInfo", "FindClass: ProxyInfo : %d!\n", __LINE__);
+
+    String host;
+    proxyInfo->GetHost(&host);
+    jstring jhost = Util::ToJavaString(env, host);
+
+    Int32 port;
+    proxyInfo->GetPort(&port);
+
+    String exclList;
+    proxyInfo->GetExclusionListAsString(&exclList);
+    jstring jexclList = Util::ToJavaString(env, exclList);
+
+    AutoPtr<ArrayOf<String> > parsedExclusionList;
+    proxyInfo->GetExclusionList((ArrayOf<String>**)&parsedExclusionList);
+    jobjectArray jparsedExclusionList = Util::ToJavaStringArray(env, parsedExclusionList);
+
+    AutoPtr<IUri> pacFileUrl;
+    proxyInfo->GetPacFileUrl((IUri**)&pacFileUrl);
+
+    jobject jpacFileUrl = ToJavaUri(env, pacFileUrl);
+
+    jmethodID m = env->GetMethodID(piKlass, "<init>", "(Ljava/lang/String;ILjava/lang/String;[Ljava/lang/String;)V");
+    Util::CheckErrorAndLog(env, "ToJavaProxyInfo", "GetMethodID: ProxyInfo : %d!\n", __LINE__);
+
+    jobject jproxyInfo = env->NewObject(piKlass, m, jhost, (jint)port, jexclList, jparsedExclusionList);
+    Util::CheckErrorAndLog(env, "ToJavaProxyInfo", "NewObject: ProxyInfo : %d!\n", __LINE__);
+
+    if (jpacFileUrl != NULL) {
+        jfieldID f = env->GetFieldID(piKlass, "mPacFileUrl", "Landroid/net/Uri;");
+        CheckErrorAndLog(env, "ToJavaProxyInfo", "GetFieldID: mPacFileUrl : %d!\n", __LINE__);
+
+        env->SetObjectField(jproxyInfo, f, jpacFileUrl);
+        Util::CheckErrorAndLog(env, "ToJavaProxyInfo Fail SetObjectField: mPacFileUrl : %d!\n", __LINE__);
+        env->DeleteLocalRef(jpacFileUrl);
+    }
+
+    env->DeleteLocalRef(piKlass);
+    env->DeleteLocalRef(jhost);
+    env->DeleteLocalRef(jexclList);
+    env->DeleteLocalRef(jparsedExclusionList);
+    return jproxyInfo;
+}
+
 Boolean Util::GetElPackageInfoLite(
     /* [in] */ JNIEnv* env,
     /* [in] */ jobject jpkgLite,
@@ -6441,7 +6833,7 @@ Boolean Util::GetElPackageInfoLite(
         return FALSE;
     }
 
-    if(NOERROR != CPackageInfoLite::New(pkgLite)) {
+    if (NOERROR != CPackageInfoLite::New(pkgLite)) {
         LOGGERE("GetElPackageInfoLite", "create CPackageInfoLite fail!");
         return FALSE;
     }
@@ -6455,11 +6847,17 @@ Boolean Util::GetElPackageInfoLite(
     Int32 versionCode = GetJavaIntField(env, pkgLiteKlass, jpkgLite, "versionCode", tag);
     Int32 recommendedInstallLocation = GetJavaIntField(env, pkgLiteKlass, jpkgLite, "recommendedInstallLocation", tag);
     Int32 installLocation = GetJavaIntField(env, pkgLiteKlass, jpkgLite, "installLocation", tag);
+    Boolean multiArch = GetJavaBoolField(env, jpkgLite, "multiArch", tag);
+    // TODO: CM12
+    // Boolean isTheme = GetJavaBoolField(env, pkgLiteKlass, jpkgLite, "isTheme", tag);
 
     (*pkgLite)->SetPackageName(packageName);
     (*pkgLite)->SetVersionCode(versionCode);
     (*pkgLite)->SetRecommendedInstallLocation(recommendedInstallLocation);
     (*pkgLite)->SetInstallLocation(installLocation);
+    (*pkgLite)->SetMultiArch(multiArch);
+    // TODO: CM12
+    // (*pkgLite)->SetIsTheme(isTheme);
 
     jfieldID m = env->GetFieldID(pkgLiteKlass, "verifiers", "[Landroid/content/pm/VerifierInfo;");
     Util::CheckErrorAndLog(env, "GetElPackageInfoLite", "GetFieldID verifiers  %d", __LINE__);
@@ -6480,7 +6878,8 @@ Boolean Util::GetElPackageInfoLite(
                         AutoPtr<IVerifierInfo> verifier;
                         if (Util::GetElVerifierInfo(env, jverifier, (IVerifierInfo**)&verifier)) {
                             verifiers->Set(i, verifier);
-                        } else {
+                        }
+                        else {
                             LOGGERE("GetElPackageInfoLite", "GetElVerifierInfo fail!");
                         }
                         env->DeleteLocalRef(jverifier);
@@ -6497,7 +6896,10 @@ Boolean Util::GetElPackageInfoLite(
     return TRUE;
 }
 
-Boolean Util::GetElRemoteViews(JNIEnv* env, jobject jremoteview, IRemoteViews** remoteview)
+Boolean Util::GetElRemoteViews(
+    /* [in] */ JNIEnv* env,
+    /* [in] */ jobject jremoteview,
+    /* [in] */ IRemoteViews** remoteview)
 {
     if (remoteview) *remoteview = NULL;
 
@@ -6518,40 +6920,32 @@ Boolean Util::GetElRemoteViews(JNIEnv* env, jobject jremoteview, IRemoteViews** 
     jobject jmPortrait = env->GetObjectField(jremoteview, mPortraitField);
     CheckErrorAndLog(env, "%s: Fail get RemoteViews field: %s : %d!\n", "GetElRemoteViews", "mPortrait ", __LINE__);
 
-    // TODO: if mLandscape and mPortrait not null, we need to use another constructor to init CRemoteViews
-    if(jmLandscape != NULL || jmPortrait != NULL){
-        LOGGERE(TAG, "Util::GetElRemoteViews RemoteViews:mLandscape/jmPortrait field is not null, need to use another constructor of CRemoteViews, line:%d", __LINE__);
+    jfieldID mApplicationField = env->GetFieldID(remoteviewClass, "mApplication", "Landroid/widget/RemoteViews;");
+    CheckErrorAndLog(env, "%s: Fail get RemoteViews fieldid: %s : %d!\n", "GetElRemoteViews", "mApplication ", __LINE__);
+    jobject jmApplication = env->GetObjectField(jremoteview, mApplicationField);
+    CheckErrorAndLog(env, "%s: Fail get RemoteViews field: %s : %d!\n", "GetElRemoteViews", "mApplication ", __LINE__);
+
+    if (jmLandscape != NULL && jmPortrait != NULL) {
+        AutoPtr<IRemoteViews> landscape, portrait;
+        GetElRemoteViews(env, jmLandscape, (IRemoteViews**)&landscape);
+        GetElRemoteViews(env, jmPortrait, (IRemoteViews**)&portrait);
+        CRemoteViews::New(landscape, portrait, remoteview);
+        env->DeleteLocalRef(remoteviewClass);
+        env->DeleteLocalRef(jmLandscape);
+        env->DeleteLocalRef(jmPortrait);
+        return TRUE;
     }
-    env->DeleteLocalRef(jmLandscape);
-    env->DeleteLocalRef(jmPortrait);
 
-
-    String mPackage = GetJavaStringField(env, remoteviewClass, jremoteview, "mPackage", "GetElRemoteViews");
+    AutoPtr<IApplicationInfo> application;
+    if (!GetElApplicationInfo(env, jmApplication, (IApplicationInfo**)&application)) {
+        LOGGERE("GetElRemoteViews", "GetElRemoteViews() GetElApplicationInfo fail!");
+    }
     Int32 mLayoutId = GetJavaIntField(env, remoteviewClass, jremoteview, "mLayoutId", "GetElRemoteViews");
-
-    CRemoteViews::New(mPackage, mLayoutId, remoteview);
-
-    jfieldID userhandleField = env->GetFieldID(remoteviewClass, "mUser", "Landroid/os/UserHandle;");
-    CheckErrorAndLog(env, "%s: Fail get UserHandle fieldid: %s : %d!\n", "GetElRemoteViews", "mUser", __LINE__);
-    jobject juserhandle = env->GetObjectField(jremoteview, userhandleField);
-    CheckErrorAndLog(env, "%s: Fail get UserHandle field: %s : %d!\n", "GetElRemoteViews", "mUser", __LINE__);
-
-    if(juserhandle == NULL){
-        LOGGERE(TAG, "Util::GetElRemoteViews UserHandle field is null, name:%s", "mUser");
-    }
-
-    jclass c = env->GetObjectClass(juserhandle);
-    jint mHandle = GetJavaIntField(env, c, juserhandle, "mHandle", "GetElRemoteViews");
-    env->DeleteLocalRef(juserhandle);
-    env->DeleteLocalRef(c);
-
-    AutoPtr<IUserHandle> userhandle;
-    CUserHandle::New((Int32)mHandle, (IUserHandle**)&userhandle);
-    (*remoteview)->SetUser(userhandle);
+    CRemoteViews::New(application, mLayoutId, remoteview);
 
     jboolean mIsRoot = GetJavaBoolField(env, jremoteview, "mIsRoot", "GetElRemoteViews");
 
-    if(!mIsRoot){
+    if (!mIsRoot){
         (*remoteview)->SetNotRoot();
     }
 
@@ -6564,7 +6958,7 @@ Boolean Util::GetElRemoteViews(JNIEnv* env, jobject jremoteview, IRemoteViews** 
     jobject jactions = env->GetObjectField(jremoteview, mActionField);
     CheckErrorAndLog(env, "%s: Fail get ArrayList field: %s : %d!\n", "GetElRemoteViews", "mActions", __LINE__);
 
-    if(jactions != NULL){
+    if (jactions != NULL){
         jclass alistKlass = env->FindClass("java/util/ArrayList");
         CheckErrorAndLog(env, "FindClass: ArrayList : %d!\n", __LINE__);
 
@@ -6587,11 +6981,11 @@ Boolean Util::GetElRemoteViews(JNIEnv* env, jobject jremoteview, IRemoteViews** 
                 CheckErrorAndLog(env, "%s: Fail get object class. %s%d!\n", "GetElRemoteViews", "", __LINE__);
                 jfieldID fTag = env->GetStaticFieldID(klass, "TAG", "I");
                 CheckErrorAndLog(env, "%s: Fail GetStaticFieldID. %s%d!\n", "GetElRemoteViews", "TAG", __LINE__);
-                Int32 TAG = env->GetStaticIntField(klass, fTag);
+                Int32 tag = env->GetStaticIntField(klass, fTag);
                 CheckErrorAndLog(env, "%s: Fail GetStaticIntField. %s%d!\n", "GetElRemoteViews", "TAG", __LINE__);
                 Int32 viewId = GetJavaIntField(env, klass, jaction, "viewId", "GetElRemoteViews");
 
-                switch(TAG){
+                switch(tag){
                     case 1: //SetOnClickPendingIntent.TAG:
                     {
                         // LOGGERD(TAG, "GetElRemoteViews: found a SetOnClickPendingIntent action.");
@@ -6613,7 +7007,6 @@ Boolean Util::GetElRemoteViews(JNIEnv* env, jobject jremoteview, IRemoteViews** 
                         Int32 alpha = GetJavaIntField(env, klass, jaction, "alpha", "GetElRemoteViews");
                         Int32 colorFilter = GetJavaIntField(env, klass, jaction, "colorFilter", "GetElRemoteViews");
                         Int32 level = GetJavaIntField(env, klass, jaction, "level", "GetElRemoteViews");
-                        LOGGERE(TAG, "GetElRemoteViews, SetDrawableParameters, PorterDuff.Mode mode did not translate");
 
                         // Translate mode
                         jfieldID modeField = env->GetFieldID(klass, "filterMode", "Landroid/graphics/PorterDuff$Mode;");
@@ -6621,17 +7014,19 @@ Boolean Util::GetElRemoteViews(JNIEnv* env, jobject jremoteview, IRemoteViews** 
                         jobject jmode = env->GetObjectField(jaction, modeField);
                         Util::CheckErrorAndLog(env, "GetObjectField: filterMode : %d!\n", __LINE__);
 
-                        if(jmode != NULL){
+                        Int32 mode = -1;
+                        if (jmode != NULL){
                             jclass c = env->GetObjectClass(jmode);
-                            jint jnativeInt = GetJavaIntField(env, c, jmode, "nativeInt", "GetElRemoteViews");
+                            mode = GetJavaIntField(env, c, jmode, "nativeInt", "GetElRemoteViews");
                             env->DeleteLocalRef(c);
                             env->DeleteLocalRef(jmode);
-                            LOGGERE(TAG, "GetElRemoteViews, SetDrawableParameters, PorterDuff.Mode mode = %d", jnativeInt);
-                        }else{
+                            LOGGERE(TAG, "GetElRemoteViews, SetDrawableParameters, PorterDuff.Mode mode = %d", mode);
+                        }
+                        else{
                             LOGGERE(TAG, "GetElRemoteViews, SetDrawableParameters, PorterDuff.Mode mode = NULL");
                         }
 
-                        (*remoteview)->SetDrawableParameters(viewId, targetBackground, alpha, colorFilter, Elastos::Droid::Graphics::PorterDuffMode_CLEAR, level);
+                        (*remoteview)->SetDrawableParameters(viewId, targetBackground, alpha, colorFilter, PorterDuffMode(mode), level);
                         break;
                     }
                     case 2: //ReflectionAction.TAG:
@@ -6756,14 +7151,14 @@ Boolean Util::GetElRemoteViews(JNIEnv* env, jobject jremoteview, IRemoteViews** 
                         Util::CheckErrorAndLog(env, "GetObjectField: nestedViews : %d!\n", __LINE__);
 
                         AutoPtr<IRemoteViews> nestedViews;
-                        if(jnestedViews != NULL){
+                        if (jnestedViews != NULL){
                             GetElRemoteViews(env, jnestedViews, (IRemoteViews**)&nestedViews);
                             env->DeleteLocalRef(jnestedViews);
                         }else{
                             LOGGERW(TAG, "GetElRemoteViews: found a ViewGroupAction action. jnestedViews is null");
                         }
 
-                        if(nestedViews == NULL){
+                        if (nestedViews == NULL){
                             (*remoteview)->RemoveAllViews(viewId);
                         }else{
                             (*remoteview)->AddView(viewId, nestedViews);
@@ -6778,9 +7173,9 @@ Boolean Util::GetElRemoteViews(JNIEnv* env, jobject jremoteview, IRemoteViews** 
                             methodName = methodName.ToLowerCase(0, 1);
                         }
 
-                        if(methodName.Equals(String("ShowNext"))){
+                        if (methodName.Equals(String("ShowNext"))){
                             (*remoteview)->ShowNext(viewId);
-                        }else if(methodName.Equals(String("ShowPrevious"))){
+                        }else if (methodName.Equals(String("ShowPrevious"))){
                             (*remoteview)->ShowPrevious(viewId);
                         }
 
@@ -6841,7 +7236,7 @@ Boolean Util::GetElRemoteViews(JNIEnv* env, jobject jremoteview, IRemoteViews** 
                         Int32 d3 = GetJavaIntField(env, klass, jaction, "d3", "GetElRemoteViews");
                         Int32 d4 = GetJavaIntField(env, klass, jaction, "d4", "GetElRemoteViews");
 
-                        if(isRelative){
+                        if (isRelative){
                             (*remoteview)->SetTextViewCompoundDrawablesRelative(viewId, d1, d2, d3, d4);
                         }else{
                             (*remoteview)->SetTextViewCompoundDrawables(viewId, d1, d2, d3, d4);
@@ -6885,7 +7280,70 @@ Boolean Util::GetElRemoteViews(JNIEnv* env, jobject jremoteview, IRemoteViews** 
                         (*remoteview)->SetBitmap(viewId, methodName, bitmap);
                         break;
                     }
+                    case 15: // SetRemoteViewsAdapterList.TAG:
+                    {
+                        // LOGGERD(TAG, "GetElRemoteViews: found a SetRemoteViewsAdapterList action.");
+                        Int32 viewTypeCount = GetJavaIntField(env, klass, jaction, "viewTypeCount", "GetElRemoteViews");
+
+                        jfieldID f = env->GetFieldID(klass, "list", "Ljava/util/ArrayList;");
+                        Util::CheckErrorAndLog(env, "GetFieldID: list : %d!\n", __LINE__);
+                        jobject jlist = env->GetObjectField(jaction, f);
+                        Util::CheckErrorAndLog(env, "GetObjectField: list : %d!\n", __LINE__);
+                        AutoPtr<IArrayList> list;
+                        if (jlist != NULL){
+                            jint jsize = env->CallIntMethod(jlist, mSize);
+                            CheckErrorAndLog(env, "CallIntMethod: list : %d!\n", __LINE__);
+                            if (jsize > 0)
+                                CArrayList::New((IArrayList**)&list);
+                            for (jint j = 0; j < jsize; j++) {
+                                jobject jitem = env->CallObjectMethod(jlist, mGet, j);
+                                CheckErrorAndLog(env, "CallObjectMethod: get : %d!\n", __LINE__);
+                                AutoPtr<IRemoteViews> item;
+                                if (GetElRemoteViews(env, jitem, (IRemoteViews**)&item)){
+                                    list->Add(item);
+                                }
+                                else {
+                                    LOGGERE(TAG, "GetElRemoteViews SetRemoteViewsAdapterList.list item%d to IRemoteViews failed", j);
+                                }
+                                env->DeleteLocalRef(jitem);
+                            }
+                            env->DeleteLocalRef(jlist);
+                        }
+
+                        (*remoteview)->SetRemoteAdapter(viewId, list, viewTypeCount);
+                        break;
+                    }
+                    case 17: // TextViewDrawableColorFilterAction.TAG:
+                    {
+                        // LOGGERD(TAG, "GetElRemoteViews: found a TextViewDrawableColorFilterAction action.");
+                        Boolean isRelative = GetJavaBoolField(env, jaction, "isRelative", "GetElRemoteViews");
+                        if (!isRelative)
+                            LOGGERE(TAG, "GetElRemoteViews: TextViewDrawableColorFilterAction isRelative is FALSE!");
+                        Int32 index = GetJavaIntField(env, klass, jaction, "index", "GetElRemoteViews");
+                        Int32 color = GetJavaIntField(env, klass, jaction, "color", "GetElRemoteViews");
+
+                        jfieldID modeField = env->GetFieldID(klass, "mode", "Landroid/graphics/PorterDuff$Mode;");
+                        Util::CheckErrorAndLog(env, "GetFieldID: mode : %d!\n", __LINE__);
+                        jobject jmode = env->GetObjectField(jaction, modeField);
+                        Util::CheckErrorAndLog(env, "GetObjectField: mode : %d!\n", __LINE__);
+
+                        Int32 mode = -1;
+                        if (jmode != NULL) {
+                            jclass c = env->GetObjectClass(jmode);
+                            mode = GetJavaIntField(env, c, jmode, "nativeInt", "GetElRemoteViews");
+                            env->DeleteLocalRef(c);
+                            env->DeleteLocalRef(jmode);
+                            LOGGERE(TAG, "GetElRemoteViews, TextViewDrawableColorFilterAction, PorterDuff.Mode mode = %d", mode);
+                        }
+                        else {
+                            LOGGERE(TAG, "GetElRemoteViews, TextViewDrawableColorFilterAction, PorterDuff.Mode mode = NULL");
+                        }
+
+                        (*remoteview)->SetTextViewCompoundDrawablesRelativeColorFilter(viewId, index, color, PorterDuffMode(mode));
+                        break;
+                    }
                     default:
+                        LOGGERE(TAG, "GetElRemoteViews action.tag = %d", tag);
                         break;
                         // throw new ActionException("Tag " + tag + " not found");
                 }
@@ -6906,30 +7364,14 @@ Boolean Util::GetElRemoteViews(JNIEnv* env, jobject jremoteview, IRemoteViews** 
     return TRUE;
 }
 
-jobject Util::ToJavaRemoteViews(JNIEnv* env, IRemoteViews* obj)
+jobject Util::ToJavaRemoteViews(
+    /* [in] */ JNIEnv* env,
+    /* [in] */ IRemoteViews* obj)
 {
     if (env == NULL || obj == NULL) {
         LOGGERE("Util::ToJavaRemoteViews:", " Invalid argumenet!");
         return NULL;
     }
-
-    String packageName;
-    obj->GetPackage(&packageName);
-    Int32 layoutId = 0;
-    obj->GetLayoutId(&layoutId);
-
-    jstring jPackageName = ToJavaString(env, packageName);
-
-    jclass klass = env->FindClass("android/widget/RemoteViews");
-    Util::CheckErrorAndLog(env, "ToJavaRemoteViews", "Fail FindClass: RemoteViews : %d!\n", __LINE__);
-
-    jmethodID m = env->GetMethodID(klass, "<init>", "(Ljava/lang/String;I)V");
-    Util::CheckErrorAndLog(env, "ToJavaRemoteViews", "Fail GetMethodID: RemoteViews() : %d!\n", __LINE__);
-
-    jobject jremoteview = env->NewObject(klass, m, jPackageName, (jint)layoutId);
-    Util::CheckErrorAndLog(env, "ToJavaRemoteViews", "Fail NewObject: RemoteViews : %d!\n", __LINE__);
-
-    env->DeleteLocalRef(jPackageName);
 
     AutoPtr<IParcel> source;
     CParcel::New((IParcel**)&source);
@@ -6943,560 +7385,695 @@ jobject Util::ToJavaRemoteViews(JNIEnv* env, IRemoteViews* obj)
     Int32 mode = 0;
     source->ReadInt32(&mode);
 
-    // Read bitmapcache
-    Int32 count = 0;
-    source->ReadInt32(&count);
-    AutoPtr<IRemoteViewsBitmapCache> bitmapCache;
-
-    if (count != 0) {
-        CRemoteViewsBitmapCache::New((IRemoteViewsBitmapCache**)&bitmapCache);
-        IParcelable* parcelable = IParcelable::Probe(bitmapCache.Get());
-        parcelable->ReadFromParcel(source);
-    }
-
-    if (mode == 0/*MODE_NORMAL*/) {
-        // LOGGERD("Util::ToJavaRemoteViews()", "read mode = MODE_NORMAL(0)");
-        String mPackage;
-        Int32 mLayoutId = 0;
-        source->ReadString(&mPackage);
-        source->ReadInt32(&mLayoutId);
-        // LOGGERD("Util::ToJavaRemoteViews()", "read mPackage = %s, layoutId = %d", mPackage.string(), mLayoutId);
-        Int32 isWidget = 0;
-        Boolean mIsWidgetCollectionChild = FALSE;
-        source->ReadInt32(&isWidget);
-        if (isWidget == 1) {
-            mIsWidgetCollectionChild = TRUE;
-        } else {
-            mIsWidgetCollectionChild = FALSE;
-        }
-        // Set bool field mIsWidgetCollectionChild
-        SetJavaBoolField(env, klass, jremoteview, mIsWidgetCollectionChild, "mIsWidgetCollectionChild", "ToJavaRemoteViews");
-
-        Int32 count = 0;
-        source->ReadInt32(&count);
-        // LOGGERD("Util::ToJavaRemoteViews()", "read action count = %d", count);
-        if (count > 0) {
-            for (Int32 i = 0; i < count; i++) {
-                Int32 tag = 0;
-                source->ReadInt32(&tag);
-                switch (tag) {
-                    case 1: // RemoteViewsSetOnClickPendingIntent::TAG:
-                    {
-                        // LOGGERD("Util::ToJavaRemoteViews()", "read SetOnClickPendingIntent action");
-                        Int32 mViewId = 0;
-                        source->ReadInt32(&mViewId);
-
-                        AutoPtr<IInterface> item;
-                        AutoPtr<IPendingIntent> pendingIntent;
-                        Int32 temp = 0;
-                        source->ReadInt32(&temp);
-
-                        if(temp == 1){
-                            source->ReadInterfacePtr((Handle32*)&item);
-                        }
-
-                        if(item != NULL){
-                            pendingIntent = IPendingIntent::Probe(item);
-                            jobject jpendingIntent = ToJavaPendingIntent(env, pendingIntent);
-                            jmethodID method = env->GetMethodID(klass, "setOnClickPendingIntent", "(ILandroid/app/PendingIntent;)V");
-                            CheckErrorAndLog(env, "Util::ToJavaRemoteViews()", "GetJavaIntegerField(): FindMethod: setOnClickPendingIntent: %d!\n", __LINE__);
-                            env->CallVoidMethod(jremoteview, method, (jint)mViewId, jpendingIntent);
-                            CheckErrorAndLog(env, "Util::ToJavaRemoteViews()", "GetJavaIntegerField: call method setOnClickPendingIntent: %d!\n", __LINE__);
-                            env->DeleteLocalRef(jpendingIntent);
-                        }
-                        break;
-                    }
-                    case 3: // RemoteViewsSetDrawableParameters::TAG:
-                    {
-                        // LOGGERD("Util::ToJavaRemoteViews()", "read setDrawableParameters action");
-                        Int32 mViewId = 0;
-                        Int32 mAlpha = 0;
-                        Int32 mColorFilter = 0;
-                        Int32 mLevel = 0;
-
-                        source->ReadInt32(&mViewId);
-                        Int32 background = 0;
-                        source->ReadInt32(&background);
-                        Boolean mTargetBackground = background != 0;
-                        source->ReadInt32(&mAlpha);
-                        source->ReadInt32(&mColorFilter);
-                        Int32 mode = 0;
-                        source->ReadInt32(&mode);
-                        Boolean hasMode = mode != 0;
-                        if (hasMode) {
-                            assert(0 && "TODO");
-                        } else {
-                            // mFilterMode = Elastos::Droid::Graphics::PorterDuffMode_CLEAR;
-                        }
-                        source->ReadInt32(&mLevel);
-
-                        jclass cPorterDuffMode = env->FindClass("android/graphics/PorterDuff$Mode");
-                        CheckErrorAndLog(env, "Util::ToJavaRemoteViews()", "ToJavaRemoteViews Fail FindClass: PorterDuff$Mode : %d!\n", __LINE__);
-                        jfieldID f = env->GetStaticFieldID(cPorterDuffMode, "CLEAR", "Landroid/graphics/PorterDuff$Mode;");
-                        CheckErrorAndLog(env, "Util::ToJavaRemoteViews()", "ToJavaRemoteViews Fail GetStaticFieldID: CLEAR : %d!\n", __LINE__);
-                        jobject jPorterDuffMode = env->GetStaticObjectField(cPorterDuffMode, f);
-                        CheckErrorAndLog(env, "Util::ToJavaRemoteViews()", "ToJavaRemoteViews Fail GetStaticObjectField: : %d!\n", __LINE__);
-
-                        jmethodID method = env->GetMethodID(klass, "setDrawableParameters", "(IZIILandroid/graphics/PorterDuff$Mode;I)V");
-                        CheckErrorAndLog(env, "Util::ToJavaRemoteViews()", "ToJavaRemoteViews(): FindMethod: setDrawableParameters: %d!\n", __LINE__);
-                        env->CallVoidMethod(jremoteview, method, (jint)mViewId, (jboolean)mTargetBackground, mAlpha, mColorFilter, jPorterDuffMode, mLevel);
-                        CheckErrorAndLog(env, "Util::ToJavaRemoteViews()", "ToJavaRemoteViews: call method setDrawableParameters: %d!\n", __LINE__);
-                        env->DeleteLocalRef(cPorterDuffMode);
-                        env->DeleteLocalRef(jPorterDuffMode);
-                        break;
-                    }
-                    case 2: // ReflectionAction::TAG:
-                    {
-                        // LOGGERD("Util::ToJavaRemoteViews()", "read ReflectionAction action");
-                        Int32 mViewId = 0;
-                        String mMethodName;
-                        Int32 mType = 0;
-                        source->ReadInt32(&mViewId);
-                        source->ReadString(&mMethodName);
-                        if (!mMethodName.IsNullOrEmpty()) {
-                            mMethodName = mMethodName.ToLowerCase(0, 1);
-                        }
-                        source->ReadInt32(&mType);
-
-                        if (!mMethodName.IsNullOrEmpty()) {
-                            mMethodName = mMethodName.ToLowerCase(0, 1);
-                        }
-
-                        jstring jMethodName = ToJavaString(env, mMethodName);
-                        // LOGGERD("Util::ToJavaRemoteViews()", "read ReflectionAction action, type = %d", mType);
-                        switch (mType) {
-                            case 1: // BOOLEAN:
-                            {
-                                Int32 res = 0;
-                                source->ReadInt32(&res);
-                                Boolean result = FALSE;
-                                result = res != 0;
-
-                                jmethodID method = env->GetMethodID(klass, "setBoolean", "(ILjava/lang/String;Z)V");
-                                CheckErrorAndLog(env, "Util::ToJavaRemoteViews()", "ToJavaRemoteViews(): FindMethod: setBoolean: %d!\n", __LINE__);
-                                env->CallVoidMethod(jremoteview, method, (jint)mViewId, jMethodName, (jboolean)result);
-                                CheckErrorAndLog(env, "Util::ToJavaRemoteViews()", "ToJavaRemoteViews: call method setBoolean: %d!\n", __LINE__);
-                                break;
-                            }
-                            case 2: // BYTE:
-                            {
-                                Byte byte;
-                                source->ReadByte(&byte);
-                                jmethodID method = env->GetMethodID(klass, "setByte", "(ILjava/lang/String;B)V");
-                                CheckErrorAndLog(env, "Util::ToJavaRemoteViews()", "ToJavaRemoteViews(): FindMethod: setByte: %d!\n", __LINE__);
-                                env->CallVoidMethod(jremoteview, method, (jint)mViewId, jMethodName, (jbyte)byte);
-                                CheckErrorAndLog(env, "Util::ToJavaRemoteViews()", "ToJavaRemoteViews: call method setByte: %d!\n", __LINE__);
-                                break;
-                            }
-                            case 3: // SHORT:
-                            {
-                                Int16 s = 0;
-                                source->ReadInt16(&s);
-                                jmethodID method = env->GetMethodID(klass, "setShort", "(ILjava/lang/String;S)V");
-                                CheckErrorAndLog(env, "Util::ToJavaRemoteViews()", "ToJavaRemoteViews(): FindMethod: setShort: %d!\n", __LINE__);
-                                env->CallVoidMethod(jremoteview, method, (jint)mViewId, jMethodName, (jshort)s);
-                                CheckErrorAndLog(env, "Util::ToJavaRemoteViews()", "ToJavaRemoteViews: call method setShort: %d!\n", __LINE__);
-                                break;
-                            }
-                            case 4: // INT:
-                            {
-                                Int32 i = 0;
-                                source->ReadInt32(&i);
-                                jmethodID method = env->GetMethodID(klass, "setInt", "(ILjava/lang/String;I)V");
-                                CheckErrorAndLog(env, "Util::ToJavaRemoteViews()", "ToJavaRemoteViews(): FindMethod: setInt: %d!\n", __LINE__);
-                                env->CallVoidMethod(jremoteview, method, (jint)mViewId, jMethodName, (jint)i);
-                                CheckErrorAndLog(env, "Util::ToJavaRemoteViews()", "ToJavaRemoteViews: call method setInt: %d!\n", __LINE__);
-                                break;
-                            }
-                            case 5: // LONG:
-                            {
-                                Int64 l = 0;
-                                source->ReadInt64(&l);
-                                jmethodID method = env->GetMethodID(klass, "setLong", "(ILjava/lang/String;J)V");
-                                CheckErrorAndLog(env, "Util::ToJavaRemoteViews()", "ToJavaRemoteViews(): FindMethod: setLong: %d!\n", __LINE__);
-                                env->CallVoidMethod(jremoteview, method, (jint)mViewId, jMethodName, (jlong)l);
-                                CheckErrorAndLog(env, "Util::ToJavaRemoteViews()", "ToJavaRemoteViews: call method setLong: %d!\n", __LINE__);
-                                break;
-                            }
-                            case 6: // FLOAT:
-                            {
-                                Float f = 0;
-                                source->ReadFloat(&f);
-                                jmethodID method = env->GetMethodID(klass, "setFloat", "(ILjava/lang/String;F)V");
-                                CheckErrorAndLog(env, "Util::ToJavaRemoteViews()", "ToJavaRemoteViews(): FindMethod: setFloat: %d!\n", __LINE__);
-                                env->CallVoidMethod(jremoteview, method, (jint)mViewId, jMethodName, (jfloat)f);
-                                CheckErrorAndLog(env, "Util::ToJavaRemoteViews()", "ToJavaRemoteViews: call method setFloat: %d!\n", __LINE__);
-                                break;
-                            }
-                            case 7: // DOUBLE:
-                            {
-                                Double d = 0;
-                                source->ReadDouble(&d);
-                                jmethodID method = env->GetMethodID(klass, "setDouble", "(ILjava/lang/String;D)V");
-                                CheckErrorAndLog(env, "Util::ToJavaRemoteViews()", "ToJavaRemoteViews(): FindMethod: setDouble: %d!\n", __LINE__);
-                                env->CallVoidMethod(jremoteview, method, (jint)mViewId, jMethodName, (jdouble)d);
-                                CheckErrorAndLog(env, "Util::ToJavaRemoteViews()", "ToJavaRemoteViews: call method setDouble: %d!\n", __LINE__);
-                                break;
-                            }
-                            case 8: // CHAR:
-                            {
-                                Int32 c;
-                                source->ReadInt32(&c);
-                                Char32 ch = (Char32)c;
-                                jmethodID method = env->GetMethodID(klass, "setChar", "(ILjava/lang/String;C)V");
-                                CheckErrorAndLog(env, "Util::ToJavaRemoteViews()", "ToJavaRemoteViews(): FindMethod: setChar: %d!\n", __LINE__);
-                                env->CallVoidMethod(jremoteview, method, (jint)mViewId, jMethodName, (jchar)ch);
-                                CheckErrorAndLog(env, "Util::ToJavaRemoteViews()", "ToJavaRemoteViews: call method setChar: %d!\n", __LINE__);
-                                break;
-                            }
-                            case 9: // STRING:
-                            {
-                                String str;
-                                source->ReadString(&str);
-                                jstring jstr = ToJavaString(env, str);
-                                jmethodID method = env->GetMethodID(klass, "setString", "(ILjava/lang/String;Ljava/lang/String;)V");
-                                CheckErrorAndLog(env, "Util::ToJavaRemoteViews()", "ToJavaRemoteViews(): FindMethod: setString: %d!\n", __LINE__);
-                                env->CallVoidMethod(jremoteview, method, (jint)mViewId, jMethodName, jstr);
-                                CheckErrorAndLog(env, "Util::ToJavaRemoteViews()", "ToJavaRemoteViews: call method setString: %d!\n", __LINE__);
-                                env->DeleteLocalRef(jstr);
-                                break;
-                            }
-                            case 10: // CHAR_SEQUENCE:
-                            {
-                                AutoPtr<ICharSequence> charCsq;
-                                TextUtils::CHAR_SEQUENCE_CREATOR::CreateFromParcel(source, (ICharSequence**)&charCsq);
-                                String str;
-                                charCsq->ToString(&str);
-                                jstring jstr = ToJavaString(env, str);
-                                jmethodID method = env->GetMethodID(klass, "setCharSequence", "(ILjava/lang/String;Ljava/lang/CharSequence;)V");
-                                CheckErrorAndLog(env, "Util::ToJavaRemoteViews()", "ToJavaRemoteViews(): FindMethod: setCharSequence: %d!\n", __LINE__);
-                                env->CallVoidMethod(jremoteview, method, (jint)mViewId, jMethodName, jstr);
-                                CheckErrorAndLog(env, "Util::ToJavaRemoteViews()", "ToJavaRemoteViews: call method setCharSequence: %d!\n", __LINE__);
-                                env->DeleteLocalRef(jstr);
-                                break;
-                            }
-                            case 11: // URI:
-                            {
-                                Int32 flag = 0;
-                                source->ReadInt32(&flag);
-                                if (flag != 0) {
-                                    AutoPtr<IUri> uri;
-                                    source->ReadInterfacePtr((Handle32*)&uri);
-                                    if(uri != NULL){
-                                        jobject jUri = ToJavaUri(env, uri);
-                                        jmethodID method = env->GetMethodID(klass, "setUri", "(ILjava/lang/String;Landroid/net/Uri;)V");
-                                        CheckErrorAndLog(env, "Util::ToJavaRemoteViews()", "ToJavaRemoteViews(): FindMethod: setUri: %d!\n", __LINE__);
-                                        env->CallVoidMethod(jremoteview, method, (jint)mViewId, jMethodName, jUri);
-                                        CheckErrorAndLog(env, "Util::ToJavaRemoteViews()", "ToJavaRemoteViews: call method setUri: %d!\n", __LINE__);
-                                        env->DeleteLocalRef(jUri);
-                                    }
-                                    else{
-                                        LOGGERE("Util::ToJavaRemoteViews()", "read uri null");
-                                    }
-                                }
-                                break;
-                            }
-                            case 12: // BITMAP:
-                            {
-                                Int32 bitmap = 0;
-                                source->ReadInt32(&bitmap);
-                                if(bitmap != 0) {
-                                    AutoPtr<IBitmap> bmp;
-                                    CBitmap::New(0, NULL, FALSE, NULL, 0, (IBitmap**)&bmp);
-                                    // AutoPtr<CBitmap> cbmp = (CBitmap*)bmp.Get();
-                                    AutoPtr<IParcelable> bitmapParcel = IParcelable::Probe(bmp);
-                                    bitmapParcel->ReadFromParcel(source);
-
-                                    jobject jbitmap = ToJavaBitmap(env, bmp);
-                                    jmethodID method = env->GetMethodID(klass, "setBitmap", "(ILjava/lang/String;Landroid/graphics/Bitmap;)V");
-                                    CheckErrorAndLog(env, "Util::ToJavaRemoteViews()", "ToJavaRemoteViews(): FindMethod: setBitmap: %d!\n", __LINE__);
-                                    env->CallVoidMethod(jremoteview, method, (jint)mViewId, jMethodName, jbitmap);
-                                    CheckErrorAndLog(env, "Util::ToJavaRemoteViews()", "ToJavaRemoteViews: call method setBitmap: %d!\n", __LINE__);
-                                    env->DeleteLocalRef(jbitmap);
-                                }
-                                break;
-                            }
-                            case 13: // BUNDLE:
-                            {
-                                AutoPtr<IBundle> bundle;
-                                CBundle::New((IBundle**)&bundle);
-                                // AutoPtr<CBundle> cBundle = (CBundle*)bundle.Get();
-                                AutoPtr<IParcelable> bundleParcel = IParcelable::Probe(bundle);
-                                bundleParcel->ReadFromParcel(source);
-                                jobject jbundle = ToJavaBundle(env, bundle);
-                                jmethodID method = env->GetMethodID(klass, "setBundle", "(ILjava/lang/String;Landroid/os/Bundle;)V");
-                                CheckErrorAndLog(env, "Util::ToJavaRemoteViews()", "ToJavaRemoteViews(): FindMethod: setBundle: %d!\n", __LINE__);
-                                env->CallVoidMethod(jremoteview, method, (jint)mViewId, jMethodName, jbundle);
-                                CheckErrorAndLog(env, "Util::ToJavaRemoteViews()", "ToJavaRemoteViews: call method setBundle: %d!\n", __LINE__);
-                                env->DeleteLocalRef(jbundle);
-                                break;
-                            }
-                            case 14: // INTENT:
-                            {
-                                Int32 intent = 0;
-                                source->ReadInt32(&intent);
-                                if (intent) {
-                                    AutoPtr<IIntent> intent;
-                                    CIntent::New((IIntent**)&intent);
-                                    AutoPtr<IParcelable> parcel = IParcelable::Probe(intent);
-                                    // AutoPtr<CIntent> cIntent = (CIntent*)intent.Get();
-                                    parcel->ReadFromParcel(source);
-                                    jobject jintent = ToJavaIntent(env, intent);
-                                    jmethodID method = env->GetMethodID(klass, "setIntent", "(ILjava/lang/String;Landroid/content/Intent;)V");
-                                    CheckErrorAndLog(env, "Util::ToJavaRemoteViews()", "ToJavaRemoteViews(): FindMethod: setIntent: %d!\n", __LINE__);
-                                    env->CallVoidMethod(jremoteview, method, (jint)mViewId, jMethodName, jintent);
-                                    CheckErrorAndLog(env, "Util::ToJavaRemoteViews()", "ToJavaRemoteViews: call method setIntent: %d!\n", __LINE__);
-                                    env->DeleteLocalRef(jintent);
-                                }
-                                break;
-                            }
-                            default:
-                                break;
-                        }
-
-                        env->DeleteLocalRef(jMethodName);
-                        break;
-                    }
-                    case 4: // ViewGroupAction::TAG:
-                    {
-                        LOGGERE("Util::ToJavaRemoteViews()", "read ViewGroupAction action, not finish!");
-                        Int32 viewId;
-                        source->ReadInt32(&viewId);
-                        Int32 res = 0;
-                        source->ReadInt32(&res);
-                        Boolean nestedViewsNull = res == 0;
-                        if (!nestedViewsNull) {
-                            // addView
-                            LOGGERE("Util::ToJavaRemoteViews()", "ToJavaRemoteViews(), read ViewGroupAction action not finished, Please check RemoteViews::ViewGroupAction::WriteToParcel()");
-
-                            AutoPtr<IRemoteViews> remoteviews;
-                            // Need to read a remoteview here
-                            jobject jremoteviews = ToJavaRemoteViews(env, remoteviews);
-
-                            if(jremoteviews != NULL){
-                                jmethodID method = env->GetMethodID(klass, "addView", "(ILandroid/widget/RemoteViews;)V");
-                                CheckErrorAndLog(env, "Util::ToJavaRemoteViews()", "ToJavaRemoteViews(): FindMethod: addView: %d!\n", __LINE__);
-                                env->CallVoidMethod(jremoteview, method, (jint)viewId, jremoteviews);
-                                CheckErrorAndLog(env, "Util::ToJavaRemoteViews()", "ToJavaRemoteViews: call method addView: %d!\n", __LINE__);
-
-                                env->DeleteLocalRef(jremoteviews);
-                            }
-                        } else {
-                            // removeAllViews
-                            jmethodID method = env->GetMethodID(klass, "removeAllViews", "(I)V");
-                            CheckErrorAndLog(env, "Util::ToJavaRemoteViews()", "ToJavaRemoteViews(): FindMethod: removeAllViews: %d!\n", __LINE__);
-                            env->CallVoidMethod(jremoteview, method, (jint)viewId);
-                            CheckErrorAndLog(env, "Util::ToJavaRemoteViews()", "ToJavaRemoteViews: call method removeAllViews: %d!\n", __LINE__);
-                        }
-
-                        break;
-                    }
-                    case 5: // ReflectionActionWithoutParams::TAG:
-                    {
-                        // LOGGERD("Util::ToJavaRemoteViews()", "read ReflectionActionWithoutParams action");
-                        Int32 viewId;
-                        String methodName;
-                        source->ReadInt32(&viewId);
-                        source->ReadString(&methodName);
-
-                        if (!methodName.IsNullOrEmpty()) {
-                            methodName = methodName.ToLowerCase(0, 1);
-                        }
-
-                        jclass jrawp = env->FindClass("android/widget/RemoteViews$ReflectionActionWithoutParams");
-                        CheckErrorAndLog(env, "Util::ToJavaRemoteViews()", "ToJavaRemoteViews GetMethodID: ReflectionActionWithoutParams(I,String): %d!\n", __LINE__);
-                        jmethodID mconstructor = env->GetMethodID(jrawp, "<init>", "(II)V");
-                        CheckErrorAndLog(env, "Util::ToJavaRemoteViews()", "ToJavaRemoteViews GetMethodID: ReflectionActionWithoutParams(I,String) : %d!\n", __LINE__);
-                        jstring jMethodName = ToJavaString(env, methodName);
-                        jobject jaction = env->NewObject(jrawp, mconstructor, (jint)viewId, jMethodName);
-                        CheckErrorAndLog(env, "Util::ToJavaRemoteViews()", "ToJavaRemoteViews NewObject: ReflectionActionWithoutParams : %d!\n", __LINE__);
-                        jmethodID method = env->GetMethodID(klass, "addAction", "(android/widget/RemoteViews$Action)V");
-                        CheckErrorAndLog(env, "Util::ToJavaRemoteViews()", "ToJavaRemoteViews(): FindMethod: addAction: %d!\n", __LINE__);
-                        env->CallVoidMethod(jremoteview, method, jaction);
-                        CheckErrorAndLog(env, "Util::ToJavaRemoteViews()", "ToJavaRemoteViews: call method addAction: %d!\n", __LINE__);
-                        env->DeleteLocalRef(jrawp);
-                        env->DeleteLocalRef(jMethodName);
-                        env->DeleteLocalRef(jaction);
-                        break;
-                    }
-                    case 6: // RemoteViewsSetEmptyView::TAG:
-                    {
-                        // LOGGERD("Util::ToJavaRemoteViews()", "read RemoteViewsSetEmptyView action");
-                        Int32 viewId;
-                        Int32 emptyViewId;
-                        source->ReadInt32(&viewId);
-                        source->ReadInt32(&emptyViewId);
-
-                        jmethodID method = env->GetMethodID(klass, "setEmptyView", "(II)V");
-                        CheckErrorAndLog(env, "Util::ToJavaRemoteViews()", "setEmptyView(): FindMethod: setEmptyView: %d!\n", __LINE__);
-                        env->CallVoidMethod(jremoteview, method, (jint)viewId, (jint)emptyViewId);
-                        CheckErrorAndLog(env, "Util::ToJavaRemoteViews()", "ToJavaRemoteViews: call method setEmptyView: %d!\n", __LINE__);
-                        break;
-                    }
-                    case 8: // RemoteViewsSetPendingIntentTemplate::TAG:
-                    {
-                        // LOGGERD("Util::ToJavaRemoteViews()", "read RemoteViewsSetPendingIntentTemplate action");
-                        Int32 viewId;
-                        source->ReadInt32(&viewId);
-                        AutoPtr<IPendingIntent> pendingIntent;
-                        source->ReadInterfacePtr((Handle32*)&pendingIntent);
-                        jobject jpendingIntent = ToJavaPendingIntent(env, pendingIntent);
-                        jmethodID method = env->GetMethodID(klass, "setPendingIntentTemplate", "(ILandroid/app/PendingIntent;)V");
-                        CheckErrorAndLog(env, "Util::ToJavaRemoteViews()", "ToJavaRemoteViews(): FindMethod: setPendingIntentTemplate: %d!\n", __LINE__);
-                        env->CallVoidMethod(jremoteview, method, (jint)viewId, jpendingIntent);
-                        CheckErrorAndLog(env, "Util::ToJavaRemoteViews()", "ToJavaRemoteViews: call method setPendingIntentTemplate: %d!\n", __LINE__);
-                        env->DeleteLocalRef(jpendingIntent);
-                        break;
-                    }
-                    case 9: // RemoteViewsSetOnClickFillInIntent::TAG:
-                    {
-                        // LOGGERD("Util::ToJavaRemoteViews()", "read RemoteViewsSetOnClickFillInIntent action");
-
-                        Int32 viewId;
-                        source->ReadInt32(&viewId);
-                        AutoPtr<IIntent> intent;
-                        source->ReadInterfacePtr((Handle32*)&intent);
-                        jobject jintent = ToJavaIntent(env, intent);
-                        jmethodID method = env->GetMethodID(klass, "setOnClickFillInIntent", "(ILandroid/content/Intent;)V");
-                        CheckErrorAndLog(env, "Util::ToJavaRemoteViews()", "ToJavaRemoteViews(): FindMethod: setOnClickFillInIntent: %d!\n", __LINE__);
-                        env->CallVoidMethod(jremoteview, method, (jint)viewId, jintent);
-                        CheckErrorAndLog(env, "Util::ToJavaRemoteViews()", "ToJavaRemoteViews: call method setOnClickFillInIntent: %d!\n", __LINE__);
-                        env->DeleteLocalRef(jintent);
-                        break;
-                    }
-                    case 10: // SetRemoteViewsAdapterIntent::TAG:
-                    {
-                        // LOGGERD("Util::ToJavaRemoteViews()", "read SetRemoteViewsAdapterIntent action");
-                        Int32 viewId;
-                        source->ReadInt32(&viewId);
-                        AutoPtr<IIntent> intent;
-                        source->ReadInterfacePtr((Handle32*)&intent);
-                        jobject jintent = ToJavaIntent(env, intent);
-                        jmethodID method = env->GetMethodID(klass, "setRemoteAdapter", "(ILandroid/content/Intent;)V");
-                        CheckErrorAndLog(env, "Util::ToJavaRemoteViews()", "ToJavaRemoteViews(): FindMethod: setRemoteAdapter: %d!\n", __LINE__);
-                        env->CallVoidMethod(jremoteview, method, (jint)viewId, jintent);
-                        CheckErrorAndLog(env, "Util::ToJavaRemoteViews()", "ToJavaRemoteViews: call method setRemoteAdapter: %d!\n", __LINE__);
-                        env->DeleteLocalRef(jintent);
-                        break;
-                    }
-                    case 11: // TextViewDrawableAction::TAG:
-                    {
-                        // LOGGERD("Util::ToJavaRemoteViews()", "read TextViewDrawableAction action");
-                        Int32 viewId;
-                        source->ReadInt32(&viewId);
-                        Int32 res = 0;
-                        source->ReadInt32(&res);
-                        Boolean isRelative = res != 0;
-                        Int32 d1, d2, d3, d4;
-                        source->ReadInt32(&d1);
-                        source->ReadInt32(&d2);
-                        source->ReadInt32(&d3);
-                        source->ReadInt32(&d4);
-
-                        jmethodID method;
-                        if(isRelative){
-                            method = env->GetMethodID(klass, "setTextViewCompoundDrawablesRelative", "(IIIII)V");
-                            CheckErrorAndLog(env, "Util::ToJavaRemoteViews()", "ToJavaRemoteViews(): FindMethod: setTextViewCompoundDrawablesRelative: %d!\n", __LINE__);
-                        }else{
-                            method = env->GetMethodID(klass, "setTextViewCompoundDrawables", "(IIIII)V");
-                            CheckErrorAndLog(env, "Util::ToJavaRemoteViews()", "ToJavaRemoteViews(): FindMethod: setTextViewCompoundDrawables: %d!\n", __LINE__);
-                        }
-
-                        env->CallVoidMethod(jremoteview, method, (jint)viewId, (jint)d1, (jint)d2, (jint)d3, (jint)d4);
-                        CheckErrorAndLog(env, "Util::ToJavaRemoteViews()", "ToJavaRemoteViews: call method setRemoteAdapter: %d!\n", __LINE__);
-                        break;
-                    }
-                    case 13: // TextViewSizeAction::TAG:
-                    {
-                        // LOGGERD("Util::ToJavaRemoteViews()", "read TextViewSizeAction action");
-                        Int32 viewId;
-                        Int32 units;
-                        Float size;
-                        source->ReadInt32(&viewId);
-                        source->ReadInt32(&units);
-                        source->ReadFloat(&size);
-
-                        jmethodID method = env->GetMethodID(klass, "setTextViewTextSize", "(IIF)V");
-                        CheckErrorAndLog(env, "ToJavaRemoteViews(): FindMethod: setTextViewTextSize: %d!\n", __LINE__);
-                        env->CallVoidMethod(jremoteview, method, (jint)viewId, (jint)units, (jfloat)size);
-                        CheckErrorAndLog(env, "ToJavaRemoteViews: call method setTextViewTextSize: %d!\n", __LINE__);
-                        break;
-                    }
-                    case 14: // ViewPaddingAction::TAG:
-                    {
-                        LOGGERD("Util::ToJavaRemoteViews()", "read ViewPaddingAction action");
-                        Int32 viewId;
-                        Int32 left;
-                        Int32 top;
-                        Int32 right;
-                        Int32 bottom;
-                        source->ReadInt32(&viewId);
-                        source->ReadInt32(&left);
-                        source->ReadInt32(&top);
-                        source->ReadInt32(&right);
-                        source->ReadInt32(&bottom);
-                        jmethodID method = env->GetMethodID(klass, "setViewPadding", "(IIIII)V");
-                        CheckErrorAndLog(env, "ToJavaRemoteViews(): FindMethod: setViewPadding: %d!\n", __LINE__);
-                        env->CallVoidMethod(jremoteview, method, (jint)viewId, (jint)left, (jint)top, (jint)right, (jint)bottom);
-                        CheckErrorAndLog(env, "ToJavaRemoteViews: call method setViewPadding: %d!\n", __LINE__);
-                        break;
-                    }
-                    case 12: // BitmapReflectionAction::TAG:
-                    {
-                        // LOGGERE("Util::ToJavaRemoteViews()", "read BitmapReflectionAction action, not implemented");
-                        Int32 viewId;
-                        String methodName;
-                        Int32 bitmapId;
-                        source->ReadInt32(&viewId);
-                        source->ReadString(&methodName);
-
-                        if (!methodName.IsNullOrEmpty()) {
-                            methodName = methodName.ToLowerCase(0, 1);
-                        }
-
-                        source->ReadInt32(&bitmapId);
-
-                        if(bitmapCache != NULL){
-                            AutoPtr<IBitmap> bitmap;
-                            bitmapCache->GetBitmapForId(bitmapId, (IBitmap**)&bitmap);
-
-                            if(bitmap != NULL){
-                                LOGGERE("Util::ToJavaRemoteViews()", "ToJavaRemoteViews(), read BitmapReflectionAction action, Found bitmap in bitmapCache");
-                                jobject jbitmap = ToJavaBitmap(env, bitmap);
-                                jstring jmethodName = ToJavaString(env, methodName);
-
-                                jmethodID method = env->GetMethodID(klass, "setBitmap", "(ILjava/lang/String;Landroid/graphics/Bitmap;)V");
-                                CheckErrorAndLog(env, "ToJavaRemoteViews(): FindMethod: setBitmap: %d!\n", __LINE__);
-                                env->CallVoidMethod(jremoteview, method, (jint)viewId, jmethodName, jbitmap);
-                                CheckErrorAndLog(env, "ToJavaRemoteViews: call method setBitmap: %d!\n", __LINE__);
-
-                                env->DeleteLocalRef(jbitmap);
-                                env->DeleteLocalRef(jmethodName);
-                            }else{
-                                LOGGERE("Util::ToJavaRemoteViews()", "ToJavaRemoteViews(), read BitmapReflectionAction action, did not found bitmap in bitmapCache");
-                            }
-                        }else{
-                            LOGGERE("Util::ToJavaRemoteViews()", "ToJavaRemoteViews(), read BitmapReflectionAction action, But bitmapCache is null");
-                        }
-
-                        break;
-                    }
-                    default:
-                        break;
-                }
-            }
-        }
-    }
-    else {
+    if (mode != 0) {
         LOGGERE("Util::ToJavaRemoteViews()", "read mode = %d", mode);
         assert(0 && "TODO");
+        return NULL;
+    }
+
+    // Read bitmapcache
+    AutoPtr<IBitmapCache> bitmapCache;
+    CRemoteViewsBitmapCache::New(source, (IBitmapCache**)&bitmapCache);
+
+    AutoPtr<IApplicationInfo> application;
+    Int32 layoutId = 0;
+    source->ReadInterfacePtr((Handle32*)&application);
+    source->ReadInt32(&layoutId);
+
+    jobject japplication = ToJavaApplicationInfo(env, application);
+
+    jclass klass = env->FindClass("android/widget/RemoteViews");
+    Util::CheckErrorAndLog(env, "ToJavaRemoteViews", "Fail FindClass: RemoteViews : %d!\n", __LINE__);
+
+    jmethodID m = env->GetMethodID(klass, "<init>", "(Landroid/content/pm/ApplicationInfo;I)V");
+    Util::CheckErrorAndLog(env, "ToJavaRemoteViews", "Fail GetMethodID: RemoteViews() : %d!\n", __LINE__);
+
+    jobject jremoteview = env->NewObject(klass, m, japplication, (jint)layoutId);
+    Util::CheckErrorAndLog(env, "ToJavaRemoteViews", "Fail NewObject: RemoteViews : %d!\n", __LINE__);
+
+    env->DeleteLocalRef(japplication);
+
+    Int32 tmp;
+    source->ReadInt32(&tmp);
+    // Set bool field mIsWidgetCollectionChild
+    SetJavaBoolField(env, klass, jremoteview, tmp == 1, "mIsWidgetCollectionChild", "ToJavaRemoteViews");
+
+    Int32 count = 0;
+    source->ReadInt32(&count);
+    // LOGGERD("Util::ToJavaRemoteViews()", "read action count = %d", count);
+    if (count > 0) {
+        for (Int32 i = 0; i < count; i++) {
+            Int32 tag = 0;
+            source->ReadInt32(&tag);
+            switch (tag) {
+                case 1: // RemoteViewsSetOnClickPendingIntent::TAG:
+                {
+                    // LOGGERD("Util::ToJavaRemoteViews()", "read SetOnClickPendingIntent action");
+                    Int32 mViewId = 0;
+                    source->ReadInt32(&mViewId);
+
+                    AutoPtr<IInterface> item;
+                    AutoPtr<IPendingIntent> pendingIntent;
+                    Int32 temp = 0;
+                    source->ReadInt32(&temp);
+
+                    if (temp == 1){
+                        source->ReadInterfacePtr((Handle32*)&item);
+                    }
+
+                    if (item != NULL){
+                        pendingIntent = IPendingIntent::Probe(item);
+                        jobject jpendingIntent = ToJavaPendingIntent(env, pendingIntent);
+                        jmethodID method = env->GetMethodID(klass, "setOnClickPendingIntent", "(ILandroid/app/PendingIntent;)V");
+                        CheckErrorAndLog(env, "Util::ToJavaRemoteViews()", "GetJavaIntegerField(): FindMethod: setOnClickPendingIntent: %d!\n", __LINE__);
+                        env->CallVoidMethod(jremoteview, method, (jint)mViewId, jpendingIntent);
+                        CheckErrorAndLog(env, "Util::ToJavaRemoteViews()", "GetJavaIntegerField: call method setOnClickPendingIntent: %d!\n", __LINE__);
+                        env->DeleteLocalRef(jpendingIntent);
+                    }
+                    break;
+                }
+                case 3: // RemoteViewsSetDrawableParameters::TAG:
+                {
+                    // LOGGERD("Util::ToJavaRemoteViews()", "read setDrawableParameters action");
+                    Int32 mViewId = 0;
+                    Int32 mAlpha = 0;
+                    Int32 mColorFilter = 0;
+                    Int32 mLevel = 0;
+
+                    source->ReadInt32(&mViewId);
+                    Int32 background = 0;
+                    source->ReadInt32(&background);
+                    Boolean mTargetBackground = background != 0;
+                    source->ReadInt32(&mAlpha);
+                    source->ReadInt32(&mColorFilter);
+                    Int32 mode = 0;
+                    source->ReadInt32(&mode);
+
+                    jobject jPorterDuffMode = ToJavaPorterDuffMode(env, mode);
+                    jmethodID method = env->GetMethodID(klass, "setDrawableParameters", "(IZIILandroid/graphics/PorterDuff$Mode;I)V");
+                    CheckErrorAndLog(env, "Util::ToJavaRemoteViews()", "ToJavaRemoteViews(): FindMethod: setDrawableParameters: %d!\n", __LINE__);
+                    env->CallVoidMethod(jremoteview, method, (jint)mViewId, (jboolean)mTargetBackground, mAlpha, mColorFilter, jPorterDuffMode, mLevel);
+                    CheckErrorAndLog(env, "Util::ToJavaRemoteViews()", "ToJavaRemoteViews: call method setDrawableParameters: %d!\n", __LINE__);
+                    env->DeleteLocalRef(jPorterDuffMode);
+                    break;
+                }
+                case 2: // ReflectionAction::TAG:
+                {
+                    // LOGGERD("Util::ToJavaRemoteViews()", "read ReflectionAction action");
+                    Int32 mViewId = 0;
+                    String mMethodName;
+                    Int32 mType = 0;
+                    source->ReadInt32(&mViewId);
+                    source->ReadString(&mMethodName);
+                    if (!mMethodName.IsNullOrEmpty()) {
+                        mMethodName = mMethodName.ToLowerCase(0, 1);
+                    }
+                    source->ReadInt32(&mType);
+
+                    if (!mMethodName.IsNullOrEmpty()) {
+                        mMethodName = mMethodName.ToLowerCase(0, 1);
+                    }
+
+                    jstring jMethodName = ToJavaString(env, mMethodName);
+                    // LOGGERD("Util::ToJavaRemoteViews()", "read ReflectionAction action, type = %d", mType);
+                    switch (mType) {
+                        case 1: // BOOLEAN:
+                        {
+                            Int32 res = 0;
+                            source->ReadInt32(&res);
+                            Boolean result = FALSE;
+                            result = res != 0;
+
+                            jmethodID method = env->GetMethodID(klass, "setBoolean", "(ILjava/lang/String;Z)V");
+                            CheckErrorAndLog(env, "Util::ToJavaRemoteViews()", "ToJavaRemoteViews(): FindMethod: setBoolean: %d!\n", __LINE__);
+                            env->CallVoidMethod(jremoteview, method, (jint)mViewId, jMethodName, (jboolean)result);
+                            CheckErrorAndLog(env, "Util::ToJavaRemoteViews()", "ToJavaRemoteViews: call method setBoolean: %d!\n", __LINE__);
+                            break;
+                        }
+                        case 2: // BYTE:
+                        {
+                            Byte byte;
+                            source->ReadByte(&byte);
+                            jmethodID method = env->GetMethodID(klass, "setByte", "(ILjava/lang/String;B)V");
+                            CheckErrorAndLog(env, "Util::ToJavaRemoteViews()", "ToJavaRemoteViews(): FindMethod: setByte: %d!\n", __LINE__);
+                            env->CallVoidMethod(jremoteview, method, (jint)mViewId, jMethodName, (jbyte)byte);
+                            CheckErrorAndLog(env, "Util::ToJavaRemoteViews()", "ToJavaRemoteViews: call method setByte: %d!\n", __LINE__);
+                            break;
+                        }
+                        case 3: // SHORT:
+                        {
+                            Int16 s = 0;
+                            source->ReadInt16(&s);
+                            jmethodID method = env->GetMethodID(klass, "setShort", "(ILjava/lang/String;S)V");
+                            CheckErrorAndLog(env, "Util::ToJavaRemoteViews()", "ToJavaRemoteViews(): FindMethod: setShort: %d!\n", __LINE__);
+                            env->CallVoidMethod(jremoteview, method, (jint)mViewId, jMethodName, (jshort)s);
+                            CheckErrorAndLog(env, "Util::ToJavaRemoteViews()", "ToJavaRemoteViews: call method setShort: %d!\n", __LINE__);
+                            break;
+                        }
+                        case 4: // INT:
+                        {
+                            Int32 i = 0;
+                            source->ReadInt32(&i);
+                            jmethodID method = env->GetMethodID(klass, "setInt", "(ILjava/lang/String;I)V");
+                            CheckErrorAndLog(env, "Util::ToJavaRemoteViews()", "ToJavaRemoteViews(): FindMethod: setInt: %d!\n", __LINE__);
+                            env->CallVoidMethod(jremoteview, method, (jint)mViewId, jMethodName, (jint)i);
+                            CheckErrorAndLog(env, "Util::ToJavaRemoteViews()", "ToJavaRemoteViews: call method setInt: %d!\n", __LINE__);
+                            break;
+                        }
+                        case 5: // LONG:
+                        {
+                            Int64 l = 0;
+                            source->ReadInt64(&l);
+                            jmethodID method = env->GetMethodID(klass, "setLong", "(ILjava/lang/String;J)V");
+                            CheckErrorAndLog(env, "Util::ToJavaRemoteViews()", "ToJavaRemoteViews(): FindMethod: setLong: %d!\n", __LINE__);
+                            env->CallVoidMethod(jremoteview, method, (jint)mViewId, jMethodName, (jlong)l);
+                            CheckErrorAndLog(env, "Util::ToJavaRemoteViews()", "ToJavaRemoteViews: call method setLong: %d!\n", __LINE__);
+                            break;
+                        }
+                        case 6: // FLOAT:
+                        {
+                            Float f = 0;
+                            source->ReadFloat(&f);
+                            jmethodID method = env->GetMethodID(klass, "setFloat", "(ILjava/lang/String;F)V");
+                            CheckErrorAndLog(env, "Util::ToJavaRemoteViews()", "ToJavaRemoteViews(): FindMethod: setFloat: %d!\n", __LINE__);
+                            env->CallVoidMethod(jremoteview, method, (jint)mViewId, jMethodName, (jfloat)f);
+                            CheckErrorAndLog(env, "Util::ToJavaRemoteViews()", "ToJavaRemoteViews: call method setFloat: %d!\n", __LINE__);
+                            break;
+                        }
+                        case 7: // DOUBLE:
+                        {
+                            Double d = 0;
+                            source->ReadDouble(&d);
+                            jmethodID method = env->GetMethodID(klass, "setDouble", "(ILjava/lang/String;D)V");
+                            CheckErrorAndLog(env, "Util::ToJavaRemoteViews()", "ToJavaRemoteViews(): FindMethod: setDouble: %d!\n", __LINE__);
+                            env->CallVoidMethod(jremoteview, method, (jint)mViewId, jMethodName, (jdouble)d);
+                            CheckErrorAndLog(env, "Util::ToJavaRemoteViews()", "ToJavaRemoteViews: call method setDouble: %d!\n", __LINE__);
+                            break;
+                        }
+                        case 8: // CHAR:
+                        {
+                            Int32 c;
+                            source->ReadInt32(&c);
+                            Char32 ch = (Char32)c;
+                            jmethodID method = env->GetMethodID(klass, "setChar", "(ILjava/lang/String;C)V");
+                            CheckErrorAndLog(env, "Util::ToJavaRemoteViews()", "ToJavaRemoteViews(): FindMethod: setChar: %d!\n", __LINE__);
+                            env->CallVoidMethod(jremoteview, method, (jint)mViewId, jMethodName, (jchar)ch);
+                            CheckErrorAndLog(env, "Util::ToJavaRemoteViews()", "ToJavaRemoteViews: call method setChar: %d!\n", __LINE__);
+                            break;
+                        }
+                        case 9: // STRING:
+                        {
+                            String str;
+                            source->ReadString(&str);
+                            jstring jstr = ToJavaString(env, str);
+                            jmethodID method = env->GetMethodID(klass, "setString", "(ILjava/lang/String;Ljava/lang/String;)V");
+                            CheckErrorAndLog(env, "Util::ToJavaRemoteViews()", "ToJavaRemoteViews(): FindMethod: setString: %d!\n", __LINE__);
+                            env->CallVoidMethod(jremoteview, method, (jint)mViewId, jMethodName, jstr);
+                            CheckErrorAndLog(env, "Util::ToJavaRemoteViews()", "ToJavaRemoteViews: call method setString: %d!\n", __LINE__);
+                            env->DeleteLocalRef(jstr);
+                            break;
+                        }
+                        case 10: // CHAR_SEQUENCE:
+                        {
+                            AutoPtr<ICharSequence> charCsq;
+                            TextUtils::CHAR_SEQUENCE_CREATOR::CreateFromParcel(source, (ICharSequence**)&charCsq);
+                            String str;
+                            charCsq->ToString(&str);
+                            jstring jstr = ToJavaString(env, str);
+                            jmethodID method = env->GetMethodID(klass, "setCharSequence", "(ILjava/lang/String;Ljava/lang/CharSequence;)V");
+                            CheckErrorAndLog(env, "Util::ToJavaRemoteViews()", "ToJavaRemoteViews(): FindMethod: setCharSequence: %d!\n", __LINE__);
+                            env->CallVoidMethod(jremoteview, method, (jint)mViewId, jMethodName, jstr);
+                            CheckErrorAndLog(env, "Util::ToJavaRemoteViews()", "ToJavaRemoteViews: call method setCharSequence: %d!\n", __LINE__);
+                            env->DeleteLocalRef(jstr);
+                            break;
+                        }
+                        case 11: // URI:
+                        {
+                            Int32 flag = 0;
+                            source->ReadInt32(&flag);
+                            if (flag != 0) {
+                                AutoPtr<IUri> uri;
+                                source->ReadInterfacePtr((Handle32*)&uri);
+                                if (uri != NULL){
+                                    jobject jUri = ToJavaUri(env, uri);
+                                    jmethodID method = env->GetMethodID(klass, "setUri", "(ILjava/lang/String;Landroid/net/Uri;)V");
+                                    CheckErrorAndLog(env, "Util::ToJavaRemoteViews()", "ToJavaRemoteViews(): FindMethod: setUri: %d!\n", __LINE__);
+                                    env->CallVoidMethod(jremoteview, method, (jint)mViewId, jMethodName, jUri);
+                                    CheckErrorAndLog(env, "Util::ToJavaRemoteViews()", "ToJavaRemoteViews: call method setUri: %d!\n", __LINE__);
+                                    env->DeleteLocalRef(jUri);
+                                }
+                                else{
+                                    LOGGERE("Util::ToJavaRemoteViews()", "read uri null");
+                                }
+                            }
+                            break;
+                        }
+                        case 12: // BITMAP:
+                        {
+                            Int32 bitmap = 0;
+                            source->ReadInt32(&bitmap);
+                            if (bitmap != 0) {
+                                AutoPtr<IBitmap> bmp;
+                                CBitmap::New((IBitmap**)&bmp);
+                                AutoPtr<IParcelable> bitmapParcel = IParcelable::Probe(bmp);
+                                bitmapParcel->ReadFromParcel(source);
+
+                                jobject jbitmap = ToJavaBitmap(env, bmp);
+                                jmethodID method = env->GetMethodID(klass, "setBitmap", "(ILjava/lang/String;Landroid/graphics/Bitmap;)V");
+                                CheckErrorAndLog(env, "Util::ToJavaRemoteViews()", "ToJavaRemoteViews(): FindMethod: setBitmap: %d!\n", __LINE__);
+                                env->CallVoidMethod(jremoteview, method, (jint)mViewId, jMethodName, jbitmap);
+                                CheckErrorAndLog(env, "Util::ToJavaRemoteViews()", "ToJavaRemoteViews: call method setBitmap: %d!\n", __LINE__);
+                                env->DeleteLocalRef(jbitmap);
+                            }
+                            break;
+                        }
+                        case 13: // BUNDLE:
+                        {
+                            AutoPtr<IBundle> bundle;
+                            CBundle::New((IBundle**)&bundle);
+                            // AutoPtr<CBundle> cBundle = (CBundle*)bundle.Get();
+                            AutoPtr<IParcelable> bundleParcel = IParcelable::Probe(bundle);
+                            bundleParcel->ReadFromParcel(source);
+                            jobject jbundle = ToJavaBundle(env, bundle);
+                            jmethodID method = env->GetMethodID(klass, "setBundle", "(ILjava/lang/String;Landroid/os/Bundle;)V");
+                            CheckErrorAndLog(env, "Util::ToJavaRemoteViews()", "ToJavaRemoteViews(): FindMethod: setBundle: %d!\n", __LINE__);
+                            env->CallVoidMethod(jremoteview, method, (jint)mViewId, jMethodName, jbundle);
+                            CheckErrorAndLog(env, "Util::ToJavaRemoteViews()", "ToJavaRemoteViews: call method setBundle: %d!\n", __LINE__);
+                            env->DeleteLocalRef(jbundle);
+                            break;
+                        }
+                        case 14: // INTENT:
+                        {
+                            Int32 intent = 0;
+                            source->ReadInt32(&intent);
+                            if (intent) {
+                                AutoPtr<IIntent> intent;
+                                CIntent::New((IIntent**)&intent);
+                                AutoPtr<IParcelable> parcel = IParcelable::Probe(intent);
+                                // AutoPtr<CIntent> cIntent = (CIntent*)intent.Get();
+                                parcel->ReadFromParcel(source);
+                                jobject jintent = ToJavaIntent(env, intent);
+                                jmethodID method = env->GetMethodID(klass, "setIntent", "(ILjava/lang/String;Landroid/content/Intent;)V");
+                                CheckErrorAndLog(env, "Util::ToJavaRemoteViews()", "ToJavaRemoteViews(): FindMethod: setIntent: %d!\n", __LINE__);
+                                env->CallVoidMethod(jremoteview, method, (jint)mViewId, jMethodName, jintent);
+                                CheckErrorAndLog(env, "Util::ToJavaRemoteViews()", "ToJavaRemoteViews: call method setIntent: %d!\n", __LINE__);
+                                env->DeleteLocalRef(jintent);
+                            }
+                            break;
+                        }
+                        default:
+                            break;
+                    }
+
+                    env->DeleteLocalRef(jMethodName);
+                    break;
+                }
+                case 4: // ViewGroupAction::TAG:
+                {
+                    LOGGERE("Util::ToJavaRemoteViews()", "read ViewGroupAction action, not finish!");
+                    Int32 viewId;
+                    source->ReadInt32(&viewId);
+                    Int32 res = 0;
+                    source->ReadInt32(&res);
+                    Boolean nestedViewsNull = res == 0;
+                    if (!nestedViewsNull) {
+                        // addView
+                        LOGGERE("Util::ToJavaRemoteViews()", "ToJavaRemoteViews(), read ViewGroupAction action not finished, Please check RemoteViews::ViewGroupAction::WriteToParcel()");
+
+                        AutoPtr<IRemoteViews> remoteviews;
+                        // Need to read a remoteview here
+                        jobject jremoteviews = ToJavaRemoteViews(env, remoteviews);
+
+                        if (jremoteviews != NULL){
+                            jmethodID method = env->GetMethodID(klass, "addView", "(ILandroid/widget/RemoteViews;)V");
+                            CheckErrorAndLog(env, "Util::ToJavaRemoteViews()", "ToJavaRemoteViews(): FindMethod: addView: %d!\n", __LINE__);
+                            env->CallVoidMethod(jremoteview, method, (jint)viewId, jremoteviews);
+                            CheckErrorAndLog(env, "Util::ToJavaRemoteViews()", "ToJavaRemoteViews: call method addView: %d!\n", __LINE__);
+
+                            env->DeleteLocalRef(jremoteviews);
+                        }
+                    }
+                    else {
+                        // removeAllViews
+                        jmethodID method = env->GetMethodID(klass, "removeAllViews", "(I)V");
+                        CheckErrorAndLog(env, "Util::ToJavaRemoteViews()", "ToJavaRemoteViews(): FindMethod: removeAllViews: %d!\n", __LINE__);
+                        env->CallVoidMethod(jremoteview, method, (jint)viewId);
+                        CheckErrorAndLog(env, "Util::ToJavaRemoteViews()", "ToJavaRemoteViews: call method removeAllViews: %d!\n", __LINE__);
+                    }
+
+                    break;
+                }
+                case 5: // ReflectionActionWithoutParams::TAG:
+                {
+                    // LOGGERD("Util::ToJavaRemoteViews()", "read ReflectionActionWithoutParams action");
+                    Int32 viewId;
+                    String methodName;
+                    source->ReadInt32(&viewId);
+                    source->ReadString(&methodName);
+
+                    if (!methodName.IsNullOrEmpty()) {
+                        methodName = methodName.ToLowerCase(0, 1);
+                    }
+
+                    jclass jrawp = env->FindClass("android/widget/RemoteViews$ReflectionActionWithoutParams");
+                    CheckErrorAndLog(env, "Util::ToJavaRemoteViews()", "ToJavaRemoteViews GetMethodID: ReflectionActionWithoutParams(I,String): %d!\n", __LINE__);
+                    jmethodID mconstructor = env->GetMethodID(jrawp, "<init>", "(II)V");
+                    CheckErrorAndLog(env, "Util::ToJavaRemoteViews()", "ToJavaRemoteViews GetMethodID: ReflectionActionWithoutParams(I,String) : %d!\n", __LINE__);
+                    jstring jMethodName = ToJavaString(env, methodName);
+                    jobject jaction = env->NewObject(jrawp, mconstructor, (jint)viewId, jMethodName);
+                    CheckErrorAndLog(env, "Util::ToJavaRemoteViews()", "ToJavaRemoteViews NewObject: ReflectionActionWithoutParams : %d!\n", __LINE__);
+                    jmethodID method = env->GetMethodID(klass, "addAction", "(android/widget/RemoteViews$Action)V");
+                    CheckErrorAndLog(env, "Util::ToJavaRemoteViews()", "ToJavaRemoteViews(): FindMethod: addAction: %d!\n", __LINE__);
+                    env->CallVoidMethod(jremoteview, method, jaction);
+                    CheckErrorAndLog(env, "Util::ToJavaRemoteViews()", "ToJavaRemoteViews: call method addAction: %d!\n", __LINE__);
+                    env->DeleteLocalRef(jrawp);
+                    env->DeleteLocalRef(jMethodName);
+                    env->DeleteLocalRef(jaction);
+                    break;
+                }
+                case 6: // RemoteViewsSetEmptyView::TAG:
+                {
+                    // LOGGERD("Util::ToJavaRemoteViews()", "read RemoteViewsSetEmptyView action");
+                    Int32 viewId;
+                    Int32 emptyViewId;
+                    source->ReadInt32(&viewId);
+                    source->ReadInt32(&emptyViewId);
+
+                    jmethodID method = env->GetMethodID(klass, "setEmptyView", "(II)V");
+                    CheckErrorAndLog(env, "Util::ToJavaRemoteViews()", "setEmptyView(): FindMethod: setEmptyView: %d!\n", __LINE__);
+                    env->CallVoidMethod(jremoteview, method, (jint)viewId, (jint)emptyViewId);
+                    CheckErrorAndLog(env, "Util::ToJavaRemoteViews()", "ToJavaRemoteViews: call method setEmptyView: %d!\n", __LINE__);
+                    break;
+                }
+                case 8: // RemoteViewsSetPendingIntentTemplate::TAG:
+                {
+                    // LOGGERD("Util::ToJavaRemoteViews()", "read RemoteViewsSetPendingIntentTemplate action");
+                    Int32 viewId;
+                    source->ReadInt32(&viewId);
+                    AutoPtr<IPendingIntent> pendingIntent;
+                    source->ReadInterfacePtr((Handle32*)&pendingIntent);
+                    jobject jpendingIntent = ToJavaPendingIntent(env, pendingIntent);
+                    jmethodID method = env->GetMethodID(klass, "setPendingIntentTemplate", "(ILandroid/app/PendingIntent;)V");
+                    CheckErrorAndLog(env, "Util::ToJavaRemoteViews()", "ToJavaRemoteViews(): FindMethod: setPendingIntentTemplate: %d!\n", __LINE__);
+                    env->CallVoidMethod(jremoteview, method, (jint)viewId, jpendingIntent);
+                    CheckErrorAndLog(env, "Util::ToJavaRemoteViews()", "ToJavaRemoteViews: call method setPendingIntentTemplate: %d!\n", __LINE__);
+                    env->DeleteLocalRef(jpendingIntent);
+                    break;
+                }
+                case 9: // RemoteViewsSetOnClickFillInIntent::TAG:
+                {
+                    // LOGGERD("Util::ToJavaRemoteViews()", "read RemoteViewsSetOnClickFillInIntent action");
+
+                    Int32 viewId;
+                    source->ReadInt32(&viewId);
+                    AutoPtr<IIntent> intent;
+                    source->ReadInterfacePtr((Handle32*)&intent);
+                    jobject jintent = ToJavaIntent(env, intent);
+                    jmethodID method = env->GetMethodID(klass, "setOnClickFillInIntent", "(ILandroid/content/Intent;)V");
+                    CheckErrorAndLog(env, "Util::ToJavaRemoteViews()", "ToJavaRemoteViews(): FindMethod: setOnClickFillInIntent: %d!\n", __LINE__);
+                    env->CallVoidMethod(jremoteview, method, (jint)viewId, jintent);
+                    CheckErrorAndLog(env, "Util::ToJavaRemoteViews()", "ToJavaRemoteViews: call method setOnClickFillInIntent: %d!\n", __LINE__);
+                    env->DeleteLocalRef(jintent);
+                    break;
+                }
+                case 10: // SetRemoteViewsAdapterIntent::TAG:
+                {
+                    // LOGGERD("Util::ToJavaRemoteViews()", "read SetRemoteViewsAdapterIntent action");
+                    Int32 viewId;
+                    source->ReadInt32(&viewId);
+                    AutoPtr<IIntent> intent;
+                    source->ReadInterfacePtr((Handle32*)&intent);
+                    jobject jintent = ToJavaIntent(env, intent);
+                    jmethodID method = env->GetMethodID(klass, "setRemoteAdapter", "(ILandroid/content/Intent;)V");
+                    CheckErrorAndLog(env, "Util::ToJavaRemoteViews()", "ToJavaRemoteViews(): FindMethod: setRemoteAdapter: %d!\n", __LINE__);
+                    env->CallVoidMethod(jremoteview, method, (jint)viewId, jintent);
+                    CheckErrorAndLog(env, "Util::ToJavaRemoteViews()", "ToJavaRemoteViews: call method setRemoteAdapter: %d!\n", __LINE__);
+                    env->DeleteLocalRef(jintent);
+                    break;
+                }
+                case 11: // TextViewDrawableAction::TAG:
+                {
+                    // LOGGERD("Util::ToJavaRemoteViews()", "read TextViewDrawableAction action");
+                    Int32 viewId;
+                    source->ReadInt32(&viewId);
+                    Int32 res = 0;
+                    source->ReadInt32(&res);
+                    Boolean isRelative = res != 0;
+                    Int32 d1, d2, d3, d4;
+                    source->ReadInt32(&d1);
+                    source->ReadInt32(&d2);
+                    source->ReadInt32(&d3);
+                    source->ReadInt32(&d4);
+
+                    jmethodID method;
+                    if (isRelative){
+                        method = env->GetMethodID(klass, "setTextViewCompoundDrawablesRelative", "(IIIII)V");
+                        CheckErrorAndLog(env, "Util::ToJavaRemoteViews()", "ToJavaRemoteViews(): FindMethod: setTextViewCompoundDrawablesRelative: %d!\n", __LINE__);
+                    }else{
+                        method = env->GetMethodID(klass, "setTextViewCompoundDrawables", "(IIIII)V");
+                        CheckErrorAndLog(env, "Util::ToJavaRemoteViews()", "ToJavaRemoteViews(): FindMethod: setTextViewCompoundDrawables: %d!\n", __LINE__);
+                    }
+
+                    env->CallVoidMethod(jremoteview, method, (jint)viewId, (jint)d1, (jint)d2, (jint)d3, (jint)d4);
+                    CheckErrorAndLog(env, "Util::ToJavaRemoteViews()", "ToJavaRemoteViews: call method setRemoteAdapter: %d!\n", __LINE__);
+                    break;
+                }
+                case 13: // TextViewSizeAction::TAG:
+                {
+                    // LOGGERD("Util::ToJavaRemoteViews()", "read TextViewSizeAction action");
+                    Int32 viewId;
+                    Int32 units;
+                    Float size;
+                    source->ReadInt32(&viewId);
+                    source->ReadInt32(&units);
+                    source->ReadFloat(&size);
+
+                    jmethodID method = env->GetMethodID(klass, "setTextViewTextSize", "(IIF)V");
+                    CheckErrorAndLog(env, "ToJavaRemoteViews(): FindMethod: setTextViewTextSize: %d!\n", __LINE__);
+                    env->CallVoidMethod(jremoteview, method, (jint)viewId, (jint)units, (jfloat)size);
+                    CheckErrorAndLog(env, "ToJavaRemoteViews: call method setTextViewTextSize: %d!\n", __LINE__);
+                    break;
+                }
+                case 14: // ViewPaddingAction::TAG:
+                {
+                    LOGGERD("Util::ToJavaRemoteViews()", "read ViewPaddingAction action");
+                    Int32 viewId;
+                    Int32 left;
+                    Int32 top;
+                    Int32 right;
+                    Int32 bottom;
+                    source->ReadInt32(&viewId);
+                    source->ReadInt32(&left);
+                    source->ReadInt32(&top);
+                    source->ReadInt32(&right);
+                    source->ReadInt32(&bottom);
+                    jmethodID method = env->GetMethodID(klass, "setViewPadding", "(IIIII)V");
+                    CheckErrorAndLog(env, "ToJavaRemoteViews(): FindMethod: setViewPadding: %d!\n", __LINE__);
+                    env->CallVoidMethod(jremoteview, method, (jint)viewId, (jint)left, (jint)top, (jint)right, (jint)bottom);
+                    CheckErrorAndLog(env, "ToJavaRemoteViews: call method setViewPadding: %d!\n", __LINE__);
+                    break;
+                }
+                case 12: // BitmapReflectionAction::TAG:
+                {
+                    // LOGGERE("Util::ToJavaRemoteViews()", "read BitmapReflectionAction action, not implemented");
+                    Int32 viewId;
+                    String methodName;
+                    Int32 bitmapId;
+                    source->ReadInt32(&viewId);
+                    source->ReadString(&methodName);
+
+                    if (!methodName.IsNullOrEmpty()) {
+                        methodName = methodName.ToLowerCase(0, 1);
+                    }
+
+                    source->ReadInt32(&bitmapId);
+
+                    if (bitmapCache != NULL){
+                        AutoPtr<IBitmap> bitmap;
+                        bitmapCache->GetBitmapForId(bitmapId, (IBitmap**)&bitmap);
+
+                        if (bitmap != NULL){
+                            LOGGERE("Util::ToJavaRemoteViews()", "ToJavaRemoteViews(), read BitmapReflectionAction action, Found bitmap in bitmapCache");
+                            jobject jbitmap = ToJavaBitmap(env, bitmap);
+                            jstring jmethodName = ToJavaString(env, methodName);
+
+                            jmethodID method = env->GetMethodID(klass, "setBitmap", "(ILjava/lang/String;Landroid/graphics/Bitmap;)V");
+                            CheckErrorAndLog(env, "ToJavaRemoteViews(): FindMethod: setBitmap: %d!\n", __LINE__);
+                            env->CallVoidMethod(jremoteview, method, (jint)viewId, jmethodName, jbitmap);
+                            CheckErrorAndLog(env, "ToJavaRemoteViews: call method setBitmap: %d!\n", __LINE__);
+
+                            env->DeleteLocalRef(jbitmap);
+                            env->DeleteLocalRef(jmethodName);
+                        }else{
+                            LOGGERE("Util::ToJavaRemoteViews()", "ToJavaRemoteViews(), read BitmapReflectionAction action, did not found bitmap in bitmapCache");
+                        }
+                    }else{
+                        LOGGERE("Util::ToJavaRemoteViews()", "ToJavaRemoteViews(), read BitmapReflectionAction action, But bitmapCache is null");
+                    }
+
+                    break;
+                }
+                case 15: // SetRemoteViewsAdapterList::TAG:
+                {
+                    jclass listKlass = env->FindClass("java/util/ArrayList");
+                    Util::CheckErrorAndLog(env, "ToJavaRemoteViews", "NewObject: ArrayList line: %d", __LINE__);
+
+                    jmethodID m = env->GetMethodID(listKlass, "<init>", "()V");
+                    Util::CheckErrorAndLog(env, "ToJavaRemoteViews", "GetMethodID: ArrayList line: %d", __LINE__);
+
+                    jobject jlist = env->NewObject(listKlass, m);
+                    Util::CheckErrorAndLog(env, "ToJavaRemoteViews", "NewObject: ArrayList line: %d", __LINE__);
+
+                    jmethodID mAdd = env->GetMethodID(listKlass, "add", "(Ljava/lang/Object;)Z");
+                    Util::CheckErrorAndLog(env, "ToJavaRemoteViews", "GetMethodID: add line: %d", __LINE__);
+
+                    Int32 viewId, viewTypeCount;
+                    source->ReadInt32(&viewId);
+                    source->ReadInt32(&viewTypeCount);
+                    Int32 count;
+                    source->ReadInt32(&count);
+                    for (Int32 i = 0; i < count; i++) {
+                        AutoPtr<IRemoteViews> rv;
+                        CRemoteViews::New((IRemoteViews**)&rv);
+                        IParcelable::Probe(rv)->ReadFromParcel(source);
+                        jobject jrv = ToJavaRemoteViews(env, rv);
+                        env->CallBooleanMethod(jlist, mAdd, jrv);
+                        Util::CheckErrorAndLog(env, "ToJavaRemoteViews", "CallBooleanMethod: add line: %d", __LINE__);
+                        env->DeleteLocalRef(jrv);
+                    }
+                    jmethodID method = env->GetMethodID(klass, "setRemoteAdapter", "(ILjava/util/ArrayList;I)V");
+                    CheckErrorAndLog(env, "ToJavaRemoteViews(): FindMethod: setRemoteAdapter: %d!\n", __LINE__);
+                    env->CallVoidMethod(jremoteview, method, (jint)viewId, jlist, (jint)viewTypeCount);
+                    CheckErrorAndLog(env, "ToJavaRemoteViews: call method setRemoteAdapter: %d!\n", __LINE__);
+                    env->DeleteLocalRef(listKlass);
+                    env->DeleteLocalRef(jlist);
+                    break;
+                }
+                case 17: // TextViewDrawableColorFilterAction::TAG:
+                {
+                    Int32 viewId, index, color, mode;
+                    source->ReadInt32(&viewId);
+                    Int32 isRelative;
+                    source->ReadInt32(&isRelative);
+                    source->ReadInt32(&index);
+                    source->ReadInt32(&color);
+                    source->ReadInt32(&mode);
+                    jobject jPorterDuffMode = ToJavaPorterDuffMode(env, mode);
+                    jmethodID method = env->GetMethodID(klass, "setTextViewCompoundDrawablesRelativeColorFilter",
+                        "(IIILandroid/graphics/PorterDuff$Mode;)V");
+                    CheckErrorAndLog(env, "ToJavaRemoteViews(): FindMethod: setTextViewCompoundDrawablesRelativeColorFilter: %d!\n", __LINE__);
+                    env->CallVoidMethod(jremoteview, method, (jint)viewId, (jint)index, (jint)color, jPorterDuffMode);
+                    CheckErrorAndLog(env, "ToJavaRemoteViews: call method setTextViewCompoundDrawablesRelativeColorFilter: %d!\n", __LINE__);
+                    env->DeleteLocalRef(jPorterDuffMode);
+                    break;
+                }
+                default:
+                    break;
+            }
+        }
     }
 
     env->DeleteLocalRef(klass);
     return jremoteview;
 }
 
-jobject Util::ToJavaAppWidgetProviderInfo(JNIEnv* env, IAppWidgetProviderInfo* obj)
+jobject Util::ToJavaPorterDuffMode(
+    /* [in] */ JNIEnv* env,
+    /* [in] */ PorterDuffMode mode)
+{
+    jclass cPorterDuffMode = env->FindClass("android/graphics/PorterDuff$Mode");
+    CheckErrorAndLog(env, "Util::ToJavaPorterDuffMode()", "Fail FindClass: PorterDuff$Mode : %d!\n", __LINE__);
+    jfieldID f;
+    switch (mode) {
+        case Elastos::Droid::Graphics::PorterDuffMode_NONE:
+            f = env->GetStaticFieldID(cPorterDuffMode, "NONE", "Landroid/graphics/PorterDuff$Mode;");
+            CheckErrorAndLog(env, "Util::ToJavaPorterDuffMode()", "Fail GetStaticFieldID: NONE : %d!\n", __LINE__);
+            break;
+        case Elastos::Droid::Graphics::PorterDuffMode_CLEAR:
+            f = env->GetStaticFieldID(cPorterDuffMode, "CLEAR", "Landroid/graphics/PorterDuff$Mode;");
+            CheckErrorAndLog(env, "Util::ToJavaPorterDuffMode()", "Fail GetStaticFieldID: CLEAR : %d!\n", __LINE__);
+            break;
+        case Elastos::Droid::Graphics::PorterDuffMode_SRC:
+            f = env->GetStaticFieldID(cPorterDuffMode, "SRC", "Landroid/graphics/PorterDuff$Mode;");
+            CheckErrorAndLog(env, "Util::ToJavaPorterDuffMode()", "Fail GetStaticFieldID: SRC : %d!\n", __LINE__);
+            break;
+        case Elastos::Droid::Graphics::PorterDuffMode_DST:
+            f = env->GetStaticFieldID(cPorterDuffMode, "DST", "Landroid/graphics/PorterDuff$Mode;");
+            CheckErrorAndLog(env, "Util::ToJavaPorterDuffMode()", "Fail GetStaticFieldID: DST : %d!\n", __LINE__);
+            break;
+        case Elastos::Droid::Graphics::PorterDuffMode_SRC_OVER:
+            f = env->GetStaticFieldID(cPorterDuffMode, "SRC_OVER", "Landroid/graphics/PorterDuff$Mode;");
+            CheckErrorAndLog(env, "Util::ToJavaPorterDuffMode()", "Fail GetStaticFieldID: SRC_OVER : %d!\n", __LINE__);
+            break;
+        case Elastos::Droid::Graphics::PorterDuffMode_DST_OVER:
+            f = env->GetStaticFieldID(cPorterDuffMode, "DST_OVER", "Landroid/graphics/PorterDuff$Mode;");
+            CheckErrorAndLog(env, "Util::ToJavaPorterDuffMode()", "Fail GetStaticFieldID: DST_OVER : %d!\n", __LINE__);
+            break;
+        case Elastos::Droid::Graphics::PorterDuffMode_SRC_IN:
+            f = env->GetStaticFieldID(cPorterDuffMode, "SRC_IN", "Landroid/graphics/PorterDuff$Mode;");
+            CheckErrorAndLog(env, "Util::ToJavaPorterDuffMode()", "Fail GetStaticFieldID: SRC_IN : %d!\n", __LINE__);
+            break;
+        case Elastos::Droid::Graphics::PorterDuffMode_DST_IN:
+            f = env->GetStaticFieldID(cPorterDuffMode, "DST_IN", "Landroid/graphics/PorterDuff$Mode;");
+            CheckErrorAndLog(env, "Util::ToJavaPorterDuffMode()", "Fail GetStaticFieldID: DST_IN : %d!\n", __LINE__);
+            break;
+        case Elastos::Droid::Graphics::PorterDuffMode_SRC_OUT:
+            f = env->GetStaticFieldID(cPorterDuffMode, "SRC_OUT", "Landroid/graphics/PorterDuff$Mode;");
+            CheckErrorAndLog(env, "Util::ToJavaPorterDuffMode()", "Fail GetStaticFieldID: SRC_OUT : %d!\n", __LINE__);
+            break;
+        case Elastos::Droid::Graphics::PorterDuffMode_DST_OUT:
+            f = env->GetStaticFieldID(cPorterDuffMode, "DST_OUT", "Landroid/graphics/PorterDuff$Mode;");
+            CheckErrorAndLog(env, "Util::ToJavaPorterDuffMode()", "Fail GetStaticFieldID: DST_OUT : %d!\n", __LINE__);
+            break;
+        case Elastos::Droid::Graphics::PorterDuffMode_SRC_ATOP:
+            f = env->GetStaticFieldID(cPorterDuffMode, "SRC_ATOP", "Landroid/graphics/PorterDuff$Mode;");
+            CheckErrorAndLog(env, "Util::ToJavaPorterDuffMode()", "Fail GetStaticFieldID: SRC_ATOP : %d!\n", __LINE__);
+            break;
+        case Elastos::Droid::Graphics::PorterDuffMode_DST_ATOP:
+            f = env->GetStaticFieldID(cPorterDuffMode, "DST_ATOP", "Landroid/graphics/PorterDuff$Mode;");
+            CheckErrorAndLog(env, "Util::ToJavaPorterDuffMode()", "Fail GetStaticFieldID: DST_ATOP : %d!\n", __LINE__);
+            break;
+        case Elastos::Droid::Graphics::PorterDuffMode_XOR:
+            f = env->GetStaticFieldID(cPorterDuffMode, "XOR", "Landroid/graphics/PorterDuff$Mode;");
+            CheckErrorAndLog(env, "Util::ToJavaPorterDuffMode()", "Fail GetStaticFieldID: XOR : %d!\n", __LINE__);
+            break;
+        case Elastos::Droid::Graphics::PorterDuffMode_DARKEN:
+            f = env->GetStaticFieldID(cPorterDuffMode, "DARKEN", "Landroid/graphics/PorterDuff$Mode;");
+            CheckErrorAndLog(env, "Util::ToJavaPorterDuffMode()", "Fail GetStaticFieldID: DARKEN : %d!\n", __LINE__);
+            break;
+        case Elastos::Droid::Graphics::PorterDuffMode_LIGHTEN:
+            f = env->GetStaticFieldID(cPorterDuffMode, "LIGHTEN", "Landroid/graphics/PorterDuff$Mode;");
+            CheckErrorAndLog(env, "Util::ToJavaPorterDuffMode()", "Fail GetStaticFieldID: LIGHTEN : %d!\n", __LINE__);
+            break;
+        case Elastos::Droid::Graphics::PorterDuffMode_MULTIPLY:
+            f = env->GetStaticFieldID(cPorterDuffMode, "MULTIPLY", "Landroid/graphics/PorterDuff$Mode;");
+            CheckErrorAndLog(env, "Util::ToJavaPorterDuffMode()", "Fail GetStaticFieldID: MULTIPLY : %d!\n", __LINE__);
+            break;
+        case Elastos::Droid::Graphics::PorterDuffMode_SCREEN:
+            f = env->GetStaticFieldID(cPorterDuffMode, "SCREEN", "Landroid/graphics/PorterDuff$Mode;");
+            CheckErrorAndLog(env, "Util::ToJavaPorterDuffMode()", "Fail GetStaticFieldID: SCREEN : %d!\n", __LINE__);
+            break;
+        case Elastos::Droid::Graphics::PorterDuffMode_ADD:
+            f = env->GetStaticFieldID(cPorterDuffMode, "ADD", "Landroid/graphics/PorterDuff$Mode;");
+            CheckErrorAndLog(env, "Util::ToJavaPorterDuffMode()", "Fail GetStaticFieldID: ADD : %d!\n", __LINE__);
+            break;
+        case Elastos::Droid::Graphics::PorterDuffMode_OVERLAY:
+            f = env->GetStaticFieldID(cPorterDuffMode, "OVERLAY", "Landroid/graphics/PorterDuff$Mode;");
+            CheckErrorAndLog(env, "Util::ToJavaPorterDuffMode()", "Fail GetStaticFieldID: OVERLAY : %d!\n", __LINE__);
+            break;
+        default:
+            break;
+    }
+
+    jobject jPorterDuffMode = env->GetStaticObjectField(cPorterDuffMode, f);
+    CheckErrorAndLog(env, "Util::ToJavaPorterDuffMode()", "Fail GetStaticObjectField: : %d!\n", __LINE__);
+    env->DeleteLocalRef(cPorterDuffMode);
+    return jPorterDuffMode;
+}
+
+jobject Util::ToJavaAppWidgetProviderInfo(
+    /* [in] */ JNIEnv* env,
+    /* [in] */ IAppWidgetProviderInfo* obj)
 {
     if (env == NULL || obj == NULL) {
         LOGGERW(TAG, "ToJavaAppWidgetProviderInfo: Invalid argumenet!");
@@ -7524,7 +8101,8 @@ jobject Util::ToJavaAppWidgetProviderInfo(JNIEnv* env, IAppWidgetProviderInfo* o
         env->SetObjectField(jproviderInfo, f, jcomponentName);
         Util::CheckErrorAndLog(env, "ToJavaAppWidgetProviderInfo Fail SetObjectField: provider : %d!\n", __LINE__);
         env->DeleteLocalRef(jcomponentName);
-    } else {
+    }
+    else {
         Logger::W(TAG, "ToJavaAppWidgetProviderInfo() WARN: jcomponentName is NULL!");
     }
 
@@ -7562,7 +8140,8 @@ jobject Util::ToJavaAppWidgetProviderInfo(JNIEnv* env, IAppWidgetProviderInfo* o
         env->SetObjectField(jproviderInfo, f, jconfigure);
         Util::CheckErrorAndLog(env, "ToJavaAppWidgetProviderInfo Fail SetObjectField: configure : %d!\n", __LINE__);
         env->DeleteLocalRef(jconfigure);
-    } else {
+    }
+    else {
         Logger::W(TAG, "ToJavaAppWidgetProviderInfo() WARN: jconfigure is NULL!");
     }
 
@@ -7585,7 +8164,18 @@ jobject Util::ToJavaAppWidgetProviderInfo(JNIEnv* env, IAppWidgetProviderInfo* o
     obj->GetWidgetCategory(&tempInt);
     SetJavaIntField(env, klass, jproviderInfo, tempInt, "widgetCategory", "ToJavaAppWidgetProviderInfo");
 
+    AutoPtr<IActivityInfo> aInfo;
+    obj->GetProviderInfo((IActivityInfo**)&aInfo);
+
+    jobject jaInfo = ToJavaActivityInfo(env, aInfo);
+    jfieldID f = env->GetFieldID(klass, "providerInfo", "Landroid/content/pm/ActivityInfo;");
+    Util::CheckErrorAndLog(env, "ToJavaAppWidgetProviderInfo", "GetFieldID: providerInfo", __LINE__);
+
+    env->SetObjectField(jproviderInfo, f, jaInfo);
+    Util::CheckErrorAndLog(env, "ToJavaAppWidgetProviderInfo", "SetObjectField: providerInfo", __LINE__);
+
     env->DeleteLocalRef(klass);
+    env->DeleteLocalRef(jproviderInfo);
     return jproviderInfo;
 }
 
@@ -7618,12 +8208,12 @@ Boolean Util::GetElPendingIntent(
     jobject jInstance = env->NewGlobalRef(jtarget);
 
     AutoPtr<IIIntentSender> iisender;
-    // if(NOERROR != CIIntentSenderNative::New((Handle32)jvm, (Handle32)jInstance, (IIIntentSender**)&iisender)) {
+    // if (NOERROR != CIIntentSenderNative::New((Handle32)jvm, (Handle32)jInstance, (IIIntentSender**)&iisender)) {
     //     LOGGERD(TAG, "GetElPendingIntent new CIIntentSenderNative fail!\n");
     //     return FALSE;
     // }
 
-    if(NOERROR != CPendingIntent::New(iisender, pintent)) {
+    if (NOERROR != CPendingIntent::New(iisender, pintent)) {
         LOGGERD(TAG, "GetElPendingIntent: create CPendingIntent fail!");
         return FALSE;
     }
@@ -7632,7 +8222,9 @@ Boolean Util::GetElPendingIntent(
     return TRUE;
 }
 
-jobject Util::ToJavaPendingIntent(JNIEnv* env, IPendingIntent* pendingIntent)
+jobject Util::ToJavaPendingIntent(
+    /* [in] */ JNIEnv* env,
+    /* [in] */ IPendingIntent* pendingIntent)
 {
     if (env == NULL || pendingIntent == NULL) {
         LOGGERE("Util", "ToJavaPendingIntent: Invalid argumenet!");
@@ -7643,7 +8235,7 @@ jobject Util::ToJavaPendingIntent(JNIEnv* env, IPendingIntent* pendingIntent)
 
     pendingIntent->GetTarget((IIIntentSender**)&iIntentSender);
 
-    if(iIntentSender == NULL){
+    if (iIntentSender == NULL){
         LOGGERE("Util", "ToJavaPendingIntent, Got iIntentSender is NULL");
         return NULL;
     }
@@ -7691,7 +8283,7 @@ jobject Util::ToJavaExtractedText(
     /* [in] */ JNIEnv* env,
     /* [in] */ IExtractedText* ert)
 {
-    if(env == NULL || ert == NULL){
+    if (env == NULL || ert == NULL){
         LOGGERE("ToJavaExtractedText()", "Invalid argumenet!");
         return NULL;
     }
@@ -7746,7 +8338,7 @@ jobject Util::ToJavaExtractedTextRequest(
     /* [in] */ JNIEnv* env,
     /* [in] */ IExtractedTextRequest* ertr)
 {
-    if(env == NULL || ertr == NULL){
+    if (env == NULL || ertr == NULL){
         LOGGERE("ToJavaExtractedTextRequest()", "Invalid argumenet!");
         return NULL;
     }
@@ -7780,7 +8372,7 @@ jobject Util::ToJavaCompletionInfo(
     /* [in] */ JNIEnv* env,
     /* [in] */ ICompletionInfo* completion)
 {
-    if(env == NULL || completion == NULL){
+    if (env == NULL || completion == NULL){
         LOGGERE("ToJavaCompletionInfo()", "Invalid argumenet!");
         return NULL;
     }
@@ -7827,7 +8419,7 @@ jobject Util::ToJavaCorrectionInfo(
     /* [in] */ JNIEnv* env,
     /* [in] */ ICorrectionInfo* correction)
 {
-    if(env == NULL || correction == NULL){
+    if (env == NULL || correction == NULL){
         LOGGERE("ToJavaCorrectionInfo()", "Invalid argumenet!");
         return NULL;
     }
@@ -7872,7 +8464,7 @@ jobject Util::ToJavaStorageVolume(
     /* [in] */ JNIEnv* env,
     /* [in] */ IStorageVolume* volume)
 {
-    if(env == NULL || volume == NULL){
+    if (env == NULL || volume == NULL){
         LOGGERE("ToJavaStorageVolume()", "Invalid argumenet!");
         return NULL;
     }
@@ -7934,6 +8526,19 @@ jobject Util::ToJavaStorageVolume(
     Int32 storageId;
     volume->GetStorageId(&storageId);
     Util::SetJavaIntField(env, volKlass, jvolume, storageId, "mStorageId", "ToJavaStorageVolume");
+
+    String uuid;
+    volume->GetUuid(&uuid);
+    Util::SetJavaStringField(env, volKlass, jvolume, uuid, "mUuid", "ToJavaStorageVolume");
+
+    String userLabel;
+    volume->GetUserLabel(&userLabel);
+    Util::SetJavaStringField(env, volKlass, jvolume, uuid, "mUserLabel", "ToJavaStorageVolume");
+
+    String state;
+    volume->GetState(&state);
+    Util::SetJavaStringField(env, volKlass, jvolume, state, "mState", "ToJavaStorageVolume");
+
     env->DeleteLocalRef(volKlass);
     return jvolume;
 }
@@ -7942,7 +8547,7 @@ jobject Util::ToJavaUserHandle(
     /* [in] */ JNIEnv* env,
     /* [in] */ IUserHandle* handle)
 {
-    if(env == NULL || handle == NULL){
+    if (env == NULL || handle == NULL){
         LOGGERE("ToJavaUserHandle()", "Invalid argumenet!");
         return NULL;
     }
@@ -7972,7 +8577,7 @@ Boolean Util::GetElFileDescriptor(
         return FALSE;
     }
 
-    if(NOERROR != CFileDescriptor::New(fDescptor)) {
+    if (NOERROR != CFileDescriptor::New(fDescptor)) {
         LOGGERE("GetElFileDescriptor", "create CFileDescriptor fail!");
         return FALSE;
     }
@@ -8010,13 +8615,13 @@ Boolean Util::GetElParcelFileDescriptor(
     Util::CheckErrorAndLog(env, "GetElParcelFileDescriptor", "GetObjectField: mFileDescriptor  %d", __LINE__);
 
     AutoPtr<IFileDescriptor> fd;
-    if(!GetElFileDescriptor(env, jfd, (IFileDescriptor**)&fd)) {
+    if (!GetElFileDescriptor(env, jfd, (IFileDescriptor**)&fd)) {
         LOGGERE("GetElParcelFileDescriptor", "GetElFileDescriptor() fail ", __LINE__);
     }
 
     env->DeleteLocalRef(jfd);
 
-    if(NOERROR != CParcelFileDescriptor::New(fd, pFDescptor)) {
+    if (NOERROR != CParcelFileDescriptor::New(fd, pFDescptor)) {
         LOGGERE("GetElParcelFileDescriptor", "create CParcelFileDescriptor fail!");
         return FALSE;
     }
@@ -8039,13 +8644,12 @@ Boolean Util::GetElAssetFileDescriptor(
 
     jfieldID f = env->GetFieldID(afdKlass, "mFd", "Landroid/os/ParcelFileDescriptor;");
     Util::CheckErrorAndLog(env, "GetElAssetFileDescriptor", "GetFieldID: mFd  %d", __LINE__);
-    env->DeleteLocalRef(afdKlass);
 
     jobject jfd = env->GetObjectField(jaFDescptor, f);
     Util::CheckErrorAndLog(env, "GetElAssetFileDescriptor", "GetObjectField: mFd %d", __LINE__);
 
     AutoPtr<IParcelFileDescriptor> fd;
-    if(!GetElParcelFileDescriptor(env, jfd, (IParcelFileDescriptor**)&fd)) {
+    if (!GetElParcelFileDescriptor(env, jfd, (IParcelFileDescriptor**)&fd)) {
         LOGGERE("GetElParcelFileDescriptor", "GetElParcelFileDescriptor() fail ", __LINE__);
     }
 
@@ -8054,7 +8658,19 @@ Boolean Util::GetElAssetFileDescriptor(
     Int64 startOffset = GetJavalongField(env, jaFDescptor, "mStartOffset", "GetElAssetFileDescriptor");
     Int64 length = GetJavalongField(env, jaFDescptor, "mLength", "GetElAssetFileDescriptor");
 
-    if(NOERROR != CAssetFileDescriptor::New(fd, startOffset, length, aFDescptor)) {
+    f = env->GetFieldID(afdKlass, "mExtras", "Landroid/os/Bundle;");
+    Util::CheckErrorAndLog(env, "GetElAssetFileDescriptor", "GetFieldID: mExtras  %d", __LINE__);
+
+    jobject jextras = env->GetObjectField(jaFDescptor, f);
+    Util::CheckErrorAndLog(env, "GetElAssetFileDescriptor", "GetObjectField: mExtras %d", __LINE__);
+    env->DeleteLocalRef(afdKlass);
+
+    AutoPtr<IBundle> extras;
+    if (jextras != NULL && !GetElBundle(env, jextras, (IBundle**)&extras)) {
+        LOGGERE("GetElParcelFileDescriptor", "GetElBundle() fail ", __LINE__);
+    }
+
+    if (NOERROR != CAssetFileDescriptor::New(fd, startOffset, length, extras, aFDescptor)) {
         LOGGERE("GetElAssetFileDescriptor", "create CParcelFileDescriptor fail!");
         return FALSE;
     }
@@ -8076,7 +8692,7 @@ Boolean Util::GetElObbInfo(
     jclass obbKlass = env->FindClass("android/content/res/ObbInfo");
     Util::CheckErrorAndLog(env, "GetElObbInfo", "FindClass: ObbInfo %d", __LINE__);
 
-    if(NOERROR != CObbInfo::New(obbInfo)) {
+    if (NOERROR != CObbInfo::New(obbInfo)) {
         LOGGERE("GetElObbInfo", "create CObbInfo fail!");
         *obbInfo = NULL;
         return FALSE;
@@ -8132,12 +8748,14 @@ jobject Util::ToJavaContentValues(
     jContentValues = env->NewObject(contentValuesKlass, m);
     Util::CheckErrorAndLog(env, "ToJavaContentValues", "Fail NewObject: contentValuesKlass %d", __LINE__);
 
-    AutoPtr<ArrayOf<String> > keys;
-    contentValues->KeySet((ArrayOf<String>**)&keys);
-
+    AutoPtr<ISet> set;
+    contentValues->GetKeySet((ISet**)&set);
+    AutoPtr<ArrayOf<IInterface*> > keys;
+    set->ToArray((ArrayOf<IInterface*>**)&keys);
     Int32 size = keys->GetLength();
     for (Int32 i = 0; i < size; i++) {
-        String keyStr = (*keys)[i];
+        String keyStr;
+        ICharSequence::Probe((*keys)[i])->ToString(&keyStr);
         jstring jKey = Util::ToJavaString(env, keyStr);
         AutoPtr<IInterface> value;
         contentValues->Get(keyStr, (IInterface**)&value);
@@ -8322,9 +8940,10 @@ jobject Util::ToJavaContentValues(
 
                 env->CallVoidMethod(jContentValues, m, jKey, jbytearray);
                 env->DeleteLocalRef(jbytearray);
-            } else {
+            }
+            else {
                 LOGGERE("ToJavaContentValues", "Unknown value type!");
-                AutoPtr<IObject> object = (IObject*)value->Probe(EIID_IObject);
+                AutoPtr<IObject> object = IObject::Probe(value);
                 ClassID clsid;
                 object->GetClassID(&clsid);
                 DUMP_CLSID(clsid, "ToJavaContentValues");
@@ -8430,7 +9049,7 @@ jobject Util::ToJavaMotionEvent(
     jobject jevent = env->NewObject(eventKlass, m);
     Util::CheckErrorAndLog(env, "ToJavaMotionEvent", "NewObject: MotionEvent line: %d", __LINE__);
 
-    Handle32 nativeEvent;
+    Handle64 nativeEvent;
     event->GetNative(&nativeEvent);
 
     android::MotionEvent* destEvent = new android::MotionEvent();
@@ -8527,11 +9146,15 @@ jobject Util::ToJavaHashMap(
     m = env->GetMethodID(hmKlass, "put", "(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;");
     Util::CheckErrorAndLog(env, "ToJavaHashMap", "GetMethodID: put line: %d", __LINE__);
 
-    AutoPtr<ArrayOf<String> > keys;
-    map->GetKeys((ArrayOf<String>**)&keys);
+    AutoPtr<ISet> set;
+    map->GetKeySet((ISet**)&set);
+    AutoPtr<ArrayOf<IInterface*> > keys;
+    set->ToArray((ArrayOf<IInterface*>**)&keys);
     Int32 size = keys->GetLength();
     for (Int32 i = 0; i < size; i++) {
-        jstring jkey = Util::ToJavaString(env, (*keys)[i]);
+        String key;
+        ICharSequence::Probe((*keys)[i])->ToString(&key);
+        jstring jkey = Util::ToJavaString(env, key);
 
         AutoPtr<IInterface> value;
         map->Get((*keys)[i], (IInterface**)&value);
@@ -8545,36 +9168,30 @@ jobject Util::ToJavaHashMap(
 
             env->DeleteLocalRef(jvalue);
             env->DeleteLocalRef(jresult);
-        } else if(ISerializable::Probe(value) != NULL){
-            AutoPtr<IObject> object = (IObject*)value->Probe(EIID_IObject);
+        }
+        else if (ISerializable::Probe(value) != NULL){
+            AutoPtr<IObject> object = IObject::Probe(value);
             ClassID clsid;
             object->GetClassID(&clsid);
 
             /*if (ECLSID_CISerializableNative == clsid) {
-                CISerializableNative* snative = (CISerializableNative*)ISerializable::Probe(value);
-
-                AutoPtr<ArrayOf<Byte> > obj;
-                snative->GetObject((ArrayOf<Byte>**)&obj);
-
-                String path = snative->GetPackagePath();
-
-                jobject jserializable = Util::ElByteArrayToJavaObject(env, obj, path);
+                jobject jserializable = Util::ElByteArrayToJavaObject(env, ISerializable::Probe(value));
                 LOGGERD("ToJavaHashMap", "ISerializable jserializable: %p, path: %s",
-                    jserializable, path.string());
+                    jserializable, snative->mPkgPath.string());
 
                 jobject jresult = env->CallObjectMethod(jmap, m, jkey, jserializable);
                 Util::CheckErrorAndLog(env, "ToJavaHashMap", "CallObjectMethod: put line: %d", __LINE__);
 
                 env->DeleteLocalRef(jserializable);
                 env->DeleteLocalRef(jresult);
-            } */else {
-                LOGGERE("ToJavaHashMap", "ToJavaHashMap() Unknown ISerializable value not implemented! key is:%s\n", ((*keys)[i]).string());
+            } else*/ {
+                LOGGERE("ToJavaHashMap", "ToJavaHashMap() Unknown ISerializable value not implemented! key is:%s\n", key.string());
                 DUMP_CLSID(clsid, "ToJavaBundle");
             }
         }
         else {
             LOGGERE("ToJavaHashMap", "Unsupported value!")
-            AutoPtr<IObject> object = (IObject*)value->Probe(EIID_IObject);
+            AutoPtr<IObject> object = IObject::Probe(value);
 
             ClassID clsid;
             object->GetClassID(&clsid);
@@ -8696,13 +9313,28 @@ jobject Util::ToJavaDebugMemoryInfo(
     Util::SetJavaIntField(env, dmiKlass, jinfo, tempInt, "dalvikPss", "ToJavaDebugMemoryInfo");
 
     parcel->ReadInt32(&tempInt);
+    Util::SetJavaIntField(env, dmiKlass, jinfo, tempInt, "dalvikSwappablePss", "ToJavaDebugMemoryInfo");
+
+    parcel->ReadInt32(&tempInt);
     Util::SetJavaIntField(env, dmiKlass, jinfo, tempInt, "dalvikPrivateDirty", "ToJavaDebugMemoryInfo");
 
     parcel->ReadInt32(&tempInt);
     Util::SetJavaIntField(env, dmiKlass, jinfo, tempInt, "dalvikSharedDirty", "ToJavaDebugMemoryInfo");
 
     parcel->ReadInt32(&tempInt);
+    Util::SetJavaIntField(env, dmiKlass, jinfo, tempInt, "dalvikPrivateClean", "ToJavaDebugMemoryInfo");
+
+    parcel->ReadInt32(&tempInt);
+    Util::SetJavaIntField(env, dmiKlass, jinfo, tempInt, "dalvikSharedClean", "ToJavaDebugMemoryInfo");
+
+    parcel->ReadInt32(&tempInt);
+    Util::SetJavaIntField(env, dmiKlass, jinfo, tempInt, "dalvikSwappedOut", "ToJavaDebugMemoryInfo");
+
+    parcel->ReadInt32(&tempInt);
     Util::SetJavaIntField(env, dmiKlass, jinfo, tempInt, "nativePss", "ToJavaDebugMemoryInfo");
+
+    parcel->ReadInt32(&tempInt);
+    Util::SetJavaIntField(env, dmiKlass, jinfo, tempInt, "nativeSwappablePss", "ToJavaDebugMemoryInfo");
 
     parcel->ReadInt32(&tempInt);
     Util::SetJavaIntField(env, dmiKlass, jinfo, tempInt, "nativePrivateDirty", "ToJavaDebugMemoryInfo");
@@ -8711,13 +9343,31 @@ jobject Util::ToJavaDebugMemoryInfo(
     Util::SetJavaIntField(env, dmiKlass, jinfo, tempInt, "nativeSharedDirty", "ToJavaDebugMemoryInfo");
 
     parcel->ReadInt32(&tempInt);
+    Util::SetJavaIntField(env, dmiKlass, jinfo, tempInt, "nativePrivateClean", "ToJavaDebugMemoryInfo");
+
+    parcel->ReadInt32(&tempInt);
+    Util::SetJavaIntField(env, dmiKlass, jinfo, tempInt, "nativeSharedClean", "ToJavaDebugMemoryInfo");
+
+    parcel->ReadInt32(&tempInt);
+    Util::SetJavaIntField(env, dmiKlass, jinfo, tempInt, "nativeSwappedOut", "ToJavaDebugMemoryInfo");
+
+    parcel->ReadInt32(&tempInt);
     Util::SetJavaIntField(env, dmiKlass, jinfo, tempInt, "otherPss", "ToJavaDebugMemoryInfo");
+
+    parcel->ReadInt32(&tempInt);
+    Util::SetJavaIntField(env, dmiKlass, jinfo, tempInt, "otherSwappablePss", "ToJavaDebugMemoryInfo");
 
     parcel->ReadInt32(&tempInt);
     Util::SetJavaIntField(env, dmiKlass, jinfo, tempInt, "otherPrivateDirty", "ToJavaDebugMemoryInfo");
 
     parcel->ReadInt32(&tempInt);
     Util::SetJavaIntField(env, dmiKlass, jinfo, tempInt, "otherSharedDirty", "ToJavaDebugMemoryInfo");
+
+    parcel->ReadInt32(&tempInt);
+    Util::SetJavaIntField(env, dmiKlass, jinfo, tempInt, "otherSharedClean", "ToJavaDebugMemoryInfo");
+
+    parcel->ReadInt32(&tempInt);
+    Util::SetJavaIntField(env, dmiKlass, jinfo, tempInt, "otherSwappedOut", "ToJavaDebugMemoryInfo");
 
     AutoPtr<ArrayOf<Int32> > otherStats;
     parcel->ReadArrayOf((Handle32*)(&otherStats));
@@ -8755,8 +9405,8 @@ Boolean Util::GetElDebugMemoryInfo(
     }
 
     assert(0);
-    return FALSE
-    // if(NOERROR != CDebugMemoryInfo::New(info)) {
+    return FALSE;
+    // if (NOERROR != CDebugMemoryInfo::New(info)) {
     //     return FALSE;
     // }
 
@@ -8781,21 +9431,45 @@ Boolean Util::GetElDebugMemoryInfo(
 
     Int32 tempInt = GetJavaIntField(env, dmiKlass, jinfo, "dalvikPss", "GetElDebugMemoryInfo");
     parcel->WriteInt32(tempInt);
+    tempInt = GetJavaIntField(env, dmiKlass, jinfo, "dalvikSwappablePss", "GetElDebugMemoryInfo");
+    parcel->WriteInt32(tempInt);
     tempInt = GetJavaIntField(env, dmiKlass, jinfo, "dalvikPrivateDirty", "GetElDebugMemoryInfo");
     parcel->WriteInt32(tempInt);
     tempInt = GetJavaIntField(env, dmiKlass, jinfo, "dalvikSharedDirty", "GetElDebugMemoryInfo");
     parcel->WriteInt32(tempInt);
+    tempInt = GetJavaIntField(env, dmiKlass, jinfo, "dalvikPrivateClean", "GetElDebugMemoryInfo");
+    parcel->WriteInt32(tempInt);
+    tempInt = GetJavaIntField(env, dmiKlass, jinfo, "dalvikSharedClean", "GetElDebugMemoryInfo");
+    parcel->WriteInt32(tempInt);
+    tempInt = GetJavaIntField(env, dmiKlass, jinfo, "dalvikSwappedOut", "GetElDebugMemoryInfo");
+    parcel->WriteInt32(tempInt);
     tempInt = GetJavaIntField(env, dmiKlass, jinfo, "nativePss", "GetElDebugMemoryInfo");
+    parcel->WriteInt32(tempInt);
+    tempInt = GetJavaIntField(env, dmiKlass, jinfo, "nativeSwappablePss", "GetElDebugMemoryInfo");
     parcel->WriteInt32(tempInt);
     tempInt = GetJavaIntField(env, dmiKlass, jinfo, "nativePrivateDirty", "GetElDebugMemoryInfo");
     parcel->WriteInt32(tempInt);
     tempInt = GetJavaIntField(env, dmiKlass, jinfo, "nativeSharedDirty", "GetElDebugMemoryInfo");
     parcel->WriteInt32(tempInt);
+    tempInt = GetJavaIntField(env, dmiKlass, jinfo, "nativePrivateClean", "GetElDebugMemoryInfo");
+    parcel->WriteInt32(tempInt);
+    tempInt = GetJavaIntField(env, dmiKlass, jinfo, "nativeSharedClean", "GetElDebugMemoryInfo");
+    parcel->WriteInt32(tempInt);
+    tempInt = GetJavaIntField(env, dmiKlass, jinfo, "nativeSwappedOut", "GetElDebugMemoryInfo");
+    parcel->WriteInt32(tempInt);
     tempInt = GetJavaIntField(env, dmiKlass, jinfo, "otherPss", "GetElDebugMemoryInfo");
+    parcel->WriteInt32(tempInt);
+    tempInt = GetJavaIntField(env, dmiKlass, jinfo, "otherSwappablePss", "GetElDebugMemoryInfo");
     parcel->WriteInt32(tempInt);
     tempInt = GetJavaIntField(env, dmiKlass, jinfo, "otherPrivateDirty", "GetElDebugMemoryInfo");
     parcel->WriteInt32(tempInt);
     tempInt = GetJavaIntField(env, dmiKlass, jinfo, "otherSharedDirty", "GetElDebugMemoryInfo");
+    parcel->WriteInt32(tempInt);
+    tempInt = GetJavaIntField(env, dmiKlass, jinfo, "otherPrivateClean", "GetElDebugMemoryInfo");
+    parcel->WriteInt32(tempInt);
+    tempInt = GetJavaIntField(env, dmiKlass, jinfo, "otherSharedClean", "GetElDebugMemoryInfo");
+    parcel->WriteInt32(tempInt);
+    tempInt = GetJavaIntField(env, dmiKlass, jinfo, "otherSwappedOut", "GetElDebugMemoryInfo");
     parcel->WriteInt32(tempInt);
 
     jfieldID f = env->GetFieldID(dmiKlass, "otherStats", "[I");
@@ -8842,11 +9516,11 @@ jobject Util::ToJavaProviderRequest(
     request->GetInterval(&interval);
     Util::SetJavalongField(env, prKlass, jrequest, interval, "interval", "ToJavaProviderRequest");
 
-    AutoPtr<IObjectContainer> container;
-    request->GetLocationRequests((IObjectContainer**)&container);
-    if (container != NULL) {
+    AutoPtr<IList> list;
+    request->GetLocationRequests((IList**)&list);
+    if (list != NULL) {
         Int32 count = 0;
-        container->GetObjectCount(&count);
+        list->GetSize(&count);
         if (count > 0) {
             jfieldID f = env->GetFieldID(prKlass, "locationRequests", "Ljava/util/List;");
             Util::CheckErrorAndLog(env, "ToJavaProviderRequest", "GetFieldID: locationRequests line: %d", __LINE__);
@@ -8860,13 +9534,9 @@ jobject Util::ToJavaProviderRequest(
             jmethodID mAdd = env->GetMethodID(listKlass, "add", "(Ljava/lang/Object;)Z");
             CheckErrorAndLog(env, "GetMethodID: get : %d!\n", __LINE__);
 
-            AutoPtr<IObjectEnumerator> it;
-            container->GetObjectEnumerator((IObjectEnumerator**)&it);
-
-            Boolean hasNext;
-            while (it->MoveNext(&hasNext), hasNext) {
+            for (Int32 i = 0; i < count; i++) {
                 AutoPtr<IInterface> obj;
-                it->Current((IInterface**)&obj);
+                list->Get(i, (IInterface**)&obj);
                 AutoPtr<ILocationRequest> route = ILocationRequest::Probe(obj);
 
                 jobject jlocationRequest = Util::ToJavaLocationRequest(env, route);
@@ -8929,9 +9599,24 @@ jobject Util::ToJavaLocationRequest(
     request->GetSmallestDisplacement(&smallestDisplacement);
     SetJavafloatField(env, lrKlass, jrequest, smallestDisplacement, "mSmallestDisplacement", "ToJavaLocationRequest");
 
+    Boolean hideFromAppOps;
+    request->GetHideFromAppOps(&hideFromAppOps);
+    SetJavaBoolField(env, lrKlass, jrequest, hideFromAppOps, "mHideFromAppOps", "ToJavaLocationRequest");
+
     String provider;
     request->GetProvider(&provider);
     SetJavaStringField(env, lrKlass, jrequest, provider, "mProvider", "ToJavaLocationRequest");
+
+    AutoPtr<IWorkSource> workSource;
+    request->GetWorkSource((IWorkSource**)&workSource);
+
+    jobject jworkSource = ToJavaWorkSource(env, workSource);
+    jfieldID f = env->GetFieldID(lrKlass, "mWorkSource", "Landroid/os/WorkSource;");
+    Util::CheckErrorAndLog(env, "ToJavaLocationRequest", "GetFieldID: mWorkSource", __LINE__);
+
+    env->SetObjectField(jrequest, f, jworkSource);
+    Util::CheckErrorAndLog(env, "ToJavaLocationRequest", "SetObjectField: mWorkSource", __LINE__);
+    env->DeleteLocalRef(jworkSource);
 
     env->DeleteLocalRef(lrKlass);
 
@@ -8961,24 +9646,30 @@ jobject Util::ToJavaWorkSource(
     Util::SetJavaIntField(env, wsKlass, jws, num, "mNum", "WorkSource");
 
     if (num > 0) {
-        m = env->GetMethodID(wsKlass, "set", "(I)V");
+        m = env->GetMethodID(wsKlass, "set", "(ILjava/lang/String;)V");
         Util::CheckErrorAndLog(env, "ToJavaWorkSource", "GetMethodID: set line: %d", __LINE__);
 
         Int32 uid = -1;
         ws->Get(0, &uid);
-        env->CallVoidMethod(jws, m, (jint)uid);
+        String name;
+        ws->GetName(0, &name);
+        jstring jname = ToJavaString(env, name);
+        env->CallVoidMethod(jws, m, (jint)uid, jname);
         Util::CheckErrorAndLog(env, "ToJavaWorkSource", "CallBooleanMethod: set %d", __LINE__);
+        env->DeleteLocalRef(jname);
 
-        m = env->GetMethodID(wsKlass, "add", "(I)Z");
+        m = env->GetMethodID(wsKlass, "add", "(ILjava/lang/String;)Z");
         Util::CheckErrorAndLog(env, "ToJavaWorkSource", "GetMethodID: add line: %d", __LINE__);
 
         for (Int32 i = 1; i < num; i++) {
             ws->Get(i, &uid);
-            env->CallBooleanMethod(jws, m, (jint)uid);
+            ws->GetName(i, &name);
+            jstring jname = ToJavaString(env, name);
+            env->CallBooleanMethod(jws, m, (jint)uid, jname);
             Util::CheckErrorAndLog(env, "ToJavaWorkSource", "CallBooleanMethod: add %d", __LINE__);
+            env->DeleteLocalRef(jname);
         }
     }
-
 
     env->DeleteLocalRef(wsKlass);
 
@@ -9074,7 +9765,7 @@ jobject Util::ToJavaWifiP2pInfo(
     Util::SetJavaBoolField(env, wpKlass, jinfo, groupFormed, "groupFormed", "ToJavaWifiP2pInfo");
 
     Boolean isGroupOwner;
-    info->IsGroupOwner(&isGroupOwner);
+    info->GetIsGroupOwner(&isGroupOwner);
     Util::SetJavaBoolField(env, wpKlass, jinfo, isGroupOwner, "isGroupOwner", "ToJavaWifiP2pInfo");
 
     AutoPtr<IInetAddress> groupOwnerAddress;
@@ -9210,13 +9901,14 @@ jobject Util::ToJavaWifiP2pDeviceList(
     jclass wpdlKlass = env->FindClass("android/net/wifi/p2p/WifiP2pDeviceList");
     Util::CheckErrorAndLog(env, "ToJavaWifiP2pDeviceList", "FindClass: WifiP2pDeviceList line: %d", __LINE__);
 
-
-    AutoPtr<ArrayOf<IWifiP2pDevice*> > list;
-    info->GetDeviceList((ArrayOf<IWifiP2pDevice*>**)&list);
+    AutoPtr<ICollection> list;
+    info->GetDeviceList((ICollection**)&list);
+    AutoPtr<ArrayOf<IInterface*> > array;
+    list->ToArray((ArrayOf<IInterface*>**)&array);
 
     jobject jinfo = NULL;
 
-    Int32 count = list->GetLength();
+    Int32 count = array->GetLength();
     if (count > 0) {
         jclass listKlass = env->FindClass("java/util/ArrayList");
         Util::CheckErrorAndLog(env, "ToJavaWifiP2pDeviceList", "NewObject: ArrayList line: %d", __LINE__);
@@ -9231,7 +9923,7 @@ jobject Util::ToJavaWifiP2pDeviceList(
         Util::CheckErrorAndLog(env, "ToJavaWifiP2pDeviceList", "GetMethodID: add line: %d", __LINE__);
 
         for (Int32 i = 0; i < count; i++) {
-            jobject jdev = ToJavaWifiP2pDevice(env, (*list)[i]);
+            jobject jdev = ToJavaWifiP2pDevice(env, IWifiP2pDevice::Probe((*array)[i]));
             env->CallBooleanMethod(jlist, mAdd, jdev);
             Util::CheckErrorAndLog(env, "ToJavaWifiP2pDeviceList", "CallBooleanMethod: add line: %d", __LINE__);
 
@@ -9246,7 +9938,8 @@ jobject Util::ToJavaWifiP2pDeviceList(
 
         env->DeleteLocalRef(jlist);
         env->DeleteLocalRef(listKlass);
-    } else {
+    }
+    else {
         jmethodID m = env->GetMethodID(wpdlKlass, "<init>", "()V");
         Util::CheckErrorAndLog(env, "ToJavaWifiP2pDeviceList", "GetMethodID: WifiP2pDeviceList line: %d", __LINE__);
 
@@ -9297,9 +9990,11 @@ jobject Util::ToJavaWifiP2pGroup(
     group->IsGroupOwner(&isGroupOwner);
     Util::SetJavaBoolField(env, wpgKlass, jgroup, isGroupOwner, "mIsGroupOwner", "ToJavaWifiP2pGroup");
 
-    AutoPtr<ArrayOf<IWifiP2pDevice*> > clients;
-    group->GetClientList((ArrayOf<IWifiP2pDevice*>**)&clients);
-    if(clients != NULL) {
+    AutoPtr<ICollection> list;
+    group->GetClientList((ICollection**)&list);
+    AutoPtr<ArrayOf<IInterface*> > clients;
+    list->ToArray((ArrayOf<IInterface*>**)&clients);
+    if (clients != NULL) {
         jfieldID f = env->GetFieldID(wpgKlass, "mClients", "Ljava/util/List;");
         Util::CheckErrorAndLog(env, "ToJavaWifiP2pGroup", "GetFieldID: mClients line: %d", __LINE__);
 
@@ -9313,7 +10008,7 @@ jobject Util::ToJavaWifiP2pGroup(
         CheckErrorAndLog(env, "ToJavaWifiP2pGroup", "GetMethodID: add : %d!", __LINE__);
 
         for (Int32 i = 0; i < clients->GetLength(); i++) {
-            jobject jclient = Util::ToJavaWifiP2pDevice(env, (*clients)[i]);
+            jobject jclient = Util::ToJavaWifiP2pDevice(env, IWifiP2pDevice::Probe((*clients)[i]));
 
             env->CallBooleanMethod(jclients, mAdd, jclient);
             Util::CheckErrorAndLog(env, "ToJavaWifiP2pGroup", "CallBooleanMethod: add : %d!\n", __LINE__);
@@ -9380,6 +10075,18 @@ jobject Util::ToJavaWifiConfiguration(
     config->GetBSSID(&BSSID);
     SetJavaStringField(env, wcKlass, jconfig, BSSID, "BSSID", "ToJavaWifiConfiguration");
 
+    String autoJoinBSSID;
+    config->GetAutoJoinBSSID(&autoJoinBSSID);
+    SetJavaStringField(env, wcKlass, jconfig, autoJoinBSSID, "autoJoinBSSID", "ToJavaWifiConfiguration");
+
+    String FQDN;
+    config->GetFQDN(&FQDN);
+    SetJavaStringField(env, wcKlass, jconfig, FQDN, "FQDN", "ToJavaWifiConfiguration");
+
+    String naiRealm;
+    config->GetNaiRealm(&naiRealm);
+    SetJavaStringField(env, wcKlass, jconfig, naiRealm, "naiRealm", "ToJavaWifiConfiguration");
+
     String preSharedKey;
     config->GetPreSharedKey(&preSharedKey);
     SetJavaStringField(env, wcKlass, jconfig, preSharedKey, "preSharedKey", "ToJavaWifiConfiguration");
@@ -9406,6 +10113,20 @@ jobject Util::ToJavaWifiConfiguration(
     Boolean tempBool;
     config->GetHiddenSSID(&tempBool);
     Util::SetJavaBoolField(env, wcKlass, jconfig, tempBool, "hiddenSSID", "ToJavaWifiConfiguration");
+
+    // TODO: CM12
+    // config->GetIsIBSS(&tempBool);
+    // Util::SetJavaBoolField(env, wcKlass, jconfig, tempBool, "isIBSS", "ToJavaWifiConfiguration");
+
+    // config->GetFrequency(&tempInt);
+    // Util::SetJavaIntField(env, wcKlass, jconfig, tempInt, "frequency", "ToJavaWifiConfiguration");
+
+    config->GetRequirePMF(&tempBool);
+    Util::SetJavaBoolField(env, wcKlass, jconfig, tempBool, "requirePMF", "ToJavaWifiConfiguration");
+
+    String updateIdentifier;
+    config->GetUpdateIdentifier(&updateIdentifier);
+    SetJavaStringField(env, wcKlass, jconfig, updateIdentifier, "updateIdentifier", "ToJavaWifiConfiguration");
 
     AutoPtr<IBitSet> allowedKeyManagement;
     config->GetAllowedKeyManagement((IBitSet**)&allowedKeyManagement);
@@ -9472,135 +10193,426 @@ jobject Util::ToJavaWifiConfiguration(
         env->DeleteLocalRef(jallowedGroupCiphers);
     }
 
-    jclass ipaClass = env->FindClass("android/net/wifi/WifiConfiguration$IpAssignment");
-    Util::CheckErrorAndLog(env, "ToJavaWifiConfiguration", "Fail FindClass IpAssignment %d", __LINE__);
+    AutoPtr<IWifiEnterpriseConfig> enterpriseConfig;
+    config->GetEnterpriseConfig((IWifiEnterpriseConfig**)&enterpriseConfig);
+    if (enterpriseConfig != NULL) {
+        jobject jenterpriseConfig = Util::ToJavaWifiEnterpriseConfig(env, enterpriseConfig);
 
-    Elastos::Droid::Net::Wifi::IpAssignment ipAssignment;
-    config->GetIpAssignment(&ipAssignment);
-    switch(ipAssignment) {
-        case Elastos::Droid::Net::Wifi::IpAssignment_STATIC: {
-            jfieldID f = env->GetStaticFieldID(ipaClass, "STATIC", "Landroid/net/wifi/WifiConfiguration$IpAssignment;");
-            CheckErrorAndLog(env,"ToJavaWifiConfiguration", "GetStaticFieldID: STATIC : %d!\n", __LINE__);
+        jfieldID f = env->GetFieldID(wcKlass, "enterpriseConfig", "Landroid/net/wifi/WifiEnterpriseConfig;");
+        Util::CheckErrorAndLog(env, "ToJavaWifiConfiguration", "Fail GetFieldID: enterpriseConfig : %d!\n", __LINE__);
 
-            jobject jSTATIC = env->GetStaticObjectField(ipaClass, f);
-            CheckErrorAndLog(env,"ToJavaWifiConfiguration", "GetStaticObjectField: STATIC : %d!\n", __LINE__);
+        env->SetObjectField(jconfig, f, jenterpriseConfig);
+        Util::CheckErrorAndLog(env, "ToJavaWifiConfiguration", "Fail SetObjectField: enterpriseConfig : %d!\n", __LINE__);
 
-            f = env->GetFieldID(wcKlass, "ipAssignment", "Landroid/net/wifi/WifiConfiguration$IpAssignment;");
-            Util::CheckErrorAndLog(env, "ToJavaWifiConfiguration", "Fail GetFieldID: IpAssignment : %d!\n", __LINE__);
-
-            env->SetObjectField(jconfig, f, jSTATIC);
-            Util::CheckErrorAndLog(env, "ToJavaWifiConfiguration", "Fail SetObjectField: jSTATIC : %d!\n", __LINE__);
-
-            env->DeleteLocalRef(jSTATIC);
-            break;
-        }
-        case Elastos::Droid::Net::Wifi::IpAssignment_DHCP: {
-            jfieldID f = env->GetStaticFieldID(ipaClass, "DHCP", "Landroid/net/wifi/WifiConfiguration$IpAssignment;");
-            CheckErrorAndLog(env,"ToJavaWifiConfiguration", "GetStaticFieldID: DHCP : %d!\n", __LINE__);
-
-            jobject jDHCP = env->GetStaticObjectField(ipaClass, f);
-            CheckErrorAndLog(env,"ToJavaWifiConfiguration", "GetStaticObjectField: DHCP : %d!\n", __LINE__);
-
-            f = env->GetFieldID(wcKlass, "ipAssignment", "Landroid/net/wifi/WifiConfiguration$IpAssignment;");
-            Util::CheckErrorAndLog(env, "ToJavaWifiConfiguration", "Fail GetFieldID: IpAssignment : %d!\n", __LINE__);
-
-            env->SetObjectField(jconfig, f, jDHCP);
-            Util::CheckErrorAndLog(env, "ToJavaWifiConfiguration", "Fail SetObjectField: jDHCP : %d!\n", __LINE__);
-
-            env->DeleteLocalRef(jDHCP);
-            break;
-        }
-        default: {
-            jfieldID f = env->GetStaticFieldID(ipaClass, "UNASSIGNED", "Landroid/net/wifi/WifiConfiguration$IpAssignment;");
-            CheckErrorAndLog(env,"ToJavaWifiConfiguration", "GetStaticFieldID: UNASSIGNED : %d!\n", __LINE__);
-
-            jobject jUNASSIGNED = env->GetStaticObjectField(ipaClass, f);
-            CheckErrorAndLog(env,"ToJavaWifiConfiguration", "GetStaticObjectField: UNASSIGNED : %d!\n", __LINE__);
-
-            f = env->GetFieldID(wcKlass, "ipAssignment", "Landroid/net/wifi/WifiConfiguration$IpAssignment;");
-            Util::CheckErrorAndLog(env, "ToJavaWifiConfiguration", "Fail GetFieldID: IpAssignment : %d!\n", __LINE__);
-
-            env->SetObjectField(jconfig, f, jUNASSIGNED);
-            Util::CheckErrorAndLog(env, "ToJavaWifiConfiguration", "Fail SetObjectField: jUNASSIGNED : %d!\n", __LINE__);
-
-            env->DeleteLocalRef(jUNASSIGNED);
-            break;
-        }
+        env->DeleteLocalRef(jenterpriseConfig);
     }
 
-    jclass psClass = env->FindClass("android/net/wifi/WifiConfiguration$ProxySettings");
-    Util::CheckErrorAndLog(env, "ToJavaWifiConfiguration", "Fail FindClass ProxySettings %d", __LINE__);
+    AutoPtr<IIpConfiguration> ipConfiguration;
+    config->GetIpConfiguration((IIpConfiguration**)&ipConfiguration);
+    if (ipConfiguration != NULL) {
+        jobject jipConfiguration = Util::ToJavaIpConfiguration(env, ipConfiguration);
 
-    Elastos::Droid::Net::Wifi::ProxySettings proxySettings;
-    config->GetIpAssignment(&proxySettings);
-    switch(proxySettings) {
-        case Elastos::Droid::Net::Wifi::ProxySettings_NONE: {
-            jfieldID f = env->GetStaticFieldID(psClass, "NONE", "Landroid/net/wifi/WifiConfiguration$ProxySettings;");
-            CheckErrorAndLog(env,"ToJavaWifiConfiguration", "GetStaticFieldID: NONE : %d!\n", __LINE__);
+        jfieldID f = env->GetFieldID(wcKlass, "mIpConfiguration", "Landroid/net/IpConfiguration;");
+        Util::CheckErrorAndLog(env, "ToJavaWifiConfiguration", "Fail GetFieldID: mIpConfiguration : %d!\n", __LINE__);
 
-            jobject jNONE = env->GetStaticObjectField(psClass, f);
-            CheckErrorAndLog(env,"ToJavaWifiConfiguration", "GetStaticObjectField: STATIC : %d!\n", __LINE__);
+        env->SetObjectField(jconfig, f, jipConfiguration);
+        Util::CheckErrorAndLog(env, "ToJavaWifiConfiguration", "Fail SetObjectField: mIpConfiguration : %d!\n", __LINE__);
 
-            f = env->GetFieldID(wcKlass, "proxySettings", "Landroid/net/wifi/WifiConfiguration$ProxySettings;");
-            Util::CheckErrorAndLog(env, "ToJavaWifiConfiguration", "Fail GetFieldID: ProxySettings : %d!\n", __LINE__);
-
-            env->SetObjectField(jconfig, f, jNONE);
-            Util::CheckErrorAndLog(env, "ToJavaWifiConfiguration", "Fail SetObjectField: jSTATIC : %d!\n", __LINE__);
-
-            env->DeleteLocalRef(jNONE);
-            break;
-        }
-        case Elastos::Droid::Net::Wifi::ProxySettings_STATIC: {
-            jfieldID f = env->GetStaticFieldID(psClass, "STATIC", "Landroid/net/wifi/WifiConfiguration$ProxySettings;");
-            CheckErrorAndLog(env,"ToJavaWifiConfiguration", "GetStaticFieldID: STATIC : %d!\n", __LINE__);
-
-            jobject jSTATIC = env->GetStaticObjectField(psClass, f);
-            CheckErrorAndLog(env,"ToJavaWifiConfiguration", "GetStaticObjectField: STATIC : %d!\n", __LINE__);
-
-            f = env->GetFieldID(wcKlass, "proxySettings", "Landroid/net/wifi/WifiConfiguration$ProxySettings;");
-            Util::CheckErrorAndLog(env, "ToJavaWifiConfiguration", "Fail GetFieldID: ProxySettings : %d!\n", __LINE__);
-
-            env->SetObjectField(jconfig, f, jSTATIC);
-            Util::CheckErrorAndLog(env, "ToJavaWifiConfiguration", "Fail SetObjectField: jSTATIC : %d!\n", __LINE__);
-
-            env->DeleteLocalRef(jSTATIC);
-            break;
-        }
-        default: {
-            jfieldID f = env->GetStaticFieldID(psClass, "UNASSIGNED", "Landroid/net/wifi/WifiConfiguration$ProxySettings;");
-            CheckErrorAndLog(env,"ToJavaWifiConfiguration", "GetStaticFieldID: UNASSIGNED : %d!\n", __LINE__);
-
-            jobject jUNASSIGNED = env->GetStaticObjectField(psClass, f);
-            CheckErrorAndLog(env,"ToJavaWifiConfiguration", "GetStaticObjectField: UNASSIGNED : %d!\n", __LINE__);
-
-            f = env->GetFieldID(wcKlass, "proxySettings", "Landroid/net/wifi/WifiConfiguration$ProxySettings;");
-            Util::CheckErrorAndLog(env, "ToJavaWifiConfiguration", "Fail GetFieldID: ProxySettings : %d!\n", __LINE__);
-
-            env->SetObjectField(jconfig, f, jUNASSIGNED);
-            Util::CheckErrorAndLog(env, "ToJavaWifiConfiguration", "Fail SetObjectField: jUNASSIGNED : %d!\n", __LINE__);
-
-            env->DeleteLocalRef(jUNASSIGNED);
-            break;
-        }
+        env->DeleteLocalRef(jipConfiguration);
     }
 
-    AutoPtr<ILinkProperties> linkProperties;
-    config->GetLinkProperties((ILinkProperties**)&linkProperties);
-    if (linkProperties != NULL) {
-        jobject jlinkProperties = Util::ToJavaLinkProperties(env, linkProperties);
+    String dhcpServer;
+    config->GetDhcpServer(&dhcpServer);
+    SetJavaStringField(env, wcKlass, jconfig, dhcpServer, "dhcpServer", "ToJavaWifiConfiguration");
 
-        jfieldID f = env->GetFieldID(wcKlass, "linkProperties", "Landroid/net/LinkProperties;");
-        Util::CheckErrorAndLog(env, "ToJavaWifiConfiguration", "Fail GetFieldID: linkProperties : %d!\n", __LINE__);
+    String defaultGwMacAddress;
+    config->GetDefaultGwMacAddress(&defaultGwMacAddress);
+    SetJavaStringField(env, wcKlass, jconfig, defaultGwMacAddress, "defaultGwMacAddress", "ToJavaWifiConfiguration");
 
-        env->SetObjectField(jconfig, f, jlinkProperties);
-        Util::CheckErrorAndLog(env, "ToJavaWifiConfiguration", "Fail SetObjectField: linkProperties : %d!\n", __LINE__);
+    config->GetAutoJoinStatus(&tempInt);
+    Util::SetJavaIntField(env, wcKlass, jconfig, tempInt, "autoJoinStatus", "ToJavaWifiConfiguration");
 
-        env->DeleteLocalRef(jlinkProperties);
-    }
+    config->GetSelfAdded(&tempBool);
+    Util::SetJavaBoolField(env, wcKlass, jconfig, tempBool, "selfAdded", "ToJavaWifiConfiguration");
+
+    config->GetDidSelfAdd(&tempBool);
+    Util::SetJavaBoolField(env, wcKlass, jconfig, tempBool, "didSelfAdd", "ToJavaWifiConfiguration");
+
+    config->GetNoInternetAccess(&tempBool);
+    Util::SetJavaBoolField(env, wcKlass, jconfig, tempBool, "noInternetAccess", "ToJavaWifiConfiguration");
+
+    config->GetCreatorUid(&tempInt);
+    Util::SetJavaIntField(env, wcKlass, jconfig, tempInt, "creatorUid", "ToJavaWifiConfiguration");
+
+    config->GetLastConnectUid(&tempInt);
+    Util::SetJavaIntField(env, wcKlass, jconfig, tempInt, "lastConnectUid", "ToJavaWifiConfiguration");
+
+    config->GetLastUpdateUid(&tempInt);
+    Util::SetJavaIntField(env, wcKlass, jconfig, tempInt, "lastUpdateUid", "ToJavaWifiConfiguration");
+
+    Int64 blackListTimestamp;
+    config->GetBlackListTimestamp(&blackListTimestamp);
+    Util::SetJavaIntField(env, wcKlass, jconfig, blackListTimestamp, "blackListTimestamp", "ToJavaWifiConfiguration");
+
+    Int64 lastConnectionFailure;
+    config->GetLastConnectionFailure(&lastConnectionFailure);
+    Util::SetJavaIntField(env, wcKlass, jconfig, lastConnectionFailure, "lastConnectionFailure", "ToJavaWifiConfiguration");
+
+    config->GetNumConnectionFailures(&tempInt);
+    Util::SetJavaIntField(env, wcKlass, jconfig, tempInt, "numConnectionFailures", "ToJavaWifiConfiguration");
+
+    config->GetNumIpConfigFailures(&tempInt);
+    Util::SetJavaIntField(env, wcKlass, jconfig, tempInt, "numIpConfigFailures", "ToJavaWifiConfiguration");
+
+    config->GetNumAuthFailures(&tempInt);
+    Util::SetJavaIntField(env, wcKlass, jconfig, tempInt, "numAuthFailures", "ToJavaWifiConfiguration");
+
+    config->GetNumScorerOverride(&tempInt);
+    Util::SetJavaIntField(env, wcKlass, jconfig, tempInt, "numScorerOverride", "ToJavaWifiConfiguration");
+
+    config->GetNumScorerOverrideAndSwitchedNetwork(&tempInt);
+    Util::SetJavaIntField(env, wcKlass, jconfig, tempInt, "numScorerOverrideAndSwitchedNetwork", "ToJavaWifiConfiguration");
+
+    config->GetNumAssociation(&tempInt);
+    Util::SetJavaIntField(env, wcKlass, jconfig, tempInt, "numAssociation", "ToJavaWifiConfiguration");
+
+    config->GetNumUserTriggeredWifiDisableLowRSSI(&tempInt);
+    Util::SetJavaIntField(env, wcKlass, jconfig, tempInt, "numUserTriggeredWifiDisableLowRSSI", "ToJavaWifiConfiguration");
+
+    config->GetNumUserTriggeredWifiDisableBadRSSI(&tempInt);
+    Util::SetJavaIntField(env, wcKlass, jconfig, tempInt, "numUserTriggeredWifiDisableBadRSSI", "ToJavaWifiConfiguration");
+
+    config->GetNumUserTriggeredWifiDisableNotHighRSSI(&tempInt);
+    Util::SetJavaIntField(env, wcKlass, jconfig, tempInt, "numUserTriggeredWifiDisableNotHighRSSI", "ToJavaWifiConfiguration");
+
+    config->GetNumTicksAtLowRSSI(&tempInt);
+    Util::SetJavaIntField(env, wcKlass, jconfig, tempInt, "numTicksAtLowRSSI", "ToJavaWifiConfiguration");
+
+    config->GetNumTicksAtBadRSSI(&tempInt);
+    Util::SetJavaIntField(env, wcKlass, jconfig, tempInt, "numTicksAtBadRSSI", "ToJavaWifiConfiguration");
+
+    config->GetNumTicksAtNotHighRSSI(&tempInt);
+    Util::SetJavaIntField(env, wcKlass, jconfig, tempInt, "numTicksAtNotHighRSSI", "ToJavaWifiConfiguration");
+
+    config->GetNumUserTriggeredJoinAttempts(&tempInt);
+    Util::SetJavaIntField(env, wcKlass, jconfig, tempInt, "numUserTriggeredJoinAttempts", "ToJavaWifiConfiguration");
+
+    config->GetAutoJoinUseAggressiveJoinAttemptThreshold(&tempInt);
+    Util::SetJavaIntField(env, wcKlass, jconfig, tempInt, "autoJoinUseAggressiveJoinAttemptThreshold", "ToJavaWifiConfiguration");
+
+    config->GetAutoJoinBailedDueToLowRssi(&tempBool);
+    Util::SetJavaBoolField(env, wcKlass, jconfig, tempBool, "autoJoinBailedDueToLowRssi", "ToJavaWifiConfiguration");
 
     env->DeleteLocalRef(wcKlass);
+    return jconfig;
+}
+
+jobject Util::ToJavaWifiEnterpriseConfig(
+    /* [in] */ JNIEnv* env,
+    /* [in] */ IWifiEnterpriseConfig* config)
+{
+    if (env == NULL || config == NULL) {
+        LOGGERE("ToJavaWifiEnterpriseConfig", "Invalid arguments!");
+        return NULL;
+    }
+
+    jclass parcelClass = env->FindClass("android/os/Parcel");
+    Util::CheckErrorAndLog(env, "ToJavaWifiEnterpriseConfig", "FindClass: Parcel : %d", __LINE__);
+
+    jmethodID m = env->GetStaticMethodID(parcelClass, "obtain", "(J)Landroid/os/Parcel;");
+    Util::CheckErrorAndLog(env, "ToJavaWifiEnterpriseConfig", "GetStaticMethodID: obtain : %d", __LINE__);
+
+    jobject jparcel = env->CallStaticObjectMethod(parcelClass, m, 0);
+    Util::CheckErrorAndLog(env, "ToJavaWifiEnterpriseConfig", "CallStaticObjectMethod: obtain : %d", __LINE__);
+
+    jmethodID mWriteInt = env->GetMethodID(parcelClass, "writeInt", "(I)V");
+    jmethodID mWriteString = env->GetMethodID(parcelClass, "writeString", "(Ljava/lang/String;)V");
+    jmethodID mWriteByteArray = env->GetMethodID(parcelClass, "writeByteArray", "([B)V");
+
+    AutoPtr<IParcel> source;
+    CParcel::New((IParcel**)&source);
+    IParcelable::Probe(config)->WriteToParcel(source);
+    source->SetDataPosition(0);
+
+    Int32 count;
+    source->ReadInt32(&count);
+    env->CallVoidMethod(jparcel, mWriteInt, count);
+    CheckErrorAndLog(env, "ToJavaWifiEnterpriseConfig", "CallVoidMethod: writeInt", __LINE__);
+    for (Int32 i = 0; i < count; i++) {
+        String key, value;
+        source->ReadString(&key);
+        source->ReadString(&value);
+        jstring jkey = ToJavaString(env, key);
+        jstring jvalue = ToJavaString(env, value);
+        env->CallVoidMethod(jparcel, mWriteString, jkey);
+        CheckErrorAndLog(env, "ToJavaWifiEnterpriseConfig", "CallVoidMethod: writeString", __LINE__);
+        env->CallVoidMethod(jparcel, mWriteString, jvalue);
+        CheckErrorAndLog(env, "ToJavaWifiEnterpriseConfig", "CallVoidMethod: writeString", __LINE__);
+        env->DeleteLocalRef(jkey);
+        env->DeleteLocalRef(jvalue);
+    }
+
+    Int32 len;
+    source->ReadInt32(&len);
+    env->CallVoidMethod(jparcel, mWriteInt, len);
+    CheckErrorAndLog(env, "ToJavaWifiEnterpriseConfig", "CallVoidMethod: writeInt", __LINE__);
+    if (len > 0) {
+        AutoPtr<ArrayOf<Byte> > byteArray;
+        source->ReadArrayOf((Handle32*)&byteArray);
+        jbyteArray jbytearray = ToJavaByteArray(env, byteArray);
+        env->CallVoidMethod(jparcel, mWriteByteArray, jbytearray);
+        CheckErrorAndLog(env, "ToJavaWifiEnterpriseConfig", "CallVoidMethod: writeByteArray", __LINE__);
+        env->DeleteLocalRef(jbytearray);
+    }
+
+    source->ReadInt32(&len);
+    env->CallVoidMethod(jparcel, mWriteInt, len);
+    CheckErrorAndLog(env, "ToJavaWifiEnterpriseConfig", "CallVoidMethod: writeInt", __LINE__);
+    if (len > 0) {
+        AutoPtr<ArrayOf<Byte> > byteArray;
+        source->ReadArrayOf((Handle32*)&byteArray);
+        jbyteArray jbytearray = ToJavaByteArray(env, byteArray);
+        env->CallVoidMethod(jparcel, mWriteByteArray, jbytearray);
+        CheckErrorAndLog(env, "ToJavaWifiEnterpriseConfig", "CallVoidMethod: writeByteArray", __LINE__);
+        env->DeleteLocalRef(jbytearray);
+        String algorithm;
+        source->ReadString(&algorithm);
+        jstring jalgorithm = ToJavaString(env, algorithm);
+        env->CallVoidMethod(jparcel, mWriteString, jalgorithm);
+        CheckErrorAndLog(env, "ToJavaWifiEnterpriseConfig", "CallVoidMethod: writeString", __LINE__);
+        env->DeleteLocalRef(jalgorithm);
+    }
+
+    source->ReadInt32(&len);
+    env->CallVoidMethod(jparcel, mWriteInt, len);
+    CheckErrorAndLog(env, "ToJavaWifiEnterpriseConfig", "CallVoidMethod: writeInt", __LINE__);
+    if (len > 0) {
+        AutoPtr<ArrayOf<Byte> > byteArray;
+        source->ReadArrayOf((Handle32*)&byteArray);
+        jbyteArray jbytearray = ToJavaByteArray(env, byteArray);
+        env->CallVoidMethod(jparcel, mWriteByteArray, jbytearray);
+        CheckErrorAndLog(env, "ToJavaWifiEnterpriseConfig", "CallVoidMethod: writeByteArray", __LINE__);
+        env->DeleteLocalRef(jbytearray);
+    }
+
+    jmethodID mSetDataPosition = env->GetMethodID(parcelClass, "setDataPosition", "(I)V");
+    env->CallVoidMethod(jparcel, mSetDataPosition, 0);
+    CheckErrorAndLog(env, "ToJavaWifiEnterpriseConfig", "CallVoidMethod: setDataPosition", __LINE__);
+
+    jclass wecKlass = env->FindClass("android/net/wifi/WifiEnterpriseConfig");
+    Util::CheckErrorAndLog(env, "ToJavaWifiEnterpriseConfig", "FindClass: WifiEnterpriseConfig line: %d", __LINE__);
+
+    jfieldID f = env->GetStaticFieldID(wecKlass, "CREATOR", "Landroid/os/Parcelable$Creator;");
+    Util::CheckErrorAndLog(env, "ToJavaWifiEnterpriseConfig", "Fail GetStaticFieldID: SIMPLIFIED_CHINESE : %d", __LINE__);
+
+    jobject jcreater = env->GetStaticObjectField(wecKlass, f);
+    Util::CheckErrorAndLog(env, "ToJavaWifiEnterpriseConfig", "Fail GetStaticObjectField: %d", __LINE__);
+
+    jclass cKlass = env->GetObjectClass(jcreater);
+    Util::CheckErrorAndLog(env, "ToJavaWifiEnterpriseConfig", "GetObjectClass: Parcelable$Creator line: %d", __LINE__);
+
+    m = env->GetMethodID(cKlass, "createFromParcel", "(Landroid/os/Parcel;)Landroid/net/wifi/WifiEnterpriseConfig;");
+    Util::CheckErrorAndLog(env, "ToJavaWifiEnterpriseConfig", "GetMethodID: WifiEnterpriseConfig line: %d", __LINE__);
+
+    jobject jconfig = env->CallObjectMethod(cKlass, m, jparcel);
+    Util::CheckErrorAndLog(env, "ToJavaWifiEnterpriseConfig", "NewObject: WifiEnterpriseConfig line: %d", __LINE__);
+
+    env->DeleteLocalRef(parcelClass);
+    env->DeleteLocalRef(jparcel);
+    env->DeleteLocalRef(wecKlass);
+    env->DeleteLocalRef(jcreater);
+    env->DeleteLocalRef(cKlass);
+    return jconfig;
+}
+
+jobject Util::ToJavaIpConfiguration(
+    /* [in] */ JNIEnv* env,
+    /* [in] */ IIpConfiguration* config)
+{
+    if (env == NULL || config == NULL) {
+        LOGGERE("ToJavaIpConfiguration", "Invalid arguments!");
+        return NULL;
+    }
+
+    jclass ipaClass = env->FindClass("android/net/wifi/IpConfiguration$IpAssignment");
+    Util::CheckErrorAndLog(env, "ToJavaWifiConfiguration", "Fail FindClass IpAssignment %d", __LINE__);
+
+    Elastos::Droid::Net::IpConfigurationIpAssignment ipAssignment;
+    config->GetIpAssignment(&ipAssignment);
+    jobject jipAssignment = NULL;
+    switch (ipAssignment) {
+        case Elastos::Droid::Net::STATIC_IpAssignment: {
+            jfieldID f = env->GetStaticFieldID(ipaClass, "STATIC", "Landroid/net/IpConfiguration$IpAssignment;");
+            CheckErrorAndLog(env,"ToJavaIpConfiguration", "GetStaticFieldID: STATIC : %d!\n", __LINE__);
+
+            jipAssignment = env->GetStaticObjectField(ipaClass, f);
+            CheckErrorAndLog(env,"ToJavaIpConfiguration", "GetStaticObjectField: STATIC : %d!\n", __LINE__);
+            break;
+        }
+        case Elastos::Droid::Net::DHCP_IpAssignment: {
+            jfieldID f = env->GetStaticFieldID(ipaClass, "DHCP", "Landroid/net/IpConfiguration$IpAssignment;");
+            CheckErrorAndLog(env,"ToJavaIpConfiguration", "GetStaticFieldID: DHCP : %d!\n", __LINE__);
+
+            jipAssignment = env->GetStaticObjectField(ipaClass, f);
+            CheckErrorAndLog(env,"ToJavaIpConfiguration", "GetStaticObjectField: DHCP : %d!\n", __LINE__);
+            break;
+        }
+        default: {
+            jfieldID f = env->GetStaticFieldID(ipaClass, "UNASSIGNED", "Landroid/net/IpConfiguration$IpAssignment;");
+            CheckErrorAndLog(env,"ToJavaIpConfiguration", "GetStaticFieldID: UNASSIGNED : %d!\n", __LINE__);
+
+            jipAssignment = env->GetStaticObjectField(ipaClass, f);
+            CheckErrorAndLog(env,"ToJavaIpConfiguration", "GetStaticObjectField: UNASSIGNED : %d!\n", __LINE__);
+            break;
+        }
+    }
+
+    jclass psClass = env->FindClass("android/net/IpConfiguration$ProxySettings");
+    Util::CheckErrorAndLog(env, "ToJavaIpConfiguration", "Fail FindClass ProxySettings %d", __LINE__);
+
+    Elastos::Droid::Net::IpConfigurationProxySettings proxySettings;
+    config->GetIpAssignment(&proxySettings);
+    jobject jproxySettings = NULL;
+    switch(proxySettings) {
+        case Elastos::Droid::Net::NONE_ProxySettings: {
+            jfieldID f = env->GetStaticFieldID(psClass, "NONE", "Landroid/net/IpConfiguration$ProxySettings;");
+            CheckErrorAndLog(env,"ToJavaIpConfiguration", "GetStaticFieldID: NONE : %d!\n", __LINE__);
+
+            jproxySettings = env->GetStaticObjectField(psClass, f);
+            CheckErrorAndLog(env,"ToJavaIpConfiguration", "GetStaticObjectField: STATIC : %d!\n", __LINE__);
+            break;
+        }
+        case Elastos::Droid::Net::STATIC_ProxySettings: {
+            jfieldID f = env->GetStaticFieldID(psClass, "STATIC", "Landroid/net/IpConfiguration$ProxySettings;");
+            CheckErrorAndLog(env,"ToJavaIpConfiguration", "GetStaticFieldID: STATIC : %d!\n", __LINE__);
+
+            jproxySettings = env->GetStaticObjectField(psClass, f);
+            CheckErrorAndLog(env,"ToJavaIpConfiguration", "GetStaticObjectField: STATIC : %d!\n", __LINE__);
+            break;
+        }
+        case Elastos::Droid::Net::PAC_ProxySettings: {
+            jfieldID f = env->GetStaticFieldID(psClass, "PAC", "Landroid/net/IpConfiguration$ProxySettings;");
+            CheckErrorAndLog(env,"ToJavaIpConfiguration", "GetStaticFieldID: PAC : %d!\n", __LINE__);
+
+            jproxySettings = env->GetStaticObjectField(psClass, f);
+            CheckErrorAndLog(env,"ToJavaIpConfiguration", "GetStaticObjectField: PAC : %d!\n", __LINE__);
+            break;
+        }
+        default: {
+            jfieldID f = env->GetStaticFieldID(psClass, "UNASSIGNED", "Landroid/net/IpConfiguration$ProxySettings;");
+            CheckErrorAndLog(env,"ToJavaIpConfiguration", "GetStaticFieldID: UNASSIGNED : %d!\n", __LINE__);
+
+            jproxySettings = env->GetStaticObjectField(psClass, f);
+            CheckErrorAndLog(env,"ToJavaIpConfiguration", "GetStaticObjectField: UNASSIGNED : %d!\n", __LINE__);
+            break;
+        }
+    }
+
+    AutoPtr<IStaticIpConfiguration> staticIpConfiguration;
+    config->GetStaticIpConfiguration((IStaticIpConfiguration**)&staticIpConfiguration);
+    jobject jstaticIpConfiguration = ToJavaStaticIpConfiguration(env, staticIpConfiguration);
+
+    AutoPtr<IProxyInfo> httpProxy;
+    config->GetHttpProxy((IProxyInfo**)&httpProxy);
+    jobject jhttpProxy = Util::ToJavaProxyInfo(env, httpProxy);
+
+    jclass icKlass = env->FindClass("android/net/IpConfiguration");
+    Util::CheckErrorAndLog(env, "ToJavaIpConfiguration", "FindClass: IpConfiguration line: %d", __LINE__);
+
+    jmethodID m = env->GetMethodID(icKlass, "<init>", "(Landroid/net/IpConfiguration$IpAssignment;"
+        "Landroid/net/IpConfiguration$ProxySettings;Landroid/net/StaticIpConfiguration;Landroid/net/ProxyInfo)V");
+    Util::CheckErrorAndLog(env, "ToJavaIpConfiguration", "GetMethodID: IpConfiguration line: %d", __LINE__);
+
+    jobject jconfig = env->NewObject(icKlass, m, jipAssignment, jproxySettings, jstaticIpConfiguration, jhttpProxy);
+    Util::CheckErrorAndLog(env, "ToJavaIpConfiguration", "NewObject: IpConfiguration line: %d", __LINE__);
+
+    env->DeleteLocalRef(icKlass);
     env->DeleteLocalRef(ipaClass);
     env->DeleteLocalRef(psClass);
+    env->DeleteLocalRef(jipAssignment);
+    env->DeleteLocalRef(jproxySettings);
+    env->DeleteLocalRef(jstaticIpConfiguration);
+    env->DeleteLocalRef(jhttpProxy);
+
+    return jconfig;
+}
+
+jobject Util::ToJavaStaticIpConfiguration(
+    /* [in] */ JNIEnv* env,
+    /* [in] */ IStaticIpConfiguration* config)
+{
+    if (env == NULL || config == NULL) {
+        LOGGERE("ToJavaStaticIpConfiguration", "Invalid arguments!");
+        return NULL;
+    }
+
+    jclass sicKlass = env->FindClass("android/net/StaticIpConfiguration");
+    Util::CheckErrorAndLog(env, "ToJavaStaticIpConfiguration", "FindClass: StaticIpConfiguration line: %d", __LINE__);
+
+    jmethodID m = env->GetMethodID(sicKlass, "<init>", "()V");
+    Util::CheckErrorAndLog(env, "ToJavaStaticIpConfiguration", "GetMethodID: StaticIpConfiguration line: %d", __LINE__);
+
+    jobject jconfig = env->NewObject(sicKlass, m);
+    Util::CheckErrorAndLog(env, "ToJavaStaticIpConfiguration", "NewObject: StaticIpConfiguration line: %d", __LINE__);
+
+    AutoPtr<ILinkAddress> ipAddress;
+    config->GetIpAddress((ILinkAddress**)&ipAddress);
+
+    jobject jipAddress = ToJavaLinkAddress(env, ipAddress);
+    jfieldID f = env->GetFieldID(sicKlass, "ipAddress", "Landroid/net/LinkAddress;");
+    Util::CheckErrorAndLog(env, "ToJavaStaticIpConfiguration", "Fail GetFieldID: ipAddress : %d!\n", __LINE__);
+
+    env->SetObjectField(jconfig, f, jipAddress);
+    Util::CheckErrorAndLog(env, "ToJavaStaticIpConfiguration", "Fail SetObjectField: ipAddress : %d!\n", __LINE__);
+
+    AutoPtr<IInetAddress> gateway;
+    config->GetGateway((IInetAddress**)&gateway);
+
+    jobject jgateway = ToJavaInetAddress(env, gateway);
+    f = env->GetFieldID(sicKlass, "gateway", "Ljava/net/InetAddress;");
+    Util::CheckErrorAndLog(env, "ToJavaStaticIpConfiguration", "Fail GetFieldID: gateway : %d!\n", __LINE__);
+
+    env->SetObjectField(jconfig, f, jgateway);
+    Util::CheckErrorAndLog(env, "ToJavaStaticIpConfiguration", "Fail SetObjectField: gateway : %d!\n", __LINE__);
+
+    AutoPtr<IArrayList> dnsServers;
+    config->GetDnsServers((IArrayList**)&dnsServers);
+    Int32 size = 0;
+    if (dnsServers)
+        dnsServers->GetSize(&size);
+    if (size > 0) {
+        jfieldID f = env->GetFieldID(sicKlass, "dnsServers", "Ljava/util/ArrayList;");
+        Util::CheckErrorAndLog(env, "ToJavaStaticIpConfiguration", "GetFieldID: dnsServers line: %d", __LINE__);
+
+        jobject jdnsServers = env->GetObjectField(jconfig, f);
+        Util::CheckErrorAndLog(env, "ToJavaStaticIpConfiguration", "GetObjectField: dnsServers line: %d", __LINE__);
+
+        jclass listKlass = env->FindClass("java/util/ArrayList");
+        CheckErrorAndLog(env, "ToJavaStaticIpConfiguration", "FindClass: ArrayList : %d!", __LINE__);
+
+        jmethodID mAdd = env->GetMethodID(listKlass, "add", "(Ljava/lang/Object;)Z");
+        CheckErrorAndLog(env, "ToJavaStaticIpConfiguration", "GetMethodID: add : %d!", __LINE__);
+
+        for (Int32 i = 0; i < size; i++) {
+            AutoPtr<IInterface> item;
+            dnsServers->Get(i, (IInterface**)&item);
+            jobject jitem = ToJavaInetAddress(env, IInetAddress::Probe(item));
+            env->CallBooleanMethod(jdnsServers, mAdd, jitem);
+            Util::CheckErrorAndLog(env, "ToJavaStaticIpConfiguration", "CallBooleanMethod: add : %d!\n", __LINE__);
+            env->DeleteLocalRef(jitem);
+        }
+        env->DeleteLocalRef(jdnsServers);
+        env->DeleteLocalRef(listKlass);
+    }
+
+    String domains;
+    config->GetDomains(&domains);
+    SetJavaStringField(env, sicKlass, jconfig, domains, "domains", "ToJavaStaticIpConfiguration");
+
+    env->DeleteLocalRef(sicKlass);
+    env->DeleteLocalRef(jipAddress);
+    env->DeleteLocalRef(jgateway);
+
     return jconfig;
 }
 
@@ -9632,42 +10644,31 @@ jobject Util::ToJavaWifiDisplayStatus(
     jclass wifiDisplayKlass = env->FindClass("android/hardware/display/WifiDisplay");
     Util::CheckErrorAndLog(env, "ToJavaWifiDisplayStatus", "FindClass: WifiDisplay %d", __LINE__);
 
-    AutoPtr<ArrayOf<IWifiDisplay*> > availableDisplays;
-    status->GetAvailableDisplays((ArrayOf<IWifiDisplay*>**)&availableDisplays);
+    AutoPtr<ArrayOf<IWifiDisplay*> > displays;
+    status->GetDisplays((ArrayOf<IWifiDisplay*>**)&displays);
 
-    jobjectArray javailableDisplays = NULL;
-    if(availableDisplays != NULL){
-        int size = availableDisplays->GetLength();
-        javailableDisplays = env->NewObjectArray((jsize)size, wifiDisplayKlass, 0);
+    jobjectArray jdisplays = NULL;
+    if (displays != NULL){
+        int size = displays->GetLength();
+        jdisplays = env->NewObjectArray((jsize)size, wifiDisplayKlass, 0);
         Util::CheckErrorAndLog(env, "ToJavaWifiDisplayStatus", "new object array: WifiDisplayStatus %d", __LINE__);
 
         for(Int32 i = 0; i < size; i++ ) {
-            jobject jwifiDisplay = ToJavaWifiDisplay(env, (*availableDisplays)[i]);
+            jobject jwifiDisplay = ToJavaWifiDisplay(env, (*displays)[i]);
             if (jwifiDisplay != NULL) {
-                env->SetObjectArrayElement(javailableDisplays, i, jwifiDisplay);
+                env->SetObjectArrayElement(jdisplays, i, jwifiDisplay);
                 Util::CheckErrorAndLog(env, "ToJavaWifiDisplayStatus", "SetObjectArrayElement fail %d", __LINE__);
                 env->DeleteLocalRef(jwifiDisplay);
             }
         }
     }
 
-    AutoPtr<ArrayOf<IWifiDisplay*> > rememberedDisplays;
-    status->GetRememberedDisplays((ArrayOf<IWifiDisplay*>**)&rememberedDisplays);
+    AutoPtr<IWifiDisplaySessionInfo> sessionInfo;
+    status->GetSessionInfo((IWifiDisplaySessionInfo**)&sessionInfo);
 
-    jobjectArray jrememberedDisplays = NULL;
-    if(rememberedDisplays != NULL){
-        int size = rememberedDisplays->GetLength();
-        jrememberedDisplays = env->NewObjectArray((jsize)size, wifiDisplayKlass, 0);
-        Util::CheckErrorAndLog(env, "ToJavaWifiDisplayStatus", "new object array: WifiDisplayStatus %d", __LINE__);
-
-        for(Int32 i = 0; i < size; i++ ) {
-            jobject jwifiDisplay = ToJavaWifiDisplay(env, (*rememberedDisplays)[i]);
-            if (jwifiDisplay != NULL) {
-                env->SetObjectArrayElement(jrememberedDisplays, i, jwifiDisplay);
-                Util::CheckErrorAndLog(env, "ToJavaWifiDisplayStatus", "SetObjectArrayElement fail %d", __LINE__);
-                env->DeleteLocalRef(jwifiDisplay);
-            }
-        }
+    jobject jsessionInfo = NULL;
+    if (sessionInfo != NULL) {
+        jsessionInfo = ToJavaWifiDisplaySessionInfo(env, sessionInfo);
     }
 
     env->DeleteLocalRef(wifiDisplayKlass);
@@ -9675,17 +10676,58 @@ jobject Util::ToJavaWifiDisplayStatus(
     jclass wifiDisplayStatusKlass = env->FindClass("android/hardware/display/WifiDisplayStatus");
     Util::CheckErrorAndLog(env, "ToJavaWifiDisplayStatus", "FindClass: WifiDisplayStatus %d", __LINE__);
 
-    jmethodID m = env->GetMethodID(wifiDisplayStatusKlass, "<init>", "(IIILandroid/hardware/display/WifiDisplay;[Landroid/hardware/display/WifiDisplay;[Landroid/hardware/display/WifiDisplay;)V");
+    jmethodID m = env->GetMethodID(wifiDisplayStatusKlass, "<init>", "(IIILandroid/hardware/display/WifiDisplay;"
+        "[Landroid/hardware/display/WifiDisplay;Landroid/hardware/display/WifiDisplaySessionInfo;)V");
     Util::CheckErrorAndLog(env, "ToJavaWifiDisplayStatus", "GetMethodID: WifiDisplayStatus() line: %d", __LINE__);
 
-    jobject jstatus = env->NewObject(wifiDisplayStatusKlass, m, featureState, scanState, activeDisplayState, jactiveDisplay, javailableDisplays, jrememberedDisplays);
+    jobject jstatus = env->NewObject(wifiDisplayStatusKlass, m, featureState, scanState, activeDisplayState,
+        jactiveDisplay, jdisplays, jsessionInfo);
 
     env->DeleteLocalRef(wifiDisplayStatusKlass);
     env->DeleteLocalRef(jactiveDisplay);
-    env->DeleteLocalRef(javailableDisplays);
-    env->DeleteLocalRef(jrememberedDisplays);
+    env->DeleteLocalRef(jdisplays);
+    env->DeleteLocalRef(jsessionInfo);
 
     return jstatus;
+}
+
+jobject Util::ToJavaWifiDisplaySessionInfo(
+    /* [in] */ JNIEnv* env,
+    /* [in] */ IWifiDisplaySessionInfo* info)
+{
+    if (env == NULL || info == NULL) {
+        LOGGERE("ToJavaWifiDisplaySessionInfo", "Invalid arguments!");
+        return NULL;
+    }
+
+    Boolean isClient;
+    info->IsClient(&isClient);
+    Int32 id;
+    info->GetSessionId(&id);
+    String gId;
+    info->GetGroupId(&gId);
+    jstring jgId = ToJavaString(env, gId);
+    String pp;
+    info->GetPassphrase(&pp);
+    jstring jpp = ToJavaString(env, pp);
+    String ip;
+    info->GetIP(&ip);
+    jstring jip = ToJavaString(env, ip);
+
+    jclass infoKlass = env->FindClass("android/hardware/display/WifiDisplaySessionInfo");
+    Util::CheckErrorAndLog(env, "ToJavaWifiDisplaySessionInfo", "FindClass: WifiDisplaySessionInfo %d", __LINE__);
+
+    jmethodID m = env->GetMethodID(infoKlass, "<init>", "(ZILjava/lang/String;Ljava/lang/String;Ljava/lang/String;)V");
+    Util::CheckErrorAndLog(env, "ToJavaWifiDisplaySessionInfo", "GetMethodID: WifiDisplaySessionInfo() line: %d", __LINE__);
+
+    jobject jinfo = env->NewObject(infoKlass, m, isClient, id, jgId, jpp, jip);
+
+    env->DeleteLocalRef(infoKlass);
+    env->DeleteLocalRef(jgId);
+    env->DeleteLocalRef(jpp);
+    env->DeleteLocalRef(jip);
+
+    return jinfo;
 }
 
 jobject Util::ToJavaWifiDisplay(
@@ -9709,13 +10751,19 @@ jobject Util::ToJavaWifiDisplay(
     display->GetDeviceAlias(&deviceAlias);
     jstring jdeviceAlias = ToJavaString(env, deviceAlias);
 
+    Boolean available, canConnect, remembered;
+    display->IsAvailable(&available);
+    display->CanConnect(&canConnect);
+    display->IsRemembered(&remembered);
+
     jclass wifiDisplayKlass = env->FindClass("android/hardware/display/WifiDisplay");
     Util::CheckErrorAndLog(env, "ToJavaWifiDisplay", "FindClass: WifiDisplay %d", __LINE__);
 
-    jmethodID m = env->GetMethodID(wifiDisplayKlass, "<init>", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V");
+    jmethodID m = env->GetMethodID(wifiDisplayKlass, "<init>", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ZZZ)V");
     Util::CheckErrorAndLog(env, "ToJavaWifiDisplay", "GetMethodID: WifiDisplay() line: %d", __LINE__);
 
-    jobject jdisplay = env->NewObject(wifiDisplayKlass, m, jdeviceAddress, jdeviceName, jdeviceAlias);
+    jobject jdisplay = env->NewObject(wifiDisplayKlass, m, jdeviceAddress, jdeviceName, jdeviceAlias,
+        available, canConnect, remembered);
     Util::CheckErrorAndLog(env, "ToJavaWifiDisplay", "NewObject: WifiDisplay() line: %d", __LINE__);
 
     env->DeleteLocalRef(wifiDisplayKlass);
@@ -9743,7 +10791,7 @@ jobject Util::ToJavaBitSet(
     Util::CheckErrorAndLog(env, "ToJavaBitSet", "GetMethodID: BitSet line: %d", __LINE__);
 
     AutoPtr<ArrayOf<Int64> > int64Arr;
-    bitSet->ToInt64Array((ArrayOf<Int64>**)&int64Arr);
+    bitSet->ToArray((ArrayOf<Int64>**)&int64Arr);
     if (int64Arr != NULL) {
         Int32 count = int64Arr->GetLength();
 
@@ -9793,14 +10841,15 @@ jobject Util::ToJavaContainerEncryptionParams(
         AutoPtr<IIvParameterSpec> spec = IIvParameterSpec::Probe(encryptionSpec);
         if (spec != NULL) {
             jencryptionSpec = Util::ToJavaIvParameterSpec(env, spec);
-        } else {
+        }
+        else {
             LOGGERE("ToJavaContainerEncryptionParams", "What's this encryptionSpec?");
             assert(0);
         }
     }
 
-    AutoPtr<Elastos::Crypto::ISecretKey> encryptionKey;
-    params->GetEncryptionKey((Elastos::Crypto::ISecretKey**)&encryptionKey);
+    AutoPtr<Elastosx::Crypto::ISecretKey> encryptionKey;
+    params->GetEncryptionKey((Elastosx::Crypto::ISecretKey**)&encryptionKey);
     jobject jencryptionKey = NULL;
     if (encryptionKey != NULL) {
         LOGGERE("ToJavaContainerEncryptionParams", "encryptionKey is NOT NULL!");
@@ -9817,8 +10866,8 @@ jobject Util::ToJavaContainerEncryptionParams(
         LOGGERE("ToJavaContainerEncryptionParams", "macSpec is NOT NULL!");
     }
 
-    AutoPtr<Elastos::Crypto::ISecretKey> macKey;
-    params->GetMacKey((Elastos::Crypto::ISecretKey**)&macKey);
+    AutoPtr<Elastosx::Crypto::ISecretKey> macKey;
+    params->GetMacKey((Elastosx::Crypto::ISecretKey**)&macKey);
     jobject jmacKey = NULL;
     if (macKey != NULL) {
         LOGGERE("ToJavaContainerEncryptionParams", "encryptionKey is NOT NULL!");
@@ -9871,8 +10920,7 @@ jobject Util::ToJavaIvParameterSpec(
     Util::CheckErrorAndLog(env, "ToJavaIvParameterSpec", "GetMethodID: IvParameterSpec line: %d", __LINE__);
 
     AutoPtr<ArrayOf<Byte> > iv;
-    LOGGERE("ToJavaIvParameterSpec", "IIvParameterSpec E_NOT_IMPLEMENTED!");
-    // spec->GetIV((ArrayOf<Byte>**)&iv);
+    spec->GetIV((ArrayOf<Byte>**)&iv);
     jbyteArray jiv = NULL;
     if (iv != NULL) {
         jiv = Util::ToJavaByteArray(env, iv);
@@ -9945,7 +10993,7 @@ Boolean Util::GetElClipData(
     jclass clipKlass = env->FindClass("android/content/ClipData");
     CheckErrorAndLog(env, "GetElClipData", "FindClass: ClipData : %d!\n", __LINE__);
 
-    if(NOERROR != CClipData::New(clip)) {
+    if (NOERROR != CClipData::New(clip)) {
         LOGGERE("GetElClipData", "create CCorrectionInfo fail!");
         *clip = NULL;
         return FALSE;
@@ -9983,12 +11031,14 @@ Boolean Util::GetElClipData(
             parcelable = (IParcelable*)icon->Probe(EIID_IParcelable);
             parcelable->WriteToParcel(source);
             env->DeleteLocalRef(jicon);
-        } else {
+        }
+        else {
             LOGGERE("GetElClipData", " GetElBitmap fail!");
             source->WriteInt32(0);
         }
 
-    } else {
+    }
+    else {
         source->WriteInt32(0);
     }
 
@@ -10018,7 +11068,7 @@ Boolean Util::GetElClipData(
                 CheckErrorAndLog(env, "GetElClipData", "CallObjectMethod: get : %d!\n", __LINE__);
 
                 AutoPtr<IClipDataItem> item;
-                if(!Util::GetElClipDataItem(env, jitem, (IClipDataItem**)&item)) {
+                if (!Util::GetElClipDataItem(env, jitem, (IClipDataItem**)&item)) {
                     LOGGERE("GetElClipData", "ToElClipDataItem fail!");
                     continue;
                 }
@@ -10059,12 +11109,13 @@ Boolean Util::GetElClipData(
         }
         env->DeleteLocalRef(alistKlass);
         env->DeleteLocalRef(jitems);
-    } else {
+    }
+    else {
         source->WriteInt32(0);
     }
 
     AutoPtr<IParcelable> clipParcel = IParcelable::Probe(*clip);
-    if(clipParcel != NULL) {
+    if (clipParcel != NULL) {
         clipParcel->ReadFromParcel(source);
     }else {
         LOGGERE("GetElClipData", "Get IParcelable  from IClipData failed!");
@@ -10108,7 +11159,7 @@ Boolean Util::GetElClipDataItem(
         CheckErrorAndLog(env, "GetElClipDataItem", "CallObjectMethod toString : %d!\n", __LINE__);
 
         String stext = Util::GetElString(env, jstext);
-        CStringWrapper::New(stext, (ICharSequence**)&text);
+        CString::New(stext, (ICharSequence**)&text);
 
         env->DeleteLocalRef(csClass);
         env->DeleteLocalRef(jstext);
@@ -10143,7 +11194,7 @@ Boolean Util::GetElClipDataItem(
         }
     }
 
-    if(NOERROR != CClipDataItem::New(text, htmlText, intent, uri, item)) {
+    if (NOERROR != CClipDataItem::New(text, htmlText, intent, uri, item)) {
         LOGGERE("GetElClipDataItem", "create CClipDataItem fail!");
         *item = NULL;
         return FALSE;
@@ -10185,7 +11236,7 @@ Boolean Util::GetElClipDescription(
         CheckErrorAndLog(env, "GetElClipDescription", "CallObjectMethod toString : %d!\n", __LINE__);
 
         String slabel = Util::GetElString(env, jslabel);
-        CStringWrapper::New(slabel, (ICharSequence**)&label);
+        CString::New(slabel, (ICharSequence**)&label);
 
         env->DeleteLocalRef(csClass);
         env->DeleteLocalRef(jslabel);
@@ -10205,7 +11256,7 @@ Boolean Util::GetElClipDescription(
         }
     }
 
-    if(NOERROR != CClipDescription::New(label, mimeTypes, clipDesc)) {
+    if (NOERROR != CClipDescription::New(label, mimeTypes, clipDesc)) {
         LOGGERE("GetElClipDescription", "create CClipDescription fail!");
         *clipDesc = NULL;
         return FALSE;
@@ -10217,84 +11268,115 @@ Boolean Util::GetElClipDescription(
 
 jobject Util::ElByteArrayToJavaObject(
     /* [in] */ JNIEnv* env,
-    /* [in] */ ArrayOf<Byte>* obj,
-    /* [in] */ const String& path)
+    /* [in] */ ISerializable* serializable)
 {
-    if (env == NULL || obj == NULL) {
+    if (env == NULL || serializable == NULL) {
         LOGGERE("ElByteArrayToJavaObject", "Invalid argumenet!");
         return NULL;
     }
 
-    jbyteArray jbArray = Util::ToJavaByteArray(env, obj);
-    if (jbArray == NULL) {
-        LOGGERE("ElByteArrayToJavaObject", "ToJavaByteArray fail!");
-        return NULL;
-    }
+    // CISerializableNative* snative = (CISerializableNative*)serializable;
 
-    jclass baisKlass = env->FindClass("java/io/ByteArrayInputStream");
-    CheckErrorAndLog(env, "ElByteArrayToJavaObject", "FindClass ByteArrayInputStream : %d!\n", __LINE__);
+    // jclass baisKlass = env->FindClass("java/io/ByteArrayInputStream");
+    // CheckErrorAndLog(env, "ElByteArrayToJavaObject", "FindClass ByteArrayInputStream : %d!\n", __LINE__);
 
-    jmethodID m = env->GetMethodID(baisKlass, "<init>", "([B)V");
-    CheckErrorAndLog(env, "ElByteArrayToJavaObject", "GetMethodID ByteArrayInputStream : %d!\n", __LINE__);
+    // jmethodID m = env->GetMethodID(baisKlass, "<init>", "([B)V");
+    // CheckErrorAndLog(env, "ElByteArrayToJavaObject", "GetMethodID ByteArrayInputStream : %d!\n", __LINE__);
 
-    jobject jbais = env->NewObject(baisKlass, m, jbArray);
-    CheckErrorAndLog(env, "ElByteArrayToJavaObject", "NewObject ByteArrayInputStream : %d!\n", __LINE__);
+    // jobject jbais = env->NewObject(baisKlass, m, jbArray);
+    // CheckErrorAndLog(env, "ElByteArrayToJavaObject", "NewObject ByteArrayInputStream : %d!\n", __LINE__);
 
-    jclass oisKlass = env->FindClass("java/io/ObjectInputStream");
-    CheckErrorAndLog(env, "ElByteArrayToJavaObject", "FindClass ObjectInputStream : %d!\n", __LINE__);
+    // jclass oisKlass = env->FindClass("java/io/ObjectInputStream");
+    // CheckErrorAndLog(env, "ElByteArrayToJavaObject", "FindClass ObjectInputStream : %d!\n", __LINE__);
 
-    m = env->GetMethodID(oisKlass, "<init>", "(Ljava/io/InputStream;)V");
-    CheckErrorAndLog(env, "ElByteArrayToJavaObject", "GetMethodID ObjectInputStream : %d!\n", __LINE__);
+    // m = env->GetMethodID(oisKlass, "<init>", "(Ljava/io/InputStream;)V");
+    // CheckErrorAndLog(env, "ElByteArrayToJavaObject", "GetMethodID ObjectInputStream : %d!\n", __LINE__);
 
-    jobject jois = env->NewObject(oisKlass, m, jbais);
-    CheckErrorAndLog(env, "ElByteArrayToJavaObject", "GetMethodID ObjectInputStream : %d!\n", __LINE__);
+    // jobject jois = env->NewObject(oisKlass, m, jbais);
+    // CheckErrorAndLog(env, "ElByteArrayToJavaObject", "GetMethodID ObjectInputStream : %d!\n", __LINE__);
 
-    if (!path.IsNullOrEmpty())  {
-        jclass alsKlass = env->FindClass("android/app/ApplicationLoaders");
-        CheckErrorAndLog(env, "FindClass ApplicationLoaders : %d!\n", __LINE__);
+    // if (!snative->mPkgPath.IsNullOrEmpty())  {
+    //     jstring jpath = Util::ToJavaString(env, snative->mPkgPath);
+    //     jobject jloader;
+    //     if (snative->mIsDexClassLoader) {
+    //         // jclass dexKlass = env->FindClass("dalvik/system/DexClassLoader");
+    //         // CheckErrorAndLog(env, "FindClass DexClassLoader : %d!\n", __LINE__);
 
-        m = env->GetStaticMethodID(alsKlass, "getDefault", "()Landroid/app/ApplicationLoaders;");
-        CheckErrorAndLog(env, "GetStaticMethodID getDefault : %d!\n", __LINE__);
+    //         // jclass klass = env->FindClass("java/lang/Class");
+    //         // CheckErrorAndLog(env, "FindClass Class : %d!\n", __LINE__);
 
-        jobject jloaders = env->CallStaticObjectMethod(alsKlass, m);
-        CheckErrorAndLog(env, "GetMethodID getDefault : %d!\n", __LINE__);
+    //         // m = env->GetMethodID(klass, "getClassLoader", "()Ljava/lang/ClassLoader;");
+    //         // CheckErrorAndLog(env, "GetMethodID getClassLoader : %d!\n", __LINE__);
 
-        m = env->GetMethodID(alsKlass, "getClassLoader", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/ClassLoader;)Ljava/lang/ClassLoader;");
-        CheckErrorAndLog(env, "GetMethodID getClassLoader : %d!\n", __LINE__);
+    //         // jobject jparent = env->CallObjectMethod(dexKlass, m);
+    //         // CheckErrorAndLog(env, "CallObjectMethod getClassLoader : %d!\n", __LINE__);
 
-        jstring jpath = Util::ToJavaString(env, path);
+    //         // m = env->GetMethodID(dexKlass, "<init>", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/ClassLoader;)V");
+    //         // CheckErrorAndLog(env, "GetMethodID DexClassLoader : %d!\n", __LINE__);
 
-        jobject jloader = env->CallObjectMethod(jloaders, m, jpath, NULL, NULL);
-        CheckErrorAndLog(env, "CallObjectMethod getClassLoader : %d!\n", __LINE__);
+    //         // jstring jdir = Util::ToJavaString(env, snative->mOptimizedDirectory);
 
-        if (jloader != NULL) {
-            jfieldID f = env->GetFieldID(oisKlass, "callerClassLoader", "Ljava/lang/ClassLoader;");
-            Util::CheckErrorAndLog(env, "GetFieldID: callerClassLoader %d", __LINE__);
+    //         // jloader = env->NewObject(dexKlass, m, jpath, jdir, NULL, jparent);
+    //         // CheckErrorAndLog(env, "NewObject DexClassLoader : %d!\n", __LINE__);
 
-            env->SetObjectField(jois, f, jloader);
-            Util::CheckErrorAndLog(env, "SetObjectField: callerClassLoader %d", __LINE__);
+    //         // env->DeleteLocalRef(dexKlass);
+    //         // env->DeleteLocalRef(jdir);
 
-            Util::SetJavaIntField(env, oisKlass, jois, 1, "nestedLevels", "ElByteArrayToJavaObject");
-        }
+    //         jloader = (jobject)StringUtils::ParseInt32(snative->mOptimizedDirectory);
+    //         snative->mOptimizedDirectory = NULL;
+    //     }
+    //     else {
+    //         jclass alsKlass = env->FindClass("android/app/ApplicationLoaders");
+    //         CheckErrorAndLog(env, "FindClass ApplicationLoaders : %d!\n", __LINE__);
 
-        env->DeleteLocalRef(alsKlass);
-        env->DeleteLocalRef(jloaders);
-        env->DeleteLocalRef(jpath);
-        env->DeleteLocalRef(jloader);
-    }
+    //         m = env->GetStaticMethodID(alsKlass, "getDefault", "()Landroid/app/ApplicationLoaders;");
+    //         CheckErrorAndLog(env, "GetStaticMethodID getDefault : %d!\n", __LINE__);
 
-    m = env->GetMethodID(oisKlass, "readObject", "()Ljava/lang/Object;");
-    CheckErrorAndLog(env, "ElByteArrayToJavaObject", "GetMethodID readObject : %d!\n", __LINE__);
+    //         jobject jloaders = env->CallStaticObjectMethod(alsKlass, m);
+    //         CheckErrorAndLog(env, "GetMethodID getDefault : %d!\n", __LINE__);
 
-    jobject jobj = env->CallObjectMethod(jois, m);
-    CheckErrorAndLog(env, "ElByteArrayToJavaObject", "CallObjectMethod readObject : %d!\n", __LINE__);
+    //         m = env->GetMethodID(alsKlass, "getClassLoader", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/ClassLoader;)Ljava/lang/ClassLoader;");
+    //         CheckErrorAndLog(env, "GetMethodID getClassLoader : %d!\n", __LINE__);
 
-    env->DeleteLocalRef(baisKlass);
-    env->DeleteLocalRef(oisKlass);
-    env->DeleteLocalRef(jbArray);
-    env->DeleteLocalRef(jbais);
-    env->DeleteLocalRef(jois);
-    return jobj;
+    //         jloader = env->CallObjectMethod(jloaders, m, jpath, NULL, NULL);
+    //         CheckErrorAndLog(env, "CallObjectMethod getClassLoader : %d!\n", __LINE__);
+
+    //         env->DeleteLocalRef(alsKlass);
+    //         env->DeleteLocalRef(jloaders);
+    //     }
+
+    //     if (jloader != NULL) {
+    //         jfieldID f = env->GetFieldID(oisKlass, "callerClassLoader", "Ljava/lang/ClassLoader;");
+    //         Util::CheckErrorAndLog(env, "GetFieldID: callerClassLoader %d", __LINE__);
+
+    //         env->SetObjectField(jois, f, jloader);
+    //         Util::CheckErrorAndLog(env, "SetObjectField: callerClassLoader %d", __LINE__);
+
+    //         Util::SetJavaIntField(env, oisKlass, jois, 1, "nestedLevels", "ElByteArrayToJavaObject");
+
+    //         if (snative->mIsDexClassLoader)
+    //             env->DeleteGlobalRef(jloader);
+    //         else
+    //             env->DeleteLocalRef(jloader);
+    //     }
+
+    //     env->DeleteLocalRef(jpath);
+    // }
+
+    // m = env->GetMethodID(oisKlass, "readObject", "()Ljava/lang/Object;");
+    // CheckErrorAndLog(env, "ElByteArrayToJavaObject", "GetMethodID readObject : %d!\n", __LINE__);
+
+    // jobject jobj = env->CallObjectMethod(jois, m);
+    // CheckErrorAndLog(env, "ElByteArrayToJavaObject", "CallObjectMethod readObject : %d!\n", __LINE__);
+
+    // env->DeleteLocalRef(baisKlass);
+    // env->DeleteLocalRef(oisKlass);
+    // env->DeleteLocalRef(jbArray);
+    // env->DeleteLocalRef(jbais);
+    // env->DeleteLocalRef(jois);
+    // return jobj;
+    assert(0);
+    return NOERROR;
 }
 
 jobject Util::ToJavaParcelable(
@@ -10311,7 +11393,7 @@ jobject Util::ToJavaParcelable(
     // jclass parcelClass = env->FindClass("android/os/Parcel");
     // Util::CheckErrorAndLog(env, "ToJavaParcelable", "FindClass: Parcel : %d", __LINE__);
 
-    // jmethodID m = env->GetStaticMethodID(parcelClass, "obtain", "(I)Landroid/os/Parcel;");
+    // jmethodID m = env->GetStaticMethodID(parcelClass, "obtain", "(J)Landroid/os/Parcel;");
     // Util::CheckErrorAndLog(env, "ToJavaParcelable", "GetStaticMethodID: obtain : %d", __LINE__);
 
     // jobject jparcel = env->CallStaticObjectMethod(parcelClass, m, 0);
@@ -10336,7 +11418,8 @@ jobject Util::ToJavaParcelable(
     //     void* raw = parcel->writeInplace(length);
     //     memcpy(raw, parcelObj->GetPayload(), length);
     //     parcel->setDataPosition(0);
-    // } else {
+    // }
+    // else {
     //     LOGGERE("ToJavaParcelable", "ToJavaParcelable() IParcelable parcelObj is NULL!");
     //     env->DeleteLocalRef(parcelClass);
     //     env->DeleteLocalRef(jparcel);
@@ -10367,7 +11450,8 @@ jobject Util::ToJavaParcelable(
     //     env->DeleteLocalRef(alsKlass);
     //     env->DeleteLocalRef(jloaders);
     //     env->DeleteLocalRef(jpkgPath);
-    // } else {
+    // }
+    // else {
     //     jclass clKlass = env->FindClass("java/lang/ClassLoader");
     //     CheckErrorAndLog(env, "FindClass ClassLoader : %d!\n", __LINE__);
 
@@ -10574,21 +11658,22 @@ Boolean Util::GetElContentProviderResult(
 
     AutoPtr<IUri> uri;
     if (juri != NULL)  {
-        if(!Util::GetElUri(env, juri, (IUri**)&uri)) {
+        if (!Util::GetElUri(env, juri, (IUri**)&uri)) {
             LOGGERE("GetElContentProviderResult", "GetElContentProviderResult() GetElIntent fail %d", __LINE__);
         }
 
-        if(NOERROR != CContentProviderResult::New(uri, result)) {
+        if (NOERROR != CContentProviderResult::New(uri, result)) {
             LOGGERE("GetElContentProviderResult", "GetElContentProviderResult new CContentProviderResult fail!");
             env->DeleteLocalRef(cprKlass);
             return FALSE;
         }
 
         env->DeleteLocalRef(juri);
-    } else {
+    }
+    else {
         Int32 count = Util::GetJavaIntegerField(env, cprKlass, jresult, "count", 0, "GetElContentProviderResult");
 
-        if(NOERROR != CContentProviderResult::New(count, result)) {
+        if (NOERROR != CContentProviderResult::New(count, result)) {
             LOGGERE("GetElContentProviderResult", "GetElContentProviderResult new CContentProviderResult fail!");
             env->DeleteLocalRef(cprKlass);
             return FALSE;
@@ -10792,12 +11877,11 @@ Boolean Util::GetElVerifierInfo(
         env->DeleteLocalRef(jpublicKey);
     }
 
-    // TODO:
-    // if(NOERROR != CVerifierInfo::New(packageName, publicKey, info)) {
-    //     LOGGERE("GetElVerifierInfo", "new CVerifierInfo fail!");
-    //     env->DeleteLocalRef(vfKlass);
-    //     return FALSE;
-    // }
+    if (NOERROR != CVerifierInfo::New(packageName, publicKey, info)) {
+        LOGGERE("GetElVerifierInfo", "new CVerifierInfo fail!");
+        env->DeleteLocalRef(vfKlass);
+        return FALSE;
+    }
 
     env->DeleteLocalRef(vfKlass);
     return TRUE;

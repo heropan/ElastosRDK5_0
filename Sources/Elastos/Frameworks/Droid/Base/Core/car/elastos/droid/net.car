@@ -224,6 +224,15 @@ module
     }
 
     class CHierarchicalUri {
+        constructor();
+
+        constructor(
+            [in] String scheme,
+            [in] Handle32 authority,
+            [in] Handle32 path,
+            [in] Handle32 query,
+            [in] Handle32 fragment);
+
         interface IParcelable;
         interface IComparable;
         interface IUri;
@@ -674,6 +683,13 @@ module
     }
 
     class COpaqueUri {
+        constructor();
+
+        constructor(
+            [in] String scheme,
+            [in] Handle32 sspPart,
+            [in] Handle32 fragmentPart);
+
         interface IParcelable;
         interface IComparable;
         interface IUri;
@@ -849,6 +865,11 @@ module
     }
 
     class CStringUri {
+        constructor();
+
+        constructor(
+            [in] String uriString);
+
         interface IParcelable;
         interface IComparable;
         interface IUri;

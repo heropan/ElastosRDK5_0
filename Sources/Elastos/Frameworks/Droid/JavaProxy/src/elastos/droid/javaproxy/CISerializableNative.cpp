@@ -17,32 +17,24 @@ ECode CISerializableNative::constructor()
 }
 
 ECode CISerializableNative::constructor(
+    /* [in] */ Boolean isDexClassLoader,
     /* [in] */ const String& pkgPath,
+    /* [in] */ const String& optimizedDirectory,
     /* [in] */ ArrayOf<Byte>* obj)
 {
+    mIsDexClassLoader = isDexClassLoader;
     mPkgPath = pkgPath;
+    mOptimizedDirectory = optimizedDirectory;
     mObject = obj;
-    return NOERROR;
-}
-
-String CISerializableNative::GetPackagePath()
-{
-    return mPkgPath;
-}
-
-ECode CISerializableNative::GetObject(
-    /* [out, callee] */ ArrayOf<Byte>** obj)
-{
-    assert(obj != NULL);
-    *obj = mObject;
-    if (*obj) (*obj)->AddRef();
     return NOERROR;
 }
 
 ECode CISerializableNative::ReadFromParcel(
     /* [in] */ IParcel* source)
 {
+    source->ReadBoolean(&mIsDexClassLoader);
     source->ReadString(&mPkgPath);
+    source->ReadString(&mOptimizedDirectory);
     source->ReadArrayOf((Handle32*)&mObject);
     return NOERROR;
 }
@@ -50,7 +42,9 @@ ECode CISerializableNative::ReadFromParcel(
 ECode CISerializableNative::WriteToParcel(
     /* [in] */ IParcel* dest)
 {
+    dest->WriteBoolean(mIsDexClassLoader);
     dest->WriteString(mPkgPath);
+    dest->WriteString(mOptimizedDirectory);
     dest->WriteArrayOf((Handle32)mObject.Get());
     return NOERROR;
 }

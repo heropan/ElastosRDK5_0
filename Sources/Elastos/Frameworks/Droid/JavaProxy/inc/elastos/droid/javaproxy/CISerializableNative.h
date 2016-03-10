@@ -15,13 +15,10 @@ public:
     CARAPI constructor();
 
     CARAPI constructor(
+        /* [in] */ Boolean isDexClassLoader,
         /* [in] */ const String& pkgPath,
+        /* [in] */ const String& optimizedDirectory,
         /* [in] */ ArrayOf<Byte>* obj);
-
-    CARAPI_(String) GetPackagePath();
-
-    CARAPI GetObject(
-        /* [out, callee] */ ArrayOf<Byte>** obj);
 
     CARAPI ReadFromParcel(
         /* [in] */ IParcel * pSource);
@@ -29,12 +26,14 @@ public:
     CARAPI WriteToParcel(
         /* [in] */ IParcel * pDest);
 
+public:
+    Boolean mIsDexClassLoader;
+    String mPkgPath;
+    String mOptimizedDirectory;
+    AutoPtr<ArrayOf<Byte> > mObject;
+
 private:
     static const String TAG;
-
-    String mPkgPath;
-
-    AutoPtr<ArrayOf<Byte> > mObject;
 };
 
 }

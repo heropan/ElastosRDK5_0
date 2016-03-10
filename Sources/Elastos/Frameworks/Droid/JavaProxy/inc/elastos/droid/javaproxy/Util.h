@@ -37,8 +37,10 @@ using Elastos::Droid::Content::Res::IObbInfo;
 using Elastos::Droid::Database::ICharArrayBuffer;
 using Elastos::Droid::Graphics::IBitmap;
 using Elastos::Droid::Graphics::IRect;
+using Elastos::Droid::Graphics::PorterDuffMode;
 using Elastos::Droid::Hardware::Display::IWifiDisplay;
 using Elastos::Droid::Hardware::Display::IWifiDisplayStatus;
+using Elastos::Droid::Hardware::Display::IWifiDisplaySessionInfo;
 using Elastos::Droid::Internal::Location::IProviderProperties;
 using Elastos::Droid::Internal::Location::IProviderRequest;
 using Elastos::Droid::Location::ILocation;
@@ -56,11 +58,16 @@ using Elastos::Droid::Media::IAudioRoutesInfo;
 using Elastos::Droid::Net::IUri;
 using Elastos::Droid::Net::INetworkInfo;
 using Elastos::Droid::Net::ILinkAddress;
+using Elastos::Droid::Net::IIpConfiguration;
+using Elastos::Droid::Net::IStaticIpConfiguration;
+using Elastos::Droid::Net::IIpPrefix;
 using Elastos::Droid::Net::ILinkProperties;
 using Elastos::Droid::Net::IProxyProperties;
+using Elastos::Droid::Net::IProxyInfo;
 using Elastos::Droid::Net::IRouteInfo;
 using Elastos::Droid::Wifi::ISupplicantState;
 using Elastos::Droid::Wifi::IWifiConfiguration;
+using Elastos::Droid::Wifi::IWifiEnterpriseConfig;
 using Elastos::Droid::Wifi::IWifiInfo;
 using Elastos::Droid::Wifi::IWifiSsid;
 using Elastos::Droid::Wifi::SupplicantState;
@@ -72,6 +79,7 @@ using Elastos::Droid::Wifi::P2p::IWifiP2pWfdInfo;
 using Elastos::Droid::View::IDragEvent;
 using Elastos::Droid::View::IKeyEvent;
 using Elastos::Droid::View::IMotionEvent;
+using Elastos::Droid::View::IInputChannel;
 using Elastos::Droid::View::InputMethod::ICompletionInfo;
 using Elastos::Droid::View::InputMethod::ICorrectionInfo;
 using Elastos::Droid::View::InputMethod::IEditorInfo;
@@ -84,6 +92,7 @@ using Elastos::Droid::Internal::Net::IVpnProfile;
 using Elastos::Droid::Internal::View::IInputBindResult;
 using Elastos::Droid::Widget::IRemoteViews;
 using Elastos::Net::IInetAddress;
+using Elastos::IO::ISerializable;
 using Elastos::Security::IPublicKey;
 using Elastos::Utility::IBitSet;
 using Elastos::Utility::ILocale;
@@ -95,11 +104,11 @@ using Elastosx::Crypto::Spec::IIvParameterSpec;
     do { \
         LOGGERD(TAG, "======== DUMP_CLSID ========\n"); \
         LOGGERD(TAG, "{%p, %p, %p, {%p, %p, %p, %p, %p, %p, %p, %p} }\n", \
-                CLSID.clsid.Data1, CLSID.clsid.Data2, CLSID.clsid.Data3, \
-                CLSID.clsid.Data4[0], CLSID.clsid.Data4[1], \
-                CLSID.clsid.Data4[2], CLSID.clsid.Data4[3], \
-                CLSID.clsid.Data4[4], CLSID.clsid.Data4[5], \
-                CLSID.clsid.Data4[6], CLSID.clsid.Data4[7]); \
+                CLSID.mClsid.mData1, CLSID.mClsid.mData2, CLSID.mClsid.mData3, \
+                CLSID.mClsid.mData4[0], CLSID.mClsid.mData4[1], \
+                CLSID.mClsid.mData4[2], CLSID.mClsid.mData4[3], \
+                CLSID.mClsid.mData4[4], CLSID.mClsid.mData4[5], \
+                CLSID.mClsid.mData4[6], CLSID.mClsid.mData4[7]); \
         LOGGERD(TAG, "============================\n"); \
     } while(0);
 
@@ -114,6 +123,12 @@ class Util
 public:
     static ECode CheckErrorAndLog(
         /* [in] */ JNIEnv* env,
+        /* [in] */ const char* errlog,
+        /* [in] */ int line);
+
+    static ECode CheckErrorAndLog(
+        /* [in] */ JNIEnv* env,
+        /* [in] */ const char* tag,
         /* [in] */ const char* errlog,
         /* [in] */ int line);
 
@@ -230,6 +245,10 @@ public:
         /* [in] */ JNIEnv* env,
         /* [in] */ IInputBindResult* result);
 
+    static jobject ToJavaInputChannel(
+        /* [in] */ JNIEnv* env,
+        /* [in] */ IInputChannel* channel);
+
     static jobject ToJavaKeyEvent(
         /* [in] */ JNIEnv* env,
         /* [in] */ IKeyEvent* keyEvent);
@@ -311,6 +330,10 @@ public:
     static jobject ToJavaProxyProperties(
         /* [in] */ JNIEnv* env,
         /* [in] */ IProxyProperties* pproperties);
+
+    static jobject ToJavaProxyInfo(
+        /* [in] */ JNIEnv* env,
+        /* [in] */ IProxyInfo* proxyInfo);
 
     static jobject ToJavaExtractedText(
         /* [in] */ JNIEnv* env,
@@ -400,9 +423,25 @@ public:
         /* [in] */ JNIEnv* env,
         /* [in] */ IWifiConfiguration* config);
 
+    static jobject ToJavaWifiEnterpriseConfig(
+        /* [in] */ JNIEnv* env,
+        /* [in] */ IWifiEnterpriseConfig* config);
+
+    static jobject ToJavaIpConfiguration(
+        /* [in] */ JNIEnv* env,
+        /* [in] */ IIpConfiguration* config);
+
+    static jobject ToJavaStaticIpConfiguration(
+        /* [in] */ JNIEnv* env,
+        /* [in] */ IStaticIpConfiguration* config);
+
     static jobject ToJavaWifiDisplayStatus(
         /* [in] */ JNIEnv* env,
         /* [in] */ IWifiDisplayStatus* status);
+
+    static jobject ToJavaWifiDisplaySessionInfo(
+        /* [in] */ JNIEnv* env,
+        /* [in] */ IWifiDisplaySessionInfo* info);
 
     static jobject ToJavaWifiDisplay(
         /* [in] */ JNIEnv* env,
@@ -432,6 +471,10 @@ public:
         /* [in] */ JNIEnv* env,
         /* [in] */ ILinkAddress* info);
 
+    static jobject ToJavaIpPrefix(
+        /* [in] */ JNIEnv* env,
+        /* [in] */ IIpPrefix* ipPrefix);
+
     static jobject ToJavaContentProviderOperation(
         /* [in] */ JNIEnv* env,
         /* [in] */ IContentProviderOperation* operation);
@@ -450,8 +493,7 @@ public:
 
     static jobject ElByteArrayToJavaObject(
         /* [in] */ JNIEnv* env,
-        /* [in] */ ArrayOf<Byte>* obj,
-        /* [in] */ const String& path);
+        /* [in] */ ISerializable* serializable);
 
     static jint JavaIntegerToInt(
         /* [in] */ JNIEnv* env,
@@ -460,6 +502,10 @@ public:
     static jobject ToJavaRemoteViews(
         /* [in] */ JNIEnv* env,
         /* [in] */ IRemoteViews* obj);
+
+    static jobject ToJavaPorterDuffMode(
+        /* [in] */ JNIEnv* env,
+        /* [in] */ PorterDuffMode mode);
 
     static jobject ToJavaAppWidgetProviderInfo(
         /* [in] */ JNIEnv* env,

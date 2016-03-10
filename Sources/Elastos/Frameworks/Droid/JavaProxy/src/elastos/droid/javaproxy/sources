@@ -14,7 +14,7 @@ SOURCES = Elastos.Droid.JavaProxy.car
 SOURCES += Elastos.Droid.Core.cpp
 SOURCES += Elastos.CoreLibrary.cpp
 
-#SOURCES += Util.cpp
+SOURCES += Util.cpp
 #SOURCES += CAccountManagerResponseNative.cpp
 #SOURCES += CApplicationThreadNative.cpp
 SOURCES += CBinderNative.cpp

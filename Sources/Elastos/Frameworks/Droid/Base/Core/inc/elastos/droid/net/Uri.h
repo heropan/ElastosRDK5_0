@@ -735,6 +735,11 @@ class StringUri
 public:
     StringUri();
 
+    CARAPI constructor();
+
+    CARAPI constructor(
+        /* [in] */ const String& uriString);
+
     static CARAPI ReadFrom(
         /* [in] */ IParcel* parcel,
         /* [out] */ IUri** uri);
@@ -818,9 +823,6 @@ public:
         /* [out] */ IUriBuilder** result);
 
 private:
-    CARAPI constructor(
-        /* [in] */ const String& uriString);
-
     /** Finds the first ':'. Returns -1 if none found. */
     CARAPI_(Int32) FindSchemeSeparator();
 
@@ -874,6 +876,13 @@ protected:
 class OpaqueUri : public Uri
 {
 public:
+    CARAPI constructor();
+
+    CARAPI constructor(
+        /* [in] */ const String& scheme,
+        /* [in] */ Handle32 ssp,
+        /* [in] */ Handle32 fragment);
+
     static CARAPI ReadFrom(
         /* [in] */ IParcel* parcel,
         /* [out] */ IUri** uri);
@@ -947,12 +956,6 @@ public:
     virtual CARAPI BuildUpon(
         /* [out] */ IUriBuilder** result);
 
-private:
-    CARAPI constructor(
-        /* [in] */ const String& scheme,
-        /* [in] */ Uri::Part* ssp,
-        /* [in] */ Uri::Part* fragment);
-
 public:
     /** Used in parcelling. */
     static const Int32 TYPE_ID = 2;
@@ -975,6 +978,15 @@ class HierarchicalUri
 
 public:
     HierarchicalUri();
+
+    CARAPI constructor();
+
+    CARAPI constructor(
+        /* [in] */ const String& scheme,
+        /* [in] */ Handle32 authority,
+        /* [in] */ Handle32 path,
+        /* [in] */ Handle32 query,
+        /* [in] */ Handle32 fragment);
 
     static CARAPI ReadFrom(
         /* [in] */ IParcel* parcel,
@@ -1036,13 +1048,6 @@ public:
         /* [out] */ IUriBuilder** builder);
 
 private:
-    CARAPI constructor(
-        /* [in] */ const String& scheme,
-        /* [in] */ Uri::Part* authority,
-        /* [in] */ Uri::PathPart* path,
-        /* [in] */ Uri::Part* query,
-        /* [in] */ Uri::Part* fragment);
-
     CARAPI_(AutoPtr<Part>) GetSsp();
 
     /**
