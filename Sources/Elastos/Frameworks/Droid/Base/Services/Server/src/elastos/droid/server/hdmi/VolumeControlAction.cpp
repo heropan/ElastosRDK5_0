@@ -186,8 +186,8 @@ ECode VolumeControlAction::HandleReportAudioStatus(
         mLastAvrVolume = volume;
         if (ShouldUpdateAudioVolume(mute)) {
             HdmiLogger->Debug("Force volume change[mute:%b, volume=%d]", mute, volume);
-            AutoPtr<HdmiCecLocalDeviceTv> tv;
-            Tv((HdmiCecLocalDeviceTv**)&tv);
+            AutoPtr<IHdmiCecLocalDeviceTv> tv;
+            Tv((IHdmiCecLocalDeviceTv**)&tv);
             tv->SetAudioStatus(mute, volume);
         }
         *result = TRUE;
@@ -211,8 +211,8 @@ ECode VolumeControlAction::ShouldUpdateAudioVolume(
 
         // Update audio status if current volume position is edge of volume bar,
         // i.e max or min volume.
-        AutoPtr<HdmiCecLocalDeviceTv> tv;
-        Tv((HdmiCecLocalDeviceTv**)&tv);
+        AutoPtr<IHdmiCecLocalDeviceTv> tv;
+        Tv((IHdmiCecLocalDeviceTv**)&tv);
         AudioManager audioManager = tv->GetService()->GetAudioManager();
         Int32 currentVolume = audioManager->GetStreamVolume(AudioManager::STREAM_MUSIC);
         if (mIsVolumeUp) {
@@ -255,8 +255,8 @@ ECode VolumeControlAction::Clear()
             SendVolumeKeyReleased();
         }
         if (mLastAvrVolume != UNKNOWN_AVR_VOLUME) {
-            AutoPtr<HdmiCecLocalDeviceTv> tv;
-            Tv((HdmiCecLocalDeviceTv**)&tv);
+            AutoPtr<IHdmiCecLocalDeviceTv> tv;
+            Tv((IHdmiCecLocalDeviceTv**)&tv);
             tv->SetAudioStatus(FALSE, mLastAvrVolume);
             mLastAvrVolume = UNKNOWN_AVR_VOLUME;
         }

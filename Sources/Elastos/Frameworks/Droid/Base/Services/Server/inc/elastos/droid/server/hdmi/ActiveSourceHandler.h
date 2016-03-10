@@ -31,7 +31,7 @@ class ActiveSourceHandler
 {
 public:
     static CARAPI Create(
-        /* [in] */ HdmiCecLocalDeviceTv* source,
+        /* [in] */ IHdmiCecLocalDeviceTv* source,
         /* [in] */ IIHdmiControlCallback* callback,
         /* [out] */ ActiveSourceHandler** result);
 
@@ -45,7 +45,7 @@ public:
 
 private:
     ActiveSourceHandler(
-        /* [in] */ HdmiCecLocalDeviceTv* source,
+        /* [in] */ IHdmiCecLocalDeviceTv* source,
         /* [in] */ IIHdmiControlCallback* callback);
 
     CARAPI GetSourceAddress(
@@ -57,7 +57,7 @@ private:
 private:
     static const String TAG;
 
-    AutoPtr<HdmiCecLocalDeviceTv> mSource;
+    AutoPtr<IHdmiCecLocalDeviceTv> mSource;
 
     AutoPtr<IHdmiControlService> mService;
 

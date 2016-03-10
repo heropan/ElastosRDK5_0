@@ -19,7 +19,7 @@ namespace Hdmi {
 const String ActiveSourceHandler::TAG("ActiveSourceHandler");
 
 ECode ActiveSourceHandler::Create(
-    /* [in] */ HdmiCecLocalDeviceTv* source,
+    /* [in] */ IHdmiCecLocalDeviceTv* source,
     /* [in] */ IIHdmiControlCallback* callback,
     /* [out] */ ActiveSourceHandler** result)
 {
@@ -37,21 +37,21 @@ ECode ActiveSourceHandler::Create(
 }
 
 ActiveSourceHandler::ActiveSourceHandler(
-    /* [in] */ HdmiCecLocalDeviceTv* source,
+    /* [in] */ IHdmiCecLocalDeviceTv* source,
     /* [in] */ IIHdmiControlCallback* callback)
     : mSource(source)
     , mCallback(callback)
 {
-    mSource->GetService((IHdmiControlService**)&mService);
+    ((HdmiCecLocalDeviceTv*) mSource.Get())->GetService((IHdmiControlService**)&mService);
 }
 
 ECode ActiveSourceHandler::Process(
     /* [in] */ IHdmiCecLocalDeviceActiveSource* newActive)
 {
     // Seq #17
-    AutoPtr<HdmiCecLocalDeviceTv> tv = mSource;
+    AutoPtr<IHdmiCecLocalDeviceTv> tv = mSource;
     AutoPtr<IHdmiCecLocalDeviceActiveSource> activeSource;
-    tv->GetActiveSource((IHdmiCecLocalDeviceActiveSource**)&activeSource);
+    ((HdmiCecLocalDeviceTv*) tv.Get())->GetActiveSource((IHdmiCecLocalDeviceActiveSource**)&activeSource);
     Boolean isEquals;
     IObject::Probe(activeSource)->Equals(newActive, &isEquals);
     if (isEquals) {
@@ -61,25 +61,27 @@ ECode ActiveSourceHandler::Process(
     AutoPtr<IHdmiDeviceInfo> device;
     ((HdmiControlService*)mService.Get())->GetDeviceInfo(((HdmiCecLocalDevice::ActiveSource*)newActive)->mLogicalAddress, (IHdmiDeviceInfo**)&device);
     if (device == NULL) {
-        tv->StartNewDeviceAction(newActive);
+        ((HdmiCecLocalDeviceTv*) tv.Get())->StartNewDeviceAction(newActive);
     }
-    if (!Ptr(tv)->Func(tv->IsProhibitMode)) {
-        tv->UpdateActiveSource(newActive);
+    Boolean isProhibitMode;
+    ((HdmiCecLocalDeviceTv*) tv.Get())->IsProhibitMode(&isProhibitMode);
+    if (!isProhibitMode) {
+        ((HdmiCecLocalDeviceTv*) tv.Get())->UpdateActiveSource(newActive);
         Boolean notifyInputChange = (mCallback == NULL);
-        tv->UpdateActiveInput(((HdmiCecLocalDevice::ActiveSource*)newActive)->mPhysicalAddress, notifyInputChange);
+        ((HdmiCecLocalDeviceTv*) tv.Get())->UpdateActiveInput(((HdmiCecLocalDevice::ActiveSource*)newActive)->mPhysicalAddress, notifyInputChange);
         InvokeCallback(IHdmiControlManager::RESULT_SUCCESS);
     } else {
         // TV is in a mode that should keep its current source/input from
         // being changed for its operation. Reclaim the active source
         // or switch the port back to the one used for the current mode.
         AutoPtr<IHdmiCecLocalDeviceActiveSource> current;
-        tv->GetActiveSource((IHdmiCecLocalDeviceActiveSource**)&current);
+        ((HdmiCecLocalDeviceTv*) tv.Get())->GetActiveSource((IHdmiCecLocalDeviceActiveSource**)&current);
         if (((HdmiCecLocalDevice::ActiveSource*)current.Get())->mLogicalAddress == Ptr(this)->Func(this->GetSourceAddress)) {
             AutoPtr<IHdmiCecMessage> activeSourceCommand;
             HdmiCecMessageBuilder::BuildActiveSource(
                     ((HdmiCecLocalDevice::ActiveSource*)current.Get())->mLogicalAddress, ((HdmiCecLocalDevice::ActiveSource*)current.Get())->mPhysicalAddress, (IHdmiCecMessage**)&activeSourceCommand);
             ((HdmiControlService*)mService.Get())->SendCecCommand(activeSourceCommand);
-            tv->UpdateActiveSource(current);
+            ((HdmiCecLocalDeviceTv*) tv.Get())->UpdateActiveSource(current);
             InvokeCallback(IHdmiControlManager::RESULT_SUCCESS);
         } else {
             AutoPtr<IHdmiCecMessage> routingChange;
@@ -89,8 +91,8 @@ ECode ActiveSourceHandler::Process(
                     address, ((HdmiCecLocalDevice::ActiveSource*)newActive)->mPhysicalAddress, ((HdmiCecLocalDevice::ActiveSource*)current.Get())->mPhysicalAddress, (IHdmiCecMessage**)&routingChange);
             ((HdmiControlService*)mService.Get())->SendCecCommand(routingChange);
             AutoPtr<RoutingControlAction> action = new RoutingControlAction();
-            action->constructor(tv, ((HdmiCecLocalDevice::ActiveSource*)current.Get())->mPhysicalAddress, TRUE, mCallback);
-            tv->AddAndStartAction(action.Get());
+            action->constructor(IHdmiCecLocalDevice::Probe(tv), ((HdmiCecLocalDevice::ActiveSource*)current.Get())->mPhysicalAddress, TRUE, mCallback);
+            ((HdmiCecLocalDeviceTv*) tv.Get())->AddAndStartAction(action.Get());
         }
     }
     return NOERROR;
@@ -102,7 +104,7 @@ ECode ActiveSourceHandler::GetSourceAddress(
     VALIDATE_NOT_NULL(result)
 
     AutoPtr<IHdmiDeviceInfo> info;
-    mSource->GetDeviceInfo((IHdmiDeviceInfo**)&info);
+    ((HdmiCecLocalDeviceTv*) mSource.Get())->GetDeviceInfo((IHdmiDeviceInfo**)&info);
     return info->GetLogicalAddress(result);
 }
 

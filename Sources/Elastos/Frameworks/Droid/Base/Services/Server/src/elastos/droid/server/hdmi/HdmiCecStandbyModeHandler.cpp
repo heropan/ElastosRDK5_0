@@ -1,7 +1,12 @@
 
-#include "elastos/droid/server/hdmi/HdmiCecStandbyModeHandler.h"
+#include "elastos/droid/server/hdmi/Constants.h"
+#include "elastos/droid/server/hdmi/HdmiCecLocalDevice.h"
 #include "elastos/droid/server/hdmi/HdmiCecLocalDeviceTv.h"
+#include "elastos/droid/server/hdmi/HdmiCecStandbyModeHandler.h"
+#include "elastos/droid/server/hdmi/HdmiControlService.h"
 #include <Elastos.Droid.Utility.h>
+
+using Elastos::Droid::Utility::CSparseArray;
 
 namespace Elastos {
 namespace Droid {
@@ -19,12 +24,8 @@ ECode HdmiCecStandbyModeHandler::Bystander::Handle(
 {
     VALIDATE_NOT_NULL(result)
 
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-                *result = TRUE;
-                return NOERROR;
-
-#endif
+    *result = TRUE;
+    return NOERROR;
 }
 
 //=============================================================================
@@ -38,12 +39,8 @@ ECode HdmiCecStandbyModeHandler::Bypasser::Handle(
 {
     VALIDATE_NOT_NULL(result)
 
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-                *result = TRUE;
-                return NOERROR;
-
-#endif
+    *result = TRUE;
+    return NOERROR;
 }
 
 //=============================================================================
@@ -52,8 +49,10 @@ ECode HdmiCecStandbyModeHandler::Bypasser::Handle(
 CAR_INTERFACE_IMPL(HdmiCecStandbyModeHandler::Aborter, Object, IHdmiCecStandbyModeHandlerCecMessageHandler)
 
 HdmiCecStandbyModeHandler::Aborter::Aborter(
+    /* [in] */ HdmiCecStandbyModeHandler* host,
     /* [in] */ Int32 reason)
-    : mReason(reason)
+    : mHost(host)
+    , mReason(reason)
 {}
 
 ECode HdmiCecStandbyModeHandler::Aborter::Handle(
@@ -62,13 +61,9 @@ ECode HdmiCecStandbyModeHandler::Aborter::Handle(
 {
     VALIDATE_NOT_NULL(result)
 
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-                mService->MaySendFeatureAbortCommand(message, mReason);
-                *result = TRUE;
-                return NOERROR;
-
-#endif
+    ((HdmiControlService*)mHost->mService.Get())->MaySendFeatureAbortCommand(message, mReason);
+    *result = TRUE;
+    return NOERROR;
 }
 
 //=============================================================================
@@ -76,23 +71,27 @@ ECode HdmiCecStandbyModeHandler::Aborter::Handle(
 //=============================================================================
 CAR_INTERFACE_IMPL(HdmiCecStandbyModeHandler::AutoOnHandler, Object, IHdmiCecStandbyModeHandlerCecMessageHandler)
 
+HdmiCecStandbyModeHandler::AutoOnHandler::AutoOnHandler(
+    /* [in] */ HdmiCecStandbyModeHandler* host)
+    : mHost(host)
+{}
+
 ECode HdmiCecStandbyModeHandler::AutoOnHandler::Handle(
     /* [in] */ IHdmiCecMessage* message,
     /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result)
 
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-                if (!mTv->GetAutoWakeup()) {
-                    mAborterRefused->Handle(message);
-                    *result = TRUE;
-                    return NOERROR;
-                }
-                *result = FALSE;
-                return NOERROR;
-
-#endif
+    Boolean isAutoWakeup;
+    ((HdmiCecLocalDeviceTv*) mHost->mTv.Get())->GetAutoWakeup(&isAutoWakeup);
+    if (!isAutoWakeup) {
+        Boolean bNoUse;
+        mHost->mAborterRefused->Handle(message, &bNoUse);
+        *result = TRUE;
+        return NOERROR;
+    }
+    *result = FALSE;
+    return NOERROR;
 }
 
 //=============================================================================
@@ -100,25 +99,30 @@ ECode HdmiCecStandbyModeHandler::AutoOnHandler::Handle(
 //=============================================================================
 CAR_INTERFACE_IMPL(HdmiCecStandbyModeHandler::UserControlProcessedHandler, Object, IHdmiCecStandbyModeHandlerCecMessageHandler)
 
+HdmiCecStandbyModeHandler::UserControlProcessedHandler::UserControlProcessedHandler(
+    /* [in] */ HdmiCecStandbyModeHandler* host)
+    : mHost(host)
+{}
+
 ECode HdmiCecStandbyModeHandler::UserControlProcessedHandler::Handle(
     /* [in] */ IHdmiCecMessage* message,
     /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result)
 
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-                // The power status here is always standby.
-                if (HdmiCecLocalDevice::IsPowerOnOrToggleCommand(message)) {
-                    *result = FALSE;
-                    return NOERROR;
-                } else if (HdmiCecLocalDevice::IsPowerOffOrToggleCommand(message)) {
-                    *result = TRUE;
-                    return NOERROR;
-                }
-                return mAborterIncorrectMode->Handle(message);
-
-#endif
+    // The power status here is always standby.
+    Boolean isPowerOnOrToggleCommand;
+    HdmiCecLocalDevice::IsPowerOnOrToggleCommand(message, &isPowerOnOrToggleCommand);
+    Boolean isPowerOffOrToggleCommand;
+    HdmiCecLocalDevice::IsPowerOffOrToggleCommand(message, &isPowerOffOrToggleCommand);
+    if (isPowerOnOrToggleCommand) {
+        *result = FALSE;
+        return NOERROR;
+    } else if (isPowerOffOrToggleCommand) {
+        *result = TRUE;
+        return NOERROR;
+    }
+    return mHost->mAborterIncorrectMode->Handle(message, result);
 }
 
 //=============================================================================
@@ -126,82 +130,71 @@ ECode HdmiCecStandbyModeHandler::UserControlProcessedHandler::Handle(
 //=============================================================================
 HdmiCecStandbyModeHandler::HdmiCecStandbyModeHandler()
 {
-#if 0 // TODO: Translate codes below
-    private SparseArray<CecMessageHandler> mCecMessageHandlers = new SparseArray<>();
+    CSparseArray::New((ISparseArray**)&mCecMessageHandlers);
 
-    private CecMessageHandler mDefaultHandler = new Aborter(
-            Constants::ABORT_UNRECOGNIZED_OPCODE);
-    private CecMessageHandler mAborterIncorrectMode = new Aborter(
-            Constants::ABORT_NOT_IN_CORRECT_MODE);
-    private CecMessageHandler mAborterRefused = new Aborter(Constants::ABORT_REFUSED);
-    private CecMessageHandler mAutoOnHandler = new AutoOnHandler();
-    private CecMessageHandler mBypasser = new Bypasser();
-    private CecMessageHandler mBystander = new Bystander();
-    private UserControlProcessedHandler
-            mUserControlProcessedHandler = new UserControlProcessedHandler();
-#endif
+    mDefaultHandler = new Aborter(this, Constants::ABORT_UNRECOGNIZED_OPCODE);
+    mAborterIncorrectMode = new Aborter(this, Constants::ABORT_NOT_IN_CORRECT_MODE);
+    mAborterRefused = new Aborter(this, Constants::ABORT_REFUSED);
+    mAutoOnHandler = new AutoOnHandler(this);
+    mBypasser = new Bypasser();
+    mBystander = new Bystander();
+    mUserControlProcessedHandler = new UserControlProcessedHandler(this);
 }
 
 ECode HdmiCecStandbyModeHandler::constructor(
     /* [in] */ IHdmiControlService* service,
-    /* [in] */ HdmiCecLocalDeviceTv* tv)
+    /* [in] */ IHdmiCecLocalDeviceTv* tv)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        mService = service;
-        mTv = tv;
-        AddHandler(Constants::MESSAGE_IMAGE_VIEW_ON, mAutoOnHandler);
-        AddHandler(Constants::MESSAGE_TEXT_VIEW_ON, mAutoOnHandler);
-        AddHandler(Constants::MESSAGE_ACTIVE_SOURCE, mBystander);
-        AddHandler(Constants::MESSAGE_REQUEST_ACTIVE_SOURCE, mBystander);
-        AddHandler(Constants::MESSAGE_ROUTING_CHANGE, mBystander);
-        AddHandler(Constants::MESSAGE_ROUTING_INFORMATION, mBystander);
-        AddHandler(Constants::MESSAGE_SET_STREAM_PATH, mBystander);
-        AddHandler(Constants::MESSAGE_STANDBY, mBystander);
-        AddHandler(Constants::MESSAGE_SET_MENU_LANGUAGE, mBystander);
-        AddHandler(Constants::MESSAGE_DEVICE_VENDOR_ID, mBystander);
-        AddHandler(Constants::MESSAGE_USER_CONTROL_RELEASED, mBystander);
-        AddHandler(Constants::MESSAGE_REPORT_POWER_STATUS, mBystander);
-        AddHandler(Constants::MESSAGE_FEATURE_ABORT, mBystander);
-        AddHandler(Constants::MESSAGE_INACTIVE_SOURCE, mBystander);
-        AddHandler(Constants::MESSAGE_SYSTEM_AUDIO_MODE_STATUS, mBystander);
-        AddHandler(Constants::MESSAGE_REPORT_AUDIO_STATUS, mBystander);
-        // If TV supports the following messages during power-on, ignore them and do nothing,
-        // else reply with <Feature Abort>["Unrecognized Opcode"]
-        // <Deck Status>, <Tuner Device Status>, <Tuner Cleared Status>, <Timer Status>
-        AddHandler(Constants::MESSAGE_RECORD_STATUS, mBystander);
-        // If TV supports the following messages during power-on, reply with <Feature Abort>["Not
-        // in correct mode to respond"], else reply with <Feature Abort>["Unrecognized Opcode"]
-        // <Give Tuner Device Status>, <Select Digital Service>, <Tuner Step Decrement>,
-        // <Tuner Stem Increment>, <Menu Status>.
-        AddHandler(Constants::MESSAGE_RECORD_TV_SCREEN, mAborterIncorrectMode);
-        AddHandler(Constants::MESSAGE_INITIATE_ARC, mAborterIncorrectMode);
-        AddHandler(Constants::MESSAGE_TERMINATE_ARC, mAborterIncorrectMode);
-        AddHandler(Constants::MESSAGE_GIVE_PHYSICAL_ADDRESS, mBypasser);
-        AddHandler(Constants::MESSAGE_GET_MENU_LANGUAGE, mBypasser);
-        AddHandler(Constants::MESSAGE_REPORT_PHYSICAL_ADDRESS, mBypasser);
-        AddHandler(Constants::MESSAGE_GIVE_DEVICE_VENDOR_ID, mBypasser);
-        AddHandler(Constants::MESSAGE_GIVE_OSD_NAME, mBypasser);
-        AddHandler(Constants::MESSAGE_SET_OSD_NAME, mBypasser);
-        AddHandler(Constants::MESSAGE_USER_CONTROL_PRESSED, mUserControlProcessedHandler);
-        AddHandler(Constants::MESSAGE_GIVE_DEVICE_POWER_STATUS, mBypasser);
-        AddHandler(Constants::MESSAGE_ABORT, mBypasser);
-        AddHandler(Constants::MESSAGE_GET_CEC_VERSION, mBypasser);
-        AddHandler(Constants::MESSAGE_VENDOR_COMMAND_WITH_ID, mAborterIncorrectMode);
-        AddHandler(Constants::MESSAGE_SET_SYSTEM_AUDIO_MODE, mAborterIncorrectMode);
-
-#endif
+    mService = service;
+    mTv = tv;
+    AddHandler(Constants::MESSAGE_IMAGE_VIEW_ON, mAutoOnHandler);
+    AddHandler(Constants::MESSAGE_TEXT_VIEW_ON, mAutoOnHandler);
+    AddHandler(Constants::MESSAGE_ACTIVE_SOURCE, mBystander);
+    AddHandler(Constants::MESSAGE_REQUEST_ACTIVE_SOURCE, mBystander);
+    AddHandler(Constants::MESSAGE_ROUTING_CHANGE, mBystander);
+    AddHandler(Constants::MESSAGE_ROUTING_INFORMATION, mBystander);
+    AddHandler(Constants::MESSAGE_SET_STREAM_PATH, mBystander);
+    AddHandler(Constants::MESSAGE_STANDBY, mBystander);
+    AddHandler(Constants::MESSAGE_SET_MENU_LANGUAGE, mBystander);
+    AddHandler(Constants::MESSAGE_DEVICE_VENDOR_ID, mBystander);
+    AddHandler(Constants::MESSAGE_USER_CONTROL_RELEASED, mBystander);
+    AddHandler(Constants::MESSAGE_REPORT_POWER_STATUS, mBystander);
+    AddHandler(Constants::MESSAGE_FEATURE_ABORT, mBystander);
+    AddHandler(Constants::MESSAGE_INACTIVE_SOURCE, mBystander);
+    AddHandler(Constants::MESSAGE_SYSTEM_AUDIO_MODE_STATUS, mBystander);
+    AddHandler(Constants::MESSAGE_REPORT_AUDIO_STATUS, mBystander);
+    // If TV supports the following messages during power-on, ignore them and do nothing,
+    // else reply with <Feature Abort>["Unrecognized Opcode"]
+    // <Deck Status>, <Tuner Device Status>, <Tuner Cleared Status>, <Timer Status>
+    AddHandler(Constants::MESSAGE_RECORD_STATUS, mBystander);
+    // If TV supports the following messages during power-on, reply with <Feature Abort>["Not
+    // in correct mode to respond"], else reply with <Feature Abort>["Unrecognized Opcode"]
+    // <Give Tuner Device Status>, <Select Digital Service>, <Tuner Step Decrement>,
+    // <Tuner Stem Increment>, <Menu Status>.
+    AddHandler(Constants::MESSAGE_RECORD_TV_SCREEN, mAborterIncorrectMode);
+    AddHandler(Constants::MESSAGE_INITIATE_ARC, mAborterIncorrectMode);
+    AddHandler(Constants::MESSAGE_TERMINATE_ARC, mAborterIncorrectMode);
+    AddHandler(Constants::MESSAGE_GIVE_PHYSICAL_ADDRESS, mBypasser);
+    AddHandler(Constants::MESSAGE_GET_MENU_LANGUAGE, mBypasser);
+    AddHandler(Constants::MESSAGE_REPORT_PHYSICAL_ADDRESS, mBypasser);
+    AddHandler(Constants::MESSAGE_GIVE_DEVICE_VENDOR_ID, mBypasser);
+    AddHandler(Constants::MESSAGE_GIVE_OSD_NAME, mBypasser);
+    AddHandler(Constants::MESSAGE_SET_OSD_NAME, mBypasser);
+    AddHandler(Constants::MESSAGE_USER_CONTROL_PRESSED, mUserControlProcessedHandler);
+    AddHandler(Constants::MESSAGE_GIVE_DEVICE_POWER_STATUS, mBypasser);
+    AddHandler(Constants::MESSAGE_ABORT, mBypasser);
+    AddHandler(Constants::MESSAGE_GET_CEC_VERSION, mBypasser);
+    AddHandler(Constants::MESSAGE_VENDOR_COMMAND_WITH_ID, mAborterIncorrectMode);
+    AddHandler(Constants::MESSAGE_SET_SYSTEM_AUDIO_MODE, mAborterIncorrectMode);
+    return NOERROR;
 }
 
 ECode HdmiCecStandbyModeHandler::AddHandler(
     /* [in] */ Int32 opcode,
     /* [in] */ IHdmiCecStandbyModeHandlerCecMessageHandler* handler)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        mCecMessageHandlers->Put(opcode, handler);
-
-#endif
+    mCecMessageHandlers->Put(opcode, handler);
+    return NOERROR;
 }
 
 ECode HdmiCecStandbyModeHandler::HandleCommand(
@@ -210,19 +203,15 @@ ECode HdmiCecStandbyModeHandler::HandleCommand(
 {
     VALIDATE_NOT_NULL(result)
 
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        Int32 opcode;
-        message->GetOpcode(&opcode);
-        AutoPtr<IInterface> obj;
-        mCecMessageHandlers->Get(opcode, (IInterface**)&obj);
-        CecMessageHandler handler = I::Probe(obj);
-        if (handler != NULL) {
-            return handler->Handle(message);
-        }
-        return mDefaultHandler->Handle(message);
-
-#endif
+    Int32 opcode;
+    message->GetOpcode(&opcode);
+    AutoPtr<IInterface> obj;
+    mCecMessageHandlers->Get(opcode, (IInterface**)&obj);
+    AutoPtr<IHdmiCecStandbyModeHandlerCecMessageHandler> handler = IHdmiCecStandbyModeHandlerCecMessageHandler::Probe(obj);
+    if (handler != NULL) {
+        return handler->Handle(message, result);
+    }
+    return mDefaultHandler->Handle(message, result);
 }
 
 } // namespace Hdmi

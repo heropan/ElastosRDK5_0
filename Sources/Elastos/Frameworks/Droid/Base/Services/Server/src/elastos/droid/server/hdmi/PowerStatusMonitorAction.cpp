@@ -144,8 +144,8 @@ ECode PowerStatusMonitorAction::QueryPowerStatus()
 {
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
-        AutoPtr<HdmiCecLocalDeviceTv> tv;
-        Tv((HdmiCecLocalDeviceTv**)&tv);
+        AutoPtr<IHdmiCecLocalDeviceTv> tv;
+        Tv((IHdmiCecLocalDeviceTv**)&tv);
         List<HdmiDeviceInfo> deviceInfos = tv->GetDeviceInfoList(FALSE);
         ResetPowerStatus(deviceInfos);
         for (HdmiDeviceInfo info : deviceInfos) {
@@ -182,8 +182,8 @@ ECode PowerStatusMonitorAction::UpdatePowerStatus(
 {
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
-        AutoPtr<HdmiCecLocalDeviceTv> tv;
-        Tv((HdmiCecLocalDeviceTv**)&tv);
+        AutoPtr<IHdmiCecLocalDeviceTv> tv;
+        Tv((IHdmiCecLocalDeviceTv**)&tv);
         tv->UpdateDevicePowerStatus(logicalAddress, newStatus);
 
         if (remove) {

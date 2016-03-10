@@ -54,8 +54,8 @@ ECode SystemAudioAutoInitiationAction::SendGiveSystemAudioModeStatus()
             //@Override
             CARAPI OnSendCompleted(Int32 error) {
                 if (error != Constants::SEND_RESULT_SUCCESS) {
-                    AutoPtr<HdmiCecLocalDeviceTv> tv;
-                    Tv((HdmiCecLocalDeviceTv**)&tv);
+                    AutoPtr<IHdmiCecLocalDeviceTv> tv;
+                    Tv((IHdmiCecLocalDeviceTv**)&tv);
                     tv->SetSystemAudioMode(FALSE, TRUE);
                     Finish();
                 }
@@ -96,8 +96,8 @@ ECode SystemAudioAutoInitiationAction::HandleSystemAudioModeStatusMessage()
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
         // If the last setting is system audio, turn on system audio whatever AVR status is.
-        AutoPtr<HdmiCecLocalDeviceTv> tv;
-        Tv((HdmiCecLocalDeviceTv**)&tv);
+        AutoPtr<IHdmiCecLocalDeviceTv> tv;
+        Tv((IHdmiCecLocalDeviceTv**)&tv);
         if (tv->GetSystemAudioModeSetting()) {
             if (CanChangeSystemAudio()) {
                 AutoPtr<SystemAudioActionFromTv> newSystemAudioActionFromTv = new SystemAudioActionFromTv();
@@ -107,8 +107,8 @@ ECode SystemAudioAutoInitiationAction::HandleSystemAudioModeStatusMessage()
         } else {
             // If the last setting is non-system audio, turn off system audio mode
             // and update system audio status (volume or mute).
-            AutoPtr<HdmiCecLocalDeviceTv> tv;
-            Tv((HdmiCecLocalDeviceTv**)&tv);
+            AutoPtr<IHdmiCecLocalDeviceTv> tv;
+            Tv((IHdmiCecLocalDeviceTv**)&tv);
             tv->SetSystemAudioMode(FALSE, TRUE);
             if (CanChangeSystemAudio()) {
                 AutoPtr<SystemAudioStatusAction> newSystemAudioStatusAction = new SystemAudioStatusAction();
@@ -141,8 +141,8 @@ ECode SystemAudioAutoInitiationAction::HandleSystemAudioModeStatusTimeout()
 {
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
-        AutoPtr<HdmiCecLocalDeviceTv> tv;
-        Tv((HdmiCecLocalDeviceTv**)&tv);
+        AutoPtr<IHdmiCecLocalDeviceTv> tv;
+        Tv((IHdmiCecLocalDeviceTv**)&tv);
         if (tv->GetSystemAudioModeSetting()) {
             if (CanChangeSystemAudio()) {
                 AutoPtr<SystemAudioActionFromTv> newSystemAudioActionFromTv = new SystemAudioActionFromTv();
@@ -150,8 +150,8 @@ ECode SystemAudioAutoInitiationAction::HandleSystemAudioModeStatusTimeout()
                 AddAndStartAction(newSystemAudioActionFromTv);
             }
         } else {
-            AutoPtr<HdmiCecLocalDeviceTv> tv;
-            Tv((HdmiCecLocalDeviceTv**)&tv);
+            AutoPtr<IHdmiCecLocalDeviceTv> tv;
+            Tv((IHdmiCecLocalDeviceTv**)&tv);
             tv->SetSystemAudioMode(FALSE, TRUE);
         }
         Finish();
@@ -165,8 +165,8 @@ ECode SystemAudioAutoInitiationAction::CanChangeSystemAudio(
 
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
-        AutoPtr<HdmiCecLocalDeviceTv> tv;
-        Tv((HdmiCecLocalDeviceTv**)&tv);
+        AutoPtr<IHdmiCecLocalDeviceTv> tv;
+        Tv((IHdmiCecLocalDeviceTv**)&tv);
         Boolean hasAction;
         HasAction(ECLSID_CSystemAudioActionFromTv, &hasAction);
         Boolean hasAvrAction;

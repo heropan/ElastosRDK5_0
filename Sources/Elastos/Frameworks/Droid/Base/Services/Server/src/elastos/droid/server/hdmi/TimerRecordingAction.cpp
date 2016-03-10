@@ -82,8 +82,8 @@ ECode TimerRecordingAction::SendTimerMessage()
                         mRecorderAddress, mRecordSource);
                 break;
             default:
-                AutoPtr<HdmiCecLocalDeviceTv> tv;
-                Tv((HdmiCecLocalDeviceTv**)&tv);
+                AutoPtr<IHdmiCecLocalDeviceTv> tv;
+                Tv((IHdmiCecLocalDeviceTv**)&tv);
                 tv->AnnounceTimerRecordingResult(
                         TIMER_RECORDING_RESULT_EXTRA_FAIL_TO_RECORD_SELECTED_SOURCE);
                 Finish();
@@ -93,8 +93,8 @@ ECode TimerRecordingAction::SendTimerMessage()
             //@Override
             CARAPI OnSendCompleted(Int32 error) {
                 if (error != Constants::SEND_RESULT_SUCCESS) {
-                    AutoPtr<HdmiCecLocalDeviceTv> tv;
-                    Tv((HdmiCecLocalDeviceTv**)&tv);
+                    AutoPtr<IHdmiCecLocalDeviceTv> tv;
+                    Tv((IHdmiCecLocalDeviceTv**)&tv);
                     tv->AnnounceTimerRecordingResult(
                             TIMER_RECORDING_RESULT_EXTRA_CHECK_RECORDER_CONNECTION);
                     Finish();
@@ -152,8 +152,8 @@ ECode TimerRecordingAction::HandleTimerStatus(
         cmd->GetParams((ArrayOf<Byte>**)&timerStatusData);
         // [Timer Status Data] should be one or three bytes.
         if (timerStatusData->GetLength() == 1 || timerStatusData->GetLength() == 3) {
-            AutoPtr<HdmiCecLocalDeviceTv> tv;
-            Tv((HdmiCecLocalDeviceTv**)&tv);
+            AutoPtr<IHdmiCecLocalDeviceTv> tv;
+            Tv((IHdmiCecLocalDeviceTv**)&tv);
             tv->AnnounceTimerRecordingResult(BytesToInt32(timerStatusData));
             Slogger::I(TAG, "Received [Timer Status Data]:" + Arrays->ToString(timerStatusData));
         } else {
@@ -189,8 +189,8 @@ ECode TimerRecordingAction::HandleFeatureAbort(
         }
         Int32 reason = (*params)[1] & 0xFF;
         Slogger::I(TAG, "[Feature Abort] for " + messageType + " reason:" + reason);
-        AutoPtr<HdmiCecLocalDeviceTv> tv;
-        Tv((HdmiCecLocalDeviceTv**)&tv);
+        AutoPtr<IHdmiCecLocalDeviceTv> tv;
+        Tv((IHdmiCecLocalDeviceTv**)&tv);
         tv->AnnounceTimerRecordingResult(TIMER_RECORDING_RESULT_EXTRA_CHECK_RECORDER_CONNECTION);
         Finish();
         *result = TRUE;
@@ -229,8 +229,8 @@ ECode TimerRecordingAction::HandleTimerEvent(
             return NOERROR;
         }
 
-        AutoPtr<HdmiCecLocalDeviceTv> tv;
-        Tv((HdmiCecLocalDeviceTv**)&tv);
+        AutoPtr<IHdmiCecLocalDeviceTv> tv;
+        Tv((IHdmiCecLocalDeviceTv**)&tv);
         tv->AnnounceTimerRecordingResult(TIMER_RECORDING_RESULT_EXTRA_CHECK_RECORDER_CONNECTION);
         Finish();
 #endif

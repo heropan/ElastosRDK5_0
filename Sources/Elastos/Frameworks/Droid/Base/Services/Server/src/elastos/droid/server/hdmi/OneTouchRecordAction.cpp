@@ -67,8 +67,8 @@ ECode OneTouchRecordAction::SendRecordOn()
                     CARAPI OnSendCompleted(Int32 error) {
                         // if failed to send <Record On>, display error message and finish action.
                         if (error != Constants::SEND_RESULT_SUCCESS) {
-                            AutoPtr<HdmiCecLocalDeviceTv> tv;
-                            Tv((HdmiCecLocalDeviceTv**)&tv);
+                            AutoPtr<IHdmiCecLocalDeviceTv> tv;
+                            Tv((IHdmiCecLocalDeviceTv**)&tv);
                             tv->AnnounceOneTouchRecordResult(
                                     ONE_TOUCH_RECORD_CHECK_RECORDER_CONNECTION);
                             Finish();
@@ -126,8 +126,8 @@ ECode OneTouchRecordAction::HandleRecordStatus(
         AutoPtr<ArrayOf<Byte> > params;
         cmd->GetParams((ArrayOf<Byte>**)&params);
         Int32 recordStatus = (*params)[0];
-        AutoPtr<HdmiCecLocalDeviceTv> tv;
-        Tv((HdmiCecLocalDeviceTv**)&tv);
+        AutoPtr<IHdmiCecLocalDeviceTv> tv;
+        Tv((IHdmiCecLocalDeviceTv**)&tv);
         tv->AnnounceOneTouchRecordResult(recordStatus);
         Slogger::I(TAG, "Got record status:" + recordStatus + " from " + srcAddr);
 
@@ -160,8 +160,8 @@ ECode OneTouchRecordAction::HandleTimerEvent(
             return NOERROR;
         }
 
-        AutoPtr<HdmiCecLocalDeviceTv> tv;
-        Tv((HdmiCecLocalDeviceTv**)&tv);
+        AutoPtr<IHdmiCecLocalDeviceTv> tv;
+        Tv((IHdmiCecLocalDeviceTv**)&tv);
         tv->AnnounceOneTouchRecordResult(ONE_TOUCH_RECORD_CHECK_RECORDER_CONNECTION);
         Finish();
     }

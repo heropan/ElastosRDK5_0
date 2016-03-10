@@ -188,7 +188,7 @@ public:
         /* [out] */ HdmiCecLocalDevicePlayback** result);
 
     CARAPI Tv(
-        /* [out] */ HdmiCecLocalDeviceTv** result);
+        /* [out] */ IHdmiCecLocalDeviceTv** result);
 
     CARAPI GetSourceAddress(
         /* [out] */ Int32* result);

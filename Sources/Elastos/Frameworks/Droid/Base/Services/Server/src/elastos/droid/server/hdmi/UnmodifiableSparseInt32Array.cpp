@@ -7,7 +7,7 @@ namespace Droid {
 namespace Server {
 namespace Hdmi {
 
-const String UnmodifiableSparseInt32Array::TAG("ImmutableSparseIntArray");
+const String UnmodifiableSparseInt32Array::TAG("ImmutableSparseInt32Array");
 
 ECode UnmodifiableSparseInt32Array::constructor(
     /* [in] */ ISparseInt32Array* array)

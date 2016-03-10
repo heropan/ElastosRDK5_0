@@ -206,10 +206,10 @@ ECode DeviceSelectAction::HandleTimerEvent(
     switch (mState) {
         case STATE_WAIT_FOR_REPORT_POWER_STATUS:
             {
-                AutoPtr<HdmiCecLocalDeviceTv> tv;
-                Tv((HdmiCecLocalDeviceTv**)&tv);
+                AutoPtr<IHdmiCecLocalDeviceTv> tv;
+                Tv((IHdmiCecLocalDeviceTv**)&tv);
                 Boolean isPowerStandbyOrTransient;
-                tv->IsPowerStandbyOrTransient(&isPowerStandbyOrTransient);
+                ((HdmiCecLocalDeviceTv*) tv.Get())->IsPowerStandbyOrTransient(&isPowerStandbyOrTransient);
                 if (isPowerStandbyOrTransient) {
                     InvokeCallback(IHdmiControlManager::RESULT_INCORRECT_MODE);
                     Finish();

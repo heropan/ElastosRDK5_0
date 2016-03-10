@@ -1759,7 +1759,8 @@ module
     }
 
     class CHdmiControlServiceBinderService {
-        constructor();
+        constructor(
+            [in] IHdmiControlService* host);
 
         interface IBinder;
         interface IIHdmiControlService;

@@ -319,10 +319,10 @@ ECode DeviceDiscoveryAction::HandleReportPhysicalAddress(
         current->mPhysicalAddress = HdmiUtils::TwoBytesToInt32(params);
         GetPortId(current->mPhysicalAddress, &current->mPortId);
         current->mDeviceType = (*params)[2] & 0xFF;
-        AutoPtr<HdmiCecLocalDeviceTv> tv;
-        Tv((HdmiCecLocalDeviceTv**)&tv);
+        AutoPtr<IHdmiCecLocalDeviceTv> tv;
+        Tv((IHdmiCecLocalDeviceTv**)&tv);
         Boolean bNoUse;
-        tv->UpdateCecSwitchInfo(current->mLogicalAddress, current->mDeviceType,
+        ((HdmiCecLocalDeviceTv*) tv.Get())->UpdateCecSwitchInfo(current->mLogicalAddress, current->mDeviceType,
                     current->mPhysicalAddress, &bNoUse);
         IncreaseProcessedDeviceCount();
         CheckAndProceedStage();
@@ -335,9 +335,9 @@ ECode DeviceDiscoveryAction::GetPortId(
 {
     VALIDATE_NOT_NULL(result)
 
-    AutoPtr<HdmiCecLocalDeviceTv> tv;
-    Tv((HdmiCecLocalDeviceTv**)&tv);
-    return tv->GetPortId(physicalAddress, result);
+    AutoPtr<IHdmiCecLocalDeviceTv> tv;
+    Tv((IHdmiCecLocalDeviceTv**)&tv);
+    return ((HdmiCecLocalDeviceTv*) tv.Get())->GetPortId(physicalAddress, result);
 }
 
 ECode DeviceDiscoveryAction::HandleSetOsdName(

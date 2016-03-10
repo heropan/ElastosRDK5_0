@@ -73,8 +73,8 @@ ECode SystemAudioStatusAction::HandleSendGiveAudioStatusFailure()
 #if 0 // TODO: Translate codes below
         // Inform to all application that the audio status (volumn, mute) of
         // the audio amplifier is unknown.
-        AutoPtr<HdmiCecLocalDeviceTv> tv;
-        Tv((HdmiCecLocalDeviceTv**)&tv);
+        AutoPtr<IHdmiCecLocalDeviceTv> tv;
+        Tv((IHdmiCecLocalDeviceTv**)&tv);
         tv->SetAudioStatus(FALSE, Constants::UNKNOWN_VOLUME);
 
         Boolean isSystemAudioActivated;
@@ -125,8 +125,8 @@ ECode SystemAudioStatusAction::HandleReportAudioStatus(
         cmd->GetParams((ArrayOf<Byte>**)&params);
         Boolean mute = ((*params)[0] & 0x80) == 0x80;
         Int32 volume = (*params)[0] & 0x7F;
-        AutoPtr<HdmiCecLocalDeviceTv> tv;
-        Tv((HdmiCecLocalDeviceTv**)&tv);
+        AutoPtr<IHdmiCecLocalDeviceTv> tv;
+        Tv((IHdmiCecLocalDeviceTv**)&tv);
         tv->SetAudioStatus(mute, volume);
 
         Boolean isSystemAudioActivated;

@@ -258,8 +258,8 @@ ECode HdmiCecLocalDevice::Create(
     switch (deviceType) {
     case IHdmiDeviceInfo::DEVICE_TV:
         {
-            AutoPtr<HdmiCecLocalDeviceTv> tv;
-            tv->constructor(service);
+            AutoPtr<IHdmiCecLocalDeviceTv> tv;
+            ((HdmiCecLocalDeviceTv*) tv.Get())->constructor(service);
             *result = IHdmiCecLocalDevice::Probe(tv);
             REFCOUNT_ADD(*result)
             return NOERROR;

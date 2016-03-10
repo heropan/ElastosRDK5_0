@@ -76,8 +76,8 @@ ECode SystemAudioAction::SendSystemAudioModeRequestInternal()
 {
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
-        AutoPtr<HdmiCecLocalDeviceTv> tv;
-        Tv((HdmiCecLocalDeviceTv**)&tv);
+        AutoPtr<IHdmiCecLocalDeviceTv> tv;
+        Tv((IHdmiCecLocalDeviceTv**)&tv);
         AutoPtr<IHdmiDeviceInfo> info;
         tv->GetAvrDeviceInfo((IHdmiDeviceInfo**)&info);
         Int32 avrPhysicalAddress;
@@ -121,8 +121,8 @@ ECode SystemAudioAction::SetSystemAudioMode(
 {
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
-        AutoPtr<HdmiCecLocalDeviceTv> tv;
-        Tv((HdmiCecLocalDeviceTv**)&tv);
+        AutoPtr<IHdmiCecLocalDeviceTv> tv;
+        Tv((IHdmiCecLocalDeviceTv**)&tv);
         tv->SetSystemAudioMode(mode, TRUE);
 #endif
 }

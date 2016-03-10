@@ -167,8 +167,8 @@ ECode NewDeviceAction::AddDeviceInfo()
         if (mDisplayName == NULL) {
             mDisplayName = HdmiUtils->GetDefaultDeviceName(mDeviceLogicalAddress);
         }
-        AutoPtr<HdmiCecLocalDeviceTv> tv;
-        Tv((HdmiCecLocalDeviceTv**)&tv);
+        AutoPtr<IHdmiCecLocalDeviceTv> tv;
+        Tv((IHdmiCecLocalDeviceTv**)&tv);
         HdmiDeviceInfo deviceInfo = new HdmiDeviceInfo(
                 mDeviceLogicalAddress, mDevicePhysicalAddress,
                 tv->GetPortId(mDevicePhysicalAddress),

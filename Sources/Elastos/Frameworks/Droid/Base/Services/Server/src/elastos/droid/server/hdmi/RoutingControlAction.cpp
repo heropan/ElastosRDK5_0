@@ -108,8 +108,8 @@ ECode RoutingControlAction::HandleReportPowerStatus(
             if (IsPowerOnOrTransient(devicePowerStatus)) {
                 SendSetStreamPath();
             } else {
-                AutoPtr<HdmiCecLocalDeviceTv> tv;
-                Tv((HdmiCecLocalDeviceTv**)&tv);
+                AutoPtr<IHdmiCecLocalDeviceTv> tv;
+                Tv((IHdmiCecLocalDeviceTv**)&tv);
                 tv->UpdateActiveInput(mCurrentRoutingPath, mNotifyInputChange);
             }
         }
@@ -124,8 +124,8 @@ ECode RoutingControlAction::GetTvPowerStatus(
 
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
-        AutoPtr<HdmiCecLocalDeviceTv> tv;
-        Tv((HdmiCecLocalDeviceTv**)&tv);
+        AutoPtr<IHdmiCecLocalDeviceTv> tv;
+        Tv((IHdmiCecLocalDeviceTv**)&tv);
         return tv->GetPowerStatus(result);
 #endif
 }
@@ -175,8 +175,8 @@ ECode RoutingControlAction::HandleTimerEvent(
         }
         switch (timeoutState) {
             case STATE_WAIT_FOR_ROUTING_INFORMATION:
-                AutoPtr<HdmiCecLocalDeviceTv> tv;
-                Tv((HdmiCecLocalDeviceTv**)&tv);
+                AutoPtr<IHdmiCecLocalDeviceTv> tv;
+                Tv((IHdmiCecLocalDeviceTv**)&tv);
                 HdmiDeviceInfo device = tv->GetDeviceInfoByPath(mCurrentRoutingPath);
                 if (device != NULL && mQueryDevicePowerStatus) {
                     Int32 deviceLogicalAddress;
@@ -189,16 +189,16 @@ ECode RoutingControlAction::HandleTimerEvent(
                         }
                     });
                 } else {
-                    AutoPtr<HdmiCecLocalDeviceTv> tv;
-                    Tv((HdmiCecLocalDeviceTv**)&tv);
+                    AutoPtr<IHdmiCecLocalDeviceTv> tv;
+                    Tv((IHdmiCecLocalDeviceTv**)&tv);
                     tv->UpdateActiveInput(mCurrentRoutingPath, mNotifyInputChange);
                     FinishWithCallback(IHdmiControlManager::RESULT_SUCCESS);
                 }
                 return NOERROR;
             case STATE_WAIT_FOR_REPORT_POWER_STATUS:
                 if (IsPowerOnOrTransient(GetTvPowerStatus())) {
-                    AutoPtr<HdmiCecLocalDeviceTv> tv;
-                    Tv((HdmiCecLocalDeviceTv**)&tv);
+                    AutoPtr<IHdmiCecLocalDeviceTv> tv;
+                    Tv((IHdmiCecLocalDeviceTv**)&tv);
                     tv->UpdateActiveInput(mCurrentRoutingPath, mNotifyInputChange);
                     SendSetStreamPath();
                 }
@@ -230,8 +230,8 @@ ECode RoutingControlAction::HandlDevicePowerStatusAckResult(
             mState = STATE_WAIT_FOR_REPORT_POWER_STATUS;
             AddTimer(mState, TIMEOUT_REPORT_POWER_STATUS_MS);
         } else {
-            AutoPtr<HdmiCecLocalDeviceTv> tv;
-            Tv((HdmiCecLocalDeviceTv**)&tv);
+            AutoPtr<IHdmiCecLocalDeviceTv> tv;
+            Tv((IHdmiCecLocalDeviceTv**)&tv);
             tv->UpdateActiveInput(mCurrentRoutingPath, mNotifyInputChange);
             SendSetStreamPath();
             FinishWithCallback(IHdmiControlManager::RESULT_SUCCESS);

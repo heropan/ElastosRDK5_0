@@ -1,54 +1,94 @@
 
 #include "elastos/droid/server/hdmi/HdmiControlService.h"
-#include <elastos/utility/Arrays.h>
 #include "elastos/droid/server/hdmi/Constants.h"
-#include "elastos/droid/server/hdmi/UnmodifiableSparseInt32Array.h"
-#include "elastos/droid/server/hdmi/UnmodifiableSparseArray.h"
+#include "elastos/droid/server/hdmi/HdmiCecLocalDevice.h"
+#include "elastos/droid/server/hdmi/HdmiCecMessageBuilder.h"
+#include "elastos/droid/server/hdmi/HdmiLogger.h"
 #include "elastos/droid/server/hdmi/HdmiMhlControllerStub.h"
-#include "elastos/droid/server/hdmi/HdmiCecController.h"
+#include "elastos/droid/server/hdmi/HdmiUtils.h"
+#include "elastos/droid/server/hdmi/UnmodifiableSparseArray.h"
+#include "elastos/droid/server/hdmi/UnmodifiableSparseInt32Array.h"
+#include "elastos/droid/server/hdmi/HdmiMhlLocalDeviceStub.h"
+#include <elastos/core/StringUtils.h>
+#include <elastos/core/Thread.h>
+#include <elastos/droid/Manifest.h>
+#include <elastos/droid/os/Build.h>
+#include <elastos/droid/os/SystemClock.h>
+#include <elastos/droid/os/UserHandle.h>
+#include <elastos/utility/Arrays.h>
+#include <elastos/utility/logging/Logger.h>
+#include <elastos/utility/logging/Slogger.h>
+#include <libcore/utility/EmptyArray.h>
+#include <elastos/droid/provider/Settings.h>
+#include <Elastos.Droid.Content.h>
+#include <Elastos.Droid.Internal.h>
+#include <Elastos.Droid.Provider.h>
+#include <elastos/droid/net/ReturnOutValue.h>
+#include <elastos/core/AutoLock.h>
+#include <Elastos.CoreLibrary.IO.h>
+#include <Elastos.Droid.Text.h>
+#include <Elastos.Droid.Media.h>
 
-// import static android.hardware.hdmi.IHdmiControlManager::DEVICE_EVENT_ADD_DEVICE;
-// import static android.hardware.hdmi.IHdmiControlManager::DEVICE_EVENT_REMOVE_DEVICE;
-// import static com.android.server.hdmi.Constants::DISABLED;
-// import static com.android.server.hdmi.Constants::ENABLED;
-// import static com.android.server.hdmi.Constants::OPTION_CEC_AUTO_WAKEUP;
-// import static com.android.server.hdmi.Constants::OPTION_CEC_ENABLE;
-// import static com.android.server.hdmi.Constants::OPTION_CEC_SERVICE_CONTROL;
-// import static com.android.server.hdmi.Constants::OPTION_MHL_ENABLE;
-// import static com.android.server.hdmi.Constants::OPTION_MHL_INPUT_SWITCHING;
-// import static com.android.server.hdmi.Constants::OPTION_MHL_POWER_CHARGE;
-// import libcore.util.EmptyArray;
-
+using Elastos::Droid::Provider::Settings;
+using Elastos::Core::IThread;
+// using Elastos::Droid::Os::Build;
+// using Elastos::Droid::Os::ISystemClock;
+// using Elastos::Droid::Provider::ISettings::Global;
+using Elastos::Core::CInteger32;
+using Elastos::Core::CObject;
+using Elastos::Core::ICharSequence;
+using Elastos::Core::IInteger32;
+using Elastos::Core::StringUtils;
+using Elastos::Core::Thread;
+using Elastos::Droid::Content::CIntent;
+using Elastos::Droid::Content::CIntentFilter;
 using Elastos::Droid::Content::IBroadcastReceiver;
 using Elastos::Droid::Content::IContentResolver;
 using Elastos::Droid::Content::IIntentFilter;
 using Elastos::Droid::Database::IContentObserver;
+using Elastos::Droid::Hardware::Hdmi::EIID_IIHdmiControlService;
+using Elastos::Droid::Hardware::Hdmi::EIID_IIHdmiControlCallback;
 using Elastos::Droid::Hardware::Hdmi::IHdmiControlManager;
-using Elastos::Droid::Hardware::Hdmi::IHdmiPortInfo;
-using Elastos::Droid::Hardware::Hdmi::IIHdmiControlCallback;
-using Elastos::Droid::Hardware::Hdmi::IIHdmiInputChangeListener;
-using Elastos::Droid::Hardware::Hdmi::IIHdmiMhlVendorCommandListener;
-using Elastos::Droid::Hardware::Hdmi::IIHdmiRecordListener;
-using Elastos::Droid::Hardware::Hdmi::IIHdmiVendorCommandListener;
-// using Elastos::Droid::Os::Build;
-using Elastos::Droid::Os::IBinder;
+// using Elastos::Droid::Hardware::Hdmi::CHdmiDeviceInfo;
+using Elastos::Droid::Internal::Utility::CIndentingPrintWriter;
+using Elastos::Droid::Internal::Utility::IIndentingPrintWriter;
+using Elastos::Droid::Manifest;
+using Elastos::Droid::Os::Build;
+using Elastos::Droid::Os::CHandler;
+using Elastos::Droid::Os::CHandlerThread;
+using Elastos::Droid::Os::CSystemProperties;
+using Elastos::Droid::Os::EIID_IBinder;
 using Elastos::Droid::Os::IPowerManager;
-// using Elastos::Droid::Os::ISystemClock;
 using Elastos::Droid::Os::ISystemProperties;
 using Elastos::Droid::Os::IUserHandle;
-// using Elastos::Droid::Provider::ISettings::Global;
+using Elastos::Droid::Os::SystemClock;
+using Elastos::Droid::Os::UserHandle;
+using Elastos::Droid::Provider::CSettingsGlobal;
+using Elastos::Droid::Provider::ISettingsGlobal;
+using Elastos::Droid::Server::ISystemService;
 using Elastos::Droid::Text::ITextUtils;
+using Elastos::Droid::Text::CSimpleStringSplitter;
+using Elastos::Droid::Text::ISimpleStringSplitter;
+using Elastos::Droid::Utility::CArraySet;
+using Elastos::Droid::Utility::CSparseArray;
+using Elastos::Droid::Utility::CSparseInt32Array;
 using Elastos::Droid::Utility::IArraySet;
 using Elastos::Droid::Utility::ISlog;
 using Elastos::Droid::Utility::ISparseArray;
 using Elastos::Droid::Utility::ISparseInt32Array;
-using Elastos::Droid::Internal::Utility::IIndentingPrintWriter;
-using Elastos::Droid::Server::ISystemService;
 using Elastos::Utility::Arrays;
+using Elastos::Utility::CArrayList;
+using Elastos::Utility::CCollections;
 using Elastos::Utility::ICollections;
+using Elastos::Utility::IIterator;
 using Elastos::Utility::ILocale;
-using Elastos::Droid::Hardware::Hdmi::EIID_IIHdmiControlService;
-using Elastos::Droid::Os::EIID_IBinder;
+using Elastos::Utility::ILocaleHelper;
+using Elastos::Utility::CLocaleHelper;
+using Elastos::Utility::Logging::Logger;
+using Elastos::Utility::Logging::Slogger;
+using Libcore::Utility::EmptyArray;
+using Elastos::IO::IWriter;
+using Elastos::Core::EIID_IRunnable;
 
 namespace Elastos {
 namespace Droid {
@@ -61,60 +101,72 @@ namespace Hdmi {
 CAR_INTERFACE_IMPL(HdmiControlService::VendorCommandListenerRecord, Object, IProxyDeathRecipient)
 
 HdmiControlService::VendorCommandListenerRecord::VendorCommandListenerRecord(
+    /* [in] */ HdmiControlService* host,
     /* [in] */ IIHdmiVendorCommandListener* listener,
     /* [in] */ Int32 deviceType)
-    : mListener(listener)
+    : mHost(host)
+    , mListener(listener)
     , mDeviceType(deviceType)
 {}
 
 ECode HdmiControlService::VendorCommandListenerRecord::ProxyDied()
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-                synchronized(mLock) {
-                    mVendorCommandListenerRecords->Remove(this);
-                }
-
-#endif
+    synchronized(mHost->mLock) {
+        mHost->mVendorCommandListenerRecords->Remove(TO_IINTERFACE(this));
+    }
+    return NOERROR;
 }
 
 //=============================================================================
 // HdmiControlService::HdmiControlBroadcastReceiver
 //=============================================================================
+HdmiControlService::HdmiControlBroadcastReceiver::HdmiControlBroadcastReceiver(
+    /* [in] */ HdmiControlService* host)
+    : mHost(host)
+{}
+
 ECode HdmiControlService::HdmiControlBroadcastReceiver::OnReceive(
     /* [in] */ IContext* context,
     /* [in] */ IIntent* intent)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-                AssertRunOnServiceThread();
-                switch (intent->GetAction()) {
-                    case Intent::ACTION_SCREEN_OFF:
-                        if (IsPowerOnOrTransient()) {
-                            OnStandby();
-                        }
-                        break;
-                    case Intent::ACTION_SCREEN_ON:
-                        if (IsPowerStandbyOrTransient()) {
-                            OnWakeUp();
-                        }
-                        break;
-                    case Intent::ACTION_CONFIGURATION_CHANGED:
-                        String language = Locale::GetDefault()->GetISO3Language();
-                        if (!mLanguage->Equals(language)) {
-                            OnLanguageChanged(language);
-                        }
-                        break;
-                }
-
-#endif
+    mHost->AssertRunOnServiceThread();
+    String action;
+    intent->GetAction(&action);
+    if (action == IIntent::ACTION_SCREEN_OFF) {
+        Boolean isPowerOnOrTransient;
+        mHost->IsPowerOnOrTransient(&isPowerOnOrTransient);
+        if (isPowerOnOrTransient) {
+            mHost->OnStandby();
+        }
+    }
+    else if (action == IIntent::ACTION_SCREEN_ON) {
+        Boolean isPowerStandbyOrTransient;
+        mHost->IsPowerStandbyOrTransient(&isPowerStandbyOrTransient);
+        if (isPowerStandbyOrTransient) {
+            mHost->OnWakeUp();
+        }
+    }
+    else if (action == IIntent::ACTION_CONFIGURATION_CHANGED) {
+        String language;
+        AutoPtr<ILocaleHelper> helper;
+        CLocaleHelper::AcquireSingleton((ILocaleHelper**)&helper);
+        AutoPtr<ILocale> defaultLocale;
+        helper->GetDefault((ILocale**)&defaultLocale);
+        defaultLocale->GetISO3Language(&language);
+        if (!mHost->mLanguage.Equals(language)) {
+            mHost->OnLanguageChanged(language);
+        }
+    }
+    return NOERROR;
 }
 
 //=============================================================================
 // HdmiControlService::SettingsObserver
 //=============================================================================
 HdmiControlService::SettingsObserver::SettingsObserver(
+    /* [in] */ HdmiControlService* host,
     /* [in] */ IHandler* handler)
+    : mHost(host)
 {
     ContentObserver::constructor(handler);
 }
@@ -123,35 +175,36 @@ ECode HdmiControlService::SettingsObserver::OnChange(
     /* [in] */ Boolean selfChange,
     /* [in] */ IUri* uri)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-                String option = uri->GetLastPathSegment();
-                Boolean enabled = ReadBooleanSetting(option, TRUE);
-                switch (option) {
-                    case Global::HDMI_CONTROL_ENABLED:
-                        SetControlEnabled(enabled);
-                        break;
-                    case Global::HDMI_CONTROL_AUTO_WAKEUP_ENABLED:
-                        AutoPtr<HdmiCecLocalDeviceTv> tv;
-                        Tv((HdmiCecLocalDeviceTv**)&tv);
-                        tv->SetAutoWakeup(enabled);
-                        SetCecOption(OPTION_CEC_AUTO_WAKEUP, ToInt32(enabled));
-                        break;
-                    case Global::HDMI_CONTROL_AUTO_DEVICE_OFF_ENABLED:
-                        AutoPtr<HdmiCecLocalDeviceTv> tv;
-                        Tv((HdmiCecLocalDeviceTv**)&tv);
-                        tv->SetAutoDeviceOff(enabled);
-                        // No need to propagate to HAL.
-                        break;
-                    case Global::MHL_INPUT_SWITCHING_ENABLED:
-                        SetMhlInputChangeEnabled(enabled);
-                        break;
-                    case Global::MHL_POWER_CHARGE_ENABLED:
-                        mMhlController->SetOption(OPTION_MHL_POWER_CHARGE, ToInt32(enabled));
-                        break;
-                }
-
-#endif
+    String option;
+    uri->GetLastPathSegment(&option);
+    Boolean enabled;
+    mHost->ReadBooleanSetting(option, TRUE, &enabled);
+    if (option == ISettingsGlobal::HDMI_CONTROL_ENABLED) {
+        mHost->SetControlEnabled(enabled);
+    }
+    else if (option == ISettingsGlobal::HDMI_CONTROL_AUTO_WAKEUP_ENABLED) {
+        AutoPtr<IHdmiCecLocalDeviceTv> tv;
+        mHost->Tv((IHdmiCecLocalDeviceTv**)&tv);
+        ((HdmiCecLocalDeviceTv*) tv.Get())->SetAutoWakeup(enabled);
+        Int32 iEnabled;
+        ToInt32(enabled, &iEnabled);
+        mHost->SetCecOption(Constants::OPTION_CEC_AUTO_WAKEUP, iEnabled);
+    }
+    else if (option == ISettingsGlobal::HDMI_CONTROL_AUTO_DEVICE_OFF_ENABLED) {
+        AutoPtr<IHdmiCecLocalDeviceTv> tv;
+        mHost->Tv((IHdmiCecLocalDeviceTv**)&tv);
+        ((HdmiCecLocalDeviceTv*) tv.Get())->SetAutoDeviceOff(enabled);
+        // No need to propagate to HAL.
+    }
+    else if (option == ISettingsGlobal::MHL_INPUT_SWITCHING_ENABLED) {
+        mHost->SetMhlInputChangeEnabled(enabled);
+    }
+    else if (option == ISettingsGlobal::MHL_POWER_CHARGE_ENABLED) {
+        Int32 iEnabled;
+        ToInt32(enabled, &iEnabled);
+        mHost->mMhlController->SetOption(Constants::OPTION_MHL_POWER_CHARGE, iEnabled);
+    }
+    return NOERROR;
 }
 
 //=============================================================================
@@ -160,19 +213,15 @@ ECode HdmiControlService::SettingsObserver::OnChange(
 CAR_INTERFACE_IMPL(HdmiControlService::HdmiMhlVendorCommandListenerRecord, Object, IProxyDeathRecipient)
 
 HdmiControlService::HdmiMhlVendorCommandListenerRecord::HdmiMhlVendorCommandListenerRecord(
+    /* [in] */ HdmiControlService* host,
     /* [in] */ IIHdmiMhlVendorCommandListener* listener)
-    : mListener(listener)
-{
-
-}
+    : mHost(host)
+    , mListener(listener)
+{}
 
 ECode HdmiControlService::HdmiMhlVendorCommandListenerRecord::ProxyDied()
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-                mMhlVendorCommandListenerRecords->Remove(this);
-
-#endif
+    return mHost->mMhlVendorCommandListenerRecords->Remove(TO_IINTERFACE(this));
 }
 
 //=============================================================================
@@ -181,19 +230,18 @@ ECode HdmiControlService::HdmiMhlVendorCommandListenerRecord::ProxyDied()
 CAR_INTERFACE_IMPL(HdmiControlService::HotplugEventListenerRecord, Object, IProxyDeathRecipient)
 
 HdmiControlService::HotplugEventListenerRecord::HotplugEventListenerRecord(
+    /* [in] */ HdmiControlService* host,
     /* [in] */ IIHdmiHotplugEventListener* listener)
-    : mListener(listener)
+    : mHost(host)
+    , mListener(listener)
 {}
 
 ECode HdmiControlService::HotplugEventListenerRecord::ProxyDied()
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-                synchronized(mLock) {
-                    mHotplugEventListenerRecords->Remove(this);
-                }
-
-#endif
+    synchronized(mHost->mLock) {
+        mHost->mHotplugEventListenerRecords->Remove(TO_IINTERFACE(this));
+    }
+    return NOERROR;
 }
 
 //=============================================================================
@@ -202,19 +250,18 @@ ECode HdmiControlService::HotplugEventListenerRecord::ProxyDied()
 CAR_INTERFACE_IMPL(HdmiControlService::DeviceEventListenerRecord, Object, IProxyDeathRecipient)
 
 HdmiControlService::DeviceEventListenerRecord::DeviceEventListenerRecord(
+    /* [in] */ HdmiControlService* host,
     /* [in] */ IIHdmiDeviceEventListener* listener)
-    : mListener(listener)
+    : mHost(host)
+    , mListener(listener)
 {}
 
 ECode HdmiControlService::DeviceEventListenerRecord::ProxyDied()
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-                synchronized(mLock) {
-                    mDeviceEventListenerRecords->Remove(this);
-                }
-
-#endif
+    synchronized(mHost->mLock) {
+        mHost->mDeviceEventListenerRecords->Remove(TO_IINTERFACE(this));
+    }
+    return NOERROR;
 }
 
 //=============================================================================
@@ -223,19 +270,18 @@ ECode HdmiControlService::DeviceEventListenerRecord::ProxyDied()
 CAR_INTERFACE_IMPL(HdmiControlService::SystemAudioModeChangeListenerRecord, Object, IProxyDeathRecipient)
 
 HdmiControlService::SystemAudioModeChangeListenerRecord::SystemAudioModeChangeListenerRecord(
+    /* [in] */ HdmiControlService* host,
     /* [in] */ IIHdmiSystemAudioModeChangeListener* listener)
-    : mListener(listener)
+    : mHost(host)
+    , mListener(listener)
 {}
 
 ECode HdmiControlService::SystemAudioModeChangeListenerRecord::ProxyDied()
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-                synchronized(mLock) {
-                    mSystemAudioModeChangeListenerRecords->Remove(this);
-                }
-
-#endif
+    synchronized(mHost->mLock) {
+        mHost->mSystemAudioModeChangeListenerRecords->Remove(TO_IINTERFACE(this));
+    }
+    return NOERROR;
 }
 
 //=============================================================================
@@ -244,19 +290,18 @@ ECode HdmiControlService::SystemAudioModeChangeListenerRecord::ProxyDied()
 CAR_INTERFACE_IMPL(HdmiControlService::HdmiRecordListenerRecord, Object, IProxyDeathRecipient)
 
 HdmiControlService::HdmiRecordListenerRecord::HdmiRecordListenerRecord(
+    /* [in] */ HdmiControlService* host,
     /* [in] */ IIHdmiRecordListener* listener)
-    : mListener(listener)
+    : mHost(host)
+    , mListener(listener)
 {}
 
 ECode HdmiControlService::HdmiRecordListenerRecord::ProxyDied()
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-                synchronized(mLock) {
-                    mRecordListenerRecord = null;
-                }
-
-#endif
+    synchronized(mHost->mLock) {
+        mHost->mRecordListenerRecord = NULL;
+    }
+    return NOERROR;
 }
 
 //=============================================================================
@@ -264,128 +309,89 @@ ECode HdmiControlService::HdmiRecordListenerRecord::ProxyDied()
 //=============================================================================
 CAR_INTERFACE_IMPL_2(HdmiControlService::BinderService, Object, IIHdmiControlService, IBinder)
 
+HdmiControlService::BinderService::BinderService()
+{}
+
+ECode HdmiControlService::BinderService::constructor(
+    /* [in] */ IHdmiControlService* host)
+{
+    mHost = (HdmiControlService*)host;
+    return NOERROR;
+}
+
 ECode HdmiControlService::BinderService::GetSupportedTypes(
     /* [out, callee] */ ArrayOf<Int32>** result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-                EnforceAccessPermission();
-                // mLocalDevices is an unmodifiable list - no lock necesary.
-                int[] localDevices = new int[mLocalDevices->Size()];
-                for (Int32 i = 0; i < localDevices->GetLength(); ++i) {
-                    AutoPtr<IInterface> obj;
-                    mLocalDevices->Get(i, (IInterface**)&obj);
-                    (*localDevices)[i] = I::Probe(obj);
-                }
-                return localDevices;
-
-#endif
+    mHost->EnforceAccessPermission();
+    // mLocalDevices is an unmodifiable list - no lock necesary.
+    Int32 size;
+    mHost->mLocalDevices->GetSize(&size);
+    AutoPtr<ArrayOf<Int32> > localDevices = ArrayOf<Int32>::Alloc(size);
+    for (Int32 i = 0; i < localDevices->GetLength(); ++i) {
+        AutoPtr<IInterface> obj;
+        mHost->mLocalDevices->Get(i, (IInterface**)&obj);
+        Int32 iDevice;
+        IInteger32::Probe(obj)->GetValue(&iDevice);
+        localDevices->Set(i, iDevice);
+    }
+    *result = localDevices;
+    REFCOUNT_ADD(*result)
+    return NOERROR;
 }
 
 ECode HdmiControlService::BinderService::GetActiveSource(
     /* [out] */ IHdmiDeviceInfo** result)
 {
     VALIDATE_NOT_NULL(result)
+    *result = NULL;
 
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-                EnforceAccessPermission();
-                HdmiCecLocalDeviceTv tv = Tv();
-                if (tv == null) {
-                    Slogger::W(TAG, "Local tv device not available");
-                    return null;
-                }
-                ActiveSource activeSource = tv->GetActiveSource();
-                Boolean isValid;
-                activeSource->IsValid(&isValid);
-                if (isValid) {
-                    return new HdmiDeviceInfo(activeSource->mLogicalAddress,
-                            activeSource->mPhysicalAddress, IHdmiDeviceInfo::PORT_INVALID,
-                            IHdmiDeviceInfo::DEVICE_INACTIVE, 0, "");
-                }
-                Int32 activePath;
-                GetActivePath(&activePath);
-                if (activePath != IHdmiDeviceInfo::PATH_INVALID) {
-                    Int32 activePortId;
-                    tv->GetActivePortId(&activePortId);
-                    return new HdmiDeviceInfo(activePath, activePortId);
-                }
-                return null;
-
-#endif
+    mHost->EnforceAccessPermission();
+    AutoPtr<IHdmiCecLocalDeviceTv> tv;
+    mHost->Tv((IHdmiCecLocalDeviceTv**)&tv);
+    if (tv == NULL) {
+        Slogger::W(TAG, "Local tv device not available");
+        *result = NULL;
+        return NOERROR;
+    }
+    AutoPtr<IHdmiCecLocalDeviceActiveSource> activeSource;
+    ((HdmiCecLocalDeviceTv*) tv.Get())->GetActiveSource((IHdmiCecLocalDeviceActiveSource**)&activeSource);
+    Boolean isValid;
+    activeSource->IsValid(&isValid);
+    if (isValid) {
+        // TODO: Waiting for CHdmiDeviceInfo
+        assert(0);
+        // return CHdmiDeviceInfo::New(activeSource->mLogicalAddress,
+        //         activeSource->mPhysicalAddress, IHdmiDeviceInfo::PORT_INVALID,
+        //         IHdmiDeviceInfo::DEVICE_INACTIVE, 0, String(""), result);
+    }
+    Int32 activePath;
+    ((HdmiCecLocalDeviceTv*) tv.Get())->GetActivePath(&activePath);
+    if (activePath != IHdmiDeviceInfo::PATH_INVALID) {
+        Int32 activePortId;
+        ((HdmiCecLocalDeviceTv*) tv.Get())->GetActivePortId(&activePortId);
+        // TODO: Waiting for CHdmiDeviceInfo
+        assert(0);
+        // return CHdmiDeviceInfo::New(activePath, activePortId, result);
+    }
+    return NOERROR;
 }
 
 ECode HdmiControlService::BinderService::DeviceSelect(
     /* [in] */ Int32 deviceId,
     /* [in] */ IIHdmiControlCallback* callback)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-                EnforceAccessPermission();
-                RunOnServiceThread(new Runnable() {
-                    @Override
-                    public void Run() {
-                        if (callback == null) {
-                            Slogger::E(TAG, "Callback cannot be null");
-                            return NOERROR;
-                        }
-                        HdmiCecLocalDeviceTv tv = Tv();
-                        if (tv == null) {
-                            Slogger::W(TAG, "Local tv device not available");
-                            InvokeCallback(callback, IHdmiControlManager::RESULT_SOURCE_NOT_AVAILABLE);
-                            return NOERROR;
-                        }
-                        HdmiMhlLocalDeviceStub device = mMhlController->GetLocalDeviceById(deviceId);
-                        if (device != null) {
-                            Int32 portId;
-                            device->GetPortId(&portId);
-                            Int32 activePortId;
-                            tv->GetActivePortId(&activePortId);
-                            if (portId == activePortId) {
-                                InvokeCallback(callback, IHdmiControlManager::RESULT_SUCCESS);
-                                return NOERROR;
-                            }
-                            // Upon selecting MHL device, we send RAP[Content On] to wake up
-                            // the connected mobile device, start routing control to switch ports.
-                            // callback is handled by MHL action.
-                            device->TurnOn(callback);
-                            Int32 portId;
-                            device->GetPortId(&portId);
-                            tv->DoManualPortSwitching(portId, null);
-                            return NOERROR;
-                        }
-                        tv->DeviceSelect(deviceId, callback);
-                    }
-                });
-
-#endif
+    mHost->EnforceAccessPermission();
+    mHost->RunOnServiceThread(new DeviceSelectRunnable(this->mHost, deviceId, callback));
+    return NOERROR;
 }
 
 ECode HdmiControlService::BinderService::PortSelect(
     /* [in] */ Int32 portId,
     /* [in] */ IIHdmiControlCallback* callback)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-                EnforceAccessPermission();
-                RunOnServiceThread(new Runnable() {
-                    @Override
-                    public void Run() {
-                        if (callback == null) {
-                            Slogger::E(TAG, "Callback cannot be null");
-                            return NOERROR;
-                        }
-                        HdmiCecLocalDeviceTv tv = Tv();
-                        if (tv == null) {
-                            Slogger::W(TAG, "Local tv device not available");
-                            InvokeCallback(callback, IHdmiControlManager::RESULT_SOURCE_NOT_AVAILABLE);
-                            return NOERROR;
-                        }
-                        tv->DoManualPortSwitching(portId, callback);
-                    }
-                });
-
-#endif
+    mHost->EnforceAccessPermission();
+    mHost->RunOnServiceThread(new PortSelectRunnable(this->mHost, portId, callback));
+    return NOERROR;
 }
 
 ECode HdmiControlService::BinderService::SendKeyEvent(
@@ -393,94 +399,49 @@ ECode HdmiControlService::BinderService::SendKeyEvent(
     /* [in] */ Int32 keyCode,
     /* [in] */ Boolean isPressed)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-                EnforceAccessPermission();
-                RunOnServiceThread(new Runnable() {
-                    @Override
-                    public void Run() {
-                        HdmiMhlLocalDeviceStub device = mMhlController->GetLocalDevice(mActivePortId);
-                        if (device != null) {
-                            device->SendKeyEvent(keyCode, isPressed);
-                            return NOERROR;
-                        }
-                        if (mCecController != null) {
-                            HdmiCecLocalDevice localDevice = mCecController->GetLocalDevice(deviceType);
-                            if (localDevice == null) {
-                                Slogger::W(TAG, "Local device not available");
-                                return NOERROR;
-                            }
-                            localDevice->SendKeyEvent(keyCode, isPressed);
-                        }
-                    }
-                });
-
-#endif
+    mHost->EnforceAccessPermission();
+    mHost->RunOnServiceThread(new SendKeyEventRunnable(this->mHost, deviceType, keyCode, isPressed));
+    return NOERROR;
 }
 
 ECode HdmiControlService::BinderService::OneTouchPlay(
     /* [in] */ IIHdmiControlCallback* callback)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-                EnforceAccessPermission();
-                RunOnServiceThread(new Runnable() {
-                    @Override
-                    public void Run() {
-                        HdmiControlService.this->OneTouchPlay(callback);
-                    }
-                });
-
-#endif
+    mHost->EnforceAccessPermission();
+    mHost->RunOnServiceThread(new OneTouchPlayRunnable(this->mHost, callback));
+    return NOERROR;
 }
 
 ECode HdmiControlService::BinderService::QueryDisplayStatus(
     /* [in] */ IIHdmiControlCallback* callback)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-                EnforceAccessPermission();
-                RunOnServiceThread(new Runnable() {
-                    @Override
-                    public void Run() {
-                        HdmiControlService.this->QueryDisplayStatus(callback);
-                    }
-                });
-
-#endif
+    mHost->EnforceAccessPermission();
+    mHost->RunOnServiceThread(new QueryDisplayStatusRunnable(this->mHost, callback));
+    return NOERROR;
 }
 
 ECode HdmiControlService::BinderService::AddHotplugEventListener(
     /* [in] */ IIHdmiHotplugEventListener* listener)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-                EnforceAccessPermission();
-                HdmiControlService.this->AddHotplugEventListener(listener);
-
-#endif
+    mHost->EnforceAccessPermission();
+    mHost->AddHotplugEventListener(listener);
+    return NOERROR;
 }
 
 ECode HdmiControlService::BinderService::RemoveHotplugEventListener(
     /* [in] */ IIHdmiHotplugEventListener* listener)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-                EnforceAccessPermission();
-                HdmiControlService.this->RemoveHotplugEventListener(listener);
-
-#endif
+    mHost->EnforceAccessPermission();
+    mHost->RemoveHotplugEventListener(listener);
+    return NOERROR;
 }
 
 ECode HdmiControlService::BinderService::AddDeviceEventListener(
     /* [in] */ IIHdmiDeviceEventListener* listener)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-                EnforceAccessPermission();
-                HdmiControlService.this->AddDeviceEventListener(listener);
-
-#endif
+    mHost->EnforceAccessPermission();
+    mHost->AddDeviceEventListener(listener);
+    return NOERROR;
 }
 
 ECode HdmiControlService::BinderService::GetPortInfo(
@@ -488,12 +449,8 @@ ECode HdmiControlService::BinderService::GetPortInfo(
 {
     VALIDATE_NOT_NULL(result)
 
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-                EnforceAccessPermission();
-                return HdmiControlService.this->GetPortInfo();
-
-#endif
+    mHost->EnforceAccessPermission();
+    return mHost->GetPortInfo(result);
 }
 
 ECode HdmiControlService::BinderService::CanChangeSystemAudioMode(
@@ -501,17 +458,14 @@ ECode HdmiControlService::BinderService::CanChangeSystemAudioMode(
 {
     VALIDATE_NOT_NULL(result)
 
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-                EnforceAccessPermission();
-                HdmiCecLocalDeviceTv tv = Tv();
-                if (tv == null) {
-                    *result = FALSE;
-                    return NOERROR;
-                }
-                return tv->HasSystemAudioDevice();
-
-#endif
+    mHost->EnforceAccessPermission();
+    AutoPtr<IHdmiCecLocalDeviceTv> tv;
+    mHost->Tv((IHdmiCecLocalDeviceTv**)&tv);
+    if (tv == NULL) {
+        *result = FALSE;
+        return NOERROR;
+    }
+    return ((HdmiCecLocalDeviceTv*) tv.Get())->HasSystemAudioDevice(result);
 }
 
 ECode HdmiControlService::BinderService::GetSystemAudioMode(
@@ -519,75 +473,50 @@ ECode HdmiControlService::BinderService::GetSystemAudioMode(
 {
     VALIDATE_NOT_NULL(result)
 
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-                EnforceAccessPermission();
-                HdmiCecLocalDeviceTv tv = Tv();
-                if (tv == null) {
-                    *result = FALSE;
-                    return NOERROR;
-                }
-                Boolean isSystemAudioActivated;
-                tv->IsSystemAudioActivated(&isSystemAudioActivated);
-                return isSystemAudioActivated;
-
-#endif
+    mHost->EnforceAccessPermission();
+    AutoPtr<IHdmiCecLocalDeviceTv> tv;
+    mHost->Tv((IHdmiCecLocalDeviceTv**)&tv);
+    if (tv == NULL) {
+        *result = FALSE;
+        return NOERROR;
+    }
+    Boolean isSystemAudioActivated;
+    ((HdmiCecLocalDeviceTv*) tv.Get())->IsSystemAudioActivated(&isSystemAudioActivated);
+    *result = isSystemAudioActivated;
+    return NOERROR;
 }
 
 ECode HdmiControlService::BinderService::SetSystemAudioMode(
     /* [in] */ Boolean enabled,
     /* [in] */ IIHdmiControlCallback* callback)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-                EnforceAccessPermission();
-                RunOnServiceThread(new Runnable() {
-                    @Override
-                    public void Run() {
-                        HdmiCecLocalDeviceTv tv = Tv();
-                        if (tv == null) {
-                            Slogger::W(TAG, "Local tv device not available");
-                            InvokeCallback(callback, IHdmiControlManager::RESULT_SOURCE_NOT_AVAILABLE);
-                            return NOERROR;
-                        }
-                        tv->ChangeSystemAudioMode(enabled, callback);
-                    }
-                });
-
-#endif
+    mHost->EnforceAccessPermission();
+    mHost->RunOnServiceThread(new SetSystemAudioModeRunnable(this->mHost, enabled, callback));
+    return NOERROR;
 }
 
 ECode HdmiControlService::BinderService::AddSystemAudioModeChangeListener(
     /* [in] */ IIHdmiSystemAudioModeChangeListener* listener)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-                EnforceAccessPermission();
-                HdmiControlService.this->AddSystemAudioModeChangeListner(listener);
-
-#endif
+    mHost->EnforceAccessPermission();
+    mHost->AddSystemAudioModeChangeListner(listener);
+    return NOERROR;
 }
 
 ECode HdmiControlService::BinderService::RemoveSystemAudioModeChangeListener(
     /* [in] */ IIHdmiSystemAudioModeChangeListener* listener)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-                EnforceAccessPermission();
-                HdmiControlService.this->RemoveSystemAudioModeChangeListener(listener);
-
-#endif
+    mHost->EnforceAccessPermission();
+    mHost->RemoveSystemAudioModeChangeListener(listener);
+    return NOERROR;
 }
 
 ECode HdmiControlService::BinderService::SetInputChangeListener(
     /* [in] */ IIHdmiInputChangeListener* listener)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-                EnforceAccessPermission();
-                HdmiControlService.this->SetInputChangeListener(listener);
-
-#endif
+    mHost->EnforceAccessPermission();
+    mHost->SetInputChangeListener(listener);
+    return NOERROR;
 }
 
 ECode HdmiControlService::BinderService::GetInputDevices(
@@ -595,20 +524,27 @@ ECode HdmiControlService::BinderService::GetInputDevices(
 {
     VALIDATE_NOT_NULL(result)
 
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-                EnforceAccessPermission();
-                // No need to hold the lock for obtaining TV device as the local device instance
-                // is preserved while the HDMI control is enabled.
-                HdmiCecLocalDeviceTv tv = Tv();
-                synchronized(mLock) {
-                    List<HdmiDeviceInfo> cecDevices = (tv == null)
-                            ? Collections.<HdmiDeviceInfo>emptyList()
-                            : tv->GetSafeExternalInputsLocked();
-                    return HdmiUtils::MergeToUnmodifiableList(cecDevices, GetMhlDevicesLocked());
-                }
-
-#endif
+    mHost->EnforceAccessPermission();
+    // No need to hold the lock for obtaining TV device as the local device instance
+    // is preserved while the HDMI control is enabled.
+    AutoPtr<IHdmiCecLocalDeviceTv> tv;
+    mHost->Tv((IHdmiCecLocalDeviceTv**)&tv);
+    synchronized(mHost->mLock) {
+        AutoPtr<IList> cecDevices;
+        if (tv == NULL) {
+            AutoPtr<ICollections> helper;
+            CCollections::AcquireSingleton((ICollections**)&helper);
+            helper->GetEmptyList((IList**)&cecDevices);
+        }
+        else {
+            ((HdmiCecLocalDeviceTv*) tv.Get())->GetSafeExternalInputsLocked((IList**)&cecDevices);
+        }
+        AutoPtr<IList> mhlDevicesLocked;
+        mHost->GetMhlDevicesLocked((IList**)&mhlDevicesLocked);
+        *result = HdmiUtils::MergeToUnmodifiableList(cecDevices, mhlDevicesLocked);
+        REFCOUNT_ADD(*result)
+    }
+    return NOERROR;
 }
 
 ECode HdmiControlService::BinderService::SetSystemAudioVolume(
@@ -616,89 +552,47 @@ ECode HdmiControlService::BinderService::SetSystemAudioVolume(
     /* [in] */ Int32 newIndex,
     /* [in] */ Int32 maxIndex)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-                EnforceAccessPermission();
-                RunOnServiceThread(new Runnable() {
-                    @Override
-                    public void Run() {
-                        HdmiCecLocalDeviceTv tv = Tv();
-                        if (tv == null) {
-                            Slogger::W(TAG, "Local tv device not available");
-                            return NOERROR;
-                        }
-                        tv->ChangeVolume(oldIndex, newIndex - oldIndex, maxIndex);
-                    }
-                });
-
-#endif
+    mHost->EnforceAccessPermission();
+    mHost->RunOnServiceThread(new SetSystemAudioVolumeRunnable(this->mHost, oldIndex, newIndex, maxIndex));
+    return NOERROR;
 }
 
 ECode HdmiControlService::BinderService::SetSystemAudioMute(
     /* [in] */ Boolean mute)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-                EnforceAccessPermission();
-                RunOnServiceThread(new Runnable() {
-                    @Override
-                    public void Run() {
-                        HdmiCecLocalDeviceTv tv = Tv();
-                        if (tv == null) {
-                            Slogger::W(TAG, "Local tv device not available");
-                            return NOERROR;
-                        }
-                        tv->ChangeMute(mute);
-                    }
-                });
-
-#endif
+    mHost->EnforceAccessPermission();
+    mHost->RunOnServiceThread(new SetSystemAudioMuteRunnable(this->mHost, mute));
+    return NOERROR;
 }
 
 ECode HdmiControlService::BinderService::SetArcMode(
     /* [in] */ Boolean enabled)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-                EnforceAccessPermission();
-                RunOnServiceThread(new Runnable() {
-                    @Override
-                    public void Run() {
-                        HdmiCecLocalDeviceTv tv = Tv();
-                        if (tv == null) {
-                            Slogger::W(TAG, "Local tv device not available to change arc mode.");
-                            return NOERROR;
-                        }
-                    }
-                });
-
-#endif
+    mHost->EnforceAccessPermission();
+    mHost->RunOnServiceThread(new SetArcModeRunnable(this->mHost));
+    return NOERROR;
 }
 
 ECode HdmiControlService::BinderService::SetProhibitMode(
     /* [in] */ Boolean enabled)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-                EnforceAccessPermission();
-                if (!IsTvDevice()) {
-                    return NOERROR;
-                }
-                HdmiControlService.this->SetProhibitMode(enabled);
-
-#endif
+    mHost->EnforceAccessPermission();
+    Boolean isTvDevice;
+    mHost->IsTvDevice(&isTvDevice);
+    if (!isTvDevice) {
+        return NOERROR;
+    }
+    mHost->SetProhibitMode(enabled);
+    return NOERROR;
 }
 
 ECode HdmiControlService::BinderService::AddVendorCommandListener(
     /* [in] */ IIHdmiVendorCommandListener* listener,
     /* [in] */ Int32 deviceType)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-                EnforceAccessPermission();
-                HdmiControlService.this->AddVendorCommandListener(listener, deviceType);
-
-#endif
+    mHost->EnforceAccessPermission();
+    mHost->AddVendorCommandListener(listener, deviceType);
+    return NOERROR;
 }
 
 ECode HdmiControlService::BinderService::SendVendorCommand(
@@ -707,116 +601,43 @@ ECode HdmiControlService::BinderService::SendVendorCommand(
     /* [in] */ ArrayOf<Byte>* params,
     /* [in] */ Boolean hasVendorId)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-                EnforceAccessPermission();
-                RunOnServiceThread(new Runnable() {
-                    @Override
-                    public void Run() {
-                        AutoPtr<IHdmiCecLocalDevice> device = mCecController->GetLocalDevice(deviceType);
-                        if (device == null) {
-                            Slogger::W(TAG, "Local device not available");
-                            return NOERROR;
-                        }
-                        if (hasVendorId) {
-                            AutoPtr<IHdmiDeviceInfo> info;
-                            device->GetDeviceInfo((IHdmiDeviceInfo**)&info);
-                            Int32 logicalAddr;
-                            info->GetLogicalAddress(&logicalAddr);
-                            SendCecCommand(HdmiCecMessageBuilder::BuildVendorCommandWithId(
-                                    logicalAddr, targetAddress,
-                                    GetVendorId(), params));
-                        } else {
-                            AutoPtr<IHdmiCecMessage> cmd;
-                            AutoPtr<IHdmiDeviceInfo> deviceInfo;
-                            device->GetDeviceInfo((IHdmiDeviceInfo**)&deviceInfo);
-                            Int32 logicalAddress;
-                            deviceInfo->GetLogicalAddress(&logicalAddress);
-                            HdmiCecMessageBuilder::BuildVendorCommand(logicalAddress, targetAddress, params, (IHdmiCecMessage**)&cmd);
-                            SendCecCommand(cmd);
-                        }
-                    }
-                });
-
-#endif
+    mHost->EnforceAccessPermission();
+    mHost->RunOnServiceThread(new SendVendorCommandRunnable(this->mHost, deviceType, targetAddress, params, hasVendorId));
+    return NOERROR;
 }
 
 ECode HdmiControlService::BinderService::SendStandby(
     /* [in] */ Int32 deviceType,
     /* [in] */ Int32 deviceId)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-                EnforceAccessPermission();
-                RunOnServiceThread(new Runnable() {
-                    @Override
-                    public void Run() {
-                        AutoPtr<IHdmiCecLocalDevice> device = mCecController->GetLocalDevice(deviceType);
-                        if (device == null) {
-                            Slogger::W(TAG, "Local device not available");
-                            return NOERROR;
-                        }
-                        device->SendStandby(deviceId);
-                    }
-                });
-
-#endif
+    mHost->EnforceAccessPermission();
+    mHost->RunOnServiceThread(new SendStandbyRunnable(this->mHost, deviceType, deviceId));
+    return NOERROR;
 }
 
 ECode HdmiControlService::BinderService::SetHdmiRecordListener(
     /* [in] */ IIHdmiRecordListener* listener)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-                EnforceAccessPermission();
-                HdmiControlService.this->SetHdmiRecordListener(listener);
-
-#endif
+    mHost->EnforceAccessPermission();
+    mHost->SetHdmiRecordListener(listener);
+    return NOERROR;
 }
 
 ECode HdmiControlService::BinderService::StartOneTouchRecord(
     /* [in] */ Int32 recorderAddress,
     /* [in] */ ArrayOf<Byte>* recordSource)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-                EnforceAccessPermission();
-                RunOnServiceThread(new Runnable() {
-                    @Override
-                    public void Run() {
-                        if (!IsTvDevice()) {
-                            Slogger::W(TAG, "No TV is available.");
-                            return NOERROR;
-                        }
-                        AutoPtr<HdmiCecLocalDeviceTv> tv;
-                        Tv((HdmiCecLocalDeviceTv**)&tv);
-                        tv->StartOneTouchRecord(recorderAddress, recordSource);
-                    }
-                });
-
-#endif
+    mHost->EnforceAccessPermission();
+    mHost->RunOnServiceThread(new StartOneTouchRecordRunnable(this->mHost, recorderAddress, recordSource));
+    return NOERROR;
 }
 
 ECode HdmiControlService::BinderService::StopOneTouchRecord(
     /* [in] */ Int32 recorderAddress)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-                EnforceAccessPermission();
-                RunOnServiceThread(new Runnable() {
-                    @Override
-                    public void Run() {
-                        if (!IsTvDevice()) {
-                            Slogger::W(TAG, "No TV is available.");
-                            return NOERROR;
-                        }
-                        AutoPtr<HdmiCecLocalDeviceTv> tv;
-                        Tv((HdmiCecLocalDeviceTv**)&tv);
-                        tv->StopOneTouchRecord(recorderAddress);
-                    }
-                });
-
-#endif
+    mHost->EnforceAccessPermission();
+    mHost->RunOnServiceThread(new StopOneTouchRecordRunnable(this->mHost, recorderAddress));
+    return NOERROR;
 }
 
 ECode HdmiControlService::BinderService::StartTimerRecording(
@@ -824,23 +645,9 @@ ECode HdmiControlService::BinderService::StartTimerRecording(
     /* [in] */ Int32 sourceType,
     /* [in] */ ArrayOf<Byte>* recordSource)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-                EnforceAccessPermission();
-                RunOnServiceThread(new Runnable() {
-                    @Override
-                    public void Run() {
-                        if (!IsTvDevice()) {
-                            Slogger::W(TAG, "No TV is available.");
-                            return NOERROR;
-                        }
-                        AutoPtr<HdmiCecLocalDeviceTv> tv;
-                        Tv((HdmiCecLocalDeviceTv**)&tv);
-                        tv->StartTimerRecording(recorderAddress, sourceType, recordSource);
-                    }
-                });
-
-#endif
+    mHost->EnforceAccessPermission();
+    mHost->RunOnServiceThread(new StartTimerRecordingRunnable(this->mHost, recorderAddress, sourceType, recordSource));
+    return NOERROR;
 }
 
 ECode HdmiControlService::BinderService::ClearTimerRecording(
@@ -848,23 +655,9 @@ ECode HdmiControlService::BinderService::ClearTimerRecording(
     /* [in] */ Int32 sourceType,
     /* [in] */ ArrayOf<Byte>* recordSource)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-                EnforceAccessPermission();
-                RunOnServiceThread(new Runnable() {
-                    @Override
-                    public void Run() {
-                        if (!IsTvDevice()) {
-                            Slogger::W(TAG, "No TV is available.");
-                            return NOERROR;
-                        }
-                        AutoPtr<HdmiCecLocalDeviceTv> tv;
-                        Tv((HdmiCecLocalDeviceTv**)&tv);
-                        tv->ClearTimerRecording(recorderAddress, sourceType, recordSource);
-                    }
-                });
-
-#endif
+    mHost->EnforceAccessPermission();
+    mHost->RunOnServiceThread(new ClearTimerRecordingRunnable(this->mHost, recorderAddress, sourceType, recordSource));
+    return NOERROR;
 }
 
 ECode HdmiControlService::BinderService::SendMhlVendorCommand(
@@ -873,37 +666,17 @@ ECode HdmiControlService::BinderService::SendMhlVendorCommand(
     /* [in] */ Int32 length,
     /* [in] */ ArrayOf<Byte>* data)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-                EnforceAccessPermission();
-                RunOnServiceThread(new Runnable() {
-                    @Override
-                    public void Run() {
-                        if (!IsControlEnabled()) {
-                            Slogger::W(TAG, "Hdmi control is disabled.");
-                            return ;
-                        }
-                        HdmiMhlLocalDeviceStub device = mMhlController->GetLocalDevice(portId);
-                        if (device == null) {
-                            Slogger::W(TAG, "Invalid port id:" + portId);
-                            return NOERROR;
-                        }
-                        mMhlController->SendVendorCommand(portId, offset, length, data);
-                    }
-                });
-
-#endif
+    mHost->EnforceAccessPermission();
+    mHost->RunOnServiceThread(new SendMhlVendorCommandRunnable(this->mHost, portId, offset, length, data));
+    return NOERROR;
 }
 
 ECode HdmiControlService::BinderService::AddHdmiMhlVendorCommandListener(
     /* [in] */ IIHdmiMhlVendorCommandListener* listener)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-                EnforceAccessPermission();
-                HdmiControlService.this->AddHdmiMhlVendorCommandListener(listener);
-
-#endif
+    mHost->EnforceAccessPermission();
+    mHost->AddHdmiMhlVendorCommandListener(listener);
+    return NOERROR;
 }
 
 ECode HdmiControlService::BinderService::Dump(
@@ -911,27 +684,38 @@ ECode HdmiControlService::BinderService::Dump(
     /* [in] */ IPrintWriter* writer,
     /* [in] */ ArrayOf<String>* args)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-                GetContext()->EnforceCallingOrSelfPermission(android.Manifest.permission.DUMP, TAG);
-                IndentingPrintWriter pw = new IndentingPrintWriter(writer, "  ");
-                pw->Println("mHdmiControlEnabled: " + mHdmiControlEnabled);
-                pw->Println("mProhibitMode: " + mProhibitMode);
-                if (mCecController != null) {
-                    pw->Println("mCecController: ");
-                    pw->IncreaseIndent();
-                    mCecController->Dump(pw);
-                    pw->DecreaseIndent();
-                }
-                pw->Println("mPortInfo: ");
-                pw->IncreaseIndent();
-                for (HdmiPortInfo hdmiPortInfo : mPortInfo) {
-                    pw->Println("- " + hdmiPortInfo);
-                }
-                pw->DecreaseIndent();
-                pw->Println("mPowerStatus: " + mPowerStatus);
-
-#endif
+    AutoPtr<IContext> context;
+    mHost->GetContext((IContext**)&context);
+    context->EnforceCallingOrSelfPermission(Droid::Manifest::permission::DUMP, TAG);
+    AutoPtr<IIndentingPrintWriter> pw;
+    CIndentingPrintWriter::New(IWriter::Probe(writer), String("  "), (IIndentingPrintWriter**)&pw);
+    String s("mHdmiControlEnabled: ");
+    s += mHost->mHdmiControlEnabled ? "true" : "false";
+    IPrintWriter::Probe(pw)->Println(s);
+    s = String("mProhibitMode: ");
+    s += mHost->mProhibitMode ? "true" : "false";
+    IPrintWriter::Probe(pw)->Println(s);
+    if (mHost->mCecController != NULL) {
+        IPrintWriter::Probe(pw)->Println(String("mCecController: "));
+        pw->IncreaseIndent();
+        mHost->mCecController->Dump(pw);
+        pw->DecreaseIndent();
+    }
+    IPrintWriter::Probe(pw)->Println(String("mPortInfo: "));
+    pw->IncreaseIndent();
+    FOR_EACH(it, mHost->mPortInfo) {
+        AutoPtr<IInterface> obj;
+        it->GetNext((IInterface**)&obj);
+        AutoPtr<IHdmiPortInfo> hdmiPortInfo = IHdmiPortInfo::Probe(obj);
+        s = String("- ");
+        s.Append(TO_STR(hdmiPortInfo));
+        IPrintWriter::Probe(pw)->Println(s);
+    }
+    pw->DecreaseIndent();
+    s = String("mPowerStatus: ");
+    s.AppendFormat("%d", mHost->mPowerStatus);
+    IPrintWriter::Probe(pw)->Println(s);
+    return NOERROR;
 }
 
 ECode HdmiControlService::BinderService::ToString(
@@ -946,24 +730,625 @@ ECode HdmiControlService::BinderService::ToString(
 CAR_INTERFACE_IMPL(HdmiControlService::InputChangeListenerRecord, Object, IProxyDeathRecipient)
 
 HdmiControlService::InputChangeListenerRecord::InputChangeListenerRecord(
+    /* [in] */ HdmiControlService* host,
     /* [in] */ IIHdmiInputChangeListener* listener)
-    : mListener(listener)
+    : mHost(host)
+    , mListener(listener)
 {}
 
 ECode HdmiControlService::InputChangeListenerRecord::ProxyDied()
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-                synchronized(mLock) {
-                    mInputChangeListenerRecord = null;
-                }
+    synchronized(mHost->mLock) {
+        mHost->mInputChangeListenerRecord = NULL;
+    }
+    return NOERROR;
+}
 
-#endif
+//=============================================================================
+// HdmiControlService::DeviceSelectRunnable
+//=============================================================================
+CAR_INTERFACE_IMPL(HdmiControlService::DeviceSelectRunnable, Object, IRunnable)
+
+HdmiControlService::DeviceSelectRunnable::DeviceSelectRunnable(
+    /* [in] */ HdmiControlService* host,
+    /* [in] */ Int32 deviceId,
+    /* [in] */ IIHdmiControlCallback* callback)
+    : mHost(host)
+    , mDeviceId(deviceId)
+    , mCallback(callback)
+{}
+
+ECode HdmiControlService::DeviceSelectRunnable::Run()
+{
+    if (mCallback == NULL) {
+        Slogger::E(TAG, "Callback cannot be null");
+        return NOERROR;
+    }
+    AutoPtr<IHdmiCecLocalDeviceTv> tv;
+    mHost->Tv((IHdmiCecLocalDeviceTv**)&tv);
+    if (tv == NULL) {
+        Slogger::W(TAG, "Local tv device not available");
+        mHost->InvokeCallback(mCallback, IHdmiControlManager::RESULT_SOURCE_NOT_AVAILABLE);
+        return NOERROR;
+    }
+    AutoPtr<HdmiMhlLocalDeviceStub> device;
+    mHost->mMhlController->GetLocalDeviceById(mDeviceId, (HdmiMhlLocalDeviceStub**)&device);
+    if (device != NULL) {
+        Int32 portId;
+        device->GetPortId(&portId);
+        Int32 activePortId;
+        ((HdmiCecLocalDeviceTv*) tv.Get())->GetActivePortId(&activePortId);
+        if (portId == activePortId) {
+            mHost->InvokeCallback(mCallback, IHdmiControlManager::RESULT_SUCCESS);
+            return NOERROR;
+        }
+        // Upon selecting MHL device, we send RAP[Content On] to wake up
+        // the connected mobile device, start routing control to switch ports.
+        // callback is handled by MHL action.
+        device->TurnOn(mCallback);
+        ((HdmiCecLocalDeviceTv*) tv.Get())->DoManualPortSwitching(portId, NULL);
+        return NOERROR;
+    }
+    ((HdmiCecLocalDeviceTv*) tv.Get())->DeviceSelect(mDeviceId, mCallback);
+    return NOERROR;
+}
+
+//=============================================================================
+// HdmiControlService::PortSelectRunnable
+//=============================================================================
+CAR_INTERFACE_IMPL(HdmiControlService::PortSelectRunnable, Object, IRunnable)
+
+HdmiControlService::PortSelectRunnable::PortSelectRunnable(
+    /* [in] */ HdmiControlService* host,
+    /* [in] */ Int32 portId,
+    /* [in] */ IIHdmiControlCallback* callback)
+    : mHost(host)
+    , mPortId(portId)
+    , mCallback(callback)
+{}
+
+ECode HdmiControlService::PortSelectRunnable::Run()
+{
+    if (mCallback == NULL) {
+        Slogger::E(TAG, "Callback cannot be null");
+        return NOERROR;
+    }
+    AutoPtr<IHdmiCecLocalDeviceTv> tv;
+    mHost->Tv((IHdmiCecLocalDeviceTv**)&tv);
+    if (tv == NULL) {
+        Slogger::W(TAG, "Local tv device not available");
+        mHost->InvokeCallback(mCallback, IHdmiControlManager::RESULT_SOURCE_NOT_AVAILABLE);
+        return NOERROR;
+    }
+    ((HdmiCecLocalDeviceTv*) tv.Get())->DoManualPortSwitching(mPortId, mCallback);
+    return NOERROR;
+}
+
+//=============================================================================
+// HdmiControlService::SendKeyEventRunnable
+//=============================================================================
+CAR_INTERFACE_IMPL(HdmiControlService::SendKeyEventRunnable, Object, IRunnable)
+
+HdmiControlService::SendKeyEventRunnable::SendKeyEventRunnable(
+    /* [in] */ HdmiControlService* host,
+    /* [in] */ Int32 deviceType,
+    /* [in] */ Int32 keyCode,
+    /* [in] */ Boolean isPressed)
+    : mHost(host)
+    , mDeviceType(deviceType)
+    , mKeyCode(keyCode)
+    , mIsPressed(isPressed)
+{}
+
+ECode HdmiControlService::SendKeyEventRunnable::Run()
+{
+    AutoPtr<HdmiMhlLocalDeviceStub> device;
+    mHost->mMhlController->GetLocalDevice(mHost->mActivePortId, (HdmiMhlLocalDeviceStub**)&device);
+    if (device != NULL) {
+        device->SendKeyEvent(mKeyCode, mIsPressed);
+        return NOERROR;
+    }
+    if (mHost->mCecController != NULL) {
+        AutoPtr<IHdmiCecLocalDevice> localDevice;
+        mHost->mCecController->GetLocalDevice(mDeviceType, (IHdmiCecLocalDevice**)&localDevice);
+        if (localDevice == NULL) {
+            Slogger::W(TAG, "Local device not available");
+            return NOERROR;
+        }
+        ((HdmiCecLocalDevice*)localDevice.Get())->SendKeyEvent(mKeyCode, mIsPressed);
+    }
+    return NOERROR;
+}
+
+//=============================================================================
+// HdmiControlService::OneTouchPlayRunnable
+//=============================================================================
+CAR_INTERFACE_IMPL(HdmiControlService::OneTouchPlayRunnable, Object, IRunnable)
+
+HdmiControlService::OneTouchPlayRunnable::OneTouchPlayRunnable(
+    /* [in] */ HdmiControlService* host,
+    /* [in] */ IIHdmiControlCallback* callback)
+    : mHost(host)
+    , mCallback(callback)
+{}
+
+ECode HdmiControlService::OneTouchPlayRunnable::Run()
+{
+    return mHost->OneTouchPlay(mCallback);
+}
+
+//=============================================================================
+// HdmiControlService::QueryDisplayStatusRunnable
+//=============================================================================
+CAR_INTERFACE_IMPL(HdmiControlService::QueryDisplayStatusRunnable, Object, IRunnable)
+
+HdmiControlService::QueryDisplayStatusRunnable::QueryDisplayStatusRunnable(
+    /* [in] */ HdmiControlService* host,
+    /* [in] */ IIHdmiControlCallback* callback)
+    : mHost(host)
+    , mCallback(callback)
+{}
+
+ECode HdmiControlService::QueryDisplayStatusRunnable::Run()
+{
+    return mHost->QueryDisplayStatus(mCallback);
+}
+
+//=============================================================================
+// HdmiControlService::SetSystemAudioModeRunnable
+//=============================================================================
+CAR_INTERFACE_IMPL(HdmiControlService::SetSystemAudioModeRunnable, Object, IRunnable)
+
+HdmiControlService::SetSystemAudioModeRunnable::SetSystemAudioModeRunnable(
+    /* [in] */ HdmiControlService* host,
+    /* [in] */ Boolean enabled,
+    /* [in] */ IIHdmiControlCallback* callback)
+    : mHost(host)
+    , mEnabled(enabled)
+    , mCallback(callback)
+{}
+
+ECode HdmiControlService::SetSystemAudioModeRunnable::Run()
+{
+    AutoPtr<IHdmiCecLocalDeviceTv> tv;
+    mHost->Tv((IHdmiCecLocalDeviceTv**)&tv);
+    if (tv == NULL) {
+        Slogger::W(TAG, "Local tv device not available");
+        mHost->InvokeCallback(mCallback, IHdmiControlManager::RESULT_SOURCE_NOT_AVAILABLE);
+        return NOERROR;
+    }
+    ((HdmiCecLocalDeviceTv*) tv.Get())->ChangeSystemAudioMode(mEnabled, mCallback);
+    return NOERROR;
+}
+
+//=============================================================================
+// HdmiControlService::SetSystemAudioVolumeRunnable
+//=============================================================================
+CAR_INTERFACE_IMPL(HdmiControlService::SetSystemAudioVolumeRunnable, Object, IRunnable)
+
+HdmiControlService::SetSystemAudioVolumeRunnable::SetSystemAudioVolumeRunnable(
+    /* [in] */ HdmiControlService* host,
+    /* [in] */ Int32 oldIndex,
+    /* [in] */ Int32 newIndex,
+    /* [in] */ Int32 maxIndex)
+    : mHost(host)
+    , mOldIndex(oldIndex)
+    , mNewIndex(newIndex)
+    , mMaxIndex(maxIndex)
+{}
+
+ECode HdmiControlService::SetSystemAudioVolumeRunnable::Run()
+{
+    AutoPtr<IHdmiCecLocalDeviceTv> tv;
+    mHost->Tv((IHdmiCecLocalDeviceTv**)&tv);
+    if (tv == NULL) {
+        Slogger::W(TAG, "Local tv device not available");
+        return NOERROR;
+    }
+    ((HdmiCecLocalDeviceTv*) tv.Get())->ChangeVolume(mOldIndex, mNewIndex - mOldIndex, mMaxIndex);
+    return NOERROR;
+}
+
+//=============================================================================
+// HdmiControlService::SetSystemAudioMuteRunnable
+//=============================================================================
+CAR_INTERFACE_IMPL(HdmiControlService::SetSystemAudioMuteRunnable, Object, IRunnable)
+
+HdmiControlService::SetSystemAudioMuteRunnable::SetSystemAudioMuteRunnable(
+    /* [in] */ HdmiControlService* host,
+    /* [in] */ Boolean mute)
+    : mHost(host)
+    , mMute(mute)
+{}
+
+ECode HdmiControlService::SetSystemAudioMuteRunnable::Run()
+{
+    AutoPtr<IHdmiCecLocalDeviceTv> tv;
+    mHost->Tv((IHdmiCecLocalDeviceTv**)&tv);
+    if (tv == NULL) {
+        Slogger::W(TAG, "Local tv device not available");
+        return NOERROR;
+    }
+    ((HdmiCecLocalDeviceTv*) tv.Get())->ChangeMute(mMute);
+    return NOERROR;
+}
+
+//=============================================================================
+// HdmiControlService::SetArcModeRunnable
+//=============================================================================
+CAR_INTERFACE_IMPL(HdmiControlService::SetArcModeRunnable, Object, IRunnable)
+
+HdmiControlService::SetArcModeRunnable::SetArcModeRunnable(
+    /* [in] */ HdmiControlService* host)
+    : mHost(host)
+{}
+
+ECode HdmiControlService::SetArcModeRunnable::Run()
+{
+    AutoPtr<IHdmiCecLocalDeviceTv> tv;
+    mHost->Tv((IHdmiCecLocalDeviceTv**)&tv);
+    if (tv == NULL) {
+        Slogger::W(TAG, "Local tv device not available to change arc mode.");
+        return NOERROR;
+    }
+    return NOERROR;
+}
+
+//=============================================================================
+// HdmiControlService::SendVendorCommandRunnable
+//=============================================================================
+CAR_INTERFACE_IMPL(HdmiControlService::SendVendorCommandRunnable, Object, IRunnable)
+
+HdmiControlService::SendVendorCommandRunnable::SendVendorCommandRunnable(
+    /* [in] */ HdmiControlService* host,
+    /* [in] */ Int32 deviceType,
+    /* [in] */ Int32 targetAddress,
+    /* [in] */ ArrayOf<Byte>* params,
+    /* [in] */ Boolean hasVendorId)
+    : mHost(host)
+    , mDeviceType(deviceType)
+    , mTargetAddress(targetAddress)
+    , mParams(params)
+    , mHasVendorId(hasVendorId)
+{}
+
+ECode HdmiControlService::SendVendorCommandRunnable::Run()
+{
+    AutoPtr<IHdmiCecLocalDevice> device;
+    mHost->mCecController->GetLocalDevice(mDeviceType, (IHdmiCecLocalDevice**)&device);
+    if (device == NULL) {
+        Slogger::W(TAG, "Local device not available");
+        return NOERROR;
+    }
+    AutoPtr<IHdmiDeviceInfo> deviceInfo;
+    ((HdmiCecLocalDevice*)device.Get())->GetDeviceInfo((IHdmiDeviceInfo**)&deviceInfo);
+    if (mHasVendorId) {
+        Int32 logicalAddr;
+        deviceInfo->GetLogicalAddress(&logicalAddr);
+        Int32 vendorId;
+        mHost->GetVendorId(&vendorId);
+        AutoPtr<IHdmiCecMessage> cmd;
+        HdmiCecMessageBuilder::BuildVendorCommandWithId(
+                logicalAddr, mTargetAddress,
+                vendorId, mParams, (IHdmiCecMessage**)&cmd);
+        mHost->SendCecCommand(cmd);
+    } else {
+        AutoPtr<IHdmiCecMessage> cmd;
+        Int32 logicalAddress;
+        deviceInfo->GetLogicalAddress(&logicalAddress);
+        HdmiCecMessageBuilder::BuildVendorCommand(logicalAddress, mTargetAddress, mParams, (IHdmiCecMessage**)&cmd);
+        mHost->SendCecCommand(cmd);
+    }
+    return NOERROR;
+}
+
+//=============================================================================
+// HdmiControlService::SendStandbyRunnable
+//=============================================================================
+CAR_INTERFACE_IMPL(HdmiControlService::SendStandbyRunnable, Object, IRunnable)
+
+HdmiControlService::SendStandbyRunnable::SendStandbyRunnable(
+    /* [in] */ HdmiControlService* host,
+    /* [in] */ Int32 deviceType,
+    /* [in] */ Int32 deviceId)
+    : mHost(host)
+    , mDeviceType(deviceType)
+    , mDeviceId(deviceId)
+{}
+
+ECode HdmiControlService::SendStandbyRunnable::Run()
+{
+    AutoPtr<IHdmiCecLocalDevice> device;
+    mHost->mCecController->GetLocalDevice(mDeviceType, (IHdmiCecLocalDevice**)&device);
+    if (device == NULL) {
+        Slogger::W(TAG, "Local device not available");
+        return NOERROR;
+    }
+    ((HdmiCecLocalDevice*) device.Get())->SendStandby(mDeviceId);
+    return NOERROR;
+}
+
+//=============================================================================
+// HdmiControlService::StartOneTouchRecordRunnable
+//=============================================================================
+CAR_INTERFACE_IMPL(HdmiControlService::StartOneTouchRecordRunnable, Object, IRunnable)
+
+HdmiControlService::StartOneTouchRecordRunnable::StartOneTouchRecordRunnable(
+    /* [in] */ HdmiControlService* host,
+    /* [in] */ Int32 recorderAddress,
+    /* [in] */ ArrayOf<Byte>* recordSource)
+    : mHost(host)
+    , mRecorderAddress(recorderAddress)
+    , mRecordSource(recordSource)
+{}
+
+ECode HdmiControlService::StartOneTouchRecordRunnable::Run()
+{
+    Boolean isTvDevice;
+    mHost->IsTvDevice(&isTvDevice);
+    if (!isTvDevice) {
+        Slogger::W(TAG, "No TV is available.");
+        return NOERROR;
+    }
+    AutoPtr<IHdmiCecLocalDeviceTv> tv;
+    mHost->Tv((IHdmiCecLocalDeviceTv**)&tv);
+    Int32 iNoUse;
+    ((HdmiCecLocalDeviceTv*) tv.Get())->StartOneTouchRecord(mRecorderAddress, mRecordSource, &iNoUse);
+    return NOERROR;
+}
+
+//=============================================================================
+// HdmiControlService::StopOneTouchRecordRunnable
+//=============================================================================
+CAR_INTERFACE_IMPL(HdmiControlService::StopOneTouchRecordRunnable, Object, IRunnable)
+
+HdmiControlService::StopOneTouchRecordRunnable::StopOneTouchRecordRunnable(
+    /* [in] */ HdmiControlService* host,
+    /* [in] */ Int32 recorderAddress)
+    : mHost(host)
+    , mRecorderAddress(recorderAddress)
+{}
+
+ECode HdmiControlService::StopOneTouchRecordRunnable::Run()
+{
+    Boolean isTvDevice;
+    mHost->IsTvDevice(&isTvDevice);
+    if (!isTvDevice) {
+        Slogger::W(TAG, "No TV is available.");
+        return NOERROR;
+    }
+    AutoPtr<IHdmiCecLocalDeviceTv> tv;
+    mHost->Tv((IHdmiCecLocalDeviceTv**)&tv);
+    ((HdmiCecLocalDeviceTv*) tv.Get())->StopOneTouchRecord(mRecorderAddress);
+    return NOERROR;
+}
+
+//=============================================================================
+// HdmiControlService::StartTimerRecordingRunnable
+//=============================================================================
+CAR_INTERFACE_IMPL(HdmiControlService::StartTimerRecordingRunnable, Object, IRunnable)
+
+HdmiControlService::StartTimerRecordingRunnable::StartTimerRecordingRunnable(
+    /* [in] */ HdmiControlService* host,
+    /* [in] */ Int32 recorderAddress,
+    /* [in] */ Int32 sourceType,
+    /* [in] */ ArrayOf<Byte>* recordSource)
+    : mHost(host)
+    , mRecorderAddress(recorderAddress)
+    , mSourceType(sourceType)
+    , mRecordSource(recordSource)
+{}
+
+ECode HdmiControlService::StartTimerRecordingRunnable::Run()
+{
+    Boolean isTvDevice;
+    mHost->IsTvDevice(&isTvDevice);
+    if (!isTvDevice) {
+        Slogger::W(TAG, "No TV is available.");
+        return NOERROR;
+    }
+    AutoPtr<IHdmiCecLocalDeviceTv> tv;
+    mHost->Tv((IHdmiCecLocalDeviceTv**)&tv);
+    ((HdmiCecLocalDeviceTv*) tv.Get())->StartTimerRecording(mRecorderAddress, mSourceType, mRecordSource);
+    return NOERROR;
+}
+
+//=============================================================================
+// HdmiControlService::ClearTimerRecordingRunnable
+//=============================================================================
+CAR_INTERFACE_IMPL(HdmiControlService::ClearTimerRecordingRunnable, Object, IRunnable)
+
+HdmiControlService::ClearTimerRecordingRunnable::ClearTimerRecordingRunnable(
+    /* [in] */ HdmiControlService* host,
+    /* [in] */ Int32 recorderAddress,
+    /* [in] */ Int32 sourceType,
+    /* [in] */ ArrayOf<Byte>* recordSource)
+    : mHost(host)
+    , mRecorderAddress(recorderAddress)
+    , mSourceType(sourceType)
+    , mRecordSource(recordSource)
+{}
+
+ECode HdmiControlService::ClearTimerRecordingRunnable::Run()
+{
+    Boolean isTvDevice;
+    mHost->IsTvDevice(&isTvDevice);
+    if (!isTvDevice) {
+        Slogger::W(TAG, "No TV is available.");
+        return NOERROR;
+    }
+    AutoPtr<IHdmiCecLocalDeviceTv> tv;
+    mHost->Tv((IHdmiCecLocalDeviceTv**)&tv);
+    ((HdmiCecLocalDeviceTv*) tv.Get())->ClearTimerRecording(mRecorderAddress, mSourceType, mRecordSource);
+    return NOERROR;
+}
+
+//=============================================================================
+// HdmiControlService::SendMhlVendorCommandRunnable
+//=============================================================================
+CAR_INTERFACE_IMPL(HdmiControlService::SendMhlVendorCommandRunnable, Object, IRunnable)
+
+HdmiControlService::SendMhlVendorCommandRunnable::SendMhlVendorCommandRunnable(
+    /* [in] */ HdmiControlService* host,
+    /* [in] */ Int32 portId,
+    /* [in] */ Int32 offset,
+    /* [in] */ Int32 length,
+    /* [in] */ ArrayOf<Byte>* data)
+    : mHost(host)
+    , mPortId(portId)
+    , mOffset(offset)
+    , mLength(length)
+    , mData(data)
+{}
+
+ECode HdmiControlService::SendMhlVendorCommandRunnable::Run()
+{
+    Boolean isControlEnabled;
+    mHost->IsControlEnabled(&isControlEnabled);
+    if (!isControlEnabled) {
+        Slogger::W(TAG, "Hdmi control is disabled.");
+        return NOERROR;
+    }
+    AutoPtr<HdmiMhlLocalDeviceStub> device;
+    mHost->mMhlController->GetLocalDevice(mPortId, (HdmiMhlLocalDeviceStub**)&device);
+    if (device == NULL) {
+        Slogger::W(TAG, "Invalid port id:%d", mPortId);
+        return NOERROR;
+    }
+    mHost->mMhlController->SendVendorCommand(mPortId, mOffset, mLength, mData);
+    return NOERROR;
+}
+
+//=============================================================================
+// HdmiControlService::InnerSub_AllocateAddressCallback
+//=============================================================================
+CAR_INTERFACE_IMPL(HdmiControlService::InnerSub_AllocateAddressCallback, Object, IHdmiCecControllerAllocateAddressCallback)
+
+HdmiControlService::InnerSub_AllocateAddressCallback::InnerSub_AllocateAddressCallback(
+    /* [in] */ HdmiControlService* host,
+    /* [in] */ IHdmiCecLocalDevice* localDevice,
+    /* [in] */ IArrayList* allocatingDevices,
+    /* [in] */ IArrayList* allocatedDevices,
+    /* [in] */ ArrayOf<Int32>* finished,
+    /* [in] */ Int32 initiatedBy)
+    : mHost(host)
+    , mLocalDevice(localDevice)
+    , mAllocatingDevices(allocatingDevices)
+    , mAllocatedDevices(allocatedDevices)
+    , mFinished(finished)
+    , mInitiatedBy(initiatedBy)
+{}
+
+ECode HdmiControlService::InnerSub_AllocateAddressCallback::OnAllocated(
+    /* [in] */ Int32 deviceType,
+    /* [in] */ Int32 logicalAddress)
+{
+    if (logicalAddress == Constants::ADDR_UNREGISTERED) {
+        Slogger::E(TAG, "Failed to allocate address:[device_type:%d]", deviceType);
+    } else {
+        // Set POWER_STATUS_ON to all local devices because they share lifetime
+        // with system.
+        AutoPtr<IHdmiDeviceInfo> deviceInfo;
+        mHost->CreateDeviceInfo(logicalAddress, deviceType,
+                IHdmiControlManager::POWER_STATUS_ON, (IHdmiDeviceInfo**)&deviceInfo);
+        ((HdmiCecLocalDevice*)mLocalDevice.Get())->SetDeviceInfo(deviceInfo);
+        mHost->mCecController->AddLocalDevice(deviceType, mLocalDevice);
+        Int32 iNoUse;
+        mHost->mCecController->AddLogicalAddress(logicalAddress, &iNoUse);
+        mAllocatedDevices->Add(mLocalDevice);
+    }
+    // Address allocation completed for all devices. Notify each device.
+    Int32 size;
+    mAllocatingDevices->GetSize(&size);
+    if (size == ++(*mFinished)[0]) {
+        if (mInitiatedBy != INITIATED_BY_HOTPLUG) {
+            // In case of the hotplug we don't call onInitializeCecComplete()
+            // since we reallocate the logical address only.
+            mHost->OnInitializeCecComplete();
+        }
+        mHost->NotifyAddressAllocated(mAllocatedDevices, mInitiatedBy);
+    }
+    return NOERROR;
+}
+
+//=============================================================================
+// HdmiControlService::OnStandbyPendingActionClearedCallback
+//=============================================================================
+CAR_INTERFACE_IMPL(HdmiControlService::OnStandbyPendingActionClearedCallback, Object, IHdmiCecLocalDevicePendingActionClearedCallback)
+
+HdmiControlService::OnStandbyPendingActionClearedCallback::OnStandbyPendingActionClearedCallback(
+    /* [in] */ HdmiControlService* host,
+    /* [in] */ IList* devices)
+    : mHost(host)
+    , mDevices(devices)
+{}
+
+ECode HdmiControlService::OnStandbyPendingActionClearedCallback::OnCleared(
+    /* [in] */ IHdmiCecLocalDevice* device)
+{
+    Slogger::V(TAG, "On standby-action cleared:%d", ((HdmiCecLocalDevice*)device)->mDeviceType);
+    mDevices->Remove(device);
+    Boolean isEmpty;
+    mDevices->IsEmpty(&isEmpty);
+    if (isEmpty) {
+        mHost->OnStandbyCompleted();
+        // We will not clear local devices here, since some OEM/SOC will keep passing
+        // the received packets until the application processor enters to the sleep
+        // actually.
+    }
+    return NOERROR;
+}
+
+//=============================================================================
+// HdmiControlService::SetControlEnabledPendingActionClearedCallback
+//=============================================================================
+CAR_INTERFACE_IMPL(HdmiControlService::SetControlEnabledPendingActionClearedCallback, Object, IHdmiCecLocalDevicePendingActionClearedCallback)
+
+HdmiControlService::SetControlEnabledPendingActionClearedCallback::SetControlEnabledPendingActionClearedCallback(
+    /* [in] */ HdmiControlService* host)
+    : mHost(host)
+{}
+
+ECode HdmiControlService::SetControlEnabledPendingActionClearedCallback::OnCleared(
+    /* [in] */ IHdmiCecLocalDevice* device)
+{
+    mHost->AssertRunOnServiceThread();
+    mHost->ClearLocalDevices();
+    return NOERROR;
+}
+
+//=============================================================================
+// HdmiControlService::InnerSub_IHdmiControlCallbackStub
+//=============================================================================
+CAR_INTERFACE_IMPL_2(HdmiControlService::InnerSub_IHdmiControlCallbackStub, Object, IBinder, IIHdmiControlCallback)
+
+HdmiControlService::InnerSub_IHdmiControlCallbackStub::InnerSub_IHdmiControlCallbackStub(
+    /* [in] */ HdmiControlService* host,
+    /* [in] */ Int32 lastInput)
+    : mHost(host)
+    , mLastInput(lastInput)
+{}
+
+ECode HdmiControlService::InnerSub_IHdmiControlCallbackStub::OnComplete(
+    /* [in] */ Int32 result)
+{
+    // Keep the last input to switch back later when RAP[ContentOff] is received.
+    // This effectively sets the port to invalid one if the switching is for
+    // RAP[ContentOff].
+    return mHost->SetLastInputForMhl(mLastInput);
+}
+
+ECode HdmiControlService::InnerSub_IHdmiControlCallbackStub::ToString(
+    /* [out] */ String* result)
+{
+    return IObject::Probe(TO_IINTERFACE(this))->ToString(result);
 }
 
 //=============================================================================
 // HdmiControlService
 //=============================================================================
+CAR_INTERFACE_IMPL(HdmiControlService, SystemService, IHdmiControlService)
+
 const String HdmiControlService::TAG("HdmiControlService");
 const String HdmiControlService::PERMISSION("android.permission.HDMI_CEC");
 const Int32 HdmiControlService::INITIATED_BY_ENABLE_CEC = 0;
@@ -982,134 +1367,171 @@ HdmiControlService::HdmiControlService()
     , mMhlInputChangeEnabled(FALSE)
     , mLastInputMhl(Constants::INVALID_PORT_ID)
 {
-#if 0 // TODO: Translate codes below
-    mIoThread = new HandlerThread("Hdmi Control Io Thread");
-    mLock = new Object();
+    CHandlerThread::New(String("Hdmi Control Io Thread"), (IHandlerThread**)&mIoThread);
+    Elastos::Core::CObject::New((IObject**)&mLock);
     CArrayList::New((IArrayList**)&mDeviceEventListenerRecords);
     CArrayList::New((IArrayList**)&mVendorCommandListenerRecords);
     CArrayList::New((IArrayList**)&mSystemAudioModeChangeListenerRecords);
-    mHandler = new Handler();
-    mHdmiControlBroadcastReceiver = new HdmiControlBroadcastReceiver();
-    mLanguage = Locale::GetDefault()->GetISO3Language();
+    CHandler::New((IHandler**)&mHandler);
+    mHdmiControlBroadcastReceiver = new HdmiControlBroadcastReceiver(this);
+    AutoPtr<ILocaleHelper> helper;
+    CLocaleHelper::AcquireSingleton((ILocaleHelper**)&helper);
+    AutoPtr<ILocale> defaultLocale;
+    helper->GetDefault((ILocale**)&defaultLocale);
+    defaultLocale->GetISO3Language(&mLanguage);
     CArrayList::New((IArrayList**)&mMhlVendorCommandListenerRecords);
     CArrayList::New((IArrayList**)&mHotplugEventListenerRecords);
-#endif
+    return;
 }
 
 ECode HdmiControlService::constructor(
     /* [in] */ IContext* context)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        super::constructor(context);
-        AutoPtr<ISystemProperties> helper;
-        CSystemProperties::AcquireSingleton((ISystemProperties**)&helper);
-        mLocalDevices = GetIntList(helper->Get(Constants::PROPERTY_DEVICE_TYPE));
-        mSettingsObserver = new SettingsObserver(mHandler);
-
-#endif
+    SystemService::constructor(context);
+    AutoPtr<ISystemProperties> helper;
+    CSystemProperties::AcquireSingleton((ISystemProperties**)&helper);
+    String type;
+    helper->Get(Constants::PROPERTY_DEVICE_TYPE, &type);
+    GetInt32List(type, (IList**)&mLocalDevices);
+    mSettingsObserver = new SettingsObserver(this, mHandler);
+    return NOERROR;
 }
 
-ECode HdmiControlService::GetIntList(
+ECode HdmiControlService::GetInt32List(
     /* [in] */ const String& string,
     /* [out] */ IList** result)
 {
     VALIDATE_NOT_NULL(result)
 
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        AutoPtr<IArrayList> list;
-        CArrayList::New((IArrayList**)&list);
-        TextUtils::SimpleStringSplitter splitter = new TextUtils::SimpleStringSplitter(',');
-        splitter->SetString(string);
-        for (String item : splitter) {
-            try {
-                list->Add(Integer::ParseInt32(item));
-            } catch (NumberFormatException e) {
-                Slogger::W(TAG, "Can't parseInt: " + item);
+    AutoPtr<IArrayList> list;
+    CArrayList::New((IArrayList**)&list);
+    AutoPtr<ISimpleStringSplitter> splitter;
+    CSimpleStringSplitter::New(',', (ISimpleStringSplitter**)&splitter);
+    splitter->SetString(string);
+    AutoPtr<IIterator> it;
+    splitter->GetIterator((IIterator**)&it);
+    Boolean hasNext;
+    while (it->HasNext(&hasNext), hasNext) {
+        AutoPtr<IInterface> obj;
+        it->GetNext((IInterface**)&obj);
+        String item;
+        ICharSequence::Probe(obj)->ToString(&item);
+        // try {
+        ECode ec;
+        do {
+            Int32 i32;
+            ec = StringUtils::Parse(item, &i32);
+            if (FAILED(ec)) break;
+            AutoPtr<IInteger32> integer32;
+            CInteger32::New(i32, (IInteger32**)&integer32);
+            ec = list->Add(integer32);
+        } while(FALSE);
+        // } catch (NumberFormatException e) {
+        if (FAILED(ec)) {
+            if ((ECode) E_NUMBER_FORMAT_EXCEPTION == ec) {
+                Slogger::W(TAG, "Can't parseInt: %s", item.string());
             }
+            else
+                return ec;
         }
-        return Collections::UnmodifiableList(list);
-
-#endif
+        // }
+    }
+    AutoPtr<ICollections> helper;
+    CCollections::AcquireSingleton((ICollections**)&helper);
+    return helper->UnmodifiableList(IList::Probe(list), result);
 }
 
 ECode HdmiControlService::OnStart()
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        mIoThread->Start();
-        mPowerStatus = IHdmiControlManager::POWER_STATUS_TRANSIENT_TO_ON;
-        mProhibitMode = FALSE;
-        mHdmiControlEnabled = ReadBooleanSetting(Global::HDMI_CONTROL_ENABLED, TRUE);
-        mMhlInputChangeEnabled = ReadBooleanSetting(Global::MHL_INPUT_SWITCHING_ENABLED, TRUE);
-        mCecController = HdmiCecController::Create(this);
-        if (mCecController != NULL) {
-            // TODO: Remove this as soon as OEM's HAL implementation is corrected.
-            mCecController->SetOption(OPTION_CEC_ENABLE, ENABLED);
-            // TODO: load value for mHdmiControlEnabled from preference.
-            if (mHdmiControlEnabled) {
-                InitializeCec(INITIATED_BY_BOOT_UP);
-            }
-        } else {
-            Slogger::I(TAG, "Device does not support HDMI-CEC.");
+    IThread::Probe(mIoThread)->Start();
+    mPowerStatus = IHdmiControlManager::POWER_STATUS_TRANSIENT_TO_ON;
+    mProhibitMode = FALSE;
+    ReadBooleanSetting(ISettingsGlobal::HDMI_CONTROL_ENABLED, TRUE, &mHdmiControlEnabled);
+    ReadBooleanSetting(ISettingsGlobal::MHL_INPUT_SWITCHING_ENABLED, TRUE, &mMhlInputChangeEnabled);
+    HdmiCecController::Create(this, (HdmiCecController**)&mCecController);
+    if (mCecController != NULL) {
+        // TODO: Remove this as soon as OEM's HAL implementation is corrected.
+        mCecController->SetOption(Constants::OPTION_CEC_ENABLE, Constants::ENABLED);
+        // TODO: load value for mHdmiControlEnabled from preference.
+        if (mHdmiControlEnabled) {
+            InitializeCec(INITIATED_BY_BOOT_UP);
         }
-        mMhlController = HdmiMhlControllerStub::Create(this);
-        Boolean isReady;
-        mMhlController->IsReady(&isReady);
-        if (!isReady) {
-            Slogger::I(TAG, "Device does not support MHL-control.");
-        }
-        mMhlDevices = Collections::EmptyList();
-        InitPortInfo();
-        mMessageValidator = new HdmiCecMessageValidator(this);
-        PublishBinderService(Context::HDMI_CONTROL_SERVICE, new BinderService());
-        // Register broadcast receiver for power state change.
-        if (mCecController != NULL) {
-            IntentFilter filter = new IntentFilter();
-            filter->AddAction(Intent::ACTION_SCREEN_OFF);
-            filter->AddAction(Intent::ACTION_SCREEN_ON);
-            filter->AddAction(Intent::ACTION_CONFIGURATION_CHANGED);
-            GetContext()->RegisterReceiver(mHdmiControlBroadcastReceiver, filter);
-        }
-
-#endif
+    } else {
+        Slogger::I(TAG, "Device does not support HDMI-CEC.");
+    }
+    HdmiMhlControllerStub::Create(this, (HdmiMhlControllerStub**)&mMhlController);
+    Boolean isReady;
+    mMhlController->IsReady(&isReady);
+    if (!isReady) {
+        Slogger::I(TAG, "Device does not support MHL-control.");
+    }
+    AutoPtr<ICollections> helper;
+    CCollections::AcquireSingleton((ICollections**)&helper);
+    helper->GetEmptyList((IList**)&mMhlDevices);
+    InitPortInfo();
+    mMessageValidator = new HdmiCecMessageValidator();
+    mMessageValidator->constructor(this);
+    AutoPtr<BinderService> binderService = new BinderService();
+    binderService->constructor(this);
+    PublishBinderService(IContext::HDMI_CONTROL_SERVICE, binderService);
+    // Register broadcast receiver for power state change.
+    if (mCecController != NULL) {
+        AutoPtr<IIntentFilter> filter;
+        CIntentFilter::New((IIntentFilter**)&filter);
+        filter->AddAction(IIntent::ACTION_SCREEN_OFF);
+        filter->AddAction(IIntent::ACTION_SCREEN_ON);
+        filter->AddAction(IIntent::ACTION_CONFIGURATION_CHANGED);
+        AutoPtr<IContext> context;
+        GetContext((IContext**)&context);
+        AutoPtr<IIntent> iNoUse;
+        context->RegisterReceiver(mHdmiControlBroadcastReceiver, filter, (IIntent**)&iNoUse);
+    }
+    return NOERROR;
 }
 
 ECode HdmiControlService::OnInitializeCecComplete()
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        if (mPowerStatus == IHdmiControlManager::POWER_STATUS_TRANSIENT_TO_ON) {
-            mPowerStatus = IHdmiControlManager::POWER_STATUS_ON;
-        }
-        mWakeUpMessageReceived = FALSE;
-        if (IsTvDevice()) {
-            mCecController->SetOption(OPTION_CEC_AUTO_WAKEUP, ToInt32(tv()->GetAutoWakeup()));
-            RegisterContentObserver();
-        }
-
-#endif
+    if (mPowerStatus == IHdmiControlManager::POWER_STATUS_TRANSIENT_TO_ON) {
+        mPowerStatus = IHdmiControlManager::POWER_STATUS_ON;
+    }
+    mWakeUpMessageReceived = FALSE;
+    Boolean isTvDevice;
+    IsTvDevice(&isTvDevice);
+    if (isTvDevice) {
+        AutoPtr<IHdmiCecLocalDeviceTv> tv;
+        Tv((IHdmiCecLocalDeviceTv**)&tv);
+        Boolean isAutoWakeup;
+        ((HdmiCecLocalDeviceTv*) tv.Get())->GetAutoWakeup(&isAutoWakeup);
+        Int32 iAutoWakeup;
+        ToInt32(isAutoWakeup, &iAutoWakeup);
+        mCecController->SetOption(Constants::OPTION_CEC_AUTO_WAKEUP, iAutoWakeup);
+        RegisterContentObserver();
+    }
+    return NOERROR;
 }
 
 ECode HdmiControlService::RegisterContentObserver()
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        ContentResolver resolver = GetContext()->GetContentResolver();
-        AutoPtr<ArrayOf<String> > settings = new String[] {
-                Global::HDMI_CONTROL_ENABLED,
-                Global::HDMI_CONTROL_AUTO_WAKEUP_ENABLED,
-                Global::HDMI_CONTROL_AUTO_DEVICE_OFF_ENABLED,
-                Global::MHL_INPUT_SWITCHING_ENABLED,
-                Global::MHL_POWER_CHARGE_ENABLED
-        };
-        for (String s : settings) {
-            resolver->RegisterContentObserver(Global::GetUriFor(s), FALSE, mSettingsObserver,
-                    UserHandle::USER_ALL);
-        }
-
-#endif
+    AutoPtr<IContext> context;
+    GetContext((IContext**)&context);
+    AutoPtr<IContentResolver> resolver;
+    context->GetContentResolver((IContentResolver**)&resolver);
+    AutoPtr<ArrayOf<String> > settings = ArrayOf<String>::Alloc(5);
+    settings->Set(0, ISettingsGlobal::HDMI_CONTROL_ENABLED);
+    settings->Set(1, ISettingsGlobal::HDMI_CONTROL_AUTO_WAKEUP_ENABLED);
+    settings->Set(2, ISettingsGlobal::HDMI_CONTROL_AUTO_DEVICE_OFF_ENABLED);
+    settings->Set(3, ISettingsGlobal::MHL_INPUT_SWITCHING_ENABLED);
+    settings->Set(4, ISettingsGlobal::MHL_POWER_CHARGE_ENABLED);
+    AutoPtr<ISettingsGlobal> helper;
+    CSettingsGlobal::AcquireSingleton((ISettingsGlobal**)&helper);
+    for (Int32 i = 0; i < settings->GetLength(); ++i) {
+        String s = (*settings)[i];
+        AutoPtr<IUri> uri;
+        helper->GetUriFor(s, (IUri**)&uri);
+        resolver->RegisterContentObserver(uri, FALSE, mSettingsObserver,
+                UserHandle::USER_ALL);
+    }
+    return NOERROR;
 }
 
 ECode HdmiControlService::ToInt32(
@@ -1118,11 +1540,11 @@ ECode HdmiControlService::ToInt32(
 {
     VALIDATE_NOT_NULL(result)
 
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        return enabled ? ENABLED : DISABLED;
-
-#endif
+    if (enabled)
+        *result = Constants::ENABLED;
+    else
+        *result = Constants::DISABLED;
+    return NOERROR;
 }
 
 ECode HdmiControlService::ReadBooleanSetting(
@@ -1132,195 +1554,219 @@ ECode HdmiControlService::ReadBooleanSetting(
 {
     VALIDATE_NOT_NULL(result)
 
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        ContentResolver cr = GetContext()->GetContentResolver();
-        return Global::GetInt32(cr, key, ToInt32(defVal)) == ENABLED;
-
-#endif
+    AutoPtr<IContext> context;
+    GetContext((IContext**)&context);
+    AutoPtr<IContentResolver> cr;
+    context->GetContentResolver((IContentResolver**)&cr);
+    Int32 iDefVal;
+    ToInt32(defVal, &iDefVal);
+    Int32 settings;
+    Settings::Global::GetInt32(cr, key, iDefVal, &settings);
+    *result = settings == Constants::ENABLED;
+    return NOERROR;
 }
 
 ECode HdmiControlService::WriteBooleanSetting(
     /* [in] */ const String& key,
     /* [in] */ Boolean value)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        ContentResolver cr = GetContext()->GetContentResolver();
-        Global::PutInt32(cr, key, ToInt32(value));
-
-#endif
+    AutoPtr<IContext> context;
+    GetContext((IContext**)&context);
+    AutoPtr<IContentResolver> cr;
+    context->GetContentResolver((IContentResolver**)&cr);
+    Int32 iValue;
+    ToInt32(value, &iValue);
+    Boolean bNoUse;
+    Settings::Global::PutInt32(cr, key, iValue, &bNoUse);
+    return NOERROR;
 }
 
 ECode HdmiControlService::UnregisterSettingsObserver()
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        GetContext()->GetContentResolver()->UnregisterContentObserver(mSettingsObserver);
-
-#endif
+    AutoPtr<IContext> context;
+    GetContext((IContext**)&context);
+    AutoPtr<IContentResolver> cr;
+    context->GetContentResolver((IContentResolver**)&cr);
+    cr->UnregisterContentObserver(mSettingsObserver);
+    return NOERROR;
 }
 
 ECode HdmiControlService::InitializeCec(
     /* [in] */ Int32 initiatedBy)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        mCecController->SetOption(OPTION_CEC_SERVICE_CONTROL, ENABLED);
-        InitializeLocalDevices(initiatedBy);
-
-#endif
+    mCecController->SetOption(Constants::OPTION_CEC_SERVICE_CONTROL, Constants::ENABLED);
+    InitializeLocalDevices(initiatedBy);
+    return NOERROR;
 }
 
 ECode HdmiControlService::InitializeLocalDevices(
     /* [in] */ Int32 initiatedBy)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        AssertRunOnServiceThread();
-        // A container for [Device type, Local device info].
-        AutoPtr<IArrayList> localDevices;
-        CArrayList::New((IArrayList**)&localDevices);
-        for (Int32 type : mLocalDevices) {
-            AutoPtr<IHdmiCecLocalDevice> localDevice = mCecController->GetLocalDevice(type);
-            if (localDevice == NULL) {
-                localDevice = HdmiCecLocalDevice::Create(this, type);
-            }
-            localDevice->Init();
-            localDevices->Add(localDevice);
+    AssertRunOnServiceThread();
+    // A container for [Device type, Local device info].
+    AutoPtr<IArrayList> localDevices;
+    CArrayList::New((IArrayList**)&localDevices);
+    FOR_EACH(it, mLocalDevices) {
+        AutoPtr<IInterface> obj;
+        it->GetNext((IInterface**)&obj);
+        Int32 type;
+        IInteger32::Probe(obj)->GetValue(&type);
+        AutoPtr<IHdmiCecLocalDevice> localDevice;
+        mCecController->GetLocalDevice(type, (IHdmiCecLocalDevice**)&localDevice);
+        if (localDevice == NULL) {
+            HdmiCecLocalDevice::Create(this, type, (IHdmiCecLocalDevice**)&localDevice);
         }
-        // It's now safe to flush existing local devices from mCecController since they were
-        // already moved to 'localDevices'.
-        ClearLocalDevices();
-        AllocateLogicalAddress(localDevices, initiatedBy);
-
-#endif
+        ((HdmiCecLocalDevice*)localDevice.Get())->Init();
+        localDevices->Add(localDevice);
+    }
+    // It's now safe to flush existing local devices from mCecController since they were
+    // already moved to 'localDevices'.
+    ClearLocalDevices();
+    AllocateLogicalAddress(localDevices, initiatedBy);
+    return NOERROR;
 }
 
 ECode HdmiControlService::AllocateLogicalAddress(
     /* [in] */ IArrayList* allocatingDevices,
     /* [in] */ Int32 initiatedBy)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        AssertRunOnServiceThread();
-        mCecController->ClearLogicalAddress();
-        AutoPtr<IArrayList> allocatedDevices;
-        CArrayList::New((IArrayList**)&allocatedDevices);
-        int[] finished = new int[1];
-        FOR_EACH(it : allocatingDevices) {
-            AutoPtr<IHdmiCecLocalDevice> localDevice = it->GetNext();
-            mCecController->AllocateLogicalAddress(localDevice->GetType(),
-                    localDevice->GetPreferredAddress(), new AllocateAddressCallback() {
-                @Override
-                public void OnAllocated(Int32 deviceType, Int32 logicalAddress) {
-                    if (logicalAddress == Constants::ADDR_UNREGISTERED) {
-                        Slogger::E(TAG, "Failed to allocate address:[device_type:" + deviceType + "]");
-                    } else {
-                        // Set POWER_STATUS_ON to all local devices because they share lifetime
-                        // with system.
-                        HdmiDeviceInfo deviceInfo = CreateDeviceInfo(logicalAddress, deviceType,
-                                IHdmiControlManager::POWER_STATUS_ON);
-                        localDevice->SetDeviceInfo(deviceInfo);
-                        mCecController->AddLocalDevice(deviceType, localDevice);
-                        mCecController->AddLogicalAddress(logicalAddress);
-                        allocatedDevices->Add(localDevice);
-                    }
-                    // Address allocation completed for all devices. Notify each device.
-                    Int32 size;
-                    allocatingDevices->GetSize(&size);
-                    if (size == ++(*finished)[0]) {
-                        if (initiatedBy != INITIATED_BY_HOTPLUG) {
-                            // In case of the hotplug we don't call onInitializeCecComplete()
-                            // since we reallocate the logical address only.
-                            OnInitializeCecComplete();
-                        }
-                        NotifyAddressAllocated(allocatedDevices, initiatedBy);
-                    }
-                }
-            });
-        }
-
-#endif
+    AssertRunOnServiceThread();
+    mCecController->ClearLogicalAddress();
+    AutoPtr<IArrayList> allocatedDevices;
+    CArrayList::New((IArrayList**)&allocatedDevices);
+    AutoPtr<ArrayOf<Int32> > finished = ArrayOf<Int32>::Alloc(1);
+    FOR_EACH(it, allocatingDevices) {
+        AutoPtr<IInterface> obj;
+        it->GetNext((IInterface**)&obj);
+        AutoPtr<IHdmiCecLocalDevice> localDevice = IHdmiCecLocalDevice::Probe(obj);
+        Int32 type;
+        ((HdmiCecLocalDevice*)localDevice.Get())->GetType(&type);
+        Int32 preferredAddress;
+        ((HdmiCecLocalDevice*)localDevice.Get())->GetPreferredAddress(&preferredAddress);
+        mCecController->AllocateLogicalAddress(type, preferredAddress, new InnerSub_AllocateAddressCallback(this,
+                localDevice, allocatingDevices, allocatedDevices, finished, initiatedBy));
+    }
+    return NOERROR;
 }
 
 ECode HdmiControlService::NotifyAddressAllocated(
     /* [in] */ IArrayList* devices,
     /* [in] */ Int32 initiatedBy)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        AssertRunOnServiceThread();
-        FOR_EACH(it : devices) {
-            AutoPtr<IHdmiCecLocalDevice> device = it->GetNextt();
-            AutoPtr<IHdmiDeviceInfo> deviceInfo;
-            device->GetDeviceInfo((IHdmiDeviceInfo**)&deviceInfo);
-            Int32 address;
-            deviceInfo->GetLogicalAddress(&address);
-            device->HandleAddressAllocated(address, initiatedBy);
-        }
-
-#endif
+    AssertRunOnServiceThread();
+    FOR_EACH(it, devices) {
+        AutoPtr<IInterface> obj;
+        it->GetNext((IInterface**)&obj);
+        AutoPtr<IHdmiCecLocalDevice> device = IHdmiCecLocalDevice::Probe(obj);
+        AutoPtr<IHdmiDeviceInfo> deviceInfo;
+        ((HdmiCecLocalDevice*)device.Get())->GetDeviceInfo((IHdmiDeviceInfo**)&deviceInfo);
+        Int32 address;
+        deviceInfo->GetLogicalAddress(&address);
+        ((HdmiCecLocalDevice*)device.Get())->HandleAddressAllocated(address, initiatedBy);
+    }
+    return NOERROR;
 }
 
 ECode HdmiControlService::InitPortInfo()
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        AssertRunOnServiceThread();
-        AutoPtr<ArrayOf<HdmiPortInfo> > cecPortInfo = NULL;
-        // CEC HAL provides majority of the info while MHL does only MHL support flag for
-        // each port. Return empty array if CEC HAL didn't provide the info.
-        if (mCecController != NULL) {
-            cecPortInfo = mCecController->GetPortInfos();
+    AssertRunOnServiceThread();
+    AutoPtr<ArrayOf<IHdmiPortInfo*> > cecPortInfo;
+    // CEC HAL provides majority of the info while MHL does only MHL support flag for
+    // each port. Return empty array if CEC HAL didn't provide the info.
+    if (mCecController != NULL) {
+        mCecController->GetPortInfos((ArrayOf<IHdmiPortInfo*>**)&cecPortInfo);
+    }
+    if (cecPortInfo == NULL) {
+        return NOERROR;
+    }
+    AutoPtr<ISparseArray> portInfoMap;
+    CSparseArray::New((ISparseArray**)&portInfoMap);
+    AutoPtr<ISparseInt32Array> portIdMap;
+    CSparseInt32Array::New((ISparseInt32Array**)&portIdMap);
+    AutoPtr<ISparseArray> portDeviceMap;
+    CSparseArray::New((ISparseArray**)&portDeviceMap);
+    for (Int32 i = 0; i < cecPortInfo->GetLength(); ++i) {
+        AutoPtr<IHdmiPortInfo> info = (*cecPortInfo)[i];
+        Int32 address;
+        info->GetAddress(&address);
+        Int32 id;
+        info->GetId(&id);
+        portIdMap->Put(address, id);
+        portInfoMap->Put(id, info);
+        AutoPtr<IHdmiDeviceInfo> newInfo;
+        // TODO: Waiting for CHdmiDeviceInfo
+        assert(0);
+        // CHdmiDeviceInfo::New(address, id, (IHdmiDeviceInfo**)&newInfo);
+        portDeviceMap->Put(id, newInfo);
+    }
+    mPortIdMap = new UnmodifiableSparseInt32Array();
+    mPortIdMap->constructor(portIdMap);
+    mPortInfoMap = new UnmodifiableSparseArray();
+    mPortInfoMap->constructor(portInfoMap);
+    mPortDeviceMap = new UnmodifiableSparseArray();
+    mPortDeviceMap->constructor(portDeviceMap);
+    AutoPtr<ArrayOf<IHdmiPortInfo*> > mhlPortInfo;
+    mMhlController->GetPortInfos((ArrayOf<IHdmiPortInfo*>**)&mhlPortInfo);
+    AutoPtr<IArraySet> mhlSupportedPorts;
+    CArraySet::New(mhlPortInfo->GetLength(), (IArraySet**)&mhlSupportedPorts);
+    for (Int32 i = 0; i < mhlPortInfo->GetLength(); ++i) {
+        AutoPtr<IHdmiPortInfo> info = (*mhlPortInfo)[i];
+        Boolean isMhlSupported;
+        info->IsMhlSupported(&isMhlSupported);
+        if (isMhlSupported) {
+            Int32 id;
+            info->GetId(&id);
+            AutoPtr<IInteger32> i32Id;
+            CInteger32::New(id, (IInteger32**)&i32Id);
+            mhlSupportedPorts->Add(i32Id);
         }
-        if (cecPortInfo == NULL) {
-            return NOERROR;
+    }
+    // Build HDMI port info list with CEC port info plus MHL supported flag. We can just use
+    // cec port info if we do not have have port that supports MHL.
+    Boolean isEmpty;
+    mhlSupportedPorts->IsEmpty(&isEmpty);
+    if (isEmpty) {
+        AutoPtr<IList> list;
+        Arrays::AsList(cecPortInfo, (IList**)&list);
+        AutoPtr<ICollections> helper;
+        CCollections::AcquireSingleton((ICollections**)&helper);
+        helper->UnmodifiableList(list, (IList**)&mPortInfo);
+        return NOERROR;
+    }
+    AutoPtr<IArrayList> result;
+    CArrayList::New(cecPortInfo->GetLength(), (IArrayList**)&result);
+    for (Int32 i = 0; i < cecPortInfo->GetLength(); ++i) {
+        AutoPtr<IHdmiPortInfo> info = (*cecPortInfo)[i];
+        Int32 id;
+        info->GetId(&id);
+        AutoPtr<IInteger32> i32Id;
+        CInteger32::New(id, (IInteger32**)&i32Id);
+        Boolean isContains;
+        mhlSupportedPorts->Contains(i32Id, &isContains);
+        if (isContains) {
+            Boolean isArcSupported;
+            info->IsArcSupported(&isArcSupported);
+            Boolean isCecSupported;
+            info->IsCecSupported(&isCecSupported);
+            Int32 type;
+            info->GetType(&type);
+            Int32 id;
+            info->GetId(&id);
+            Int32 address;
+            info->GetAddress(&address);
+            AutoPtr<IHdmiPortInfo> portInfo;
+            // TODO: Waiting for CHdmiPortInfo
+            assert(0);
+            // CHdmiPortInfo::New(id, type, address, isCecSupported, TRUE, isArcSupported, (IHdmiPortInfo**)&portInfo);
+            result->Add(portInfo);
+        } else {
+            result->Add(info);
         }
-        SparseArray<HdmiPortInfo> portInfoMap = new SparseArray<>();
-        SparseIntArray portIdMap = new SparseIntArray();
-        SparseArray<HdmiDeviceInfo> portDeviceMap = new SparseArray<>();
-        for (HdmiPortInfo info : cecPortInfo) {
-            portIdMap->Put(info->GetAddress(), info->GetId());
-            portInfoMap->Put(info->GetId(), info);
-            portDeviceMap->Put(info->GetId(), new HdmiDeviceInfo(info->GetAddress(), info->GetId()));
-        }
-        mPortIdMap = new UnmodifiableSparseIntArray(portIdMap);
-        mPortInfoMap = new UnmodifiableSparseArray<>(portInfoMap);
-        mPortDeviceMap = new UnmodifiableSparseArray<>(portDeviceMap);
-        AutoPtr<ArrayOf<HdmiPortInfo> > mhlPortInfo = mMhlController->GetPortInfos();
-        ArraySet<Integer> mhlSupportedPorts = new ArraySet<Integer>(mhlPortInfo->GetLength());
-        for (HdmiPortInfo info : mhlPortInfo) {
-            Boolean isMhlSupported;
-            info->IsMhlSupported(&isMhlSupported);
-            if (isMhlSupported) {
-                mhlSupportedPorts->Add(info->GetId());
-            }
-        }
-        // Build HDMI port info list with CEC port info plus MHL supported flag. We can just use
-        // cec port info if we do not have have port that supports MHL.
-        Boolean isEmpty;
-        mhlSupportedPorts->IsEmpty(&isEmpty);
-        if (isEmpty) {
-            mPortInfo = Collections::UnmodifiableList(Arrays::AsList(cecPortInfo));
-            return NOERROR;
-        }
-        ArrayList<HdmiPortInfo> result = new ArrayList<>(cecPortInfo->GetLength());
-        for (HdmiPortInfo info : cecPortInfo) {
-            if (mhlSupportedPorts->Contains(info->GetId())) {
-                Boolean isArcSupported;
-                info->IsArcSupported(&isArcSupported);
-                Boolean isCecSupported;
-                info->IsCecSupported(&isCecSupported);
-                result->Add(new HdmiPortInfo(info->GetId(), info->GetType(), info->GetAddress(),
-                        isCecSupported, TRUE, isArcSupported));
-            } else {
-                result->Add(info);
-            }
-        }
-        mPortInfo = Collections::UnmodifiableList(result);
-
-#endif
+    }
+    AutoPtr<ICollections> helper;
+    CCollections::AcquireSingleton((ICollections**)&helper);
+    helper->UnmodifiableList(IList::Probe(result), (IList**)&mPortInfo);
+    return NOERROR;
 }
 
 ECode HdmiControlService::GetPortInfo(
@@ -1328,11 +1774,9 @@ ECode HdmiControlService::GetPortInfo(
 {
     VALIDATE_NOT_NULL(result)
 
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        return mPortInfo;
-
-#endif
+    *result = mPortInfo;
+    REFCOUNT_ADD(*result)
+    return NOERROR;
 }
 
 ECode HdmiControlService::GetPortInfo(
@@ -1341,11 +1785,11 @@ ECode HdmiControlService::GetPortInfo(
 {
     VALIDATE_NOT_NULL(result)
 
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        return mPortInfoMap->Get(portId, NULL);
-
-#endif
+    AutoPtr<IInterface> obj;
+    mPortInfoMap->Get(portId, NULL, (IInterface**)&obj);
+    *result = IHdmiPortInfo::Probe(obj);
+    REFCOUNT_ADD(*result)
+    return NOERROR;
 }
 
 ECode HdmiControlService::PortIdToPath(
@@ -1353,17 +1797,15 @@ ECode HdmiControlService::PortIdToPath(
     /* [out] */ Int32* result)
 {
     VALIDATE_NOT_NULL(result)
+    *result = 0;
 
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        HdmiPortInfo portInfo = GetPortInfo(portId);
-        if (portInfo == NULL) {
-            Slogger::E(TAG, "Cannot find the port info: " + portId);
-            return Constants::INVALID_PHYSICAL_ADDRESS;
-        }
-        return portInfo->GetAddress();
-
-#endif
+    AutoPtr<IHdmiPortInfo> portInfo;
+    GetPortInfo(portId, (IHdmiPortInfo**)&portInfo);
+    if (portInfo == NULL) {
+        Slogger::E(TAG, "Cannot find the port info: %d", portId);
+        return Constants::INVALID_PHYSICAL_ADDRESS;
+    }
+    return portInfo->GetAddress(result);
 }
 
 ECode HdmiControlService::PathToPortId(
@@ -1372,12 +1814,8 @@ ECode HdmiControlService::PathToPortId(
 {
     VALIDATE_NOT_NULL(result)
 
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        Int32 portAddress = path & Constants::ROUTING_PATH_TOP_MASK;
-        return mPortIdMap->Get(portAddress, Constants::INVALID_PORT_ID);
-
-#endif
+    Int32 portAddress = path & Constants::ROUTING_PATH_TOP_MASK;
+    return mPortIdMap->Get(portAddress, Constants::INVALID_PORT_ID, result);
 }
 
 ECode HdmiControlService::IsValidPortId(
@@ -1386,43 +1824,28 @@ ECode HdmiControlService::IsValidPortId(
 {
     VALIDATE_NOT_NULL(result)
 
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        return GetPortInfo(portId) != NULL;
-
-#endif
+    AutoPtr<IHdmiPortInfo> portInfo;
+    GetPortInfo(portId, (IHdmiPortInfo**)&portInfo);
+    *result = portInfo != NULL;
+    return NOERROR;
 }
 
 ECode HdmiControlService::GetIoLooper(
     /* [out] */ ILooper** result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        return mIoThread->GetLooper(result);
-
-#endif
+    return mIoThread->GetLooper(result);
 }
 
 ECode HdmiControlService::GetServiceLooper(
     /* [out] */ ILooper** result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        return mHandler->GetLooper(result);
-
-#endif
+    return mHandler->GetLooper(result);
 }
 
 ECode HdmiControlService::GetPhysicalAddress(
     /* [out] */ Int32* result)
 {
-    VALIDATE_NOT_NULL(result)
-
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        return mCecController->GetPhysicalAddress(result);
-
-#endif
+    return mCecController->GetPhysicalAddress(result);
 }
 
 ECode HdmiControlService::GetVendorId(
@@ -1430,13 +1853,10 @@ ECode HdmiControlService::GetVendorId(
 {
     VALIDATE_NOT_NULL(result)
 
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        Int32 vendorId;
-        mCecController->GetVendorId(&vendorId);
-        return vendorId;
-
-#endif
+    Int32 vendorId;
+    mCecController->GetVendorId(&vendorId);
+    *result = vendorId;
+    return NOERROR;
 }
 
 ECode HdmiControlService::GetDeviceInfo(
@@ -1445,29 +1865,20 @@ ECode HdmiControlService::GetDeviceInfo(
 {
     VALIDATE_NOT_NULL(result)
 
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        AssertRunOnServiceThread();
-        HdmiCecLocalDeviceTv tv = Tv();
-        if (tv == NULL) {
-            *result = NULL;
-            return NOERROR;
-        }
-        return tv->GetCecDeviceInfo(logicalAddress, result);
-
-#endif
+    AssertRunOnServiceThread();
+    AutoPtr<IHdmiCecLocalDeviceTv> tv;
+    Tv((IHdmiCecLocalDeviceTv**)&tv);
+    if (tv == NULL) {
+        *result = NULL;
+        return NOERROR;
+    }
+    return ((HdmiCecLocalDeviceTv*) tv.Get())->GetCecDeviceInfo(logicalAddress, result);
 }
 
 ECode HdmiControlService::GetCecVersion(
     /* [out] */ Int32* result)
 {
-    VALIDATE_NOT_NULL(result)
-
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        return mCecController->GetVersion();
-
-#endif
+    return mCecController->GetVersion(result);
 }
 
 ECode HdmiControlService::IsConnectedToArcPort(
@@ -1476,97 +1887,75 @@ ECode HdmiControlService::IsConnectedToArcPort(
 {
     VALIDATE_NOT_NULL(result)
 
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        Int32 portId;
-        PathToPortId(physicalAddress, &portId);
-        if (portId != Constants::INVALID_PORT_ID) {
-            AutoPtr<IInterface> obj;
-            mPortInfoMap->Get(portId, (IInterface**)&obj);
-            return I::Probe(obj)->IsArcSupported();
-        }
-        *result = FALSE;
-        return NOERROR;
-
-#endif
+    Int32 portId;
+    PathToPortId(physicalAddress, &portId);
+    if (portId != Constants::INVALID_PORT_ID) {
+        AutoPtr<IInterface> obj;
+        mPortInfoMap->Get(portId, (IInterface**)&obj);
+        return IHdmiPortInfo::Probe(obj)->IsArcSupported(result);
+    }
+    *result = FALSE;
+    return NOERROR;
 }
 
 ECode HdmiControlService::RunOnServiceThread(
     /* [in] */ IRunnable* runnable)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        mHandler->Post(runnable);
-
-#endif
+    Boolean bNoUse;
+    return mHandler->Post(runnable, &bNoUse);
 }
 
 ECode HdmiControlService::RunOnServiceThreadAtFrontOfQueue(
     /* [in] */ IRunnable* runnable)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        mHandler->PostAtFrontOfQueue(runnable);
-
-#endif
+    Boolean bNoUse;
+    return mHandler->PostAtFrontOfQueue(runnable, &bNoUse);
 }
 
 ECode HdmiControlService::AssertRunOnServiceThread()
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        AutoPtr<ILooper> looper;
-        mHandler->GetLooper((ILooper**)&looper);
-        if (Looper::GetMyLooper() != looper) {
-            Logger::E(TAG, "Should run on service thread.");
-            return E_ILLEGAL_STATE_EXCEPTION;
-        }
-
-#endif
+    AutoPtr<ILooper> looper;
+    mHandler->GetLooper((ILooper**)&looper);
+    if (Looper::GetMyLooper() != looper) {
+        Logger::E(TAG, "Should run on service thread.");
+        return E_ILLEGAL_STATE_EXCEPTION;
+    }
+    return NOERROR;
 }
 
 ECode HdmiControlService::SendCecCommand(
     /* [in] */ IHdmiCecMessage* command,
     /* [in] */ IHdmiControlServiceSendMessageCallback* callback)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        AssertRunOnServiceThread();
-        Boolean isValid;
-        mMessageValidator->IsValid(command, &isValid);
-        if (isValid == HdmiCecMessageValidator::OK) {
-            mCecController->SendCommand(command, callback);
-        } else {
-            HdmiLogger::Error("Invalid message type:" + command);
-            if (callback != NULL) {
-                callback->OnSendCompleted(Constants::SEND_RESULT_FAILURE);
-            }
+    AssertRunOnServiceThread();
+    Int32 isValid;
+    mMessageValidator->IsValid(command, &isValid);
+    if (isValid == HdmiCecMessageValidator::OK) {
+        mCecController->SendCommand(command, callback);
+    } else {
+        HdmiLogger::Error("Invalid message type:%s", TO_CSTR(command));
+        if (callback != NULL) {
+            callback->OnSendCompleted(Constants::SEND_RESULT_FAILURE);
         }
-
-#endif
+    }
+    return NOERROR;
 }
 
 ECode HdmiControlService::SendCecCommand(
     /* [in] */ IHdmiCecMessage* command)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        AssertRunOnServiceThread();
-        SendCecCommand(command, NULL);
-
-#endif
+    AssertRunOnServiceThread();
+    SendCecCommand(command, NULL);
+    return NOERROR;
 }
 
 ECode HdmiControlService::MaySendFeatureAbortCommand(
     /* [in] */ IHdmiCecMessage* command,
     /* [in] */ Int32 reason)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        AssertRunOnServiceThread();
-        mCecController->MaySendFeatureAbortCommand(command, reason);
-
-#endif
+    AssertRunOnServiceThread();
+    mCecController->MaySendFeatureAbortCommand(command, reason);
+    return NOERROR;
 }
 
 ECode HdmiControlService::HandleCecCommand(
@@ -1575,31 +1964,24 @@ ECode HdmiControlService::HandleCecCommand(
 {
     VALIDATE_NOT_NULL(result)
 
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        AssertRunOnServiceThread();
-        Int32 errorCode = mMessageValidator->IsValid(message);
-        if (errorCode != HdmiCecMessageValidator::OK) {
-            // We'll not response on the messages with the invalid source or destination.
-            if (errorCode == HdmiCecMessageValidator::ERROR_PARAMETER) {
-                MaySendFeatureAbortCommand(message, Constants::ABORT_INVALID_OPERAND);
-            }
-            *result = TRUE;
-            return NOERROR;
+    AssertRunOnServiceThread();
+    Int32 errorCode;
+    mMessageValidator->IsValid(message, &errorCode);
+    if (errorCode != HdmiCecMessageValidator::OK) {
+        // We'll not response on the messages with the invalid source or destination.
+        if (errorCode == HdmiCecMessageValidator::ERROR_PARAMETER) {
+            MaySendFeatureAbortCommand(message, Constants::ABORT_INVALID_OPERAND);
         }
-        return DispatchMessageToLocalDevice(message);
-
-#endif
+        *result = TRUE;
+        return NOERROR;
+    }
+    return DispatchMessageToLocalDevice(message, result);
 }
 
 ECode HdmiControlService::SetAudioReturnChannel(
     /* [in] */ Boolean enabled)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        mCecController->SetAudioReturnChannel(enabled);
-
-#endif
+    return mCecController->SetAudioReturnChannel(enabled);
 }
 
 ECode HdmiControlService::DispatchMessageToLocalDevice(
@@ -1608,59 +1990,66 @@ ECode HdmiControlService::DispatchMessageToLocalDevice(
 {
     VALIDATE_NOT_NULL(result)
 
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        AssertRunOnServiceThread();
-        FOR_EACH(it : mCecController->GetLocalDeviceList()) {
-            AutoPtr<IHdmiCecLocalDevice> device = it->GetNext();
-            Int32 dest;
-            message->GetDestination(&dest);
-            if (device->DispatchMessage(message)
-                    && dest != Constants::ADDR_BROADCAST) {
-                *result = TRUE;
-                return NOERROR;
-            }
-        }
+    AssertRunOnServiceThread();
+    AutoPtr<IList> localDeviceList;
+    mCecController->GetLocalDeviceList((IList**)&localDeviceList);
+    FOR_EACH(it, localDeviceList) {
+        AutoPtr<IInterface> obj;
+        it->GetNext((IInterface**)&obj);
+        AutoPtr<IHdmiCecLocalDevice> device = IHdmiCecLocalDevice::Probe(obj);
         Int32 dest;
         message->GetDestination(&dest);
-        if (dest != Constants::ADDR_BROADCAST) {
-            HdmiLogger::Warning("Unhandled cec command:" + message);
+        Boolean isDispatchMessageOk;
+        ((HdmiCecLocalDevice*) device.Get())->DispatchMessage(message, &isDispatchMessageOk);
+        if (isDispatchMessageOk && dest != Constants::ADDR_BROADCAST) {
+            *result = TRUE;
+            return NOERROR;
         }
-        *result = FALSE;
-        return NOERROR;
-
-#endif
+    }
+    Int32 dest;
+    message->GetDestination(&dest);
+    if (dest != Constants::ADDR_BROADCAST) {
+        HdmiLogger::Warning("Unhandled cec command:%s", TO_CSTR(message));
+    }
+    *result = FALSE;
+    return NOERROR;
 }
 
 ECode HdmiControlService::OnHotplug(
     /* [in] */ Int32 portId,
     /* [in] */ Boolean connected)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        AssertRunOnServiceThread();
-        AutoPtr<IArrayList> localDevices;
-        CArrayList::New((IArrayList**)&localDevices);
-        for (Int32 type : mLocalDevices) {
-            if (type == IHdmiDeviceInfo::DEVICE_TV) {
-                // Skip the reallocation of the logical address on TV.
-                continue;
-            }
-            AutoPtr<IHdmiCecLocalDevice> localDevice = mCecController->GetLocalDevice(type);
-            if (localDevice == NULL) {
-                localDevice = HdmiCecLocalDevice::Create(this, type);
-                localDevice->Init();
-            }
-            localDevices->Add(localDevice);
+    AssertRunOnServiceThread();
+    AutoPtr<IArrayList> localDevices;
+    CArrayList::New((IArrayList**)&localDevices);
+    FOR_EACH(it, mLocalDevices) {
+        AutoPtr<IInterface> obj;
+        it->GetNext((IInterface**)&obj);
+        Int32 type;
+        IInteger32::Probe(obj)->GetValue(&type);
+        if (type == IHdmiDeviceInfo::DEVICE_TV) {
+            // Skip the reallocation of the logical address on TV.
+            continue;
         }
-        AllocateLogicalAddress(localDevices, INITIATED_BY_HOTPLUG);
-        FOR_EACH(it : mCecController->GetLocalDeviceList()) {
-            AutoPtr<IHdmiCecLocalDevice> device = it->GetNext();
-            device->OnHotplug(portId, connected);
+        AutoPtr<IHdmiCecLocalDevice> localDevice;
+        mCecController->GetLocalDevice(type, (IHdmiCecLocalDevice**)&localDevice);
+        if (localDevice == NULL) {
+            HdmiCecLocalDevice::Create(this, type, (IHdmiCecLocalDevice**)&localDevice);
+            ((HdmiCecLocalDevice*) localDevice.Get())->Init();
         }
-        AnnounceHotplugEvent(portId, connected);
-
-#endif
+        localDevices->Add(localDevice);
+    }
+    AllocateLogicalAddress(localDevices, INITIATED_BY_HOTPLUG);
+    AutoPtr<IList> localDeviceList;
+    mCecController->GetLocalDeviceList((IList**)&localDeviceList);
+    FOR_EACH(iter, localDeviceList) {
+        AutoPtr<IInterface> obj;
+        iter->GetNext((IInterface**)&obj);
+        AutoPtr<IHdmiCecLocalDevice> device = IHdmiCecLocalDevice::Probe(obj);
+        ((HdmiCecLocalDevice*) device.Get())->OnHotplug(portId, connected);
+    }
+    AnnounceHotplugEvent(portId, connected);
+    return NOERROR;
 }
 
 ECode HdmiControlService::PollDevices(
@@ -1669,13 +2058,12 @@ ECode HdmiControlService::PollDevices(
     /* [in] */ Int32 pickStrategy,
     /* [in] */ Int32 retryCount)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        AssertRunOnServiceThread();
-        mCecController->PollDevices(callback, sourceAddress, CheckPollStrategy(pickStrategy),
-                retryCount);
-
-#endif
+    AssertRunOnServiceThread();
+    Int32 checkPollStrategyResult;
+    CheckPollStrategy(pickStrategy, &checkPollStrategyResult);
+    mCecController->PollDevices(callback, sourceAddress, checkPollStrategyResult,
+            retryCount);
+    return NOERROR;
 }
 
 ECode HdmiControlService::CheckPollStrategy(
@@ -1683,35 +2071,30 @@ ECode HdmiControlService::CheckPollStrategy(
     /* [out] */ Int32* result)
 {
     VALIDATE_NOT_NULL(result)
+    *result = 0;
 
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        Int32 strategy = pickStrategy & Constants::POLL_STRATEGY_MASK;
-        if (strategy == 0) {
-            Logger::E(TAG, "Invalid poll strategy:" + pickStrategy);
-            return E_ILLEGAL_ARGUMENT_EXCEPTION;
-        }
-        Int32 iterationStrategy = pickStrategy & Constants::POLL_ITERATION_STRATEGY_MASK;
-        if (iterationStrategy == 0) {
-            Logger::E(TAG, "Invalid iteration strategy:" + pickStrategy);
-            return E_ILLEGAL_ARGUMENT_EXCEPTION;
-        }
-        return strategy | iterationStrategy;
-
-#endif
+    Int32 strategy = pickStrategy & Constants::POLL_STRATEGY_MASK;
+    if (strategy == 0) {
+        Logger::E(TAG, "Invalid poll strategy:%d", pickStrategy);
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
+    Int32 iterationStrategy = pickStrategy & Constants::POLL_ITERATION_STRATEGY_MASK;
+    if (iterationStrategy == 0) {
+        Logger::E(TAG, "Invalid iteration strategy:%d", pickStrategy);
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
+    *result = strategy | iterationStrategy;
+    return NOERROR;
 }
 
 ECode HdmiControlService::GetAllLocalDevices(
     /* [out] */ IList** result)
 {
     VALIDATE_NOT_NULL(result)
+    *result = 0;
 
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        AssertRunOnServiceThread();
-        return mCecController->GetLocalDeviceList();
-
-#endif
+    AssertRunOnServiceThread();
+    return mCecController->GetLocalDeviceList(result);
 }
 
 ECode HdmiControlService::GetServiceLock(
@@ -1719,51 +2102,47 @@ ECode HdmiControlService::GetServiceLock(
 {
     VALIDATE_NOT_NULL(result)
 
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        return mLock;
-
-#endif
+    *result = mLock;
+    REFCOUNT_ADD(*result)
+    return NOERROR;
 }
 
 ECode HdmiControlService::SetAudioStatus(
     /* [in] */ Boolean mute,
     /* [in] */ Int32 volume)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        AudioManager audioManager = GetAudioManager();
-        Boolean muted = audioManager->IsStreamMute(AudioManager::STREAM_MUSIC);
-        if (mute) {
-            if (!muted) {
-                audioManager->SetStreamMute(AudioManager::STREAM_MUSIC, TRUE);
-            }
-        } else {
-            if (muted) {
-                audioManager->SetStreamMute(AudioManager::STREAM_MUSIC, FALSE);
-            }
-            // FLAG_HDMI_SYSTEM_AUDIO_VOLUME prevents audio manager from announcing
-            // volume change notification back to hdmi control service.
-            audioManager->SetStreamVolume(AudioManager::STREAM_MUSIC, volume,
-                    AudioManager::FLAG_SHOW_UI | AudioManager::FLAG_HDMI_SYSTEM_AUDIO_VOLUME);
+    AutoPtr<IAudioManager> audioManager;
+    GetAudioManager((IAudioManager**)&audioManager);
+    Boolean muted;
+    audioManager->IsStreamMute(IAudioManager::STREAM_MUSIC, &muted);
+    if (mute) {
+        if (!muted) {
+            audioManager->SetStreamMute(IAudioManager::STREAM_MUSIC, TRUE);
         }
-
-#endif
+    } else {
+        if (muted) {
+            audioManager->SetStreamMute(IAudioManager::STREAM_MUSIC, FALSE);
+        }
+        // FLAG_HDMI_SYSTEM_AUDIO_VOLUME prevents audio manager from announcing
+        // volume change notification back to hdmi control service.
+        audioManager->SetStreamVolume(IAudioManager::STREAM_MUSIC, volume,
+                IAudioManager::FLAG_SHOW_UI | IAudioManager::FLAG_HDMI_SYSTEM_AUDIO_VOLUME);
+    }
+    return NOERROR;
 }
 
 ECode HdmiControlService::AnnounceSystemAudioModeChange(
     /* [in] */ Boolean enabled)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        synchronized(mLock) {
-            for (SystemAudioModeChangeListenerRecord record :
-                    mSystemAudioModeChangeListenerRecords) {
-                InvokeSystemAudioModeChangeLocked(record.mListener, enabled);
-            }
+    synchronized(mLock) {
+        FOR_EACH(it, mSystemAudioModeChangeListenerRecords) {
+            AutoPtr<IInterface> obj;
+            it->GetNext((IInterface**)&obj);
+            AutoPtr<SystemAudioModeChangeListenerRecord> record = (SystemAudioModeChangeListenerRecord*) IObject::Probe(obj);
+            InvokeSystemAudioModeChangeLocked(record->mListener, enabled);
         }
-
-#endif
+    }
+    return NOERROR;
 }
 
 ECode HdmiControlService::CreateDeviceInfo(
@@ -1774,88 +2153,84 @@ ECode HdmiControlService::CreateDeviceInfo(
 {
     VALIDATE_NOT_NULL(result)
 
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        // TODO: find better name instead of model name.
-        String displayName = Build::MODEL;
-        Int32 physicalAddr;
-        GetPhysicalAddress(&physicalAddr);
-        Int32 portId;
-        PathToPortId(physicalAddr, &portId);
-        return new HdmiDeviceInfo(logicalAddress,
-                physicalAddr, portId, deviceType,
-                GetVendorId(), displayName);
-
-#endif
+    // TODO: find better name instead of model name.
+    String displayName = Build::MODEL;
+    Int32 physicalAddr;
+    GetPhysicalAddress(&physicalAddr);
+    Int32 portId;
+    PathToPortId(physicalAddr, &portId);
+    Int32 vendorId;
+    GetVendorId(&vendorId);
+    // TODO: Waiting for CHdmiDeviceInfo
+    assert(0);
+    // return CHdmiDeviceInfo::New(logicalAddress, physicalAddr, portId, deviceType,
+            // vendorId, displayName, result);
+    return NOERROR;
 }
 
 ECode HdmiControlService::HandleMhlHotplugEvent(
     /* [in] */ Int32 portId,
     /* [in] */ Boolean connected)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        AssertRunOnServiceThread();
-        if (connected) {
-            HdmiMhlLocalDeviceStub newDevice = new HdmiMhlLocalDeviceStub(this, portId);
-            HdmiMhlLocalDeviceStub oldDevice = mMhlController->AddLocalDevice(newDevice);
-            if (oldDevice != NULL) {
-                oldDevice->OnDeviceRemoved();
-                Slogger::I(TAG, "Old device of port " + portId + " is removed");
+    AssertRunOnServiceThread();
+    if (connected) {
+        AutoPtr<HdmiMhlLocalDeviceStub> newDevice = new HdmiMhlLocalDeviceStub();
+        newDevice->constructor(this, portId);
+        AutoPtr<HdmiMhlLocalDeviceStub> oldDevice;
+        mMhlController->AddLocalDevice(newDevice, (HdmiMhlLocalDeviceStub**)&oldDevice);
+        if (oldDevice != NULL) {
+            oldDevice->OnDeviceRemoved();
+            Slogger::I(TAG, "Old device of port %d is removed", portId);
+        }
+    } else {
+        AutoPtr<HdmiMhlLocalDeviceStub> device;
+        mMhlController->RemoveLocalDevice(portId, (HdmiMhlLocalDeviceStub**)&device);
+        if (device != NULL) {
+            device->OnDeviceRemoved();
+            // There is no explicit event for device removal.
+            // Hence we remove the device on hotplug event.
+            AutoPtr<IHdmiDeviceInfo> deviceInfo;
+            device->GetInfo((IHdmiDeviceInfo**)&deviceInfo);
+            if (deviceInfo != NULL) {
+                InvokeDeviceEventListeners(deviceInfo, IHdmiControlManager::DEVICE_EVENT_REMOVE_DEVICE);
+                UpdateSafeMhlInput();
             }
         } else {
-            HdmiMhlLocalDeviceStub device = mMhlController->RemoveLocalDevice(portId);
-            if (device != NULL) {
-                device->OnDeviceRemoved();
-                // There is no explicit event for device removal.
-                // Hence we remove the device on hotplug event.
-                HdmiDeviceInfo deviceInfo = device->GetInfo();
-                if (deviceInfo != NULL) {
-                    InvokeDeviceEventListeners(deviceInfo, DEVICE_EVENT_REMOVE_DEVICE);
-                    UpdateSafeMhlInput();
-                }
-            } else {
-                Slogger::W(TAG, "No device to remove:[portId=" + portId);
-            }
+            Slogger::W(TAG, "No device to remove:[portId=%d", portId);
         }
-        AnnounceHotplugEvent(portId, connected);
-
-#endif
+    }
+    AnnounceHotplugEvent(portId, connected);
+    return NOERROR;
 }
 
 ECode HdmiControlService::HandleMhlBusModeChanged(
     /* [in] */ Int32 portId,
     /* [in] */ Int32 busmode)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        AssertRunOnServiceThread();
-        HdmiMhlLocalDeviceStub device = mMhlController->GetLocalDevice(portId);
-        if (device != NULL) {
-            device->SetBusMode(busmode);
-        } else {
-            Slogger::W(TAG, "No mhl device exists for bus mode change[portId:" + portId +
-                    ", busmode:" + busmode + "]");
-        }
-
-#endif
+    AssertRunOnServiceThread();
+    AutoPtr<HdmiMhlLocalDeviceStub> device;
+    mMhlController->GetLocalDevice(portId, (HdmiMhlLocalDeviceStub**)&device);
+    if (device != NULL) {
+        device->SetBusMode(busmode);
+    } else {
+        Slogger::W(TAG, "No mhl device exists for bus mode change[portId:%d, busmode:%d]", portId, busmode);
+    }
+    return NOERROR;
 }
 
 ECode HdmiControlService::HandleMhlBusOvercurrent(
     /* [in] */ Int32 portId,
     /* [in] */ Boolean on)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        AssertRunOnServiceThread();
-        HdmiMhlLocalDeviceStub device = mMhlController->GetLocalDevice(portId);
-        if (device != NULL) {
-            device->OnBusOvercurrentDetected(on);
-        } else {
-            Slogger::W(TAG, "No mhl device exists for bus overcurrent event[portId:" + portId + "]");
-        }
-
-#endif
+    AssertRunOnServiceThread();
+    AutoPtr<HdmiMhlLocalDeviceStub> device;
+    mMhlController->GetLocalDevice(portId, (HdmiMhlLocalDeviceStub**)&device);
+    if (device != NULL) {
+        device->OnBusOvercurrentDetected(on);
+    } else {
+        Slogger::W(TAG, "No mhl device exists for bus overcurrent event[portId:%d]", portId);
+    }
+    return NOERROR;
 }
 
 ECode HdmiControlService::HandleMhlDeviceStatusChanged(
@@ -1863,49 +2238,55 @@ ECode HdmiControlService::HandleMhlDeviceStatusChanged(
     /* [in] */ Int32 adopterId,
     /* [in] */ Int32 deviceId)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        AssertRunOnServiceThread();
-        HdmiMhlLocalDeviceStub device = mMhlController->GetLocalDevice(portId);
-        // Hotplug event should already have been called before device status change event.
-        if (device != NULL) {
-            device->SetDeviceStatusChange(adopterId, deviceId);
-            InvokeDeviceEventListeners(device->GetInfo(), DEVICE_EVENT_ADD_DEVICE);
-            UpdateSafeMhlInput();
-        } else {
-            Slogger::W(TAG, "No mhl device exists for device status event[portId:"
-                    + portId + ", adopterId:" + adopterId + ", deviceId:" + deviceId + "]");
-        }
-
-#endif
+    AssertRunOnServiceThread();
+    AutoPtr<HdmiMhlLocalDeviceStub> device;
+    mMhlController->GetLocalDevice(portId, (HdmiMhlLocalDeviceStub**)&device);
+    // Hotplug event should already have been called before device status change event.
+    if (device != NULL) {
+        device->SetDeviceStatusChange(adopterId, deviceId);
+        AutoPtr<IHdmiDeviceInfo> deviceInfo;
+        device->GetInfo((IHdmiDeviceInfo**)&deviceInfo);
+        InvokeDeviceEventListeners(deviceInfo, IHdmiControlManager::DEVICE_EVENT_ADD_DEVICE);
+        UpdateSafeMhlInput();
+    } else {
+        Slogger::W(TAG, "No mhl device exists for device status event[portId:%d"
+                ", adopterId:%d, deviceId:%d]", portId, adopterId, deviceId);
+    }
+    return NOERROR;
 }
 
 ECode HdmiControlService::UpdateSafeMhlInput()
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        AssertRunOnServiceThread();
-        List<HdmiDeviceInfo> inputs = Collections::EmptyList();
-        SparseArray<HdmiMhlLocalDeviceStub> devices = mMhlController->GetAllLocalDevices();
-        Int32 size;
-        devices->GetSize(&size);
-        for (Int32 i = 0; i < size; ++i) {
-            HdmiMhlLocalDeviceStub device = devices->ValueAt(i);
-            HdmiDeviceInfo info = device->GetInfo();
-            if (info != NULL) {
-                Boolean isEmpty;
-                inputs->IsEmpty(&isEmpty);
-                if (isEmpty) {
-                    CArrayList::New((IArrayList**)&inputs);
-                }
-                inputs->Add(device->GetInfo());
+    AssertRunOnServiceThread();
+    AutoPtr<ICollections> helper;
+    CCollections::AcquireSingleton((ICollections**)&helper);
+    AutoPtr<IList> inputs;
+    helper->GetEmptyList((IList**)&inputs);
+    AutoPtr<ISparseArray> devices;
+    mMhlController->GetAllLocalDevices((ISparseArray**)&devices);
+    Int32 size;
+    devices->GetSize(&size);
+    for (Int32 i = 0; i < size; ++i) {
+        AutoPtr<IInterface> obj;
+        devices->ValueAt(i, (IInterface**)&obj);
+        AutoPtr<HdmiMhlLocalDeviceStub> device = (HdmiMhlLocalDeviceStub*) IObject::Probe(obj);
+        AutoPtr<IHdmiDeviceInfo> info;
+        device->GetInfo((IHdmiDeviceInfo**)&info);
+        if (info != NULL) {
+            Boolean isEmpty;
+            inputs->IsEmpty(&isEmpty);
+            if (isEmpty) {
+                CArrayList::New((IArrayList**)&inputs);
             }
+            AutoPtr<IHdmiDeviceInfo> deviceInfo;
+            device->GetInfo((IHdmiDeviceInfo**)&deviceInfo);
+            inputs->Add(deviceInfo);
         }
-        synchronized(mLock) {
-            mMhlDevices = inputs;
-        }
-
-#endif
+    }
+    synchronized(mLock) {
+        mMhlDevices = inputs;
+    }
+    return NOERROR;
 }
 
 ECode HdmiControlService::GetMhlDevicesLocked(
@@ -1913,368 +2294,440 @@ ECode HdmiControlService::GetMhlDevicesLocked(
 {
     VALIDATE_NOT_NULL(result)
 
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        return mMhlDevices;
-
-#endif
+    *result = mMhlDevices;
+    REFCOUNT_ADD(*result)
+    return NOERROR;
 }
 
 ECode HdmiControlService::EnforceAccessPermission()
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        GetContext()->EnforceCallingOrSelfPermission(PERMISSION, TAG);
-
-#endif
+    AutoPtr<IContext> context;
+    GetContext((IContext**)&context);
+    context->EnforceCallingOrSelfPermission(PERMISSION, TAG);
+    return NOERROR;
 }
 
 ECode HdmiControlService::OneTouchPlay(
     /* [in] */ IIHdmiControlCallback* callback)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        AssertRunOnServiceThread();
-        HdmiCecLocalDevicePlayback source = Playback();
-        if (source == NULL) {
-            Slogger::W(TAG, "Local playback device not available");
-            InvokeCallback(callback, IHdmiControlManager::RESULT_SOURCE_NOT_AVAILABLE);
-            return NOERROR;
-        }
-        source->OneTouchPlay(callback);
-
-#endif
+    AssertRunOnServiceThread();
+    AutoPtr<HdmiCecLocalDevicePlayback> source;
+    Playback((HdmiCecLocalDevicePlayback**)&source);
+    if (source == NULL) {
+        Slogger::W(TAG, "Local playback device not available");
+        InvokeCallback(callback, IHdmiControlManager::RESULT_SOURCE_NOT_AVAILABLE);
+        return NOERROR;
+    }
+    source->OneTouchPlay(callback);
+    return NOERROR;
 }
 
 ECode HdmiControlService::QueryDisplayStatus(
     /* [in] */ IIHdmiControlCallback* callback)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        AssertRunOnServiceThread();
-        HdmiCecLocalDevicePlayback source = Playback();
-        if (source == NULL) {
-            Slogger::W(TAG, "Local playback device not available");
-            InvokeCallback(callback, IHdmiControlManager::RESULT_SOURCE_NOT_AVAILABLE);
-            return NOERROR;
-        }
-        source->QueryDisplayStatus(callback);
-
-#endif
+    AssertRunOnServiceThread();
+    AutoPtr<HdmiCecLocalDevicePlayback> source;
+    Playback((HdmiCecLocalDevicePlayback**)&source);
+    if (source == NULL) {
+        Slogger::W(TAG, "Local playback device not available");
+        InvokeCallback(callback, IHdmiControlManager::RESULT_SOURCE_NOT_AVAILABLE);
+        return NOERROR;
+    }
+    source->QueryDisplayStatus(callback);
+    return NOERROR;
 }
 
 ECode HdmiControlService::AddHotplugEventListener(
     /* [in] */ IIHdmiHotplugEventListener* listener)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        HotplugEventListenerRecord record = new HotplugEventListenerRecord(listener);
-        try {
-            listener->AsBinder()->LinkToDeath(record, 0);
-        } catch (RemoteException e) {
+    AutoPtr<HotplugEventListenerRecord> record = new HotplugEventListenerRecord(this, listener);
+    // try {
+    AutoPtr<IProxy> proxy = (IProxy*) listener->Probe(EIID_IProxy);
+    ECode ec = NOERROR;
+    if (proxy != NULL)
+        ec = proxy->LinkToDeath(record, 0);
+    // } catch (RemoteException e) {
+    if (FAILED(ec)) {
+        if ((ECode) E_REMOTE_EXCEPTION == ec) {
             Slogger::W(TAG, "Listener already died");
             return NOERROR;
         }
-        synchronized(mLock) {
-            mHotplugEventListenerRecords->Add(record);
-        }
-
-#endif
+        else
+            return ec;
+    }
+    // }
+    synchronized(mLock) {
+        mHotplugEventListenerRecords->Add(TO_IINTERFACE(record));
+    }
+    return NOERROR;
 }
 
 ECode HdmiControlService::RemoveHotplugEventListener(
     /* [in] */ IIHdmiHotplugEventListener* listener)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        synchronized(mLock) {
-            for (HotplugEventListenerRecord record : mHotplugEventListenerRecords) {
-                if (record->mMListener->AsBinder() == listener->AsBinder()) {
-                    listener->AsBinder()->UnlinkToDeath(record, 0);
-                    mHotplugEventListenerRecords->Remove(record);
-                    break;
+    synchronized(mLock) {
+        FOR_EACH(it, mHotplugEventListenerRecords) {
+            AutoPtr<IInterface> obj;
+            it->GetNext((IInterface**)&obj);
+            AutoPtr<HotplugEventListenerRecord> record = (HotplugEventListenerRecord*) IObject::Probe(obj);
+            if (IBinder::Probe(record->mListener) == IBinder::Probe(listener)) {
+                AutoPtr<IProxy> proxy = (IProxy*) listener->Probe(EIID_IProxy);
+                if (proxy != NULL) {
+                    Boolean bNoUse;
+                    proxy->UnlinkToDeath(record, 0, &bNoUse);
                 }
+                mHotplugEventListenerRecords->Remove(TO_IINTERFACE(record));
+                break;
             }
         }
-
-#endif
+    }
+    return NOERROR;
 }
 
 ECode HdmiControlService::AddDeviceEventListener(
     /* [in] */ IIHdmiDeviceEventListener* listener)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        DeviceEventListenerRecord record = new DeviceEventListenerRecord(listener);
-        try {
-            listener->AsBinder()->LinkToDeath(record, 0);
-        } catch (RemoteException e) {
+    AutoPtr<DeviceEventListenerRecord> record = new DeviceEventListenerRecord(this, listener);
+    // try {
+    ECode ec = NOERROR;
+    AutoPtr<IProxy> proxy = (IProxy*) listener->Probe(EIID_IProxy);
+    if (proxy != NULL)
+        ec = proxy->LinkToDeath(record, 0);
+    // } catch (RemoteException e) {
+    if (FAILED(ec)) {
+        if ((ECode) E_REMOTE_EXCEPTION == ec) {
             Slogger::W(TAG, "Listener already died");
             return NOERROR;
         }
-        synchronized(mLock) {
-            mDeviceEventListenerRecords->Add(record);
-        }
-
-#endif
+        else
+            return ec;
+    }
+    // }
+    synchronized(mLock) {
+        mDeviceEventListenerRecords->Add(TO_IINTERFACE(record));
+    }
+    return NOERROR;
 }
 
 ECode HdmiControlService::InvokeDeviceEventListeners(
     /* [in] */ IHdmiDeviceInfo* device,
     /* [in] */ Int32 status)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        synchronized(mLock) {
-            for (DeviceEventListenerRecord record : mDeviceEventListenerRecords) {
-                try {
-                    record->mMListener->OnStatusChanged(device, status);
-                } catch (RemoteException e) {
-                    Slogger::E(TAG, "Failed to report device event:" + e);
+    synchronized(mLock) {
+        FOR_EACH(it, mDeviceEventListenerRecords) {
+            AutoPtr<IInterface> obj;
+            it->GetNext((IInterface**)&obj);
+            AutoPtr<DeviceEventListenerRecord> record = (DeviceEventListenerRecord*) IObject::Probe(obj);
+            // try {
+            ECode ec = record->mListener->OnStatusChanged(device, status);
+            // } catch (RemoteException e) {
+            if (FAILED(ec)) {
+                if ((ECode) E_REMOTE_EXCEPTION == ec) {
+                    Slogger::E(TAG, "Failed to report device event:%d", ec);
                 }
+                else
+                    return ec;
             }
+            // }
         }
-
-#endif
+    }
+    return NOERROR;
 }
 
 ECode HdmiControlService::AddSystemAudioModeChangeListner(
     /* [in] */ IIHdmiSystemAudioModeChangeListener* listener)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        SystemAudioModeChangeListenerRecord record = new SystemAudioModeChangeListenerRecord(
-                listener);
-        try {
-            listener->AsBinder()->LinkToDeath(record, 0);
-        } catch (RemoteException e) {
+    AutoPtr<SystemAudioModeChangeListenerRecord> record = new SystemAudioModeChangeListenerRecord(this, listener);
+    // try {
+    ECode ec = NOERROR;
+    AutoPtr<IProxy> proxy = (IProxy*) listener->Probe(EIID_IProxy);
+    if (proxy != NULL)
+        ec = proxy->LinkToDeath(record, 0);
+    // } catch (RemoteException e) {
+    if (FAILED(ec)) {
+        if ((ECode) E_REMOTE_EXCEPTION == ec) {
             Slogger::W(TAG, "Listener already died");
             return NOERROR;
         }
-        synchronized(mLock) {
-            mSystemAudioModeChangeListenerRecords->Add(record);
-        }
-
-#endif
+        return ec;
+    }
+    // }
+    synchronized(mLock) {
+        mSystemAudioModeChangeListenerRecords->Add(TO_IINTERFACE(record));
+    }
+    return NOERROR;
 }
 
 ECode HdmiControlService::RemoveSystemAudioModeChangeListener(
     /* [in] */ IIHdmiSystemAudioModeChangeListener* listener)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        synchronized(mLock) {
-            for (SystemAudioModeChangeListenerRecord record :
-                    mSystemAudioModeChangeListenerRecords) {
-                if (record->mMListener->AsBinder() == listener) {
-                    listener->AsBinder()->UnlinkToDeath(record, 0);
-                    mSystemAudioModeChangeListenerRecords->Remove(record);
-                    break;
+    synchronized(mLock) {
+        FOR_EACH(it, mSystemAudioModeChangeListenerRecords) {
+            AutoPtr<IInterface> obj;
+            it->GetNext((IInterface**)&obj);
+            AutoPtr<SystemAudioModeChangeListenerRecord> record = (SystemAudioModeChangeListenerRecord*) IObject::Probe(obj);
+            if (IBinder::Probe(record->mListener) == IBinder::Probe(listener)) {
+                AutoPtr<IProxy> proxy = (IProxy*) listener->Probe(EIID_IProxy);
+                if (proxy != NULL) {
+                    Boolean bNoUse;
+                    proxy->UnlinkToDeath(record, 0, &bNoUse);
                 }
+                mSystemAudioModeChangeListenerRecords->Remove(TO_IINTERFACE(record));
+                break;
             }
         }
-
-#endif
+    }
+    return NOERROR;
 }
 
 ECode HdmiControlService::SetInputChangeListener(
     /* [in] */ IIHdmiInputChangeListener* listener)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        synchronized(mLock) {
-            mInputChangeListenerRecord = new InputChangeListenerRecord(listener);
-            try {
-                listener->AsBinder()->LinkToDeath(mInputChangeListenerRecord, 0);
-            } catch (RemoteException e) {
+    synchronized(mLock) {
+        mInputChangeListenerRecord = new InputChangeListenerRecord(this, listener);
+        // try {
+        ECode ec = NOERROR;
+        AutoPtr<IProxy> proxy = (IProxy*) listener->Probe(EIID_IProxy);
+        if (proxy != NULL)
+            ec = proxy->LinkToDeath(mInputChangeListenerRecord, 0);
+        // } catch (RemoteException e) {
+        if (FAILED(ec)) {
+            if ((ECode) E_REMOTE_EXCEPTION == ec) {
                 Slogger::W(TAG, "Listener already died");
                 return NOERROR;
             }
+            return ec;
         }
-
-#endif
+        // }
+    }
+    return NOERROR;
 }
 
 ECode HdmiControlService::InvokeInputChangeListener(
     /* [in] */ IHdmiDeviceInfo* info)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        synchronized(mLock) {
-            if (mInputChangeListenerRecord != NULL) {
-                try {
-                    mInputChangeListenerRecord->mMListener->OnChanged(info);
-                } catch (RemoteException e) {
-                    Slogger::W(TAG, "Exception thrown by IHdmiInputChangeListener: " + e);
+    synchronized(mLock) {
+        if (mInputChangeListenerRecord != NULL) {
+            // try {
+            ECode ec = mInputChangeListenerRecord->mListener->OnChanged(info);
+            // } catch (RemoteException e) {
+            if (FAILED(ec)) {
+                if ((ECode) E_REMOTE_EXCEPTION == ec) {
+                    Slogger::W(TAG, "Exception thrown by IHdmiInputChangeListener: %d", ec);
                 }
+                else
+                    return ec;
             }
+            // }
         }
-
-#endif
+    }
+    return NOERROR;
 }
 
 ECode HdmiControlService::SetHdmiRecordListener(
     /* [in] */ IIHdmiRecordListener* listener)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        synchronized(mLock) {
-            mRecordListenerRecord = new HdmiRecordListenerRecord(listener);
-            try {
-                listener->AsBinder()->LinkToDeath(mRecordListenerRecord, 0);
-            } catch (RemoteException e) {
-                Slogger::W(TAG, "Listener already died.", e);
+    synchronized(mLock) {
+        mRecordListenerRecord = new HdmiRecordListenerRecord(this, listener);
+        // try {
+        ECode ec = NOERROR;
+        AutoPtr<IProxy> proxy = (IProxy*) listener->Probe(EIID_IProxy);
+        if (proxy != NULL)
+            ec = proxy->LinkToDeath(mRecordListenerRecord, 0);
+        // } catch (RemoteException e) {
+        if (FAILED(ec)) {
+            if ((ECode) E_REMOTE_EXCEPTION == ec) {
+                Slogger::W(TAG, "Listener already died. %d", ec);
             }
+            else
+                return ec;
         }
-
-#endif
+        // }
+    }
+    return NOERROR;
 }
 
 ECode HdmiControlService::InvokeRecordRequestListener(
     /* [in] */ Int32 recorderAddress,
     /* [out, callee] */ ArrayOf<Byte>** result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        synchronized(mLock) {
-            if (mRecordListenerRecord != NULL) {
-                try {
-                    return mRecordListenerRecord->mMListener->GetOneTouchRecordSource(recorderAddress);
-                } catch (RemoteException e) {
-                    Slogger::W(TAG, "Failed to start record.", e);
-                }
-            }
-            return EmptyArray::BYTE;
-        }
+    VALIDATE_NOT_NULL(result)
+    *result = NULL;
 
-#endif
+    synchronized(mLock) {
+        if (mRecordListenerRecord != NULL) {
+            // try {
+            AutoPtr<ArrayOf<Byte> > oneTouchRecordSource;
+            ECode ec = mRecordListenerRecord->mListener->GetOneTouchRecordSource(recorderAddress, (ArrayOf<Byte>**)&oneTouchRecordSource);
+            // } catch (RemoteException e) {
+            if (FAILED(ec)) {
+                if ((ECode) E_REMOTE_EXCEPTION == ec) {
+                    Slogger::W(TAG, "Failed to start record. %d", ec);
+                }
+                else
+                    return ec;
+            }
+            else {
+                *result = oneTouchRecordSource;
+                REFCOUNT_ADD(*result)
+                return NOERROR;
+            }
+
+            // }
+        }
+        *result = EmptyArray::BYTE;
+        REFCOUNT_ADD(*result)
+        return NOERROR;
+    }
+    return NOERROR;
 }
 
 ECode HdmiControlService::InvokeOneTouchRecordResult(
     /* [in] */ Int32 result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        synchronized(mLock) {
-            if (mRecordListenerRecord != NULL) {
-                try {
-                    mRecordListenerRecord->mMListener->OnOneTouchRecordResult(result);
-                } catch (RemoteException e) {
-                    Slogger::W(TAG, "Failed to call onOneTouchRecordResult.", e);
+    synchronized(mLock) {
+        if (mRecordListenerRecord != NULL) {
+            // try {
+            ECode ec = mRecordListenerRecord->mListener->OnOneTouchRecordResult(result);
+            // } catch (RemoteException e) {
+            if (FAILED(ec)) {
+                if ((ECode) E_REMOTE_EXCEPTION == ec) {
+                    Slogger::W(TAG, "Failed to call onOneTouchRecordResult.%d", ec);
                 }
+                else
+                    return ec;
             }
+            // }
         }
-
-#endif
+    }
+    return NOERROR;
 }
 
 ECode HdmiControlService::InvokeTimerRecordingResult(
     /* [in] */ Int32 result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        synchronized(mLock) {
-            if (mRecordListenerRecord != NULL) {
-                try {
-                    mRecordListenerRecord->mMListener->OnTimerRecordingResult(result);
-                } catch (RemoteException e) {
-                    Slogger::W(TAG, "Failed to call onTimerRecordingResult.", e);
+    synchronized(mLock) {
+        if (mRecordListenerRecord != NULL) {
+            // try {
+            ECode ec = mRecordListenerRecord->mListener->OnTimerRecordingResult(result);
+            // } catch (RemoteException e) {
+            if (FAILED(ec)) {
+                if ((ECode) E_REMOTE_EXCEPTION == ec) {
+                    Slogger::W(TAG, "Failed to call onTimerRecordingResult. %d", ec);
                 }
+                else
+                    return ec;
             }
+            // }
         }
-
-#endif
+    }
+    return NOERROR;
 }
 
 ECode HdmiControlService::InvokeClearTimerRecordingResult(
     /* [in] */ Int32 result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        synchronized(mLock) {
-            if (mRecordListenerRecord != NULL) {
-                try {
-                    mRecordListenerRecord->mMListener->OnClearTimerRecordingResult(result);
-                } catch (RemoteException e) {
-                    Slogger::W(TAG, "Failed to call onClearTimerRecordingResult.", e);
+    synchronized(mLock) {
+        if (mRecordListenerRecord != NULL) {
+            // try {
+            ECode ec = mRecordListenerRecord->mListener->OnClearTimerRecordingResult(result);
+            // } catch (RemoteException e) {
+            if (FAILED(ec)) {
+                if ((ECode) E_REMOTE_EXCEPTION == ec) {
+                    Slogger::W(TAG, "Failed to call onClearTimerRecordingResult. %d", ec);
                 }
+                else
+                    return ec;
             }
+            // }
         }
-
-#endif
+    }
+    return NOERROR;
 }
 
 ECode HdmiControlService::InvokeCallback(
     /* [in] */ IIHdmiControlCallback* callback,
     /* [in] */ Int32 result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        try {
-            callback->OnComplete(result);
-        } catch (RemoteException e) {
-            Slogger::E(TAG, "Invoking callback failed:" + e);
+    // try {
+    ECode ec = callback->OnComplete(result);
+    // } catch (RemoteException e) {
+    if (FAILED(ec)) {
+        if ((ECode) E_REMOTE_EXCEPTION == ec) {
+            Slogger::E(TAG, "Invoking callback failed:%d", ec);
         }
-
-#endif
+        else
+            return ec;
+    }
+    // }
+    return NOERROR;
 }
 
 ECode HdmiControlService::InvokeSystemAudioModeChangeLocked(
     /* [in] */ IIHdmiSystemAudioModeChangeListener* listener,
     /* [in] */ Boolean enabled)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        try {
-            listener->OnStatusChanged(enabled);
-        } catch (RemoteException e) {
-            Slogger::E(TAG, "Invoking callback failed:" + e);
+    // try {
+    ECode ec = listener->OnStatusChanged(enabled);
+    // } catch (RemoteException e) {
+    if (FAILED(ec)) {
+        if ((ECode) E_REMOTE_EXCEPTION == ec) {
+            Slogger::E(TAG, "Invoking callback failed:%d", ec);
         }
-
-#endif
+        else
+            return ec;
+    }
+    // }
+    return NOERROR;
 }
 
 ECode HdmiControlService::AnnounceHotplugEvent(
     /* [in] */ Int32 portId,
     /* [in] */ Boolean connected)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        HdmiHotplugEvent event = new HdmiHotplugEvent(portId, connected);
-        synchronized(mLock) {
-            for (HotplugEventListenerRecord record : mHotplugEventListenerRecords) {
-                InvokeHotplugEventListenerLocked(record->mMListener, event);
-            }
+    AutoPtr<IHdmiHotplugEvent> event;
+    // TODO: Waiting for CHdmiHotplugEvent
+    assert(0);
+    // CHdmiHotplugEvent::New(portId, connected, (IHdmiHotplugEvent**)&event);
+    synchronized(mLock) {
+        FOR_EACH(it, mHotplugEventListenerRecords) {
+            AutoPtr<IInterface> obj;
+            it->GetNext((IInterface**)&obj);
+            AutoPtr<HotplugEventListenerRecord> record = (HotplugEventListenerRecord*) IObject::Probe(obj);
+            InvokeHotplugEventListenerLocked(record->mListener, event);
         }
-
-#endif
+    }
+    return NOERROR;
 }
 
 ECode HdmiControlService::InvokeHotplugEventListenerLocked(
     /* [in] */ IIHdmiHotplugEventListener* listener,
     /* [in] */ IHdmiHotplugEvent* event)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        try {
-            listener->OnReceived(event);
-        } catch (RemoteException e) {
-            Slogger::E(TAG, "Failed to report hotplug event:" + event->ToString(), e);
+    // try {
+    ECode ec = listener->OnReceived(event);
+    // } catch (RemoteException e) {
+    if (FAILED(ec)) {
+        if ((ECode) E_REMOTE_EXCEPTION == ec) {
+            Slogger::E(TAG, "Failed to report hotplug event:%s %d", TO_CSTR(event), ec);
         }
-
-#endif
+        else
+            return ec;
+    }
+    // }
+    return NOERROR;
 }
 
 ECode HdmiControlService::Tv(
-    /* [out] */ HdmiCecLocalDeviceTv** result)
+    /* [out] */ IHdmiCecLocalDeviceTv** result)
 {
     VALIDATE_NOT_NULL(result)
 
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        return (HdmiCecLocalDeviceTv) mCecController->GetLocalDevice(IHdmiDeviceInfo::DEVICE_TV);
-
-#endif
+    AutoPtr<IHdmiCecLocalDevice> device;
+    mCecController->GetLocalDevice(IHdmiDeviceInfo::DEVICE_TV, (IHdmiCecLocalDevice**)&device);
+    *result = IHdmiCecLocalDeviceTv::Probe(device);
+    REFCOUNT_ADD(*result)
+    return NOERROR;
 }
 
 ECode HdmiControlService::IsTvDevice(
@@ -2282,11 +2735,10 @@ ECode HdmiControlService::IsTvDevice(
 {
     VALIDATE_NOT_NULL(result)
 
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        return Tv() != NULL;
-
-#endif
+    AutoPtr<IHdmiCecLocalDeviceTv> tv;
+    Tv((IHdmiCecLocalDeviceTv**)&tv);
+    *result = tv != NULL;
+    return NOERROR;
 }
 
 ECode HdmiControlService::Playback(
@@ -2294,12 +2746,11 @@ ECode HdmiControlService::Playback(
 {
     VALIDATE_NOT_NULL(result)
 
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        return (HdmiCecLocalDevicePlayback)
-                mCecController->GetLocalDevice(IHdmiDeviceInfo::DEVICE_PLAYBACK);
-
-#endif
+    AutoPtr<IHdmiCecLocalDevice> device;
+    mCecController->GetLocalDevice(IHdmiDeviceInfo::DEVICE_PLAYBACK, (IHdmiCecLocalDevice**)&device);
+    *result = (HdmiCecLocalDevicePlayback*) device.Get();
+    REFCOUNT_ADD(*result)
+    return NOERROR;
 }
 
 ECode HdmiControlService::GetAudioManager(
@@ -2307,11 +2758,13 @@ ECode HdmiControlService::GetAudioManager(
 {
     VALIDATE_NOT_NULL(result)
 
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        return (AudioManager) GetContext()->GetSystemService(Context::AUDIO_SERVICE);
-
-#endif
+    AutoPtr<IContext> context;
+    GetContext((IContext**)&context);
+    AutoPtr<IInterface> obj;
+    context->GetSystemService(IContext::AUDIO_SERVICE, (IInterface**)&obj);
+    *result = IAudioManager::Probe(obj);
+    REFCOUNT_ADD(*result)
+    return NOERROR;
 }
 
 ECode HdmiControlService::IsControlEnabled(
@@ -2319,160 +2772,131 @@ ECode HdmiControlService::IsControlEnabled(
 {
     VALIDATE_NOT_NULL(result)
 
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        synchronized(mLock) {
-            return mHdmiControlEnabled;
-        }
-
-#endif
+    synchronized(mLock) {
+        *result = mHdmiControlEnabled;
+    }
+    return NOERROR;
 }
 
 ECode HdmiControlService::GetPowerStatus(
     /* [out] */ Int32* result)
 {
     VALIDATE_NOT_NULL(result)
+    *result = 0;
 
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        AssertRunOnServiceThread();
-        return mPowerStatus;
-
-#endif
+    AssertRunOnServiceThread();
+    *result = mPowerStatus;
+    return NOERROR;
 }
 
 ECode HdmiControlService::IsPowerOnOrTransient(
     /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result)
+    *result = FALSE;
 
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        AssertRunOnServiceThread();
-        return mPowerStatus == IHdmiControlManager::POWER_STATUS_ON
-                || mPowerStatus == IHdmiControlManager::POWER_STATUS_TRANSIENT_TO_ON;
-
-#endif
+    AssertRunOnServiceThread();
+    *result = mPowerStatus == IHdmiControlManager::POWER_STATUS_ON
+            || mPowerStatus == IHdmiControlManager::POWER_STATUS_TRANSIENT_TO_ON;
+    return NOERROR;
 }
 
 ECode HdmiControlService::IsPowerStandbyOrTransient(
     /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result)
+    *result = FALSE;
 
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        AssertRunOnServiceThread();
-        return mPowerStatus == IHdmiControlManager::POWER_STATUS_STANDBY
-                || mPowerStatus == IHdmiControlManager::POWER_STATUS_TRANSIENT_TO_STANDBY;
-
-#endif
+    AssertRunOnServiceThread();
+    *result = mPowerStatus == IHdmiControlManager::POWER_STATUS_STANDBY
+            || mPowerStatus == IHdmiControlManager::POWER_STATUS_TRANSIENT_TO_STANDBY;
+    return NOERROR;
 }
 
 ECode HdmiControlService::IsPowerStandby(
     /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result)
+    *result = FALSE;
 
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        AssertRunOnServiceThread();
-        return mPowerStatus == IHdmiControlManager::POWER_STATUS_STANDBY;
-
-#endif
+    AssertRunOnServiceThread();
+    *result = mPowerStatus == IHdmiControlManager::POWER_STATUS_STANDBY;
+    return NOERROR;
 }
 
 ECode HdmiControlService::WakeUp()
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        AssertRunOnServiceThread();
-        mWakeUpMessageReceived = TRUE;
-        PowerManager pm = (PowerManager) GetContext()->GetSystemService(Context::POWER_SERVICE);
-        pm->WakeUp(SystemClock::GetUptimeMillis());
-        // PowerManger will send the broadcast Intent::ACTION_SCREEN_ON and after this gets
-        // the intent, the sequence will continue at onWakeUp().
-
-#endif
+    AssertRunOnServiceThread();
+    mWakeUpMessageReceived = TRUE;
+    AutoPtr<IContext> context;
+    GetContext((IContext**)&context);
+    AutoPtr<IInterface> obj;
+    context->GetSystemService(IContext::POWER_SERVICE, (IInterface**)&obj);
+    AutoPtr<IPowerManager> pm = IPowerManager::Probe(obj);
+    pm->WakeUp(SystemClock::GetUptimeMillis());
+    // PowerManger will send the broadcast Intent.ACTION_SCREEN_ON and after this gets
+    // the intent, the sequence will continue at onWakeUp().
+    return NOERROR;
 }
 
 ECode HdmiControlService::Standby()
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        AssertRunOnServiceThread();
-        mStandbyMessageReceived = TRUE;
-        PowerManager pm = (PowerManager) GetContext()->GetSystemService(Context::POWER_SERVICE);
-        pm->GoToSleep(SystemClock::GetUptimeMillis(), PowerManager::GO_TO_SLEEP_REASON_HDMI, 0);
-        // PowerManger will send the broadcast Intent.ACTION_SCREEN_OFF and after this gets
-        // the intent, the sequence will continue at onStandby().
-
-#endif
+    AssertRunOnServiceThread();
+    mStandbyMessageReceived = TRUE;
+    AutoPtr<IContext> context;
+    GetContext((IContext**)&context);
+    AutoPtr<IInterface> obj;
+    context->GetSystemService(IContext::POWER_SERVICE, (IInterface**)&obj);
+    AutoPtr<IPowerManager> pm = IPowerManager::Probe(obj);
+    pm->GoToSleep(SystemClock::GetUptimeMillis(), IPowerManager::GO_TO_SLEEP_REASON_HDMI, 0);
+    // PowerManger will send the broadcast Intent.ACTION_SCREEN_OFF and after this gets
+    // the intent, the sequence will continue at onStandby().
+    return NOERROR;
 }
 
 ECode HdmiControlService::OnWakeUp()
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        AssertRunOnServiceThread();
-        mPowerStatus = IHdmiControlManager::POWER_STATUS_TRANSIENT_TO_ON;
-        if (mCecController != NULL) {
-            if (mHdmiControlEnabled) {
-                Int32 startReason = INITIATED_BY_SCREEN_ON;
-                if (mWakeUpMessageReceived) {
-                    startReason = INITIATED_BY_WAKE_UP_MESSAGE;
-                }
-                InitializeCec(startReason);
+    AssertRunOnServiceThread();
+    mPowerStatus = IHdmiControlManager::POWER_STATUS_TRANSIENT_TO_ON;
+    if (mCecController != NULL) {
+        if (mHdmiControlEnabled) {
+            Int32 startReason = INITIATED_BY_SCREEN_ON;
+            if (mWakeUpMessageReceived) {
+                startReason = INITIATED_BY_WAKE_UP_MESSAGE;
             }
-        } else {
-            Slogger::I(TAG, "Device does not support HDMI-CEC.");
+            InitializeCec(startReason);
         }
-        // TODO: Initialize MHL local devices.
-
-#endif
+    } else {
+        Slogger::I(TAG, "Device does not support HDMI-CEC.");
+    }
+    // TODO: Initialize MHL local devices.
+    return NOERROR;
 }
 
 ECode HdmiControlService::OnStandby()
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        AssertRunOnServiceThread();
-        mPowerStatus = IHdmiControlManager::POWER_STATUS_TRANSIENT_TO_STANDBY;
-        List<HdmiCecLocalDevice> devices = GetAllLocalDevices();
-        DisableDevices(new PendingActionClearedCallback() {
-            @Override
-            public void OnCleared(IHdmiCecLocalDevice* device) {
-                Slogger::V(TAG, "On standby-action cleared:" + device->mMDeviceType);
-                devices->Remove(device);
-                Boolean isEmpty;
-                devices->IsEmpty(&isEmpty);
-                if (isEmpty) {
-                    OnStandbyCompleted();
-                    // We will not clear local devices here, since some OEM/SOC will keep passing
-                    // the received packets until the application processor enters to the sleep
-                    // actually.
-                }
-            }
-        });
-
-#endif
+    AssertRunOnServiceThread();
+    mPowerStatus = IHdmiControlManager::POWER_STATUS_TRANSIENT_TO_STANDBY;
+    AutoPtr<IList> devices;
+    GetAllLocalDevices((IList**)&devices);
+    DisableDevices(new OnStandbyPendingActionClearedCallback(this, devices));
+    return NOERROR;
 }
 
 ECode HdmiControlService::OnLanguageChanged(
     /* [in] */ const String& language)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        AssertRunOnServiceThread();
-        mLanguage = language;
-        if (IsTvDevice()) {
-            AutoPtr<HdmiCecLocalDeviceTv> tv;
-            Tv((HdmiCecLocalDeviceTv**)&tv);
-            Boolean isBroadcastMenuLanguage;
-            tv->BroadcastMenuLanguage(language, &isBroadcastMenuLanguage);
-        }
-
-#endif
+    AssertRunOnServiceThread();
+    mLanguage = language;
+    Boolean isTvDevice;
+    IsTvDevice(&isTvDevice);
+    if (isTvDevice) {
+        AutoPtr<IHdmiCecLocalDeviceTv> tv;
+        Tv((IHdmiCecLocalDeviceTv**)&tv);
+        Boolean isBroadcastMenuLanguage;
+        ((HdmiCecLocalDeviceTv*) tv.Get())->BroadcastMenuLanguage(language, &isBroadcastMenuLanguage);
+    }
+    return NOERROR;
 }
 
 ECode HdmiControlService::GetLanguage(
@@ -2480,85 +2904,88 @@ ECode HdmiControlService::GetLanguage(
 {
     VALIDATE_NOT_NULL(result)
 
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        AssertRunOnServiceThread();
-        return mLanguage;
-
-#endif
+    AssertRunOnServiceThread();
+    *result = mLanguage;
+    return NOERROR;
 }
 
 ECode HdmiControlService::DisableDevices(
     /* [in] */ IHdmiCecLocalDevicePendingActionClearedCallback* callback)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        if (mCecController != NULL) {
-            for_each (it : mCecController->GetLocalDeviceList()) {
-                AutoPtr<IHdmiCecLocalDevice> device = it->GetNext();
-                device->DisableDevice(mStandbyMessageReceived, callback);
-            }
-            if (IsTvDevice()) {
-                UnregisterSettingsObserver();
-            }
+    if (mCecController != NULL) {
+        AutoPtr<IList> localDeviceList;
+        mCecController->GetLocalDeviceList((IList**)&localDeviceList);
+        FOR_EACH(it, localDeviceList) {
+            AutoPtr<IInterface> obj;
+            it->GetNext((IInterface**)&obj);
+            AutoPtr<IHdmiCecLocalDevice> device = IHdmiCecLocalDevice::Probe(obj);
+            ((HdmiCecLocalDevice*) device.Get())->DisableDevice(mStandbyMessageReceived, callback);
         }
-        mMhlController->ClearAllLocalDevices();
-
-#endif
+        Boolean isTvDevice;
+        IsTvDevice(&isTvDevice);
+        if (isTvDevice) {
+            UnregisterSettingsObserver();
+        }
+    }
+    mMhlController->ClearAllLocalDevices();
+    return NOERROR;
 }
 
 ECode HdmiControlService::ClearLocalDevices()
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        AssertRunOnServiceThread();
-        if (mCecController == NULL) {
-            return NOERROR;
-        }
-        mCecController->ClearLogicalAddress();
-        mCecController->ClearLocalDevices();
-
-#endif
+    AssertRunOnServiceThread();
+    if (mCecController == NULL) {
+        return NOERROR;
+    }
+    mCecController->ClearLogicalAddress();
+    mCecController->ClearLocalDevices();
+    return NOERROR;
 }
 
 ECode HdmiControlService::OnStandbyCompleted()
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        AssertRunOnServiceThread();
-        Slogger::V(TAG, "onStandbyCompleted");
-        if (mPowerStatus != IHdmiControlManager::POWER_STATUS_TRANSIENT_TO_STANDBY) {
-            return NOERROR;
-        }
-        mPowerStatus = IHdmiControlManager::POWER_STATUS_STANDBY;
-        FOR_EACH(it : mCecController->GetLocalDeviceList()) {
-            AutoPtr<IHdmiCecLocalDevice> device = it->GetNext();
-            device->OnStandby(mStandbyMessageReceived);
-        }
-        mStandbyMessageReceived = FALSE;
-        mCecController->SetOption(OPTION_CEC_SERVICE_CONTROL, DISABLED);
-
-#endif
+    AssertRunOnServiceThread();
+    Slogger::V(TAG, "onStandbyCompleted");
+    if (mPowerStatus != IHdmiControlManager::POWER_STATUS_TRANSIENT_TO_STANDBY) {
+        return NOERROR;
+    }
+    mPowerStatus = IHdmiControlManager::POWER_STATUS_STANDBY;
+    AutoPtr<IList> localDeviceList;
+    mCecController->GetLocalDeviceList((IList**)&localDeviceList);
+    FOR_EACH(it, localDeviceList) {
+        AutoPtr<IInterface> obj;
+        it->GetNext((IInterface**)&obj);
+        AutoPtr<IHdmiCecLocalDevice> device = IHdmiCecLocalDevice::Probe(obj);
+        ((HdmiCecLocalDevice*)device.Get())->OnStandby(mStandbyMessageReceived);
+    }
+    mStandbyMessageReceived = FALSE;
+    mCecController->SetOption(Constants::OPTION_CEC_SERVICE_CONTROL, Constants::DISABLED);
+    return NOERROR;
 }
 
 ECode HdmiControlService::AddVendorCommandListener(
     /* [in] */ IIHdmiVendorCommandListener* listener,
     /* [in] */ Int32 deviceType)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        VendorCommandListenerRecord record = new VendorCommandListenerRecord(listener, deviceType);
-        try {
-            listener->AsBinder()->LinkToDeath(record, 0);
-        } catch (RemoteException e) {
+    AutoPtr<VendorCommandListenerRecord> record = new VendorCommandListenerRecord(this, listener, deviceType);
+    // try {
+    ECode ec = NOERROR;
+    AutoPtr<IProxy> proxy = (IProxy*) listener->Probe(EIID_IProxy);
+    if (proxy != NULL)
+        ec = proxy->LinkToDeath(record, 0);
+    // } catch (RemoteException e) {
+    if (FAILED(ec)) {
+        if ((ECode) E_REMOTE_EXCEPTION == ec) {
             Slogger::W(TAG, "Listener already died");
             return NOERROR;
         }
-        synchronized(mLock) {
-            mVendorCommandListenerRecords->Add(record);
-        }
-
-#endif
+        return ec;
+    }
+    // }
+    synchronized(mLock) {
+        mVendorCommandListenerRecords->Add(TO_IINTERFACE(record));
+    }
+    return NOERROR;
 }
 
 ECode HdmiControlService::InvokeVendorCommandListeners(
@@ -2570,50 +2997,60 @@ ECode HdmiControlService::InvokeVendorCommandListeners(
 {
     VALIDATE_NOT_NULL(result)
 
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        synchronized(mLock) {
-            Boolean isEmpty;
-            mVendorCommandListenerRecords->IsEmpty(&isEmpty);
-            if (isEmpty) {
-                *result = FALSE;
-                return NOERROR;
-            }
-            for (VendorCommandListenerRecord record : mVendorCommandListenerRecords) {
-                if (record->mMDeviceType != deviceType) {
-                    continue;
-                }
-                try {
-                    record->mMListener->OnReceived(srcAddress, params, hasVendorId);
-                } catch (RemoteException e) {
-                    Slogger::E(TAG, "Failed to notify vendor command reception", e);
-                }
-            }
-            *result = TRUE;
+    synchronized(mLock) {
+        Boolean isEmpty;
+        mVendorCommandListenerRecords->IsEmpty(&isEmpty);
+        if (isEmpty) {
+            *result = FALSE;
             return NOERROR;
         }
-
-#endif
+        FOR_EACH(it, mVendorCommandListenerRecords) {
+            AutoPtr<IInterface> obj;
+            it->GetNext((IInterface**)&obj);
+            AutoPtr<VendorCommandListenerRecord> record = (VendorCommandListenerRecord*) IObject::Probe(obj);
+            if (record->mDeviceType != deviceType) {
+                continue;
+            }
+            // try {
+            ECode ec = record->mListener->OnReceived(srcAddress, params, hasVendorId);
+            // } catch (RemoteException e) {
+            if (FAILED(ec)) {
+                if ((ECode) E_REMOTE_EXCEPTION == ec) {
+                    Slogger::E(TAG, "Failed to notify vendor command reception %d", ec);
+                }
+                else
+                    return ec;
+            }
+            // }
+        }
+        *result = TRUE;
+    }
+    return NOERROR;
 }
 
 ECode HdmiControlService::AddHdmiMhlVendorCommandListener(
     /* [in] */ IIHdmiMhlVendorCommandListener* listener)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        HdmiMhlVendorCommandListenerRecord record =
-                new HdmiMhlVendorCommandListenerRecord(listener);
-        try {
-            listener->AsBinder()->LinkToDeath(record, 0);
-        } catch (RemoteException e) {
+    AutoPtr<HdmiMhlVendorCommandListenerRecord> record =
+            new HdmiMhlVendorCommandListenerRecord(this, listener);
+    // try {
+    ECode ec = NOERROR;
+    AutoPtr<IProxy> proxy = (IProxy*) listener->Probe(EIID_IProxy);
+    if (proxy != NULL)
+        ec = proxy->LinkToDeath(record, 0);
+    // } catch (RemoteException e) {
+    if (FAILED(ec)) {
+        if ((ECode) E_REMOTE_EXCEPTION == ec) {
             Slogger::W(TAG, "Listener already died.");
             return NOERROR;
         }
-        synchronized(mLock) {
-            mMhlVendorCommandListenerRecords->Add(record);
-        }
-
-#endif
+        return ec;
+    }
+    // }
+    synchronized(mLock) {
+        mMhlVendorCommandListenerRecords->Add(TO_IINTERFACE(record));
+    }
+    return NOERROR;
 }
 
 ECode HdmiControlService::InvokeMhlVendorCommandListeners(
@@ -2622,19 +3059,25 @@ ECode HdmiControlService::InvokeMhlVendorCommandListeners(
     /* [in] */ Int32 length,
     /* [in] */ ArrayOf<Byte>* data)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        synchronized(mLock) {
-            for (HdmiMhlVendorCommandListenerRecord record : mMhlVendorCommandListenerRecords) {
-                try {
-                    record->mMListener->OnReceived(portId, offest, length, data);
-                } catch (RemoteException e) {
-                    Slogger::E(TAG, "Failed to notify MHL vendor command", e);
+    synchronized(mLock) {
+        FOR_EACH(it, mMhlVendorCommandListenerRecords) {
+            AutoPtr<IInterface> obj;
+            it->GetNext((IInterface**)&obj);
+            AutoPtr<HdmiMhlVendorCommandListenerRecord> record = (HdmiMhlVendorCommandListenerRecord*) IObject::Probe(obj);
+            // try {
+            ECode ec = record->mListener->OnReceived(portId, offest, length, data);
+            // } catch (RemoteException e) {
+            if (FAILED(ec)) {
+                if ((ECode) E_REMOTE_EXCEPTION == ec) {
+                    Slogger::E(TAG, "Failed to notify MHL vendor command %d", ec);
                 }
+                else
+                    return ec;
             }
+            // }
         }
-
-#endif
+    }
+    return NOERROR;
 }
 
 ECode HdmiControlService::IsProhibitMode(
@@ -2642,154 +3085,124 @@ ECode HdmiControlService::IsProhibitMode(
 {
     VALIDATE_NOT_NULL(result)
 
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        synchronized(mLock) {
-            return mProhibitMode;
-        }
-
-#endif
+    synchronized(mLock) {
+        *result = mProhibitMode;
+    }
+    return NOERROR;
 }
 
 ECode HdmiControlService::SetProhibitMode(
     /* [in] */ Boolean enabled)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        synchronized(mLock) {
-            mProhibitMode = enabled;
-        }
-
-#endif
+    synchronized(mLock) {
+        mProhibitMode = enabled;
+    }
+    return NOERROR;
 }
 
 ECode HdmiControlService::SetCecOption(
     /* [in] */ Int32 key,
     /* [in] */ Int32 value)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        AssertRunOnServiceThread();
-        mCecController->SetOption(key, value);
-
-#endif
+    AssertRunOnServiceThread();
+    mCecController->SetOption(key, value);
+    return NOERROR;
 }
 
 ECode HdmiControlService::SetControlEnabled(
     /* [in] */ Boolean enabled)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        AssertRunOnServiceThread();
-        Int32 value = ToInt32(enabled);
-        mCecController->SetOption(OPTION_CEC_ENABLE, value);
-        mMhlController->SetOption(OPTION_MHL_ENABLE, value);
-        synchronized(mLock) {
-            mHdmiControlEnabled = enabled;
-        }
-        if (enabled) {
-            InitializeCec(INITIATED_BY_ENABLE_CEC);
-        } else {
-            DisableDevices(new PendingActionClearedCallback() {
-                @Override
-                public void OnCleared(IHdmiCecLocalDevice* device) {
-                    AssertRunOnServiceThread();
-                    ClearLocalDevices();
-                }
-            });
-        }
-
-#endif
+    AssertRunOnServiceThread();
+    Int32 value;
+    ToInt32(enabled, &value);
+    mCecController->SetOption(Constants::OPTION_CEC_ENABLE, value);
+    mMhlController->SetOption(Constants::OPTION_MHL_ENABLE, value);
+    synchronized(mLock) {
+        mHdmiControlEnabled = enabled;
+    }
+    if (enabled) {
+        InitializeCec(INITIATED_BY_ENABLE_CEC);
+    } else {
+        DisableDevices(new SetControlEnabledPendingActionClearedCallback(this));
+    }
+    return NOERROR;
 }
 
 ECode HdmiControlService::SetActivePortId(
     /* [in] */ Int32 portId)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        AssertRunOnServiceThread();
-        mActivePortId = portId;
-        // Resets last input for MHL, which stays valid only after the MHL device was selected,
-        // and no further switching is done.
-        SetLastInputForMhl(Constants::INVALID_PORT_ID);
-
-#endif
+    AssertRunOnServiceThread();
+    mActivePortId = portId;
+    // Resets last input for MHL, which stays valid only after the MHL device was selected,
+    // and no further switching is done.
+    SetLastInputForMhl(Constants::INVALID_PORT_ID);
+    return NOERROR;
 }
 
 ECode HdmiControlService::SetLastInputForMhl(
     /* [in] */ Int32 portId)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        AssertRunOnServiceThread();
-        mLastInputMhl = portId;
-
-#endif
+    AssertRunOnServiceThread();
+    mLastInputMhl = portId;
+    return NOERROR;
 }
 
 ECode HdmiControlService::GetLastInputForMhl(
     /* [out] */ Int32* result)
 {
     VALIDATE_NOT_NULL(result)
+    *result = 0;
 
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        AssertRunOnServiceThread();
-        return mLastInputMhl;
-
-#endif
+    AssertRunOnServiceThread();
+    *result = mLastInputMhl;
+    return NOERROR;
 }
 
 ECode HdmiControlService::ChangeInputForMhl(
     /* [in] */ Int32 portId,
     /* [in] */ Boolean contentOn)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        AssertRunOnServiceThread();
-        AutoPtr<HdmiCecLocalDeviceTv> tv;
-        Tv((HdmiCecLocalDeviceTv**)&tv);
-        Int32 activePortId;
-        tv->GetActivePortId(&activePortId);
-        const Int32 lastInput = contentOn ? activePortId : Constants::INVALID_PORT_ID;
-        tv->DoManualPortSwitching(portId, new IHdmiControlCallback.Stub() {
-            @Override
-            public void OnComplete(Int32 result) throws RemoteException {
-                // Keep the last input to switch back later when RAP[ContentOff] is received.
-                // This effectively sets the port to invalid one if the switching is for
-                // RAP[ContentOff].
-                SetLastInputForMhl(lastInput);
-            }
-        });
-        // MHL device is always directly connected to the port. Update the active port ID to avoid
-        // unnecessary post-routing control task.
-        tv->SetActivePortId(portId);
-        // The port is either the MHL-enabled port where the mobile device is connected, or
-        // the last port to go back to when turnoff command is received. Note that the last port
-        // may not be the MHL-enabled one. In this case the device info to be passed to
-        // input change listener should be the one describing the corresponding HDMI port.
-        HdmiMhlLocalDeviceStub device = mMhlController->GetLocalDevice(portId);
-        AutoPtr<IInterface> obj;
-        mPortDeviceMap->Get(portId, (IInterface**)&obj);
-        HdmiDeviceInfo info = (device != NULL && device->GetInfo() != NULL)
-                ? device->GetInfo()
-                : I::Probe(obj);
-        InvokeInputChangeListener(info);
-
-#endif
+    AssertRunOnServiceThread();
+    AutoPtr<IHdmiCecLocalDeviceTv> tv;
+    Tv((IHdmiCecLocalDeviceTv**)&tv);
+    Int32 activePortId;
+    ((HdmiCecLocalDeviceTv*) tv.Get())->GetActivePortId(&activePortId);
+    const Int32 lastInput = contentOn ? activePortId : Constants::INVALID_PORT_ID;
+    ((HdmiCecLocalDeviceTv*) tv.Get())->DoManualPortSwitching(portId, new InnerSub_IHdmiControlCallbackStub(this, lastInput));
+    // MHL device is always directly connected to the port. Update the active port ID to avoid
+    // unnecessary post-routing control task.
+    ((HdmiCecLocalDeviceTv*) tv.Get())->SetActivePortId(portId);
+    // The port is either the MHL-enabled port where the mobile device is connected, or
+    // the last port to go back to when turnoff command is received. Note that the last port
+    // may not be the MHL-enabled one. In this case the device info to be passed to
+    // input change listener should be the one describing the corresponding HDMI port.
+    AutoPtr<HdmiMhlLocalDeviceStub> device;
+    mMhlController->GetLocalDevice(portId, (HdmiMhlLocalDeviceStub**)&device);
+    AutoPtr<IInterface> obj;
+    mPortDeviceMap->Get(portId, (IInterface**)&obj);
+    AutoPtr<IHdmiDeviceInfo> deviceInfo;
+    device->GetInfo((IHdmiDeviceInfo**)&deviceInfo);
+    AutoPtr<IHdmiDeviceInfo> info;
+    if (device != NULL && deviceInfo != NULL) {
+        device->GetInfo((IHdmiDeviceInfo**)&info);
+    }
+    else {
+        info = IHdmiDeviceInfo::Probe(obj);
+    }
+    InvokeInputChangeListener(info);
+    return NOERROR;
 }
 
 ECode HdmiControlService::SetMhlInputChangeEnabled(
     /* [in] */ Boolean enabled)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-       mMhlController->SetOption(OPTION_MHL_INPUT_SWITCHING, ToInt32(enabled));
-        synchronized(mLock) {
-            mMhlInputChangeEnabled = enabled;
-        }
-
-#endif
+    Int32 iEnabled;
+    ToInt32(enabled, &iEnabled);
+    mMhlController->SetOption(Constants::OPTION_MHL_INPUT_SWITCHING, iEnabled);
+    synchronized(mLock) {
+        mMhlInputChangeEnabled = enabled;
+    }
+    return NOERROR;
 }
 
 ECode HdmiControlService::IsMhlInputChangeEnabled(
@@ -2797,43 +3210,40 @@ ECode HdmiControlService::IsMhlInputChangeEnabled(
 {
     VALIDATE_NOT_NULL(result)
 
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        synchronized(mLock) {
-            return mMhlInputChangeEnabled;
-        }
-
-#endif
+    synchronized(mLock) {
+        *result = mMhlInputChangeEnabled;
+    }
+    return NOERROR;
 }
 
 ECode HdmiControlService::DisplayOsd(
     /* [in] */ Int32 messageId)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        AssertRunOnServiceThread();
-        Intent intent = new Intent(IHdmiControlManager::ACTION_OSD_MESSAGE);
-        intent->PutExtra(IHdmiControlManager::EXTRA_MESSAGE_ID, messageId);
-        GetContext()->SendBroadcastAsUser(intent, UserHandle::ALL,
-                HdmiControlService::PERMISSION);
-
-#endif
+    AssertRunOnServiceThread();
+    AutoPtr<IIntent> intent;
+    CIntent::New(IHdmiControlManager::ACTION_OSD_MESSAGE, (IIntent**)&intent);
+    intent->PutExtra(IHdmiControlManager::EXTRA_MESSAGE_ID, messageId);
+    AutoPtr<IContext> context;
+    GetContext((IContext**)&context);
+    context->SendBroadcastAsUser(intent, UserHandle::ALL,
+            HdmiControlService::PERMISSION);
+    return NOERROR;
 }
 
 ECode HdmiControlService::DisplayOsd(
     /* [in] */ Int32 messageId,
     /* [in] */ Int32 extra)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        AssertRunOnServiceThread();
-        Intent intent = new Intent(IHdmiControlManager::ACTION_OSD_MESSAGE);
-        intent->PutExtra(IHdmiControlManager::EXTRA_MESSAGE_ID, messageId);
-        intent->PutExtra(IHdmiControlManager::EXTRA_MESSAGE_EXTRAM_PARAM1, extra);
-        GetContext()->SendBroadcastAsUser(intent, UserHandle::ALL,
-                HdmiControlService::PERMISSION);
-
-#endif
+    AssertRunOnServiceThread();
+    AutoPtr<IIntent> intent;
+    CIntent::New(IHdmiControlManager::ACTION_OSD_MESSAGE, (IIntent**)&intent);
+    intent->PutExtra(IHdmiControlManager::EXTRA_MESSAGE_ID, messageId);
+    intent->PutExtra(IHdmiControlManager::EXTRA_MESSAGE_EXTRAM_PARAM1, extra);
+    AutoPtr<IContext> context;
+    GetContext((IContext**)&context);
+    context->SendBroadcastAsUser(intent, UserHandle::ALL,
+            HdmiControlService::PERMISSION);
+    return NOERROR;
 }
 
 } // namespace Hdmi

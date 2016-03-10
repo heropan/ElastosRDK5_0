@@ -45,16 +45,16 @@ ECode SystemAudioActionFromAvr::HandleSystemAudioActionFromAvr()
 {
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
-        AutoPtr<HdmiCecLocalDeviceTv> tv;
-        Tv((HdmiCecLocalDeviceTv**)&tv);
+        AutoPtr<IHdmiCecLocalDeviceTv> tv;
+        Tv((IHdmiCecLocalDeviceTv**)&tv);
         Boolean isSystemAudioActivated;
         tv->IsSystemAudioActivated(&isSystemAudioActivated);
         if (mTargetAudioStatus == isSystemAudioActivated) {
             FinishWithCallback(IHdmiControlManager::RESULT_SUCCESS);
             return NOERROR;
         }
-        AutoPtr<HdmiCecLocalDeviceTv> tv;
-        Tv((HdmiCecLocalDeviceTv**)&tv);
+        AutoPtr<IHdmiCecLocalDeviceTv> tv;
+        Tv((IHdmiCecLocalDeviceTv**)&tv);
         Boolean isProhibitMode;
         tv->IsProhibitMode(&isProhibitMode);
         if (isProhibitMode) {

@@ -108,8 +108,8 @@ ECode HotplugDetectionAction::PollDevices()
         if (mTimeoutCount == 0) {
             PollAllDevices();
         } else {
-            AutoPtr<HdmiCecLocalDeviceTv> tv;
-            Tv((HdmiCecLocalDeviceTv**)&tv);
+            AutoPtr<IHdmiCecLocalDeviceTv> tv;
+            Tv((IHdmiCecLocalDeviceTv**)&tv);
             Boolean isSystemAudioActivated;
             tv->IsSystemAudioActivated(&isSystemAudioActivated);
             if (isSystemAudioActivated) {
@@ -159,8 +159,8 @@ ECode HotplugDetectionAction::CheckHotplug(
 {
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
-        AutoPtr<HdmiCecLocalDeviceTv> tv;
-        Tv((HdmiCecLocalDeviceTv**)&tv);
+        AutoPtr<IHdmiCecLocalDeviceTv> tv;
+        Tv((IHdmiCecLocalDeviceTv**)&tv);
         BitSet currentInfos = InfoListToBitSet(tv->GetDeviceInfoList(FALSE), audioOnly);
         BitSet polledResult = AddressListToBitSet(ackedAddress);
 
@@ -266,8 +266,8 @@ ECode HotplugDetectionAction::RemoveDevice(
         MayCancelOneTouchRecord(removedAddress);
         MayDisableSystemAudioAndARC(removedAddress);
 
-        AutoPtr<HdmiCecLocalDeviceTv> tv;
-        Tv((HdmiCecLocalDeviceTv**)&tv);
+        AutoPtr<IHdmiCecLocalDeviceTv> tv;
+        Tv((IHdmiCecLocalDeviceTv**)&tv);
         tv->RemoveCecDevice(removedAddress);
 #endif
 }
@@ -277,8 +277,8 @@ ECode HotplugDetectionAction::MayChangeRoutingPath(
 {
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
-        AutoPtr<HdmiCecLocalDeviceTv> tv;
-        Tv((HdmiCecLocalDeviceTv**)&tv);
+        AutoPtr<IHdmiCecLocalDeviceTv> tv;
+        Tv((IHdmiCecLocalDeviceTv**)&tv);
         AutoPtr<IHdmiDeviceInfo> info;
         tv->GetCecDeviceInfo(address, (IHdmiDeviceInfo**)&info);
         if (info != NULL) {
@@ -337,8 +337,8 @@ ECode HotplugDetectionAction::MayDisableSystemAudioAndARC(
         }
 
         // Turn off system audio mode and update settings.
-        AutoPtr<HdmiCecLocalDeviceTv> tv;
-        Tv((HdmiCecLocalDeviceTv**)&tv);
+        AutoPtr<IHdmiCecLocalDeviceTv> tv;
+        Tv((IHdmiCecLocalDeviceTv**)&tv);
         tv->SetSystemAudioMode(FALSE, TRUE);
         Boolean isArcEstabilished;
         tv->IsArcEstabilished(&isArcEstabilished);

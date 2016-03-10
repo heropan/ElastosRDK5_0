@@ -92,8 +92,8 @@ ECode SetArcTransmissionStateAction::SetArcStatus(
 {
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
-        AutoPtr<HdmiCecLocalDeviceTv> tv;
-        Tv((HdmiCecLocalDeviceTv**)&tv);
+        AutoPtr<IHdmiCecLocalDeviceTv> tv;
+        Tv((IHdmiCecLocalDeviceTv**)&tv);
         Boolean wasEnabled = tv->SetArcStatus(enabled);
         Slogger::I(TAG, "Change arc status [old:" + wasEnabled + ", new:" + enabled + "]");
 

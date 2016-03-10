@@ -248,7 +248,7 @@ ECode HdmiCecFeatureAction::Playback(
 }
 
 ECode HdmiCecFeatureAction::Tv(
-    /* [out] */ HdmiCecLocalDeviceTv** result)
+    /* [out] */ IHdmiCecLocalDeviceTv** result)
 {
     VALIDATE_NOT_NULL(result)
 
