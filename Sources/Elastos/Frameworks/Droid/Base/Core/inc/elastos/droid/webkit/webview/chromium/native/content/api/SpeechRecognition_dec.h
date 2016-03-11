@@ -10,14 +10,14 @@
 extern "C"
 {
 #endif
-    extern void Elastos_SpeechRecognition_nativeOnAudioStart(IInterface* caller,Handle32 nativeSpeechRecognizerImplAndroid);
-    extern void Elastos_SpeechRecognition_nativeOnSoundStart(IInterface* caller,Handle32 nativeSpeechRecognizerImplAndroid);
-    extern void Elastos_SpeechRecognition_nativeOnSoundEnd(IInterface* caller,Handle32 nativeSpeechRecognizerImplAndroid);
-    extern void Elastos_SpeechRecognition_nativeOnAudioEnd(IInterface* caller,Handle32 nativeSpeechRecognizerImplAndroid);
-    extern void Elastos_SpeechRecognition_nativeOnRecognitionResults(IInterface* caller,Handle32 nativeSpeechRecognizerImplAndroid,ArrayOf<String>* results,ArrayOf<Float>* scores,Boolean provisional);
-    extern void Elastos_SpeechRecognition_nativeOnRecognitionError(IInterface* caller,Handle32 nativeSpeechRecognizerImplAndroid,Int32 error);
-    extern void Elastos_SpeechRecognition_nativeOnRecognitionEnd(IInterface* caller,Handle32 nativeSpeechRecognizerImplAndroid);
-    extern void Elastos_SpeechRecognition_InitCallback(Handle32 cb);
+    extern void Elastos_SpeechRecognition_nativeOnAudioStart(IInterface* caller,Handle64 nativeSpeechRecognizerImplAndroid);
+    extern void Elastos_SpeechRecognition_nativeOnSoundStart(IInterface* caller,Handle64 nativeSpeechRecognizerImplAndroid);
+    extern void Elastos_SpeechRecognition_nativeOnSoundEnd(IInterface* caller,Handle64 nativeSpeechRecognizerImplAndroid);
+    extern void Elastos_SpeechRecognition_nativeOnAudioEnd(IInterface* caller,Handle64 nativeSpeechRecognizerImplAndroid);
+    extern void Elastos_SpeechRecognition_nativeOnRecognitionResults(IInterface* caller,Handle64 nativeSpeechRecognizerImplAndroid,ArrayOf<String>* results,ArrayOf<Float>* scores,Boolean provisional);
+    extern void Elastos_SpeechRecognition_nativeOnRecognitionError(IInterface* caller,Handle64 nativeSpeechRecognizerImplAndroid,Int32 error);
+    extern void Elastos_SpeechRecognition_nativeOnRecognitionEnd(IInterface* caller,Handle64 nativeSpeechRecognizerImplAndroid);
+    extern void Elastos_SpeechRecognition_InitCallback(Handle64 cb);
 #ifdef __cplusplus
 }
 #endif
@@ -33,7 +33,7 @@ namespace Browser {
 
 struct ElaSpeechRecognitionCallback
 {
-    AutoPtr<IInterface> (*elastos_SpeechRecognition_createSpeechRecognition)(IInterface* context, Int64 nativeSpeechRecognizerImplAndroid);
+    AutoPtr<IInterface> (*elastos_SpeechRecognition_createSpeechRecognition)(IInterface* context, Handle64 nativeSpeechRecognizerImplAndroid);
     void (*elastos_SpeechRecognition_startRecognition)(IInterface* obj, const String& language, Boolean continuous, Boolean interimResults);
     void (*elastos_SpeechRecognition_abortRecognition)(IInterface* obj);
     void (*elastos_SpeechRecognition_stopRecognition)(IInterface* obj);
@@ -48,7 +48,7 @@ void* SpeechRecognition::ElaSpeechRecognitionCallback_Init()
     sElaSpeechRecognitionCallback.elastos_SpeechRecognition_abortRecognition = &SpeechRecognition::AbortRecognition;
     sElaSpeechRecognitionCallback.elastos_SpeechRecognition_stopRecognition = &SpeechRecognition::StopRecognition;
 
-    Elastos_SpeechRecognition_InitCallback((Handle32)&sElaSpeechRecognitionCallback);
+    Elastos_SpeechRecognition_InitCallback((Handle64)&sElaSpeechRecognitionCallback);
     return &sElaSpeechRecognitionCallback;
 }
 

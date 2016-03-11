@@ -10,9 +10,9 @@
 extern "C"
 {
 #endif
-    extern void Elastos_AwHttpAuthHandler_nativeProceed(IInterface* caller,Handle32 nativeAwHttpAuthHandler,const String& username,const String& password);
-    extern void Elastos_AwHttpAuthHandler_nativeCancel(IInterface* caller,Handle32 nativeAwHttpAuthHandler);
-    extern void Elastos_AwHttpAuthHandler_InitCallback(Handle32 cb);
+    extern void Elastos_AwHttpAuthHandler_nativeProceed(IInterface* caller,Handle64 nativeAwHttpAuthHandler,const String& username,const String& password);
+    extern void Elastos_AwHttpAuthHandler_nativeCancel(IInterface* caller,Handle64 nativeAwHttpAuthHandler);
+    extern void Elastos_AwHttpAuthHandler_InitCallback(Handle64 cb);
 #ifdef __cplusplus
 }
 #endif
@@ -27,7 +27,7 @@ namespace AndroidWebview {
 
 struct ElaAwHttpAuthHandlerCallback
 {
-    AutoPtr<IInterface> (*elastos_AwHttpAuthHandler_create)(Int64 nativeAwAuthHandler, Boolean firstAttempt);
+    AutoPtr<IInterface> (*elastos_AwHttpAuthHandler_create)(Handle64 nativeAwAuthHandler, Boolean firstAttempt);
     void (*elastos_AwHttpAuthHandler_handlerDestroyed)(IInterface* obj);
 };
 
@@ -38,7 +38,7 @@ void* AwHttpAuthHandler::ElaAwHttpAuthHandlerCallback_Init()
     sElaAwHttpAuthHandlerCallback.elastos_AwHttpAuthHandler_create = &AwHttpAuthHandler::Create;
     sElaAwHttpAuthHandlerCallback.elastos_AwHttpAuthHandler_handlerDestroyed = &AwHttpAuthHandler::HandlerDestroyed;
 
-    Elastos_AwHttpAuthHandler_InitCallback((Handle32)&sElaAwHttpAuthHandlerCallback);
+    Elastos_AwHttpAuthHandler_InitCallback((Handle64)&sElaAwHttpAuthHandlerCallback);
     return &sElaAwHttpAuthHandlerCallback;
 }
 

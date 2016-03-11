@@ -10,8 +10,8 @@
 extern "C"
 {
 #endif
-    extern void Elastos_AwPermissionRequest_nativeOnAccept(IInterface* caller,Handle32 nativeAwPermissionRequest,Boolean allowed);
-    extern void Elastos_AwPermissionRequest_InitCallback(Handle32 cb);
+    extern void Elastos_AwPermissionRequest_nativeOnAccept(IInterface* caller,Handle64 nativeAwPermissionRequest,Boolean allowed);
+    extern void Elastos_AwPermissionRequest_InitCallback(Handle64 cb);
 #ifdef __cplusplus
 }
 #endif
@@ -27,7 +27,7 @@ namespace Permission{
 
 struct ElaAwPermissionRequestCallback
 {
-    AutoPtr<IInterface> (*elastos_AwPermissionRequest_create)(Int64 nativeAwPermissionRequest, const String& url, Int64 resources);
+    AutoPtr<IInterface> (*elastos_AwPermissionRequest_create)(Handle64 nativeAwPermissionRequest, const String& url, Int64 resources);
     void (*elastos_AwPermissionRequest_detachNativeInstance)(IInterface* obj);
 };
 
@@ -38,7 +38,7 @@ void* AwPermissionRequest::ElaAwPermissionRequestCallback_Init()
     sElaAwPermissionRequestCallback.elastos_AwPermissionRequest_create = &AwPermissionRequest::Create;
     sElaAwPermissionRequestCallback.elastos_AwPermissionRequest_detachNativeInstance = &AwPermissionRequest::DetachNativeInstance;
 
-    Elastos_AwPermissionRequest_InitCallback((Handle32)&sElaAwPermissionRequestCallback);
+    Elastos_AwPermissionRequest_InitCallback((Handle64)&sElaAwPermissionRequestCallback);
     return &sElaAwPermissionRequestCallback;
 }
 

@@ -16,16 +16,6 @@ using Elastos::Droid::Database::IContentObserver;
 using Elastos::Droid::Os::IHandlerThread;
 using Elastos::Droid::Media::IAudioManager;
 
-
-// import android.util.Log;
-
-// import org.chromium.base.CalledByNative;
-// import org.chromium.base.JNINamespace;
-
-// import java.util.ArrayList;
-// import java.util.Arrays;
-// import java.util.List;
-
 namespace Elastos {
 namespace Droid {
 namespace Webkit {
@@ -157,7 +147,7 @@ public:
 private:
     AudioManagerElastos(
         /* [in] */ IContext* context,
-        /* [in] */ Int64 nativeAudioManagerElastos);
+        /* [in] */ Handle64 nativeAudioManagerElastos);
 
     static CARAPI_(Boolean) RunningOnJellyBeanOrHigher();
 
@@ -169,7 +159,7 @@ private:
     //@CalledByNative AudioManagerElastos
     static CARAPI_(AutoPtr<AudioManagerElastos>) CreateAudioManagerElastos(
         /* [in] */ IContext* context,
-        /* [in] */ Int64 nativeAudioManagerElastos);
+        /* [in] */ Handle64 nativeAudioManagerElastos);
 
     /**
      * Saves the initial speakerphone and microphone state.
@@ -393,7 +383,7 @@ private:
     CARAPI_(void) StopObservingVolumeChanges();
 
     CARAPI_(void) NativeSetMute(
-        /* [in] */ Int64 nativeAudioManagerElastos,
+        /* [in] */ Handle64 nativeAudioManagerElastos,
         /* [in] */ Boolean muted);
 
 // begin the callback function declare
@@ -428,7 +418,7 @@ public:
 
     static CARAPI_(AutoPtr<IInterface>) CreateAudioManagerElastos(
         /* [in] */ IInterface* context,
-        /* [in} */ Int64 nativeAudioManagerElastos);
+        /* [in} */ Handle64 nativeAudioManagerElastos);
 
 private:
     static const String TAG;
@@ -482,7 +472,7 @@ private:
 
     AutoPtr<IAudioManager> mAudioManager;
     const AutoPtr<IContext> mContext;
-    const Int64 mNativeAudioManagerElastos;
+    const Handle64 mNativeAudioManagerElastos;
 
     // Enabled during initialization if MODIFY_AUDIO_SETTINGS permission is
     // granted. Required to shift system-wide audio settings.

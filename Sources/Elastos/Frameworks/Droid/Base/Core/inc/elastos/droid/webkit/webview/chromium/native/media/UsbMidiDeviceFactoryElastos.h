@@ -8,16 +8,8 @@ using Elastos::Droid::Content::IIntent;
 using Elastos::Droid::Hardware::Usb::IUsbManager;
 using Elastos::Droid::Hardware::Usb::IUsbDevice;
 using Elastos::Droid::Content::BroadcastReceiver;
-// import org.chromium.base.CalledByNative;
-// import org.chromium.base.JNINamespace;
 using Elastos::Utility::IList;
 using Elastos::Utility::ISet;
-
-// import java.util.ArrayList;
-// import java.util.HashSet;
-// import java.util.List;
-// import java.util.Map;
-// import java.util.Set;
 
 namespace Elastos {
 namespace Droid {
@@ -56,7 +48,7 @@ public:
      * @param natviePointer The native pointer to which the created factory is associated.
      */
     UsbMidiDeviceFactoryElastos(
-        /* [in] */ Int64 nativePointer);
+        /* [in] */ Handle64 nativePointer);
 
     /**
      * Constructs a UsbMidiDeviceAndroid.
@@ -64,7 +56,7 @@ public:
      */
     //@CalledByNative return UsbMidiDeviceFactoryElastos
     static CARAPI_(AutoPtr<IInterface>) Create(
-        /* [in] */ Int64 nativePointer);
+        /* [in] */ Handle64 nativePointer);
 
     /**
      * Enumerates USB-MIDI devices.
@@ -97,7 +89,7 @@ private:
         /* [in] */ IIntent* intent);
 
     static CARAPI_(void) NativeOnUsbMidiDeviceRequestDone(
-        /* [in] */ Int64 nativeUsbMidiDeviceFactoryElastos,
+        /* [in] */ Handle64 nativeUsbMidiDeviceFactoryElastos,
         /* [in] */ ArrayOf<IInterface*>* devices);
 
 //callback function declaration
@@ -137,7 +129,7 @@ private:
     /**
      * The identifier of this factory.
      */
-    Int64 mNativePointer;
+    Handle64 mNativePointer;
 
     static const String ACTION_USB_PERMISSION;
 };

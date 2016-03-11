@@ -180,7 +180,7 @@ CAR_INTERFACE_IMPL(ContentVideoView, FrameLayout, ISurfaceHolderCallback);
 
 ContentVideoView::ContentVideoView(
     /* [in] */ IContext* context,
-    /* [in] */ Int64 nativeContentVideoView,
+    /* [in] */ Handle64 nativeContentVideoView,
     /* [in] */ ContentVideoViewClient* client)
     : mVideoWidth(0)
     , mVideoHeight(0)
@@ -480,7 +480,7 @@ Boolean ContentVideoView::IsPlaying()
 //@CalledByNative
 AutoPtr<ContentVideoView> ContentVideoView::CreateContentVideoView(
     /* [in] */ IContext* context,
-    /* [in] */ Int64 nativeContentVideoView,
+    /* [in] */ Handle64 nativeContentVideoView,
     /* [in] */ ContentVideoViewClient* client,
     /* [in] */ Boolean legacy)
 {
@@ -624,7 +624,7 @@ ECode ContentVideoView::ReleaseAnchorView(
 }
 
 //@CalledByNative
-Int64 ContentVideoView::GetNativeViewAndroid()
+Handle64 ContentVideoView::GetNativeViewAndroid()
 {
     return mViewAndroid->GetNativePointer();
 }
@@ -636,72 +636,72 @@ AutoPtr<ContentVideoView> ContentVideoView::NativeGetSingletonJavaContentVideoVi
 }
 
 void ContentVideoView::NativeExitFullscreen(
-    /* [in] */ Int64 nativeContentVideoView,
+    /* [in] */ Handle64 nativeContentVideoView,
     /* [in] */ Boolean relaseMediaPlayer)
 {
-    Elastos_ContentVideoView_nativeExitFullscreen(THIS_PROBE(IInterface), (Handle32)nativeContentVideoView, relaseMediaPlayer);
+    Elastos_ContentVideoView_nativeExitFullscreen(THIS_PROBE(IInterface), nativeContentVideoView, relaseMediaPlayer);
 }
 
 Int32 ContentVideoView::NativeGetCurrentPosition(
-    /* [in] */ Int64 nativeContentVideoView)
+    /* [in] */ Handle64 nativeContentVideoView)
 {
-    return Elastos_ContentVideoView_nativeGetCurrentPosition(THIS_PROBE(IInterface), (Handle32)nativeContentVideoView);
+    return Elastos_ContentVideoView_nativeGetCurrentPosition(THIS_PROBE(IInterface), nativeContentVideoView);
 }
 
 Int32 ContentVideoView::NativeGetDurationInMilliSeconds(
-    /* [in] */ Int64 nativeContentVideoView)
+    /* [in] */ Handle64 nativeContentVideoView)
 {
-    return Elastos_ContentVideoView_nativeGetDurationInMilliSeconds(THIS_PROBE(IInterface), (Handle32)nativeContentVideoView);
+    return Elastos_ContentVideoView_nativeGetDurationInMilliSeconds(THIS_PROBE(IInterface), nativeContentVideoView);
 }
 
 void ContentVideoView::NativeRequestMediaMetadata(
-    /* [in] */ Int64 nativeContentVideoView)
+    /* [in] */ Handle64 nativeContentVideoView)
 {
-    Elastos_ContentVideoView_nativeRequestMediaMetadata(THIS_PROBE(IInterface), (Handle32)nativeContentVideoView);
+    Elastos_ContentVideoView_nativeRequestMediaMetadata(THIS_PROBE(IInterface), nativeContentVideoView);
 }
 
 Int32 ContentVideoView::NativeGetVideoWidth(
-    /* [in] */ Int64 nativeContentVideoView)
+    /* [in] */ Handle64 nativeContentVideoView)
 {
-    return Elastos_ContentVideoView_nativeGetVideoWidth(THIS_PROBE(IInterface), (Handle32)nativeContentVideoView);
+    return Elastos_ContentVideoView_nativeGetVideoWidth(THIS_PROBE(IInterface), nativeContentVideoView);
 }
 
 Int32 ContentVideoView::NativeGetVideoHeight(
-    /* [in] */ Int64 nativeContentVideoView)
+    /* [in] */ Handle64 nativeContentVideoView)
 {
-    return Elastos_ContentVideoView_nativeGetVideoHeight(THIS_PROBE(IInterface), (Handle32)nativeContentVideoView);
+    return Elastos_ContentVideoView_nativeGetVideoHeight(THIS_PROBE(IInterface), nativeContentVideoView);
 }
 
 Boolean ContentVideoView::NativeIsPlaying(
-    /* [in] */ Int64 nativeContentVideoView)
+    /* [in] */ Handle64 nativeContentVideoView)
 {
-    return Elastos_ContentVideoView_nativeIsPlaying(THIS_PROBE(IInterface), (Handle32)nativeContentVideoView);
+    return Elastos_ContentVideoView_nativeIsPlaying(THIS_PROBE(IInterface), nativeContentVideoView);
 }
 
 void ContentVideoView::NativePause(
-    /* [in] */ Int64 nativeContentVideoView)
+    /* [in] */ Handle64 nativeContentVideoView)
 {
-    Elastos_ContentVideoView_nativePause(THIS_PROBE(IInterface), (Handle32)nativeContentVideoView);
+    Elastos_ContentVideoView_nativePause(THIS_PROBE(IInterface), nativeContentVideoView);
 }
 
 void ContentVideoView::NativePlay(
-    /* [in] */ Int64 nativeContentVideoView)
+    /* [in] */ Handle64 nativeContentVideoView)
 {
-    Elastos_ContentVideoView_nativePlay(THIS_PROBE(IInterface), (Handle32)nativeContentVideoView);
+    Elastos_ContentVideoView_nativePlay(THIS_PROBE(IInterface), nativeContentVideoView);
 }
 
 void ContentVideoView::NativeSeekTo(
-    /* [in] */ Int64 nativeContentVideoView,
+    /* [in] */ Handle64 nativeContentVideoView,
     /* [in] */ Int32 msec)
 {
-    Elastos_ContentVideoView_nativeSeekTo(THIS_PROBE(IInterface), (Handle32)nativeContentVideoView, msec);
+    Elastos_ContentVideoView_nativeSeekTo(THIS_PROBE(IInterface), nativeContentVideoView, msec);
 }
 
 void ContentVideoView::NativeSetSurface(
-    /* [in] */ Int64 nativeContentVideoView,
+    /* [in] */ Handle64 nativeContentVideoView,
     /* [in] */ ISurface* surface)
 {
-    Elastos_ContentVideoView_nativeSetSurface(THIS_PROBE(IInterface), (Handle32)nativeContentVideoView, TO_IINTERFACE(surface));
+    Elastos_ContentVideoView_nativeSetSurface(THIS_PROBE(IInterface), nativeContentVideoView, TO_IINTERFACE(surface));
 }
 
 void ContentVideoView::OnMediaPlayerError(
@@ -788,7 +788,7 @@ void ContentVideoView::OpenVideo(
 
 AutoPtr<IInterface> ContentVideoView::CreateContentVideoView(
     /* [in] */ IInterface* context,
-    /* [in] */ Int64 nativeContentVideoView,
+    /* [in] */ Handle64 nativeContentVideoView,
     /* [in] */ IInterface* client,
     /* [in] */ Boolean legacy)
 {
@@ -822,7 +822,7 @@ void ContentVideoView::DestroyContentVideoView(
     mObj->DestroyContentVideoView(nativeViewDestroyed);
 }
 
-Int64 ContentVideoView::GetNativeViewAndroid(
+Handle64 ContentVideoView::GetNativeViewAndroid(
     /* [in] */ IInterface* obj)
 {
     AutoPtr<ContentVideoView> mObj = (ContentVideoView*)(FrameLayout*)(IObject::Probe(obj));

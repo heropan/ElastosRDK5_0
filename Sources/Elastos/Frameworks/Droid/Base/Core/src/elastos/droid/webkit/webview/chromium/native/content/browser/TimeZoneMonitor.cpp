@@ -46,7 +46,7 @@ const String TimeZoneMonitor::TAG("TimeZoneMonitor");
 
 TimeZoneMonitor::TimeZoneMonitor(
     /* [in] */ IContext* context,
-    /* [in] */ Int64 nativePtr)
+    /* [in] */ Handle64 nativePtr)
     : mNativePtr(nativePtr)
 {
     context->GetApplicationContext((IContext**)&mAppContext);
@@ -56,7 +56,7 @@ TimeZoneMonitor::TimeZoneMonitor(
 
 AutoPtr<TimeZoneMonitor> TimeZoneMonitor::GetInstance(
     /* [in] */ IContext* context,
-    /* [in] */ Int64 nativePtr)
+    /* [in] */ Handle64 nativePtr)
 {
     return new TimeZoneMonitor(context, nativePtr);
 }
@@ -70,15 +70,15 @@ ECode TimeZoneMonitor::Stop()
 }
 
 ECode TimeZoneMonitor::NativeTimeZoneChangedFromJava(
-    /* [in] */ Int64 nativeTimeZoneMonitorAndroid)
+    /* [in] */ Handle64 nativeTimeZoneMonitorAndroid)
 {
-    Elastos_TimeZoneMonitor_nativeTimeZoneChangedFromJava(THIS_PROBE(IInterface), (Handle32)nativeTimeZoneMonitorAndroid);
+    Elastos_TimeZoneMonitor_nativeTimeZoneChangedFromJava(THIS_PROBE(IInterface), nativeTimeZoneMonitorAndroid);
     return NOERROR;
 }
 
 AutoPtr<IInterface> TimeZoneMonitor::GetInstance(
     /* [in] */ IInterface* context,
-    /* [in] */ Int64 nativePtr)
+    /* [in] */ Handle64 nativePtr)
 {
     AutoPtr<IContext> c = IContext::Probe(context);
     return TO_IINTERFACE(GetInstance(c, nativePtr));

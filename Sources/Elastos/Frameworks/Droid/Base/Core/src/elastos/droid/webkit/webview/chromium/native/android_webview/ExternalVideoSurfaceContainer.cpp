@@ -41,7 +41,7 @@ void ExternalVideoSurfaceContainer::NoPunchingSurfaceView::DispatchDraw(
 //===============================================================
 
 AutoPtr<ExternalVideoSurfaceContainer> ExternalVideoSurfaceContainer::Factory::Create(
-    /* [in] */ Int64 nativeExternalVideoSurfaceContainer,
+    /* [in] */ Handle64 nativeExternalVideoSurfaceContainer,
     /* [in] */ ContentViewCore* contentViewCore)
 {
     AutoPtr<ExternalVideoSurfaceContainer> container = new ExternalVideoSurfaceContainer(
@@ -58,7 +58,7 @@ AutoPtr<IWeakReference> ExternalVideoSurfaceContainer::sActiveContainer;
 AutoPtr<ExternalVideoSurfaceContainer::Factory> ExternalVideoSurfaceContainer::sFactory = new Factory();
 
 ExternalVideoSurfaceContainer::ExternalVideoSurfaceContainer(
-    /* [in] */ Int64 nativeExternalVideoSurfaceContainer,
+    /* [in] */ Handle64 nativeExternalVideoSurfaceContainer,
     /* [in] */ ContentViewCore* contentViewCore)
     : mNativeExternalVideoSurfaceContainer(nativeExternalVideoSurfaceContainer)
     , mContentViewCore(contentViewCore)
@@ -86,7 +86,7 @@ void ExternalVideoSurfaceContainer::SetFactory(
 
 //@CalledByNative return ExternalVideoSurfaceContainer
 AutoPtr<IInterface> ExternalVideoSurfaceContainer::Create(
-    /* [in] */ Int64 nativeExternalVideoSurfaceContainer,
+    /* [in] */ Handle64 nativeExternalVideoSurfaceContainer,
     /* [in] */ ContentViewCore* contentViewCore)
 {
     AutoPtr<ExternalVideoSurfaceContainer> externalVideoSurfaceContainer =
@@ -309,24 +309,24 @@ ECode ExternalVideoSurfaceContainer::SurfaceDestroyed(
 }
 
 void ExternalVideoSurfaceContainer::NativeSurfaceCreated(
-    /* [in] */ Int64 nativeExternalVideoSurfaceContainerImpl,
+    /* [in] */ Handle64 nativeExternalVideoSurfaceContainerImpl,
     /* [in] */ Int32 playerId,
     /* [in] */ ISurface* surface)
 {
     Elastos_ExternalVideoSurfaceContainer_nativeSurfaceCreated(THIS_PROBE(IInterface),
-            (Handle32)nativeExternalVideoSurfaceContainerImpl, playerId, TO_IINTERFACE(surface));
+            nativeExternalVideoSurfaceContainerImpl, playerId, TO_IINTERFACE(surface));
 }
 
 void ExternalVideoSurfaceContainer::NativeSurfaceDestroyed(
-    /* [in] */ Int64 nativeExternalVideoSurfaceContainerImpl,
+    /* [in] */ Handle64 nativeExternalVideoSurfaceContainerImpl,
     /* [in] */ Int32 playerId)
 {
     Elastos_ExternalVideoSurfaceContainer_nativeSurfaceDestroyed(THIS_PROBE(IInterface),
-            (Handle32)nativeExternalVideoSurfaceContainerImpl, playerId);
+            nativeExternalVideoSurfaceContainerImpl, playerId);
 }
 //callback function definition
 AutoPtr<IInterface> ExternalVideoSurfaceContainer::Create(
-    /* [in] */ Int64 nativeExternalVideoSurfaceContainer,
+    /* [in] */ Handle64 nativeExternalVideoSurfaceContainer,
     /* [in] */ IInterface* contentViewCore)
 {
     AutoPtr<ContentViewCore> c = (ContentViewCore*)(IObject::Probe(contentViewCore));

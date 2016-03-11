@@ -10,9 +10,9 @@
 extern "C"
 {
 #endif
-    extern Int64 Elastos_ContentSettings_nativeInit(IInterface* caller,Int64 contentViewPtr);
-    extern Boolean Elastos_ContentSettings_nativeGetJavaScriptEnabled(IInterface* caller,Handle32 nativeContentSettings);
-    extern void Elastos_ContentSettings_InitCallback(Handle32 cb);
+    extern Handle64 Elastos_ContentSettings_nativeInit(IInterface* caller,Handle64 contentViewPtr);
+    extern Boolean Elastos_ContentSettings_nativeGetJavaScriptEnabled(IInterface* caller,Handle64 nativeContentSettings);
+    extern void Elastos_ContentSettings_InitCallback(Handle64 cb);
 #ifdef __cplusplus
 }
 #endif
@@ -28,7 +28,7 @@ namespace Browser {
 
 struct ElaContentSettingsCallback
 {
-    void (*elastos_ContentSettings_onNativeContentSettingsDestroyed)(IInterface* obj, Int64 nativeContentSettings);
+    void (*elastos_ContentSettings_onNativeContentSettingsDestroyed)(IInterface* obj, Handle64 nativeContentSettings);
 };
 
 void* ContentSettings::ElaContentSettingsCallback_Init()
@@ -37,7 +37,7 @@ void* ContentSettings::ElaContentSettingsCallback_Init()
 
     sElaContentSettingsCallback.elastos_ContentSettings_onNativeContentSettingsDestroyed = &ContentSettings::OnNativeContentSettingsDestroyed;
 
-    Elastos_ContentSettings_InitCallback((Handle32)&sElaContentSettingsCallback);
+    Elastos_ContentSettings_InitCallback((Handle64)&sElaContentSettingsCallback);
     return &sElaContentSettingsCallback;
 }
 

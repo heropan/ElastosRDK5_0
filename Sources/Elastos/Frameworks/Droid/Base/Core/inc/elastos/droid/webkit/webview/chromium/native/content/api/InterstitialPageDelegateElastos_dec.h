@@ -10,10 +10,10 @@
 extern "C"
 {
 #endif
-    extern Int64 Elastos_InterstitialPageDelegateAndroid_nativeInit(IInterface* caller,const String& htmlContent);
-    extern void Elastos_InterstitialPageDelegateAndroid_nativeProceed(IInterface* caller,Handle32 nativeInterstitialPageDelegateElastos);
-    extern void Elastos_InterstitialPageDelegateAndroid_nativeDontProceed(IInterface* caller,Handle32 nativeInterstitialPageDelegateElastos);
-    extern void Elastos_InterstitialPageDelegateAndroid_InitCallback(Handle32 cb);
+    extern Handle64 Elastos_InterstitialPageDelegateAndroid_nativeInit(IInterface* caller,const String& htmlContent);
+    extern void Elastos_InterstitialPageDelegateAndroid_nativeProceed(IInterface* caller,Handle64 nativeInterstitialPageDelegateElastos);
+    extern void Elastos_InterstitialPageDelegateAndroid_nativeDontProceed(IInterface* caller,Handle64 nativeInterstitialPageDelegateElastos);
+    extern void Elastos_InterstitialPageDelegateAndroid_InitCallback(Handle64 cb);
 #ifdef __cplusplus
 }
 #endif
@@ -44,7 +44,7 @@ void* InterstitialPageDelegateElastos::ElaInterstitialPageDelegateElastosCallbac
     sElaInterstitialPageDelegateAndroidCallback.elastos_InterstitialPageDelegateAndroid_commandReceived = &InterstitialPageDelegateElastos::CommandReceived;
     sElaInterstitialPageDelegateAndroidCallback.elastos_InterstitialPageDelegateAndroid_onNativeDestroyed = &InterstitialPageDelegateElastos::OnNativeDestroyed;
 
-    Elastos_InterstitialPageDelegateAndroid_InitCallback((Handle32)&sElaInterstitialPageDelegateAndroidCallback);
+    Elastos_InterstitialPageDelegateAndroid_InitCallback((Handle64)&sElaInterstitialPageDelegateAndroidCallback);
     return &sElaInterstitialPageDelegateAndroidCallback;
 }
 

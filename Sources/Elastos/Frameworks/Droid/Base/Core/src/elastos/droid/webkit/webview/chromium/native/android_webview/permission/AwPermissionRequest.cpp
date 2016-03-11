@@ -23,7 +23,7 @@ namespace Permission {
 String AwPermissionRequest::TAG("AwPermissionRequest");
 
 AwPermissionRequest::AwPermissionRequest(
-    /* [in] */ Int64 nativeAwPermissionRequest,
+    /* [in] */ Handle64 nativeAwPermissionRequest,
     /* [in] */ IUri* origin,
     /* [in] */ Int64 resources)
     : mOrigin(origin)
@@ -44,7 +44,7 @@ AwPermissionRequest::~AwPermissionRequest()
 
 //@CalledByNative return AwPermissionRequest
 AutoPtr<IInterface> AwPermissionRequest::Create(
-    /* [in] */ Int64 nativeAwPermissionRequest,
+    /* [in] */ Handle64 nativeAwPermissionRequest,
     /* [in] */ const String& url,
     /* [in] */ Int64 resources)
 {
@@ -119,10 +119,10 @@ ECode AwPermissionRequest::Validate()
 }
 
 void AwPermissionRequest::NativeOnAccept(
-    /* [in] */ Int64 nativeAwPermissionRequest,
+    /* [in] */ Handle64 nativeAwPermissionRequest,
     /* [in] */ Boolean allowed)
 {
-    Elastos_AwPermissionRequest_nativeOnAccept(THIS_PROBE(IInterface), (Handle32)nativeAwPermissionRequest, allowed);
+    Elastos_AwPermissionRequest_nativeOnAccept(THIS_PROBE(IInterface), nativeAwPermissionRequest, allowed);
 }
 //callback function definition
 

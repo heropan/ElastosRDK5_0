@@ -7,10 +7,6 @@
 
 using Elastos::Droid::Content::IContext;
 
-// import org.chromium.base.CalledByNative;
-// import org.chromium.base.JNINamespace;
-// import org.chromium.content.browser.ContentViewCore;
-
 namespace Elastos {
 namespace Droid {
 namespace Webkit {
@@ -55,7 +51,7 @@ public:
 private:
     static CARAPI_(AutoPtr<IInterface>) CreateDateTimeChooser(
         /* [in] */ IInterface* contentViewCore,
-        /* [in] */ Int64 nativeDateTimeChooserElastos,
+        /* [in] */ Handle64 nativeDateTimeChooserElastos,
         /* [in] */ Int32 dialogType,
         /* [in] */ Double dialogValue,
         /* [in] */ Double min,
@@ -65,7 +61,7 @@ private:
 
     DateTimeChooserElastos(
         /* [in] */ IContext* context,
-        /* [in] */ Int64 nativeDateTimeChooserElastos);
+        /* [in] */ Handle64 nativeDateTimeChooserElastos);
 
     CARAPI_(void) ShowDialog(
         /* [in] */ Int32 dialogType,
@@ -78,7 +74,7 @@ private:
     //@CalledByNative
     static CARAPI_(AutoPtr<DateTimeChooserElastos>) CreateDateTimeChooser(
         /* [in] */ ContentViewCore* contentViewCore,
-        /* [in] */ Int64 nativeDateTimeChooserElastos,
+        /* [in] */ Handle64 nativeDateTimeChooserElastos,
         /* [in] */ Int32 dialogType,
         /* [in] */ Double dialogValue,
         /* [in] */ Double min,
@@ -115,14 +111,14 @@ private:
         /* [in] */ Int32 textInputTypeWeek);
 
     CARAPI_(void) NativeReplaceDateTime(
-        /* [in] */ Int64 nativeDateTimeChooserElastos,
+        /* [in] */ Handle64 nativeDateTimeChooserElastos,
         /* [in] */ Double dialogValue);
 
     CARAPI_(void) NativeCancelDialog(
-        /* [in] */ Int64 nativeDateTimeChooserElastos);
+        /* [in] */ Handle64 nativeDateTimeChooserElastos);
 
 private:
-    const Int64 mNativeDateTimeChooserElastos;
+    const Handle64 mNativeDateTimeChooserElastos;
     AutoPtr<InputDialogContainer> mInputDialogContainer;
 };
 

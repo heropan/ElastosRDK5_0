@@ -12,9 +12,6 @@ using Elastos::Droid::Webkit::Webview::Chromium::Content::Common::CleanupReferen
 using Elastos::Core::IRunnable;
 using Elastos::IO::IOutputStream;
 
-
-// import org.chromium.base.JNINamespace;
-
 namespace Elastos {
 namespace Droid {
 namespace Webkit {
@@ -45,9 +42,9 @@ private:
 
     public:
         DestroyRunnable(
-            /* [in] */ Int64 nativeAwPicture);
+            /* [in] */ Handle64 nativeAwPicture);
 
-        Int64 mNativeAwPicture;
+        Handle64 mNativeAwPicture;
     };
 
 public:
@@ -56,7 +53,7 @@ public:
      *                        taken by this java instance.
      */
     AwPicture(
-        /* [in] */ Int64 nativeAwPicture);
+        /* [in] */ Handle64 nativeAwPicture);
 
     //@Override
     CARAPI BeginRecording(
@@ -81,7 +78,7 @@ public:
 
     //override
     CARAPI GetNativePicture(
-        /* [out] */ Handle32* handle);
+        /* [out] */ Handle32/*TODO Handle64*/* handle);
     //@Override
     //@SuppressWarnings("deprecation")
     CARAPI WriteToStream(
@@ -91,19 +88,19 @@ private:
     CARAPI_(void) UnsupportedOperation();
 
     static CARAPI_(void) NativeDestroy(
-        /* [in] */ Int64 nativeAwPicture);
+        /* [in] */ Handle64 nativeAwPicture);
 
     CARAPI_(Int32) NativeGetWidth(
-        /* [in] */ Int64 nativeAwPicture);
+        /* [in] */ Handle64 nativeAwPicture);
 
     CARAPI_(Int32) NativeGetHeight(
-        /* [in] */ Int64 nativeAwPicture);
+        /* [in] */ Handle64 nativeAwPicture);
 
     CARAPI_(void) NativeDraw(
-        /* [in] */ Int64 nativeAwPicture, ICanvas* canvas);
+        /* [in] */ Handle64 nativeAwPicture, ICanvas* canvas);
 
 private:
-    Int64 mNativeAwPicture;
+    Handle64 mNativeAwPicture;
     AutoPtr<CleanupReference> mCleanupReference;
 };
 

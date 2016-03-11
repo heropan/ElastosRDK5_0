@@ -314,7 +314,7 @@ ECode WindowElastos::Destroy()
     return NOERROR;
 }
 
-Int64 WindowElastos::GetNativePointer()
+Handle64 WindowElastos::GetNativePointer()
 {
     // ==================before translated======================
     // if (mNativeWindowElastos == 0) {
@@ -347,24 +347,24 @@ ECode WindowElastos::RequestVSyncUpdate()
     return NOERROR;
 }
 
-Int64 WindowElastos::NativeInit(
+Handle64 WindowElastos::NativeInit(
     /* [in] */ Int64 vsyncPeriod)
 {
     return Elastos_WindowAndroid_nativeInit(THIS_PROBE(IInterface), vsyncPeriod);
 }
 
 ECode WindowElastos::NativeOnVSync(
-    /* [in] */ Int64 nativeWindowElastos,
+    /* [in] */ Handle64 nativeWindowElastos,
     /* [in] */ Int64 vsyncTimeMicros)
 {
-    Elastos_WindowAndroid_nativeOnVSync(THIS_PROBE(IInterface), (Handle32)nativeWindowElastos, vsyncTimeMicros);
+    Elastos_WindowAndroid_nativeOnVSync(THIS_PROBE(IInterface), (Handle64)nativeWindowElastos, vsyncTimeMicros);
     return NOERROR;
 }
 
 ECode WindowElastos::NativeDestroy(
-    /* [in] */ Int64 nativeWindowElastos)
+    /* [in] */ Handle64 nativeWindowElastos)
 {
-    Elastos_WindowAndroid_nativeDestroy(THIS_PROBE(IInterface), (Handle32)nativeWindowElastos);
+    Elastos_WindowAndroid_nativeDestroy(THIS_PROBE(IInterface), (Handle64)nativeWindowElastos);
     return NOERROR;
 }
 

@@ -165,7 +165,7 @@ private:
 public:
     ContentVideoViewLegacy(
         /* [in] */ IContext* context,
-        /* [in] */ Int64 nativeContentVideoView,
+        /* [in] */ Handle64 nativeContentVideoView,
         /* [in] */ ContentVideoViewClient* client);
 
     //@Override

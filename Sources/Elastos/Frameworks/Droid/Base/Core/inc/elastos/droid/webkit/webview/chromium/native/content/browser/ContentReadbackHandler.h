@@ -12,11 +12,6 @@ using Elastos::Droid::Graphics::IRect;
 using Elastos::Droid::Webkit::Webview::Chromium::Ui::Base::WindowElastos;
 using Elastos::Droid::Utility::ISparseArray;
 
-// import org.chromium.base.CalledByNative;
-// import org.chromium.base.JNINamespace;
-// import org.chromium.base.ThreadUtils;
-// import org.chromium.ui.base.WindowAndroid;
-
 namespace Elastos {
 namespace Droid {
 namespace Webkit {
@@ -114,13 +109,13 @@ private:
         /* [in] */ Boolean success,
         /* [in] */ IBitmap* bitmap);
 
-    CARAPI_(Int64) NativeInit();
+    CARAPI_(Handle64) NativeInit();
 
     CARAPI_(void) NativeDestroy(
-        /* [in] */ Int64 nativeContentReadbackHandler);
+        /* [in] */ Handle64 nativeContentReadbackHandler);
 
     CARAPI_(void) NativeGetContentBitmap(
-        /* [in] */ Int64 nativeContentReadbackHandler,
+        /* [in] */ Handle64 nativeContentReadbackHandler,
         /* [in] */ Int32 readback_id,
         /* [in] */ Float scale,
         /* [in] */ /*BitmapConfig*/Int32 config,
@@ -131,15 +126,15 @@ private:
         /* [in] */ IInterface* contentViewCore);
 
     CARAPI_(void) NativeGetCompositorBitmap(
-        /* [in] */ Int64 nativeContentReadbackHandler,
+        /* [in] */ Handle64 nativeContentReadbackHandler,
         /* [in] */ Int32 readback_id,
-        /* [in] */ Int64 nativeWindowAndroid);
+        /* [in] */ Handle64 nativeWindowAndroid);
 
 private:
     Int32 mNextReadbackId;
     AutoPtr<ISparseArray> mGetBitmapRequests;// <GetBitmapCallback>
 
-    Int64 mNativeContentReadbackHandler;
+    Handle64 mNativeContentReadbackHandler;
 };
 
 } // namespace Browser

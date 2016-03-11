@@ -10,15 +10,6 @@
 #include "elastos/droid/ext/frameworkext.h"
 #include <elastos/core/Object.h>
 
-// package org.chromium.content.browser;
-// import android.content.BroadcastReceiver;
-// import android.content.Context;
-// import android.content.Intent;
-// import android.content.IntentFilter;
-// import android.util.Log;
-// import org.chromium.base.CalledByNative;
-// import org.chromium.base.JNINamespace;
-
 using Elastos::Droid::Content::IBroadcastReceiver;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Content::IIntent;
@@ -63,7 +54,7 @@ public:
     // @CalledByNative
     static CARAPI_(AutoPtr<TimeZoneMonitor>) GetInstance(
         /* [in] */ IContext* context,
-        /* [in] */ Int64 nativePtr);
+        /* [in] */ Handle64 nativePtr);
 
     /**
       * Stop listening for intents.
@@ -76,7 +67,7 @@ public:
 private:
     static CARAPI_(AutoPtr<IInterface>) GetInstance(
         /* [in] */ IInterface* context,
-        /* [in] */ Int64 nativePtr);
+        /* [in] */ Handle64 nativePtr);
 
     static CARAPI_(void) Stop(
         /* [in] */ IInterface* obj);
@@ -87,21 +78,21 @@ private:
       */
     TimeZoneMonitor(
         /* [in] */ IContext* context,
-        /* [in] */ Int64 nativePtr);
+        /* [in] */ Handle64 nativePtr);
 
     /**
       * Native JNI call to content::TimeZoneMonitorAndroid::TimeZoneChanged.
       * See content/browser/time_zone_monitor_android.cc.
       */
     CARAPI NativeTimeZoneChangedFromJava(
-        /* [in] */ Int64 nativeTimeZoneMonitorAndroid);
+        /* [in] */ Handle64 nativeTimeZoneMonitorAndroid);
 
 private:
     static const String TAG;
     AutoPtr<IContext> mAppContext;
     AutoPtr<IIntentFilter> mFilter;
     AutoPtr<IBroadcastReceiver> mBroadcastReceiver;
-    Int64 mNativePtr;
+    Handle64 mNativePtr;
 };
 
 } // namespace Browser

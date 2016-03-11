@@ -85,12 +85,12 @@ public:
 
 private:
     MediaPlayerListener(
-        /* [in] */ Int64 nativeMediaPlayerListener,
+        /* [in] */ Handle64 nativeMediaPlayerListener,
         /* [in] */ IContext* context);
 
     //@CalledByNative return IMediaPlayerListener
     static CARAPI_(AutoPtr<IInterface>) Create(
-        /* [in] */ Int64 nativeMediaPlayerListener,
+        /* [in] */ Handle64 nativeMediaPlayerListener,
         /* [in] */ IContext* context,
         /* [in] */ MediaPlayerBridge* mediaPlayerBridge);
 
@@ -98,29 +98,29 @@ private:
      * See media/base/android/media_player_listener.cc for all the following functions.
      */
     CARAPI_(void) NativeOnMediaError(
-        /* [in] */ Int64 nativeMediaPlayerListener,
+        /* [in] */ Handle64 nativeMediaPlayerListener,
         /* [in] */ Int32 errorType);
 
     CARAPI_(void) NativeOnVideoSizeChanged(
-        /* [in] */ Int64 nativeMediaPlayerListener,
+        /* [in] */ Handle64 nativeMediaPlayerListener,
         /* [in] */ Int32 width,
         /* [in] */ Int32 height);
 
     CARAPI_(void) NativeOnBufferingUpdate(
-        /* [in] */ Int64 nativeMediaPlayerListener,
+        /* [in] */ Handle64 nativeMediaPlayerListener,
         /* [in] */ Int32 percent);
 
     CARAPI_(void) NativeOnMediaPrepared(
-        /* [in] */ Int64 nativeMediaPlayerListener);
+        /* [in] */ Handle64 nativeMediaPlayerListener);
 
     CARAPI_(void) NativeOnPlaybackComplete(
-        /* [in] */ Int64 nativeMediaPlayerListener);
+        /* [in] */ Handle64 nativeMediaPlayerListener);
 
     CARAPI_(void) NativeOnSeekComplete(
-        /* [in] */ Int64 nativeMediaPlayerListener);
+        /* [in] */ Handle64 nativeMediaPlayerListener);
 
     CARAPI_(void) NativeOnMediaInterrupted(
-        /* [in] */ Int64 nativeMediaPlayerListener);
+        /* [in] */ Handle64 nativeMediaPlayerListener);
 
 //callback function declaration
 public:
@@ -131,7 +131,7 @@ private:
         /* [in] */ IInterface* obj);
 
     static CARAPI_(AutoPtr<IInterface>) Create(
-        /* [in] */ Int64 nativeMediaPlayerListener,
+        /* [in] */ Handle64 nativeMediaPlayerListener,
         /* [in] */ IInterface* context,
         /* [in] */ IInterface* mediaPlayerBridge);
 
@@ -150,7 +150,7 @@ private:
     static const Int32 MEDIA_ERROR_INVALID_CODE = 3;
 
     // Used to determine the class instance to dispatch the native call to.
-    Int64 mNativeMediaPlayerListener;
+    Handle64 mNativeMediaPlayerListener;
     const AutoPtr<IContext> mContext;
 };
 

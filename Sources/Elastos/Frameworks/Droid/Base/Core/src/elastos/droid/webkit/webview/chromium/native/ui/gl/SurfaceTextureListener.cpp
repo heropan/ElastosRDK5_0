@@ -18,7 +18,7 @@ namespace Gl {
 CAR_INTERFACE_IMPL(SurfaceTextureListener, Object, IOnFrameAvailableListener)
 
 SurfaceTextureListener::SurfaceTextureListener(
-    /* [in] */ Int64 nativeSurfaceTextureListener)
+    /* [in] */ Handle64 nativeSurfaceTextureListener)
 {
     // ==================before translated======================
     // assert nativeSurfaceTextureListener != 0;
@@ -57,16 +57,16 @@ ECode SurfaceTextureListener::Finalize()
 }
 
 ECode SurfaceTextureListener::NativeFrameAvailable(
-    /* [in] */ Int64 nativeSurfaceTextureListener)
+    /* [in] */ Handle64 nativeSurfaceTextureListener)
 {
-    Elastos_SurfaceTextureListener_nativeFrameAvailable(THIS_PROBE(IInterface), (Handle32)nativeSurfaceTextureListener);
+    Elastos_SurfaceTextureListener_nativeFrameAvailable(THIS_PROBE(IInterface), (Handle64)nativeSurfaceTextureListener);
     return NOERROR;
 }
 
 ECode SurfaceTextureListener::NativeDestroy(
-    /* [in] */ Int64 nativeSurfaceTextureListener)
+    /* [in] */ Handle64 nativeSurfaceTextureListener)
 {
-    Elastos_SurfaceTextureListener_nativeDestroy(THIS_PROBE(IInterface), (Handle32)nativeSurfaceTextureListener);
+    Elastos_SurfaceTextureListener_nativeDestroy(THIS_PROBE(IInterface), (Handle64)nativeSurfaceTextureListener);
     return NOERROR;
 }
 

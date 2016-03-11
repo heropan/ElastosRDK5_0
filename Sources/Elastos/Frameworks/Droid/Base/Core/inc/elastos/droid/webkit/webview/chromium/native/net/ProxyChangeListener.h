@@ -8,20 +8,6 @@
 #include "elastos/droid/content/BroadcastReceiver.h"
 #include "elastos/droid/ext/frameworkext.h"
 
-// package org.chromium.net;
-// import android.content.BroadcastReceiver;
-// import android.content.Context;
-// import android.content.Intent;
-// import android.content.IntentFilter;
-// import android.net.Proxy;
-// import android.os.Build;
-// import android.util.Log;
-// import org.chromium.base.CalledByNative;
-// import org.chromium.base.JNINamespace;
-// import org.chromium.base.NativeClassQualifiedName;
-// import java.lang.reflect.InvocationTargetException;
-// import java.lang.reflect.Method;
-
 using Elastos::Droid::Content::BroadcastReceiver;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Content::IIntent;
@@ -106,7 +92,7 @@ public:
 
     // @CalledByNative
     virtual CARAPI Start(
-        /* [in] */ Int64 nativePtr);
+        /* [in] */ Handle64 nativePtr);
 
     // @CalledByNative
     virtual CARAPI Stop();
@@ -119,7 +105,7 @@ private:
 
     static CARAPI_(void) Start(
         /* [in] */ IInterface* obj,
-        /* [in] */ Int64 nativePtr);
+        /* [in] */ Handle64 nativePtr);
 
     static CARAPI_(void) Stop(
         /* [in] */ IInterface* obj);
@@ -140,18 +126,18 @@ private:
       */
     // @NativeClassQualifiedName("ProxyConfigServiceAndroid::JNIDelegate")
     CARAPI NativeProxySettingsChangedTo(
-        /* [in] */ Int64 nativePtr,
+        /* [in] */ Handle64 nativePtr,
         /* [in] */ const String& host,
         /* [in] */ Int32 port);
 
     // @NativeClassQualifiedName("ProxyConfigServiceAndroid::JNIDelegate")
     CARAPI NativeProxySettingsChanged(
-        /* [in] */ Int64 nativePtr);
+        /* [in] */ Handle64 nativePtr);
 
 private:
     static const String TAG;
     static Boolean sEnabled;
-    Int64 mNativePtr;
+    Handle64 mNativePtr;
     AutoPtr<IContext> mContext;
     AutoPtr<ProxyReceiver> mProxyReceiver;
     AutoPtr<Delegate> mDelegate;

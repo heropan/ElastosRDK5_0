@@ -254,7 +254,7 @@ void AdapterInputConnection::UpdateState(
     if (!isNonImeChange) return;
 
     // Non-breaking spaces can cause the IME to get confused. Replace with normal spaces.
-    text = text.Replace('\u00A0', ' ');
+    text = text.Replace('\u00A0', ' ');//TODO is this OK??
 
     selectionStart = Elastos::Core::Math::Min(selectionStart, text.GetLength());
     selectionEnd = Elastos::Core::Math::Min(selectionEnd, text.GetLength());

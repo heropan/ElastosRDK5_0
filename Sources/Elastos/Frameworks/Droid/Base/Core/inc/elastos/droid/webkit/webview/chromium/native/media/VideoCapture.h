@@ -13,9 +13,6 @@ using Elastos::Droid::Hardware::IParameters;
 using Elastos::Droid::Hardware::IPreviewCallback;
 
 using Elastos::Utility::Concurrent::Locks::IReentrantLock;
-// import java.io.IOException;
-// import java.util.List;
-// import java.util.concurrent.locks.ReentrantLock;
 
 namespace Elastos {
 namespace Droid {
@@ -64,7 +61,7 @@ public:
     VideoCapture(
         /* [in] */ IContext* context,
         /* [in] */ Int32 id,
-        /* [in] */ Int64 nativeVideoCaptureDeviceAndroid);
+        /* [in] */ Handle64 nativeVideoCaptureDeviceAndroid);
 
     //@CalledByNative
     virtual CARAPI_(Boolean) Allocate(
@@ -112,7 +109,7 @@ public:
 
     // Method for VideoCapture implementations to call back native code.
     virtual CARAPI_(void) NativeOnFrameAvailable(
-        /* [in] */ Int64 nativeVideoCaptureDeviceAndroid,
+        /* [in] */ Handle64 nativeVideoCaptureDeviceAndroid,
         /* [in] */ ArrayOf<Byte>* data,
         /* [in] */ Int32 length,
         /* [in] */ Int32 rotation);
@@ -168,7 +165,7 @@ protected:
 
     Int32 mId;
     // Native callback context variable.
-    Int64 mNativeVideoCaptureDeviceAndroid;
+    Handle64 mNativeVideoCaptureDeviceAndroid;
     AutoPtr< ArrayOf<Int32> > mGlTextures;
     AutoPtr<ISurfaceTexture> mSurfaceTexture;
     static const Int32 GL_TEXTURE_EXTERNAL_OES = 0x8D65;

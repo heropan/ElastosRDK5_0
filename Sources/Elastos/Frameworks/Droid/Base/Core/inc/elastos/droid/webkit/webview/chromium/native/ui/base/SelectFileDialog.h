@@ -9,24 +9,6 @@
 #include "elastos/droid/os/AsyncTask.h"
 #include "elastos/droid/webkit/webview/chromium/native/ui/base/WindowElastos.h"
 
-// package org.chromium.ui.base;
-// import android.app.Activity;
-// import android.content.ContentResolver;
-// import android.content.Intent;
-// import android.net.Uri;
-// import android.os.AsyncTask;
-// import android.os.Environment;
-// import android.provider.MediaStore;
-// import android.text.TextUtils;
-// import org.chromium.base.CalledByNative;
-// import org.chromium.base.ContentUriUtils;
-// import org.chromium.base.JNINamespace;
-// import org.chromium.ui.R;
-// import java.io.File;
-// import java.util.ArrayList;
-// import java.util.Arrays;
-// import java.util.List;
-
 using Elastos::Droid::Content::IContentResolver;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Content::IIntent;
@@ -99,7 +81,7 @@ public:
 
 private:
     SelectFileDialog(
-        /* [in] */ Int64 nativeSelectFileDialog);
+        /* [in] */ Handle64 nativeSelectFileDialog);
 
     /**
       * Creates and starts an intent based on the passed fileTypes and capture value.
@@ -146,15 +128,15 @@ private:
 
     // @CalledByNative return SelectFileDialog
     static CARAPI_(AutoPtr<IInterface>) Create(
-        /* [in] */ Int64 nativeSelectFileDialog);
+        /* [in] */ Handle64 nativeSelectFileDialog);
 
     CARAPI NativeOnFileSelected(
-        /* [in] */ Int64 nativeSelectFileDialogImpl,
+        /* [in] */ Handle64 nativeSelectFileDialogImpl,
         /* [in] */ const String& filePath,
         /* [in] */ const String& displayName);
 
     CARAPI NativeOnFileNotSelected(
-        /* [in] */ Int64 nativeSelectFileDialogImpl);
+        /* [in] */ Handle64 nativeSelectFileDialogImpl);
 
     static CARAPI_(void) SelectFile(
         /* [in] */ IInterface* obj,
@@ -171,7 +153,7 @@ private:
     static const String ALL_AUDIO_TYPES;
     static const String ANY_TYPES;
     static const String CAPTURE_IMAGE_DIRECTORY;
-    Int64 mNativeSelectFileDialog;
+    Handle64 mNativeSelectFileDialog;
     AutoPtr<IList> mFileTypes;
     Boolean mCapture;
     AutoPtr<IUri> mCameraOutputUri;

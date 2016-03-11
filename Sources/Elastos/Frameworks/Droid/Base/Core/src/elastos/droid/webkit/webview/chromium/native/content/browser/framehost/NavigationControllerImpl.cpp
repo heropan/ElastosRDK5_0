@@ -2,6 +2,7 @@
 #include "elastos/droid/webkit/webview/chromium/native/content/browser/framehost/NavigationControllerImpl.h"
 #include "elastos/droid/webkit/webview/chromium/native/content/api/NavigationControllerImpl_dec.h"
 #include <elastos/utility/logging/Logger.h>
+
 using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
@@ -14,14 +15,14 @@ namespace Browser {
 namespace Framehost {
 
 NavigationControllerImpl::NavigationControllerImpl(
-    /* [in] */ Int64 nativeNavigationControllerAndroid)
+    /* [in] */ Handle64 nativeNavigationControllerAndroid)
 {
     mNativeNavigationControllerAndroid = nativeNavigationControllerAndroid;
 }
 
 //@CalledByNative
 AutoPtr<IInterface> NavigationControllerImpl::Create(
-    /* [in] */ Int64 nativeNavigationControllerAndroid)
+    /* [in] */ Handle64 nativeNavigationControllerAndroid)
 {
     AutoPtr<NavigationControllerImpl> ret = new NavigationControllerImpl(nativeNavigationControllerAndroid);
     return TO_IINTERFACE(ret);
@@ -90,48 +91,48 @@ void NavigationControllerImpl::GoForward()
 }
 
 Boolean NavigationControllerImpl::NativeCanGoBack(
-    /* [in] */ Int64 nativeNavigationControllerAndroid)
+    /* [in] */ Handle64 nativeNavigationControllerAndroid)
 {
-    return Elastos_NavigationControllerImpl_nativeCanGoBack(THIS_PROBE(IInterface), (Handle32)nativeNavigationControllerAndroid);
+    return Elastos_NavigationControllerImpl_nativeCanGoBack(THIS_PROBE(IInterface), nativeNavigationControllerAndroid);
 }
 
 Boolean NavigationControllerImpl::NativeCanGoForward(
-    /* [in] */ Int64 nativeNavigationControllerAndroid)
+    /* [in] */ Handle64 nativeNavigationControllerAndroid)
 {
-    return Elastos_NavigationControllerImpl_nativeCanGoForward(THIS_PROBE(IInterface), (Handle32)nativeNavigationControllerAndroid);
+    return Elastos_NavigationControllerImpl_nativeCanGoForward(THIS_PROBE(IInterface), nativeNavigationControllerAndroid);
 }
 
 Boolean NavigationControllerImpl::NativeCanGoToOffset(
-    /* [in] */ Int64 nativeNavigationControllerAndroid,
+    /* [in] */ Handle64 nativeNavigationControllerAndroid,
     /* [in] */ Int32 offset)
 {
-    return Elastos_NavigationControllerImpl_nativeCanGoToOffset(THIS_PROBE(IInterface), (Handle32)nativeNavigationControllerAndroid, offset);
+    return Elastos_NavigationControllerImpl_nativeCanGoToOffset(THIS_PROBE(IInterface), nativeNavigationControllerAndroid, offset);
 }
 
 void NavigationControllerImpl::NativeGoBack(
-    /* [in] */ Int64 nativeNavigationControllerAndroid)
+    /* [in] */ Handle64 nativeNavigationControllerAndroid)
 {
-    Elastos_NavigationControllerImpl_nativeGoBack(THIS_PROBE(IInterface), (Handle32)nativeNavigationControllerAndroid);
+    Elastos_NavigationControllerImpl_nativeGoBack(THIS_PROBE(IInterface), nativeNavigationControllerAndroid);
 }
 
 void NavigationControllerImpl::NativeGoForward(
-    /* [in] */ Int64 nativeNavigationControllerAndroid)
+    /* [in] */ Handle64 nativeNavigationControllerAndroid)
 {
-    Elastos_NavigationControllerImpl_nativeGoForward(THIS_PROBE(IInterface), (Handle32)nativeNavigationControllerAndroid);
+    Elastos_NavigationControllerImpl_nativeGoForward(THIS_PROBE(IInterface), nativeNavigationControllerAndroid);
 }
 
 void NavigationControllerImpl::NativeGoToOffset(
-    /* [in] */ Int64 nativeNavigationControllerAndroid,
+    /* [in] */ Handle64 nativeNavigationControllerAndroid,
     /* [in] */ Int32 offset)
 {
-    Elastos_NavigationControllerImpl_nativeGoToOffset(THIS_PROBE(IInterface), (Handle32)nativeNavigationControllerAndroid, offset);
+    Elastos_NavigationControllerImpl_nativeGoToOffset(THIS_PROBE(IInterface), nativeNavigationControllerAndroid, offset);
 }
 
 void NavigationControllerImpl::NativeGoToNavigationIndex(
-    /* [in] */ Int64 nativeNavigationControllerAndroid,
+    /* [in] */ Handle64 nativeNavigationControllerAndroid,
     /* [in] */ Int32 index)
 {
-    Elastos_NavigationControllerImpl_nativeGoToNavigationIndex(THIS_PROBE(IInterface), (Handle32)nativeNavigationControllerAndroid, index);
+    Elastos_NavigationControllerImpl_nativeGoToNavigationIndex(THIS_PROBE(IInterface), nativeNavigationControllerAndroid, index);
 }
 
 void NavigationControllerImpl::Destroy(

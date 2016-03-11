@@ -46,7 +46,7 @@ static AutoPtr< ArrayOf<Int32> > mTempLocation_init()
 }
 
 BrowserAccessibilityManager::BrowserAccessibilityManager(
-    /* [in] */ Int64 nativeBrowserAccessibilityManagerAndroid,
+    /* [in] */ Handle64 nativeBrowserAccessibilityManagerAndroid,
     /* [in] */ ContentViewCore* contentViewCore)
     : mContentViewCore(contentViewCore)
     , mNativeObj(nativeBrowserAccessibilityManagerAndroid)
@@ -76,7 +76,7 @@ BrowserAccessibilityManager::BrowserAccessibilityManager(
  */
 //@CalledByNative
 AutoPtr<BrowserAccessibilityManager> BrowserAccessibilityManager::Create(
-    /* [in] */ Int64 nativeBrowserAccessibilityManagerAndroid,
+    /* [in] */ Handle64 nativeBrowserAccessibilityManagerAndroid,
     /* [in] */ ContentViewCore* contentViewCore)
 {
     // A bug in the KitKat framework prevents us from using these new APIs.
@@ -947,85 +947,85 @@ void BrowserAccessibilityManager::SetAccessibilityEventRangeInfo(
 }
 
 Int32 BrowserAccessibilityManager::NativeGetRootId(
-    /* [in] */ Int64 nativeBrowserAccessibilityManagerAndroid)
+    /* [in] */ Handle64 nativeBrowserAccessibilityManagerAndroid)
 {
-    return Elastos_BrowserAccessibilityManager_nativeGetRootId(THIS_PROBE(IInterface), (Handle32)nativeBrowserAccessibilityManagerAndroid);
+    return Elastos_BrowserAccessibilityManager_nativeGetRootId(THIS_PROBE(IInterface), nativeBrowserAccessibilityManagerAndroid);
 }
 
 Boolean BrowserAccessibilityManager::NativeIsNodeValid(
-    /* [in] */ Int64 nativeBrowserAccessibilityManagerAndroid,
+    /* [in] */ Handle64 nativeBrowserAccessibilityManagerAndroid,
     /* [in] */ Int32 id)
 {
-    return Elastos_BrowserAccessibilityManager_nativeIsNodeValid(THIS_PROBE(IInterface), (Handle32)nativeBrowserAccessibilityManagerAndroid, id);
+    return Elastos_BrowserAccessibilityManager_nativeIsNodeValid(THIS_PROBE(IInterface), nativeBrowserAccessibilityManagerAndroid, id);
 }
 
 void BrowserAccessibilityManager::NativeHitTest(
-    /* [in] */ Int64 nativeBrowserAccessibilityManagerAndroid,
+    /* [in] */ Handle64 nativeBrowserAccessibilityManagerAndroid,
     /* [in] */ Int32 x,
     /* [in] */ Int32 y)
 {
-    Elastos_BrowserAccessibilityManager_nativeHitTest(THIS_PROBE(IInterface), (Handle32)nativeBrowserAccessibilityManagerAndroid, x, y);
+    Elastos_BrowserAccessibilityManager_nativeHitTest(THIS_PROBE(IInterface), nativeBrowserAccessibilityManagerAndroid, x, y);
 }
 
 Boolean BrowserAccessibilityManager::NativePopulateAccessibilityNodeInfo(
-    /* [in] */ Int64 nativeBrowserAccessibilityManagerAndroid,
+    /* [in] */ Handle64 nativeBrowserAccessibilityManagerAndroid,
     /* [in] */ IAccessibilityNodeInfo* info,
     /* [in] */ Int32 id)
 {
     return Elastos_BrowserAccessibilityManager_nativePopulateAccessibilityNodeInfo(
-            THIS_PROBE(IInterface), (Handle32)nativeBrowserAccessibilityManagerAndroid, TO_IINTERFACE(info), id);
+            THIS_PROBE(IInterface), nativeBrowserAccessibilityManagerAndroid, TO_IINTERFACE(info), id);
 }
 
 Boolean BrowserAccessibilityManager::NativePopulateAccessibilityEvent(
-    /* [in] */ Int64 nativeBrowserAccessibilityManagerAndroid,
+    /* [in] */ Handle64 nativeBrowserAccessibilityManagerAndroid,
     /* [in] */ IAccessibilityEvent* event,
     /* [in] */ Int32 id,
     /* [in] */ Int32 eventType)
 {
     return Elastos_BrowserAccessibilityManager_nativePopulateAccessibilityEvent(
-            THIS_PROBE(IInterface), (Handle32)nativeBrowserAccessibilityManagerAndroid, TO_IINTERFACE(event), id, eventType);
+            THIS_PROBE(IInterface), nativeBrowserAccessibilityManagerAndroid, TO_IINTERFACE(event), id, eventType);
 }
 
 void BrowserAccessibilityManager::NativeClick(
-    /* [in] */ Int64 nativeBrowserAccessibilityManagerAndroid,
+    /* [in] */ Handle64 nativeBrowserAccessibilityManagerAndroid,
     /* [in] */ Int32 id)
 {
-    Elastos_BrowserAccessibilityManager_nativeClick(THIS_PROBE(IInterface), (Handle32)nativeBrowserAccessibilityManagerAndroid, id);
+    Elastos_BrowserAccessibilityManager_nativeClick(THIS_PROBE(IInterface), nativeBrowserAccessibilityManagerAndroid, id);
 }
 
 void BrowserAccessibilityManager::NativeFocus(
-    /* [in] */ Int64 nativeBrowserAccessibilityManagerAndroid,
+    /* [in] */ Handle64 nativeBrowserAccessibilityManagerAndroid,
     /* [in] */ Int32 id)
 {
-    Elastos_BrowserAccessibilityManager_nativeFocus(THIS_PROBE(IInterface), (Handle32)nativeBrowserAccessibilityManagerAndroid, id);
+    Elastos_BrowserAccessibilityManager_nativeFocus(THIS_PROBE(IInterface), nativeBrowserAccessibilityManagerAndroid, id);
 }
 
 void BrowserAccessibilityManager::NativeBlur(
-    /* [in] */ Int64 nativeBrowserAccessibilityManagerAndroid)
+    /* [in] */ Handle64 nativeBrowserAccessibilityManagerAndroid)
 {
-    Elastos_BrowserAccessibilityManager_nativeBlur(THIS_PROBE(IInterface), (Handle32)nativeBrowserAccessibilityManagerAndroid);
+    Elastos_BrowserAccessibilityManager_nativeBlur(THIS_PROBE(IInterface), nativeBrowserAccessibilityManagerAndroid);
 }
 
 void BrowserAccessibilityManager::NativeScrollToMakeNodeVisible(
-    /* [in] */ Int64 nativeBrowserAccessibilityManagerAndroid,
+    /* [in] */ Handle64 nativeBrowserAccessibilityManagerAndroid,
     /* [in] */ Int32 id)
 {
     Elastos_BrowserAccessibilityManager_nativeScrollToMakeNodeVisible(
-            THIS_PROBE(IInterface), (Handle32)nativeBrowserAccessibilityManagerAndroid, id);
+            THIS_PROBE(IInterface), nativeBrowserAccessibilityManagerAndroid, id);
 }
 
 Int32 BrowserAccessibilityManager::NativeFindElementType(
-    /* [in] */ Int64 nativeBrowserAccessibilityManagerAndroid,
+    /* [in] */ Handle64 nativeBrowserAccessibilityManagerAndroid,
     /* [in] */ Int32 startId,
     /* [in] */ const String& elementType,
     /* [in] */ Boolean forwards)
 {
     return Elastos_BrowserAccessibilityManager_nativeFindElementType(
-            THIS_PROBE(IInterface), (Handle32)nativeBrowserAccessibilityManagerAndroid, startId, elementType, forwards);
+            THIS_PROBE(IInterface), nativeBrowserAccessibilityManagerAndroid, startId, elementType, forwards);
 }
 
 AutoPtr<IInterface> BrowserAccessibilityManager::Create(
-    /* [in] */ Int64 nativeBrowserAccessibilityManagerAndroid,
+    /* [in] */ Handle64 nativeBrowserAccessibilityManagerAndroid,
     /* [in] */ IInterface* contentViewCore)
 {
     AutoPtr<ContentViewCore> cvc = (ContentViewCore*)(IObject::Probe(contentViewCore));

@@ -258,7 +258,7 @@ void UsbMidiDeviceElastos::PostOnDataEvent(
  */
 //@CalledByNative
 void UsbMidiDeviceElastos::RegisterSelf(
-    /* [in] */ Int64 nativePointer)
+    /* [in] */ Handle64 nativePointer)
 {
     mNativePointer = nativePointer;
 }
@@ -395,17 +395,17 @@ Int32 UsbMidiDeviceElastos::GetInputDataLength(
 }
 
 void UsbMidiDeviceElastos::NativeOnData(
-    /* [in] */ Int64 nativeUsbMidiDeviceElastos,
+    /* [in] */ Handle64 nativeUsbMidiDeviceElastos,
     /* [in] */ Int32 endpointNumber,
     /* [in] */ ArrayOf<Byte>* data)
 {
-    // Elastos_UsbMidiDeviceAndroid_nativeOnData((Handle32)nativeUsbMidiDeviceElastos, endpointNumber, data);
+    Elastos_UsbMidiDeviceAndroid_nativeOnData(nativeUsbMidiDeviceElastos, endpointNumber, data);
 }
 
 //callback function definition
 void UsbMidiDeviceElastos::RegisterSelf(
     /* [in] */ IInterface* obj,
-    /* [in] */ Int64 nativePointer)
+    /* [in] */ Handle64 nativePointer)
 {
     AutoPtr<UsbMidiDeviceElastos> mObj = (UsbMidiDeviceElastos*)(IObject::Probe(obj));
     if (NULL == mObj)

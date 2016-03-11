@@ -10,11 +10,11 @@
 extern "C"
 {
 #endif
-    extern void Elastos_DeviceSensors_nativeGotOrientation(IInterface* caller,Handle32 nativeSensorManagerAndroid,Double alpha,Double beta,Double gamma);
-    extern void Elastos_DeviceSensors_nativeGotAcceleration(IInterface* caller,Handle32 nativeSensorManagerAndroid,Double x,Double y,Double z);
-    extern void Elastos_DeviceSensors_nativeGotAccelerationIncludingGravity(IInterface* caller,Handle32 nativeSensorManagerAndroid,Double x,Double y,Double z);
-    extern void Elastos_DeviceSensors_nativeGotRotationRate(IInterface* caller,Handle32 nativeSensorManagerAndroid,Double alpha,Double beta,Double gamma);
-    extern void Elastos_DeviceSensors_InitCallback(Handle32 cb);
+    extern void Elastos_DeviceSensors_nativeGotOrientation(IInterface* caller,Handle64 nativeSensorManagerAndroid,Double alpha,Double beta,Double gamma);
+    extern void Elastos_DeviceSensors_nativeGotAcceleration(IInterface* caller,Handle64 nativeSensorManagerAndroid,Double x,Double y,Double z);
+    extern void Elastos_DeviceSensors_nativeGotAccelerationIncludingGravity(IInterface* caller,Handle64 nativeSensorManagerAndroid,Double x,Double y,Double z);
+    extern void Elastos_DeviceSensors_nativeGotRotationRate(IInterface* caller,Handle64 nativeSensorManagerAndroid,Double alpha,Double beta,Double gamma);
+    extern void Elastos_DeviceSensors_InitCallback(Handle64 cb);
 #ifdef __cplusplus
 }
 #endif
@@ -30,7 +30,7 @@ namespace Browser {
 
 struct ElaDeviceSensorsCallback
 {
-    Boolean (*elastos_DeviceSensors_start)(IInterface* obj, Int64 nativePtr, Int32 eventType, Int32 rateInMilliseconds);
+    Boolean (*elastos_DeviceSensors_start)(IInterface* obj, Handle64 nativePtr, Int32 eventType, Int32 rateInMilliseconds);
     Int32 (*elastos_DeviceSensors_getNumberActiveDeviceMotionSensors)(IInterface* obj);
     void (*elastos_DeviceSensors_stop)(IInterface* obj, Int32 eventType);
     AutoPtr<IInterface> (*elastos_DeviceSensors_getInstance)(IInterface* appContext);
@@ -45,7 +45,7 @@ void* DeviceSensors::ElaDeviceSensorsCallback_Init()
     sElaDeviceSensorsCallback.elastos_DeviceSensors_stop = &DeviceSensors::Stop;
     sElaDeviceSensorsCallback.elastos_DeviceSensors_getInstance = &DeviceSensors::GetInstance;
 
-    Elastos_DeviceSensors_InitCallback((Handle32)&sElaDeviceSensorsCallback);
+    Elastos_DeviceSensors_InitCallback((Handle64)&sElaDeviceSensorsCallback);
     return &sElaDeviceSensorsCallback;
 }
 

@@ -35,7 +35,7 @@ class SurfaceTextureListener
 public:
     CAR_INTERFACE_DECL()
     SurfaceTextureListener(
-        /* [in] */ Int64 nativeSurfaceTextureListener);
+        /* [in] */ Handle64 nativeSurfaceTextureListener);
 
     // @Override
     CARAPI OnFrameAvailable(
@@ -47,14 +47,14 @@ protected:
 
 private:
     CARAPI NativeFrameAvailable(
-        /* [in] */ Int64 nativeSurfaceTextureListener);
+        /* [in] */ Handle64 nativeSurfaceTextureListener);
 
     CARAPI NativeDestroy(
-        /* [in] */ Int64 nativeSurfaceTextureListener);
+        /* [in] */ Handle64 nativeSurfaceTextureListener);
 
 private:
     // Used to determine the class instance to dispatch the native call to.
-    Int64 mNativeSurfaceTextureListener;
+    Handle64 mNativeSurfaceTextureListener;
 };
 
 } // namespace Gl

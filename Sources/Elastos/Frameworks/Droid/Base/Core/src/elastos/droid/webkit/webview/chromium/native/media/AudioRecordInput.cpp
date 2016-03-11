@@ -122,7 +122,7 @@ const Boolean AudioRecordInput::DEBUG = FALSE;
 const Int32 AudioRecordInput::HARDWARE_DELAY_MS;
 
 AudioRecordInput::AudioRecordInput(
-    /* [in] */ Int64 nativeAudioRecordInputStream,
+    /* [in] */ Handle64 nativeAudioRecordInputStream,
     /* [in] */ Int32 sampleRate,
     /* [in] */ Int32 channels,
     /* [in] */ Int32 bitsPerSample,
@@ -156,7 +156,7 @@ AudioRecordInput::AudioRecordInput(
 
 //@CalledByNative return AudioRecordInput
 AutoPtr<IInterface> AudioRecordInput::CreateAudioRecordInput(
-    /* [in] */ Int64 nativeAudioRecordInputStream,
+    /* [in] */ Handle64 nativeAudioRecordInputStream,
     /* [in] */ Int32 sampleRate,
     /* [in] */ Int32 channels,
     /* [in] */ Int32 bitsPerSample,
@@ -332,18 +332,18 @@ void AudioRecordInput::Close()
 }
 
 void AudioRecordInput::NativeCacheDirectBufferAddress(
-    /* [in] */ Int64 nativeAudioRecordInputStream,
+    /* [in] */ Handle64 nativeAudioRecordInputStream,
     /* [in] */ IByteBuffer* buffer)
 {
-    Elastos_AudioRecordInput_nativeCacheDirectBufferAddress(THIS_PROBE(IInterface), (Handle32)nativeAudioRecordInputStream, TO_IINTERFACE(buffer));
+    Elastos_AudioRecordInput_nativeCacheDirectBufferAddress(THIS_PROBE(IInterface), nativeAudioRecordInputStream, TO_IINTERFACE(buffer));
 }
 
 void AudioRecordInput::NativeOnData(
-    /* [in] */ Int64 nativeAudioRecordInputStream,
+    /* [in] */ Handle64 nativeAudioRecordInputStream,
     /* [in] */ Int32 size,
     /* [in] */ Int32 hardwareDelayBytes)
 {
-    Elastos_AudioRecordInput_nativeOnData(THIS_PROBE(IInterface), (Handle32)nativeAudioRecordInputStream, size, hardwareDelayBytes);
+    Elastos_AudioRecordInput_nativeOnData(THIS_PROBE(IInterface), nativeAudioRecordInputStream, size, hardwareDelayBytes);
 }
 
 Boolean AudioRecordInput::Open(

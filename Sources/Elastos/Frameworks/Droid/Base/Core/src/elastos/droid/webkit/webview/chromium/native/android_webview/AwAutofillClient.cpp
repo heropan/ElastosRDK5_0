@@ -40,14 +40,14 @@ ECode AwAutofillClient::InnerAutofillPopupDelegate::SuggestionSelected(
 //===============================================================
 
 AwAutofillClient::AwAutofillClient(
-    /* [in] */ Int64 nativeAwAutofillClient)
+    /* [in] */ Handle64 nativeAwAutofillClient)
     : mNativeAwAutofillClient(nativeAwAutofillClient)
 {
 }
 
 //@CalledByNative AwAutofillClient
 AutoPtr<IInterface> AwAutofillClient::Create(
-    /* [in] */ Int64 nativeClient)
+    /* [in] */ Handle64 nativeClient)
 {
     AutoPtr<AwAutofillClient> client = new AwAutofillClient(nativeClient);
     AutoPtr<IInterface> result = TO_IINTERFACE(client);
@@ -121,10 +121,10 @@ void AwAutofillClient::AddToAutofillSuggestionArray(
 }
 
 void AwAutofillClient::NativeSuggestionSelected(
-    /* [in] */ Int64 nativeAwAutofillClient,
+    /* [in] */ Handle64 nativeAwAutofillClient,
     /* [in] */ Int32 position)
 {
-    Elastos_AwAutofillClient_nativeSuggestionSelected(THIS_PROBE(IInterface), (Handle32)nativeAwAutofillClient, position);
+    Elastos_AwAutofillClient_nativeSuggestionSelected(THIS_PROBE(IInterface), nativeAwAutofillClient, position);
 }
 //callback function definition
 void AwAutofillClient::ShowAutofillPopup(

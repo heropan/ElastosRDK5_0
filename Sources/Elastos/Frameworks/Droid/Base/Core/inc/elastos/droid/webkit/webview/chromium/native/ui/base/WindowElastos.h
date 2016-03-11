@@ -8,23 +8,6 @@
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/webkit/webview/chromium/native/ui/VSyncMonitor.h"
 
-// package org.chromium.ui.base;
-// import android.annotation.SuppressLint;
-// import android.app.Activity;
-// import android.app.PendingIntent;
-// import android.content.ContentResolver;
-// import android.content.Context;
-// import android.content.Intent;
-// import android.os.Bundle;
-// import android.util.Log;
-// import android.util.SparseArray;
-// import android.widget.Toast;
-// import org.chromium.base.CalledByNative;
-// import org.chromium.base.JNINamespace;
-// import org.chromium.ui.VSyncMonitor;
-// import java.lang.ref.WeakReference;
-// import java.util.HashMap;
-
 using Elastos::Droid::App::IActivity;
 using Elastos::Droid::App::IPendingIntent;
 using Elastos::Droid::Content::IContentResolver;
@@ -245,7 +228,7 @@ public:
       * the object has not been previously initialized.
       * @return A pointer to the c++ AndroidWindow.
       */
-    virtual CARAPI_(Int64) GetNativePointer();
+    virtual CARAPI_(Handle64) GetNativePointer();
 
     static CARAPI_(void*) ElaWindowElastosCallback_Init();
 
@@ -264,15 +247,15 @@ private:
     // @CalledByNative
     CARAPI RequestVSyncUpdate();
 
-    CARAPI_(Int64) NativeInit(
+    CARAPI_(Handle64) NativeInit(
         /* [in] */ Int64 vsyncPeriod);
 
     CARAPI NativeOnVSync(
-        /* [in] */ Int64 nativeWindowElastos,
+        /* [in] */ Handle64 nativeWindowElastos,
         /* [in] */ Int64 vsyncTimeMicros);
 
     CARAPI NativeDestroy(
-        /* [in] */ Int64 nativeWindowElastos);
+        /* [in] */ Handle64 nativeWindowElastos);
 
 public:
     // A string used as a key to store intent errors in a bundle
@@ -291,7 +274,7 @@ protected:
 private:
     static const String TAG;
     // Native pointer to the c++ WindowElastos object.
-    Int64 mNativeWindowElastos;
+    Handle64 mNativeWindowElastos;
     AutoPtr<VSyncMonitor> mVSyncMonitor;
     AutoPtr<VSyncMonitor::Listener> mVSyncListener;
 };

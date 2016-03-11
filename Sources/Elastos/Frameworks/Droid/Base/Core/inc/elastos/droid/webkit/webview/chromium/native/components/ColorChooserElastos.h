@@ -11,15 +11,6 @@
 #include "elastos/droid/webkit/webview/chromium/native/ui/ColorSuggestion.h"
 #include "Elastos.Droid.Webkit.h"
 
-// package org.chromium.components.web_contents_delegate_android;
-// import android.content.Context;
-// import org.chromium.base.CalledByNative;
-// import org.chromium.base.JNINamespace;
-// import org.chromium.content.browser.ContentViewCore;
-// import org.chromium.ui.ColorPickerDialog;
-// import org.chromium.ui.ColorSuggestion;
-// import org.chromium.ui.OnColorChangedListener;
-
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Webkit::Webview::Chromium::Content::Browser::ContentViewCore;
 using Elastos::Droid::Webkit::Webview::Chromium::Ui::ColorPickerDialog;
@@ -66,7 +57,7 @@ public:
 
     // @CalledByNative
     static CARAPI_(AutoPtr<ColorChooserElastos>) CreateColorChooserElastos(
-        /* [in] */ Int64 nativeColorChooserElastos,
+        /* [in] */ Handle64 nativeColorChooserElastos,
         /* [in] */ ContentViewCore* contentViewCore,
         /* [in] */ Int32 initialColor,
         /* [in] */ ArrayOf<IInterface*>* suggestions);
@@ -78,13 +69,13 @@ private:
         /* [in] */ IInterface* obj);
 
     static CARAPI_(AutoPtr<IInterface>) CreateColorChooserElastos(
-        /* [in] */ Int64 nativeColorChooserElastos,
+        /* [in] */ Handle64 nativeColorChooserElastos,
         /* [in] */ IInterface* contentViewCore,
         /* [in] */ Int32 initialColor,
         /* [in] */ ArrayOf<IInterface*>* suggestions);
 
     ColorChooserElastos(
-        /* [in] */ Int64 nativeColorChooserElastos,
+        /* [in] */ Handle64 nativeColorChooserElastos,
         /* [in] */ IContext* context,
         /* [in] */ Int32 initialColor,
         /* [in] */ ArrayOf<IInterface*>* suggestions);
@@ -110,12 +101,12 @@ private:
 
     // Implemented in color_chooser_android.cc
     CARAPI NativeOnColorChosen(
-        /* [in] */ Int64 nativeColorChooserElastos,
+        /* [in] */ Handle64 nativeColorChooserElastos,
         /* [in] */ Int32 color);
 
 private:
     /*const*/ AutoPtr<ColorPickerDialog> mDialog;
-    /*const*/ Int64 mNativeColorChooserElastos;
+    /*const*/ Handle64 mNativeColorChooserElastos;
 };
 
 } // namespace Components

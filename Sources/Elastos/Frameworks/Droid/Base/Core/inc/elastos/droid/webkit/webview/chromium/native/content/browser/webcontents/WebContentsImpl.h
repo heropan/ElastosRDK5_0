@@ -9,11 +9,6 @@
 using Elastos::Droid::Webkit::Webview::Chromium::Content_Public::Browser::NavigationController;
 using Elastos::Droid::Webkit::Webview::Chromium::Content_Public::Browser::WebContents;
 
-// import org.chromium.base.CalledByNative;
-// import org.chromium.base.JNINamespace;
-// import org.chromium.content_public.browser.NavigationController;
-// import org.chromium.content_public.browser.WebContents;
-
 namespace Elastos {
 namespace Droid {
 namespace Webkit {
@@ -51,41 +46,41 @@ public:
 
 private:
     static CARAPI_(AutoPtr<IInterface>) Create(
-        /* [in] */ Int64 nativeWebContentsAndroid,
+        /* [in] */ Handle64 nativeWebContentsAndroid,
         /* [in] */ IInterface* navigationController);
 
     static CARAPI_(void) Destroy(
         /* [in] */ IInterface* obj);
 
-    static CARAPI_(Int64) GetNativePointer(
+    static CARAPI_(Handle64) GetNativePointer(
         /* [in] */ IInterface* obj);
 
     WebContentsImpl(
-        /* [in] */ Int64 nativeWebContentsAndroid,
+        /* [in] */ Handle64 nativeWebContentsAndroid,
         /* [in] */ NavigationController* navigationController);
 
     //@CalledByNative
     static CARAPI_(AutoPtr<WebContentsImpl>) Create(
-        /* [in] */ Int64 nativeWebContentsAndroid,
+        /* [in] */ Handle64 nativeWebContentsAndroid,
         /* [in] */ NavigationController* navigationController);
 
     //@CalledByNative
     CARAPI_(void) Destroy();
 
     //@CalledByNative
-    CARAPI_(Int64) GetNativePointer();
+    CARAPI_(Handle64) GetNativePointer();
 
     CARAPI_(String) NativeGetTitle(
-        /* [in] */ Int64 nativeWebContentsAndroid);
+        /* [in] */ Handle64 nativeWebContentsAndroid);
 
     CARAPI_(String) NativeGetVisibleURL(
-        /* [in] */ Int64 nativeWebContentsAndroid);
+        /* [in] */ Handle64 nativeWebContentsAndroid);
 
     CARAPI_(void) NativeStop(
-        /* [in] */ Int64 nativeWebContentsAndroid);
+        /* [in] */ Handle64 nativeWebContentsAndroid);
 
 private:
-    Int64 mNativeWebContentsAndroid;
+    Handle64 mNativeWebContentsAndroid;
     AutoPtr<NavigationController> mNavigationController;
 };
 

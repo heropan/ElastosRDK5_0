@@ -10,10 +10,10 @@
 extern "C"
 {
 #endif
-    extern Int64 Elastos_WindowAndroid_nativeInit(IInterface* caller,Int64 vsyncPeriod);
-    extern void Elastos_WindowAndroid_nativeOnVSync(IInterface* caller,Handle32 nativeWindowAndroid,Int64 vsyncTimeMicros);
-    extern void Elastos_WindowAndroid_nativeDestroy(IInterface* caller,Handle32 nativeWindowAndroid);
-    extern void Elastos_WindowAndroid_InitCallback(Handle32 cb);
+    extern Handle64 Elastos_WindowAndroid_nativeInit(IInterface* caller,Int64 vsyncPeriod);
+    extern void Elastos_WindowAndroid_nativeOnVSync(IInterface* caller,Handle64 nativeWindowAndroid,Int64 vsyncTimeMicros);
+    extern void Elastos_WindowAndroid_nativeDestroy(IInterface* caller,Handle64 nativeWindowAndroid);
+    extern void Elastos_WindowAndroid_InitCallback(Handle64 cb);
 #ifdef __cplusplus
 }
 #endif
@@ -38,7 +38,7 @@ void* WindowElastos::ElaWindowElastosCallback_Init()
 
     sElaWindowAndroidCallback.elastos_WindowAndroid_requestVSyncUpdate = &WindowElastos::RequestVSyncUpdate;
 
-    Elastos_WindowAndroid_InitCallback((Handle32)&sElaWindowAndroidCallback);
+    Elastos_WindowAndroid_InitCallback((Handle64)&sElaWindowAndroidCallback);
     return &sElaWindowAndroidCallback;
 }
 

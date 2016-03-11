@@ -10,11 +10,11 @@
 extern "C"
 {
 #endif
-    extern Int64 Elastos_ContentReadbackHandler_nativeInit(IInterface* caller);
-    extern void Elastos_ContentReadbackHandler_nativeDestroy(IInterface* caller,Handle32 nativeContentReadbackHandler);
-    extern void Elastos_ContentReadbackHandler_nativeGetContentBitmap(IInterface* caller,Handle32 nativeContentReadbackHandler,Int32 readback_id,Float scale,Int32 config,Float x,Float y,Float width,Float height,IInterface* contentViewCore);
-    extern void Elastos_ContentReadbackHandler_nativeGetCompositorBitmap(IInterface* caller,Handle32 nativeContentReadbackHandler,Int32 readback_id,Int64 nativeWindowAndroid);
-    extern void Elastos_ContentReadbackHandler_InitCallback(Handle32 cb);
+    extern Handle64 Elastos_ContentReadbackHandler_nativeInit(IInterface* caller);
+    extern void Elastos_ContentReadbackHandler_nativeDestroy(IInterface* caller,Handle64 nativeContentReadbackHandler);
+    extern void Elastos_ContentReadbackHandler_nativeGetContentBitmap(IInterface* caller,Handle64 nativeContentReadbackHandler,Int32 readback_id,Float scale,Int32 config,Float x,Float y,Float width,Float height,IInterface* contentViewCore);
+    extern void Elastos_ContentReadbackHandler_nativeGetCompositorBitmap(IInterface* caller,Handle64 nativeContentReadbackHandler,Int32 readback_id,Handle64 nativeWindowAndroid);
+    extern void Elastos_ContentReadbackHandler_InitCallback(Handle64 cb);
 #ifdef __cplusplus
 }
 #endif
@@ -39,7 +39,7 @@ void* ContentReadbackHandler::ElaContentReadbackHandlerCallback_Init()
 
     sElaContentReadbackHandlerCallback.elastos_ContentReadbackHandler_notifyGetBitmapFinished = &ContentReadbackHandler::NotifyGetBitmapFinished;
 
-    Elastos_ContentReadbackHandler_InitCallback((Handle32)&sElaContentReadbackHandlerCallback);
+    Elastos_ContentReadbackHandler_InitCallback((Handle64)&sElaContentReadbackHandlerCallback);
     return &sElaContentReadbackHandlerCallback;
 }
 

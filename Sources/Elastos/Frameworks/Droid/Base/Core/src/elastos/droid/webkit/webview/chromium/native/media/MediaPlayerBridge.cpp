@@ -237,14 +237,14 @@ MediaPlayerBridge::MediaPlayerBridge()
 }
 
 MediaPlayerBridge::MediaPlayerBridge(
-    /* [in] */ Int64 nativeMediaPlayerBridge)
+    /* [in] */ Handle64 nativeMediaPlayerBridge)
     : mNativeMediaPlayerBridge(nativeMediaPlayerBridge)
 {
 }
 
 //@CalledByNative return MediaPlayerBridge
 AutoPtr<IInterface> MediaPlayerBridge::Create(
-    /* [in] */ Int64 nativeMediaPlayerBridge)
+    /* [in] */ Handle64 nativeMediaPlayerBridge)
 {
     AutoPtr<MediaPlayerBridge> mpb = new MediaPlayerBridge(nativeMediaPlayerBridge);
     AutoPtr<IInterface> result = TO_IINTERFACE(mpb);
@@ -602,10 +602,10 @@ AutoPtr<MediaPlayerBridge::AllowedOperations> MediaPlayerBridge::GetAllowedOpera
 }
 
 void MediaPlayerBridge::NativeOnDidSetDataUriDataSource(
-    /* [in] */ Int64 nativeMediaPlayerBridge,
+    /* [in] */ Handle64 nativeMediaPlayerBridge,
     /* [in] */ Boolean success)
 {
-    Elastos_MediaPlayerBridge_nativeOnDidSetDataUriDataSource(THIS_PROBE(IInterface), (Handle32)nativeMediaPlayerBridge, success);
+    Elastos_MediaPlayerBridge_nativeOnDidSetDataUriDataSource(THIS_PROBE(IInterface), nativeMediaPlayerBridge, success);
 }
 
 void MediaPlayerBridge::Destroy(
