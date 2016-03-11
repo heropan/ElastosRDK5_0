@@ -327,24 +327,16 @@ ECode Conference::Destroy()
 }
 
 ECode Conference::AddListener(
-    /* [in] */ IConferenceListener* listener,
-    /* [out] */ IConference** res)
+    /* [in] */ IConferenceListener* listener)
 {
-    VALIDATE_NOT_NULL(res)
     mListeners->Add(listener);
-    *res = this;
-    REFCOUNT_ADD(*res)
     return NOERROR;
 }
 
 ECode Conference::RemoveListener(
-    /* [in] */ IConferenceListener* listener,
-    /* [out] */ IConference** res)
+    /* [in] */ IConferenceListener* listener)
 {
-    VALIDATE_NOT_NULL(res)
     mListeners->Remove(listener);
-    *res = this;
-    REFCOUNT_ADD(*res)
     return NOERROR;
 }
 

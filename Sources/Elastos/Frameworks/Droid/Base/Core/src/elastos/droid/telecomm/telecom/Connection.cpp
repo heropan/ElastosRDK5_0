@@ -132,18 +132,6 @@ ECode Connection::Listener::OnConferenceChanged(
 // Connection::VideoProvider::VideoProviderHandler::
 //===============================================================
 
-const Int32 Connection::VideoProvider::MSG_SET_VIDEO_CALLBACK = 1;
-const Int32 Connection::VideoProvider::MSG_SET_CAMERA = 2;
-const Int32 Connection::VideoProvider::MSG_SET_PREVIEW_SURFACE = 3;
-const Int32 Connection::VideoProvider::MSG_SET_DISPLAY_SURFACE = 4;
-const Int32 Connection::VideoProvider::MSG_SET_DEVICE_ORIENTATION = 5;
-const Int32 Connection::VideoProvider::MSG_SET_ZOOM = 6;
-const Int32 Connection::VideoProvider::MSG_SEND_SESSION_MODIFY_REQUEST = 7;
-const Int32 Connection::VideoProvider::MSG_SEND_SESSION_MODIFY_RESPONSE = 8;
-const Int32 Connection::VideoProvider::MSG_REQUEST_CAMERA_CAPABILITIES = 9;
-const Int32 Connection::VideoProvider::MSG_REQUEST_CALL_DATA_USAGE = 10;
-const Int32 Connection::VideoProvider::MSG_SET_PAUSE_IMAGE = 11;
-
 Connection::VideoProvider::VideoProviderHandler::VideoProviderHandler(
     /* [in] */ VideoProvider* host)
     : mHost(host)
@@ -157,48 +145,48 @@ ECode Connection::VideoProvider::VideoProviderHandler::HandleMessage(
     AutoPtr<IInterface> obj;
     msg->GetObj((IInterface**)&obj);
     switch (what) {
-        case MSG_SET_VIDEO_CALLBACK:
+        case IConnectionVideoProvider::MSG_SET_VIDEO_CALLBACK:
             // mVideoCallback = IVideoCallback.Stub.asInterface((IBinder) msg.obj);
             break;
-        case MSG_SET_CAMERA: {
+        case IConnectionVideoProvider::MSG_SET_CAMERA: {
             AutoPtr<ICharSequence> pObj = ICharSequence::Probe(obj);
             String strObj;
             pObj->ToString(&strObj);
             mHost->OnSetCamera(strObj);
         }
             break;
-        case MSG_SET_PREVIEW_SURFACE:
+        case IConnectionVideoProvider::MSG_SET_PREVIEW_SURFACE:
             mHost->OnSetPreviewSurface(ISurface::Probe(obj));
             break;
-        case MSG_SET_DISPLAY_SURFACE:
+        case IConnectionVideoProvider::MSG_SET_DISPLAY_SURFACE:
             mHost->OnSetDisplaySurface(ISurface::Probe(obj));
             break;
-        case MSG_SET_DEVICE_ORIENTATION: {
+        case IConnectionVideoProvider::MSG_SET_DEVICE_ORIENTATION: {
             Int32 arg1 = 0;
             msg->GetArg1(&arg1);
             mHost->OnSetDeviceOrientation(arg1);
         }
             break;
-        case MSG_SET_ZOOM: {
+        case IConnectionVideoProvider::MSG_SET_ZOOM: {
             AutoPtr<IFloat> pObj = IFloat::Probe(obj);
             Float val = 0;
             pObj->GetValue(&val);
             mHost->OnSetZoom(val);
         }
             break;
-        case MSG_SEND_SESSION_MODIFY_REQUEST:
+        case IConnectionVideoProvider::MSG_SEND_SESSION_MODIFY_REQUEST:
             mHost->OnSendSessionModifyRequest(IVideoProfile::Probe(obj));
             break;
-        case MSG_SEND_SESSION_MODIFY_RESPONSE:
+        case IConnectionVideoProvider::MSG_SEND_SESSION_MODIFY_RESPONSE:
             mHost->OnSendSessionModifyResponse(IVideoProfile::Probe(obj));
             break;
-        case MSG_REQUEST_CAMERA_CAPABILITIES:
+        case IConnectionVideoProvider::MSG_REQUEST_CAMERA_CAPABILITIES:
             mHost->OnRequestCameraCapabilities();
             break;
-        case MSG_REQUEST_CALL_DATA_USAGE:
+        case IConnectionVideoProvider::MSG_REQUEST_CALL_DATA_USAGE:
             mHost->OnRequestCallDataUsage();
             break;
-        case MSG_SET_PAUSE_IMAGE: {
+        case IConnectionVideoProvider::MSG_SET_PAUSE_IMAGE: {
             AutoPtr<ICharSequence> pObj = ICharSequence::Probe(obj);
             String strObj;
             pObj->ToString(&strObj);
@@ -938,10 +926,10 @@ ECode Connection::ToLogSafePhoneNumber(
     for (Int32 i = 0; i < number.GetLength(); i++) {
         Char32 c = number.GetChar(i);
         if (c == '-' || c == '@' || c == '.') {
-            builder.Append((Int32)c);
+            builder.AppendChar(c);
         }
         else {
-            builder.Append('x');
+            builder.AppendChar('x');
         }
     }
     *result = builder.ToString();

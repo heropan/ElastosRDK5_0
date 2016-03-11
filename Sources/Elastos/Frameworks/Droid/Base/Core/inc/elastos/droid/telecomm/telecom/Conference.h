@@ -210,8 +210,7 @@ public:
      * @hide
      */
     CARAPI AddListener(
-        /* [in] */ IConferenceListener* listener,
-        /* [out] */ IConference** res);
+        /* [in] */ IConferenceListener* listener);
 
     /**
      * Removes the specified listener.
@@ -221,8 +220,7 @@ public:
      * @hide
      */
     CARAPI RemoveListener(
-        /* [in] */ IConferenceListener* listener,
-        /* [out] */ IConference** res);
+        /* [in] */ IConferenceListener* listener);
 
     /**
      * Inform this Conference that the state of its audio output has been changed externally.
@@ -234,12 +232,12 @@ public:
         /* [in] */ IAudioState* state);
 
 private:
-    void FireOnConferenceableConnectionsChanged();
+    CARAPI_(void) FireOnConferenceableConnectionsChanged();
 
-    void SetState(
+    CARAPI_(void) SetState(
         /* [in] */ Int32 newState);
 
-    void ClearConferenceableList();
+    CARAPI_(void) ClearConferenceableList();
 
 private:
     AutoPtr<ISet> mListeners;

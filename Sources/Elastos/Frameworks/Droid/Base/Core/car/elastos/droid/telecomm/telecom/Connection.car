@@ -123,6 +123,18 @@ module
          */
         const Int32 SESSION_MODIFY_REQUEST_INVALID = 3;
 
+        const Int32 MSG_SET_VIDEO_CALLBACK = 1;
+        const Int32 MSG_SET_CAMERA = 2;
+        const Int32 MSG_SET_PREVIEW_SURFACE = 3;
+        const Int32 MSG_SET_DISPLAY_SURFACE = 4;
+        const Int32 MSG_SET_DEVICE_ORIENTATION = 5;
+        const Int32 MSG_SET_ZOOM = 6;
+        const Int32 MSG_SEND_SESSION_MODIFY_REQUEST = 7;
+        const Int32 MSG_SEND_SESSION_MODIFY_RESPONSE = 8;
+        const Int32 MSG_REQUEST_CAMERA_CAPABILITIES = 9;
+        const Int32 MSG_REQUEST_CALL_DATA_USAGE = 10;
+        const Int32 MSG_SET_PAUSE_IMAGE = 11;
+
         GetInterface(
             [out] IIVideoProvider** res);
 
@@ -247,6 +259,9 @@ module
         GetDisconnectCause(
             [out] IDisconnectCause** res);
 
+        SetAudioState(
+            [in] IAudioState* state);
+
         GetCallCapabilities(
             [out] Int32* res);
 
@@ -275,6 +290,9 @@ module
 
         SetVideoProvider(
             [in] IConnectionVideoProvider* videoProvider);
+
+        GetVideoProvider(
+            [out] IConnectionVideoProvider** result);
 
         SetDisconnected(
             [in] IDisconnectCause* disconnectCause);

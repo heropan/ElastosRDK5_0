@@ -42,6 +42,10 @@ module
     merge("telecomm/internal/IVideoProvider.car");
     merge("telecomm/internal/RemoteServiceCallback.car");
 
+    interface Elastos.Droid.Os.IHandler;
+    interface Elastos.Droid.Telecomm.Internal.IRemoteServiceCallback;
+    interface Elastos.Droid.Telecomm.Internal.IIVideoProvider;
+
     namespace Elastos {
     namespace Droid {
     namespace Telecomm {
@@ -49,6 +53,25 @@ module
 
     singleton class CCallState {
         interface ICallState;
+    }
+
+    class CConnectionServiceBinder {
+        constructor(
+            [in] IHandler* handler);
+
+        interface IConnectionService;
+    }
+
+    class CRemoteServiceCallback {
+
+        interface IRemoteServiceCallback;
+    }
+
+    class CVideoProviderBinder {
+        constructor(
+            [in] IHandler* handler);
+
+        interface IIVideoProvider;
     }
 
     } // namespace Telecom

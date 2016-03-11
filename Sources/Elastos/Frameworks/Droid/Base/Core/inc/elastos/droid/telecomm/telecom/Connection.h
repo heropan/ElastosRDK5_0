@@ -200,18 +200,6 @@ public:
             /* [in] */ ICameraCapabilities* cameraCapabilities);
 
     private:
-        static const Int32 MSG_SET_VIDEO_CALLBACK;
-        static const Int32 MSG_SET_CAMERA;
-        static const Int32 MSG_SET_PREVIEW_SURFACE;
-        static const Int32 MSG_SET_DISPLAY_SURFACE;
-        static const Int32 MSG_SET_DEVICE_ORIENTATION;
-        static const Int32 MSG_SET_ZOOM;
-        static const Int32 MSG_SEND_SESSION_MODIFY_REQUEST;
-        static const Int32 MSG_SEND_SESSION_MODIFY_RESPONSE;
-        static const Int32 MSG_REQUEST_CAMERA_CAPABILITIES;
-        static const Int32 MSG_REQUEST_CALL_DATA_USAGE;
-        static const Int32 MSG_SET_PAUSE_IMAGE;
-
         AutoPtr<VideoProviderHandler> mMessageHandler;
         // AutoPtr<IVideoProviderBinder> mBinder;
         AutoPtr<IIVideoCallback> mVideoCallback;
@@ -679,13 +667,13 @@ public:
         /* [out] */ IConnection** result);
 
 private:
-    void FireOnConferenceableConnectionsChanged();
+    CARAPI_(void) FireOnConferenceableConnectionsChanged();
 
-    void FireConferenceChanged();
+    CARAPI_(void) FireConferenceChanged();
 
-    void ClearConferenceableList();
+    CARAPI_(void) ClearConferenceableList();
 
-    void SetState(
+    CARAPI_(void) SetState(
         /* [in] */ Int32 state);
 
 private:

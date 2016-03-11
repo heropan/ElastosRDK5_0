@@ -111,12 +111,13 @@ module
         Destroy();
 
         AddListener(
-            [in] IConferenceListener* listener,
-            [out] IConference** res);
+            [in] IConferenceListener* listener);
 
         RemoveListener(
-            [in] IConferenceListener* listener,
-            [out] IConference** res);
+            [in] IConferenceListener* listener);
+
+        SetAudioState(
+            [in] IAudioState* state);
     }
 
     } // namespace Telecom
