@@ -3,18 +3,12 @@
 #include "elastos/droid/ext/frameworkext.h"
 #include <elastos/utility/etl/HashMap.h>
 #include <elastos/core/Thread.h>
-// import android.annotation.TargetApi;
 using Elastos::Droid::Hardware::Usb::IUsbManager;
 using Elastos::Droid::Hardware::Usb::IUsbDevice;
 using Elastos::Droid::Hardware::Usb::IUsbDeviceConnection;
 using Elastos::Droid::Hardware::Usb::IUsbEndpoint;
 using Elastos::Droid::Hardware::Usb::IUsbRequest;
 using Elastos::Droid::Os::IHandler;
-
-// import org.chromium.base.CalledByNative;
-// import org.chromium.base.JNINamespace;
-// import java.util.HashMap;
-// import java.util.Map;
 
 using Elastos::Core::IThread;
 using Elastos::Core::Thread;
@@ -93,7 +87,7 @@ public:
      */
     //@CalledByNative
     CARAPI_(void) RegisterSelf(
-        /* [in] */ Int64 nativePointer);
+        /* [in] */ Handle64 nativePointer);
 
     /**
      * Sends a USB-MIDI data to the device.
@@ -148,7 +142,7 @@ private:
         /* [in] */ IByteBuffer* buffer);
 
     static CARAPI_(void) NativeOnData(
-        /* [in] */ Int64 nativeUsbMidiDeviceElastos,
+        /* [in] */ Handle64 nativeUsbMidiDeviceElastos,
         /* [in] */ Int32 endpointNumber,
         /* [in] */ ArrayOf<Byte>* data);
 
@@ -159,7 +153,7 @@ public:
 private:
     static CARAPI_(void) RegisterSelf(
         /* [in] */ IInterface* obj,
-        /* [in] */ Int64 nativePointer);
+        /* [in] */ Handle64 nativePointer);
 
     static CARAPI_(void) Send(
         /* [in] */ IInterface* obj,
@@ -207,7 +201,7 @@ private:
     /**
      * The identifier of this device.
      */
-    Int64 mNativePointer;
+    Handle64 mNativePointer;
 };
 
 } // namespace Media

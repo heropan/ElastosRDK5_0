@@ -11,14 +11,14 @@ extern "C"
 {
 #endif
     extern void Elastos_MediaDrmBridge_nativeAddKeySystemUuidMapping(const String& keySystem,IInterface* uuid);
-    extern void Elastos_MediaDrmBridge_nativeOnMediaCryptoReady(IInterface* caller,Handle32 nativeMediaDrmBridge);
-    extern void Elastos_MediaDrmBridge_nativeOnSessionCreated(IInterface* caller,Handle32 nativeMediaDrmBridge,Int32 sessionId,const String& webSessionId);
-    extern void Elastos_MediaDrmBridge_nativeOnSessionMessage(IInterface* caller,Handle32 nativeMediaDrmBridge,Int32 sessionId,ArrayOf<Byte>* message,const String& destinationUrl);
-    extern void Elastos_MediaDrmBridge_nativeOnSessionReady(IInterface* caller,Handle32 nativeMediaDrmBridge,Int32 sessionId);
-    extern void Elastos_MediaDrmBridge_nativeOnSessionClosed(IInterface* caller,Handle32 nativeMediaDrmBridge,Int32 sessionId);
-    extern void Elastos_MediaDrmBridge_nativeOnSessionError(IInterface* caller,Handle32 nativeMediaDrmBridge,Int32 sessionId);
-    extern void Elastos_MediaDrmBridge_nativeOnResetDeviceCredentialsCompleted(IInterface* caller,Handle32 nativeMediaDrmBridge,Boolean success);
-    extern void Elastos_MediaDrmBridge_InitCallback(Handle32 cb);
+    extern void Elastos_MediaDrmBridge_nativeOnMediaCryptoReady(IInterface* caller,Handle64 nativeMediaDrmBridge);
+    extern void Elastos_MediaDrmBridge_nativeOnSessionCreated(IInterface* caller,Handle64 nativeMediaDrmBridge,Int32 sessionId,const String& webSessionId);
+    extern void Elastos_MediaDrmBridge_nativeOnSessionMessage(IInterface* caller,Handle64 nativeMediaDrmBridge,Int32 sessionId,ArrayOf<Byte>* message,const String& destinationUrl);
+    extern void Elastos_MediaDrmBridge_nativeOnSessionReady(IInterface* caller,Handle64 nativeMediaDrmBridge,Int32 sessionId);
+    extern void Elastos_MediaDrmBridge_nativeOnSessionClosed(IInterface* caller,Handle64 nativeMediaDrmBridge,Int32 sessionId);
+    extern void Elastos_MediaDrmBridge_nativeOnSessionError(IInterface* caller,Handle64 nativeMediaDrmBridge,Int32 sessionId);
+    extern void Elastos_MediaDrmBridge_nativeOnResetDeviceCredentialsCompleted(IInterface* caller,Handle64 nativeMediaDrmBridge,Boolean success);
+    extern void Elastos_MediaDrmBridge_InitCallback(Handle64 cb);
 #ifdef __cplusplus
 }
 #endif
@@ -34,7 +34,7 @@ namespace Media {
 struct ElaMediaDrmBridgeCallback
 {
     Boolean (*elastos_MediaDrmBridge_isCryptoSchemeSupported)(ArrayOf<Byte>* schemeUUID, const String& containerMimeType);
-    AutoPtr<IInterface> (*elastos_MediaDrmBridge_create)(ArrayOf<Byte>* schemeUUID, Int64 nativeMediaDrmBridge);
+    AutoPtr<IInterface> (*elastos_MediaDrmBridge_create)(ArrayOf<Byte>* schemeUUID, Handle64 nativeMediaDrmBridge);
     Boolean (*elastos_MediaDrmBridge_setSecurityLevel)(IInterface* obj, const String& securityLevel);
     AutoPtr<IInterface> (*elastos_MediaDrmBridge_getMediaCrypto)(IInterface* obj);
     void (*elastos_MediaDrmBridge_resetDeviceCredentials)(IInterface* obj);
@@ -60,7 +60,7 @@ void* MediaDrmBridge::ElaMediaDrmBridgeCallback_Init()
     sElaMediaDrmBridgeCallback.elastos_MediaDrmBridge_updateSession = &MediaDrmBridge::UpdateSession;
     sElaMediaDrmBridgeCallback.elastos_MediaDrmBridge_getSecurityLevel = &MediaDrmBridge::GetSecurityLevel;
 
-    Elastos_MediaDrmBridge_InitCallback((Handle32)&sElaMediaDrmBridgeCallback);
+    Elastos_MediaDrmBridge_InitCallback((Handle64)&sElaMediaDrmBridgeCallback);
     return &sElaMediaDrmBridgeCallback;
 }
 

@@ -2,7 +2,6 @@
 #include "Elastos.Droid.Content.h"
 #include "Elastos.Droid.Net.h"
 #include "Elastos.Droid.Os.h"
-//TODO: #include "elastos/droid/net/CProxyProperties.h"
 #include "elastos/droid/os/Build.h"
 #include "elastos/droid/webkit/webview/chromium/native/net/ProxyChangeListener.h"
 #include "elastos/droid/webkit/webview/chromium/native/net/api/ProxyChangeListener_dec.h"
@@ -10,9 +9,10 @@
 
 using Elastos::Droid::Content::CIntentFilter;
 using Elastos::Droid::Content::IIntentFilter;
-//using Elastos::Droid::Net::CProxyProperties;
+//TODO using Elastos::Droid::Net::CProxyProperties;
 using Elastos::Droid::Net::IProxyInfo;
 using Elastos::Droid::Net::IProxyInfoHelper;
+//TODO using Elastos::Droid::Net::CProxyInfoHelper;
 using Elastos::Droid::Net::IProxyProperties;
 using Elastos::Droid::Os::Build;
 using Elastos::Droid::Os::IBundle;
@@ -150,14 +150,14 @@ AutoPtr<ProxyChangeListener::ProxyConfig> ProxyChangeListener::ProxyReceiver::Ex
         String host;
         Int32 port;
         if (Build::VERSION::SDK_INT <= Build::VERSION_CODES::KITKAT) {
-            //--:CProxyProperties::New((IProxyProperties**)&proxyProperties);
+            //TODO CProxyProperties::New((IProxyProperties**)&proxyProperties);
             proxyProperties->GetHost(&host);
             proxyProperties->GetPort(&port);
         }
         else {
             AutoPtr<IProxyInfoHelper> helper;
-            //--CProxyInfoHelper::AcquireSingleton((IProxyInfoHelper**)&helper);
-            //--helper->GetInstance((IProxyInfo**)&proxyInfo);
+            //TODO CProxyInfoHelper::AcquireSingleton((IProxyInfoHelper**)&helper);
+            //TODO helper->GetInstance((IProxyInfo**)&proxyInfo);
             proxyInfo->GetHost(&host);
             proxyInfo->GetPort(&port);
         }
@@ -232,7 +232,7 @@ String ProxyChangeListener::GetProperty(
 }
 
 ECode ProxyChangeListener::Start(
-    /* [in] */ Int64 nativePtr)
+    /* [in] */ Handle64 nativePtr)
 {
     // ==================before translated======================
     // assert mNativePtr == 0;
@@ -349,18 +349,18 @@ ECode ProxyChangeListener::UnregisterReceiver()
 }
 
 ECode ProxyChangeListener::NativeProxySettingsChangedTo(
-    /* [in] */ Int64 nativePtr,
+    /* [in] */ Handle64 nativePtr,
     /* [in] */ const String& host,
     /* [in] */ Int32 port)
 {
-    Elastos_ProxyChangeListener_nativeProxySettingsChangedTo(THIS_PROBE(IInterface), (Handle32)nativePtr, host, port);
+    Elastos_ProxyChangeListener_nativeProxySettingsChangedTo(THIS_PROBE(IInterface), (Handle64)nativePtr, host, port);
     return NOERROR;
 }
 
 ECode ProxyChangeListener::NativeProxySettingsChanged(
-    /* [in] */ Int64 nativePtr)
+    /* [in] */ Handle64 nativePtr)
 {
-    Elastos_ProxyChangeListener_nativeProxySettingsChanged(THIS_PROBE(IInterface), (Handle32)nativePtr);
+    Elastos_ProxyChangeListener_nativeProxySettingsChanged(THIS_PROBE(IInterface), (Handle64)nativePtr);
     return NOERROR;
 }
 
@@ -373,7 +373,7 @@ AutoPtr<IInterface> ProxyChangeListener::Create(
 
 void ProxyChangeListener::Start(
     /* [in] */ IInterface* obj,
-    /* [in] */ Int64 nativePtr)
+    /* [in] */ Handle64 nativePtr)
 {
     ProxyChangeListener* mObj = (ProxyChangeListener*)(IObject::Probe(obj));
     if (NULL == mObj) {
@@ -400,5 +400,3 @@ void ProxyChangeListener::Stop(
 } // namespace Webkit
 } // namespace Droid
 } // namespace Elastos
-
-

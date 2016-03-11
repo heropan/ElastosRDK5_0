@@ -26,8 +26,8 @@ CAR_INTERFACE_IMPL(CppHandlerThread::InnerRunnable, Object, IRunnable);
 
 CppHandlerThread::InnerRunnable::InnerRunnable(
     /* [in] */ CppHandlerThread* owner,
-    /* [in] */ const Int64 nativeThread,
-    /* [in] */ const Int64 nativeEvent)
+    /* [in] */ const Handle64 nativeThread,
+    /* [in] */ const Handle64 nativeEvent)
     : mOwner(owner)
     , mNativeThread(nativeThread)
     , mNativeEvent(nativeEvent)
@@ -61,8 +61,8 @@ AutoPtr<IInterface> CppHandlerThread::Create(
 
 //@CalledByNative
 void CppHandlerThread::Start(
-    /* [in] */ const Int64 nativeThread,
-    /* [in] */ const Int64 nativeEvent)
+    /* [in] */ const Handle64 nativeThread,
+    /* [in] */ const Handle64 nativeEvent)
 {
     AutoPtr<IThread> thread = IThread::Probe(mThread);
     thread->Start();
@@ -76,16 +76,16 @@ void CppHandlerThread::Start(
 }
 
 void CppHandlerThread::NativeInitializeThread(
-    /* [in] */ Int64 nativeCppHandlerThread,
-    /* [in] */ Int64 nativeEvent)
+    /* [in] */ Handle64 nativeCppHandlerThread,
+    /* [in] */ Handle64 nativeEvent)
 {
-    Elastos_JavaHandlerThread_nativeInitializeThread(THIS_PROBE(IInterface), (Handle32)nativeCppHandlerThread, nativeEvent);
+    Elastos_JavaHandlerThread_nativeInitializeThread(THIS_PROBE(IInterface), nativeCppHandlerThread, nativeEvent);
 }
 
 void CppHandlerThread::Start(
     /* [in] */ IInterface* obj,
-    /* [in] */ Int64 nativeThread,
-    /* [in] */ Int64 nativeEvent)
+    /* [in] */ Handle64 nativeThread,
+    /* [in] */ Handle64 nativeEvent)
 {
     AutoPtr<CppHandlerThread> mObj = (CppHandlerThread*)(IObject::Probe(obj));
     if (NULL == mObj)

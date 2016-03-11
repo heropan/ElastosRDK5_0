@@ -67,7 +67,7 @@ String WebAudioMediaCodecBridge::CreateTempFile(
 //@CalledByNative
 Boolean WebAudioMediaCodecBridge::DecodeAudioFile(
     /* [in] */ IContext* ctx,
-    /* [in] */ Int64 nativeMediaCodecBridge,
+    /* [in] */ Handle64 nativeMediaCodecBridge,
     /* [in] */ Int32 inputFD,
     /* [in] */ Int64 dataSize)
 {
@@ -275,22 +275,22 @@ Boolean WebAudioMediaCodecBridge::DecodeAudioFile(
 }
 
 void WebAudioMediaCodecBridge::NativeOnChunkDecoded(
-    /* [in] */ Int64 nativeWebAudioMediaCodecBridge,
+    /* [in] */ Handle64 nativeWebAudioMediaCodecBridge,
     /* [in] */ IByteBuffer* buf,
     /* [in] */ Int32 size,
     /* [in] */ Int32 inputChannelCount,
     /* [in] */ Int32 outputChannelCount)
 {
-    Elastos_WebAudioMediaCodecBridge_nativeOnChunkDecoded((Handle32)nativeWebAudioMediaCodecBridge, TO_IINTERFACE(buf), size, inputChannelCount, outputChannelCount);
+    Elastos_WebAudioMediaCodecBridge_nativeOnChunkDecoded(nativeWebAudioMediaCodecBridge, TO_IINTERFACE(buf), size, inputChannelCount, outputChannelCount);
 }
 
 void WebAudioMediaCodecBridge::NativeInitializeDestination(
-    /* [in] */ Int64 nativeWebAudioMediaCodecBridge,
+    /* [in] */ Handle64 nativeWebAudioMediaCodecBridge,
     /* [in] */ Int32 inputChannelCount,
     /* [in] */ Int32 sampleRate,
     /* [in] */ Int64 durationMicroseconds)
 {
-    Elastos_WebAudioMediaCodecBridge_nativeInitializeDestination((Handle32)nativeWebAudioMediaCodecBridge, inputChannelCount, sampleRate, durationMicroseconds);
+    Elastos_WebAudioMediaCodecBridge_nativeInitializeDestination(nativeWebAudioMediaCodecBridge, inputChannelCount, sampleRate, durationMicroseconds);
 }
 //callback function definition
 String WebAudioMediaCodecBridge::CreateTempFile(
@@ -302,7 +302,7 @@ String WebAudioMediaCodecBridge::CreateTempFile(
 
 Boolean WebAudioMediaCodecBridge::DecodeAudioFile(
     /* [in] */ IInterface* ctx,
-    /* [in] */ Int64 nativeMediaCodecBridge,
+    /* [in] */ Handle64 nativeMediaCodecBridge,
     /* [in] */ Int32 inputFD,
     /* [in] */ Int64 dataSize)
 {

@@ -14,11 +14,6 @@ using Elastos::Droid::Webkit::IWebSettings;
 using Elastos::Droid::Webkit::PluginState;
 using Elastos::Core::IRunnable;
 
-// import com.google.common.annotations.VisibleForTesting;
-
-// import org.chromium.base.CalledByNative;
-// import org.chromium.base.JNINamespace;
-
 namespace Elastos {
 namespace Droid {
 namespace Webkit {
@@ -244,7 +239,7 @@ public:
         /* [in] */ ZoomSupportChangeListener* zoomChangeListener);
 
     CARAPI_(void) SetWebContents(
-        /* [in] */ Int64 nativeWebContents);
+        /* [in] */ Handle64 nativeWebContents);
 
     /**
      * See {@link android.webkit.WebSettings#setBlockNetworkLoads}.
@@ -755,7 +750,7 @@ public:
 private:
     //@CalledByNative
     CARAPI_(void) NativeAwSettingsGone(
-        /* [in] */ Int64 nativeAwSettings);
+        /* [in] */ Handle64 nativeAwSettings);
 
     //@CalledByNative
     CARAPI_(Double) GetDIPScaleLocked();
@@ -916,42 +911,42 @@ private:
 
     //@CalledByNative
     CARAPI_(void) PopulateWebPreferences(
-        /* [in] */ Int64 webPrefsPtr);
+        /* [in] */ Handle64 webPrefsPtr);
 
     CARAPI_(void) UpdateWebkitPreferencesOnUiThreadLocked();
 
-    CARAPI_(Int64) NativeInit(
-        /* [in] */ Int64 webContentsPtr);
+    CARAPI_(Handle64) NativeInit(
+        /* [in] */ Handle64 webContentsPtr);
 
     CARAPI_(void) NativeDestroy(
-        /* [in] */ Int64 nativeAwSettings);
+        /* [in] */ Handle64 nativeAwSettings);
 
     CARAPI_(void) NativePopulateWebPreferencesLocked(
-        /* [in] */ Int64 nativeAwSettings,
-        /* [in] */ Int64 webPrefsPtr);
+        /* [in] */ Handle64 nativeAwSettings,
+        /* [in] */ Handle64 webPrefsPtr);
 
     CARAPI_(void) NativeResetScrollAndScaleState(
-        /* [in] */ Int64 nativeAwSettings);
+        /* [in] */ Handle64 nativeAwSettings);
 
     CARAPI_(void) NativeUpdateEverythingLocked(
-        /* [in] */ Int64 nativeAwSettings);
+        /* [in] */ Handle64 nativeAwSettings);
 
     CARAPI_(void) NativeUpdateInitialPageScaleLocked(
-        /* [in] */ Int64 nativeAwSettings);
+        /* [in] */ Handle64 nativeAwSettings);
 
     CARAPI_(void) NativeUpdateUserAgentLocked(
-        /* [in] */ Int64 nativeAwSettings);
+        /* [in] */ Handle64 nativeAwSettings);
 
     CARAPI_(void) NativeUpdateWebkitPreferencesLocked(
-        /* [in] */ Int64 nativeAwSettings);
+        /* [in] */ Handle64 nativeAwSettings);
 
     static CARAPI_(String) NativeGetDefaultUserAgent();
 
     CARAPI_(void) NativeUpdateFormDataPreferencesLocked(
-        /* [in] */ Int64 nativeAwSettings);
+        /* [in] */ Handle64 nativeAwSettings);
 
     CARAPI_(void) NativeUpdateRendererPreferencesLocked(
-        /* [in] */ Int64 nativeAwSettings);
+        /* [in] */ Handle64 nativeAwSettings);
 
 //callback function declaration
 public:
@@ -960,7 +955,7 @@ public:
 private:
     static CARAPI_(void) NativeAwSettingsGone(
         /* [in] */ IInterface* obj,
-        /* [in] */ Int64 nativeAwSettings);
+        /* [in] */ Handle64 nativeAwSettings);
 
     static CARAPI_(Double) GetDIPScaleLocked(
         /* [in] */ IInterface* obj);
@@ -1096,7 +1091,7 @@ private:
 
     static CARAPI_(void) PopulateWebPreferences(
         /* [in] */ IInterface* obj,
-        /* [in] */ Int64 webPrefsPtr);
+        /* [in] */ Handle64 webPrefsPtr);
 
 private:
     static const String TAG;
@@ -1179,7 +1174,7 @@ private:
     static Boolean sAppCachePathIsSet;
 
     // The native side of this object. It's lifetime is bounded by the WebContent it is attached to.
-    Int64 mNativeAwSettings;
+    Handle64 mNativeAwSettings;
 
     // Custom handler that queues messages to call native code on the UI thread.
     AutoPtr<EventHandler> mEventHandler;

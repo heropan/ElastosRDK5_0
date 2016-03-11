@@ -434,7 +434,7 @@ void AwContentsClientBridge::NativeProceedSslError(
     /* [in] */ Boolean proceed,
     /* [in] */ Int32 id)
 {
-    Elastos_AwContentsClientBridge_nativeProceedSslError(THIS_PROBE(IInterface), (Handle32)nativeAwContentsClientBridge, proceed, id);
+    Elastos_AwContentsClientBridge_nativeProceedSslError(THIS_PROBE(IInterface), nativeAwContentsClientBridge, proceed, id);
 }
 
 void AwContentsClientBridge::NativeProvideClientCertificateResponse(
@@ -443,7 +443,7 @@ void AwContentsClientBridge::NativeProvideClientCertificateResponse(
     /* [in] */ ArrayOf<AutoPtr<ArrayOf<Byte> > >* certChain,
     /* [in] */ ElastosPrivateKey* androidKey)
 {
-    Elastos_AwContentsClientBridge_nativeProvideClientCertificateResponse(THIS_PROBE(IInterface), (Handle32)nativeAwContentsClientBridge, id, certChain, TO_IINTERFACE(androidKey));
+    Elastos_AwContentsClientBridge_nativeProvideClientCertificateResponse(THIS_PROBE(IInterface), nativeAwContentsClientBridge, id, certChain, TO_IINTERFACE(androidKey));
 }
 
 void AwContentsClientBridge::NativeConfirmJsResult(
@@ -451,14 +451,14 @@ void AwContentsClientBridge::NativeConfirmJsResult(
     /* [in] */ Int32 id,
     /* [in] */ const String& prompt)
 {
-    Elastos_AwContentsClientBridge_nativeConfirmJsResult(THIS_PROBE(IInterface), (Handle32)nativeAwContentsClientBridge, id, prompt);
+    Elastos_AwContentsClientBridge_nativeConfirmJsResult(THIS_PROBE(IInterface), nativeAwContentsClientBridge, id, prompt);
 }
 
 void AwContentsClientBridge::NativeCancelJsResult(
     /* [in] */ Int64 nativeAwContentsClientBridge,
     /* [in] */ Int32 id)
 {
-    Elastos_AwContentsClientBridge_nativeCancelJsResult(THIS_PROBE(IInterface), (Handle32)nativeAwContentsClientBridge, id);
+    Elastos_AwContentsClientBridge_nativeCancelJsResult(THIS_PROBE(IInterface), nativeAwContentsClientBridge, id);
 }
 //callback function definition
 void AwContentsClientBridge::SetNativeContentsClientBridge(

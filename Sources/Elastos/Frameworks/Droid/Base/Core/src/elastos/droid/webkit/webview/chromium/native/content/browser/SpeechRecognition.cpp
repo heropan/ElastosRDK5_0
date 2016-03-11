@@ -195,7 +195,7 @@ AutoPtr<IComponentName> SpeechRecognition::sRecognitionProvider;
 
 SpeechRecognition::SpeechRecognition(
     /* [in] */ IContext* context,
-    /* [in] */ Int64 nativeSpeechRecognizerImplAndroid)
+    /* [in] */ Handle64 nativeSpeechRecognizerImplAndroid)
     : mContext(context)
     , mNativeSpeechRecognizerImplAndroid(nativeSpeechRecognizerImplAndroid)
     , mContinuous(FALSE)
@@ -301,7 +301,7 @@ ECode SpeechRecognition::Terminate(
 
 AutoPtr<SpeechRecognition> SpeechRecognition::CreateSpeechRecognition(
     /* [in] */ IContext* context,
-    /* [in] */ Int64 nativeSpeechRecognizerImplAndroid)
+    /* [in] */ Handle64 nativeSpeechRecognizerImplAndroid)
 {
     return new SpeechRecognition(context, nativeSpeechRecognizerImplAndroid);
 }
@@ -346,64 +346,64 @@ ECode SpeechRecognition::StopRecognition()
 }
 
 ECode SpeechRecognition::NativeOnAudioStart(
-    /* [in] */ Int64 nativeSpeechRecognizerImplAndroid)
+    /* [in] */ Handle64 nativeSpeechRecognizerImplAndroid)
 {
-    Elastos_SpeechRecognition_nativeOnAudioStart(THIS_PROBE(IInterface), (Handle32)nativeSpeechRecognizerImplAndroid);
+    Elastos_SpeechRecognition_nativeOnAudioStart(THIS_PROBE(IInterface), nativeSpeechRecognizerImplAndroid);
     return NOERROR;
 }
 
 ECode SpeechRecognition::NativeOnSoundStart(
-    /* [in] */ Int64 nativeSpeechRecognizerImplAndroid)
+    /* [in] */ Handle64 nativeSpeechRecognizerImplAndroid)
 {
-    Elastos_SpeechRecognition_nativeOnSoundStart(THIS_PROBE(IInterface), (Handle32)nativeSpeechRecognizerImplAndroid);
+    Elastos_SpeechRecognition_nativeOnSoundStart(THIS_PROBE(IInterface), nativeSpeechRecognizerImplAndroid);
     return NOERROR;
 }
 
 ECode SpeechRecognition::NativeOnSoundEnd(
-    /* [in] */ Int64 nativeSpeechRecognizerImplAndroid)
+    /* [in] */ Handle64 nativeSpeechRecognizerImplAndroid)
 {
-    Elastos_SpeechRecognition_nativeOnSoundEnd(THIS_PROBE(IInterface), (Handle32)nativeSpeechRecognizerImplAndroid);
+    Elastos_SpeechRecognition_nativeOnSoundEnd(THIS_PROBE(IInterface), nativeSpeechRecognizerImplAndroid);
     return NOERROR;
 }
 
 ECode SpeechRecognition::NativeOnAudioEnd(
-    /* [in] */ Int64 nativeSpeechRecognizerImplAndroid)
+    /* [in] */ Handle64 nativeSpeechRecognizerImplAndroid)
 {
-    Elastos_SpeechRecognition_nativeOnAudioEnd(THIS_PROBE(IInterface), (Handle32)nativeSpeechRecognizerImplAndroid);
+    Elastos_SpeechRecognition_nativeOnAudioEnd(THIS_PROBE(IInterface), nativeSpeechRecognizerImplAndroid);
     return NOERROR;
 }
 
 ECode SpeechRecognition::NativeOnRecognitionResults(
-    /* [in] */ Int64 nativeSpeechRecognizerImplAndroid,
+    /* [in] */ Handle64 nativeSpeechRecognizerImplAndroid,
     /* [in] */ ArrayOf<String>* results,
     /* [in] */ ArrayOf<Float>* scores,
     /* [in] */ Boolean provisional)
 {
     Elastos_SpeechRecognition_nativeOnRecognitionResults(THIS_PROBE(IInterface),
-            (Handle32)nativeSpeechRecognizerImplAndroid, results, scores, provisional);
+            nativeSpeechRecognizerImplAndroid, results, scores, provisional);
     return NOERROR;
 }
 
 ECode SpeechRecognition::NativeOnRecognitionError(
-    /* [in] */ Int64 nativeSpeechRecognizerImplAndroid,
+    /* [in] */ Handle64 nativeSpeechRecognizerImplAndroid,
     /* [in] */ Int32 error)
 {
     Elastos_SpeechRecognition_nativeOnRecognitionError(THIS_PROBE(IInterface),
-            (Handle32)nativeSpeechRecognizerImplAndroid, error);
+            nativeSpeechRecognizerImplAndroid, error);
     return NOERROR;
 }
 
 ECode SpeechRecognition::NativeOnRecognitionEnd(
-    /* [in] */ Int64 nativeSpeechRecognizerImplAndroid)
+    /* [in] */ Handle64 nativeSpeechRecognizerImplAndroid)
 {
     Elastos_SpeechRecognition_nativeOnRecognitionEnd(THIS_PROBE(IInterface),
-            (Handle32)nativeSpeechRecognizerImplAndroid);
+            nativeSpeechRecognizerImplAndroid);
     return NOERROR;
 }
 
 AutoPtr<IInterface> SpeechRecognition::CreateSpeechRecognition(
     /* [in] */ IInterface* context,
-    /* [in] */ Int64 nativeSpeechRecognizerImplAndroid)
+    /* [in] */ Handle64 nativeSpeechRecognizerImplAndroid)
 {
     AutoPtr<IContext> c = IContext::Probe(context);
     return TO_IINTERFACE(CreateSpeechRecognition(c, nativeSpeechRecognizerImplAndroid));

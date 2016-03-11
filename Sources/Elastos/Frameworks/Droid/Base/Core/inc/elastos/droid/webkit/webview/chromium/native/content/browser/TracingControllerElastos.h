@@ -10,24 +10,6 @@
 #include "elastos/droid/content/IntentFilter.h"
 #include "elastos/droid/content/BroadcastReceiver.h"
 
-// package org.chromium.content.browser;
-// import android.content.BroadcastReceiver;
-// import android.content.Context;
-// import android.content.Intent;
-// import android.content.IntentFilter;
-// import android.os.Environment;
-// import android.text.TextUtils;
-// import android.util.Log;
-// import android.widget.Toast;
-// import org.chromium.base.CalledByNative;
-// import org.chromium.base.JNINamespace;
-// import org.chromium.content.R;
-// import java.io.File;
-// import java.text.SimpleDateFormat;
-// import java.util.Date;
-// import java.util.Locale;
-// import java.util.TimeZone;
-
 using Elastos::Droid::Content::IBroadcastReceiver;
 using Elastos::Droid::Content::BroadcastReceiver;
 using Elastos::Droid::Content::IContext;
@@ -212,22 +194,22 @@ private:
     CARAPI ShowToast(
         /* [in] */ const String& str);
 
-    CARAPI_(Int64) NativeInit();
+    CARAPI_(Handle64) NativeInit();
 
     CARAPI NativeDestroy(
-        /* [in] */ Int64 nativeTracingControllerElastos);
+        /* [in] */ Handle64 nativeTracingControllerElastos);
 
     CARAPI_(Boolean) NativeStartTracing(
-        /* [in] */ Int64 nativeTracingControllerElastos,
+        /* [in] */ Handle64 nativeTracingControllerElastos,
         /* [in] */ const String& categories,
         /* [in] */ Boolean recordContinuously);
 
     CARAPI NativeStopTracing(
-        /* [in] */ Int64 nativeTracingControllerElastos,
+        /* [in] */ Handle64 nativeTracingControllerElastos,
         /* [in] */ const String& filename);
 
     CARAPI_(Boolean) NativeGetKnownCategoryGroupsAsync(
-        /* [in] */ Int64 nativeTracingControllerElastos);
+        /* [in] */ Handle64 nativeTracingControllerElastos);
 
     CARAPI_(String) NativeGetDefaultCategories();
 
@@ -251,7 +233,7 @@ private:
     // showing the toast impacts performance.  This gives us the chance to disable them.
     Boolean mShowToasts;
     String mFilename;
-    Int64 mNativeTracingControllerElastos;
+    Handle64 mNativeTracingControllerElastos;
 };
 
 } // namespace Browser

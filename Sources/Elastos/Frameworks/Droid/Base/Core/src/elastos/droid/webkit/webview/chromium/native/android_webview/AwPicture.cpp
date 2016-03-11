@@ -17,7 +17,7 @@ namespace AndroidWebview {
 CAR_INTERFACE_IMPL(AwPicture::DestroyRunnable, Object, IRunnable);
 
 AwPicture::DestroyRunnable::DestroyRunnable(
-    /* [in] */ Int64 nativeAwPicture)
+    /* [in] */ Handle64 nativeAwPicture)
     : mNativeAwPicture(nativeAwPicture)
 {
 }
@@ -39,7 +39,7 @@ CAR_INTERFACE_IMPL(AwPicture, Object, IPicture);
  *                        taken by this java instance.
  */
 AwPicture::AwPicture(
-    /* [in] */ Int64 nativeAwPicture)
+    /* [in] */ Handle64 nativeAwPicture)
     : mNativeAwPicture(nativeAwPicture)
 {
     AutoPtr<IRunnable> runnable = new DestroyRunnable(nativeAwPicture);
@@ -94,7 +94,7 @@ ECode AwPicture::Draw(
 }
 
 ECode GetNativePicture(
-    /* [out] */ Handle32* handle)
+    /* [out] */ Handle32/*TODO Handle64*/* handle)
 {
     return E_NOT_IMPLEMENTED;
 }
@@ -115,28 +115,28 @@ void AwPicture::UnsupportedOperation()
 }
 
 void AwPicture::NativeDestroy(
-    /* [in] */ Int64 nativeAwPicture)
+    /* [in] */ Handle64 nativeAwPicture)
 {
-    Elastos_AwPicture_nativeDestroy((Handle32)nativeAwPicture);
+    Elastos_AwPicture_nativeDestroy(nativeAwPicture);
 }
 
 Int32 AwPicture::NativeGetWidth(
-    /* [in] */ Int64 nativeAwPicture)
+    /* [in] */ Handle64 nativeAwPicture)
 {
-    return Elastos_AwPicture_nativeGetWidth(THIS_PROBE(IInterface), (Handle32)nativeAwPicture);
+    return Elastos_AwPicture_nativeGetWidth(THIS_PROBE(IInterface), nativeAwPicture);
 }
 
 Int32 AwPicture::NativeGetHeight(
-    /* [in] */ Int64 nativeAwPicture)
+    /* [in] */ Handle64 nativeAwPicture)
 {
-    return Elastos_AwPicture_nativeGetHeight(THIS_PROBE(IInterface), (Handle32)nativeAwPicture);
+    return Elastos_AwPicture_nativeGetHeight(THIS_PROBE(IInterface), nativeAwPicture);
 }
 
 void AwPicture::NativeDraw(
-    /* [in] */ Int64 nativeAwPicture,
+    /* [in] */ Handle64 nativeAwPicture,
     /* [in] */ ICanvas* canvas)
 {
-    Elastos_AwPicture_nativeDraw(THIS_PROBE(IInterface), (Handle32)nativeAwPicture, TO_IINTERFACE(canvas));
+    Elastos_AwPicture_nativeDraw(THIS_PROBE(IInterface), nativeAwPicture, TO_IINTERFACE(canvas));
 }
 
 } // namespace AndroidWebview

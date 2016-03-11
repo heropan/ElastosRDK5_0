@@ -90,7 +90,7 @@ Int32 NetworkChangeNotifier::GetCurrentConnectionType()
 }
 
 ECode NetworkChangeNotifier::AddNativeObserver(
-    /* [in] */ Int64 nativeChangeNotifier)
+    /* [in] */ Handle64 nativeChangeNotifier)
 {
     // ==================before translated======================
     // mNativeChangeNotifiers.add(nativeChangeNotifier);
@@ -100,7 +100,7 @@ ECode NetworkChangeNotifier::AddNativeObserver(
 }
 
 ECode NetworkChangeNotifier::RemoveNativeObserver(
-    /* [in] */ Int64 nativeChangeNotifier)
+    /* [in] */ Handle64 nativeChangeNotifier)
 {
     // ==================before translated======================
     // mNativeChangeNotifiers.remove(nativeChangeNotifier);
@@ -151,7 +151,7 @@ ECode NetworkChangeNotifier::NotifyObserversOfConnectionTypeChange(
     //     observer.onConnectionTypeChanged(newConnectionType);
     // }
 
-    Int64 nativeChangeNotifier;
+    Handle64 nativeChangeNotifier;
     for (Int32 i=0; i<(Int32)mNativeChangeNotifiers->GetSize(); ++i) {
         nativeChangeNotifier = (*mNativeChangeNotifiers)[i];
         NativeNotifyConnectionTypeChanged(nativeChangeNotifier, newConnectionType);
@@ -217,7 +217,7 @@ NetworkChangeNotifier::NetworkChangeNotifier(
     // mConnectionTypeObservers = new ObserverList<ConnectionTypeObserver>();
 
     context->GetApplicationContext((IContext**)&mContext);
-    mNativeChangeNotifiers = new List<Int64>();
+    mNativeChangeNotifiers = new List<Handle64>();
     CArrayList::New((IList**)&mConnectionTypeObservers);
 }
 
@@ -320,10 +320,10 @@ ECode NetworkChangeNotifier::RemoveConnectionTypeObserverInternal(
 }
 
 ECode NetworkChangeNotifier::NativeNotifyConnectionTypeChanged(
-    /* [in] */ Int64 nativePtr,
+    /* [in] */ Handle64 nativePtr,
     /* [in] */ Int32 newConnectionType)
 {
-    Elastos_NetworkChangeNotifier_nativeNotifyConnectionTypeChanged(THIS_PROBE(IInterface), (Handle32)nativePtr, newConnectionType);
+    Elastos_NetworkChangeNotifier_nativeNotifyConnectionTypeChanged(THIS_PROBE(IInterface), (Handle64)nativePtr, newConnectionType);
     return NOERROR;
 }
 
@@ -347,7 +347,7 @@ Int32 NetworkChangeNotifier::GetCurrentConnectionType(
 
 void NetworkChangeNotifier::AddNativeObserver(
     /* [in] */ IInterface* obj,
-    /* [in] */ Int64 nativeChangeNotifier)
+    /* [in] */ Handle64 nativeChangeNotifier)
 {
     NetworkChangeNotifier* mObj = (NetworkChangeNotifier*)(IObject::Probe(obj));
     if (NULL == mObj) {
@@ -359,7 +359,7 @@ void NetworkChangeNotifier::AddNativeObserver(
 
 void NetworkChangeNotifier::RemoveNativeObserver(
     /* [in] */ IInterface* obj,
-    /* [in] */ Int64 nativeChangeNotifier)
+    /* [in] */ Handle64 nativeChangeNotifier)
 {
     NetworkChangeNotifier* mObj = (NetworkChangeNotifier*)(IObject::Probe(obj));
     if (NULL == mObj) {

@@ -32,7 +32,7 @@ CAR_INTERFACE_IMPL_7(MediaPlayerListener, Object, IMediaPlayerOnPreparedListener
         IMediaPlayerOnErrorListener, IAudioManagerOnAudioFocusChangeListener);
 
 MediaPlayerListener::MediaPlayerListener(
-    /* [in] */ Int64 nativeMediaPlayerListener,
+    /* [in] */ Handle64 nativeMediaPlayerListener,
     /* [in] */ IContext* context)
     : mNativeMediaPlayerListener(nativeMediaPlayerListener)
     , mContext(context)
@@ -156,7 +156,7 @@ void MediaPlayerListener::ReleaseResources()
 
 //@CalledByNative return IMediaPlayerListener
 AutoPtr<IInterface> MediaPlayerListener::Create(
-    /* [in] */ Int64 nativeMediaPlayerListener,
+    /* [in] */ Handle64 nativeMediaPlayerListener,
     /* [in] */ IContext* context,
     /* [in] */ MediaPlayerBridge* mediaPlayerBridge)
 {
@@ -189,49 +189,49 @@ AutoPtr<IInterface> MediaPlayerListener::Create(
  * See media/base/android/media_player_listener.cc for all the following functions.
  */
 void MediaPlayerListener::NativeOnMediaError(
-    /* [in] */ Int64 nativeMediaPlayerListener,
+    /* [in] */ Handle64 nativeMediaPlayerListener,
     /* [in] */ Int32 errorType)
 {
-    Elastos_MediaPlayerListener_nativeOnMediaError(THIS_PROBE(IInterface), (Handle32)nativeMediaPlayerListener, errorType);
+    Elastos_MediaPlayerListener_nativeOnMediaError(THIS_PROBE(IInterface), nativeMediaPlayerListener, errorType);
 }
 
 void MediaPlayerListener::NativeOnVideoSizeChanged(
-    /* [in] */ Int64 nativeMediaPlayerListener,
+    /* [in] */ Handle64 nativeMediaPlayerListener,
     /* [in] */ Int32 width,
     /* [in] */ Int32 height)
 {
-    Elastos_MediaPlayerListener_nativeOnVideoSizeChanged(THIS_PROBE(IInterface), (Handle32)nativeMediaPlayerListener, width, height);
+    Elastos_MediaPlayerListener_nativeOnVideoSizeChanged(THIS_PROBE(IInterface), nativeMediaPlayerListener, width, height);
 }
 
 void MediaPlayerListener::NativeOnBufferingUpdate(
-    /* [in] */ Int64 nativeMediaPlayerListener,
+    /* [in] */ Handle64 nativeMediaPlayerListener,
     /* [in] */ Int32 percent)
 {
-    Elastos_MediaPlayerListener_nativeOnBufferingUpdate(THIS_PROBE(IInterface), (Handle32)nativeMediaPlayerListener, percent);
+    Elastos_MediaPlayerListener_nativeOnBufferingUpdate(THIS_PROBE(IInterface), nativeMediaPlayerListener, percent);
 }
 
 void MediaPlayerListener::NativeOnMediaPrepared(
-    /* [in] */ Int64 nativeMediaPlayerListener)
+    /* [in] */ Handle64 nativeMediaPlayerListener)
 {
-    Elastos_MediaPlayerListener_nativeOnMediaPrepared(THIS_PROBE(IInterface), (Handle32)nativeMediaPlayerListener);
+    Elastos_MediaPlayerListener_nativeOnMediaPrepared(THIS_PROBE(IInterface), nativeMediaPlayerListener);
 }
 
 void MediaPlayerListener::NativeOnPlaybackComplete(
-    /* [in] */ Int64 nativeMediaPlayerListener)
+    /* [in] */ Handle64 nativeMediaPlayerListener)
 {
-    Elastos_MediaPlayerListener_nativeOnPlaybackComplete(THIS_PROBE(IInterface), (Handle32)nativeMediaPlayerListener);
+    Elastos_MediaPlayerListener_nativeOnPlaybackComplete(THIS_PROBE(IInterface), nativeMediaPlayerListener);
 }
 
 void MediaPlayerListener::NativeOnSeekComplete(
-    /* [in] */ Int64 nativeMediaPlayerListener)
+    /* [in] */ Handle64 nativeMediaPlayerListener)
 {
-    Elastos_MediaPlayerListener_nativeOnSeekComplete(THIS_PROBE(IInterface), (Handle32)nativeMediaPlayerListener);
+    Elastos_MediaPlayerListener_nativeOnSeekComplete(THIS_PROBE(IInterface), nativeMediaPlayerListener);
 }
 
 void MediaPlayerListener::NativeOnMediaInterrupted(
-    /* [in] */ Int64 nativeMediaPlayerListener)
+    /* [in] */ Handle64 nativeMediaPlayerListener)
 {
-    Elastos_MediaPlayerListener_nativeOnMediaInterrupted(THIS_PROBE(IInterface), (Handle32)nativeMediaPlayerListener);
+    Elastos_MediaPlayerListener_nativeOnMediaInterrupted(THIS_PROBE(IInterface), nativeMediaPlayerListener);
 }
 
 //callback function definition
@@ -248,7 +248,7 @@ void MediaPlayerListener::ReleaseResources(
 }
 
 AutoPtr<IInterface> MediaPlayerListener::Create(
-    /* [in] */ Int64 nativeMediaPlayerListener,
+    /* [in] */ Handle64 nativeMediaPlayerListener,
     /* [in] */ IInterface* context,
     /* [in] */ IInterface* mediaPlayerBridge)
 {

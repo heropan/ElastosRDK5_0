@@ -15,12 +15,6 @@ using Elastos::Droid::Content::IIntent;
 using Elastos::Droid::Content::IIntentFilter;
 using Elastos::Droid::Os::IBatteryManager;
 using Elastos::Droid::Os::Build;
-// import android.util.Log;
-
-// import com.google.common.annotations.VisibleForTesting;
-
-// import org.chromium.base.CalledByNative;
-// import org.chromium.base.JNINamespace;
 
 namespace Elastos {
 namespace Droid {
@@ -64,7 +58,7 @@ public:
      */
     //@CalledByNative
     CARAPI_(Boolean) Start(
-      /* [in] */ Int64 nativePtr);
+      /* [in] */ Handle64 nativePtr);
 
     /**
      * Stop listening to intents.
@@ -100,7 +94,7 @@ private:
 
     static CARAPI_(Boolean) Start(
         /* [in] */ IInterface* obj,
-        /* [in] */ Int64 nativePtr);
+        /* [in] */ Handle64 nativePtr);
 
     static CARAPI_(void) Stop(
         /* [in] */ IInterface* obj);
@@ -110,7 +104,7 @@ private:
      * see content/browser/battery_status/battery_status_manager.cc
      */
     CARAPI_(void) NativeGotBatteryStatus(
-      /* [in] */ Int64 nativeBatteryStatusManager,
+      /* [in] */ Handle64 nativeBatteryStatusManager,
       /* [in] */ Boolean charging,
       /* [in] */ Double chargingTime,
       /* [in] */ Double dischargingTime,
@@ -126,7 +120,7 @@ private:
 
     // Non-zero if and only if we're listening for events.
     // To avoid race conditions on the C++ side, access must be synchronized.
-    Int64 mNativePtr;
+    Handle64 mNativePtr;
 
     // The lock to access the mNativePtr.
     Object mNativePtrLock;

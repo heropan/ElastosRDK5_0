@@ -47,7 +47,7 @@ public:
 private:
     //@CalledByNative
     CARAPI_(void) SetNativeAwPdfExporter(
-        /* [in] */ Int64 nativePdfExporter);
+        /* [in] */ Handle64 nativePdfExporter);
 
     static CARAPI_(Int32) GetPrintDpi(
         /* [in] */ /*TODO IPrintAttributes*/IInterface* attributes);
@@ -78,7 +78,7 @@ private:
     CARAPI_(Int32) GetBottomMargin();
 
     CARAPI_(void) NativeExportToPdf(
-        /* [in] */ Int64 nativeAwPdfExporter,
+        /* [in] */ Handle64 nativeAwPdfExporter,
         /* [in] */ Int32 fd,
         /* [in] */ ICancellationSignal* cancellationSignal);
 
@@ -89,7 +89,7 @@ public:
 private:
     static CARAPI_(void) SetNativeAwPdfExporter(
         /* [in] */ IInterface* obj,
-        /* [in] */ Int64 nativePdfExporter);
+        /* [in] */ Handle64 nativePdfExporter);
 
     static CARAPI_(void) DidExportPdf(
         /* [in] */ IInterface* obj,
@@ -118,7 +118,7 @@ private:
 
 private:
     static const String TAG;
-    Int64 mNativeAwPdfExporter;
+    Handle64 mNativeAwPdfExporter;
     // TODO(sgurun) result callback should return an int/object indicating errors.
     // potential errors: invalid print parameters, already pending, IO error
     AutoPtr<IValueCallback> mResultCallback;

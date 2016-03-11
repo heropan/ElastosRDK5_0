@@ -20,12 +20,6 @@ using Elastos::Utility::IUUID;
 using Elastos::IO::IByteBuffer;
 
 using Elastos::Utility::Etl::HashMap;
-// import org.apache.http.client.ClientProtocolException;
-// import org.apache.http.util.EntityUtils;
-// import org.chromium.base.CalledByNative;
-// import org.chromium.base.JNINamespace;
-
-// import java.io.IOException;
 
 DEFINE_OBJECT_HASH_FUNC_FOR(Elastos::IO::IByteBuffer);
 
@@ -241,7 +235,7 @@ public:
 private:
     MediaDrmBridge(
         /* [in] */ IUUID* schemeUUID,
-        /* [in] */ Int64 nativeMediaDrmBridge,
+        /* [in] */ Handle64 nativeMediaDrmBridge,
         /* [in] */ Boolean singleSessionMode);
 
     static CARAPI_(AutoPtr<IUUID>) GetUUIDFromBytes(
@@ -301,7 +295,7 @@ private:
     //@CalledByNative return MediaDrmBridge
     static CARAPI_(AutoPtr<IInterface>) Create(
         /* [in] */ ArrayOf<Byte>* schemeUUID,
-        /* [in] */ Int64 nativeMediaDrmBridge);
+        /* [in] */ Handle64 nativeMediaDrmBridge);
 
     /**
      * Set the security level that the MediaDrm object uses.
@@ -445,33 +439,33 @@ private:
         /* [in] */ IByteBuffer* session);
 
     CARAPI_(void) NativeOnMediaCryptoReady(
-        /* [in] */ Int64 nativeMediaDrmBridge);
+        /* [in] */ Handle64 nativeMediaDrmBridge);
 
     CARAPI_(void) NativeOnSessionCreated(
-        /* [in] */ Int64 nativeMediaDrmBridge,
+        /* [in] */ Handle64 nativeMediaDrmBridge,
         /* [in] */ Int32 sessionId,
         /* [in] */ const String& webSessionId);
 
     CARAPI_(void) NativeOnSessionMessage(
-        /* [in] */ Int64 nativeMediaDrmBridge,
+        /* [in] */ Handle64 nativeMediaDrmBridge,
         /* [in] */ Int32 sessionId,
         /* [in] */ ArrayOf<Byte>* message,
         /* [in] */ const String& destinationUrl);
 
     CARAPI_(void) NativeOnSessionReady(
-        /* [in] */ Int64 nativeMediaDrmBridge,
+        /* [in] */ Handle64 nativeMediaDrmBridge,
         /* [in] */ Int32 sessionId);
 
     CARAPI_(void) NativeOnSessionClosed(
-        /* [in] */ Int64 nativeMediaDrmBridge,
+        /* [in] */ Handle64 nativeMediaDrmBridge,
         /* [in] */ Int32 sessionId);
 
     CARAPI_(void) NativeOnSessionError(
-        /* [in] */ Int64 nativeMediaDrmBridge,
+        /* [in] */ Handle64 nativeMediaDrmBridge,
         /* [in] */ Int32 sessionId);
 
     CARAPI_(void) NativeOnResetDeviceCredentialsCompleted(
-        /* [in] */ Int64 nativeMediaDrmBridge,
+        /* [in] */ Handle64 nativeMediaDrmBridge,
         /* [in] */ Boolean success);
 
     static CARAPI_(void) NativeAddKeySystemUuidMapping(
@@ -550,7 +544,7 @@ private:
     static const Int32 INVALID_SESSION_ID = 0;
 
     AutoPtr<IMediaDrm> mMediaDrm;
-    Int64 mNativeMediaDrmBridge;
+    Handle64 mNativeMediaDrmBridge;
     AutoPtr<IUUID> mSchemeUUID;
     AutoPtr<IHandler> mHandler;
 

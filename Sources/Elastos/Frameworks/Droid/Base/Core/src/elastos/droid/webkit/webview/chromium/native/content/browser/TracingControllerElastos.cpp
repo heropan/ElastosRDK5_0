@@ -378,41 +378,41 @@ ECode TracingControllerElastos::ShowToast(
     return NOERROR;
 }
 
-Int64 TracingControllerElastos::NativeInit()
+Handle64 TracingControllerElastos::NativeInit()
 {
     return Elastos_TracingControllerAndroid_nativeInit(THIS_PROBE(IInterface));
 }
 
 ECode TracingControllerElastos::NativeDestroy(
-    /* [in] */ Int64 nativeTracingControllerElastos)
+    /* [in] */ Handle64 nativeTracingControllerElastos)
 {
-    Elastos_TracingControllerAndroid_nativeDestroy(THIS_PROBE(IInterface), (Handle32)nativeTracingControllerElastos);
+    Elastos_TracingControllerAndroid_nativeDestroy(THIS_PROBE(IInterface), nativeTracingControllerElastos);
     return NOERROR;
 }
 
 Boolean TracingControllerElastos::NativeStartTracing(
-    /* [in] */ Int64 nativeTracingControllerElastos,
+    /* [in] */ Handle64 nativeTracingControllerElastos,
     /* [in] */ const String& categories,
     /* [in] */ Boolean recordContinuously)
 {
     return Elastos_TracingControllerAndroid_nativeStartTracing(THIS_PROBE(IInterface),
-        (Handle32)nativeTracingControllerElastos, categories, recordContinuously);
+        nativeTracingControllerElastos, categories, recordContinuously);
 }
 
 ECode TracingControllerElastos::NativeStopTracing(
-    /* [in] */ Int64 nativeTracingControllerElastos,
+    /* [in] */ Handle64 nativeTracingControllerElastos,
     /* [in] */ const String& filename)
 {
     Elastos_TracingControllerAndroid_nativeStopTracing(THIS_PROBE(IInterface),
-            (Handle32)nativeTracingControllerElastos, filename);
+            nativeTracingControllerElastos, filename);
     return NOERROR;
 }
 
 Boolean TracingControllerElastos::NativeGetKnownCategoryGroupsAsync(
-    /* [in] */ Int64 nativeTracingControllerElastos)
+    /* [in] */ Handle64 nativeTracingControllerElastos)
 {
     return Elastos_TracingControllerAndroid_nativeGetKnownCategoryGroupsAsync(THIS_PROBE(IInterface),
-            (Handle32)nativeTracingControllerElastos);
+            nativeTracingControllerElastos);
 }
 
 String TracingControllerElastos::NativeGetDefaultCategories()

@@ -99,7 +99,7 @@ ECode AwPdfExporter::ExportToPdf(
 
 //@CalledByNative
 void AwPdfExporter::SetNativeAwPdfExporter(
-    /* [in] */ Int64 nativePdfExporter)
+    /* [in] */ Handle64 nativePdfExporter)
 {
     mNativeAwPdfExporter = nativePdfExporter;
     // Handle the cornercase that Webview.Destroy is called before the native side
@@ -208,16 +208,16 @@ Int32 AwPdfExporter::GetBottomMargin()
 }
 
 void AwPdfExporter::NativeExportToPdf(
-    /* [in] */ Int64 nativeAwPdfExporter,
+    /* [in] */ Handle64 nativeAwPdfExporter,
     /* [in] */ Int32 fd,
     /* [in] */ ICancellationSignal* cancellationSignal)
 {
-    Elastos_AwPdfExporter_nativeExportToPdf(THIS_PROBE(IInterface), (Handle32)nativeAwPdfExporter, fd, TO_IINTERFACE(cancellationSignal));
+    Elastos_AwPdfExporter_nativeExportToPdf(THIS_PROBE(IInterface), nativeAwPdfExporter, fd, TO_IINTERFACE(cancellationSignal));
 }
 //callback function definition
 void AwPdfExporter::SetNativeAwPdfExporter(
     /* [in] */ IInterface* obj,
-    /* [in] */ Int64 nativePdfExporter)
+    /* [in] */ Handle64 nativePdfExporter)
 {
     AutoPtr<AwPdfExporter> mObj = (AwPdfExporter*)(IObject::Probe(obj));
     if (NULL == mObj)

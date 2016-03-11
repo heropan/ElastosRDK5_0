@@ -9,9 +9,6 @@
 #include "elastos/droid/ext/frameworkext.h"
 #include <elastos/core/Object.h>
 
-// import org.chromium.base.CalledByNative;
-// import org.chromium.base.JNINamespace;
-
 namespace Elastos {
 namespace Droid {
 namespace Webkit {
@@ -39,7 +36,7 @@ public:
     /**
       * @return The pointer to the underlying native counterpart.
       */
-    virtual CARAPI_(Int64) GetNative();
+    virtual CARAPI_(Handle64) GetNative();
 
     static CARAPI_(void*) ElaInterstitialPageDelegateElastosCallback_Init();
 
@@ -92,17 +89,17 @@ private:
     // @CalledByNative
     CARAPI OnNativeDestroyed();
 
-    CARAPI_(Int64) NativeInit(
+    CARAPI_(Handle64) NativeInit(
         /* [in] */ const String& htmlContent);
 
     CARAPI NativeProceed(
-        /* [in] */ Int64 nativeInterstitialPageDelegateElastos);
+        /* [in] */ Handle64 nativeInterstitialPageDelegateElastos);
 
     CARAPI NativeDontProceed(
-        /* [in] */ Int64 nativeInterstitialPageDelegateElastos);
+        /* [in] */ Handle64 nativeInterstitialPageDelegateElastos);
 
 private:
-    Int64 mNativePtr;
+    Handle64 mNativePtr;
 };
 
 } // namespace Browser

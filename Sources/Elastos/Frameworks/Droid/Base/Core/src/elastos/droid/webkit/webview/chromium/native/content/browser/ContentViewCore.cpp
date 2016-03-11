@@ -1045,16 +1045,16 @@ AutoPtr<ImeAdapter> ContentViewCore::CreateImeAdapter(
 void ContentViewCore::Initialize(
     /* [in] */ IViewGroup* containerView,
     /* [in] */ InternalAccessDelegate* internalDispatcher,
-    /* [in] */ Int64 nativeWebContents,
+    /* [in] */ Handle64 nativeWebContents,
     /* [in] */ WindowElastos* windowElastos)
 {
     SetContainerView(containerView);
 
     mPositionListener = new InnerListener(this);
 
-    Int64 windowNativePointer = windowElastos != NULL ? windowElastos->GetNativePointer() : 0;
+    Handle64 windowNativePointer = windowElastos != NULL ? windowElastos->GetNativePointer() : 0;
 
-    Int64 viewAndroidNativePointer = 0;
+    Handle64 viewAndroidNativePointer = 0;
     if (windowNativePointer != 0) {
         mViewElastos = new ViewElastos(windowElastos, GetViewAndroidDelegate());
         viewAndroidNativePointer = mViewElastos->GetNativePointer();
@@ -1133,7 +1133,7 @@ void ContentViewCore::SetContainerView(
 
 //@CalledByNative
 void ContentViewCore::OnNativeContentViewCoreDestroyed(
-    /* [in] */ Int64 nativeContentViewCore)
+    /* [in] */ Handle64 nativeContentViewCore)
 {
     assert(nativeContentViewCore == mNativeContentViewCore);
     mNativeContentViewCore = 0;
@@ -1215,7 +1215,7 @@ Boolean ContentViewCore::IsAlive()
  * @return native ContentViewCore pointer.
  */
 //@CalledByNative
-Int64 ContentViewCore::GetNativeContentViewCore()
+Handle64 ContentViewCore::GetNativeContentViewCore()
 {
     return mNativeContentViewCore;
 }
@@ -3136,7 +3136,7 @@ void ContentViewCore::UpdateFrameInfo(
 
 //@CalledByNative
 void ContentViewCore::UpdateImeAdapter(
-    /* [in] */ Int64 nativeImeAdapterAndroid,
+    /* [in] */ Handle64 nativeImeAdapterAndroid,
     /* [in] */ Int32 textInputType,
     /* [in] */ const String& text,
     /* [in] */ Int32 selectionStart,
@@ -4142,10 +4142,10 @@ void ContentViewCore::ResetScrollInProgress()
     }
 }
 
-Int64 ContentViewCore::NativeInit(
-    /* [in] */ Int64 webContentsPtr,
-    /* [in] */ Int64 viewAndroidPtr,
-    /* [in] */ Int64 windowAndroidPtr,
+Handle64 ContentViewCore::NativeInit(
+    /* [in] */ Handle64 webContentsPtr,
+    /* [in] */ Handle64 viewAndroidPtr,
+    /* [in] */ Handle64 windowAndroidPtr,
     /* [in] */ IHashSet* retainedObjectSet)
 {
     return Elastos_ContentViewCore_nativeInit(THIS_PROBE(IInterface), webContentsPtr, viewAndroidPtr, windowAndroidPtr, TO_IINTERFACE(retainedObjectSet));
@@ -4186,20 +4186,20 @@ ECode ContentViewCore::OnScreenOrientationChanged(
 }
 
 AutoPtr<WebContents> ContentViewCore::NativeGetWebContentsAndroid(
-    /* [in] */ Int64 nativeContentViewCoreImpl)
+    /* [in] */ Handle64 nativeContentViewCoreImpl)
 {
-    AutoPtr<IInterface> wc = Elastos_ContentViewCore_nativeGetWebContentsAndroid(THIS_PROBE(IInterface), (Handle32)nativeContentViewCoreImpl);
+    AutoPtr<IInterface> wc = Elastos_ContentViewCore_nativeGetWebContentsAndroid(THIS_PROBE(IInterface), nativeContentViewCoreImpl);
     return (WebContents*)(IObject::Probe(wc));
 }
 
 void ContentViewCore::NativeOnJavaContentViewCoreDestroyed(
-    /* [in] */ Int64 nativeContentViewCoreImpl)
+    /* [in] */ Handle64 nativeContentViewCoreImpl)
 {
-    Elastos_ContentViewCore_nativeOnJavaContentViewCoreDestroyed(THIS_PROBE(IInterface), (Handle32)nativeContentViewCoreImpl);
+    Elastos_ContentViewCore_nativeOnJavaContentViewCoreDestroyed(THIS_PROBE(IInterface), nativeContentViewCoreImpl);
 }
 
 void ContentViewCore::NativeLoadUrl(
-    /* [in] */ Int64 nativeContentViewCoreImpl,
+    /* [in] */ Handle64 nativeContentViewCoreImpl,
     /* [in] */ const String& url,
     /* [in] */ Int32 loadUrlType,
     /* [in] */ Int32 transitionType,
@@ -4213,54 +4213,54 @@ void ContentViewCore::NativeLoadUrl(
     /* [in] */ Boolean canLoadLocalResources,
     /* [in] */ Boolean isRendererInitiated)
 {
-    Elastos_ContentViewCore_nativeLoadUrl(THIS_PROBE(IInterface), (Handle32)nativeContentViewCoreImpl, url,
+    Elastos_ContentViewCore_nativeLoadUrl(THIS_PROBE(IInterface), nativeContentViewCoreImpl, url,
             loadUrlType, transitionType, referrerUrl, referrerPolicy, uaOverrideOption, extraHeaders,
             postData, baseUrlForDataUrl, virtualUrlForDataUrl, canLoadLocalResources, isRendererInitiated);
 }
 
 String ContentViewCore::NativeGetURL(
-    /* [in] */ Int64 nativeContentViewCoreImpl)
+    /* [in] */ Handle64 nativeContentViewCoreImpl)
 {
-    return Elastos_ContentViewCore_nativeGetURL(THIS_PROBE(IInterface), (Handle32)nativeContentViewCoreImpl);
+    return Elastos_ContentViewCore_nativeGetURL(THIS_PROBE(IInterface), nativeContentViewCoreImpl);
 }
 
 void ContentViewCore::NativeShowInterstitialPage(
-    /* [in] */ Int64 nativeContentViewCoreImpl,
+    /* [in] */ Handle64 nativeContentViewCoreImpl,
     /* [in] */ const String& url,
-    /* [in] */ Int64 nativeInterstitialPageDelegateAndroid)
+    /* [in] */ Handle64 nativeInterstitialPageDelegateAndroid)
 {
-    Elastos_ContentViewCore_nativeShowInterstitialPage(THIS_PROBE(IInterface), (Handle32)nativeContentViewCoreImpl, url, nativeInterstitialPageDelegateAndroid);
+    Elastos_ContentViewCore_nativeShowInterstitialPage(THIS_PROBE(IInterface), nativeContentViewCoreImpl, url, nativeInterstitialPageDelegateAndroid);
 }
 
 Boolean ContentViewCore::NativeIsShowingInterstitialPage(
-    /* [in] */ Int64 nativeContentViewCoreImpl)
+    /* [in] */ Handle64 nativeContentViewCoreImpl)
 {
-    return Elastos_ContentViewCore_nativeIsShowingInterstitialPage(THIS_PROBE(IInterface), (Handle32)nativeContentViewCoreImpl);
+    return Elastos_ContentViewCore_nativeIsShowingInterstitialPage(THIS_PROBE(IInterface), nativeContentViewCoreImpl);
 }
 
 Boolean ContentViewCore::NativeIsIncognito(
-    /* [in] */ Int64 nativeContentViewCoreImpl)
+    /* [in] */ Handle64 nativeContentViewCoreImpl)
 {
-    return Elastos_ContentViewCore_nativeIsIncognito(THIS_PROBE(IInterface), (Handle32)nativeContentViewCoreImpl);
+    return Elastos_ContentViewCore_nativeIsIncognito(THIS_PROBE(IInterface), nativeContentViewCoreImpl);
 }
 
 void ContentViewCore::NativeSetFocus(
-    /* [in] */ Int64 nativeContentViewCoreImpl,
+    /* [in] */ Handle64 nativeContentViewCoreImpl,
     /* [in] */ Boolean focused)
 {
-    Elastos_ContentViewCore_nativeSetFocus(THIS_PROBE(IInterface), (Handle32)nativeContentViewCoreImpl, focused);
+    Elastos_ContentViewCore_nativeSetFocus(THIS_PROBE(IInterface), nativeContentViewCoreImpl, focused);
 }
 
 void ContentViewCore::NativeSendOrientationChangeEvent(
-    /* [in] */ Int64 nativeContentViewCoreImpl,
+    /* [in] */ Handle64 nativeContentViewCoreImpl,
     /* [in] */ Int32 orientation)
 {
-    Elastos_ContentViewCore_nativeSendOrientationChangeEvent(THIS_PROBE(IInterface), (Handle32)nativeContentViewCoreImpl, orientation);
+    Elastos_ContentViewCore_nativeSendOrientationChangeEvent(THIS_PROBE(IInterface), nativeContentViewCoreImpl, orientation);
 }
 
 // All touch events (including flings, scrolls etc) accept coordinates in physical pixels.
 Boolean ContentViewCore::NativeOnTouchEvent(
-    /* [in] */ Int64 nativeContentViewCoreImpl,
+    /* [in] */ Handle64 nativeContentViewCoreImpl,
     /* [in] */ IMotionEvent* event,
     /* [in] */ Int64 timeMs,
     /* [in] */ Int32 action,
@@ -4281,398 +4281,398 @@ Boolean ContentViewCore::NativeOnTouchEvent(
     /* [in] */ Int32 androidToolType1,
     /* [in] */ Int32 androidButtonState)
 {
-    return Elastos_ContentViewCore_nativeOnTouchEvent(THIS_PROBE(IInterface), (Handle32)nativeContentViewCoreImpl, TO_IINTERFACE(event),
+    return Elastos_ContentViewCore_nativeOnTouchEvent(THIS_PROBE(IInterface), nativeContentViewCoreImpl, TO_IINTERFACE(event),
             timeMs, action, pointerCount, historySize, actionIndex, x0, y0, x1, y1, pointerId0, pointerId1, touchMajor0,
             touchMajor1, rawX, rawY, androidToolType0, androidToolType1, androidButtonState);
 }
 
 Int32 ContentViewCore::NativeSendMouseMoveEvent(
-    /* [in] */ Int64 nativeContentViewCoreImpl,
+    /* [in] */ Handle64 nativeContentViewCoreImpl,
     /* [in] */ Int64 timeMs,
     /* [in] */ Float x,
     /* [in] */ Float y)
 {
-    return Elastos_ContentViewCore_nativeSendMouseMoveEvent(THIS_PROBE(IInterface), (Handle32)nativeContentViewCoreImpl, timeMs, x, y);
+    return Elastos_ContentViewCore_nativeSendMouseMoveEvent(THIS_PROBE(IInterface), nativeContentViewCoreImpl, timeMs, x, y);
 }
 
 Int32 ContentViewCore::NativeSendMouseWheelEvent(
-    /* [in] */ Int64 nativeContentViewCoreImpl,
+    /* [in] */ Handle64 nativeContentViewCoreImpl,
     /* [in] */ Int64 timeMs,
     /* [in] */ Float x,
     /* [in] */ Float y,
     /* [in] */ Float verticalAxis)
 {
-    return Elastos_ContentViewCore_nativeSendMouseWheelEvent(THIS_PROBE(IInterface), (Handle32)nativeContentViewCoreImpl, timeMs, x, y, verticalAxis);
+    return Elastos_ContentViewCore_nativeSendMouseWheelEvent(THIS_PROBE(IInterface), nativeContentViewCoreImpl, timeMs, x, y, verticalAxis);
 }
 
 void ContentViewCore::NativeScrollBegin(
-    /* [in] */ Int64 nativeContentViewCoreImpl,
+    /* [in] */ Handle64 nativeContentViewCoreImpl,
     /* [in] */ Int64 timeMs,
     /* [in] */ Float x,
     /* [in] */ Float y,
     /* [in] */ Float hintX,
     /* [in] */ Float hintY)
 {
-    Elastos_ContentViewCore_nativeScrollBegin(THIS_PROBE(IInterface), (Handle32)nativeContentViewCoreImpl, timeMs, x, y, hintX, hintY);
+    Elastos_ContentViewCore_nativeScrollBegin(THIS_PROBE(IInterface), nativeContentViewCoreImpl, timeMs, x, y, hintX, hintY);
 }
 
 void ContentViewCore::NativeScrollEnd(
-    /* [in] */ Int64 nativeContentViewCoreImpl,
+    /* [in] */ Handle64 nativeContentViewCoreImpl,
     /* [in] */ Int64 timeMs)
 {
-    Elastos_ContentViewCore_nativeScrollEnd(THIS_PROBE(IInterface), (Handle32)nativeContentViewCoreImpl, timeMs);
+    Elastos_ContentViewCore_nativeScrollEnd(THIS_PROBE(IInterface), nativeContentViewCoreImpl, timeMs);
 }
 
 void ContentViewCore::NativeScrollBy(
-    /* [in] */ Int64 nativeContentViewCoreImpl,
+    /* [in] */ Handle64 nativeContentViewCoreImpl,
     /* [in] */ Int64 timeMs,
     /* [in] */ Float x,
     /* [in] */ Float y,
     /* [in] */ Float deltaX,
     /* [in] */ Float deltaY)
 {
-    Elastos_ContentViewCore_nativeScrollBy(THIS_PROBE(IInterface), (Handle32)nativeContentViewCoreImpl, timeMs, x, y, deltaX, deltaY);
+    Elastos_ContentViewCore_nativeScrollBy(THIS_PROBE(IInterface), nativeContentViewCoreImpl, timeMs, x, y, deltaX, deltaY);
 }
 
 void ContentViewCore::NativeFlingStart(
-    /* [in] */ Int64 nativeContentViewCoreImpl,
+    /* [in] */ Handle64 nativeContentViewCoreImpl,
     /* [in] */ Int64 timeMs,
     /* [in] */ Float x,
     /* [in] */ Float y,
     /* [in] */ Float vx,
     /* [in] */ Float vy)
 {
-    Elastos_ContentViewCore_nativeFlingStart(THIS_PROBE(IInterface), (Handle32)nativeContentViewCoreImpl, timeMs, x, y, vx, vy);
+    Elastos_ContentViewCore_nativeFlingStart(THIS_PROBE(IInterface), nativeContentViewCoreImpl, timeMs, x, y, vx, vy);
 }
 
 void ContentViewCore::NativeFlingCancel(
-    /* [in] */ Int64 nativeContentViewCoreImpl,
+    /* [in] */ Handle64 nativeContentViewCoreImpl,
     /* [in] */ Int64 timeMs)
 {
-    Elastos_ContentViewCore_nativeFlingCancel(THIS_PROBE(IInterface), (Handle32)nativeContentViewCoreImpl, timeMs);
+    Elastos_ContentViewCore_nativeFlingCancel(THIS_PROBE(IInterface), nativeContentViewCoreImpl, timeMs);
 }
 
 void ContentViewCore::NativeSingleTap(
-    /* [in] */ Int64 nativeContentViewCoreImpl,
+    /* [in] */ Handle64 nativeContentViewCoreImpl,
     /* [in] */ Int64 timeMs,
     /* [in] */ Float x,
     /* [in] */ Float y)
 {
-    Elastos_ContentViewCore_nativeSingleTap(THIS_PROBE(IInterface), (Handle32)nativeContentViewCoreImpl, timeMs, x, y);
+    Elastos_ContentViewCore_nativeSingleTap(THIS_PROBE(IInterface), nativeContentViewCoreImpl, timeMs, x, y);
 }
 
 void ContentViewCore::NativeDoubleTap(
-    /* [in] */ Int64 nativeContentViewCoreImpl,
+    /* [in] */ Handle64 nativeContentViewCoreImpl,
     /* [in] */ Int64 timeMs,
     /* [in] */ Float x,
     /* [in] */ Float y)
 {
-    Elastos_ContentViewCore_nativeDoubleTap(THIS_PROBE(IInterface), (Handle32)nativeContentViewCoreImpl, timeMs, x, y);
+    Elastos_ContentViewCore_nativeDoubleTap(THIS_PROBE(IInterface), nativeContentViewCoreImpl, timeMs, x, y);
 }
 
 void ContentViewCore::NativeLongPress(
-    /* [in] */ Int64 nativeContentViewCoreImpl,
+    /* [in] */ Handle64 nativeContentViewCoreImpl,
     /* [in] */ Int64 timeMs,
     /* [in] */ Float x,
     /* [in] */ Float y)
 {
-    Elastos_ContentViewCore_nativeLongPress(THIS_PROBE(IInterface), (Handle32)nativeContentViewCoreImpl, timeMs, x, y);
+    Elastos_ContentViewCore_nativeLongPress(THIS_PROBE(IInterface), nativeContentViewCoreImpl, timeMs, x, y);
 }
 
 void ContentViewCore::NativePinchBegin(
-    /* [in] */ Int64 nativeContentViewCoreImpl,
+    /* [in] */ Handle64 nativeContentViewCoreImpl,
     /* [in] */ Int64 timeMs,
     /* [in] */ Float x,
     /* [in] */ Float y)
 {
-    Elastos_ContentViewCore_nativePinchBegin(THIS_PROBE(IInterface), (Handle32)nativeContentViewCoreImpl, timeMs, x, y);
+    Elastos_ContentViewCore_nativePinchBegin(THIS_PROBE(IInterface), nativeContentViewCoreImpl, timeMs, x, y);
 }
 
 void ContentViewCore::NativePinchEnd(
-    /* [in] */ Int64 nativeContentViewCoreImpl,
+    /* [in] */ Handle64 nativeContentViewCoreImpl,
     /* [in] */ Int64 timeMs)
 {
-    Elastos_ContentViewCore_nativePinchEnd(THIS_PROBE(IInterface), (Handle32)nativeContentViewCoreImpl, timeMs);
+    Elastos_ContentViewCore_nativePinchEnd(THIS_PROBE(IInterface), nativeContentViewCoreImpl, timeMs);
 }
 
 void ContentViewCore::NativePinchBy(
-    /* [in] */ Int64 nativeContentViewCoreImpl,
+    /* [in] */ Handle64 nativeContentViewCoreImpl,
     /* [in] */ Int64 timeMs,
     /* [in] */ Float anchorX,
     /* [in] */ Float anchorY,
     /* [in] */ Float deltaScale)
 {
-    Elastos_ContentViewCore_nativePinchBy(THIS_PROBE(IInterface), (Handle32)nativeContentViewCoreImpl, timeMs, anchorX, anchorY, deltaScale);
+    Elastos_ContentViewCore_nativePinchBy(THIS_PROBE(IInterface), nativeContentViewCoreImpl, timeMs, anchorX, anchorY, deltaScale);
 }
 
 void ContentViewCore::NativeSelectBetweenCoordinates(
-    /* [in] */ Int64 nativeContentViewCoreImpl,
+    /* [in] */ Handle64 nativeContentViewCoreImpl,
     /* [in] */ Float x1,
     /* [in] */ Float y1,
     /* [in] */ Float x2,
     /* [in] */ Float y2)
 {
-    Elastos_ContentViewCore_nativeSelectBetweenCoordinates(THIS_PROBE(IInterface), (Handle32)nativeContentViewCoreImpl, x1, y1, x2, y2);
+    Elastos_ContentViewCore_nativeSelectBetweenCoordinates(THIS_PROBE(IInterface), nativeContentViewCoreImpl, x1, y1, x2, y2);
 }
 
 void ContentViewCore::NativeMoveCaret(
-    /* [in] */ Int64 nativeContentViewCoreImpl,
+    /* [in] */ Handle64 nativeContentViewCoreImpl,
     /* [in] */ Float x,
     /* [in] */ Float y)
 {
-    Elastos_ContentViewCore_nativeMoveCaret(THIS_PROBE(IInterface), (Handle32)nativeContentViewCoreImpl, x, y);
+    Elastos_ContentViewCore_nativeMoveCaret(THIS_PROBE(IInterface), nativeContentViewCoreImpl, x, y);
 }
 
 void ContentViewCore::NativeResetGestureDetection(
-    /* [in] */ Int64 nativeContentViewCoreImpl)
+    /* [in] */ Handle64 nativeContentViewCoreImpl)
 {
-    Elastos_ContentViewCore_nativeResetGestureDetection(THIS_PROBE(IInterface), (Handle32)nativeContentViewCoreImpl);
+    Elastos_ContentViewCore_nativeResetGestureDetection(THIS_PROBE(IInterface), nativeContentViewCoreImpl);
 }
 
 void ContentViewCore::NativeSetDoubleTapSupportEnabled(
-    /* [in] */ Int64 nativeContentViewCoreImpl,
+    /* [in] */ Handle64 nativeContentViewCoreImpl,
     /* [in] */ Boolean enabled)
 {
-    Elastos_ContentViewCore_nativeSetDoubleTapSupportEnabled(THIS_PROBE(IInterface), (Handle32)nativeContentViewCoreImpl, enabled);
+    Elastos_ContentViewCore_nativeSetDoubleTapSupportEnabled(THIS_PROBE(IInterface), nativeContentViewCoreImpl, enabled);
 }
 
 void ContentViewCore::NativeSetMultiTouchZoomSupportEnabled(
-    /* [in] */ Int64 nativeContentViewCoreImpl,
+    /* [in] */ Handle64 nativeContentViewCoreImpl,
     /* [in] */ Boolean enabled)
 {
-    Elastos_ContentViewCore_nativeSetMultiTouchZoomSupportEnabled(THIS_PROBE(IInterface), (Handle32)nativeContentViewCoreImpl, enabled);
+    Elastos_ContentViewCore_nativeSetMultiTouchZoomSupportEnabled(THIS_PROBE(IInterface), nativeContentViewCoreImpl, enabled);
 }
 
 void ContentViewCore::NativeLoadIfNecessary(
-    /* [in] */ Int64 nativeContentViewCoreImpl)
+    /* [in] */ Handle64 nativeContentViewCoreImpl)
 {
-    Elastos_ContentViewCore_nativeLoadIfNecessary(THIS_PROBE(IInterface), (Handle32)nativeContentViewCoreImpl);
+    Elastos_ContentViewCore_nativeLoadIfNecessary(THIS_PROBE(IInterface), nativeContentViewCoreImpl);
 }
 
 void ContentViewCore::NativeRequestRestoreLoad(
-    /* [in] */ Int64 nativeContentViewCoreImpl)
+    /* [in] */ Handle64 nativeContentViewCoreImpl)
 {
-    Elastos_ContentViewCore_nativeRequestRestoreLoad(THIS_PROBE(IInterface), (Handle32)nativeContentViewCoreImpl);
+    Elastos_ContentViewCore_nativeRequestRestoreLoad(THIS_PROBE(IInterface), nativeContentViewCoreImpl);
 }
 
 void ContentViewCore::NativeReload(
-    /* [in] */ Int64 nativeContentViewCoreImpl,
+    /* [in] */ Handle64 nativeContentViewCoreImpl,
     /* [in] */ Boolean checkForRepost)
 {
-    Elastos_ContentViewCore_nativeReload(THIS_PROBE(IInterface), (Handle32)nativeContentViewCoreImpl, checkForRepost);
+    Elastos_ContentViewCore_nativeReload(THIS_PROBE(IInterface), nativeContentViewCoreImpl, checkForRepost);
 }
 
 void ContentViewCore::NativeReloadIgnoringCache(
-    /* [in] */ Int64 nativeContentViewCoreImpl,
+    /* [in] */ Handle64 nativeContentViewCoreImpl,
     /* [in] */ Boolean checkForRepost)
 {
-    Elastos_ContentViewCore_nativeReloadIgnoringCache(THIS_PROBE(IInterface), (Handle32)nativeContentViewCoreImpl, checkForRepost);
+    Elastos_ContentViewCore_nativeReloadIgnoringCache(THIS_PROBE(IInterface), nativeContentViewCoreImpl, checkForRepost);
 }
 
 void ContentViewCore::NativeCancelPendingReload(
-    /* [in] */ Int64 nativeContentViewCoreImpl)
+    /* [in] */ Handle64 nativeContentViewCoreImpl)
 {
-    Elastos_ContentViewCore_nativeCancelPendingReload(THIS_PROBE(IInterface), (Handle32)nativeContentViewCoreImpl);
+    Elastos_ContentViewCore_nativeCancelPendingReload(THIS_PROBE(IInterface), nativeContentViewCoreImpl);
 }
 
 void ContentViewCore::NativeContinuePendingReload(
-    /* [in] */ Int64 nativeContentViewCoreImpl)
+    /* [in] */ Handle64 nativeContentViewCoreImpl)
 {
-    Elastos_ContentViewCore_nativeContinuePendingReload(THIS_PROBE(IInterface), (Handle32)nativeContentViewCoreImpl);
+    Elastos_ContentViewCore_nativeContinuePendingReload(THIS_PROBE(IInterface), nativeContentViewCoreImpl);
 }
 
 void ContentViewCore::NativeSelectPopupMenuItems(
-    /* [in] */ Int64 nativeContentViewCoreImpl,
+    /* [in] */ Handle64 nativeContentViewCoreImpl,
     /* [in] */ ArrayOf<Int32>* indices)
 {
-    Elastos_ContentViewCore_nativeSelectPopupMenuItems(THIS_PROBE(IInterface), (Handle32)nativeContentViewCoreImpl, indices);
+    Elastos_ContentViewCore_nativeSelectPopupMenuItems(THIS_PROBE(IInterface), nativeContentViewCoreImpl, indices);
 }
 
 void ContentViewCore::NativeScrollFocusedEditableNodeIntoView(
-    /* [in] */ Int64 nativeContentViewCoreImpl)
+    /* [in] */ Handle64 nativeContentViewCoreImpl)
 {
-    Elastos_ContentViewCore_nativeScrollFocusedEditableNodeIntoView(THIS_PROBE(IInterface), (Handle32)nativeContentViewCoreImpl);
+    Elastos_ContentViewCore_nativeScrollFocusedEditableNodeIntoView(THIS_PROBE(IInterface), nativeContentViewCoreImpl);
 }
 
 void ContentViewCore::NativeSelectWordAroundCaret(
-    /* [in] */ Int64 nativeContentViewCoreImpl)
+    /* [in] */ Handle64 nativeContentViewCoreImpl)
 {
-    Elastos_ContentViewCore_nativeSelectWordAroundCaret(THIS_PROBE(IInterface), (Handle32)nativeContentViewCoreImpl);
+    Elastos_ContentViewCore_nativeSelectWordAroundCaret(THIS_PROBE(IInterface), nativeContentViewCoreImpl);
 }
 
 void ContentViewCore::NativeClearHistory(
-    /* [in] */ Int64 nativeContentViewCoreImpl)
+    /* [in] */ Handle64 nativeContentViewCoreImpl)
 {
-    Elastos_ContentViewCore_nativeClearHistory(THIS_PROBE(IInterface), (Handle32)nativeContentViewCoreImpl);
+    Elastos_ContentViewCore_nativeClearHistory(THIS_PROBE(IInterface), nativeContentViewCoreImpl);
 }
 
 void ContentViewCore::NativeAddStyleSheetByURL(
-    /* [in] */ Int64 nativeContentViewCoreImpl,
+    /* [in] */ Handle64 nativeContentViewCoreImpl,
     /* [in] */ const String& stylesheetUrl)
 {
-    Elastos_ContentViewCore_nativeAddStyleSheetByURL(THIS_PROBE(IInterface), (Handle32)nativeContentViewCoreImpl, stylesheetUrl);
+    Elastos_ContentViewCore_nativeAddStyleSheetByURL(THIS_PROBE(IInterface), nativeContentViewCoreImpl, stylesheetUrl);
 }
 
 void ContentViewCore::NativeEvaluateJavaScript(
-    /* [in] */ Int64 nativeContentViewCoreImpl,
+    /* [in] */ Handle64 nativeContentViewCoreImpl,
     /* [in] */ const String& script,
     /* [in] */ JavaScriptCallback* callback,
     /* [in] */ Boolean startRenderer)
 {
-    Elastos_ContentViewCore_nativeEvaluateJavaScript(THIS_PROBE(IInterface), (Handle32)nativeContentViewCoreImpl,
+    Elastos_ContentViewCore_nativeEvaluateJavaScript(THIS_PROBE(IInterface), nativeContentViewCoreImpl,
             script, TO_IINTERFACE(callback), startRenderer);
 }
 
-Int64 ContentViewCore::NativeGetNativeImeAdapter(
-    /* [in] */ Int64 nativeContentViewCoreImpl)
+Handle64 ContentViewCore::NativeGetNativeImeAdapter(
+    /* [in] */ Handle64 nativeContentViewCoreImpl)
 {
-    return Elastos_ContentViewCore_nativeGetNativeImeAdapter(THIS_PROBE(IInterface), (Handle32)nativeContentViewCoreImpl);
+    return Elastos_ContentViewCore_nativeGetNativeImeAdapter(THIS_PROBE(IInterface), nativeContentViewCoreImpl);
 }
 
 Int32 ContentViewCore::NativeGetCurrentRenderProcessId(
-    /* [in] */ Int64 nativeContentViewCoreImpl)
+    /* [in] */ Handle64 nativeContentViewCoreImpl)
 {
-    return Elastos_ContentViewCore_nativeGetCurrentRenderProcessId(THIS_PROBE(IInterface), (Handle32)nativeContentViewCoreImpl);
+    return Elastos_ContentViewCore_nativeGetCurrentRenderProcessId(THIS_PROBE(IInterface), nativeContentViewCoreImpl);
 }
 
 Int32 ContentViewCore::NativeGetBackgroundColor(
-    /* [in] */ Int64 nativeContentViewCoreImpl)
+    /* [in] */ Handle64 nativeContentViewCoreImpl)
 {
-    return Elastos_ContentViewCore_nativeGetBackgroundColor(THIS_PROBE(IInterface), (Handle32)nativeContentViewCoreImpl);
+    return Elastos_ContentViewCore_nativeGetBackgroundColor(THIS_PROBE(IInterface), nativeContentViewCoreImpl);
 }
 
 void ContentViewCore::NativeOnShow(
-    /* [in] */ Int64 nativeContentViewCoreImpl)
+    /* [in] */ Handle64 nativeContentViewCoreImpl)
 {
-    Elastos_ContentViewCore_nativeOnShow(THIS_PROBE(IInterface), (Handle32)nativeContentViewCoreImpl);
+    Elastos_ContentViewCore_nativeOnShow(THIS_PROBE(IInterface), nativeContentViewCoreImpl);
 }
 
 void ContentViewCore::NativeOnHide(
-    /* [in] */ Int64 nativeContentViewCoreImpl)
+    /* [in] */ Handle64 nativeContentViewCoreImpl)
 {
-    Elastos_ContentViewCore_nativeOnHide(THIS_PROBE(IInterface), (Handle32)nativeContentViewCoreImpl);
+    Elastos_ContentViewCore_nativeOnHide(THIS_PROBE(IInterface), nativeContentViewCoreImpl);
 }
 
 void ContentViewCore::NativeSetUseDesktopUserAgent(
-    /* [in] */ Int64 nativeContentViewCoreImpl,
+    /* [in] */ Handle64 nativeContentViewCoreImpl,
     /* [in] */ Boolean enabled,
     /* [in] */ Boolean reloadOnChange)
 {
-    Elastos_ContentViewCore_nativeSetUseDesktopUserAgent(THIS_PROBE(IInterface), (Handle32)nativeContentViewCoreImpl, enabled, reloadOnChange);
+    Elastos_ContentViewCore_nativeSetUseDesktopUserAgent(THIS_PROBE(IInterface), nativeContentViewCoreImpl, enabled, reloadOnChange);
 }
 
 Boolean ContentViewCore::NativeGetUseDesktopUserAgent(
-    /* [in] */ Int64 nativeContentViewCoreImpl)
+    /* [in] */ Handle64 nativeContentViewCoreImpl)
 {
-    return Elastos_ContentViewCore_nativeGetUseDesktopUserAgent(THIS_PROBE(IInterface), (Handle32)nativeContentViewCoreImpl);
+    return Elastos_ContentViewCore_nativeGetUseDesktopUserAgent(THIS_PROBE(IInterface), nativeContentViewCoreImpl);
 }
 
 void ContentViewCore::NativeClearSslPreferences(
-    /* [in] */ Int64 nativeContentViewCoreImpl)
+    /* [in] */ Handle64 nativeContentViewCoreImpl)
 {
-    Elastos_ContentViewCore_nativeClearSslPreferences(THIS_PROBE(IInterface), (Handle32)nativeContentViewCoreImpl);
+    Elastos_ContentViewCore_nativeClearSslPreferences(THIS_PROBE(IInterface), nativeContentViewCoreImpl);
 }
 
 void ContentViewCore::NativeSetAllowJavascriptInterfacesInspection(
-    /* [in] */ Int64 nativeContentViewCoreImpl,
+    /* [in] */ Handle64 nativeContentViewCoreImpl,
     /* [in] */ Boolean allow)
 {
-    Elastos_ContentViewCore_nativeSetAllowJavascriptInterfacesInspection(THIS_PROBE(IInterface), (Handle32)nativeContentViewCoreImpl, allow);
+    Elastos_ContentViewCore_nativeSetAllowJavascriptInterfacesInspection(THIS_PROBE(IInterface), nativeContentViewCoreImpl, allow);
 }
 
 void ContentViewCore::NativeAddJavascriptInterface(
-    /* [in] */ Int64 nativeContentViewCoreImpl,
+    /* [in] */ Handle64 nativeContentViewCoreImpl,
     /* [in] */ IInterface* object,
     /* [in] */ const String& name,
     /* [in] */ IInterface* requiredAnnotation)
 {
-    Elastos_ContentViewCore_nativeAddJavascriptInterface(THIS_PROBE(IInterface), (Handle32)nativeContentViewCoreImpl, object, name, requiredAnnotation);
+    Elastos_ContentViewCore_nativeAddJavascriptInterface(THIS_PROBE(IInterface), nativeContentViewCoreImpl, object, name, requiredAnnotation);
 }
 
 void ContentViewCore::NativeRemoveJavascriptInterface(
-    /* [in] */ Int64 nativeContentViewCoreImpl,
+    /* [in] */ Handle64 nativeContentViewCoreImpl,
     /* [in] */ const String& name)
 {
-    Elastos_ContentViewCore_nativeRemoveJavascriptInterface(THIS_PROBE(IInterface), (Handle32)nativeContentViewCoreImpl, name);
+    Elastos_ContentViewCore_nativeRemoveJavascriptInterface(THIS_PROBE(IInterface), nativeContentViewCoreImpl, name);
 }
 
 Int32 ContentViewCore::NativeGetNavigationHistory(
-    /* [in] */ Int64 nativeContentViewCoreImpl,
+    /* [in] */ Handle64 nativeContentViewCoreImpl,
     /* [in] */ IInterface* context)
 {
-    return Elastos_ContentViewCore_nativeGetNavigationHistory(THIS_PROBE(IInterface), (Handle32)nativeContentViewCoreImpl, context);
+    return Elastos_ContentViewCore_nativeGetNavigationHistory(THIS_PROBE(IInterface), nativeContentViewCoreImpl, context);
 }
 
 void ContentViewCore::NativeGetDirectedNavigationHistory(
-    /* [in] */ Int64 nativeContentViewCoreImpl,
+    /* [in] */ Handle64 nativeContentViewCoreImpl,
     /* [in] */ IInterface* context,
     /* [in] */ Boolean isForward,
     /* [in] */ Int32 maxEntries)
 {
-    Elastos_ContentViewCore_nativeGetDirectedNavigationHistory(THIS_PROBE(IInterface), (Handle32)nativeContentViewCoreImpl, context, isForward, maxEntries);
+    Elastos_ContentViewCore_nativeGetDirectedNavigationHistory(THIS_PROBE(IInterface), nativeContentViewCoreImpl, context, isForward, maxEntries);
 }
 
 String ContentViewCore::NativeGetOriginalUrlForActiveNavigationEntry(
-    /* [in] */ Int64 nativeContentViewCoreImpl)
+    /* [in] */ Handle64 nativeContentViewCoreImpl)
 {
-    return Elastos_ContentViewCore_nativeGetOriginalUrlForActiveNavigationEntry(THIS_PROBE(IInterface), (Handle32)nativeContentViewCoreImpl);
+    return Elastos_ContentViewCore_nativeGetOriginalUrlForActiveNavigationEntry(THIS_PROBE(IInterface), nativeContentViewCoreImpl);
 }
 
 void ContentViewCore::NativeWasResized(
-    /* [in] */ Int64 nativeContentViewCoreImpl)
+    /* [in] */ Handle64 nativeContentViewCoreImpl)
 {
-    Elastos_ContentViewCore_nativeWasResized(THIS_PROBE(IInterface), (Handle32)nativeContentViewCoreImpl);
+    Elastos_ContentViewCore_nativeWasResized(THIS_PROBE(IInterface), nativeContentViewCoreImpl);
 }
 
 Boolean ContentViewCore::NativeIsRenderWidgetHostViewReady(
-    /* [in] */ Int64 nativeContentViewCoreImpl)
+    /* [in] */ Handle64 nativeContentViewCoreImpl)
 {
-    return Elastos_ContentViewCore_nativeIsRenderWidgetHostViewReady(THIS_PROBE(IInterface), (Handle32)nativeContentViewCoreImpl);
+    return Elastos_ContentViewCore_nativeIsRenderWidgetHostViewReady(THIS_PROBE(IInterface), nativeContentViewCoreImpl);
 }
 
 void ContentViewCore::NativeExitFullscreen(
-    /* [in] */ Int64 nativeContentViewCoreImpl)
+    /* [in] */ Handle64 nativeContentViewCoreImpl)
 {
-    Elastos_ContentViewCore_nativeExitFullscreen(THIS_PROBE(IInterface), (Handle32)nativeContentViewCoreImpl);
+    Elastos_ContentViewCore_nativeExitFullscreen(THIS_PROBE(IInterface), nativeContentViewCoreImpl);
 }
 
 void ContentViewCore::NativeUpdateTopControlsState(
-    /* [in] */ Int64 nativeContentViewCoreImpl,
+    /* [in] */ Handle64 nativeContentViewCoreImpl,
     /* [in] */ Boolean enableHiding,
     /* [in] */ Boolean enableShowing,
     /* [in] */ Boolean animate)
 {
-    Elastos_ContentViewCore_nativeUpdateTopControlsState(THIS_PROBE(IInterface), (Handle32)nativeContentViewCoreImpl, enableHiding, enableShowing, animate);
+    Elastos_ContentViewCore_nativeUpdateTopControlsState(THIS_PROBE(IInterface), nativeContentViewCoreImpl, enableHiding, enableShowing, animate);
 }
 
 void ContentViewCore::NativeShowImeIfNeeded(
-    /* [in] */ Int64 nativeContentViewCoreImpl)
+    /* [in] */ Handle64 nativeContentViewCoreImpl)
 {
-    Elastos_ContentViewCore_nativeShowImeIfNeeded(THIS_PROBE(IInterface), (Handle32)nativeContentViewCoreImpl);
+    Elastos_ContentViewCore_nativeShowImeIfNeeded(THIS_PROBE(IInterface), nativeContentViewCoreImpl);
 }
 
 void ContentViewCore::NativeSetAccessibilityEnabled(
-    /* [in] */ Int64 nativeContentViewCoreImpl,
+    /* [in] */ Handle64 nativeContentViewCoreImpl,
     /* [in] */ Boolean enabled)
 {
-    Elastos_ContentViewCore_nativeSetAccessibilityEnabled(THIS_PROBE(IInterface), (Handle32)nativeContentViewCoreImpl, enabled);
+    Elastos_ContentViewCore_nativeSetAccessibilityEnabled(THIS_PROBE(IInterface), nativeContentViewCoreImpl, enabled);
 }
 
 void ContentViewCore::NativeExtractSmartClipData(
-    /* [in] */ Int64 nativeContentViewCoreImpl,
+    /* [in] */ Handle64 nativeContentViewCoreImpl,
     /* [in] */ Int32 x,
     /* [in] */ Int32 y,
     /* [in] */ Int32 w,
     /* [in] */ Int32 h)
 {
-    Elastos_ContentViewCore_nativeExtractSmartClipData(THIS_PROBE(IInterface), (Handle32)nativeContentViewCoreImpl, x, y, w, h);
+    Elastos_ContentViewCore_nativeExtractSmartClipData(THIS_PROBE(IInterface), nativeContentViewCoreImpl, x, y, w, h);
 }
 
 void ContentViewCore::NativeSetBackgroundOpaque(
-    /* [in] */ Int64 nativeContentViewCoreImpl,
+    /* [in] */ Handle64 nativeContentViewCoreImpl,
     /* [in] */ Boolean opaque)
 {
-    Elastos_ContentViewCore_nativeSetBackgroundOpaque(THIS_PROBE(IInterface), (Handle32)nativeContentViewCoreImpl, opaque);
+    Elastos_ContentViewCore_nativeSetBackgroundOpaque(THIS_PROBE(IInterface), nativeContentViewCoreImpl, opaque);
 }
 
 AutoPtr<IInterface> ContentViewCore::GetContext(
@@ -4689,7 +4689,7 @@ AutoPtr<IInterface> ContentViewCore::GetContext(
 
 void ContentViewCore::OnNativeContentViewCoreDestroyed(
     /* [in] */ IInterface* obj,
-    /* [in] */ Int64 nativeContentViewCore)
+    /* [in] */ Handle64 nativeContentViewCore)
 {
     AutoPtr<ContentViewCore> mObj = (ContentViewCore*)(IObject::Probe(obj));
     if (NULL == mObj)
@@ -4700,7 +4700,7 @@ void ContentViewCore::OnNativeContentViewCoreDestroyed(
     mObj->OnNativeContentViewCoreDestroyed(nativeContentViewCore);
 }
 
-Int64 ContentViewCore::GetNativeContentViewCore(
+Handle64 ContentViewCore::GetNativeContentViewCore(
     /* [in] */ IInterface* obj)
 {
     AutoPtr<ContentViewCore> mObj = (ContentViewCore*)(IObject::Probe(obj));
@@ -4978,7 +4978,7 @@ void ContentViewCore::UpdateFrameInfo(
 
 void ContentViewCore::UpdateImeAdapter(
     /* [in] */ IInterface* obj,
-    /* [in] */ Int64 nativeImeAdapterAndroid,
+    /* [in] */ Handle64 nativeImeAdapterAndroid,
     /* [in] */ Int32 textInputType,
     /* [in] */ const String& text,
     /* [in] */ Int32 selectionStart,

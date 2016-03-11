@@ -126,19 +126,19 @@ void ContentReadbackHandler::GetCompositorBitmapAsync(
             windowAndroid->GetNativePointer());
 }
 
-Int64 ContentReadbackHandler::NativeInit()
+Handle64 ContentReadbackHandler::NativeInit()
 {
     return Elastos_ContentReadbackHandler_nativeInit(THIS_PROBE(IInterface));
 }
 
 void ContentReadbackHandler::NativeDestroy(
-    /* [in] */ Int64 nativeContentReadbackHandler)
+    /* [in] */ Handle64 nativeContentReadbackHandler)
 {
-    Elastos_ContentReadbackHandler_nativeDestroy(THIS_PROBE(IInterface), (Handle32)nativeContentReadbackHandler);
+    Elastos_ContentReadbackHandler_nativeDestroy(THIS_PROBE(IInterface), nativeContentReadbackHandler);
 }
 
 void ContentReadbackHandler::NativeGetContentBitmap(
-    /* [in] */ Int64 nativeContentReadbackHandler,
+    /* [in] */ Handle64 nativeContentReadbackHandler,
     /* [in] */ Int32 readback_id,
     /* [in] */ Float scale,
     /* [in] */ /*BitmapConfig*/Int32 config,
@@ -148,15 +148,15 @@ void ContentReadbackHandler::NativeGetContentBitmap(
     /* [in] */ Float height,
     /* [in] */ IInterface* contentViewCore)
 {
-    Elastos_ContentReadbackHandler_nativeGetContentBitmap(THIS_PROBE(IInterface), (Handle32)nativeContentReadbackHandler, readback_id, scale, config, x, y, width, height, contentViewCore);
+    Elastos_ContentReadbackHandler_nativeGetContentBitmap(THIS_PROBE(IInterface), nativeContentReadbackHandler, readback_id, scale, config, x, y, width, height, contentViewCore);
 }
 
 void ContentReadbackHandler::NativeGetCompositorBitmap(
-    /* [in] */ Int64 nativeContentReadbackHandler,
+    /* [in] */ Handle64 nativeContentReadbackHandler,
     /* [in] */ Int32 readback_id,
-    /* [in] */ Int64 nativeWindowAndroid)
+    /* [in] */ Handle64 nativeWindowAndroid)
 {
-    Elastos_ContentReadbackHandler_nativeGetCompositorBitmap(THIS_PROBE(IInterface), (Handle32)nativeContentReadbackHandler, readback_id, nativeWindowAndroid);
+    Elastos_ContentReadbackHandler_nativeGetCompositorBitmap(THIS_PROBE(IInterface), nativeContentReadbackHandler, readback_id, nativeWindowAndroid);
 }
 
 void ContentReadbackHandler::NotifyGetBitmapFinished(

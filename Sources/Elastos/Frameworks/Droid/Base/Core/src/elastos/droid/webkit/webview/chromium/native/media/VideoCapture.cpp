@@ -91,7 +91,7 @@ CAR_INTERFACE_IMPL(VideoCapture, Object, IPreviewCallback)
 VideoCapture::VideoCapture(
     /* [in] */ IContext* context,
     /* [in] */ Int32 id,
-    /* [in] */ Int64 nativeVideoCaptureDeviceAndroid)
+    /* [in] */ Handle64 nativeVideoCaptureDeviceAndroid)
     : mContext(context)
     , mIsRunning(FALSE)
     , mId(id)
@@ -408,12 +408,12 @@ Int32 VideoCapture::GetDeviceOrientation()
 
 // Method for VideoCapture implementations to call back native code.
 void VideoCapture::NativeOnFrameAvailable(
-    /* [in] */ Int64 nativeVideoCaptureDeviceAndroid,
+    /* [in] */ Handle64 nativeVideoCaptureDeviceAndroid,
     /* [in] */ ArrayOf<Byte>* data,
     /* [in] */ Int32 length,
     /* [in] */ Int32 rotation)
 {
-    // Elastos_VideoCapture_nativeOnFrameAvailable(THIS_PROBE(IInterface), (Handle32)nativeVideoCaptureDeviceAndroid, data,length, rotation);
+    Elastos_VideoCapture_nativeOnFrameAvailable(THIS_PROBE(IInterface), nativeVideoCaptureDeviceAndroid, data,length, rotation);
 }
 
 AutoPtr<IParameters> VideoCapture::GetCameraParameters(

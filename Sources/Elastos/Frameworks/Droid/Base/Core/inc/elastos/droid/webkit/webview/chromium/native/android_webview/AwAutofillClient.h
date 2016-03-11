@@ -10,9 +10,6 @@ using Elastos::Droid::Webkit::Webview::Chromium::Content::Browser::ContentViewCo
 using Elastos::Droid::Webkit::Webview::Chromium::Ui::Autofill::AutofillPopup;
 using Elastos::Droid::Webkit::Webview::Chromium::Ui::Autofill::AutofillSuggestion;
 
-// import org.chromium.base.CalledByNative;
-// import org.chromium.base.JNINamespace;
-
 namespace Elastos {
 namespace Droid {
 namespace Webkit {
@@ -50,7 +47,7 @@ private:
 public:
     //@CalledByNative AwAutofillClient
     static CARAPI_(AutoPtr<IInterface>) Create(
-        /* [in] */ Int64 nativeClient);
+        /* [in] */ Handle64 nativeClient);
 
     virtual CARAPI_(void) Init(
         /* [in] */ ContentViewCore* contentViewCore);
@@ -60,7 +57,7 @@ public:
 
 private:
     AwAutofillClient(
-        /* [in] */ Int64 nativeAwAutofillClient);
+        /* [in] */ Handle64 nativeAwAutofillClient);
 
     //@CalledByNative
     CARAPI_(void) ShowAutofillPopup(
@@ -90,7 +87,7 @@ private:
         /* [in] */ Int32 uniqueId);
 
     CARAPI_(void) NativeSuggestionSelected(
-        /* [in] */ Int64 nativeAwAutofillClient,
+        /* [in] */ Handle64 nativeAwAutofillClient,
         /* [in] */ Int32 position);
 
 //callback function declaration
@@ -110,7 +107,7 @@ private:
         /* [in] */ IInterface* obj);
 
 private:
-    const Int64 mNativeAwAutofillClient;
+    const Handle64 mNativeAwAutofillClient;
     AutoPtr<AutofillPopup> mAutofillPopup;
     AutoPtr<IViewGroup> mContainerView;
     AutoPtr<ContentViewCore> mContentViewCore;

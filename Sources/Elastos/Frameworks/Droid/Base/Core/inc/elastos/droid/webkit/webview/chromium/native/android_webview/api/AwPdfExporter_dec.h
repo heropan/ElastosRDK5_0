@@ -10,8 +10,8 @@
 extern "C"
 {
 #endif
-    extern void Elastos_AwPdfExporter_nativeExportToPdf(IInterface* caller,Handle32 nativeAwPdfExporter,Int32 fd,IInterface* cancellationSignal);
-    extern void Elastos_AwPdfExporter_InitCallback(Handle32 cb);
+    extern void Elastos_AwPdfExporter_nativeExportToPdf(IInterface* caller,Handle64 nativeAwPdfExporter,Int32 fd,IInterface* cancellationSignal);
+    extern void Elastos_AwPdfExporter_InitCallback(Handle64 cb);
 #ifdef __cplusplus
 }
 #endif
@@ -26,7 +26,7 @@ namespace AndroidWebview {
 
 struct ElaAwPdfExporterCallback
 {
-    void (*elastos_AwPdfExporter_setNativeAwPdfExporter)(IInterface* obj, Int64 nativePdfExporter);
+    void (*elastos_AwPdfExporter_setNativeAwPdfExporter)(IInterface* obj, Handle64 nativePdfExporter);
     void (*elastos_AwPdfExporter_didExportPdf)(IInterface* obj, Boolean success);
     Int32 (*elastos_AwPdfExporter_getPageWidth)(IInterface* obj);
     Int32 (*elastos_AwPdfExporter_getPageHeight)(IInterface* obj);
@@ -51,7 +51,7 @@ void* AwPdfExporter::ElaAwPdfExporterCallback_Init()
     sElaAwPdfExporterCallback.elastos_AwPdfExporter_getTopMargin = &AwPdfExporter::GetTopMargin;
     sElaAwPdfExporterCallback.elastos_AwPdfExporter_getBottomMargin = &AwPdfExporter::GetBottomMargin;
 
-    Elastos_AwPdfExporter_InitCallback((Handle32)&sElaAwPdfExporterCallback);
+    Elastos_AwPdfExporter_InitCallback((Handle64)&sElaAwPdfExporterCallback);
     return &sElaAwPdfExporterCallback;
 }
 

@@ -10,15 +10,15 @@
 extern "C"
 {
 #endif
-    extern Int64 Elastos_ContentViewRenderView_nativeInit(IInterface* caller,Int64 rootWindowNativePointer);
-    extern void Elastos_ContentViewRenderView_nativeDestroy(IInterface* caller,Handle32 nativeContentViewRenderView);
-    extern void Elastos_ContentViewRenderView_nativeSetCurrentContentViewCore(IInterface* caller,Handle32 nativeContentViewRenderView,Int64 nativeContentViewCore);
-    extern void Elastos_ContentViewRenderView_nativeSetLayerTreeBuildHelper(IInterface* caller,Handle32 nativeContentViewRenderView,Int64 buildHelperNativePtr);
-    extern void Elastos_ContentViewRenderView_nativeSurfaceCreated(IInterface* caller,Handle32 nativeContentViewRenderView);
-    extern void Elastos_ContentViewRenderView_nativeSurfaceDestroyed(IInterface* caller,Handle32 nativeContentViewRenderView);
-    extern void Elastos_ContentViewRenderView_nativeSurfaceChanged(IInterface* caller,Handle32 nativeContentViewRenderView,Int32 format,Int32 width,Int32 height,IInterface* surface);
-    extern void Elastos_ContentViewRenderView_nativeSetOverlayVideoMode(IInterface* caller,Handle32 nativeContentViewRenderView,Boolean enabled);
-    extern void Elastos_ContentViewRenderView_InitCallback(Handle32 cb);
+    extern Handle64 Elastos_ContentViewRenderView_nativeInit(IInterface* caller,Handle64 rootWindowNativePointer);
+    extern void Elastos_ContentViewRenderView_nativeDestroy(IInterface* caller,Handle64 nativeContentViewRenderView);
+    extern void Elastos_ContentViewRenderView_nativeSetCurrentContentViewCore(IInterface* caller,Handle64 nativeContentViewRenderView,Handle64 nativeContentViewCore);
+    extern void Elastos_ContentViewRenderView_nativeSetLayerTreeBuildHelper(IInterface* caller,Handle64 nativeContentViewRenderView,Handle64 buildHelperNativePtr);
+    extern void Elastos_ContentViewRenderView_nativeSurfaceCreated(IInterface* caller,Handle64 nativeContentViewRenderView);
+    extern void Elastos_ContentViewRenderView_nativeSurfaceDestroyed(IInterface* caller,Handle64 nativeContentViewRenderView);
+    extern void Elastos_ContentViewRenderView_nativeSurfaceChanged(IInterface* caller,Handle64 nativeContentViewRenderView,Int32 format,Int32 width,Int32 height,IInterface* surface);
+    extern void Elastos_ContentViewRenderView_nativeSetOverlayVideoMode(IInterface* caller,Handle64 nativeContentViewRenderView,Boolean enabled);
+    extern void Elastos_ContentViewRenderView_InitCallback(Handle64 cb);
 #ifdef __cplusplus
 }
 #endif
@@ -45,7 +45,7 @@ void* ContentViewRenderView::ElaContentViewRenderViewCallback_Init()
     sElaContentViewRenderViewCallback.elastos_ContentViewRenderView_onCompositorLayout = &ContentViewRenderView::OnCompositorLayout;
     sElaContentViewRenderViewCallback.elastos_ContentViewRenderView_onSwapBuffersCompleted = &ContentViewRenderView::OnSwapBuffersCompleted;
 
-    Elastos_ContentViewRenderView_InitCallback((Handle32)&sElaContentViewRenderViewCallback);
+    Elastos_ContentViewRenderView_InitCallback((Handle64)&sElaContentViewRenderViewCallback);
     return &sElaContentViewRenderViewCallback;
 }
 

@@ -10,9 +10,6 @@ using Elastos::Droid::Webkit::IValueCallback;
 using Elastos::Droid::Utility::ISparseArray;
 using Elastos::Utility::Etl::HashMap;
 
-// import org.chromium.base.CalledByNative;
-// import org.chromium.base.JNINamespace;
-
 namespace Elastos {
 namespace Droid {
 namespace Webkit {
@@ -101,10 +98,10 @@ public:
 
 private:
     AwQuotaManagerBridge(
-        /* [in] */ Int64 nativeAwQuotaManagerBridgeImpl);
+        /* [in] */ Handle64 nativeAwQuotaManagerBridgeImpl);
 
     // TODO(boliu): This should be obtained from Java AwBrowserContext that owns this.
-    static CARAPI_(Int64) NativeGetDefaultNativeAwQuotaManagerBridge();
+    static CARAPI_(Handle64) NativeGetDefaultNativeAwQuotaManagerBridge();
 
     CARAPI_(Int32) GetNextId();
 
@@ -123,21 +120,21 @@ private:
         /* [in] */ Int64 quota);
 
     CARAPI_(void) NativeInit(
-        /* [in] */ Int64 nativeAwQuotaManagerBridgeImpl);
+        /* [in] */ Handle64 nativeAwQuotaManagerBridgeImpl);
 
     CARAPI_(void) NativeDeleteAllData(
-        /* [in] */ Int64 nativeAwQuotaManagerBridgeImpl);
+        /* [in] */ Handle64 nativeAwQuotaManagerBridgeImpl);
 
     CARAPI_(void) NativeDeleteOrigin(
-        /* [in] */ Int64 nativeAwQuotaManagerBridgeImpl,
+        /* [in] */ Handle64 nativeAwQuotaManagerBridgeImpl,
         /* [in] */ const String& origin);
 
     CARAPI_(void) NativeGetOrigins(
-        /* [in] */ Int64 nativeAwQuotaManagerBridgeImpl,
+        /* [in] */ Handle64 nativeAwQuotaManagerBridgeImpl,
         /* [in] */ Int32 callbackId);
 
     CARAPI_(void) NativeGetUsageAndQuotaForOrigin(
-        /* [in] */ Int64 nativeAwQuotaManagerBridgeImpl,
+        /* [in] */ Handle64 nativeAwQuotaManagerBridgeImpl,
         /* [in] */ const String& origin,
         /* [in] */ Int32 callbackId,
         /* [in] */ Boolean isQuota);
@@ -166,7 +163,7 @@ private:
     static AutoPtr<AwQuotaManagerBridge> sInstance;
 
     // This is not owning. The native object is owned by the native AwBrowserContext.
-    Int64 mNativeAwQuotaManagerBridgeImpl;
+    Handle64 mNativeAwQuotaManagerBridgeImpl;
 
     // The Java callbacks are saved here. An incrementing callback id is generated for each saved
     // callback and is passed to the native side to identify callback.

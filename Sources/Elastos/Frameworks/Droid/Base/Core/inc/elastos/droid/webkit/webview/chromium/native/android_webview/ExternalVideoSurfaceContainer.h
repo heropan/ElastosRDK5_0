@@ -14,14 +14,9 @@ using Elastos::Droid::View::ISurfaceView;
 using Elastos::Droid::View::SurfaceView;
 using Elastos::Droid::View::IViewGroup;
 
-// import com.google.common.annotations.VisibleForTesting;
 
-// import org.chromium.base.CalledByNative;
-// import org.chromium.base.JNINamespace;
 using Elastos::Droid::Webkit::Webview::Chromium::Content::Browser::ContentViewCore;
 using Elastos::Droid::Webkit::Webview::Chromium::Content::Browser::RenderCoordinates;
-
-// import java.lang.ref.WeakReference;
 
 namespace Elastos {
 namespace Droid {
@@ -83,8 +78,8 @@ public:
     {
         public:
             static AutoPtr<ExternalVideoSurfaceContainer> Create(
-                /* [in] */Int64 nativeExternalVideoSurfaceContainer,
-                /* [in] */ContentViewCore* contentViewCore);
+                /* [in] */ Handle64 nativeExternalVideoSurfaceContainer,
+                /* [in] */ ContentViewCore* contentViewCore);
     };
 
 public:
@@ -116,7 +111,7 @@ protected:
     static const Int32 INVALID_PLAYER_ID = -1;
 
     ExternalVideoSurfaceContainer(
-        /* [in] */ Int64 nativeExternalVideoSurfaceContainer,
+        /* [in] */ Handle64 nativeExternalVideoSurfaceContainer,
         /* [in] */ ContentViewCore* contentViewCore);
 
     /**
@@ -177,17 +172,17 @@ private:
     CARAPI_(void) LayOutSurfaceView();
 
     CARAPI_(void) NativeSurfaceCreated(
-        /* [in] */ Int64 nativeExternalVideoSurfaceContainerImpl,
+        /* [in] */ Handle64 nativeExternalVideoSurfaceContainerImpl,
         /* [in] */ Int32 playerId,
         /* [in] */ ISurface* surface);
 
     CARAPI_(void) NativeSurfaceDestroyed(
-        /* [in] */ Int64 nativeExternalVideoSurfaceContainerImpl,
+        /* [in] */ Handle64 nativeExternalVideoSurfaceContainerImpl,
         /* [in] */ Int32 playerId);
 
     //@CalledByNative return ExternalVideoSurfaceContainer
     static CARAPI_(AutoPtr<IInterface>) Create(
-        /* [in] */ Int64 nativeExternalVideoSurfaceContainer,
+        /* [in] */ Handle64 nativeExternalVideoSurfaceContainer,
         /* [in] */ ContentViewCore* contentViewCore);
 
 //callback function declaration
@@ -196,7 +191,7 @@ public:
 
 private:
     static CARAPI_(AutoPtr<IInterface>) Create(
-        /* [in] */ Int64 nativeExternalVideoSurfaceContainer,
+        /* [in] */ Handle64 nativeExternalVideoSurfaceContainer,
         /* [in] */ IInterface* contentViewCore);
 
     static CARAPI_(void) RequestExternalVideoSurface(
@@ -230,7 +225,7 @@ private:
     //static WeakReference<ExternalVideoSurfaceContainer> sActiveContainer = new WeakReference<ExternalVideoSurfaceContainer>(null);
     static AutoPtr<IWeakReference> sActiveContainer;
 
-    const Int64 mNativeExternalVideoSurfaceContainer;
+    const Handle64 mNativeExternalVideoSurfaceContainer;
     const AutoPtr<ContentViewCore> mContentViewCore;
     Int32 mPlayerId ;
     AutoPtr<ISurfaceView> mSurfaceView;

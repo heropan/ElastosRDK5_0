@@ -15,13 +15,6 @@ using Elastos::Droid::Media::IMediaPlayerOnSeekCompleteListener;
 using Elastos::Droid::Media::IMediaPlayerOnVideoSizeChangedListener;
 
 using Elastos::IO::IFile;
-// import org.chromium.base.CalledByNative;
-// import org.chromium.base.JNINamespace;
-
-// import java.io.IOException;
-// import java.lang.reflect.InvocationTargetException;
-// import java.lang.reflect.Method;
-// import java.util.HashMap;
 
 namespace Elastos {
 namespace Droid {
@@ -106,7 +99,7 @@ protected:
     MediaPlayerBridge();
 
     MediaPlayerBridge(
-        /* [in] */ Int64 nativeMediaPlayerBridge);
+        /* [in] */ Handle64 nativeMediaPlayerBridge);
 
     //@CalledByNative
     CARAPI_(void) Destroy();
@@ -199,10 +192,10 @@ protected:
 private:
     //@CalledByNative return IInterface
     static CARAPI_(AutoPtr<IInterface>) Create(
-        /* [in] */ Int64 nativeMediaPlayerBridge);
+        /* [in] */ Handle64 nativeMediaPlayerBridge);
 
     CARAPI_(void) NativeOnDidSetDataUriDataSource(
-        /* [in] */ Int64 nativeMediaPlayerBridge,
+        /* [in] */ Handle64 nativeMediaPlayerBridge,
         /* [in] */ Boolean success);
 
 //callback function declaration
@@ -280,7 +273,7 @@ private:
     // want it.
     AutoPtr<LoadDataUriTask> mLoadDataUriTask;
     AutoPtr<IMediaPlayer> mPlayer;
-    Int64 mNativeMediaPlayerBridge;
+    Handle64 mNativeMediaPlayerBridge;
     friend class MediaPlayerListener;
 };
 

@@ -65,7 +65,7 @@ AutoPtr<BatteryStatusManager> BatteryStatusManager::GetInstance(
  */
 //@CalledByNative
 Boolean BatteryStatusManager::Start(
-  /* [in] */ Int64 nativePtr)
+  /* [in] */ Handle64 nativePtr)
 {
     synchronized(mNativePtrLock) {
         AutoPtr<IIntent> stickyIntent;
@@ -168,14 +168,14 @@ void BatteryStatusManager::GotBatteryStatus(
  * see content/browser/battery_status/battery_status_manager.cc
  */
 void BatteryStatusManager::NativeGotBatteryStatus(
-  /* [in] */ Int64 nativeBatteryStatusManager,
+  /* [in] */ Handle64 nativeBatteryStatusManager,
   /* [in] */ Boolean charging,
   /* [in] */ Double chargingTime,
   /* [in] */ Double dischargingTime,
   /* [in] */ Double level)
 {
     Elastos_BatteryStatusManager_nativeGotBatteryStatus(
-            THIS_PROBE(IInterface), (Handle32)nativeBatteryStatusManager, charging, chargingTime, dischargingTime, level);
+            THIS_PROBE(IInterface), nativeBatteryStatusManager, charging, chargingTime, dischargingTime, level);
 }
 
 AutoPtr<IInterface> BatteryStatusManager::GetInstance(
@@ -187,7 +187,7 @@ AutoPtr<IInterface> BatteryStatusManager::GetInstance(
 
 Boolean BatteryStatusManager::Start(
     /* [in] */ IInterface* obj,
-    /* [in] */ Int64 nativePtr)
+    /* [in] */ Handle64 nativePtr)
 {
     AutoPtr<BatteryStatusManager> mObj = (BatteryStatusManager*)(IObject::Probe(obj));
     if (NULL == mObj)

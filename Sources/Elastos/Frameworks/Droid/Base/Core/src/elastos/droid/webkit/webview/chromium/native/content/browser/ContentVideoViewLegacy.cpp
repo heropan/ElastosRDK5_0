@@ -278,7 +278,7 @@ ECode ContentVideoViewLegacy::InnerMediaPlayerControl::GetAudioSessionId(
 
 ContentVideoViewLegacy::ContentVideoViewLegacy(
     /* [in] */ IContext* context,
-    /* [in] */ Int64 nativeContentVideoView,
+    /* [in] */ Handle64 nativeContentVideoView,
     /* [in] */ ContentVideoViewClient* client)
     : ContentVideoView(context, nativeContentVideoView, client)
     , mCanPause(FALSE)

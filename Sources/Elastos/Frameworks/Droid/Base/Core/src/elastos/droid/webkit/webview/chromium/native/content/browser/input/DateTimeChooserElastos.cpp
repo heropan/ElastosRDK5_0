@@ -42,7 +42,7 @@ void DateTimeChooserElastos::InnerInputActionDelegate::CancelDateTimeDialog()
 
 DateTimeChooserElastos::DateTimeChooserElastos(
     /* [in] */ IContext* context,
-    /* [in] */ Int64 nativeDateTimeChooserElastos)
+    /* [in] */ Handle64 nativeDateTimeChooserElastos)
     : mNativeDateTimeChooserElastos(nativeDateTimeChooserElastos)
 {
     AutoPtr<InputDialogContainer::InputActionDelegate> delegate = new InnerInputActionDelegate(this);
@@ -63,7 +63,7 @@ void DateTimeChooserElastos::ShowDialog(
 //@CalledByNative
 AutoPtr<DateTimeChooserElastos> DateTimeChooserElastos::CreateDateTimeChooser(
     /* [in] */ ContentViewCore* contentViewCore,
-    /* [in] */ Int64 nativeDateTimeChooserElastos,
+    /* [in] */ Handle64 nativeDateTimeChooserElastos,
     /* [in] */ Int32 dialogType,
     /* [in] */ Double dialogValue,
     /* [in] */ Double min,
@@ -123,21 +123,21 @@ void DateTimeChooserElastos::InitializeDateInputTypes(
 }
 
 void DateTimeChooserElastos::NativeReplaceDateTime(
-    /* [in] */ Int64 nativeDateTimeChooserElastos,
+    /* [in] */ Handle64 nativeDateTimeChooserElastos,
     /* [in] */ Double dialogValue)
 {
-    Elastos_DateTimeChooserAndroid_nativeReplaceDateTime(THIS_PROBE(IInterface), (Handle32)nativeDateTimeChooserElastos, dialogValue);
+    Elastos_DateTimeChooserAndroid_nativeReplaceDateTime(THIS_PROBE(IInterface), (Handle64)nativeDateTimeChooserElastos, dialogValue);
 }
 
 void DateTimeChooserElastos::NativeCancelDialog(
-    /* [in] */ Int64 nativeDateTimeChooserElastos)
+    /* [in] */ Handle64 nativeDateTimeChooserElastos)
 {
-    Elastos_DateTimeChooserAndroid_nativeCancelDialog(THIS_PROBE(IInterface), (Handle32)nativeDateTimeChooserElastos);
+    Elastos_DateTimeChooserAndroid_nativeCancelDialog(THIS_PROBE(IInterface), (Handle64)nativeDateTimeChooserElastos);
 }
 
 AutoPtr<IInterface> DateTimeChooserElastos::CreateDateTimeChooser(
     /* [in] */ IInterface* contentViewCore,
-    /* [in] */ Int64 nativeDateTimeChooserElastos,
+    /* [in] */ Handle64 nativeDateTimeChooserElastos,
     /* [in] */ Int32 dialogType,
     /* [in] */ Double dialogValue,
     /* [in] */ Double min,

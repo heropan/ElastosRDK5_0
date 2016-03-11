@@ -5,10 +5,6 @@
 #include "elastos/droid/ext/frameworkext.h"
 #include <elastos/core/Object.h>
 
-// import org.chromium.base.CalledByNative;
-// import org.chromium.base.JNINamespace;
-// import org.chromium.base.ThreadUtils;
-
 namespace Elastos {
 namespace Droid {
 namespace Webkit {
@@ -35,7 +31,7 @@ public:
      */
     ContentSettings(
         /* [in] */ ContentViewCore* contentViewCore,
-        /* [in] */ Int64 nativeContentView);
+        /* [in] */ Handle64 nativeContentView);
 
     /**
      * Return true if JavaScript is enabled. Must be called on the UI thread.
@@ -49,7 +45,7 @@ public:
 private:
     static CARAPI_(void) OnNativeContentSettingsDestroyed(
         /* [in] */ IInterface* obj,
-        /* [in] */ Int64 nativeContentSettings);
+        /* [in] */ Handle64 nativeContentSettings);
 
     /**
      * Notification from the native side that it is being destroyed.
@@ -57,21 +53,21 @@ private:
      */
     //@CalledByNative
     CARAPI_(void) OnNativeContentSettingsDestroyed(
-        /* [in] */ Int64 nativeContentSettings);
+        /* [in] */ Handle64 nativeContentSettings);
 
     // Initialize the ContentSettings native side.
-    CARAPI_(Int64) NativeInit(
-        /* [in] */ Int64 contentViewPtr);
+    CARAPI_(Handle64) NativeInit(
+        /* [in] */ Handle64 contentViewPtr);
 
     CARAPI_(Boolean) NativeGetJavaScriptEnabled(
-        /* [in] */ Int64 nativeContentSettings);
+        /* [in] */ Handle64 nativeContentSettings);
 
 private:
     static const String TAG;
 
     // The native side of this object. Ownership is retained native-side by the WebContents
     // instance that backs the associated ContentViewCore.
-    Int64 mNativeContentSettings;
+    Handle64 mNativeContentSettings;
 
     AutoPtr<ContentViewCore> mContentViewCore;
 };

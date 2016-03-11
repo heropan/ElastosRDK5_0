@@ -10,9 +10,9 @@
 extern "C"
 {
 #endif
-    extern void Elastos_SelectFileDialog_nativeOnFileSelected(IInterface* caller,Handle32 nativeSelectFileDialogImpl,const String& filePath,const String& displayName);
-    extern void Elastos_SelectFileDialog_nativeOnFileNotSelected(IInterface* caller,Handle32 nativeSelectFileDialogImpl);
-    extern void Elastos_SelectFileDialog_InitCallback(Handle32 cb);
+    extern void Elastos_SelectFileDialog_nativeOnFileSelected(IInterface* caller,Handle64 nativeSelectFileDialogImpl,const String& filePath,const String& displayName);
+    extern void Elastos_SelectFileDialog_nativeOnFileNotSelected(IInterface* caller,Handle64 nativeSelectFileDialogImpl);
+    extern void Elastos_SelectFileDialog_InitCallback(Handle64 cb);
 #ifdef __cplusplus
 }
 #endif
@@ -29,7 +29,7 @@ namespace Base {
 struct ElaSelectFileDialogCallback
 {
     void (*elastos_SelectFileDialog_selectFile)(IInterface* obj, ArrayOf<String>* fileTypes, Boolean capture, IInterface* window);
-    AutoPtr<IInterface> (*elastos_SelectFileDialog_create)(Int64 nativeSelectFileDialog);
+    AutoPtr<IInterface> (*elastos_SelectFileDialog_create)(Handle64 nativeSelectFileDialog);
 };
 
 void* SelectFileDialog::ElaSelectFileDialogCallback_Init()
@@ -39,7 +39,7 @@ void* SelectFileDialog::ElaSelectFileDialogCallback_Init()
     sElaSelectFileDialogCallback.elastos_SelectFileDialog_selectFile = &SelectFileDialog::SelectFile;
     sElaSelectFileDialogCallback.elastos_SelectFileDialog_create = &SelectFileDialog::Create;
 
-    Elastos_SelectFileDialog_InitCallback((Handle32)&sElaSelectFileDialogCallback);
+    Elastos_SelectFileDialog_InitCallback((Handle64)&sElaSelectFileDialogCallback);
     return &sElaSelectFileDialogCallback;
 }
 

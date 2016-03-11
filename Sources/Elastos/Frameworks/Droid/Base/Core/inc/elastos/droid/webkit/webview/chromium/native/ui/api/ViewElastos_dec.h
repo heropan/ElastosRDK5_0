@@ -10,8 +10,8 @@
 extern "C"
 {
 #endif
-    extern Int64 Elastos_ViewAndroid_nativeInit(IInterface* caller,Int64 windowPtr);
-    extern void Elastos_ViewAndroid_nativeDestroy(IInterface* caller,Handle32 nativeViewElastos);
+    extern Handle64 Elastos_ViewAndroid_nativeInit(IInterface* caller,Handle64 windowPtr);
+    extern void Elastos_ViewAndroid_nativeDestroy(IInterface* caller,Handle64 nativeViewElastos);
 #ifdef __cplusplus
 }
 #endif

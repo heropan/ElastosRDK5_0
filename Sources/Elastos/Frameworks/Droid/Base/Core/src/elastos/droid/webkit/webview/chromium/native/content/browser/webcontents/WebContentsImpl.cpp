@@ -14,7 +14,7 @@ namespace Browser {
 namespace Webcontents {
 
 WebContentsImpl::WebContentsImpl(
-    /* [in] */ Int64 nativeWebContentsAndroid,
+    /* [in] */ Handle64 nativeWebContentsAndroid,
     /* [in] */ NavigationController* navigationController)
     : mNativeWebContentsAndroid(nativeWebContentsAndroid)
     , mNavigationController(navigationController)
@@ -23,7 +23,7 @@ WebContentsImpl::WebContentsImpl(
 
 //@CalledByNative
 AutoPtr<WebContentsImpl> WebContentsImpl::Create(
-    /* [in] */ Int64 nativeWebContentsAndroid,
+    /* [in] */ Handle64 nativeWebContentsAndroid,
     /* [in] */ NavigationController* navigationController)
 {
     return new WebContentsImpl(nativeWebContentsAndroid, navigationController);
@@ -37,7 +37,7 @@ void WebContentsImpl::Destroy()
 }
 
 //@CalledByNative
-Int64 WebContentsImpl::GetNativePointer()
+Handle64 WebContentsImpl::GetNativePointer()
 {
     return mNativeWebContentsAndroid;
 }
@@ -67,25 +67,25 @@ void WebContentsImpl::Stop()
 }
 
 String WebContentsImpl::NativeGetTitle(
-    /* [in] */ Int64 nativeWebContentsAndroid)
+    /* [in] */ Handle64 nativeWebContentsAndroid)
 {
-    return Elastos_WebContentsImpl_nativeGetTitle(THIS_PROBE(IInterface), (Handle32)nativeWebContentsAndroid);
+    return Elastos_WebContentsImpl_nativeGetTitle(THIS_PROBE(IInterface), nativeWebContentsAndroid);
 }
 
 String WebContentsImpl::NativeGetVisibleURL(
-    /* [in] */ Int64 nativeWebContentsAndroid)
+    /* [in] */ Handle64 nativeWebContentsAndroid)
 {
-    return Elastos_WebContentsImpl_nativeGetVisibleURL(THIS_PROBE(IInterface), (Handle32)nativeWebContentsAndroid);
+    return Elastos_WebContentsImpl_nativeGetVisibleURL(THIS_PROBE(IInterface), nativeWebContentsAndroid);
 }
 
 void WebContentsImpl::NativeStop(
-    /* [in] */ Int64 nativeWebContentsAndroid)
+    /* [in] */ Handle64 nativeWebContentsAndroid)
 {
-    Elastos_WebContentsImpl_nativeStop(THIS_PROBE(IInterface), (Handle32)nativeWebContentsAndroid);
+    Elastos_WebContentsImpl_nativeStop(THIS_PROBE(IInterface), nativeWebContentsAndroid);
 }
 
 AutoPtr<IInterface> WebContentsImpl::Create(
-    /* [in] */ Int64 nativeWebContentsAndroid,
+    /* [in] */ Handle64 nativeWebContentsAndroid,
     /* [in] */ IInterface* navigationController)
 {
     AutoPtr<NavigationController> nc = (NavigationController*)(IObject::Probe(navigationController));
@@ -104,7 +104,7 @@ void WebContentsImpl::Destroy(
     mObj->Destroy();
 }
 
-Int64 WebContentsImpl::GetNativePointer(
+Handle64 WebContentsImpl::GetNativePointer(
     /* [in] */ IInterface* obj)
 {
     AutoPtr<WebContentsImpl> mObj = (WebContentsImpl*)(IObject::Probe(obj));

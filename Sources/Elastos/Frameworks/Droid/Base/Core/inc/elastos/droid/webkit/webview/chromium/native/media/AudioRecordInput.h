@@ -10,11 +10,6 @@ using Elastos::Droid::Media::Audiofx::IAcousticEchoCanceler;
 
 using Elastos::Core::Thread;
 using Elastos::IO::IByteBuffer;
-// import android.annotation.SuppressLint;
-// import org.chromium.base.CalledByNative;
-// import org.chromium.base.JNINamespace;
-
-// import java.nio.ByteBuffer;
 
 namespace Elastos {
 namespace Droid {
@@ -54,7 +49,7 @@ private:
 
 private:
     AudioRecordInput(
-        /* [in] */ Int64 nativeAudioRecordInputStream,
+        /* [in] */ Handle64 nativeAudioRecordInputStream,
         /* [in] */ Int32 sampleRate,
         /* [in] */ Int32 channels,
         /* [in] */ Int32 bitsPerSample,
@@ -63,7 +58,7 @@ private:
 
     //@CalledByNative return AudioRecordInput
     static CARAPI_(AutoPtr<IInterface>) CreateAudioRecordInput(
-        /* [in] */ Int64 nativeAudioRecordInputStream,
+        /* [in] */ Handle64 nativeAudioRecordInputStream,
         /* [in] */ Int32 sampleRate,
         /* [in] */ Int32 channels,
         /* [in] */ Int32 bitsPerSample,
@@ -85,11 +80,11 @@ private:
     CARAPI_(void) Close();
 
     CARAPI_(void) NativeCacheDirectBufferAddress(
-        /* [in] */ Int64 nativeAudioRecordInputStream,
+        /* [in] */ Handle64 nativeAudioRecordInputStream,
         /* [in] */ IByteBuffer* buffer);
 
     CARAPI_(void) NativeOnData(
-        /* [in] */ Int64 nativeAudioRecordInputStream,
+        /* [in] */ Handle64 nativeAudioRecordInputStream,
         /* [in] */ Int32 size,
         /* [in] */ Int32 hardwareDelayBytes);
 
@@ -118,7 +113,7 @@ private:
     // could surely be tightened with further testing.
     static const Int32 HARDWARE_DELAY_MS = 100;
 
-    const Int64 mNativeAudioRecordInputStream;
+    const Handle64 mNativeAudioRecordInputStream;
     const Int32 mSampleRate;
     const Int32 mChannels;
     const Int32 mBitsPerSample;

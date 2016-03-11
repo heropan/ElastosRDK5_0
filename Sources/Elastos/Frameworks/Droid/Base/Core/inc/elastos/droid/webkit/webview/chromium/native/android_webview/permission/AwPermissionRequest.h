@@ -7,9 +7,6 @@
 
 using Elastos::Droid::Net::IUri;
 using Elastos::Core::Object;
-// import org.chromium.base.CalledByNative;
-// import org.chromium.base.JNINamespace;
-// import org.chromium.base.ThreadUtils;
 
 namespace Elastos {
 namespace Droid {
@@ -43,13 +40,13 @@ protected:
 
 private:
     AwPermissionRequest(
-        /* [in] */ Int64 nativeAwPermissionRequest,
+        /* [in] */ Handle64 nativeAwPermissionRequest,
         /* [in] */ IUri* origin,
         /* [in] */ Int64 resources);
 
     //@CalledByNative return AwPermissionRequest
     static CARAPI_(AutoPtr<IInterface>) Create(
-        /* [in] */ Int64 nativeAwPermissionRequest,
+        /* [in] */ Handle64 nativeAwPermissionRequest,
         /* [in] */ const String& url,
         /* [in] */ Int64 resources);
 
@@ -59,7 +56,7 @@ private:
     CARAPI Validate();
 
     CARAPI_(void) NativeOnAccept(
-        /* [in] */ Int64 nativeAwPermissionRequest,
+        /* [in] */ Handle64 nativeAwPermissionRequest,
         /* [in] */ Boolean allowed);
 
 //callback function declaration
@@ -78,7 +75,7 @@ private:
     Boolean mProcessed;
 
     // AwPermissionRequest native instance.
-    Int64 mNativeAwPermissionRequest;
+    Handle64 mNativeAwPermissionRequest;
 };
 
 } // namespace Permission

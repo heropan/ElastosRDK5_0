@@ -279,7 +279,7 @@ void ContentViewRenderView::SetOverlayVideoMode(
  * @param layerTreeBuildHelperNativePtr Native pointer to the layer tree build helper.
  */
 void ContentViewRenderView::SetLayerTreeBuildHelper(
-    /* [in] */ Int64 layerTreeBuildHelperNativePtr)
+    /* [in] */ Handle64 layerTreeBuildHelperNativePtr)
 {
     NativeSetLayerTreeBuildHelper(mNativeContentViewRenderView, layerTreeBuildHelperNativePtr);
 }
@@ -302,60 +302,60 @@ void ContentViewRenderView::OnSwapBuffersCompleted()
     }
 }
 
-Int64 ContentViewRenderView::NativeInit(
-    /* [in] */ Int64 rootWindowNativePointer)
+Handle64 ContentViewRenderView::NativeInit(
+    /* [in] */ Handle64 rootWindowNativePointer)
 {
     return Elastos_ContentViewRenderView_nativeInit(THIS_PROBE(IInterface), rootWindowNativePointer);
 }
 
 void ContentViewRenderView::NativeDestroy(
-    /* [in] */ Int64 nativeContentViewRenderView)
+    /* [in] */ Handle64 nativeContentViewRenderView)
 {
-    Elastos_ContentViewRenderView_nativeDestroy(THIS_PROBE(IInterface), (Handle32)nativeContentViewRenderView);
+    Elastos_ContentViewRenderView_nativeDestroy(THIS_PROBE(IInterface), nativeContentViewRenderView);
 }
 
 void ContentViewRenderView::NativeSetCurrentContentViewCore(
-    /* [in] */ Int64 nativeContentViewRenderView,
-    /* [in] */ Int64 nativeContentViewCore)
+    /* [in] */ Handle64 nativeContentViewRenderView,
+    /* [in] */ Handle64 nativeContentViewCore)
 {
-    Elastos_ContentViewRenderView_nativeSetCurrentContentViewCore(THIS_PROBE(IInterface), (Handle32)nativeContentViewRenderView, nativeContentViewCore);
+    Elastos_ContentViewRenderView_nativeSetCurrentContentViewCore(THIS_PROBE(IInterface), nativeContentViewRenderView, nativeContentViewCore);
 }
 
 void ContentViewRenderView::NativeSetLayerTreeBuildHelper(
-    /* [in] */ Int64 nativeContentViewRenderView,
-    /* [in] */ Int64 buildHelperNativePtr)
+    /* [in] */ Handle64 nativeContentViewRenderView,
+    /* [in] */ Handle64 buildHelperNativePtr)
 {
-    Elastos_ContentViewRenderView_nativeSetLayerTreeBuildHelper(THIS_PROBE(IInterface), (Handle32)nativeContentViewRenderView, buildHelperNativePtr);
+    Elastos_ContentViewRenderView_nativeSetLayerTreeBuildHelper(THIS_PROBE(IInterface), nativeContentViewRenderView, buildHelperNativePtr);
 }
 
 void ContentViewRenderView::NativeSurfaceCreated(
-    /* [in] */ Int64 nativeContentViewRenderView)
+    /* [in] */ Handle64 nativeContentViewRenderView)
 {
-    Elastos_ContentViewRenderView_nativeSurfaceCreated(THIS_PROBE(IInterface), (Handle32)nativeContentViewRenderView);
+    Elastos_ContentViewRenderView_nativeSurfaceCreated(THIS_PROBE(IInterface), nativeContentViewRenderView);
 }
 
 void ContentViewRenderView::NativeSurfaceDestroyed(
-    /* [in] */ Int64 nativeContentViewRenderView)
+    /* [in] */ Handle64 nativeContentViewRenderView)
 {
-    Elastos_ContentViewRenderView_nativeSurfaceDestroyed(THIS_PROBE(IInterface), (Handle32)nativeContentViewRenderView);
+    Elastos_ContentViewRenderView_nativeSurfaceDestroyed(THIS_PROBE(IInterface), nativeContentViewRenderView);
 }
 
 void ContentViewRenderView::NativeSurfaceChanged(
-    /* [in] */ Int64 nativeContentViewRenderView,
+    /* [in] */ Handle64 nativeContentViewRenderView,
     /* [in] */ Int32 format,
     /* [in] */ Int32 width,
     /* [in] */ Int32 height,
     /* [in] */ ISurface* surface)
 {
-    Elastos_ContentViewRenderView_nativeSurfaceChanged(THIS_PROBE(IInterface), (Handle32)nativeContentViewRenderView,
+    Elastos_ContentViewRenderView_nativeSurfaceChanged(THIS_PROBE(IInterface), nativeContentViewRenderView,
             format, width, height, TO_IINTERFACE(surface));
 }
 
 void ContentViewRenderView::NativeSetOverlayVideoMode(
-    /* [in] */ Int64 nativeContentViewRenderView,
+    /* [in] */ Handle64 nativeContentViewRenderView,
     /* [in] */ Boolean enabled)
 {
-    Elastos_ContentViewRenderView_nativeSetOverlayVideoMode(THIS_PROBE(IInterface), (Handle32)nativeContentViewRenderView, enabled);
+    Elastos_ContentViewRenderView_nativeSetOverlayVideoMode(THIS_PROBE(IInterface), nativeContentViewRenderView, enabled);
 }
 
 void ContentViewRenderView::OnCompositorLayout(

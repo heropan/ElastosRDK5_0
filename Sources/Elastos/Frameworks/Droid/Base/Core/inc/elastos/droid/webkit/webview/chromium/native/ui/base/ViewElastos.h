@@ -57,7 +57,7 @@ public:
       * Returns a pointer to the c++ AndroidWindow object.
       * @return A pointer to the c++ AndroidWindow.
       */
-    virtual CARAPI_(Int64) GetNativePointer();
+    virtual CARAPI_(Handle64) GetNativePointer();
 
     /**
       * Set KeepScreenOn flag. If the flag already set, increase mKeepScreenOnCount.
@@ -70,15 +70,15 @@ public:
     virtual CARAPI DecrementKeepScreenOnCount();
 
 private:
-    CARAPI_(Int64) NativeInit(
-        /* [in] */ Int64 windowPtr);
+    CARAPI_(Handle64) NativeInit(
+        /* [in] */ Handle64 windowPtr);
 
     CARAPI NativeDestroy(
-        /* [in] */ Int64 nativeViewElastos);
+        /* [in] */ Handle64 nativeViewElastos);
 
 private:
     // Native pointer to the c++ ViewElastos object.
-    Int64 mNativeViewElastos;
+    Handle64 mNativeViewElastos;
     AutoPtr<ViewElastosDelegate> mViewElastosDelegate;
     AutoPtr<WindowElastos> mWindowElastos;
     Int32 mKeepScreenOnCount;

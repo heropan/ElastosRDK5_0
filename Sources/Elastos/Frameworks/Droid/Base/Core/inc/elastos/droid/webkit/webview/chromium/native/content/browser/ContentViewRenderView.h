@@ -178,7 +178,7 @@ public:
      * @param layerTreeBuildHelperNativePtr Native pointer to the layer tree build helper.
      */
     CARAPI_(void) SetLayerTreeBuildHelper(
-        /* [in] */ Int64 layerTreeBuildHelperNativePtr);
+        /* [in] */ Handle64 layerTreeBuildHelperNativePtr);
 
     static CARAPI_(void*) ElaContentViewRenderViewCallback_Init();
 
@@ -211,35 +211,35 @@ private:
     //@CalledByNative
     CARAPI_(void) OnSwapBuffersCompleted();
 
-    CARAPI_(Int64) NativeInit(
-        /* [in] */ Int64 rootWindowNativePointer);
+    CARAPI_(Handle64) NativeInit(
+        /* [in] */ Handle64 rootWindowNativePointer);
 
     CARAPI_(void) NativeDestroy(
-        /* [in] */ Int64 nativeContentViewRenderView);
+        /* [in] */ Handle64 nativeContentViewRenderView);
 
     CARAPI_(void) NativeSetCurrentContentViewCore(
-        /* [in] */ Int64 nativeContentViewRenderView,
-        /* [in] */ Int64 nativeContentViewCore);
+        /* [in] */ Handle64 nativeContentViewRenderView,
+        /* [in] */ Handle64 nativeContentViewCore);
 
     CARAPI_(void) NativeSetLayerTreeBuildHelper(
-        /* [in] */ Int64 nativeContentViewRenderView,
-        /* [in] */ Int64 buildHelperNativePtr);
+        /* [in] */ Handle64 nativeContentViewRenderView,
+        /* [in] */ Handle64 buildHelperNativePtr);
 
     CARAPI_(void) NativeSurfaceCreated(
-        /* [in] */ Int64 nativeContentViewRenderView);
+        /* [in] */ Handle64 nativeContentViewRenderView);
 
     CARAPI_(void) NativeSurfaceDestroyed(
-        /* [in] */ Int64 nativeContentViewRenderView);
+        /* [in] */ Handle64 nativeContentViewRenderView);
 
     CARAPI_(void) NativeSurfaceChanged(
-        /* [in] */ Int64 nativeContentViewRenderView,
+        /* [in] */ Handle64 nativeContentViewRenderView,
         /* [in] */ Int32 format,
         /* [in] */ Int32 width,
         /* [in] */ Int32 height,
         /* [in] */ ISurface* surface);
 
     CARAPI_(void) NativeSetOverlayVideoMode(
-        /* [in] */ Int64 nativeContentViewRenderView,
+        /* [in] */ Handle64 nativeContentViewRenderView,
         /* [in] */ Boolean enabled);
 
 protected:
@@ -247,7 +247,7 @@ protected:
 
 private:
     // The native side of this object.
-    Int64 mNativeContentViewRenderView;
+    Handle64 mNativeContentViewRenderView;
     AutoPtr<ISurfaceHolderCallback> mSurfaceCallback;
 
     AutoPtr<ISurfaceView> mSurfaceView;

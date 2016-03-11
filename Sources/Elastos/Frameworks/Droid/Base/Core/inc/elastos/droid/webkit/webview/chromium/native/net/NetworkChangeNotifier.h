@@ -85,14 +85,14 @@ public:
       */
     // @CalledByNative
     virtual CARAPI AddNativeObserver(
-        /* [in] */ Int64 nativeChangeNotifier);
+        /* [in] */ Handle64 nativeChangeNotifier);
 
     /**
       * Removes a native-side observer.
       */
     // @CalledByNative
     virtual CARAPI RemoveNativeObserver(
-        /* [in] */ Int64 nativeChangeNotifier);
+        /* [in] */ Handle64 nativeChangeNotifier);
 
     /**
       * Returns the singleton instance.
@@ -157,11 +157,11 @@ private:
 
     static CARAPI_(void) AddNativeObserver(
         /* [in] */ IInterface* obj,
-        /* [in] */ Int64 nativeChangeNotifier);
+        /* [in] */ Handle64 nativeChangeNotifier);
 
     static CARAPI_(void) RemoveNativeObserver(
         /* [in] */ IInterface* obj,
-        /* [in] */ Int64 nativeChangeNotifier);
+        /* [in] */ Handle64 nativeChangeNotifier);
 
 private:
     NetworkChangeNotifier(
@@ -186,7 +186,7 @@ private:
 
     // @NativeClassQualifiedName("NetworkChangeNotifierDelegateAndroid")
     CARAPI NativeNotifyConnectionTypeChanged(
-        /* [in] */ Int64 nativePtr,
+        /* [in] */ Handle64 nativePtr,
         /* [in] */ Int32 newConnectionType);
 
 public:
@@ -203,7 +203,7 @@ public:
 
 private:
     /*const*/ AutoPtr<IContext> mContext;
-    /*const*/ AutoPtr< List<Int64> > mNativeChangeNotifiers;
+    /*const*/ AutoPtr< List<Handle64> > mNativeChangeNotifiers;
     /*const*/ AutoPtr<IList> mConnectionTypeObservers;
     Int32 mCurrentConnectionType;
     static AutoPtr<NetworkChangeNotifier> sInstance;

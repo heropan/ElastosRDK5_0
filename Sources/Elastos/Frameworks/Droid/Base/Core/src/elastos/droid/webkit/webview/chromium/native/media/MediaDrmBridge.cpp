@@ -434,7 +434,7 @@ const Int32 MediaDrmBridge::INVALID_SESSION_ID;
 
 MediaDrmBridge::MediaDrmBridge(
     /* [in] */ IUUID* schemeUUID,
-    /* [in] */ Int64 nativeMediaDrmBridge,
+    /* [in] */ Handle64 nativeMediaDrmBridge,
     /* [in] */ Boolean singleSessionMode)
 {
     mSchemeUUID = schemeUUID;
@@ -650,7 +650,7 @@ Boolean MediaDrmBridge::IsCryptoSchemeSupported(
 //@CalledByNative return MediaDrmBridge
 AutoPtr<IInterface> MediaDrmBridge::Create(
     /* [in] */ ArrayOf<Byte>* schemeUUID,
-    /* [in] */ Int64 nativeMediaDrmBridge)
+    /* [in] */ Handle64 nativeMediaDrmBridge)
 {
     AutoPtr<IUUID> cryptoScheme = GetUUIDFromBytes(schemeUUID);
     AutoPtr<IMediaDrmHelper> mdHelper;
@@ -1309,54 +1309,54 @@ void MediaDrmBridge::AddKeySystemUuidMapping(
 }
 
 void MediaDrmBridge::NativeOnMediaCryptoReady(
-    /* [in] */ Int64 nativeMediaDrmBridge)
+    /* [in] */ Handle64 nativeMediaDrmBridge)
 {
-    // Elastos_MediaDrmBridge_nativeOnMediaCryptoReady(THIS_PROBE(IInterface), (Handle32)nativeMediaDrmBridge);
+    Elastos_MediaDrmBridge_nativeOnMediaCryptoReady(THIS_PROBE(IInterface), nativeMediaDrmBridge);
 }
 
 void MediaDrmBridge::NativeOnSessionCreated(
-    /* [in] */ Int64 nativeMediaDrmBridge,
+    /* [in] */ Handle64 nativeMediaDrmBridge,
     /* [in] */ Int32 sessionId,
     /* [in] */ const String& webSessionId)
 {
-    // Elastos_MediaDrmBridge_nativeOnSessionCreated(THIS_PROBE(IInterface), (Handle32)nativeMediaDrmBridge, sessionId, webSessionId);
+    Elastos_MediaDrmBridge_nativeOnSessionCreated(THIS_PROBE(IInterface), nativeMediaDrmBridge, sessionId, webSessionId);
 }
 
 void MediaDrmBridge::NativeOnSessionMessage(
-    /* [in] */ Int64 nativeMediaDrmBridge,
+    /* [in] */ Handle64 nativeMediaDrmBridge,
     /* [in] */ Int32 sessionId,
     /* [in] */ ArrayOf<Byte>* message,
     /* [in] */ const String& destinationUrl)
 {
-    // Elastos_MediaDrmBridge_nativeOnSessionMessage(THIS_PROBE(IInterface), (Handle32)nativeMediaDrmBridge, sessionId, message, destinationUrl);
+    Elastos_MediaDrmBridge_nativeOnSessionMessage(THIS_PROBE(IInterface), nativeMediaDrmBridge, sessionId, message, destinationUrl);
 }
 
 void MediaDrmBridge::NativeOnSessionReady(
-    /* [in] */ Int64 nativeMediaDrmBridge,
+    /* [in] */ Handle64 nativeMediaDrmBridge,
     /* [in] */ Int32 sessionId)
 {
-    // Elastos_MediaDrmBridge_nativeOnSessionReady(THIS_PROBE(IInterface), (Handle32)nativeMediaDrmBridge, sessionId);
+    Elastos_MediaDrmBridge_nativeOnSessionReady(THIS_PROBE(IInterface), nativeMediaDrmBridge, sessionId);
 }
 
 void MediaDrmBridge::NativeOnSessionClosed(
-    /* [in] */ Int64 nativeMediaDrmBridge,
+    /* [in] */ Handle64 nativeMediaDrmBridge,
     /* [in] */ Int32 sessionId)
 {
-    // Elastos_MediaDrmBridge_nativeOnSessionClosed(THIS_PROBE(IInterface), (Handle32)nativeMediaDrmBridge, sessionId);
+    Elastos_MediaDrmBridge_nativeOnSessionClosed(THIS_PROBE(IInterface), nativeMediaDrmBridge, sessionId);
 }
 
 void MediaDrmBridge::NativeOnSessionError(
-    /* [in] */ Int64 nativeMediaDrmBridge,
+    /* [in] */ Handle64 nativeMediaDrmBridge,
     /* [in] */ Int32 sessionId)
 {
-    // Elastos_MediaDrmBridge_nativeOnSessionError(THIS_PROBE(IInterface), (Handle32)nativeMediaDrmBridge, sessionId);
+    Elastos_MediaDrmBridge_nativeOnSessionError(THIS_PROBE(IInterface), nativeMediaDrmBridge, sessionId);
 }
 
 void MediaDrmBridge::NativeOnResetDeviceCredentialsCompleted(
-    /* [in] */ Int64 nativeMediaDrmBridge,
+    /* [in] */ Handle64 nativeMediaDrmBridge,
     /* [in] */ Boolean success)
 {
-    // Elastos_MediaDrmBridge_nativeOnResetDeviceCredentialsCompleted(THIS_PROBE(IInterface), (Handle32)nativeMediaDrmBridge, success);
+    Elastos_MediaDrmBridge_nativeOnResetDeviceCredentialsCompleted(THIS_PROBE(IInterface), nativeMediaDrmBridge, success);
 }
 
 void MediaDrmBridge::NativeAddKeySystemUuidMapping(

@@ -411,7 +411,7 @@ AwSettings::AwSettings(
 
 //@CalledByNative
 void AwSettings::NativeAwSettingsGone(
-    /* [in] */ Int64 nativeAwSettings)
+    /* [in] */ Handle64 nativeAwSettings)
 {
     assert(mNativeAwSettings != 0 && mNativeAwSettings == nativeAwSettings);
     mNativeAwSettings = 0;
@@ -441,7 +441,7 @@ void AwSettings::SetZoomListener(
 }
 
 void AwSettings::SetWebContents(
-    /* [in] */ Int64 nativeWebContents)
+    /* [in] */ Handle64 nativeWebContents)
 {
     AutoLock lock(&mAwSettingsLock);
     if (mNativeAwSettings != 0) {
@@ -1878,7 +1878,7 @@ void AwSettings::UpdateEverything()
 
 //@CalledByNative
 void AwSettings::PopulateWebPreferences(
-    /* [in] */ Int64 webPrefsPtr)
+    /* [in] */ Handle64 webPrefsPtr)
 {
     AutoLock lock(&mAwSettingsLock);
     assert(mNativeAwSettings != 0);
@@ -1894,53 +1894,53 @@ void AwSettings::UpdateWebkitPreferencesOnUiThreadLocked()
     }
 }
 
-Int64 AwSettings::NativeInit(
-    /* [in] */ Int64 webContentsPtr)
+Handle64 AwSettings::NativeInit(
+    /* [in] */ Handle64 webContentsPtr)
 {
     return Elastos_AwSettings_nativeInit(THIS_PROBE(IInterface), webContentsPtr);
 }
 
 void AwSettings::NativeDestroy(
-    /* [in] */ Int64 nativeAwSettings)
+    /* [in] */ Handle64 nativeAwSettings)
 {
-    Elastos_AwSettings_nativeDestroy(THIS_PROBE(IInterface), (Handle32)nativeAwSettings);
+    Elastos_AwSettings_nativeDestroy(THIS_PROBE(IInterface), nativeAwSettings);
 }
 
 void AwSettings::NativePopulateWebPreferencesLocked(
-    /* [in] */ Int64 nativeAwSettings,
-    /* [in] */ Int64 webPrefsPtr)
+    /* [in] */ Handle64 nativeAwSettings,
+    /* [in] */ Handle64 webPrefsPtr)
 {
-    Elastos_AwSettings_nativePopulateWebPreferencesLocked(THIS_PROBE(IInterface), (Handle32)nativeAwSettings, webPrefsPtr);
+    Elastos_AwSettings_nativePopulateWebPreferencesLocked(THIS_PROBE(IInterface), nativeAwSettings, webPrefsPtr);
 }
 
 void AwSettings::NativeResetScrollAndScaleState(
-    /* [in] */ Int64 nativeAwSettings)
+    /* [in] */ Handle64 nativeAwSettings)
 {
-    Elastos_AwSettings_nativeResetScrollAndScaleState(THIS_PROBE(IInterface), (Handle32)nativeAwSettings);
+    Elastos_AwSettings_nativeResetScrollAndScaleState(THIS_PROBE(IInterface), nativeAwSettings);
 }
 
 void AwSettings::NativeUpdateEverythingLocked(
-    /* [in] */ Int64 nativeAwSettings)
+    /* [in] */ Handle64 nativeAwSettings)
 {
-    Elastos_AwSettings_nativeUpdateEverythingLocked(THIS_PROBE(IInterface), (Handle32)nativeAwSettings);
+    Elastos_AwSettings_nativeUpdateEverythingLocked(THIS_PROBE(IInterface), nativeAwSettings);
 }
 
 void AwSettings::NativeUpdateInitialPageScaleLocked(
-    /* [in] */ Int64 nativeAwSettings)
+    /* [in] */ Handle64 nativeAwSettings)
 {
-    Elastos_AwSettings_nativeUpdateInitialPageScaleLocked(THIS_PROBE(IInterface), (Handle32)nativeAwSettings);
+    Elastos_AwSettings_nativeUpdateInitialPageScaleLocked(THIS_PROBE(IInterface), nativeAwSettings);
 }
 
 void AwSettings::NativeUpdateUserAgentLocked(
-    /* [in] */ Int64 nativeAwSettings)
+    /* [in] */ Handle64 nativeAwSettings)
 {
-    Elastos_AwSettings_nativeUpdateUserAgentLocked(THIS_PROBE(IInterface), (Handle32)nativeAwSettings);
+    Elastos_AwSettings_nativeUpdateUserAgentLocked(THIS_PROBE(IInterface), nativeAwSettings);
 }
 
 void AwSettings::NativeUpdateWebkitPreferencesLocked(
-    /* [in] */ Int64 nativeAwSettings)
+    /* [in] */ Handle64 nativeAwSettings)
 {
-    Elastos_AwSettings_nativeUpdateWebkitPreferencesLocked(THIS_PROBE(IInterface), (Handle32)nativeAwSettings);
+    Elastos_AwSettings_nativeUpdateWebkitPreferencesLocked(THIS_PROBE(IInterface), nativeAwSettings);
 }
 
 String AwSettings::NativeGetDefaultUserAgent()
@@ -1949,20 +1949,20 @@ String AwSettings::NativeGetDefaultUserAgent()
 }
 
 void AwSettings::NativeUpdateFormDataPreferencesLocked(
-    /* [in] */ Int64 nativeAwSettings)
+    /* [in] */ Handle64 nativeAwSettings)
 {
-    Elastos_AwSettings_nativeUpdateFormDataPreferencesLocked(THIS_PROBE(IInterface), (Handle32)nativeAwSettings);
+    Elastos_AwSettings_nativeUpdateFormDataPreferencesLocked(THIS_PROBE(IInterface), nativeAwSettings);
 }
 
 void AwSettings::NativeUpdateRendererPreferencesLocked(
-    /* [in] */ Int64 nativeAwSettings)
+    /* [in] */ Handle64 nativeAwSettings)
 {
-    Elastos_AwSettings_nativeUpdateRendererPreferencesLocked(THIS_PROBE(IInterface), (Handle32)nativeAwSettings);
+    Elastos_AwSettings_nativeUpdateRendererPreferencesLocked(THIS_PROBE(IInterface), nativeAwSettings);
 }
 //callback function definition
 void AwSettings::NativeAwSettingsGone(
     /* [in] */ IInterface* obj,
-    /* [in] */ Int64 nativeAwSettings)
+    /* [in] */ Handle64 nativeAwSettings)
 {
     AutoPtr<AwSettings> mObj = (AwSettings*)(IObject::Probe(obj));
     if (NULL == mObj)
@@ -2503,7 +2503,7 @@ void AwSettings::UpdateEverything(
 
 void AwSettings::PopulateWebPreferences(
     /* [in] */ IInterface* obj,
-    /* [in] */ Int64 webPrefsPtr)
+    /* [in] */ Handle64 webPrefsPtr)
 {
     AutoPtr<AwSettings> mObj = (AwSettings*)(IObject::Probe(obj));
     if (NULL == mObj)

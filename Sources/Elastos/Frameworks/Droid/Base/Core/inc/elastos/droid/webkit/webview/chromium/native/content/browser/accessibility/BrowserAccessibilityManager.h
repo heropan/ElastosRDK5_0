@@ -79,7 +79,7 @@ public:
 
 protected:
     BrowserAccessibilityManager(
-        /* [in] */ Int64 nativeBrowserAccessibilityManagerAndroid,
+        /* [in] */ Handle64 nativeBrowserAccessibilityManagerAndroid,
         /* [in] */ ContentViewCore* contentViewCore);
 
         /**
@@ -178,7 +178,7 @@ protected:
 
 private:
     static CARAPI_(AutoPtr<IInterface>) Create(
-        /* [in] */ Int64 nativeBrowserAccessibilityManagerAndroid,
+        /* [in] */ Handle64 nativeBrowserAccessibilityManagerAndroid,
         /* [in] */ IInterface* contentViewCore);
 
     static CARAPI_(void) OnNativeObjectDestroyed(
@@ -399,7 +399,7 @@ private:
      */
     //@CalledByNative
     static CARAPI_(AutoPtr<BrowserAccessibilityManager>) Create(
-        /* [in] */ Int64 nativeBrowserAccessibilityManagerAndroid,
+        /* [in] */ Handle64 nativeBrowserAccessibilityManagerAndroid,
         /* [in] */ ContentViewCore* contentViewCore);
 
     //@CalledByNative
@@ -556,45 +556,45 @@ private:
         /* [in] */ const String& text);
 
     CARAPI_(Int32) NativeGetRootId(
-        /* [in] */ Int64 nativeBrowserAccessibilityManagerAndroid);
+        /* [in] */ Handle64 nativeBrowserAccessibilityManagerAndroid);
 
     CARAPI_(Boolean) NativeIsNodeValid(
-        /* [in] */ Int64 nativeBrowserAccessibilityManagerAndroid,
+        /* [in] */ Handle64 nativeBrowserAccessibilityManagerAndroid,
         /* [in] */ Int32 id);
 
     CARAPI_(void) NativeHitTest(
-        /* [in] */ Int64 nativeBrowserAccessibilityManagerAndroid,
+        /* [in] */ Handle64 nativeBrowserAccessibilityManagerAndroid,
         /* [in] */ Int32 x,
         /* [in] */ Int32 y);
 
     CARAPI_(Boolean) NativePopulateAccessibilityNodeInfo(
-        /* [in] */ Int64 nativeBrowserAccessibilityManagerAndroid,
+        /* [in] */ Handle64 nativeBrowserAccessibilityManagerAndroid,
         /* [in] */ IAccessibilityNodeInfo* info,
         /* [in] */ Int32 id);
 
     CARAPI_(Boolean) NativePopulateAccessibilityEvent(
-        /* [in] */ Int64 nativeBrowserAccessibilityManagerAndroid,
+        /* [in] */ Handle64 nativeBrowserAccessibilityManagerAndroid,
         /* [in] */ IAccessibilityEvent* event,
         /* [in] */ Int32 id,
         /* [in] */ Int32 eventType);
 
     CARAPI_(void) NativeClick(
-        /* [in] */ Int64 nativeBrowserAccessibilityManagerAndroid,
+        /* [in] */ Handle64 nativeBrowserAccessibilityManagerAndroid,
         /* [in] */ Int32 id);
 
     CARAPI_(void) NativeFocus(
-        /* [in] */ Int64 nativeBrowserAccessibilityManagerAndroid,
+        /* [in] */ Handle64 nativeBrowserAccessibilityManagerAndroid,
         /* [in] */ Int32 id);
 
     CARAPI_(void) NativeBlur(
-        /* [in] */ Int64 nativeBrowserAccessibilityManagerAndroid);
+        /* [in] */ Handle64 nativeBrowserAccessibilityManagerAndroid);
 
     CARAPI_(void) NativeScrollToMakeNodeVisible(
-        /* [in] */ Int64 nativeBrowserAccessibilityManagerAndroid,
+        /* [in] */ Handle64 nativeBrowserAccessibilityManagerAndroid,
         /* [in] */ Int32 id);
 
     CARAPI_(Int32) NativeFindElementType(
-        /* [in] */ Int64 nativeBrowserAccessibilityManagerAndroid,
+        /* [in] */ Handle64 nativeBrowserAccessibilityManagerAndroid,
         /* [in] */ Int32 startId,
         /* [in] */ const String& elementType,
         /* [in] */ Boolean forwards);
@@ -605,7 +605,7 @@ private:
     AutoPtr<ContentViewCore> mContentViewCore;
     AutoPtr<IAccessibilityManager> mAccessibilityManager;
     AutoPtr<RenderCoordinates> mRenderCoordinates;
-    Int64 mNativeObj;
+    Handle64 mNativeObj;
     Int32 mAccessibilityFocusId;
     Boolean mIsHovering;
     Int32 mLastHoverId;

@@ -10,9 +10,9 @@
 extern "C"
 {
 #endif
-    extern void Elastos_ProxyChangeListener_nativeProxySettingsChangedTo(IInterface* caller,Handle32 nativePtr,const String& host,Int32 port);
-    extern void Elastos_ProxyChangeListener_nativeProxySettingsChanged(IInterface* caller,Handle32 nativePtr);
-    extern void Elastos_ProxyChangeListener_InitCallback(Handle32 cb);
+    extern void Elastos_ProxyChangeListener_nativeProxySettingsChangedTo(IInterface* caller,Handle64 nativePtr,const String& host,Int32 port);
+    extern void Elastos_ProxyChangeListener_nativeProxySettingsChanged(IInterface* caller,Handle64 nativePtr);
+    extern void Elastos_ProxyChangeListener_InitCallback(Handle64 cb);
 #ifdef __cplusplus
 }
 #endif
@@ -29,7 +29,7 @@ struct ElaProxyChangeListenerCallback
 {
     AutoPtr<IInterface> (*elastos_ProxyChangeListener_create)(IInterface* context);
     String (*elastos_ProxyChangeListener_getProperty)(const String& property);
-    void (*elastos_ProxyChangeListener_start)(IInterface* obj, Int64 nativePtr);
+    void (*elastos_ProxyChangeListener_start)(IInterface* obj, Handle64 nativePtr);
     void (*elastos_ProxyChangeListener_stop)(IInterface* obj);
 };
 
@@ -42,7 +42,7 @@ void* ProxyChangeListener::ElaProxyChangeListenerCallback_Init()
     sElaProxyChangeListenerCallback.elastos_ProxyChangeListener_start = &ProxyChangeListener::Start;
     sElaProxyChangeListenerCallback.elastos_ProxyChangeListener_stop = &ProxyChangeListener::Stop;
 
-    Elastos_ProxyChangeListener_InitCallback((Handle32)&sElaProxyChangeListenerCallback);
+    Elastos_ProxyChangeListener_InitCallback((Handle64)&sElaProxyChangeListenerCallback);
     return &sElaProxyChangeListenerCallback;
 }
 

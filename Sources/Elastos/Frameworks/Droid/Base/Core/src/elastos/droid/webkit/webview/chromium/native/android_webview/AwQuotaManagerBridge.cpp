@@ -39,7 +39,7 @@ AwQuotaManagerBridge::Origins::Origins(
 AutoPtr<AwQuotaManagerBridge> AwQuotaManagerBridge::sInstance;
 
 AwQuotaManagerBridge::AwQuotaManagerBridge(
-    /* [in] */ Int64 nativeAwQuotaManagerBridgeImpl)
+    /* [in] */ Handle64 nativeAwQuotaManagerBridgeImpl)
     : mNativeAwQuotaManagerBridgeImpl(nativeAwQuotaManagerBridgeImpl)
     , mNextId(0)
 {
@@ -50,7 +50,7 @@ AwQuotaManagerBridge::AwQuotaManagerBridge(
 }
 
 // TODO(boliu): This should be obtained from Java AwBrowserContext that owns this.
-Int64 AwQuotaManagerBridge::NativeGetDefaultNativeAwQuotaManagerBridge()
+Handle64 AwQuotaManagerBridge::NativeGetDefaultNativeAwQuotaManagerBridge()
 {
     return Elastos_AwQuotaManagerBridge_nativeGetDefaultNativeAwQuotaManagerBridge();
 }
@@ -176,38 +176,38 @@ void AwQuotaManagerBridge::OnGetUsageAndQuotaForOriginCallback(
 }
 
 void AwQuotaManagerBridge::NativeInit(
-    /* [in] */ Int64 nativeAwQuotaManagerBridgeImpl)
+    /* [in] */ Handle64 nativeAwQuotaManagerBridgeImpl)
 {
-    Elastos_AwQuotaManagerBridge_nativeInit(THIS_PROBE(IInterface), (Handle32)nativeAwQuotaManagerBridgeImpl);
+    Elastos_AwQuotaManagerBridge_nativeInit(THIS_PROBE(IInterface), nativeAwQuotaManagerBridgeImpl);
 }
 
 void AwQuotaManagerBridge::NativeDeleteAllData(
-    /* [in] */ Int64 nativeAwQuotaManagerBridgeImpl)
+    /* [in] */ Handle64 nativeAwQuotaManagerBridgeImpl)
 {
-    Elastos_AwQuotaManagerBridge_nativeDeleteAllData(THIS_PROBE(IInterface), (Handle32)nativeAwQuotaManagerBridgeImpl);
+    Elastos_AwQuotaManagerBridge_nativeDeleteAllData(THIS_PROBE(IInterface), nativeAwQuotaManagerBridgeImpl);
 }
 
 void AwQuotaManagerBridge::NativeDeleteOrigin(
-    /* [in] */ Int64 nativeAwQuotaManagerBridgeImpl,
+    /* [in] */ Handle64 nativeAwQuotaManagerBridgeImpl,
     /* [in] */ const String& origin)
 {
-    Elastos_AwQuotaManagerBridge_nativeDeleteOrigin(THIS_PROBE(IInterface), (Handle32)nativeAwQuotaManagerBridgeImpl, origin);
+    Elastos_AwQuotaManagerBridge_nativeDeleteOrigin(THIS_PROBE(IInterface), nativeAwQuotaManagerBridgeImpl, origin);
 }
 
 void AwQuotaManagerBridge::NativeGetOrigins(
-    /* [in] */ Int64 nativeAwQuotaManagerBridgeImpl,
+    /* [in] */ Handle64 nativeAwQuotaManagerBridgeImpl,
     /* [in] */ Int32 callbackId)
 {
-    Elastos_AwQuotaManagerBridge_nativeGetOrigins(THIS_PROBE(IInterface), (Handle32)nativeAwQuotaManagerBridgeImpl, callbackId);
+    Elastos_AwQuotaManagerBridge_nativeGetOrigins(THIS_PROBE(IInterface), nativeAwQuotaManagerBridgeImpl, callbackId);
 }
 
 void AwQuotaManagerBridge::NativeGetUsageAndQuotaForOrigin(
-    /* [in] */ Int64 nativeAwQuotaManagerBridgeImpl,
+    /* [in] */ Handle64 nativeAwQuotaManagerBridgeImpl,
     /* [in] */ const String& origin,
     /* [in] */ Int32 callbackId,
     /* [in] */ Boolean isQuota)
 {
-    Elastos_AwQuotaManagerBridge_nativeGetUsageAndQuotaForOrigin(THIS_PROBE(IInterface), (Handle32)nativeAwQuotaManagerBridgeImpl, origin, callbackId, isQuota);
+    Elastos_AwQuotaManagerBridge_nativeGetUsageAndQuotaForOrigin(THIS_PROBE(IInterface), nativeAwQuotaManagerBridgeImpl, origin, callbackId, isQuota);
 }
 //callback function definition
 void AwQuotaManagerBridge::OnGetOriginsCallback(

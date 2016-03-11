@@ -10,10 +10,10 @@
 extern "C"
 {
 #endif
-    extern void Elastos_AwPicture_nativeDestroy(Handle32 nativeAwPicture);
-    extern Int32 Elastos_AwPicture_nativeGetWidth(IInterface* caller,Handle32 nativeAwPicture);
-    extern Int32 Elastos_AwPicture_nativeGetHeight(IInterface* caller,Handle32 nativeAwPicture);
-    extern void Elastos_AwPicture_nativeDraw(IInterface* caller,Handle32 nativeAwPicture,IInterface* canvas);
+    extern void Elastos_AwPicture_nativeDestroy(Handle64 nativeAwPicture);
+    extern Int32 Elastos_AwPicture_nativeGetWidth(IInterface* caller,Handle64 nativeAwPicture);
+    extern Int32 Elastos_AwPicture_nativeGetHeight(IInterface* caller,Handle64 nativeAwPicture);
+    extern void Elastos_AwPicture_nativeDraw(IInterface* caller,Handle64 nativeAwPicture,IInterface* canvas);
 #ifdef __cplusplus
 }
 #endif

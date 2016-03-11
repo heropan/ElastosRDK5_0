@@ -63,41 +63,41 @@ private:
         /* [in] */ IInterface* obj);
 
     NavigationControllerImpl(
-        /* [in] */ Int64 nativeNavigationControllerAndroid);
+        /* [in] */ Handle64 nativeNavigationControllerAndroid);
 
     //@CalledByNative return NavigationControllerImpl
     static CARAPI_(AutoPtr<IInterface>) Create(
-        /* [in] */ Int64 nativeNavigationControllerAndroid);
+        /* [in] */ Handle64 nativeNavigationControllerAndroid);
 
     //@CalledByNative
     CARAPI_(void) Destroy();
 
     CARAPI_(Boolean) NativeCanGoBack(
-        /* [in] */ Int64 nativeNavigationControllerAndroid);
+        /* [in] */ Handle64 nativeNavigationControllerAndroid);
 
     CARAPI_(Boolean) NativeCanGoForward(
-        /* [in] */ Int64 nativeNavigationControllerAndroid);
+        /* [in] */ Handle64 nativeNavigationControllerAndroid);
 
     CARAPI_(Boolean) NativeCanGoToOffset(
-        /* [in] */ Int64 nativeNavigationControllerAndroid,
+        /* [in] */ Handle64 nativeNavigationControllerAndroid,
         /* [in] */ Int32 offset);
 
     CARAPI_(void) NativeGoBack(
-        /* [in] */ Int64 nativeNavigationControllerAndroid);
+        /* [in] */ Handle64 nativeNavigationControllerAndroid);
 
     CARAPI_(void) NativeGoForward(
-        /* [in] */ Int64 nativeNavigationControllerAndroid);
+        /* [in] */ Handle64 nativeNavigationControllerAndroid);
 
     CARAPI_(void) NativeGoToOffset(
-        /* [in] */ Int64 nativeNavigationControllerAndroid,
+        /* [in] */ Handle64 nativeNavigationControllerAndroid,
         /* [in] */ Int32 offset);
 
     CARAPI_(void) NativeGoToNavigationIndex(
-        /* [in] */ Int64 nativeNavigationControllerAndroid,
+        /* [in] */ Handle64 nativeNavigationControllerAndroid,
         /* [in] */ Int32 index);
 
 private:
-    Int64 mNativeNavigationControllerAndroid;
+    Handle64 mNativeNavigationControllerAndroid;
 };
 
 } // namespace Framehost

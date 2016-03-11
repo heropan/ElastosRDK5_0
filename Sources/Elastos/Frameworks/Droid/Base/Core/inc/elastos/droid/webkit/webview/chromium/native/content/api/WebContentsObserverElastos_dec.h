@@ -10,9 +10,9 @@
 extern "C"
 {
 #endif
-    extern Int64 Elastos_WebContentsObserverAndroid_nativeInit(IInterface* caller,IInterface* webContents);
-    extern void Elastos_WebContentsObserverAndroid_nativeDestroy(IInterface* caller,Handle32 nativeWebContentsObserverElastos);
-    extern void Elastos_WebContentsObserverAndroid_InitCallback(Handle32 cb);
+    extern Handle64 Elastos_WebContentsObserverAndroid_nativeInit(IInterface* caller,IInterface* webContents);
+    extern void Elastos_WebContentsObserverAndroid_nativeDestroy(IInterface* caller,Handle64 nativeWebContentsObserverElastos);
+    extern void Elastos_WebContentsObserverAndroid_InitCallback(Handle64 cb);
 #ifdef __cplusplus
 }
 #endif
@@ -67,7 +67,7 @@ void* WebContentsObserverElastos::ElaWebContentsObserverElastosCallback_Init()
     sElaWebContentsObserverAndroidCallback.elastos_WebContentsObserverAndroid_didChangeThemeColor = &WebContentsObserverElastos::DidChangeThemeColor;
     sElaWebContentsObserverAndroidCallback.elastos_WebContentsObserverAndroid_detachFromWebContents = &WebContentsObserverElastos::DetachFromWebContents;
 
-    Elastos_WebContentsObserverAndroid_InitCallback((Handle32)&sElaWebContentsObserverAndroidCallback);
+    Elastos_WebContentsObserverAndroid_InitCallback((Handle64)&sElaWebContentsObserverAndroidCallback);
     return &sElaWebContentsObserverAndroidCallback;
 }
 
