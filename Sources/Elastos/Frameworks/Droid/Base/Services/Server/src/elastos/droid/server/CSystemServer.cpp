@@ -673,16 +673,16 @@ ECode SystemServer::StartOtherServices()
 
             systemProperties->Get(PERSISTENT_DATA_BLOCK_PROP, &str);
             if (!str.Equals("")) {
-                Slogger::I(TAG,  "Persistent Data Block Service");
-                AutoPtr<ISystemService> pdb;
-                ec = CPersistentDataBlockService::New(context, (ISystemService**)&pdb);
-                if (FAILED(ec)) Slogger::E(TAG, "failed to start CPersistentDataBlockService");
-                mSystemServiceManager->StartService(pdb.Get());
+                Slogger::I(TAG,  "Persistent Data Block Service todo");
+                // AutoPtr<ISystemService> pdb;
+                // ec = CPersistentDataBlockService::New(context, (ISystemService**)&pdb);
+                // if (FAILED(ec)) Slogger::E(TAG, "failed to start CPersistentDataBlockService");
+                // mSystemServiceManager->StartService(pdb.Get());
             }
 
             // Always start the Device Policy Manager, so that the API is compatible with
             // API8.
-            // Slogger::I(TAG,  "Device Policy Manager Service");
+            Slogger::I(TAG,  "Device Policy Manager Service todo");
             // AutoPtr<ISystemService> dpm;
             // ec = CDevicePolicyManagerServiceLifecycle::New(context, (ISystemService**)&dpm);
             // if (FAILED(ec)) Slogger::E(TAG, "failed to start CDevicePolicyManagerServiceLifecycle");
@@ -690,11 +690,11 @@ ECode SystemServer::StartOtherServices()
         }
 
         if (!disableSystemUI) {
-            Slogger::I(TAG, "Status Bar");
-            ec = CStatusBarManagerService::NewByFriend(context, IIWindowManager::Probe(wm),
-                (CStatusBarManagerService**)&statusBar);
-            if (FAILED(ec)) Slogger::E(TAG, "failed to start CStatusBarManagerService");
-            ServiceManager::AddService(IContext::STATUS_BAR_SERVICE, TO_IINTERFACE(statusBar));
+            Slogger::I(TAG, "Status Bar todo");
+            // ec = CStatusBarManagerService::NewByFriend(context, IIWindowManager::Probe(wm),
+            //     (CStatusBarManagerService**)&statusBar);
+            // if (FAILED(ec)) Slogger::E(TAG, "failed to start CStatusBarManagerService");
+            // ServiceManager::AddService(IContext::STATUS_BAR_SERVICE, TO_IINTERFACE(statusBar));
         }
 
         if (!disableNonCoreServices) {
@@ -721,9 +721,9 @@ ECode SystemServer::StartOtherServices()
             ServiceManager::AddService(IContext::TEXT_SERVICES_MANAGER_SERVICE, TO_IINTERFACE(tsms));
         }
 
-    //     if (!disableNetwork) {
+        if (!disableNetwork) {
     //         try {
-    //             Slogger::I(TAG, "Network Score Service");
+                Slogger::I(TAG, "Network Score Service todo");
     //             networkScore = new NetworkScoreService(context);
     //             ServiceManager::AddService(IContext::NETWORK_SCORE_SERVICE, networkScore);
     //         } catch (Throwable e) {
@@ -731,7 +731,7 @@ ECode SystemServer::StartOtherServices()
     //         }
 
     //         try {
-    //             Slogger::I(TAG, "NetworkStats Service");
+                Slogger::I(TAG, "NetworkStats Service todo");
     //             networkStats = new NetworkStatsService(context, networkManagement, alarm);
     //             ServiceManager::AddService(IContext::NETWORK_STATS_SERVICE, networkStats);
     //         } catch (Throwable e) {
@@ -739,7 +739,7 @@ ECode SystemServer::StartOtherServices()
     //         }
 
     //         try {
-    //             Slogger::I(TAG, "NetworkPolicy Service");
+                Slogger::I(TAG, "NetworkPolicy Service todo");
     //             networkPolicy = new NetworkPolicyManagerService(
     //                     context, mActivityManagerService,
     //                     (IPowerManager)ServiceManager::GetService(IContext::POWER_SERVICE),
@@ -761,7 +761,7 @@ ECode SystemServer::StartOtherServices()
     //         }
 
     //         try {
-    //             Slogger::I(TAG, "Connectivity Service");
+                Slogger::I(TAG, "Connectivity Service todo");
     //             connectivity = new ConnectivityService(
     //                     context, networkManagement, networkStats, networkPolicy);
     //             ServiceManager::AddService(IContext::CONNECTIVITY_SERVICE, connectivity);
@@ -772,45 +772,43 @@ ECode SystemServer::StartOtherServices()
     //         }
 
     //         try {
-    //             Slogger::I(TAG, "Network Service Discovery Service");
+                Slogger::I(TAG, "Network Service Discovery Service todo");
     //             serviceDiscovery = NsdService.create(context);
     //             ServiceManager::AddService(
     //                     Context.NSD_SERVICE, serviceDiscovery);
     //         } catch (Throwable e) {
     //             ReportWtf("starting Service Discovery Service", ec);
     //         }
-    //     }
+        }
 
-    //     if (!disableNonCoreServices) {
+        if (!disableNonCoreServices) {
     //         try {
-    //             Slogger::I(TAG, "UpdateLock Service");
+                Slogger::I(TAG, "UpdateLock Service todo");
     //             ServiceManager::AddService(IContext::UPDATE_LOCK_SERVICE,
     //                     new UpdateLockService(context));
     //         } catch (Throwable e) {
     //             ReportWtf("starting UpdateLockService", ec);
     //         }
-    //     }
-
-    //     /*
-    //      * MountService has a few dependencies: Notification Manager and
-    //      * AppWidget Provider. Make sure MountService is completely started
-    //      * first before continuing.
-    //      */
-    //     if (mountService != NULL && !mOnlyCore) {
-    //         mountService.waitForAsecScan();
-    //     }
-
-    //     try {
-    //         if (accountManager != NULL)
-    //             accountManager->SystemReady();
-    //     } catch (Throwable e) {
-    //         ReportWtf("making Account Manager Service ready", ec);
-    //     }
-
-        if (contentService != NULL) {
-            contentService->SystemReady();
-            if (FAILED(ec)) ReportWtf("making Content Service ready", ec);
         }
+
+        /*
+         * MountService has a few dependencies: Notification Manager and
+         * AppWidget Provider. Make sure MountService is completely started
+         * first before continuing.
+         */
+        // if (mountService != NULL && !mOnlyCore) {
+        //     mountService->WaitForAsecScan();
+        // }
+
+        // if (accountManager != NULL) {
+        //     ec = accountManager->SystemReady();
+        //     if (FAILED(ec)) ReportWtf("making Account Manager Service ready", ec);
+        // }
+
+        // if (contentService != NULL) {
+        //     ec = contentService->SystemReady();
+        //     if (FAILED(ec)) ReportWtf("making Content Service ready", ec);
+        // }
 
         Slogger::I(TAG, "Notification Manager Service");
         systemService = NULL;

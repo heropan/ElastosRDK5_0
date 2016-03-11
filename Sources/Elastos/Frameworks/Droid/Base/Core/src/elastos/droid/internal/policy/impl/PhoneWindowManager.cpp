@@ -246,11 +246,11 @@ static AutoPtr<CRect> InitCRect()
     return tmp;
 }
 
-String PhoneWindowManager::SYSTEM_DIALOG_REASON_KEY = String("reason");
-String PhoneWindowManager::SYSTEM_DIALOG_REASON_GLOBAL_ACTIONS = String("globalactions");
-String PhoneWindowManager::SYSTEM_DIALOG_REASON_RECENT_APPS = String("recentapps");
-String PhoneWindowManager::SYSTEM_DIALOG_REASON_HOME_KEY = String("homekey");
-String PhoneWindowManager::SYSTEM_DIALOG_REASON_ASSIST = String("assist");
+String PhoneWindowManager::SYSTEM_DIALOG_REASON_KEY("reason");
+String PhoneWindowManager::SYSTEM_DIALOG_REASON_GLOBAL_ACTIONS("globalactions");
+String PhoneWindowManager::SYSTEM_DIALOG_REASON_RECENT_APPS("recentapps");
+String PhoneWindowManager::SYSTEM_DIALOG_REASON_HOME_KEY("homekey");
+String PhoneWindowManager::SYSTEM_DIALOG_REASON_ASSIST("assist");
 
 const Int32 PhoneWindowManager::SYSTEM_UI_CHANGING_LAYOUT =
         IView::SYSTEM_UI_FLAG_HIDE_NAVIGATION | IView::SYSTEM_UI_FLAG_FULLSCREEN
@@ -488,9 +488,9 @@ PhoneWindowManager::ClearHideNavigationFlagRunnable::ClearHideNavigationFlagRunn
 ECode PhoneWindowManager::ClearHideNavigationFlagRunnable::Run()
 {
     {
-        AutoPtr<IInterface> obj;
-        mHost->mWindowManagerFuncs->GetWindowManagerLock((IInterface**)&obj);
-        AutoLock lock((Object*)IObject::Probe(obj));
+        AutoPtr<ISynchronize> obj;
+        mHost->mWindowManagerFuncs->GetWindowManagerLock((ISynchronize**)&obj);
+        AutoLock lock(obj);
         // Clear flags.
         mHost->mForceClearedSystemUiFlags &= ~IView::SYSTEM_UI_FLAG_HIDE_NAVIGATION;
     }
@@ -703,9 +703,9 @@ ECode PhoneWindowManager::HideNavInputEventReceiver::OnInputEvent(
             // When the user taps down, we re-show the nav bar.
             Boolean changed = FALSE;
             {
-                AutoPtr<IInterface> obj;
-                mHost->mWindowManagerFuncs->GetWindowManagerLock((IInterface**)&obj);
-                AutoLock lock((Object*)IObject::Probe(obj));
+                AutoPtr<ISynchronize> obj;
+                mHost->mWindowManagerFuncs->GetWindowManagerLock((ISynchronize**)&obj);
+                AutoLock lock(obj);
                 // Any user activity always causes us to show the
                 // navigation controls, if they had been hidden.
                 // We also clear the low profile and only content
@@ -895,9 +895,9 @@ ECode PhoneWindowManager::MultiuserBroadReceiver::OnReceive(
         // the window may never have been shown for this user
         // e.g. the keyguard when going through the new-user setup flow
         {
-            AutoPtr<IInterface> obj;
-            mHost->mWindowManagerFuncs->GetWindowManagerLock((IInterface**)&obj);
-            AutoLock lock((Object*)IObject::Probe(obj));
+            AutoPtr<ISynchronize> obj;
+            mHost->mWindowManagerFuncs->GetWindowManagerLock((ISynchronize**)&obj);
+            AutoLock lock(obj);
             mHost->mLastSystemUiFlags = 0;
             mHost->UpdateSystemUiVisibilityLw();
         }
@@ -1571,12 +1571,10 @@ PhoneWindowManager::PhoneWindowManager()
     , mCurrentUserId(0)
     , mForceDefaultOrientation(FALSE)
 {
-    //ASSERT_SUCCEEDED(CRect::NewByFriend((CRect**)&mTmpParentFrame));
-    //ASSERT_SUCCEEDED(CRect::NewByFriend((CRect**)&mTmpDisplayFrame));
-    //ASSERT_SUCCEEDED(CRect::NewByFriend((CRect**)&mTmpContentFrame));
-    //ASSERT_SUCCEEDED(CRect::NewByFriend((CRect**)&mTmpVisibleFrame));
-    //ASSERT_SUCCEEDED(CRect::NewByFriend((CRect**)&mTmpNavigationFrame));
+}
 
+ECode PhoneWindowManager::constructor()
+{
     memset(mNavigationBarHeightForRotation, 0, sizeof(mNavigationBarHeightForRotation));
     memset(mNavigationBarWidthForRotation, 0, sizeof(mNavigationBarWidthForRotation));
 
@@ -1614,6 +1612,7 @@ PhoneWindowManager::PhoneWindowManager()
     mHomeDoubleTapTimeoutRunnable = new HomeDoubleTapTimeoutRunnable(this);
     mClearHideNavigationFlag = new ClearHideNavigationFlagRunnable(this);
     mRequestTransientNav = new RequestTransientBarsRunnable(this);
+    return NOERROR;
 }
 
 AutoPtr<IIStatusBarService> PhoneWindowManager::GetStatusBarService()
@@ -1675,7 +1674,7 @@ void PhoneWindowManager::UpdateOrientationListenerLp()
     // change of the currently visible window's orientation
     if (localLOGV)
         Slogger::V(TAG, "mScreenOnEarly=%d, mAwake=%d, mCurrentAppOrientation=%d, mOrientationSensorEnabled=%d",
-                                mScreenOnEarly, mAwake, mCurrentAppOrientation, mOrientationSensorEnabled);
+             mScreenOnEarly, mAwake, mCurrentAppOrientation, mOrientationSensorEnabled);
     Boolean disable = TRUE;
     if (mScreenOnEarly && mAwake) {
         if (NeedSensorRunningLp()) {
@@ -1922,8 +1921,8 @@ ECode PhoneWindowManager::Init(
     AutoPtr<ISystemProperties> sp;
     CSystemProperties::AcquireSingleton((ISystemProperties**)&sp);
 
-     mWindowManagerInternal = IWindowManagerInternal::Probe(LocalServices::GetService(EIID_IWindowManagerInternal));
-     mDreamManagerInternal = IDreamManagerInternal::Probe(LocalServices::GetService(EIID_IDreamManagerInternal));
+    mWindowManagerInternal = IWindowManagerInternal::Probe(LocalServices::GetService(EIID_IWindowManagerInternal));
+    mDreamManagerInternal = IDreamManagerInternal::Probe(LocalServices::GetService(EIID_IDreamManagerInternal));
 
     mHandler = new PolicyHandler(this);
     mWakeGestureListener = new MyWakeGestureListener(mContext, mHandler, this);
@@ -2610,9 +2609,7 @@ ECode PhoneWindowManager::WindowTypeToLayerLw(
     /* [in] */ Int32 type,
     /* [out] */ Int32* layer)
 {
-    if (layer == NULL) {
-        return E_INVALID_ARGUMENT;
-    }
+    VALIDATE_NOT_NULL(layer)
 
     *layer = 2;
     if (type >= IWindowManagerLayoutParams::FIRST_APPLICATION_WINDOW && type <=
@@ -2742,9 +2739,7 @@ ECode PhoneWindowManager::SubWindowTypeToLayerLw(
     /* [in] */ Int32 type,
     /* [out] */ Int32* layer)
 {
-    if (layer == NULL) {
-        return E_INVALID_ARGUMENT;
-    }
+    VALIDATE_NOT_NULL(layer)
 
     switch (type) {
         case IWindowManagerLayoutParams::TYPE_APPLICATION_PANEL:
@@ -2805,6 +2800,7 @@ ECode PhoneWindowManager::GetNonDecorDisplayHeight(
     /* [in] */ Int32 rotation,
     /* [out] */ Int32* height)
 {
+    VALIDATE_NOT_NULL(height)
     if (mHasNavigationBar) {
         // For a basic navigation bar, when we are in portrait mode we place
         // the navigation bar to the bottom.
@@ -2876,9 +2872,7 @@ ECode PhoneWindowManager::CanBeForceHidden(
     /* [in] */ IWindowManagerLayoutParams* attrs,
     /* [out] */ Boolean* hiden)
 {
-    if (hiden == NULL) {
-        return E_INVALID_ARGUMENT;
-    }
+    VALIDATE_NOT_NULL(hiden)
 
     Int32 type = 0;
     attrs->GetType(&type);
@@ -3104,9 +3098,7 @@ ECode PhoneWindowManager::PrepareAddWindowLw(
     /* [in] */ IWindowManagerLayoutParams* attrs,
     /* [out] */ Int32* added)
 {
-    if (added == NULL) {
-        return E_INVALID_ARGUMENT;
-    }
+    VALIDATE_NOT_NULL(added)
     Int32 type = 0;
     attrs->GetType(&type);
     switch (type) {
@@ -4373,11 +4365,10 @@ ECode PhoneWindowManager::BeginLayoutLw(
             AutoPtr<ILooper> looper;
             mHandler->GetLooper((ILooper**)&looper);
 
-            //TODO
-            //mWindowManagerFuncs->AddFakeWindow(
-            //        looper, mHideNavInputEventReceiverFactory,
-            //        String("hidden nav"), IWindowManagerLayoutParams::TYPE_HIDDEN_NAV_CONSUMER, 0,
-            //        0, FALSE, FALSE, TRUE, (IFakeWindow**)&mHideNavFakeWindow);
+            mWindowManagerFuncs->AddFakeWindow(
+                   looper, mHideNavInputEventReceiverFactory,
+                   String("hidden nav"), IWindowManagerLayoutParams::TYPE_HIDDEN_NAV_CONSUMER, 0,
+                   0, FALSE, FALSE, TRUE, (IFakeWindow**)&mHideNavFakeWindow);
         }
 
         // For purposes of positioning and showing the nav bar, if we have
@@ -6152,9 +6143,9 @@ Boolean PhoneWindowManager::ShouldDispatchInputWhenNonInteractive()
 void PhoneWindowManager::RequestTransientBars(
     /* [in] */ IWindowState* swipeTarget)
 {
-    AutoPtr<IInterface> obj;
-    mWindowManagerFuncs->GetWindowManagerLock((IInterface**)&obj);
-    AutoLock lock((Object*)IObject::Probe(obj));
+    AutoPtr<ISynchronize> obj;
+    mWindowManagerFuncs->GetWindowManagerLock((ISynchronize**)&obj);
+    AutoLock lock(obj);
     if (!IsUserSetupComplete()) {
         // Swipe-up for navigation bar is disabled during setup
         return;

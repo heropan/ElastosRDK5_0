@@ -547,11 +547,8 @@ ECode CContentService::NotifyChange(
     /* [in] */ Int32 userHandle)
 {
     if (DBG) {
-        String uriStr, observerStr;
-        uriStr = Object::ToString(uri);
-        observerStr = Object::ToString(observer);
         Logger::V(TAG, "Notifying update of %s for user %d from observer %s, syncToNetwork %d",
-            uriStr.string(), userHandle, observerStr.string(), syncToNetwork);
+            TO_CSTR(uri), userHandle, TO_CSTR(observer), syncToNetwork);
     }
 
     // Notify for any user other than the caller's own requires permission.

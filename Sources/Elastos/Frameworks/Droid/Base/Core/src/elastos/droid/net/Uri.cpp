@@ -879,12 +879,29 @@ ECode Uri::PathSegments::Get(
     return NOERROR;
 }
 
-ECode Uri::PathSegments::Size(
+ECode Uri::PathSegments::GetSize(
     /* [out] */ Int32* result)
 {
     VALIDATE_NOT_NULL(result)
-
     *result = mSize;
+    return NOERROR;
+}
+
+ECode Uri::PathSegments::ToString(
+    /* [out] */ String* str)
+{
+    VALIDATE_NOT_NULL(str)
+    StringBuilder sb("Uri::PathSegments{");
+    sb += "size:";
+    sb += mSize;
+    if (mSegments) {
+        for (Int32 i = 0; i < mSegments->GetLength(); ++i) {
+            sb += ",";
+            sb += (*mSegments)[i];
+        }
+    }
+    sb += "}";
+    *str = sb.ToString();
     return NOERROR;
 }
 

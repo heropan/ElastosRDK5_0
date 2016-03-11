@@ -114,8 +114,11 @@ public:
             /* [in] */ Int32 index,
             /* [out] */ IInterface** value);
 
-        CARAPI Size(
+        CARAPI GetSize(
             /* [out] */ Int32* result);
+
+        CARAPI ToString(
+            /* [out] */ String* str);
 
     public:
         /* const */ static AutoPtr<PathSegments> sEMPTY;

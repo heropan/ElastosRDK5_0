@@ -45,6 +45,7 @@ using Elastos::Droid::Graphics::CRegion;
 using Elastos::Droid::Graphics::GraphicsNative;
 using Elastos::Droid::Graphics::INinePatchInsetStruct;
 using Elastos::Core::AutoLock;
+using Elastos::Core::CCloseGuard;
 using Elastos::Utility::Logging::Slogger;
 
 namespace Elastos {
@@ -101,7 +102,9 @@ CAR_INTERFACE_IMPL(SurfaceControl, Object, ISurfaceControl)
 SurfaceControl::SurfaceControl()
     : mNativeObject(0)
     , mName(NULL)
-{}
+{
+    CCloseGuard::New((ICloseGuard**)&mCloseGuard);
+}
 
 SurfaceControl::~SurfaceControl()
 {

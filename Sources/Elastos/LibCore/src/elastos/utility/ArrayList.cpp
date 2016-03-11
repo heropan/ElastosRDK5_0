@@ -1,8 +1,11 @@
 
 #include "Elastos.CoreLibrary.IO.h"
+#include "ArrayList.h"
 #include "CArrayList.h"
+#include "StringBuilder.h"
 
 using Elastos::Core::EIID_ICloneable;
+using Elastos::Core::StringBuilder;
 using Elastos::IO::IObjectOutputStreamPutField;
 using Elastos::IO::EIID_ISerializable;
 using Elastos::IO::IOutputStream;
@@ -13,15 +16,14 @@ namespace Utility {
 
 
 //====================================================================
-// CArrayList::ArrayListIterator
+// ArrayList::ArrayListIterator
 //====================================================================
 
-CAR_INTERFACE_IMPL_4(CArrayList, AbstractList, IArrayList, ICloneable, ISerializable, IRandomAccess)
-CAR_OBJECT_IMPL(CArrayList)
+CAR_INTERFACE_IMPL_4(ArrayList, AbstractList, IArrayList, ICloneable, ISerializable, IRandomAccess)
 
-CAR_INTERFACE_IMPL(CArrayList::ArrayListIterator, Object, IIterator)
+CAR_INTERFACE_IMPL(ArrayList::ArrayListIterator, Object, IIterator)
 
-ECode CArrayList::ArrayListIterator::HasNext(
+ECode ArrayList::ArrayListIterator::HasNext(
     /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result)
@@ -29,7 +31,7 @@ ECode CArrayList::ArrayListIterator::HasNext(
     return NOERROR;
 }
 
-ECode CArrayList::ArrayListIterator::GetNext(
+ECode ArrayList::ArrayListIterator::GetNext(
     /* [out] */ IInterface** object)
 {
     VALIDATE_NOT_NULL(object)
@@ -48,7 +50,7 @@ ECode CArrayList::ArrayListIterator::GetNext(
     return NOERROR;
 }
 
-ECode CArrayList::ArrayListIterator::Remove()
+ECode ArrayList::ArrayListIterator::Remove()
 {
     Int32 removalIdx = mRemovalIndex;
     if (mOwner->mModCount != mExpectedModCount) {
@@ -66,22 +68,22 @@ ECode CArrayList::ArrayListIterator::Remove()
 
 
 //====================================================================
-// CArrayList::
+// ArrayList::
 //====================================================================
-const Int32 CArrayList::MIN_CAPACITY_INCREMENT = 12;
-// const Int64 CArrayList::mSerialVersionUID = 8683452581122892189L;
+const Int32 ArrayList::MIN_CAPACITY_INCREMENT = 12;
+// const Int64 ArrayList::mSerialVersionUID = 8683452581122892189L;
 
-CArrayList::CArrayList()
+ArrayList::ArrayList()
     : mSize(0)
 {}
 
-ECode CArrayList::constructor()
+ECode ArrayList::constructor()
 {
     mArray = ArrayOf<IInterface*>::Alloc(0); // EmptyArray.OBJECT;
     return NOERROR;
 }
 
-ECode CArrayList::constructor(
+ECode ArrayList::constructor(
     /* [in] */ Int32 capacity)
 {
     if (capacity < 0) {
@@ -91,7 +93,7 @@ ECode CArrayList::constructor(
     return NOERROR;
 }
 
-ECode CArrayList::constructor(
+ECode ArrayList::constructor(
     /* [in] */ ICollection* collection)
 {
     AutoPtr< ArrayOf<IInterface*> > a;
@@ -107,7 +109,7 @@ ECode CArrayList::constructor(
     return NOERROR;
 }
 
-ECode CArrayList::Add(
+ECode ArrayList::Add(
     /* [in] */ IInterface* object,
     /* [out] */ Boolean* modified)
 {
@@ -128,7 +130,7 @@ ECode CArrayList::Add(
     return NOERROR;
 }
 
-ECode CArrayList::Add(
+ECode ArrayList::Add(
     /* [in] */ Int32 location,
     /* [in] */ IInterface* object)
 {
@@ -154,7 +156,7 @@ ECode CArrayList::Add(
     return NOERROR;
 }
 
-Int32 CArrayList::NewCapacity(
+Int32 ArrayList::NewCapacity(
     /* [in] */ Int32 currentCapacity)
 {
     Int32 increment = (currentCapacity < (MIN_CAPACITY_INCREMENT / 2) ?
@@ -162,7 +164,7 @@ Int32 CArrayList::NewCapacity(
     return currentCapacity + increment;
 }
 
-ECode CArrayList::AddAll(
+ECode ArrayList::AddAll(
     /* [in] */ ICollection* collection,
     /* [out] */ Boolean* modified)
 {
@@ -191,7 +193,7 @@ ECode CArrayList::AddAll(
     return NOERROR;
 }
 
-ECode CArrayList::AddAll(
+ECode ArrayList::AddAll(
     /* [in] */ Int32 location,
     /* [in] */ ICollection* collection,
     /* [out] */ Boolean* modified)
@@ -228,7 +230,7 @@ ECode CArrayList::AddAll(
     return NOERROR;
 }
 
-ECode CArrayList::Clear()
+ECode ArrayList::Clear()
 {
     if (mSize != 0) {
         for (Int32 i = 0; i < mSize; ++i) {
@@ -240,7 +242,7 @@ ECode CArrayList::Clear()
     return NOERROR;
 }
 
-ECode CArrayList::Clone(
+ECode ArrayList::Clone(
     /* [out] */ IInterface** outarray)
 {
     VALIDATE_NOT_NULL(outarray)
@@ -258,7 +260,7 @@ ECode CArrayList::Clone(
     return NOERROR;
 }
 
-ECode CArrayList::EnsureCapacity(
+ECode ArrayList::EnsureCapacity(
     /* [in] */ Int32 minimumCapacity)
 {
     AutoPtr< ArrayOf<IInterface*> > a = mArray;
@@ -271,7 +273,7 @@ ECode CArrayList::EnsureCapacity(
     return NOERROR;
 }
 
-ECode CArrayList::Get(
+ECode ArrayList::Get(
     /* [in] */ Int32 location,
     /* [out] */ IInterface** object)
 {
@@ -285,7 +287,7 @@ ECode CArrayList::Get(
     return NOERROR;
 }
 
-ECode CArrayList::GetSize(
+ECode ArrayList::GetSize(
     /* [out] */ Int32* size)
 {
     VALIDATE_NOT_NULL(size)
@@ -293,7 +295,7 @@ ECode CArrayList::GetSize(
     return NOERROR;
 }
 
-ECode CArrayList::IsEmpty(
+ECode ArrayList::IsEmpty(
     /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result)
@@ -301,7 +303,7 @@ ECode CArrayList::IsEmpty(
     return NOERROR;
 }
 
-ECode CArrayList::Contains(
+ECode ArrayList::Contains(
     /* [in] */ IInterface* object,
     /* [out] */ Boolean* result)
 {
@@ -329,7 +331,7 @@ ECode CArrayList::Contains(
     return NOERROR;
 }
 
-ECode CArrayList::IndexOf(
+ECode ArrayList::IndexOf(
     /* [in] */ IInterface* object,
     /* [out] */ Int32* index)
 {
@@ -357,7 +359,7 @@ ECode CArrayList::IndexOf(
     return NOERROR;
 }
 
-ECode CArrayList::LastIndexOf(
+ECode ArrayList::LastIndexOf(
     /* [in] */ IInterface* object,
     /* [out] */ Int32* index)
 {
@@ -384,7 +386,7 @@ ECode CArrayList::LastIndexOf(
     return NOERROR;
 }
 
-ECode CArrayList::Remove(
+ECode ArrayList::Remove(
     /* [in] */ Int32 location,
     /* [out] */ IInterface** object)
 {
@@ -406,7 +408,7 @@ ECode CArrayList::Remove(
     return NOERROR;
 }
 
-ECode CArrayList::Remove(
+ECode ArrayList::Remove(
     /* [in] */ IInterface* object,
     /* [out] */ Boolean* modified)
 {
@@ -442,7 +444,7 @@ ECode CArrayList::Remove(
     return NOERROR;
 }
 
-ECode CArrayList::RemoveRange(
+ECode ArrayList::RemoveRange(
     /* [in] */ Int32 fromIndex,
     /* [in] */ Int32 toIndex)
 {
@@ -475,7 +477,7 @@ ECode CArrayList::RemoveRange(
     return NOERROR;
 }
 
-ECode CArrayList::Set(
+ECode ArrayList::Set(
     /* [in] */ Int32 location,
     /* [in] */ IInterface* object,
     /* [out] */ IInterface** prevObject)
@@ -495,7 +497,7 @@ ECode CArrayList::Set(
     return NOERROR;
 }
 
-ECode CArrayList::ToArray(
+ECode ArrayList::ToArray(
     /* [out, callee] */ ArrayOf<IInterface*>** array)
 {
     VALIDATE_NOT_NULL(array)
@@ -508,7 +510,7 @@ ECode CArrayList::ToArray(
     return NOERROR;
 }
 
-ECode CArrayList::ToArray(
+ECode ArrayList::ToArray(
     /* [in] */ ArrayOf<IInterface*>* inArray,
     /* [out, callee] */ ArrayOf<IInterface*>** outArray)
 {
@@ -528,7 +530,7 @@ ECode CArrayList::ToArray(
     return NOERROR;
 }
 
-ECode CArrayList::TrimToSize()
+ECode ArrayList::TrimToSize()
 {
     Int32 s = mSize;
     if (s == mArray->GetLength()) {
@@ -546,7 +548,7 @@ ECode CArrayList::TrimToSize()
     return NOERROR;
 }
 
-ECode CArrayList::GetIterator(
+ECode ArrayList::GetIterator(
     /* [out] */ IIterator** it)
 {
     VALIDATE_NOT_NULL(it)
@@ -557,7 +559,7 @@ ECode CArrayList::GetIterator(
     return NOERROR;
 }
 
-ECode CArrayList::GetHashCode(
+ECode ArrayList::GetHashCode(
     /* [out] */ Int32* hashCode)
 {
     VALIDATE_NOT_NULL(hashCode)
@@ -572,7 +574,7 @@ ECode CArrayList::GetHashCode(
     return NOERROR;
 }
 
-ECode CArrayList::Equals(
+ECode ArrayList::Equals(
     /* [in] */ IInterface* object,
     /* [out] */ Boolean* result)
 {
@@ -622,7 +624,7 @@ ECode CArrayList::Equals(
     return NOERROR;
 }
 
-ECode CArrayList::WriteObject(
+ECode ArrayList::WriteObject(
     /* [in] */ IObjectOutputStream* stream)
 {
     stream->DefaultWriteObject();
@@ -634,7 +636,7 @@ ECode CArrayList::WriteObject(
     return NOERROR;
 }
 
-ECode CArrayList::ReadObject(
+ECode ArrayList::ReadObject(
     /* [in] */ IObjectInputStream* stream)
 {
     stream->DefaultReadObject();
@@ -656,41 +658,41 @@ ECode CArrayList::ReadObject(
     return NOERROR;
 }
 
-ECode CArrayList::ContainsAll(
+ECode ArrayList::ContainsAll(
     /* [in] */ ICollection* collection,
     /* [out] */ Boolean* result)
 {
     return AbstractList::ContainsAll(collection, result);
 }
 
-ECode CArrayList::RemoveAll(
+ECode ArrayList::RemoveAll(
     /* [in] */ ICollection* collection,
     /* [out] */ Boolean* modified)
 {
     return AbstractList::RemoveAll(collection, modified);
 }
 
-ECode CArrayList::RetainAll(
+ECode ArrayList::RetainAll(
     /* [in] */ ICollection* collection,
     /* [out] */ Boolean* modified)
 {
     return AbstractList::RetainAll(collection, modified);
 }
 
-ECode CArrayList::GetListIterator(
+ECode ArrayList::GetListIterator(
     /* [out] */ IListIterator** it)
 {
     return AbstractList::GetListIterator(it);
 }
 
-ECode CArrayList::GetListIterator(
+ECode ArrayList::GetListIterator(
     /* [in] */ Int32 location,
     /* [out] */ IListIterator** it)
 {
     return AbstractList::GetListIterator(location, it);
 }
 
-ECode CArrayList::GetSubList(
+ECode ArrayList::GetSubList(
     /* [in] */ Int32 start,
     /* [in] */ Int32 end,
     /* [out] */ IList** subList)
@@ -698,54 +700,65 @@ ECode CArrayList::GetSubList(
     return AbstractList::GetSubList(start, end, subList);
 }
 
-ECode CArrayList::Add(
+ECode ArrayList::Add(
     /* [in] */ IInterface* obj)
 {
     return AbstractList::Add(obj);
 }
 
-ECode CArrayList::AddAll(
+ECode ArrayList::AddAll(
     /* [in] */ Int32 value,
     /* [in] */ ICollection* collection)
 {
     return AbstractList::AddAll(value, collection);
 }
 
-ECode CArrayList::Remove(
+ECode ArrayList::Remove(
     /* [in] */ Int32 value)
 {
     return AbstractList::Remove(value);
 }
 
-ECode CArrayList::Set(
+ECode ArrayList::Set(
     /* [in] */ Int32 value,
     /* [in] */ IInterface* obj)
 {
     return Set(value, obj, NULL);
 }
 
-ECode CArrayList::AddAll(
+ECode ArrayList::AddAll(
     /* [in] */ /* [in] */ ICollection* collection)
 {
     return AbstractList::AddAll(collection);
 }
 
-ECode CArrayList::Remove(
+ECode ArrayList::Remove(
     /* [in] */ IInterface* obj)
 {
     return AbstractList::Remove(obj);
 }
 
-ECode CArrayList::RemoveAll(
+ECode ArrayList::RemoveAll(
     /* [in] */ /* [in] */ ICollection* collection)
 {
     return AbstractList::RemoveAll(collection);
 }
 
-ECode CArrayList::RetainAll(
+ECode ArrayList::RetainAll(
     /* [in] */ /* [in] */ ICollection* collection)
 {
     return AbstractList::RetainAll(collection);
+}
+
+ECode ArrayList::ToString(
+    /* [out] */ String* str)
+{
+    VALIDATE_NOT_NULL(str)
+    StringBuilder sb("ArrayList{size=");
+    sb += mSize;
+    sb += "}";
+    *str = sb.ToString();
+    return NOERROR;
 }
 
 

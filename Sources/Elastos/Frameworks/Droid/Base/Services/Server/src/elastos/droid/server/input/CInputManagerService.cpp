@@ -570,7 +570,7 @@ ECode CInputManagerService::ContentObserverInRegisterShowTouchesSettingObserver:
 //==============================================================================
 //  CInputManagerService
 //==============================================================================
-const String CInputManagerService::TAG("InputManager");
+const String CInputManagerService::TAG("CInputManagerService");
 const Boolean CInputManagerService::DEBUG;
 const String CInputManagerService::EXCLUDED_DEVICES_PATH("etc/excluded-input-devices.xml");
 
@@ -587,29 +587,19 @@ const Int32 CInputManagerService::INPUT_EVENT_INJECTION_TIMED_OUT;
 
 const Int32 CInputManagerService::INJECTION_TIMEOUT_MILLIS;
 const Int32 CInputManagerService::KEY_STATE_UNKNOWN;
-
 const Int32 CInputManagerService::KEY_STATE_UP;
-
 const Int32 CInputManagerService::KEY_STATE_DOWN;
-
 const Int32 CInputManagerService::KEY_STATE_VIRTUAL;
 
 const Int32 CInputManagerService::BTN_MOUSE;
 
 const Int32 CInputManagerService::SW_LID;
-
 const Int32 CInputManagerService::SW_KEYPAD_SLIDE;
-
 const Int32 CInputManagerService::SW_HEADPHONE_INSERT;
-
 const Int32 CInputManagerService::SW_MICROPHONE_INSERT;
-
 const Int32 CInputManagerService::SW_LINEOUT_INSERT;
-
 const Int32 CInputManagerService::SW_JACK_PHYSICAL_INSERT;
-
 const Int32 CInputManagerService::SW_CAMERA_LENS_COVER;
-
 const Int32 CInputManagerService::SW_LID_BIT;
 const Int32 CInputManagerService::SW_KEYPAD_SLIDE_BIT;
 const Int32 CInputManagerService::SW_HEADPHONE_INSERT_BIT;
@@ -620,6 +610,8 @@ const Int32 CInputManagerService::SW_JACK_BITS;
 const Int32 CInputManagerService::SW_CAMERA_LENS_COVER_BIT;
 
 CAR_INTERFACE_IMPL_3(CInputManagerService, Object, IIInputManager, IWatchdogMonitor, IBinder);
+
+CAR_OBJECT_IMPL(CInputManagerService)
 
 CInputManagerService::CInputManagerService()
     : mSystemReady(FALSE)
@@ -637,7 +629,6 @@ CInputManagerService::CInputManagerService()
 
 CInputManagerService::~CInputManagerService()
 {
-    mInputFilterHost->Release();
     mInputFilterHost = NULL;
 }
 
@@ -660,7 +651,8 @@ ECode CInputManagerService::constructor(
     looper->GetQueue((IMessageQueue**)&queue);
     FAIL_RETURN(NativeInit(mContext, queue));
 
-    LocalServices::AddService(EIID_IInputManagerInternal, (IInputManagerInternal*)new LocalService(this));
+    AutoPtr<IInputManagerInternal> imi = new LocalService(this);
+    LocalServices::AddService(EIID_IInputManagerInternal, imi.Get());
     return NOERROR;
 }
 
@@ -1392,7 +1384,6 @@ void CInputManagerService::SetInputFilter(
         if (oldFilter != NULL) {
             mInputFilter = NULL;
             mInputFilterHost->DisconnectLocked();
-            mInputFilterHost->Release();
             mInputFilterHost = NULL;
             //try {
             oldFilter->Uninstall();
@@ -1403,7 +1394,6 @@ void CInputManagerService::SetInputFilter(
 
         if (filter != NULL) {
             mInputFilter = filter;
-            mInputFilterHost->Release();
             mInputFilterHost = NULL;
             CInputFilterHost::NewByFriend((IIInputManager*)this, (CInputFilterHost**)&mInputFilterHost);
             //try {

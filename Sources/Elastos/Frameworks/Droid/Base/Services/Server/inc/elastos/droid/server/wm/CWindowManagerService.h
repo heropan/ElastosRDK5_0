@@ -101,6 +101,7 @@ using Elastos::Droid::View::IWindowsForAccessibilityCallback;
 using Elastos::Droid::View::IMagnificationCallbacks;
 using Elastos::Droid::View::Animation::IInterpolator;
 using Elastos::Core::ICharSequence;
+using Elastos::Core::ISynchronize;
 using Elastos::Core::IInteger32;
 using Elastos::Net::ISocket;
 using Elastos::Utility::Etl::HashMap;
@@ -1614,7 +1615,7 @@ public:
         /* [in] */ Int32 displayId);
 
     CARAPI GetWindowManagerLock(
-        /* [out] */ IInterface** lock);
+        /* [out] */ ISynchronize** lock);
 
     CARAPI ToString(
         /* [ou] */ String* str);
