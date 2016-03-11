@@ -45,3 +45,4 @@ SOURCES += CSystemBars.cpp
 ELASTOS_LIBS += policy/policy.lib
 ELASTOS_LIBS += phone/phone.lib
 ELASTOS_LIBS += stack/stack.lib
+ELASTOS_LIBS += tv/tv.lib

@@ -144,7 +144,6 @@ module
     merge("../../../../car/elastos/droid/statusbar/phone/SystemUIDialog.car");
     merge("../../../../car/elastos/droid/statusbar/phone/Ticker.car");
     merge("../../../../car/elastos/droid/statusbar/phone/TickerView.car");
-    merge("../../../../car/elastos/droid/statusbar/phone/TrustDrawable.car");
     merge("../../../../car/elastos/droid/statusbar/phone/UnlockMethodCache.car");
     merge("../../../../car/elastos/droid/statusbar/phone/UserAvatarView.car");
     merge("../../../../car/elastos/droid/statusbar/phone/VelocityTrackerFactory.car");
@@ -274,6 +273,7 @@ module
 //     using interface Elastos.Droid.View.IKeyEventCallback;
     using interface Elastos.Droid.View.Accessibility.IAccessibilityEventSource;
     using interface Elastos.Droid.View.IViewOnClickListener;
+    using interface Elastos.Droid.View.IViewOnLongClickListener;
 //     using interface Elastos.Droid.View.IOnComputeInternalInsetsListener;
 //     using interface Elastos.Droid.View.IOnPreDrawListener;
     using interface Elastos.Droid.View.IContextThemeWrapper;
@@ -305,6 +305,7 @@ module
     interface Elastos.Droid.SystemUI.StatusBar.IExpandableViewOnHeightChangedListener;
     interface Elastos.Droid.SystemUI.StatusBar.INotificationOverflowIconsView;
     interface Elastos.Droid.SystemUI.StatusBar.IStatusBarPanel;
+    interface Elastos.Droid.SystemUI.StatusBar.Policy.IAccessibilityStateChangedCallback;
     interface Elastos.Droid.SystemUI.StatusBar.Policy.IBatteryStateChangeCallback;
     interface Elastos.Droid.SystemUI.StatusBar.Policy.IClock;
     interface Elastos.Droid.SystemUI.StatusBar.Policy.INetworkControllerImplSignalCluster;
@@ -1729,6 +1730,34 @@ module
 
             interface IIconMerger;
             interface ILinearLayout;
+            interface IViewGroup;
+            interface IView;
+            interface IViewParent;
+            interface IViewManager;
+            interface IDrawableCallback;
+            interface IKeyEventCallback;
+            interface IAccessibilityEventSource;
+        }
+
+        class CKeyguardBottomAreaView {
+            constructor(
+                [in] IContext* context);
+
+            constructor(
+                [in] IContext* context,
+                [in] IAttributeSet* attrs);
+
+            constructor(
+                [in] IContext* context,
+                [in] IAttributeSet* attrs,
+                [in] Int32 defStyle);
+
+            interface IKeyguardBottomAreaView;
+            interface IViewOnClickListener;
+            interface IOnUnlockMethodChangedListener;
+            interface IAccessibilityStateChangedCallback;
+            interface IViewOnLongClickListener;
+            interface IFrameLayout;
             interface IViewGroup;
             interface IView;
             interface IViewParent;

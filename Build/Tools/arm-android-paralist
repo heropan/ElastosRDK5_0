@@ -365,7 +365,8 @@
   Elastos/Frameworks/Droid/Base/Packages/SystemUI/src/elastos/droid/systemui/statusbar/policy
   Elastos/Frameworks/Droid/Base/Packages/SystemUI/src/elastos/droid/systemui/statusbar/phone
   Elastos/Frameworks/Droid/Base/Packages/SystemUI/src/elastos/droid/systemui/statusbar/stack
-  Elastos/Frameworks/Droid/Base/Packages/SystemUI/src/elastos/droid/systemui/statusbar
+  Elastos/Frameworks/Droid/Base/Packages/SystemUI/src/elastos/droid/systemui/statusbar/tv
+> Elastos/Frameworks/Droid/Base/Packages/SystemUI/src/elastos/droid/systemui/statusbar
 > Elastos/Frameworks/Droid/Base/Packages/SystemUI/src/elastos/droid/systemui
   Elastos/Frameworks/Droid/Base/Packages/SettingsProvider/src/elastos/droid/settingsprovider SettingsProvider.car
 >  Elastos/Frameworks/Droid/Base/Packages/SettingsProvider/src/elastos/droid/settingsprovider

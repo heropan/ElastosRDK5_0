@@ -1,6 +1,6 @@
 
 #include "Elastos.Droid.Os.h"
-#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/graphics/CRect.h"
 #include "elastos/droid/graphics/drawable/InsetDrawable.h"
 #include "elastos/droid/graphics/drawable/CInsetDrawable.h"
 #include "elastos/droid/graphics/Insets.h"
@@ -474,7 +474,7 @@ Boolean InsetDrawable::OnLevelChange(
 void InsetDrawable::OnBoundsChange(
     /* [in] */ IRect* bounds)
 {
-    CRect* r = mTmpRect;
+    CRect* r = (CRect*)mTmpRect.Get();
     r->Set(bounds);
 
     r->mLeft += mInsetState->mInsetLeft;

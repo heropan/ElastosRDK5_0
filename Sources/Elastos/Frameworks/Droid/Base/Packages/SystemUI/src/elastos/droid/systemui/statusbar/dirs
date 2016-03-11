@@ -1,4 +1,5 @@
 
+DIRS += phone
 DIRS += stack
 DIRS += policy
-DIRS += phone
+DIRS += tv
