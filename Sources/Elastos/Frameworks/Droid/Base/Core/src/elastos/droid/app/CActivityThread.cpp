@@ -4671,6 +4671,7 @@ AutoPtr< List<AutoPtr<IComponentCallbacks2> > > CActivityThread::CollectComponen
     /* [in] */ IConfiguration* newConfig)
 {
     AutoPtr< List<AutoPtr<IComponentCallbacks2> > > callbacks = new List<AutoPtr<IComponentCallbacks2> >();
+    // assert(0 && "TODO");
     IComponentCallbacks* cc;
     IComponentCallbacks2* cc2;
 
@@ -4678,6 +4679,7 @@ AutoPtr< List<AutoPtr<IComponentCallbacks2> > > CActivityThread::CollectComponen
         AutoLock lock(mResourcesManager);
         List<AutoPtr<IApplication> >::Iterator it;
         for (it = mAllApplications.Begin(); it != mAllApplications.End(); ++it) {
+            // assert(0 && "TODO");
             cc = IComponentCallbacks::Probe(*it);
             assert(cc);
             cc2 = IComponentCallbacks2::Probe(*it);
@@ -4700,6 +4702,7 @@ AutoPtr< List<AutoPtr<IComponentCallbacks2> > > CActivityThread::CollectComponen
                     if (!isFinish && (allActivities || !ar->mPaused)) {
                         // If the activity is currently resumed, its configuration
                         // needs to change right now.
+                        // assert(0 && "TODO");
                         cc = IComponentCallbacks::Probe(a);
                         assert(cc);
                         cc2 = IComponentCallbacks2::Probe(a);
@@ -4725,6 +4728,7 @@ AutoPtr< List<AutoPtr<IComponentCallbacks2> > > CActivityThread::CollectComponen
             HashMap<AutoPtr<IBinder>, AutoPtr<IService> >:: Iterator it;
             for (it = mServices.Begin(); it != mServices.End(); ++it) {
                 AutoPtr<IService> service = it->mSecond;
+                // assert(0 && "TODO");
                 cc = IComponentCallbacks::Probe(service);
                 assert(cc);
                 cc2 = IComponentCallbacks2::Probe(service);
@@ -4739,6 +4743,7 @@ AutoPtr< List<AutoPtr<IComponentCallbacks2> > > CActivityThread::CollectComponen
             HashMap<AutoPtr<IBinder>, AutoPtr<ProviderClientRecord> >::Iterator it;
             for (it = mLocalProviders.Begin(); it != mLocalProviders.End(); ++it) {
                 AutoPtr<ProviderClientRecord> providerClientRecord = it->mSecond;
+                // assert(0 && "TODO");
                 cc = IComponentCallbacks::Probe(providerClientRecord->mLocalProvider);
                 assert(cc);
                 cc2 = IComponentCallbacks2::Probe(providerClientRecord->mLocalProvider);
