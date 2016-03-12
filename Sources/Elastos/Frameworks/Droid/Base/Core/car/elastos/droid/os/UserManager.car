@@ -792,6 +792,15 @@ module
          */
         GetDefaultGuestRestrictions(
             [out] IBundle** bundle);
+
+        /**
+         * Returns true if the user switcher should be shown, this will be if there
+         * are multiple users that aren't managed profiles.
+         * @hide
+         * @return true if user switcher should be shown.
+         */
+        IsUserSwitcherEnabled(
+            [out] Boolean* result);
     }
 
     interface IUserManagerHelper {
