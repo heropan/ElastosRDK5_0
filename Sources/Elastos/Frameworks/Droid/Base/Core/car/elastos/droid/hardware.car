@@ -242,6 +242,7 @@ module
     interface Elastos.Droid.Hardware.ICameraSize;
 
     using interface Elastos.Core.IComparator;
+    using interface Elastos.Core.IComparable;
     using interface Elastos.IO.ICloseable;
     using interface Elastos.Utility.IUUID;
     using interface Elastos.Utility.IList;
@@ -1485,6 +1486,32 @@ module
 
     namespace Input {
 
+        class CInputDeviceIdentifier {
+            constructor();
+
+            constructor(
+                [in] String descriptor,
+                [in] Int32 vendorId,
+                [in] Int32 productId);
+
+            interface IInputDeviceIdentifier;
+            interface IParcelable;
+        }
+
+        class CKeyboardLayout {
+            constructor();
+
+            constructor(
+                [in] String descriptor,
+                [in] String label,
+                [in] String collection,
+                [in] Int32 priority);
+
+            interface IKeyboardLayout;
+            interface IComparable;
+            interface IParcelable;
+        }
+
         class CInputManagerInputDevicesChangedListener {
             constructor(
                 [in] Handle32 inputManager);
@@ -1493,6 +1520,8 @@ module
         }
 
         class CInputManager {
+            constructor();
+
             interface IInputManager;
         }
 
@@ -1830,4 +1859,5 @@ module
     } // namespace Hardware
     } // namepsace Droid
     } // namespace Elastos
+
 }

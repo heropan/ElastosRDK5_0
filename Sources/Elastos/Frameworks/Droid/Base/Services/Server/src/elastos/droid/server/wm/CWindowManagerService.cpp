@@ -753,7 +753,7 @@ const Boolean CWindowManagerService::DEBUG_SURFACE_TRACE = FALSE;
 const Boolean CWindowManagerService::DEBUG_WINDOW_TRACE = FALSE;
 const Boolean CWindowManagerService::DEBUG_TASK_MOVEMENT = FALSE;
 const Boolean CWindowManagerService::DEBUG_STACK = FALSE;
-const Boolean CWindowManagerService::DEBUG_DISPLAY = FALSE;
+const Boolean CWindowManagerService::DEBUG_DISPLAY = TRUE;
 const Boolean CWindowManagerService::SHOW_SURFACE_ALLOC = FALSE;
 const Boolean CWindowManagerService::SHOW_TRANSACTIONS = FALSE;
 const Boolean CWindowManagerService::SHOW_LIGHT_TRANSACTIONS = SHOW_TRANSACTIONS;
@@ -3127,7 +3127,7 @@ void CWindowManagerService::UpdateAppOpsState()
         for (Int32 displayNdx = 0; displayNdx < numDisplays; ++displayNdx) {
             AutoPtr<IInterface> value;
             mDisplayContents->ValueAt(displayNdx, (IInterface**)&value);
-            AutoPtr<DisplayContent> dc = (DisplayContent*)(IObject*)value.Get();
+            AutoPtr<DisplayContent> dc = (DisplayContent*)IObject::Probe(value);
             AutoPtr<WindowList> windows = dc->GetWindowList();
             WindowList::Iterator it = windows->Begin();
             for (; it != windows->End(); ++it) {
@@ -5735,7 +5735,7 @@ void CWindowManagerService::DumpWindowsLocked()
     for (Int32 displayNdx = 0; displayNdx < numDisplays; ++displayNdx) {
         AutoPtr<IInterface> value;
         mDisplayContents->ValueAt(displayNdx, (IInterface**)&value);
-        AutoPtr<DisplayContent> displayContent = (DisplayContent*)(IObject*)value.Get();
+        AutoPtr<DisplayContent> displayContent = (DisplayContent*)IObject::Probe(value);
         Slogger::V(TAG, " Display #%d", displayContent->GetDisplayId());
         AutoPtr<WindowList> windows = displayContent->GetWindowList();
         WindowList::ReverseIterator rit = windows->RBegin();
@@ -5992,7 +5992,7 @@ void CWindowManagerService::AttachStack(
     synchronized(mWindowMapLock) {
         AutoPtr<IInterface> value;
         mDisplayContents->Get(displayId, (IInterface**)&value);
-        AutoPtr<DisplayContent> displayContent = (DisplayContent*)(IObject*)value.Get();
+        AutoPtr<DisplayContent> displayContent = (DisplayContent*)IObject::Probe(value);
         if (displayContent != NULL) {
             AutoPtr<IInterface> value;
             mStackIdToStack->Get(stackId, (IInterface**)&value);
@@ -6372,7 +6372,7 @@ ECode CWindowManagerService::CloseSystemDialogs(
         for (Int32 displayNdx = 0; displayNdx < numDisplays; ++displayNdx) {
             AutoPtr<IInterface> value;
             mDisplayContents->ValueAt(displayNdx, (IInterface**)&value);
-            AutoPtr<DisplayContent> dc = (DisplayContent*)(IObject*)value.Get();
+            AutoPtr<DisplayContent> dc = (DisplayContent*)IObject::Probe(value);
             AutoPtr<WindowList> windows = dc->GetWindowList();
             WindowList::Iterator it = windows->Begin();
             for (; it != windows->End(); ++it) {
@@ -6621,7 +6621,7 @@ void CWindowManagerService::SetCurrentUser(
         for (Int32 displayNdx = 0; displayNdx < numDisplays; ++displayNdx) {
             AutoPtr<IInterface> value;
             mDisplayContents->ValueAt(displayNdx, (IInterface**)&value);
-            AutoPtr<DisplayContent> displayContent = (DisplayContent*)(IObject*)value.Get();
+            AutoPtr<DisplayContent> displayContent = (DisplayContent*)IObject::Probe(value);
             displayContent->SwitchUserStacks(newUserId);
             RebuildAppWindowListLocked(displayContent);
         }
@@ -7028,7 +7028,7 @@ void CWindowManagerService::ShowStrictModeViolation(
         for (Int32 displayNdx = 0; displayNdx < numDisplays; ++displayNdx) {
             AutoPtr<IInterface> value;
             mDisplayContents->ValueAt(displayNdx, (IInterface**)&value);
-            AutoPtr<DisplayContent> dc = (DisplayContent*)(IObject*)value.Get();
+            AutoPtr<DisplayContent> dc = (DisplayContent*)IObject::Probe(value);
             AutoPtr<WindowList> windows = dc->GetWindowList();
             WindowList::Iterator it = windows->Begin();
             for (; it != windows->End(); ++it) {
@@ -7903,7 +7903,7 @@ Boolean CWindowManagerService::ViewServerListWindows(
         for (Int32 displayNdx = 0; displayNdx < numDisplays; ++displayNdx) {
             AutoPtr<IInterface> value;
             mDisplayContents->ValueAt(displayNdx, (IInterface**)&value);
-            AutoPtr<DisplayContent> displayContent = (DisplayContent*)(IObject*)value.Get();
+            AutoPtr<DisplayContent> displayContent = (DisplayContent*)IObject::Probe(value);
             AutoPtr<WindowList> wins = displayContent->GetWindowList();
             WindowList::Iterator it = wins->Begin();
             for (; it != wins->End(); ++it) {
@@ -8191,7 +8191,7 @@ AutoPtr<WindowState> CWindowManagerService::FindWindow(
         for (Int32 displayNdx = 0; displayNdx < numDisplays; ++displayNdx) {
             AutoPtr<IInterface> value;
             mDisplayContents->ValueAt(displayNdx, (IInterface**)&value);
-            AutoPtr<DisplayContent> dc = (DisplayContent*)(IObject*)value.Get();
+            AutoPtr<DisplayContent> dc = (DisplayContent*)IObject::Probe(value);
             AutoPtr<WindowList> windows = dc->GetWindowList();
             WindowList::Iterator it = windows->Begin();
             for (; it != windows->End(); ++it) {
@@ -11308,7 +11308,7 @@ void CWindowManagerService::PerformLayoutAndPlaceSurfacesLockedInner(
     for (Int32 displayNdx = 0; displayNdx < numDisplays; ++displayNdx) {
         AutoPtr<IInterface> value;
         mDisplayContents->ValueAt(displayNdx, (IInterface**)&value);
-        AutoPtr<DisplayContent> displayContent = (DisplayContent*)(IObject*)value.Get();
+        AutoPtr<DisplayContent> displayContent = (DisplayContent*)IObject::Probe(value);
         List<AutoPtr<WindowToken> >::ReverseIterator tokenRit = displayContent->mExitingTokens.RBegin();
         for (; tokenRit != displayContent->mExitingTokens.REnd(); ++tokenRit) {
             (*tokenRit)->mHasVisible = FALSE;
@@ -11367,7 +11367,7 @@ void CWindowManagerService::PerformLayoutAndPlaceSurfacesLockedInner(
     for (Int32 displayNdx = 0; displayNdx < numDisplays; ++displayNdx) {
         AutoPtr<IInterface> value;
         mDisplayContents->ValueAt(displayNdx, (IInterface**)&value);
-        AutoPtr<DisplayContent> displayContent = (DisplayContent*)(IObject*)value.Get();
+        AutoPtr<DisplayContent> displayContent = (DisplayContent*)IObject::Probe(value);
         Boolean updateAllDrawn = FALSE;
         AutoPtr<WindowList> windows = displayContent->GetWindowList();
         AutoPtr<IDisplayInfo> displayInfo = displayContent->GetDisplayInfo();
@@ -11760,7 +11760,7 @@ void CWindowManagerService::PerformLayoutAndPlaceSurfacesLockedInner(
     for (Int32 displayNdx = 0; displayNdx < numDisplays; ++displayNdx) {
         AutoPtr<IInterface> value;
         mDisplayContents->ValueAt(displayNdx, (IInterface**)&value);
-        AutoPtr<DisplayContent> displayContent = (DisplayContent*)(IObject*)value.Get();
+        AutoPtr<DisplayContent> displayContent = (DisplayContent*)IObject::Probe(value);
         List<AutoPtr<WindowToken> > exitingTokens = displayContent->mExitingTokens;
         List<AutoPtr<WindowToken> >::ReverseIterator exitTokenRit = exitingTokens.RBegin();
         while (exitTokenRit != exitingTokens.REnd()) {
@@ -11827,7 +11827,7 @@ void CWindowManagerService::PerformLayoutAndPlaceSurfacesLockedInner(
     for (Int32 displayNdx = 0; displayNdx < numDisplays; ++displayNdx) {
         AutoPtr<IInterface> value;
         mDisplayContents->ValueAt(displayNdx, (IInterface**)&value);
-        AutoPtr<DisplayContent> displayContent = (DisplayContent*)(IObject*)value.Get();
+        AutoPtr<DisplayContent> displayContent = (DisplayContent*)IObject::Probe(value);
         if (displayContent->mPendingLayoutChanges != 0) {
             displayContent->mLayoutNeeded = TRUE;
         }
@@ -11914,7 +11914,7 @@ void CWindowManagerService::PerformLayoutAndPlaceSurfacesLockedInner(
     for (Int32 displayNdx = contentsSize - 1; displayNdx >= 0; --displayNdx) {
         AutoPtr<IInterface> value;
         mDisplayContents->ValueAt(displayNdx, (IInterface**)&value);
-        AutoPtr<DisplayContent> displayContent = (DisplayContent*)(IObject*)value.Get();
+        AutoPtr<DisplayContent> displayContent = (DisplayContent*)IObject::Probe(value);
         displayContent->CheckForDeferredActions();
     }
 
@@ -12037,7 +12037,7 @@ Boolean CWindowManagerService::NeedsLayout()
     for (Int32 displayNdx = 0; displayNdx < numDisplays; ++displayNdx) {
         AutoPtr<IInterface> value;
         mDisplayContents->ValueAt(displayNdx, (IInterface**)&value);
-        AutoPtr<DisplayContent> displayContent = (DisplayContent*)(IObject*)value.Get();
+        AutoPtr<DisplayContent> displayContent = (DisplayContent*)IObject::Probe(value);
         if (displayContent->mLayoutNeeded) {
             return TRUE;
         }
@@ -12123,7 +12123,7 @@ Boolean CWindowManagerService::ReclaimSomeSurfaceMemoryLocked(
     for (Int32 displayNdx = 0; displayNdx < numDisplays; ++displayNdx) {
         AutoPtr<IInterface> value;
         mDisplayContents->ValueAt(displayNdx, (IInterface**)&value);
-        AutoPtr<DisplayContent> displayContent = (DisplayContent*)(IObject*)value.Get();
+        AutoPtr<DisplayContent> displayContent = (DisplayContent*)IObject::Probe(value);
         AutoPtr<WindowList> windows = displayContent->GetWindowList();
         WindowList::Iterator winIt = windows->Begin();
         for (; winIt != windows->End(); ++winIt) {
@@ -12164,7 +12164,7 @@ Boolean CWindowManagerService::ReclaimSomeSurfaceMemoryLocked(
         for (Int32 displayNdx = 0; displayNdx < numDisplays; ++displayNdx) {
             AutoPtr<IInterface> value;
             mDisplayContents->ValueAt(displayNdx, (IInterface**)&value);
-            AutoPtr<DisplayContent> displayContent = (DisplayContent*)(IObject*)value.Get();
+            AutoPtr<DisplayContent> displayContent = (DisplayContent*)IObject::Probe(value);
             AutoPtr<WindowList> windows = displayContent->GetWindowList();
             WindowList::Iterator winIt = windows->Begin();
             for (; winIt != windows->End(); ++winIt) {
@@ -12308,7 +12308,7 @@ AutoPtr<WindowState> CWindowManagerService::ComputeFocusedWindowLocked()
     for (Int32 i = 0; i < displayCount; i++) {
         AutoPtr<IInterface> value;
         mDisplayContents->ValueAt(i, (IInterface**)&value);
-        AutoPtr<DisplayContent> displayContent = (DisplayContent*)(IObject*)value.Get();
+        AutoPtr<DisplayContent> displayContent = (DisplayContent*)IObject::Probe(value);
         AutoPtr<WindowState> win = FindFocusedWindowLocked(displayContent);
         if (win != NULL) {
             return win;
@@ -12928,7 +12928,8 @@ AutoPtr<DisplayContent> CWindowManagerService::NewDisplayContentLocked(
     AutoPtr<DisplayContent> displayContent = new DisplayContent(display, this);
     Int32 displayId;
     display->GetDisplayId(&displayId);
-    if (DEBUG_DISPLAY) Slogger::V(TAG, "Adding display=%p", display);
+    if (DEBUG_DISPLAY) Slogger::V(TAG, "Adding %d - %p, display=%s",
+        displayId, displayContent.Get(), TO_CSTR(displayContent));
     mDisplayContents->Put(displayId, (IObject*)displayContent.Get());
 
     AutoPtr<IDisplayInfo> displayInfo = displayContent->GetDisplayInfo();
@@ -12976,7 +12977,7 @@ AutoPtr<DisplayContent> CWindowManagerService::GetDisplayContentLocked(
 {
     AutoPtr<IInterface> value;
     mDisplayContents->Get(displayId, (IInterface**)&value);
-    AutoPtr<DisplayContent> displayContent = (DisplayContent*)(IObject*)value.Get();
+    AutoPtr<DisplayContent> displayContent = (DisplayContent*)IObject::Probe(value);
     if (displayContent == NULL) {
         AutoPtr<IDisplay> display;
         mDisplayManager->GetDisplay(displayId, (IDisplay**)&display);

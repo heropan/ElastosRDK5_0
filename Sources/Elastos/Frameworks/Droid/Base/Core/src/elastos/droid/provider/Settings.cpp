@@ -1901,7 +1901,6 @@ ECode Settings::Global::GetUriFor(
     /* [in] */ const String& name,
     /* [out] */ IUri** uri)
 {
-    VALIDATE_NOT_NULL(uri)
     return NameValueTable::GetUriFor(CONTENT_URI, name, uri);
 }
 

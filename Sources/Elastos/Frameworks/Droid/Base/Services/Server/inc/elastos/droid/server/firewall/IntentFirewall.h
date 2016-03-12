@@ -43,7 +43,7 @@ namespace Droid {
 namespace Server {
 namespace Firewall {
 
-class IntentFirewall
+class IntentFirewall : Object
 {
 private:
     /**

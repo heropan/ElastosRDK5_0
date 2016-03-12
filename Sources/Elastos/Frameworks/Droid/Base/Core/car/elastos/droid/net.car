@@ -106,6 +106,7 @@ module
     merge("net/wimax/WimaxManagerConstants.car");
 
     interface Elastos.Droid.App.IService;
+    interface Elastos.Droid.Content.IComponentCallbacks;
     interface Elastos.Droid.Content.IComponentCallbacks2;
     interface Elastos.Droid.Content.IContext;
     interface Elastos.Droid.Content.IContextWrapper;
@@ -935,6 +936,7 @@ module
 
         interface IService;
         interface IComponentCallbacks2;
+        interface IComponentCallbacks;
         interface IContextWrapper;
         interface IContext;
         interface IVpnService;

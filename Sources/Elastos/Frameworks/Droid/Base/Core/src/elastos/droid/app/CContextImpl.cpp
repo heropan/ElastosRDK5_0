@@ -33,6 +33,7 @@
 //#include "elastos/droid/hardware/usb/CUsbManager.h"
 #include "elastos/droid/hardware/camera2/CCameraManager.h"
 #include "elastos/droid/hardware/display/CDisplayManager.h"
+#include "elastos/droid/hardware/input/CInputManager.h"
 #include "elastos/droid/os/ServiceManager.h"
 #include "elastos/droid/os/Environment.h"
 #include "elastos/droid/os/FileUtils.h"
@@ -124,6 +125,8 @@ using Elastos::Droid::Hardware::IISerialManager;
 using Elastos::Droid::Hardware::EIID_IISerialManager;
 using Elastos::Droid::Hardware::Display::IDisplayManager;
 using Elastos::Droid::Hardware::Display::CDisplayManager;
+using Elastos::Droid::Hardware::Input::IInputManager;
+using Elastos::Droid::Hardware::Input::CInputManager;
 using Elastos::Droid::Hardware::Usb::IIUsbManager;
 using Elastos::Droid::Hardware::Usb::IUsbManager;
 // using Elastos::Droid::Hardware::Usb::CUsbManager;
@@ -2292,6 +2295,7 @@ ECode CContextImpl::GetSystemService(
         return NOERROR;
     }
     else if (IContext::CAPTIONING_SERVICE.Equals(name)) {
+        Slogger::E(TAG, " >>> TODO: Service %s is not ready!", name.string());
         assert(0 && "TODO");
         // public Object getService(ContextImpl ctx) {
         //     return new CaptioningManager(ctx);
@@ -2338,6 +2342,7 @@ ECode CContextImpl::GetSystemService(
     }
 
     else if (IContext::MEDIA_ROUTER_SERVICE.Equals(name)) {
+        Slogger::E(TAG, " >>> TODO: Service %s is not ready!", name.string());
         assert(0 && "TODO");
     //     AutoPtr<IMediaRouter> obj;
     //     CMediaRouter::New(this, (IMediaRouter**)&obj);
@@ -2346,6 +2351,7 @@ ECode CContextImpl::GetSystemService(
     //     return NOERROR;
     }
     else if (IContext::BLUETOOTH_SERVICE.Equals(name)) {
+        Slogger::E(TAG, " >>> TODO: Service %s is not ready!", name.string());
         assert(0 && "TODO");
         // public Object createService(ContextImpl ctx) {
         //     return new BluetoothManager(ctx);
@@ -2353,6 +2359,7 @@ ECode CContextImpl::GetSystemService(
         return NOERROR;
     }
     else if (IContext::HDMI_CONTROL_SERVICE.Equals(name)) {
+        Slogger::E(TAG, " >>> TODO: Service %s is not ready!", name.string());
         assert(0 && "TODO");
         // public Object createStaticService() {
         //     IBinder b = ServiceManager.getService(HDMI_CONTROL_SERVICE);
@@ -2380,6 +2387,7 @@ ECode CContextImpl::GetSystemService(
         return NOERROR;
     }
     else if (IContext::COUNTRY_DETECTOR.Equals(name)) {
+        Slogger::E(TAG, " >>> TODO: Service %s is not ready!", name.string());
         assert(0 && "TODO");
         // registerService(COUNTRY_DETECTOR, new StaticServiceFetcher() {
         //         public Object createStaticService() {
@@ -2392,6 +2400,7 @@ ECode CContextImpl::GetSystemService(
     else if (IContext::DEVICE_POLICY_SERVICE.Equals(name)) {
         AutoPtr<IHandler> handler = mMainThread->GetHandler();
         AutoPtr<IDevicePolicyManager> devicePolicy;
+        Slogger::E(TAG, " >>> TODO: Service %s is not ready!", name.string());
         assert(0 && "TODO");
         // CDevicePolicyManager::New(this, handler, (IDevicePolicyManager**)&devicePolicy);
         *object = devicePolicy.Get();
@@ -2413,6 +2422,7 @@ ECode CContextImpl::GetSystemService(
         return NOERROR;
     }
     else if (IContext::BATTERY_SERVICE.Equals(name)) {
+        Slogger::E(TAG, " >>> TODO: Service %s is not ready!", name.string());
         assert(0 && "TODO");
         // public Object createService(ContextImpl ctx) {
         //     return new BatteryManager();
@@ -2424,10 +2434,17 @@ ECode CContextImpl::GetSystemService(
         return E_NOT_IMPLEMENTED;
     }
     else if (IContext::DROPBOX_SERVICE.Equals(name)) {
+        Slogger::E(TAG, " >>> TODO: Service %s is not ready!", name.string());
         // public Object createStaticService() {
         //     return createDropBoxManager();
         // }});
         assert(0 && "TODO");
+        return NOERROR;
+    }
+    else if (IContext::INPUT_SERVICE.Equals(name)) {
+        AutoPtr<IInputManager> mgr = CInputManager::GetInstance();
+        *object = mgr.Get();
+        REFCOUNT_ADD(*object);
         return NOERROR;
     }
     else if (IContext::DISPLAY_SERVICE.Equals(name)) {
@@ -2448,6 +2465,7 @@ ECode CContextImpl::GetSystemService(
     }
     else if (IContext::TEXT_SERVICES_MANAGER_SERVICE.Equals(name)) {
         AutoLock lock(mCacheLock);
+        Slogger::E(TAG, " >>> TODO: Service %s is not ready!", name.string());
         assert(0 && "TODO");
         // AutoPtr<ITextServicesManager> iManager = CTextServicesManager::GetInstance();
         // mServiceCache[name] = iManager;
@@ -2475,6 +2493,7 @@ ECode CContextImpl::GetSystemService(
         return NOERROR;
     }
     else if (IContext::LOCATION_SERVICE.Equals(name)) {
+        Slogger::E(TAG, " >>> TODO: Service %s is not ready!", name.string());
         assert(0 && "TODO");
         // AutoPtr<IInterface> service = ServiceManager::GetService(IContext::LOCATION_SERVICE);
         // AutoPtr<IILocationManager> mgr = IILocationManager::Probe(service);
@@ -2485,6 +2504,7 @@ ECode CContextImpl::GetSystemService(
         return NOERROR;
     }
     else if (IContext::NETWORK_POLICY_SERVICE.Equals(name)) {
+        Slogger::E(TAG, " >>> TODO: Service %s is not ready!", name.string());
         assert(0 && "TODO");
         // registerService(NETWORK_POLICY_SERVICE, new ServiceFetcher() {
         //     @Override
@@ -2516,6 +2536,9 @@ ECode CContextImpl::GetSystemService(
         REFCOUNT_ADD(*object);
         return NOERROR;
     }
+    else if (IContext::SEARCH_SERVICE.Equals(name)) {
+        Slogger::E(TAG, " >>> TODO: Service %s is not ready!", name.string());
+        assert(0 && "TODO");
     // registerService(NSD_SERVICE, new ServiceFetcher() {
     //         @Override
     //         public Object createService(ContextImpl ctx) {
@@ -2523,6 +2546,8 @@ ECode CContextImpl::GetSystemService(
     //             INsdManager service = INsdManager.Stub.asInterface(b);
     //             return new NsdManager(ctx.getOuterContext(), service);
     //         }});
+        return NOERROR;
+    }
 
     else if (IContext::POWER_SERVICE.Equals(name)) {
         AutoPtr<IInterface> service = ServiceManager::GetService(IContext::POWER_SERVICE);
@@ -2536,6 +2561,7 @@ ECode CContextImpl::GetSystemService(
     }
     else if (IContext::SEARCH_SERVICE.Equals(name)) {
         Slogger::E(TAG, " >>> TODO: Service %s is not ready!", name.string());
+        assert(0 && "TODO");
         // public Object createService(ContextImpl ctx) {
         //     return new SearchManager(ctx.getOuterContext(),
         //             ctx.mMainThread.getHandler());
@@ -2784,9 +2810,11 @@ ECode CContextImpl::GetSystemService(
     else if (IContext::TV_INPUT_SERVICE.Equals(name)) {
         Slogger::E(TAG, " >>> TODO: Service %s is not ready!", name.string());
         assert(0);
-        // public Object createStaticService() {
-        //     return InputManager.getInstance();
-        // }});
+        // public Object createService(ContextImpl ctx) {
+        //     IBinder iBinder = ServiceManager.getService(TV_INPUT_SERVICE);
+        //     ITvInputManager service = ITvInputManager.Stub.asInterface(iBinder);
+        //     return new TvInputManager(service, UserHandle.myUserId());
+        // }
         return NOERROR;
     }
     else if (IContext::NETWORK_SCORE_SERVICE.Equals(name)) {

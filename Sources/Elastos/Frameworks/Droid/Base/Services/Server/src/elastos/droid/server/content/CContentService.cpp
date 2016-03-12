@@ -390,8 +390,7 @@ AutoPtr<SyncManager> CContentService::GetSyncManager()
         return NULL;
     }
 
-    ISynchronize* sync = ISynchronize::Probe(mSyncManager);
-    AutoLock lock(sync);
+    AutoLock lock(mSyncManagerLock);
     // try {
         // Try to create the SyncManager, return NULL if it fails (e.g. the disk is full).
     if (mSyncManager == NULL) {
@@ -462,9 +461,10 @@ ECode CContentService::Dump(
     return E_NOT_IMPLEMENTED;
 }
 
-void CContentService::SystemReady()
+ECode CContentService::SystemReady()
 {
     GetSyncManager();
+    return NOERROR;
 }
 
 ECode CContentService::RegisterContentObserver(

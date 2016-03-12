@@ -46,7 +46,7 @@ public:
 
             MyRunnable(
                 /* [in] */ IPhoneAccountHandle* connectionManagerPhoneAccount,
-                /* [in] */ String id,
+                /* [in] */ const String& id,
                 /* [in] */ IConnectionRequest* request,
                 /* [in] */ Boolean isIncoming,
                 /* [in] */ Boolean isUnknown,
@@ -356,59 +356,59 @@ public:
      */
     CARAPI_(void) CreateConnection(
         /* [in] */ IPhoneAccountHandle* callManagerAccount,
-        /* [in] */ String callId,
+        /* [in] */ const String& callId,
         /* [in] */ IConnectionRequest* request,
         /* [in] */ Boolean isIncoming,
         /* [in] */ Boolean isUnknown);
 
     CARAPI_(void) Abort(
-        /* [in] */ String callId);
+        /* [in] */ const String& callId);
 
     CARAPI_(void) AnswerVideo(
-        /* [in] */ String callId,
+        /* [in] */ const String& callId,
         /* [in] */ Int32 videoState);
 
     CARAPI_(void) Answer(
-        /* [in] */ String callId);
+        /* [in] */ const String& callId);
 
     CARAPI_(void) Reject(
-        /* [in] */ String callId);
+        /* [in] */ const String& callId);
 
     CARAPI_(void) Disconnect(
-        /* [in] */ String callId);
+        /* [in] */ const String& callId);
 
     CARAPI_(void) Hold(
-        /* [in] */ String callId);
+        /* [in] */ const String& callId);
 
     CARAPI_(void) Unhold(
-        /* [in] */ String callId);
+        /* [in] */ const String& callId);
 
     CARAPI_(void) OnAudioStateChanged(
-        /* [in] */ String callId,
+        /* [in] */ const String& callId,
         /* [in] */ IAudioState* audioState);
 
     CARAPI_(void) PlayDtmfTone(
-        /* [in] */ String callId,
+        /* [in] */ const String& callId,
         /* [in] */ Char32 digit);
 
     CARAPI_(void) StopDtmfTone(
-        /* [in] */ String callId);
+        /* [in] */ const String& callId);
 
     CARAPI_(void) Conference(
-        /* [in] */ String callId1,
-        /* [in] */ String callId2);
+        /* [in] */ const String& callId1,
+        /* [in] */ const String& callId2);
 
     CARAPI_(void) SplitFromConference(
-        /* [in] */ String callId);
+        /* [in] */ const String& callId);
 
     CARAPI_(void) MergeConference(
-        /* [in] */ String callId);
+        /* [in] */ const String& callId);
 
     CARAPI_(void) SwapConference(
-        /* [in] */ String callId);
+        /* [in] */ const String& callId);
 
     CARAPI_(void) OnPostDialContinue(
-        /* [in] */ String callId,
+        /* [in] */ const String& callId,
         /* [in] */ Boolean proceed);
 
     CARAPI_(void) OnAdapterAttached();
@@ -416,7 +416,7 @@ public:
     CARAPI_(void) OnAccountsInitialized();
 
     CARAPI_(void) AddConnection(
-        /* [in] */ String callId,
+        /* [in] */ const String& callId,
         /* [in] */ IConnection* connection);
 
     CARAPI_(void) RemoveConnection(
@@ -429,14 +429,14 @@ public:
         /* [in] */ IConference* conference);
 
     CARAPI_(AutoPtr<IConnection>) FindConnectionForAction(
-        /* [in] */ String callId,
-        /* [in] */ String action);
+        /* [in] */ const String& callId,
+        /* [in] */ const String& action);
 
     static CARAPI_(AutoPtr<IConnection>) GetNullConnection();
 
     CARAPI_(AutoPtr<IConference>) FindConferenceForAction(
-        /* [in] */ String conferenceId,
-        /* [in] */ String action);
+        /* [in] */ const String& conferenceId,
+        /* [in] */ const String& action);
 
     CARAPI_(AutoPtr<IList>) CreateConnectionIdList(
         /* [in] */ IList* connections);

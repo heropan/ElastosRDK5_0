@@ -2622,7 +2622,7 @@ void CConnectivityService::SendStickyBroadcastDelayed(
     }
 }
 
-void CConnectivityService::SystemReady()
+ECode CConnectivityService::SystemReady()
 {
     // start network sampling ..
     AutoPtr<IIntent> intent;
@@ -2667,6 +2667,7 @@ void CConnectivityService::SystemReady()
     mHandler->ObtainMessage(EVENT_SYSTEM_READY, (IMessage**)&msg);
     mHandler->SendMessage(msg, &result);
     mPermissionMonitor->StartMonitoring();
+    return NOERROR;
 }
 
 ECode CConnectivityService::CaptivePortalCheckCompleted(

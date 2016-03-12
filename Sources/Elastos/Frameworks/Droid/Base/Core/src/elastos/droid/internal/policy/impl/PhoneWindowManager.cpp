@@ -43,7 +43,7 @@
 #include "elastos/droid/R.h"
 #include "elastos/droid/server/LocalServices.h"
 #include "elastos/droid/media/CAudioAttributesBuilder.h"
-//TODO #include "elastos/droid/media/CRingtoneManagerHelper.h"
+#include "elastos/droid/media/CRingtoneManagerHelper.h"
 #include "elastos/droid/media/session/CMediaSessionLegacyHelperHelper.h"
 #include "elastos/droid/Manifest.h"
 #include "elastos/droid/view/animation/CAnimationUtils.h"
@@ -92,7 +92,7 @@ using Elastos::Droid::Internal::Policy::Impl::Keyguard::CKeyguardServiceDelegate
 using Elastos::Droid::Internal::Policy::Impl::Keyguard::EIID_IKeyguardServiceDelegateShowListener;
 using Elastos::Droid::Internal::Widget::CPointerLocationView;
 using Elastos::Droid::Media::CAudioAttributesBuilder;
-//TODO using Elastos::Droid::Media::CRingtoneManagerHelper;
+using Elastos::Droid::Media::CRingtoneManagerHelper;
 using Elastos::Droid::Media::IAudioAttributesBuilder;
 using Elastos::Droid::Media::IAudioManager;
 using Elastos::Droid::Media::IRingtone;
@@ -7030,9 +7030,13 @@ void PhoneWindowManager::UpdateUiMode()
     if (mUiModeManager == NULL) {
         AutoPtr<IInterface> tmpObj = ServiceManager::GetService(IContext::UI_MODE_SERVICE);
         mUiModeManager = IIUiModeManager::Probe(tmpObj);
+        assert(mUiModeManager != NULL);
     }
+
     //try {
+    if (mUiModeManager) {
         mUiModeManager->GetCurrentModeType(&mUiMode);
+    }
     //} catch (RemoteException e) {
     //}
 }
@@ -7105,6 +7109,7 @@ AutoPtr<IIntent> PhoneWindowManager::CreateHomeDockIntent()
         if (metaData != NULL) {
             Boolean bTemp;
             if (metaData->GetBoolean(IIntent::METADATA_DOCK_HOME, &bTemp), bTemp) {
+                intent = NULL;
                 CIntent::New((IIntent**)&intent);
                 String packageName;
                 String name;
@@ -7157,6 +7162,7 @@ Boolean PhoneWindowManager::GoHome()
         // This code brings home to the front or, if it is already
         // at the front, puts the device to sleep.
         // try {
+        String nullStr;
         Int32 testMode;
         SystemProperties::GetInt32(String("persist.sys.uts-test-mode"), 0, &testMode);
         if (testMode == 1) {
@@ -7173,11 +7179,10 @@ Boolean PhoneWindowManager::GoHome()
                 String type;
                 dock->ResolveTypeIfNeeded(resolver, &type);
                 Int32 result;
-                am->StartActivityAsUser(NULL, String(NULL), dock,
-                            type,
-                            NULL, String(NULL), 0,
-                            IActivityManager::START_FLAG_ONLY_IF_NEEDED,
-                            NULL, NULL, IUserHandle::USER_CURRENT, &result);
+                am->StartActivityAsUser(NULL, nullStr, dock,
+                    type, NULL, nullStr, 0,
+                    IActivityManager::START_FLAG_ONLY_IF_NEEDED,
+                    NULL, NULL, IUserHandle::USER_CURRENT, &result);
                 if (result == IActivityManager::START_RETURN_INTENT_TO_CALLER) {
                     return FALSE;
                 }
@@ -7186,10 +7191,12 @@ Boolean PhoneWindowManager::GoHome()
 
         AutoPtr<IContentResolver> resolver;
         mContext->GetContentResolver((IContentResolver**)&resolver);
-        String type, nullStr;
+        String type;
         mHomeIntent->ResolveTypeIfNeeded(resolver, &type);
         Int32 result;
-        am->StartActivityAsUser(NULL, String(NULL), mHomeIntent, type, NULL, nullStr, 0, IActivityManager::START_FLAG_ONLY_IF_NEEDED, NULL, NULL, IUserHandle::USER_CURRENT, &result);
+        am->StartActivityAsUser(NULL, nullStr, mHomeIntent, type, NULL, nullStr, 0,
+            IActivityManager::START_FLAG_ONLY_IF_NEEDED, NULL, NULL,
+            IUserHandle::USER_CURRENT, &result);
         if (result == IActivityManager::START_RETURN_INTENT_TO_CALLER) {
             return FALSE;
         }
@@ -7239,7 +7246,7 @@ void PhoneWindowManager::PerformAuditoryFeedbackForAccessibilityIfNeed()
     }
 
     AutoPtr<IRingtoneManagerHelper> helper;
-    //TODO CRingtoneManagerHelper::AcquireSingleton((IRingtoneManagerHelper**)&helper);
+    CRingtoneManagerHelper::AcquireSingleton((IRingtoneManagerHelper**)&helper);
     AutoPtr<IRingtone> ringTone;
     helper->GetRingtone(mContext, Settings::System::DEFAULT_NOTIFICATION_URI, (IRingtone**)&ringTone);
     ringTone->SetStreamType(IAudioManager::STREAM_MUSIC);
@@ -7321,10 +7328,10 @@ ECode PhoneWindowManager::PerformHapticFeedbackLw(
 
     if (pattern->GetLength() == 1) {
         // One-shot vibration
-        //TODO mVibrator->Vibrate(owningUid, owningPackage, (*pattern)[0], VIBRATION_ATTRIBUTES);
+        mVibrator->Vibrate(owningUid, owningPackage, (*pattern)[0], VIBRATION_ATTRIBUTES);
     } else {
         // Pattern vibration
-        //TODO mVibrator->Vibrate(owningUid, owningPackage, pattern, -1, VIBRATION_ATTRIBUTES);
+        mVibrator->Vibrate(owningUid, owningPackage, pattern, -1, VIBRATION_ATTRIBUTES);
     }
     *isSucceed = TRUE;
     return NOERROR;

@@ -904,7 +904,7 @@ ECode Connection::OnConferenceWith(
 }
 
 ECode Connection::ToLogSafePhoneNumber(
-    /* [in] */ String number,
+    /* [in] */ const String& number,
     /* [out] */ String* result)
 {
     VALIDATE_NOT_NULL(result)

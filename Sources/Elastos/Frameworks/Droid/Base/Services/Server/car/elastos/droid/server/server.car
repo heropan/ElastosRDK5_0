@@ -115,6 +115,7 @@ module
     using interface Elastos.Droid.App.IStopUserCallback;
     using interface Elastos.Droid.App.IWallpaperInfo;
     using interface Elastos.Droid.App.IPendingIntentOnFinished;
+    //using interface Elastos.Droid.App.Admin.IIDevicePolicyManager;
     using interface Elastos.Droid.App.Job.IJobService;
     using interface Elastos.Droid.Bluetooth.IIBluetoothManager;
     using interface Elastos.Droid.Bluetooth.IIBluetoothCallback;
@@ -425,6 +426,13 @@ module
         interface IBinder;
     }
 
+    class CUiModeManagerService {
+        constructor(
+            [in] IContext* ctx);
+
+        interface ISystemService;
+    }
+
     class CUiModeManagerBinderService {
         constructor(
             [in] ISystemService* uiModeManagerService);
@@ -575,13 +583,6 @@ module
 
 //         interface IIUserSwitchObserver;
 //         interface IBinder;
-//     }
-
-//     class CDevicePolicyManagerService {
-//         constructor(
-//             [in] IContext* ctx);
-
-//         interface IIDevicePolicyManager;
 //     }
 
 //     namespace Location {
@@ -1717,6 +1718,13 @@ module
     namespace Server {
     namespace AppWidget {
 
+    class CAppWidgetService {
+        constructor(
+            [in] IContext* ctx);
+
+        interface ISystemService;
+    }
+
     class CAppWidgetServiceImpl {
          constructor(
              [in] IContext* ctx);
@@ -1730,6 +1738,24 @@ module
     } // namespace Server
     } // namepsace Droid
     } // namespace Elastos
+
+    //namespace Elastos {
+    //namespace Droid {
+    //namespace Server {
+    //namespace DevicePolicy {
+
+    //class CDevicePolicyManagerService {
+    //     constructor(
+    //         [in] IContext* ctx);
+
+    //     interface IIDevicePolicyManager;
+    //     interface IBinder;
+    //}
+
+    //} // namespace DevicePolicy
+    //} // namespace Server
+    //} // namepsace Droid
+    //} // namespace Elastos
 
     namespace Elastos {
     namespace Droid {

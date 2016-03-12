@@ -36,7 +36,7 @@ public:
         Details(
             /* [in] */ IUri* handle,
             /* [in] */ Int32 handlePresentation,
-            /* [in] */ String callerDisplayName,
+            /* [in] */ const String& callerDisplayName,
             /* [in] */ Int32 callerDisplayNamePresentation,
             /* [in] */ IPhoneAccountHandle* accountHandle,
             /* [in] */ Int32 capabilities,
@@ -167,7 +167,7 @@ public:
     /** {@hide} */
     CARAPI constructor(
         /* [in] */ IPhone* phone,
-        /* [in] */ String telecomCallId,
+        /* [in] */ const String& telecomCallId,
         /* [in] */ IInCallAdapter* inCallAdapter);
 
     /**
@@ -194,7 +194,7 @@ public:
      */
     CARAPI Reject(
         /* [in] */ Boolean rejectWithMessage,
-        /* [in] */ String textMessage);
+        /* [in] */ const String& textMessage);
 
     /**
      * Instructs this {@code Call} to disconnect.
@@ -373,7 +373,7 @@ public:
 
     /** {@hide} */
     CARAPI InternalSetPostDialWait(
-        /* [in] */ String remaining);
+        /* [in] */ const String& remaining);
 
     /** {@hide} */
     CARAPI InternalSetDisconnected();
@@ -398,7 +398,7 @@ private:
         /* [in] */ IInCallServiceVideoCall* videoCall);
 
     CARAPI_(void) FirePostDialWait(
-        /* [in] */ String remainingPostDialSequence);
+        /* [in] */ const String& remainingPostDialSequence);
 
     CARAPI_(void) FireCallDestroyed();
 

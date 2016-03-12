@@ -634,7 +634,7 @@ public:
         /* [in] */ IConnection* otherConnection);
 
     static CARAPI ToLogSafePhoneNumber(
-        /* [in] */ String number,
+        /* [in] */ const String& number,
         /* [out] */ String* result);
 
     /**

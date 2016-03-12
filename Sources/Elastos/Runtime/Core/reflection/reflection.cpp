@@ -5,6 +5,8 @@
 #include "CEntryList.h"
 #include "CModuleInfo.h"
 
+#include <cutils/log.h>
+
 CObjInfoList g_objInfoList;
 
 ELAPI _CReflector_AcquireModuleInfo(

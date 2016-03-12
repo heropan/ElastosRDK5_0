@@ -16,13 +16,17 @@
 #include "elastos/droid/server/CTelephonyRegistry.h"
 #include "elastos/droid/server/CTextServicesManagerService.h"
 #include "elastos/droid/server/CVibratorService.h"
+#include "elastos/droid/server/CUiModeManagerService.h"
 
+//#include "elastos/droid/server/appwidget/CAppWidgetService.h"
 #include "elastos/droid/server/clipboard/CClipboardService.h"
 #include "elastos/droid/server/content/CContentService.h"
 #include "elastos/droid/server/lights/LightsService.h"
 #include "elastos/droid/server/notification/CNotificationManagerService.h"
 #include "elastos/droid/server/os/CSchedulingPolicyService.h"
+#include "elastos/droid/server/pm/CLauncherAppsService.h"
 #include "elastos/droid/server/power/ShutdownThread.h"
+// #include "elastos/droid/server/Twilight/CTwilightService.h"
 #include "elastos/droid/server/webkit/WebViewUpdateService.h"
 #include "elastos/droid/server/wm/InputMonitor.h"
 #include "elastos/droid/server/wm/CWindowManagerService.h"
@@ -84,12 +88,15 @@ using Elastos::Droid::Webkit::IWebViewFactory;
 using Elastos::Droid::Webkit::CWebViewFactory;
 using Elastos::Droid::Utility::CDisplayMetrics;
 
+// using Elastos::Droid::Server::AppWidget::CAppWidgetService;
 using Elastos::Droid::Server::Clipboard::CClipboardService;
 using Elastos::Droid::Server::Content::CContentService;
 using Elastos::Droid::Server::Lights::LightsService;
 using Elastos::Droid::Server::Notification::CNotificationManagerService;
 using Elastos::Droid::Server::Os::CSchedulingPolicyService;
+using Elastos::Droid::Server::Pm::CLauncherAppsService;
 using Elastos::Droid::Server::Power::ShutdownThread;
+// using Elastos::Droid::Server::Twilight::CTwilightService;
 using Elastos::Droid::Server::Webkit::WebViewUpdateService;
 using Elastos::Droid::Server::Wm::InputMonitor;
 
@@ -257,7 +264,6 @@ ECode SystemServer::Run()
 
     // Start services.
     {
-        Slogger::I(TAG, "Start services.");
         ec = StartBootstrapServices();
         FAIL_GOTO(ec, _EXIT_)
 
@@ -273,7 +279,7 @@ ECode SystemServer::Run()
     //     Slogger::I(TAG, "Enabled StrictMode for system server main thread.");
     // }
 
-    Slogger::I(TAG, "Loop forever..");
+    Slogger::I(TAG, ">>>>> System Server Loop forever <<<<<");
 
     // Loop forever.
     Looper::Loop();
@@ -638,10 +644,10 @@ ECode SystemServer::StartOtherServices()
         ReportWtf("making display ready", ec);
     }
 
-    ec = mPackageManagerService->PerformBootDexOpt();
-    if (FAILED(ec)) {
-        ReportWtf("making display ready", ec);
-    }
+    // ec = mPackageManagerService->PerformBootDexOpt();
+    // if (FAILED(ec)) {
+    //     ReportWtf("making display ready", ec);
+    // }
 
     AutoPtr<IResources> res;
     context->GetResources((IResources**)&res);
@@ -698,27 +704,27 @@ ECode SystemServer::StartOtherServices()
         }
 
         if (!disableNonCoreServices) {
-            Slogger::I(TAG, "Clipboard Service");
-            AutoPtr<IIClipboard> cb;
-            ec = CClipboardService::New(context, (IIClipboard**)&cb);
-            if (FAILED(ec)) Slogger::E(TAG, "failed to start Clipboard Service");
-            ServiceManager::AddService(IContext::CLIPBOARD_SERVICE, cb.Get());
+            Slogger::I(TAG, "Clipboard Service todo");
+            // AutoPtr<IIClipboard> cb;
+            // ec = CClipboardService::New(context, (IIClipboard**)&cb);
+            // if (FAILED(ec)) Slogger::E(TAG, "failed to start Clipboard Service");
+            // ServiceManager::AddService(IContext::CLIPBOARD_SERVICE, cb.Get());
         }
 
         if (!disableNetwork) {
-            Slogger::I(TAG, "NetworkManagement Service");
-            AutoPtr<INetworkManagementService> nms;
-            ec = CNetworkManagementService::Create(context, (INetworkManagementService**)&nms);
-            if (FAILED(ec)) Slogger::E(TAG, "failed to start NetworkManagement Service");
-            networkManagement = (CNetworkManagementService*)nms.Get();
-            ServiceManager::AddService(IContext::NETWORKMANAGEMENT_SERVICE, nms.Get());
+            Slogger::I(TAG, "NetworkManagement Service todo");
+            // AutoPtr<INetworkManagementService> nms;
+            // ec = CNetworkManagementService::Create(context, (INetworkManagementService**)&nms);
+            // if (FAILED(ec)) Slogger::E(TAG, "failed to start NetworkManagement Service");
+            // networkManagement = (CNetworkManagementService*)nms.Get();
+            // ServiceManager::AddService(IContext::NETWORKMANAGEMENT_SERVICE, nms.Get());
         }
 
         if (!disableNonCoreServices) {
-            Slogger::I(TAG, "Text Service Manager Service");
-            ec = CTextServicesManagerService::NewByFriend(context, (CTextServicesManagerService**)&tsms);
-            if (FAILED(ec)) Slogger::E(TAG, "failed to start Text Service Manager Service");
-            ServiceManager::AddService(IContext::TEXT_SERVICES_MANAGER_SERVICE, TO_IINTERFACE(tsms));
+            Slogger::I(TAG, "Text Service Manager Service todo");
+            // ec = CTextServicesManagerService::NewByFriend(context, (CTextServicesManagerService**)&tsms);
+            // if (FAILED(ec)) Slogger::E(TAG, "failed to start Text Service Manager Service");
+            // ServiceManager::AddService(IContext::TEXT_SERVICES_MANAGER_SERVICE, TO_IINTERFACE(tsms));
         }
 
         if (!disableNetwork) {
@@ -805,18 +811,18 @@ ECode SystemServer::StartOtherServices()
         //     if (FAILED(ec)) ReportWtf("making Account Manager Service ready", ec);
         // }
 
-        // if (contentService != NULL) {
-        //     ec = contentService->SystemReady();
-        //     if (FAILED(ec)) ReportWtf("making Content Service ready", ec);
-        // }
+        if (contentService != NULL) {
+            ec = contentService->SystemReady();
+            if (FAILED(ec)) ReportWtf("making Content Service ready", ec);
+        }
 
-        Slogger::I(TAG, "Notification Manager Service");
-        systemService = NULL;
-        ec = CNotificationManagerService::New(context, (ISystemService**)&systemService);
-        if (FAILED(ec)) ReportWtf("making Notification Manager Service ready", ec);
-        mSystemServiceManager->StartService(systemService.Get());
-        service = ServiceManager::GetService(IContext::NOTIFICATION_SERVICE);
-        notification = IINotificationManager::Probe(service);
+        Slogger::I(TAG, "Notification Manager Service todo");
+        // systemService = NULL;
+        // ec = CNotificationManagerService::New(context, (ISystemService**)&systemService);
+        // if (FAILED(ec)) ReportWtf("making Notification Manager Service ready", ec);
+        // mSystemServiceManager->StartService(systemService.Get());
+        // service = ServiceManager::GetService(IContext::NOTIFICATION_SERVICE);
+        // notification = IINotificationManager::Probe(service);
         // networkPolicy->BindNotificationManager(notification);
 
     //     mSystemServiceManager->StartService(DeviceStorageMonitorService.class);
@@ -859,10 +865,10 @@ ECode SystemServer::StartOtherServices()
 
         if (!disableNonCoreServices
             && (res->GetBoolean(R::bool_::config_enableWallpaperService, &bval), bval)) {
-            Slogger::I(TAG, "Wallpaper Service");
-            ec = CWallpaperManagerService::NewByFriend(context, (CWallpaperManagerService**)&wallpaper);
-            if (FAILED(ec)) ReportWtf("starting Wallpaper Service", ec);
-            ServiceManager::AddService(IContext::WALLPAPER_SERVICE, TO_IINTERFACE(wallpaper));
+            Slogger::I(TAG, "Wallpaper Service todo");
+            // ec = CWallpaperManagerService::NewByFriend(context, (CWallpaperManagerService**)&wallpaper);
+            // if (FAILED(ec)) ReportWtf("starting Wallpaper Service", ec);
+            // ServiceManager::AddService(IContext::WALLPAPER_SERVICE, TO_IINTERFACE(wallpaper));
         }
 
         if (!disableMedia &&
@@ -881,54 +887,71 @@ ECode SystemServer::StartOtherServices()
             // mSystemServiceManager->StartService(systemService.Get());
         }
 
-    //     if (!disableMedia) {
-    //         try {
-    //             Slogger::I(TAG, "Wired Accessory Manager");
-    //             // Listen for wired headset changes
-    //             inputManager.setWiredAccessoryCallbacks(
-    //                     new WiredAccessoryManager(context, inputManager));
-    //         } catch (Throwable e) {
-    //             ReportWtf("starting WiredAccessoryManager", ec);
-    //         }
-    //     }
+        // if (!disableMedia) {
+        //     try {
+        //         Slogger::I(TAG, "Wired Accessory Manager");
+        //         // Listen for wired headset changes
+        //         inputManager.setWiredAccessoryCallbacks(
+        //                 new WiredAccessoryManager(context, inputManager));
+        //     } catch (Throwable e) {
+        //         ReportWtf("starting WiredAccessoryManager", ec);
+        //     }
+        // }
 
-    //     if (!disableNonCoreServices) {
-    //         if (mPackageManager.hasSystemFeature(PackageManager.FEATURE_USB_HOST)
-    //                 || mPackageManager.hasSystemFeature(
-    //                         PackageManager.FEATURE_USB_ACCESSORY)) {
-    //             // Manage USB host and device support
-    //             mSystemServiceManager->StartService(USB_SERVICE_CLASS);
-    //         }
+        // if (!disableNonCoreServices) {
+        //     if (mPackageManager.hasSystemFeature(PackageManager.FEATURE_USB_HOST)
+        //             || mPackageManager.hasSystemFeature(
+        //                     PackageManager.FEATURE_USB_ACCESSORY)) {
+        //         // Manage USB host and device support
+        //         mSystemServiceManager->StartService(USB_SERVICE_CLASS);
+        //     }
 
-    //         try {
-    //             Slogger::I(TAG, "Serial Service");
-    //             // Serial port support
-    //             serial = new SerialService(context);
-    //             ServiceManager::AddService(IContext::SERIAL_SERVICE, serial);
-    //         } catch (Throwable e) {
-    //             Slog.e(TAG, "Failure starting SerialService", ec);
-    //         }
-    //     }
+        //     try {
+        //         Slogger::I(TAG, "Serial Service");
+        //         // Serial port support
+        //         serial = new SerialService(context);
+        //         ServiceManager::AddService(IContext::SERIAL_SERVICE, serial);
+        //     } catch (Throwable e) {
+        //         Slog.e(TAG, "Failure starting SerialService", ec);
+        //     }
+        // }
 
-    //     mSystemServiceManager->StartService(TwilightService.class);
+        Slogger::I(TAG, "Twilight Service todo");
+        // systemService = NULL;
+        // ec = CTwilightService::New(context, (ISystemService**)&systemService);
+        // if (FAILED(ec)) ReportWtf("making TwilightService ready", ec);
+        // mSystemServiceManager->StartService(systemService);
 
-    //     mSystemServiceManager->StartService(UiModeManagerService.class);
+        Slogger::I(TAG, "UiMode manager Service");
+        systemService = NULL;
+        ec = CUiModeManagerService::New(context, (ISystemService**)&systemService);
+        if (FAILED(ec)) ReportWtf("making UiMode manager Service ready", ec);
+        mSystemServiceManager->StartService(systemService);
 
-    //     mSystemServiceManager->StartService(JobSchedulerService.class);
+        //mSystemServiceManager->StartService(JobSchedulerService.class);
 
-    //     if (!disableNonCoreServices) {
-    //         if (mPackageManager.hasSystemFeature(PackageManager.FEATURE_BACKUP)) {
-    //             mSystemServiceManager->StartService(BACKUP_MANAGER_SERVICE_CLASS);
-    //         }
+        if (!disableNonCoreServices) {
 
-    //         if (mPackageManager.hasSystemFeature(PackageManager.FEATURE_APP_WIDGETS)) {
-    //             mSystemServiceManager->StartService(APPWIDGET_SERVICE_CLASS);
-    //         }
+            mPackageManager->HasSystemFeature(IPackageManager::FEATURE_BACKUP, &bval);
+            if (bval) {
+                Slogger::I(TAG, "Bacup manager Service todo");
+                //mSystemServiceManager->StartService(BACKUP_MANAGER_SERVICE_CLASS);
+            }
 
-    //         if (mPackageManager.hasSystemFeature(PackageManager.FEATURE_VOICE_RECOGNIZERS)) {
-    //             mSystemServiceManager->StartService(VOICE_RECOGNITION_MANAGER_SERVICE_CLASS);
-    //         }
-    //     }
+            mPackageManager->HasSystemFeature(IPackageManager::FEATURE_APP_WIDGETS, &bval);
+            if (bval) {
+                Slogger::I(TAG, "AppWidget Service");
+                // systemService = NULL;
+                // CAppWidgetService::New(context, (ISystemService**)&systemService);
+                // mSystemServiceManager->StartService(systemService);
+            }
+
+            mPackageManager->HasSystemFeature(IPackageManager::FEATURE_VOICE_RECOGNIZERS, &bval);
+            if (bval) {
+                Slogger::I(TAG, "Voice recognizer Service todo");
+                // mSystemServiceManager->StartService(VOICE_RECOGNITION_MANAGER_SERVICE_CLASS);
+            }
+        }
 
     //     try {
     //         Slogger::I(TAG, "DiskStats Service");
@@ -1030,9 +1053,11 @@ ECode SystemServer::StartOtherServices()
 
     //     }
 
-            // systemService = NULL;
-            // CLauncherAppsService::New((ISystemService**)&systemService);
-            // mSystemServiceManager->StartService(systemService.Get());
+        Slogger::I(TAG, "Launcher Apps Service");
+        systemService = NULL;
+        ec = CLauncherAppsService::New(context, (ISystemService**)&systemService);
+        if (FAILED(ec)) ReportWtf("making Launcher Apps Service ready", ec);
+        mSystemServiceManager->StartService(systemService.Get());
     }
 
     // if (!disableNonCoreServices) {
@@ -1054,21 +1079,21 @@ ECode SystemServer::StartOtherServices()
     // // MMS service broker
     // mmsService = mSystemServiceManager->StartService(MmsServiceBroker.class);
 
-    // // It is now time to start up the app processes...
+    // It is now time to start up the app processes...
 
-    ec =  vibrator->SystemReady();
+    ec = vibrator->SystemReady();
     if (FAILED(ec)) Slogger::E(TAG, "failed to making vibrator Service ready");
 
     if (lockSettings != NULL) {
-        ec = lockSettings->SystemReady();
-        if (FAILED(ec)) Slogger::E(TAG, "failed to making lockSettings Service ready");
+        // ec = lockSettings->SystemReady();
+        // if (FAILED(ec)) Slogger::E(TAG, "failed to making lockSettings Service ready");
     }
 
     // Needed by DevicePolicyManager for initialization
     mSystemServiceManager->StartBootPhase(ISystemService::PHASE_LOCK_SETTINGS_READY);
-
     mSystemServiceManager->StartBootPhase(ISystemService::PHASE_SYSTEM_SERVICES_READY);
 
+    Slogger::I(TAG, "Window Manager Service ready...");
     ec = wm->SystemReady();
     if (FAILED(ec)) {
         ReportWtf("making Window Manager Service ready", ec);
@@ -1099,6 +1124,7 @@ ECode SystemServer::StartOtherServices()
     //     ReportWtf("making Power Manager Service ready", ec);
     // }
 
+    Slogger::I(TAG, "Package Manager Service ready...");
     ec = mPackageManagerService->SystemReady();
     if (FAILED(ec)) {
         ReportWtf("making Package Manager Service ready", ec);
@@ -1109,6 +1135,8 @@ ECode SystemServer::StartOtherServices()
     if (FAILED(ec)) {
         ReportWtf("making Display Manager Service ready", ec);
     }
+
+    Slogger::I(TAG, "other services ready...");
 
     // These are needed to propagate to the runnable below.
     AutoPtr<ServiceBundle> bundle = new ServiceBundle();

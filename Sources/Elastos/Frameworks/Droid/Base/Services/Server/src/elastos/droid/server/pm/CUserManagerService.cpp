@@ -408,7 +408,8 @@ ECode CUserManagerService::GetProfiles(
     Int64 ident = Binder::ClearCallingIdentity();
     // try {
     synchronized (mPackagesLock) {
-        *result = GetProfilesLocked(userId, enabledOnly);
+        AutoPtr<IList> list = GetProfilesLocked(userId, enabledOnly);
+        *result = list;
         REFCOUNT_ADD(*result)
     }
     // } finally {

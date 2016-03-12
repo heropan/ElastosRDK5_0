@@ -123,7 +123,7 @@ using Elastos::Droid::Os::IUserHandleHelper;
 using Elastos::Droid::Os::CUserHandleHelper;
 using Elastos::Droid::Os::Storage::IIMountService;
 using Elastos::Droid::Os::Storage::IStorageManagerHelper;
-// using Elastos::Droid::Os::Storage::CStorageManagerHelper;
+using Elastos::Droid::Os::Storage::CStorageManagerHelper;
 using Elastos::Droid::Os::Storage::IStorageManager;
 using Elastos::Droid::Net::IUriHelper;
 using Elastos::Droid::Net::CUriHelper;
@@ -2456,9 +2456,7 @@ ECode CPackageManagerService::InstallParams::HandleStartCopy()
                         recommendedInstallLocation == IPackageHelper::RECOMMEND_FAILED_INSUFFICIENT_STORAGE)) {
             // TODO: focus freeing disk space on the target device
             AutoPtr<IStorageManagerHelper> helper;
-            assert(0);
-            // TODO: CStorageManagerHelper has not been realized;
-            // CStorageManagerHelper::AcquireSingleton((IStorageManagerHelper**)&helper);
+            CStorageManagerHelper::AcquireSingleton((IStorageManagerHelper**)&helper);
             AutoPtr<IStorageManager> storage;
             helper->From(mHost->mContext, (IStorageManager**)&storage);
             Int64 lowThreshold;
@@ -2879,10 +2877,7 @@ ECode CPackageManagerService::FileInstallArgs::CheckFreeStorage(
     FAIL_RETURN(imcs->CalculateInstalledSize(absolutePath, IsFwdLocked(), mAbiOverride, &sizeBytes))
 
     AutoPtr<IStorageManagerHelper> helper;
-    assert(0);
-    // TODO: CStorageManagerHelper has not been realized;
-    // CStorageManagerHelper::AcquireSingleton((IStorageManagerHelper**)&helper);
-    assert(0);
+    CStorageManagerHelper::AcquireSingleton((IStorageManagerHelper**)&helper);
     AutoPtr<IStorageManager> storage;
     helper->From(mHost->mContext, (IStorageManager**)&storage);
     Int64 bytes;
@@ -3235,9 +3230,7 @@ ECode CPackageManagerService::AsecInstallArgs::CheckFreeStorage(
     }
 
     AutoPtr<IStorageManagerHelper> helper;
-    assert(0);
-    // TODO:: CStorageManagerHelper has not been realized;
-    // CStorageManagerHelper::AcquireSingleton((IStorageManagerHelper**)&helper);
+    CStorageManagerHelper::AcquireSingleton((IStorageManagerHelper**)&helper);
     AutoPtr<IStorageManager> storage;
     helper->From(mHost->mContext, (IStorageManager**)&storage);
     Int64 bytes;
@@ -9207,8 +9200,7 @@ ECode CPackageManagerService::PerformBootDexOpt()
         Int64 total = sortedPkgs.GetSize();
         AutoPtr<IFile> dataDir = Environment::GetDataDirectory();
         AutoPtr<IStorageManagerHelper> storageManagerHelper;
-        assert(0);
-        // CStorageManagerHelper::AcquireSingleton((IStorageManagerHelper**)&storageManagerHelper);
+        CStorageManagerHelper::AcquireSingleton((IStorageManagerHelper**)&storageManagerHelper);
         AutoPtr<IStorageManager> storageManager;
         storageManagerHelper->From(mContext, (IStorageManager**)&storageManager);
         Int64 lowThreshold;

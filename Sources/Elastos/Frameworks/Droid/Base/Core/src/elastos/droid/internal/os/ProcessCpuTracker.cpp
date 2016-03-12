@@ -921,24 +921,21 @@ AutoPtr<ArrayOf<Int64> > ProcessCpuTracker::GetCpuSpeedTimes(
     String file = ReadFile(String("/sys/devices/system/cpu/cpu0/cpufreq/stats/time_in_state"), '\0');
     // Note: file may be null on kernels without cpufreq (i.e. the emulator's)
     if (!file.IsNull()) {
+        file = file.Replace('\n', ' ');
         AutoPtr< ArrayOf<String> > st;
-        StringUtils::Split(file, String("\n "), (ArrayOf<String>**)&st);
-        if (st && st->GetLength() > 0) {
+        StringUtils::Split(file, String(" "), (ArrayOf<String>**)&st);
+        if (st && st->GetLength() > 1) {
             for (Int32 i = 0; i < st->GetLength(); ++i) {
                 String token = (*st)[i];
-                //try {
                 (*tempSpeeds)[speed] = StringUtils::ParseInt64(token);
                 token = (*st)[++i];
                 (*tempTimes)[speed] = StringUtils::ParseInt64(token);
                 speed++;
                 if (speed == MAX_SPEEDS) break; // No more
-                // if (localLOGV && out == null) {
-                //     Slog.v(TAG, "First time : Speed/Time = " + tempSpeeds[speed - 1]
-                //           + "\t" + tempTimes[speed - 1]);
-                // }
-                //} catch (NumberFormatException nfe) {
-                //    Slog.i(TAG, "Unable to parse time_in_state");
-                //}
+                if (localLOGV && out == NULL) {
+                    Slogger::V(TAG, "First time : Speed/Time = %lld\t%lld",
+                        (*tempSpeeds)[speed - 1], (*tempTimes)[speed - 1]);
+                }
             }
         }
     }
@@ -1287,7 +1284,7 @@ String ProcessCpuTracker::ReadFile(
 
     if (len > 0) {
         Int32 i;
-        AutoPtr< ArrayOf<Char32> > intBuffer = ArrayOf<UInt32>::Alloc(len);
+        AutoPtr< ArrayOf<Char32> > intBuffer = ArrayOf<Char32>::Alloc(len);
         for (i = 0; i < len; i++) {
             (*intBuffer)[i] = (Char32)(*mBuffer)[i];
             if ((*mBuffer)[i] == endChar) {

@@ -56,6 +56,7 @@
 #include <elastos/droid/os/UserHandle.h>
 #include <elastos/droid/os/ServiceManager.h>
 #include <elastos/droid/view/LayoutInflater.h>
+#include <elastos/droid/provider/Settings.h>
 #include <elastos/droid/utility/TimeUtils.h>
 #include <elastos/droid/utility/Xml.h>
 #include <elastos/droid/R.h>
@@ -200,12 +201,10 @@ using Elastos::Droid::Os::SystemClock;
 using Elastos::Droid::Os::IProcessStartResult;
 using Elastos::Droid::Os::Storage::IIMountService;
 using Elastos::Droid::Os::Storage::IStorageManager;
+using Elastos::Droid::Provider::Settings;
 using Elastos::Droid::Provider::ISettingsSystem;
-using Elastos::Droid::Provider::CSettingsSystem;
 using Elastos::Droid::Provider::ISettingsGlobal;
-using Elastos::Droid::Provider::CSettingsGlobal;
 using Elastos::Droid::Provider::ISettingsSecure;
-using Elastos::Droid::Provider::CSettingsSecure;
 using Elastos::Droid::Server::AttributeCache;
 using Elastos::Droid::Server::CAppOpsService;
 using Elastos::Droid::Text::Format::IDateUtils;
@@ -1642,12 +1641,10 @@ ECode CActivityManagerService::WorkerThread::Run()
     }
 
     String setting = ISettingsGlobal::ERROR_LOGCAT_PREFIX + mDropboxTag;
-    AutoPtr<ISettingsGlobal> global;
-    CSettingsGlobal::AcquireSingleton((ISettingsGlobal**)&global);
     AutoPtr<IContentResolver> resolver;
     mHost->mContext->GetContentResolver((IContentResolver**)&resolver);
     Int32 lines;
-    global->GetInt32(resolver, setting, 0, &lines);
+    Settings::Global::GetInt32(resolver, setting, 0, &lines);
     if (lines > 0) {
         mSb->Append("\n");
 
@@ -4230,11 +4227,8 @@ ECode CActivityManagerService::StartSetupActivityLocked()
     // low-level factory test mode.
     AutoPtr<IContentResolver> resolver;
     mContext->GetContentResolver((IContentResolver**)&resolver);
-    AutoPtr<ISettingsGlobal> settingsGlobal;
-    CSettingsGlobal::AcquireSingleton((ISettingsGlobal**)&settingsGlobal);
     Int32 value;
-    settingsGlobal->GetInt32(resolver,
-            ISettingsGlobal::DEVICE_PROVISIONED, 0, &value);
+    Settings::Global::GetInt32(resolver, ISettingsGlobal::DEVICE_PROVISIONED, 0, &value);
     if (mFactoryTest != FactoryTest::FACTORY_TEST_LOW_LEVEL &&
             value != 0) {
         mCheckedForSetup = TRUE;
@@ -4268,6 +4262,7 @@ ECode CActivityManagerService::StartSetupActivityLocked()
             }
         }
 
+        String nullStr;
         if (ri != NULL) {
             AutoPtr<IActivityInfo> aInfo;
             ri->GetActivityInfo((IActivityInfo**)&aInfo);
@@ -4276,8 +4271,6 @@ ECode CActivityManagerService::StartSetupActivityLocked()
             String vers;
             if (metaData != NULL) {
                 metaData->GetString(IIntent::METADATA_SETUP_VERSION, &vers);
-            }else {
-                vers = String(NULL);
             }
             AutoPtr<IApplicationInfo> appInfo;
             IComponentInfo::Probe(aInfo)->GetApplicationInfo((IApplicationInfo**)&appInfo);
@@ -4287,11 +4280,9 @@ ECode CActivityManagerService::StartSetupActivityLocked()
                 appMetaData->GetString(
                        IIntent::METADATA_SETUP_VERSION, &vers);
             }
-            AutoPtr<ISettingsSecure> settingsSecure;
-            CSettingsSecure::AcquireSingleton((ISettingsSecure**)&settingsSecure);
+
             String lastVers;
-            settingsSecure->GetString(
-                    resolver, ISettingsSecure::LAST_SETUP_SHOWN, &lastVers);
+            Settings::Secure::GetString(resolver, ISettingsSecure::LAST_SETUP_SHOWN, &lastVers);
             if (!vers.IsNull() && !vers.Equals(lastVers)) {
                 intent->SetFlags(IIntent::FLAG_ACTIVITY_NEW_TASK);
                 String pkgName, name;
@@ -4301,8 +4292,8 @@ ECode CActivityManagerService::StartSetupActivityLocked()
                 CComponentName::New(pkgName, name, (IComponentName**)&component);
                 intent->SetComponent(component);
                 Int32 status;
-                mStackSupervisor->StartActivityLocked(NULL, intent, String(NULL), aInfo,
-                   NULL, NULL, NULL, String(NULL), 0, 0, 0, String(NULL), 0, 0, 0, NULL,
+                mStackSupervisor->StartActivityLocked(NULL, intent, nullStr, aInfo,
+                   NULL, NULL, NULL, nullStr, 0, 0, 0, nullStr, 0, 0, 0, NULL,
                    FALSE, NULL, NULL, NULL, &status);
             }
         }
@@ -6649,11 +6640,8 @@ ECode CActivityManagerService::AppNotResponding(
     // Unless configured otherwise, swallow ANRs in background processes & kill the process.
     AutoPtr<IContentResolver> resolver;
     mContext->GetContentResolver((IContentResolver**)&resolver);
-    AutoPtr<ISettingsSecure> secure;
-    CSettingsSecure::AcquireSingleton((ISettingsSecure**)&secure);
     Int32 value;
-    secure->GetInt32(resolver,
-           ISettingsSecure::ANR_SHOW_BACKGROUND, 0, &value);
+    Settings::Secure::GetInt32(resolver, ISettingsSecure::ANR_SHOW_BACKGROUND, 0, &value);
     Boolean showBackground = value != 0;
 
     {
@@ -7207,12 +7195,13 @@ ECode CActivityManagerService::ForceStopPackageLocked(
     /* [in] */ Int32 uid,
     /* [in] */ const String& reason)
 {
+    String nullStr;
     ForceStopPackageLocked(packageName, UserHandle::GetAppId(uid), FALSE,
             FALSE, TRUE, FALSE, FALSE, UserHandle::GetUserId(uid), reason);
     AutoPtr<IUriHelper> uriHelper;
     CUriHelper::AcquireSingleton((IUriHelper**)&uriHelper);
     AutoPtr<IUri> uri;
-    uriHelper->FromParts(String("package"), packageName, String(NULL), (IUri**)&uri);
+    uriHelper->FromParts(String("package"), packageName, nullStr, (IUri**)&uri);
     AutoPtr<IIntent> intent;
     CIntent::New(IIntent::ACTION_PACKAGE_RESTARTED,
             uri, (IIntent**)&intent);
@@ -7223,8 +7212,8 @@ ECode CActivityManagerService::ForceStopPackageLocked(
     intent->PutExtra(IIntent::EXTRA_UID, uid);
     intent->PutExtra(IIntent::EXTRA_USER_HANDLE, UserHandle::GetUserId(uid));
     Int32 result;
-    return BroadcastIntentLocked(NULL, String(NULL), intent,
-        String(NULL), NULL, 0, String(NULL), NULL, String(NULL), IAppOpsManager::OP_NONE,
+    return BroadcastIntentLocked(NULL, nullStr, intent,
+        nullStr, NULL, 0, nullStr, NULL, nullStr, IAppOpsManager::OP_NONE,
         FALSE, FALSE,
         MY_PID, IProcess::SYSTEM_UID, UserHandle::GetUserId(uid), &result);
 }
@@ -7233,15 +7222,16 @@ ECode CActivityManagerService::ForceStopUserLocked(
     /* [in] */ Int32 userId,
     /* [in] */ const String& reason)
 {
-    ForceStopPackageLocked(String(NULL), -1, FALSE, FALSE, TRUE, FALSE, FALSE, userId, reason);
+    String nullStr;
+    ForceStopPackageLocked(nullStr, -1, FALSE, FALSE, TRUE, FALSE, FALSE, userId, reason);
     AutoPtr<IIntent> intent;
     CIntent::New(IIntent::ACTION_USER_STOPPED, (IIntent**)&intent);
     intent->AddFlags(IIntent::FLAG_RECEIVER_REGISTERED_ONLY
             | IIntent::FLAG_RECEIVER_FOREGROUND);
     intent->PutExtra(IIntent::EXTRA_USER_HANDLE, userId);
     Int32 result;
-    BroadcastIntentLocked(NULL, String(NULL), intent,
-        String(NULL), NULL, 0, String(NULL), NULL, String(NULL), IAppOpsManager::OP_NONE,
+    BroadcastIntentLocked(NULL, nullStr, intent,
+        nullStr, NULL, 0, nullStr, NULL, nullStr, IAppOpsManager::OP_NONE,
         FALSE, FALSE,
         MY_PID, IProcess::SYSTEM_UID, IUserHandle::USER_ALL, &result);
     return NOERROR;
@@ -7678,14 +7668,14 @@ Boolean CActivityManagerService::AttachApplicationLocked(
     }
 
     if (app == NULL) {
-        String appApDes;
-        IBinder::Probe(thread)->ToString(&appApDes);
         Slogger::W(TAG, "No pending application record for pid %d (IApplicationThread %s); dropping process",
-                pid, appApDes.string());
+                pid, TO_CSTR(thread));
         //EventLog.writeEvent(EventLogTags.AM_DROP_PROCESS, pid);
         if (pid > 0 && pid != MY_PID) {
+            Int32 uid;
+            app->mInfo->GetUid(&uid);
             Process::KillProcessQuiet(pid);
-            //TODO: Process.killProcessGroup(app.info.uid, pid);
+            Process::KillProcessGroup(uid, pid);
         }
         else {
             thread->ScheduleExit();
@@ -7702,8 +7692,7 @@ Boolean CActivityManagerService::AttachApplicationLocked(
     // Tell the process all about itself.
 
     if (localLOGV) {
-        String appDes = app->ToString();
-        Slogger::V(TAG, "Binding process pid %d to record %s", pid, appDes.string());
+        Slogger::V(TAG, "Binding process pid %d to record %s", pid, TO_CSTR(app));
     }
 
     String processName = app->mProcessName;
@@ -7738,15 +7727,12 @@ Boolean CActivityManagerService::AttachApplicationLocked(
     }
 
     if (!normalMode) {
-        String appDes = app->ToString();
-        Slogger::I(TAG, "Launching preboot mode app: %s", appDes.string());
+        Slogger::I(TAG, "Launching preboot mode app: %s", TO_CSTR(app));
     }
 
     if (localLOGV) {
-        String appDes = app->ToString();
-        String appApDes;
-        IBinder::Probe(thread)->ToString(&appApDes);
-        Slogger::V(TAG, "New app %s record %s, thread=%s pid=%d", processName.string(), appDes.string(), appApDes.string(), pid);
+        Slogger::V(TAG, "New app %s record %s, thread=%s pid=%d",
+            processName.string(), TO_CSTR(app), TO_CSTR(thread), pid);
     }
 //    try {
     Int32 testMode = IApplicationThread::DEBUG_OFF;
@@ -7802,9 +7788,7 @@ Boolean CActivityManagerService::AttachApplicationLocked(
         EnsurePackageDexOpt(classPkgName);
     }
     if (DEBUG_CONFIGURATION) {
-        String confDes;
-        mConfiguration->ToString(&confDes);
-        Slogger::V(TAG, "Binding proc %s with config %s", processName.string(), confDes.string());
+        Slogger::V(TAG, "Binding proc %s with config %s", processName.string(), TO_CSTR(mConfiguration));
     }
     AutoPtr<IApplicationInfo> appInfo = app->mInstrumentationInfo != NULL
             ? app->mInstrumentationInfo : app->mInfo;
@@ -7845,8 +7829,7 @@ Boolean CActivityManagerService::AttachApplicationLocked(
     mPersistentStartingProcesses.Remove(app);
     if (DEBUG_PROCESSES && (Find(mProcessesOnHold.Begin(),
             mProcessesOnHold.End(), app) != mProcessesOnHold.End())) {
-        String appDes = app->ToString();
-        Slogger::V(TAG, "Attach application locked removing on hold: %s", appDes.string());
+        Slogger::V(TAG, "Attach application locked removing on hold: %s", TO_CSTR(app));
     }
     mProcessesOnHold.Remove(app);
 
@@ -7888,8 +7871,9 @@ Boolean CActivityManagerService::AttachApplicationLocked(
     }
     // Check whether the next backup agent is in this process...
     Int32 backupUid;
-    if (!badApp && mBackupTarget != NULL && (mBackupTarget->mAppInfo->GetUid(&backupUid), backupUid == app->mUid)) {
-        if (DEBUG_BACKUP) Slogger::V(TAG, "New app is backup target, launching agent for %p", app.Get());
+    if (!badApp && mBackupTarget != NULL
+        && (mBackupTarget->mAppInfo->GetUid(&backupUid), backupUid == app->mUid)) {
+        if (DEBUG_BACKUP) Slogger::V(TAG, "New app is backup target, launching agent for %s", TO_CSTR(app));
         String pkgName;
         IPackageItemInfo::Probe(mBackupTarget->mAppInfo)->GetPackageName(&pkgName);
         EnsurePackageDexOpt(pkgName);
@@ -13025,13 +13009,11 @@ ECode CActivityManagerService::SetDebugApp(
     if (persistent) {
         AutoPtr<IContentResolver> resolver;
         mContext->GetContentResolver((IContentResolver**)&resolver);
-        AutoPtr<ISettingsGlobal> settingsGlobal;
-        CSettingsGlobal::AcquireSingleton((ISettingsGlobal**)&settingsGlobal);
         Boolean result;
-        settingsGlobal->PutString(
+        Settings::Global::PutString(
             resolver, ISettingsGlobal::DEBUG_APP,
             packageName, &result);
-        settingsGlobal->PutInt32(
+        Settings::Global::PutInt32(
             resolver, ISettingsGlobal::WAIT_FOR_DEBUGGER,
             waitForDebugger ? 1 : 0, &result);
     }
@@ -13116,14 +13098,11 @@ ECode CActivityManagerService::SetAlwaysFinish(
     FAIL_RETURN(EnforceCallingPermission(Manifest::permission::SET_ALWAYS_FINISH,
         String("setAlwaysFinish()")));
 
-    AutoPtr<ISettingsGlobal> settingsGlobal;
-    CSettingsGlobal::AcquireSingleton((ISettingsGlobal**)&settingsGlobal);
     AutoPtr<IContentResolver> resolver;
     mContext->GetContentResolver((IContentResolver**)&resolver);
     Boolean result;
-    settingsGlobal->PutInt32(
-           resolver,
-           ISettingsGlobal::ALWAYS_FINISH_ACTIVITIES, enabled ? 1 : 0, &result);
+    Settings::Global::PutInt32(resolver,
+        ISettingsGlobal::ALWAYS_FINISH_ACTIVITIES, enabled ? 1 : 0, &result);
 
     AutoLock lock(this);
     mAlwaysFinishActivities = enabled;
@@ -13962,19 +13941,14 @@ ECode CActivityManagerService::RetrieveSettings()
 {
     AutoPtr<IContentResolver> resolver;
     mContext->GetContentResolver((IContentResolver**)&resolver);
-    AutoPtr<ISettingsGlobal> global;
-    CSettingsGlobal::AcquireSingleton((ISettingsGlobal**)&global);
     String debugApp;
-    global->GetString(
-        resolver, ISettingsGlobal::DEBUG_APP, &debugApp);
+    Settings::Global::GetString(resolver, ISettingsGlobal::DEBUG_APP, &debugApp);
     Int32 value;
-    global->GetInt32(
-        resolver, ISettingsGlobal::WAIT_FOR_DEBUGGER, 0, &value);
+    Settings::Global::GetInt32(resolver, ISettingsGlobal::WAIT_FOR_DEBUGGER, 0, &value);
     Boolean waitForDebugger = value != 0;
-    global->GetInt32(
-            resolver, ISettingsGlobal::ALWAYS_FINISH_ACTIVITIES, 0, &value);
+    Settings::Global::GetInt32(resolver, ISettingsGlobal::ALWAYS_FINISH_ACTIVITIES, 0, &value);
     Boolean alwaysFinishActivities = value != 0;
-    global->GetInt32(resolver, ISettingsGlobal::DEVELOPMENT_FORCE_RTL, 0, &value);
+    Settings::Global::GetInt32(resolver, ISettingsGlobal::DEVELOPMENT_FORCE_RTL, 0, &value);
     Boolean forceRtl = value != 0;
     // Transfer any global setting for forcing RTL layout, into a System Property
     AutoPtr<ISystemProperties> sysProps;
@@ -13983,9 +13957,7 @@ ECode CActivityManagerService::RetrieveSettings()
 
     AutoPtr<IConfiguration> configuration;
     CConfiguration::New((IConfiguration**)&configuration);
-    AutoPtr<ISettingsSystem> settingsSystem;
-    CSettingsSystem::AcquireSingleton((ISettingsSystem**)&settingsSystem);
-    settingsSystem->GetConfiguration(resolver, configuration);
+    Settings::System::GetConfiguration(resolver, configuration);
     if (forceRtl) {
         // This will take care of setting the correct layout direction flags
         AutoPtr<ILocale> locale;
@@ -14956,13 +14928,10 @@ ECode CActivityManagerService::HandleApplicationWtf(
     AutoPtr<ProcessRecord> r = HandleApplicationWtfInner(
         callingUid, callingPid, app, tag, crashInfo);
 
-    AutoPtr<ISettingsGlobal> global;
-    CSettingsGlobal::AcquireSingleton((ISettingsGlobal**)&global);
     AutoPtr<IContentResolver> resolver;
     mContext->GetContentResolver((IContentResolver**)&resolver);
     Int32 value;
-    global->GetInt32(resolver,
-            ISettingsGlobal::WTF_IS_FATAL, 0, &value);
+    Settings::Global::GetInt32(resolver, ISettingsGlobal::WTF_IS_FATAL, 0, &value);
     if (r != NULL && r->mPid != Process::MyPid() && value != 0) {
         CrashApplication(r, crashInfo);
         *result = TRUE;
@@ -20573,9 +20542,7 @@ ECode CActivityManagerService::UpdateConfiguration(
 
         const Int64 origId = Binder::ClearCallingIdentity();
         if (values != NULL) {
-            AutoPtr<ISettingsSystem> settingsSystem;
-            CSettingsSystem::AcquireSingleton((ISettingsSystem**)&settingsSystem);
-            settingsSystem->ClearConfiguration(values);
+            Settings::System::ClearConfiguration(values);
         }
         UpdateConfigurationLocked(values, NULL, FALSE, FALSE);
         Binder::RestoreCallingIdentity(origId);
@@ -20622,11 +20589,11 @@ Boolean CActivityManagerService::UpdateConfigurationLocked(
             }
             newConfig->SetSeq(mConfigurationSeq);
             mConfiguration = newConfig;
-            String confDes;
-            newConfig->ToString(&confDes);
-            Slogger::I(TAG, "Config changed:0x%x %s", changes, confDes.string());
-             mUsageStatsService->ReportConfigurationChange(newConfig, mCurrentUserId);
-            //mUsageStatsService.noteStartConfig(newConfig);
+            Slogger::I(TAG, "Config changed:0x%x %s", changes, TO_CSTR(newConfig));
+            if (mUsageStatsService != NULL) {
+                mUsageStatsService->ReportConfigurationChange(newConfig, mCurrentUserId);
+                //mUsageStatsService.noteStartConfig(newConfig);
+            }
 
             AutoPtr<IConfiguration> configCopy;
             CConfiguration::New(mConfiguration, (IConfiguration**)&configCopy);
@@ -20649,17 +20616,13 @@ Boolean CActivityManagerService::UpdateConfigurationLocked(
             // code is executed.
             mSystemThread->ApplyConfigurationToResources(configCopy);
 
-            AutoPtr<ISettingsSystem> ss;
-            CSettingsSystem::AcquireSingleton((ISettingsSystem**)&ss);
-            Boolean hasChanges;
-            ss->HasInterestingConfigurationChanges(changes, &hasChanges);
+            Boolean hasChanges = Settings::System::HasInterestingConfigurationChanges(changes);
             if (persistent && hasChanges) {
                 AutoPtr<IConfiguration> config;
                 CConfiguration::New(configCopy, (IConfiguration**)&config);
 
                 AutoPtr<IMessage> msg;
-                mHandler->ObtainMessage(UPDATE_CONFIGURATION_MSG,
-                    config->Probe(EIID_IInterface), (IMessage**)&msg);
+                mHandler->ObtainMessage(UPDATE_CONFIGURATION_MSG, config.Get(), (IMessage**)&msg);
                 Boolean result;
                 mHandler->SendMessage(msg, &result);
             }
@@ -20669,10 +20632,8 @@ Boolean CActivityManagerService::UpdateConfigurationLocked(
                 AutoPtr<ProcessRecord> app = *rit;
                 if (app->mThread != NULL) {
                     if (DEBUG_CONFIGURATION) {
-                        String confDes;
-                        mConfiguration->ToString(&confDes);
                         Slogger::V(TAG, "Sending to proc %s new config %s",
-                                app->mProcessName.string(), confDes.string());
+                            app->mProcessName.string(), TO_CSTR(mConfiguration));
                     }
                     app->mThread->ScheduleConfigurationChanged(configCopy);
                 }
@@ -20817,6 +20778,7 @@ ECode CActivityManagerService::GetLaunchedFromUid(
     /* [in] */ IBinder* activityToken,
     /* [out] */ Int32* result)
 {
+    VALIDATE_NOT_NULL(result)
     AutoPtr<ActivityRecord> srec = ActivityRecord::ForToken(activityToken);
     if (srec == NULL) {
         *result = -1;
@@ -20831,6 +20793,7 @@ ECode CActivityManagerService::GetLaunchedFromPackage(
     /* [in] */ IBinder* activityToken,
     /* [out] */ String* launchedFromPackage)
 {
+    VALIDATE_NOT_NULL(launchedFromPackage)
     AutoPtr<ActivityRecord> srec = ActivityRecord::ForToken(activityToken);
     if (srec == NULL) {
         *launchedFromPackage = NULL;
@@ -23047,6 +23010,7 @@ ECode CActivityManagerService::StartUser(
     /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result);
+    *result = FALSE;
     if (CheckCallingPermission(Manifest::permission::INTERACT_ACROSS_USERS_FULL)
             != IPackageManager::PERMISSION_GRANTED) {
         StringBuilder msg("Permission Denial: switchUser() from pid=");
@@ -23086,7 +23050,9 @@ ECode CActivityManagerService::StartUser(
             Boolean res;
             if (foreground && (userInfo->IsManagedProfile(&res), res)) {
                 Slogger::W(TAG, "Cannot switch to User #%d: not a full user", userId);
-                return FALSE;
+                *result = FALSE;
+                Binder::RestoreCallingIdentity(ident);
+                return NOERROR;
             }
 
             if (foreground) {
@@ -23175,6 +23141,7 @@ ECode CActivityManagerService::StartUser(
                 mHandler->SendMessageDelayed(msg, USER_SWITCH_TIMEOUT, &result);
             }
 
+            String nullStr;
             if (needStart) {
                 // Send USER_STARTED broadcast
                 AutoPtr<IIntent> intent;
@@ -23183,8 +23150,8 @@ ECode CActivityManagerService::StartUser(
                         | IIntent::FLAG_RECEIVER_FOREGROUND);
                 intent->PutExtra(IIntent::EXTRA_USER_HANDLE, userId);
                 Int32 bval;
-                BroadcastIntentLocked(NULL, String(NULL), intent,
-                    String(NULL), NULL, 0, String(NULL), NULL, String(NULL), IAppOpsManager::OP_NONE,
+                BroadcastIntentLocked(NULL, nullStr, intent,
+                    nullStr, NULL, 0, nullStr, NULL, nullStr, IAppOpsManager::OP_NONE,
                     FALSE, FALSE, MY_PID, IProcess::SYSTEM_UID, userId, &bval);
             }
 
@@ -23198,8 +23165,8 @@ ECode CActivityManagerService::StartUser(
                     AutoPtr<IIntentReceiver> receiver = new SwitchUserIntentReceiver(
                         this, uss, foreground, oldUserId,  userId);
                     Int32 bval;
-                    BroadcastIntentLocked(NULL, String(NULL), intent, String(NULL),
-                            receiver, 0, String(NULL), NULL, String(NULL), IAppOpsManager::OP_NONE,
+                    BroadcastIntentLocked(NULL, nullStr, intent, nullStr,
+                            receiver, 0, nullStr, NULL, nullStr, IAppOpsManager::OP_NONE,
                             TRUE, FALSE, MY_PID, IProcess::SYSTEM_UID,
                             userId, &bval);
                     uss->mInitializing = TRUE;
@@ -23227,10 +23194,10 @@ ECode CActivityManagerService::StartUser(
                 intent->PutExtra(IIntent::EXTRA_USER_HANDLE, userId);
                 AutoPtr<IIntentReceiver> receiver = new NeedStartIntentReceiver();
                 Int32 bval;
-                BroadcastIntentLocked(NULL, String(NULL), intent,
-                        String(NULL), receiver, 0, String(NULL), NULL,
-                        Manifest::permission::INTERACT_ACROSS_USERS, IAppOpsManager::OP_NONE,
-                        TRUE, FALSE, MY_PID, IProcess::SYSTEM_UID, IUserHandle::USER_ALL, &bval);
+                BroadcastIntentLocked(NULL, nullStr, intent,
+                    nullStr, receiver, 0, nullStr, NULL,
+                    Manifest::permission::INTERACT_ACROSS_USERS, IAppOpsManager::OP_NONE,
+                    TRUE, FALSE, MY_PID, IProcess::SYSTEM_UID, IUserHandle::USER_ALL, &bval);
             }
         }
     // } finally {
@@ -23964,12 +23931,10 @@ AutoPtr<IActivityInfo> CActivityManagerService::GetActivityInfoForUser(
 void CActivityManagerService::HandleShowErrorMsg(
     /* [in] */ StringObjectHashMap* data)
 {
-    AutoPtr<ISettingsSecure> secure;
     AutoPtr<IContentResolver> resolver;
     mContext->GetContentResolver((IContentResolver**)&resolver);
-    CSettingsSecure::AcquireSingleton((ISettingsSecure**)&secure);
     Int32 value;
-    secure->GetInt32(resolver, ISettingsSecure::ANR_SHOW_BACKGROUND, 0, &value);
+    Settings::Secure::GetInt32(resolver, ISettingsSecure::ANR_SHOW_BACKGROUND, 0, &value);
     Boolean showBackground = value != 0;
     {
         AutoLock lock(this);
@@ -24130,10 +24095,8 @@ void CActivityManagerService::HandleUpdateConfigurationMsg(
 {
     AutoPtr<IContentResolver> resolver;
     mContext->GetContentResolver((IContentResolver**)&resolver);
-    AutoPtr<ISettingsSystem> ss;
-    CSettingsSystem::AcquireSingleton((ISettingsSystem**)&ss);
     Boolean hasPut;
-    ss->PutConfiguration(resolver, config, &hasPut);
+    Settings::System::PutConfiguration(resolver, config, &hasPut);
 }
 
 void CActivityManagerService::HandleGCBackgroundProcessesMsg()

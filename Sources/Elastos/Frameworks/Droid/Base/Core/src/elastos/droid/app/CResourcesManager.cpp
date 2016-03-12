@@ -200,6 +200,7 @@ ECode CResourcesManager::GetTopLevelResources(
 {
     VALIDATE_NOT_NULL(result)
     *result = NULL;
+    assert(compatInfo != NULL);
 
     Float scale;
     compatInfo->GetApplicationScale(&scale);

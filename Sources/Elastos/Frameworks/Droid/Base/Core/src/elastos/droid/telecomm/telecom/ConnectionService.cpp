@@ -43,7 +43,7 @@ CAR_INTERFACE_IMPL(ConnectionService::MyHandler::MyRunnable, Object, IRunnable)
 
 ConnectionService::MyHandler::MyRunnable::MyRunnable(
     /* [in] */ IPhoneAccountHandle* connectionManagerPhoneAccount,
-    /* [in] */ String id,
+    /* [in] */ const String& id,
     /* [in] */ IConnectionRequest* request,
     /* [in] */ Boolean isIncoming,
     /* [in] */ Boolean isUnknown,
@@ -670,7 +670,7 @@ ECode ConnectionService::OnUnbind(
 
 void ConnectionService::CreateConnection(
     /* [in] */ IPhoneAccountHandle* callManagerAccount,
-    /* [in] */ String callId,
+    /* [in] */ const String& callId,
     /* [in] */ IConnectionRequest* request,
     /* [in] */ Boolean isIncoming,
     /* [in] */ Boolean isUnknown)
@@ -770,7 +770,7 @@ void ConnectionService::CreateConnection(
 }
 
 void ConnectionService::Abort(
-    /* [in] */ String callId)
+    /* [in] */ const String& callId)
 {
     Logger::D("ConnectionService", "abort %s", (const char*)callId);
     AutoPtr<IConnection> c = FindConnectionForAction(callId, String("abort"));
@@ -778,7 +778,7 @@ void ConnectionService::Abort(
 }
 
 void ConnectionService::AnswerVideo(
-    /* [in] */ String callId,
+    /* [in] */ const String& callId,
     /* [in] */ Int32 videoState)
 {
     Logger::D("ConnectionService", "answerVideo %s", (const char*)callId);
@@ -787,7 +787,7 @@ void ConnectionService::AnswerVideo(
 }
 
 void ConnectionService::Answer(
-    /* [in] */ String callId)
+    /* [in] */ const String& callId)
 {
     Logger::D("ConnectionService", "answer %s", (const char*)callId);
     AutoPtr<IConnection> c = FindConnectionForAction(callId, String("answer"));
@@ -795,7 +795,7 @@ void ConnectionService::Answer(
 }
 
 void ConnectionService::Reject(
-    /* [in] */ String callId)
+    /* [in] */ const String& callId)
 {
     Logger::D("ConnectionService", "reject %s", (const char*)callId);
     AutoPtr<IConnection> c = FindConnectionForAction(callId, String("reject"));
@@ -803,7 +803,7 @@ void ConnectionService::Reject(
 }
 
 void ConnectionService::Disconnect(
-    /* [in] */ String callId)
+    /* [in] */ const String& callId)
 {
     Logger::D("ConnectionService", "disconnect %s", (const char*)callId);
     AutoPtr<ICharSequence> pId;
@@ -820,7 +820,7 @@ void ConnectionService::Disconnect(
 }
 
 void ConnectionService::Hold(
-    /* [in] */ String callId)
+    /* [in] */ const String& callId)
 {
     Logger::D("ConnectionService", "hold %s", (const char*)callId);
     AutoPtr<ICharSequence> pId;
@@ -837,7 +837,7 @@ void ConnectionService::Hold(
 }
 
 void ConnectionService::Unhold(
-    /* [in] */ String callId)
+    /* [in] */ const String& callId)
 {
     Logger::D("ConnectionService", "unhold %s", (const char*)callId);
     AutoPtr<ICharSequence> pId;
@@ -854,7 +854,7 @@ void ConnectionService::Unhold(
 }
 
 void ConnectionService::OnAudioStateChanged(
-    /* [in] */ String callId,
+    /* [in] */ const String& callId,
     /* [in] */ IAudioState* audioState)
 {
     Logger::D("ConnectionService", "onAudioStateChanged %s %p", (const char*)callId, audioState);
@@ -872,7 +872,7 @@ void ConnectionService::OnAudioStateChanged(
 }
 
 void ConnectionService::PlayDtmfTone(
-    /* [in] */ String callId,
+    /* [in] */ const String& callId,
     /* [in] */ Char32 digit)
 {
     Logger::D("ConnectionService", "playDtmfTone %s %c", (const char*)callId, digit);
@@ -890,7 +890,7 @@ void ConnectionService::PlayDtmfTone(
 }
 
 void ConnectionService::StopDtmfTone(
-    /* [in] */ String callId)
+    /* [in] */ const String& callId)
 {
     Logger::D("ConnectionService", "stopDtmfTone %s", (const char*)callId);
     AutoPtr<ICharSequence> pId;
@@ -907,8 +907,8 @@ void ConnectionService::StopDtmfTone(
 }
 
 void ConnectionService::Conference(
-    /* [in] */ String callId1,
-    /* [in] */ String callId2)
+    /* [in] */ const String& callId1,
+    /* [in] */ const String& callId2)
 {
     Logger::D("ConnectionService", "conference %s, %s", (const char*)callId1, (const char*)callId2);
 
@@ -936,7 +936,7 @@ void ConnectionService::Conference(
 }
 
 void ConnectionService::SplitFromConference(
-    /* [in] */ String callId)
+    /* [in] */ const String& callId)
 {
     Logger::D("ConnectionService", "splitFromConference(%s)", (const char*)callId);
 
@@ -954,7 +954,7 @@ void ConnectionService::SplitFromConference(
 }
 
 void ConnectionService::MergeConference(
-    /* [in] */ String callId)
+    /* [in] */ const String& callId)
 {
     Logger::D("ConnectionService", "mergeConference(%s)", (const char*)callId);
     AutoPtr<IConference> conference = FindConferenceForAction(callId, String("mergeConference"));
@@ -964,7 +964,7 @@ void ConnectionService::MergeConference(
 }
 
 void ConnectionService::SwapConference(
-    /* [in] */ String callId)
+    /* [in] */ const String& callId)
 {
     Logger::D("ConnectionService", "swapConference(%s)", (const char*)callId);
     AutoPtr<IConference> conference = FindConferenceForAction(callId, String("swapConference"));
@@ -974,7 +974,7 @@ void ConnectionService::SwapConference(
 }
 
 void ConnectionService::OnPostDialContinue(
-    /* [in] */ String callId,
+    /* [in] */ const String& callId,
     /* [in] */ Boolean proceed)
 {
     Logger::D("ConnectionService", "onPostDialContinue(%s)", (const char*)callId);
@@ -1165,7 +1165,7 @@ void ConnectionService::OnAccountsInitialized()
 }
 
 void ConnectionService::AddConnection(
-    /* [in] */ String callId,
+    /* [in] */ const String& callId,
     /* [in] */ IConnection* connection)
 {
     AutoPtr<ICharSequence> pId;
@@ -1235,8 +1235,8 @@ void ConnectionService::RemoveConference(
 }
 
 AutoPtr<IConnection> ConnectionService::FindConnectionForAction(
-    /* [in] */ String callId,
-    /* [in] */ String action)
+    /* [in] */ const String& callId,
+    /* [in] */ const String& action)
 {
     AutoPtr<ICharSequence> pId;
     CString::New(callId, (ICharSequence**)&pId);
@@ -1260,8 +1260,8 @@ AutoPtr<IConnection> ConnectionService::GetNullConnection()
 }
 
 AutoPtr<IConference> ConnectionService::FindConferenceForAction(
-    /* [in] */ String conferenceId,
-    /* [in] */ String action)
+    /* [in] */ const String& conferenceId,
+    /* [in] */ const String& action)
 {
     AutoPtr<ICharSequence> pId;
     CString::New(conferenceId, (ICharSequence**)&pId);

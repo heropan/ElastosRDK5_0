@@ -19,6 +19,7 @@ using Elastos::Droid::View::IKeyCharacterMap;
 using Elastos::Droid::View::CInputDevice;
 using Elastos::Droid::View::CPointerIconHelper;
 using Elastos::Droid::View::IPointerIconHelper;
+using Elastos::Droid::Hardware::Input::CInputDeviceIdentifier;
 
 namespace Elastos {
 namespace Droid {
@@ -112,12 +113,10 @@ static AutoPtr<IMotionEvent> CreateMotionEventFromNative(
     AutoPtr<IMotionEventHelper> helper;
     CMotionEventHelper::AcquireSingleton((IMotionEventHelper**)&helper);
     AutoPtr<IMotionEvent> eventObj;
-    assert(0);
-    // TODO
-    // ECode ec = helper->Obtain((IMotionEvent**)&eventObj);
-    // if (FAILED(ec)) {
-    //     return NULL;
-    // }
+    ECode ec = helper->Obtain((IMotionEvent**)&eventObj);
+    if (FAILED(ec)) {
+        return NULL;
+    }
 
     Handle64 native;
     eventObj->GetNative(&native);
@@ -443,12 +442,12 @@ static AutoPtr<IInputDevice> InputDevice_create(
 
     AutoPtr<IInputDevice> inputDevice;
     CInputDevice::New(
-            deviceInfo.getId(), deviceInfo.getGeneration(),
-            deviceInfo.getControllerNumber(), nameObj,
-            static_cast<int32_t>(ident.vendor), static_cast<int32_t>(ident.product),
-            descriptorObj, deviceInfo.isExternal(), deviceInfo.getSources(),
-            deviceInfo.getKeyboardType(), kcmObj.Get(), deviceInfo.hasVibrator(),
-            deviceInfo.hasButtonUnderPad(), (IInputDevice**)&inputDevice);
+        deviceInfo.getId(), deviceInfo.getGeneration(),
+        deviceInfo.getControllerNumber(), nameObj,
+        static_cast<int32_t>(ident.vendor), static_cast<int32_t>(ident.product),
+        descriptorObj, deviceInfo.isExternal(), deviceInfo.getSources(),
+        deviceInfo.getKeyboardType(), kcmObj.Get(), deviceInfo.hasVibrator(),
+        deviceInfo.hasButtonUnderPad(), (IInputDevice**)&inputDevice);
 
     const android::Vector<android::InputDeviceInfo::MotionRange>& ranges = deviceInfo.getMotionRanges();
     for (size_t i = 0; i < ranges.size(); i++) {
@@ -491,10 +490,8 @@ android::sp<android::KeyCharacterMap> NativeInputManager::getKeyboardLayoutOverl
 
     String descriptor(identifier.descriptor.string());
     AutoPtr<IInputDeviceIdentifier> identifierObj;
-    assert(0);
-    // TODO:
-    // CInputDeviceIdentifier::New(descriptor, identifier.vendor, identifier.product,
-    //         (IInputDeviceIdentifier**)&identifierObj);
+    CInputDeviceIdentifier::New(descriptor, identifier.vendor, identifier.product,
+            (IInputDeviceIdentifier**)&identifierObj);
     AutoPtr<ArrayOf<String> > arrayObj = mService->GetKeyboardLayoutOverlay(identifierObj);
     if (arrayObj) {
         String filenameChars = (*arrayObj)[0];
@@ -930,8 +927,7 @@ void NativeInputManager::pokeUserActivity(
     /* [in] */ nsecs_t eventTime,
     /* [in] */ int32_t eventType)
 {
-    assert(0);
-    // TODO:
+    // assert(0 && "TODO");
     // android_server_PowerManagerService_userActivity(eventTime, eventType);
 }
 

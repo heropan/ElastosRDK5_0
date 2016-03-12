@@ -26,7 +26,7 @@ CAR_INTERFACE_IMPL(Call::Details, Object, ICallDetails)
 Call::Details::Details(
     /* [in] */ IUri* handle,
     /* [in] */ Int32 handlePresentation,
-    /* [in] */ String callerDisplayName,
+    /* [in] */ const String& callerDisplayName,
     /* [in] */ Int32 callerDisplayNamePresentation,
     /* [in] */ IPhoneAccountHandle* accountHandle,
     /* [in] */ Int32 capabilities,
@@ -281,7 +281,7 @@ ECode Call::Answer(
 
 ECode Call::Reject(
     /* [in] */ Boolean rejectWithMessage,
-    /* [in] */ String textMessage)
+    /* [in] */ const String& textMessage)
 {
     return mInCallAdapter->RejectCall(mTelecomCallId, rejectWithMessage, textMessage);
 }
@@ -456,7 +456,7 @@ ECode Call::RemoveListener(
 
 ECode Call::constructor(
     /* [in] */ IPhone* phone,
-    /* [in] */ String telecomCallId,
+    /* [in] */ const String& telecomCallId,
     /* [in] */ IInCallAdapter* inCallAdapter)
 {
     mPhone = phone;
@@ -636,7 +636,7 @@ ECode Call::InternalUpdate(
 }
 
 ECode Call::InternalSetPostDialWait(
-    /* [in] */ String remaining)
+    /* [in] */ const String& remaining)
 {
     mRemainingPostDialSequence = remaining;
     FirePostDialWait(mRemainingPostDialSequence);
@@ -739,7 +739,7 @@ void Call::FireVideoCallChanged(
 }
 
 void Call::FirePostDialWait(
-    /* [in] */ String remainingPostDialSequence)
+    /* [in] */ const String& remainingPostDialSequence)
 {
     AutoPtr<IIterator> it;
     mListeners->GetIterator((IIterator**)&it);

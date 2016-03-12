@@ -136,7 +136,7 @@ namespace App {
 
 const String CActivityThread::TAG("CActivityThread");
 const Boolean CActivityThread::localLOGV = FALSE;
-const Boolean CActivityThread::DEBUG_MESSAGES = FALSE;
+const Boolean CActivityThread::DEBUG_MESSAGES = TRUE;
 const Boolean CActivityThread::DEBUG_BROADCAST = FALSE;
 const Boolean CActivityThread::DEBUG_RESULTS = FALSE;
 const Boolean CActivityThread::DEBUG_BACKUP = FALSE;
@@ -4671,12 +4671,18 @@ AutoPtr< List<AutoPtr<IComponentCallbacks2> > > CActivityThread::CollectComponen
     /* [in] */ IConfiguration* newConfig)
 {
     AutoPtr< List<AutoPtr<IComponentCallbacks2> > > callbacks = new List<AutoPtr<IComponentCallbacks2> >();
+    IComponentCallbacks* cc;
+    IComponentCallbacks2* cc2;
 
     {
         AutoLock lock(mResourcesManager);
         List<AutoPtr<IApplication> >::Iterator it;
         for (it = mAllApplications.Begin(); it != mAllApplications.End(); ++it) {
-            callbacks->PushBack(IComponentCallbacks2::Probe(*it));
+            cc = IComponentCallbacks::Probe(*it);
+            assert(cc);
+            cc2 = IComponentCallbacks2::Probe(*it);
+            assert(cc2);
+            callbacks->PushBack(cc2);
         }
 
         if (mActivities.Begin() != mActivities.End()) {
@@ -4694,7 +4700,11 @@ AutoPtr< List<AutoPtr<IComponentCallbacks2> > > CActivityThread::CollectComponen
                     if (!isFinish && (allActivities || !ar->mPaused)) {
                         // If the activity is currently resumed, its configuration
                         // needs to change right now.
-                        callbacks->PushBack(IComponentCallbacks2::Probe(a));
+                        cc = IComponentCallbacks::Probe(a);
+                        assert(cc);
+                        cc2 = IComponentCallbacks2::Probe(a);
+                        assert(cc2);
+                        callbacks->PushBack(cc2);
                     }
                     else if (thisConfig != NULL) {
                         // Otherwise, we will tell it about the change
@@ -4715,7 +4725,11 @@ AutoPtr< List<AutoPtr<IComponentCallbacks2> > > CActivityThread::CollectComponen
             HashMap<AutoPtr<IBinder>, AutoPtr<IService> >:: Iterator it;
             for (it = mServices.Begin(); it != mServices.End(); ++it) {
                 AutoPtr<IService> service = it->mSecond;
-                callbacks->PushBack(IComponentCallbacks2::Probe(service));
+                cc = IComponentCallbacks::Probe(service);
+                assert(cc);
+                cc2 = IComponentCallbacks2::Probe(service);
+                assert(cc2);
+                callbacks->PushBack(cc2);
             }
         }
     }
@@ -4725,7 +4739,11 @@ AutoPtr< List<AutoPtr<IComponentCallbacks2> > > CActivityThread::CollectComponen
             HashMap<AutoPtr<IBinder>, AutoPtr<ProviderClientRecord> >::Iterator it;
             for (it = mLocalProviders.Begin(); it != mLocalProviders.End(); ++it) {
                 AutoPtr<ProviderClientRecord> providerClientRecord = it->mSecond;
-                callbacks->PushBack(IComponentCallbacks2::Probe(providerClientRecord->mLocalProvider));
+                cc = IComponentCallbacks::Probe(providerClientRecord->mLocalProvider);
+                assert(cc);
+                cc2 = IComponentCallbacks2::Probe(providerClientRecord->mLocalProvider);
+                assert(cc2);
+                callbacks->PushBack(cc2);
             }
         }
     }
@@ -4773,7 +4791,7 @@ ECode CActivityThread::PerformConfigurationChanged(
     if (DEBUG_CONFIGURATION)
         Slogger::V(TAG, "Config callback %p: shouldChangeConfig=%d", cb, shouldChangeConfig);
     if (shouldChangeConfig) {
-        activity->OnConfigurationChanged(config);
+        IComponentCallbacks::Probe(cb)->OnConfigurationChanged(config);
 
         if (activity != NULL) {
             Boolean isCalled;

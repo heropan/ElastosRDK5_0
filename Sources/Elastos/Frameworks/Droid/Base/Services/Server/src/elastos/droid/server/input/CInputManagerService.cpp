@@ -18,12 +18,14 @@
 #include "elastos/droid/os/Process.h"
 #include "elastos/droid/os/UserHandle.h"
 #include "elastos/droid/utility/Xml.h"
+#include "elastos/droid/provider/Settings.h"
 #include "elastos/droid/view/NativeInputChannel.h"
 #include "elastos/droid/server/input/CInputFilterHost.h"
 #include "elastos/droid/server/input/NativeInputWindowHandle.h"
 #include "elastos/droid/server/input/CInputManagerService.h"
 #include "elastos/droid/server/DisplayThread.h"
 #include "elastos/droid/server/LocalServices.h"
+#include "elastos/droid/server/Watchdog.h"
 #include "elastos/droid/Manifest.h"
 #include "elastos/droid/R.h"
 #include <elastos/core/AutoLock.h>
@@ -72,9 +74,10 @@ using Elastos::Droid::Os::NativeMessageQueue;
 using Elastos::Droid::Os::Process;
 using Elastos::Droid::Os::UserHandle;
 using Elastos::Droid::Os::EIID_IBinder;
+using Elastos::Droid::Provider::Settings;
 using Elastos::Droid::Provider::ISettings;
-using Elastos::Droid::Provider::CSettingsSystem;
 using Elastos::Droid::Provider::ISettingsSystem;
+using Elastos::Droid::Server::Watchdog;
 using Elastos::Droid::Utility::CSparseArray;
 using Elastos::Droid::Utility::IAttributeSet;
 using Elastos::Droid::Utility::Xml;
@@ -1087,11 +1090,8 @@ ECode CInputManagerService::Start()
     Slogger::I(TAG, "Starting input manager");
     FAIL_RETURN(NativeStart());
 
-    // TODO:
     // Add ourself to the Watchdog monitors.
-    // AutoPtr<IWatchdog> watchdog;
-    // CWatchdog::AcquireSingleton((IWatchdog**)&watchdog);
-    // watchdog->AddMonitor(IMonitor::Probe(this));
+    Watchdog::GetInstance()->AddMonitor(this);
 
     RegisterPointerSpeedSettingObserver();
     RegisterShowTouchesSettingObserver();
@@ -2389,10 +2389,8 @@ void CInputManagerService::RegisterPointerSpeedSettingObserver()
     AutoPtr<ContentObserverInRegisterPointerSpeedSettingObserver> settingsObserver =
             new ContentObserverInRegisterPointerSpeedSettingObserver(this, mHandler);
 
-    AutoPtr<ISettingsSystem> ss;
-    CSettingsSystem::AcquireSingleton((ISettingsSystem**)&ss);
     AutoPtr<IUri> uri;
-    ss->GetUriFor(ISettingsSystem::POINTER_SPEED, (IUri**)&uri);
+    Settings::System::GetUriFor(ISettingsSystem::POINTER_SPEED, (IUri**)&uri);
     AutoPtr<IContentResolver> resolver;
     mContext->GetContentResolver((IContentResolver**)&resolver);
     resolver->RegisterContentObserver(uri, TRUE, settingsObserver, IUserHandle::USER_ALL);
@@ -2403,11 +2401,9 @@ Int32 CInputManagerService::GetPointerSpeedSetting()
     Int32 speed = IInputManager::DEFAULT_POINTER_SPEED;
     AutoPtr<IContentResolver> resolver;
     mContext->GetContentResolver((IContentResolver**)&resolver);
-    AutoPtr<ISettingsSystem> ss;
-    CSettingsSystem::AcquireSingleton((ISettingsSystem**)&ss);
-    ss->GetInt32ForUser(
-            resolver, ISettingsSystem::POINTER_SPEED,
-            IUserHandle::USER_CURRENT, &speed);
+    Settings::System::GetInt32ForUser(
+        resolver, ISettingsSystem::POINTER_SPEED,
+        IUserHandle::USER_CURRENT, &speed);
     return speed;
 }
 
@@ -2421,10 +2417,8 @@ void CInputManagerService::RegisterShowTouchesSettingObserver()
 {
     AutoPtr<ContentObserverInRegisterShowTouchesSettingObserver> settingsObserver =
             new ContentObserverInRegisterShowTouchesSettingObserver(this, mHandler);
-    AutoPtr<ISettingsSystem> ss;
-    CSettingsSystem::AcquireSingleton((ISettingsSystem**)&ss);
     AutoPtr<IUri> uri;
-    ss->GetUriFor(ISettingsSystem::SHOW_TOUCHES, (IUri**)&uri);
+    Settings::System::GetUriFor(ISettingsSystem::SHOW_TOUCHES, (IUri**)&uri);
     AutoPtr<IContentResolver> resolver;
     mContext->GetContentResolver((IContentResolver**)&resolver);
     resolver->RegisterContentObserver(uri, TRUE, settingsObserver, IUserHandle::USER_ALL);
@@ -2436,9 +2430,7 @@ Int32 CInputManagerService::GetShowTouchesSetting(
     Int32 result = defaultValue;
     AutoPtr<IContentResolver> resolver;
     mContext->GetContentResolver((IContentResolver**)&resolver);
-    AutoPtr<ISettingsSystem> ss;
-    CSettingsSystem::AcquireSingleton((ISettingsSystem**)&ss);
-    ss->GetInt32ForUser(
+    Settings::System::GetInt32ForUser(
             resolver, ISettingsSystem::SHOW_TOUCHES,
             IUserHandle::USER_CURRENT, &result);
     return result;

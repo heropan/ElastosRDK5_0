@@ -399,7 +399,9 @@ ECode UiModeManagerService::OnStart()
     Settings::Secure::GetInt32(resolver, ISettingsSecure::UI_NIGHT_MODE,
         IUiModeManager::MODE_NIGHT_AUTO, &mNightMode);
 
-    mTwilightManager->RegisterListener(mTwilightListener, mHandler);
+    if (mTwilightManager != NULL) {
+        mTwilightManager->RegisterListener(mTwilightListener, mHandler);
+    }
 
     CUiModeManagerBinderService::New(this, (IIUiModeManager**)&mService);
     PublishBinderService(IContext::UI_MODE_SERVICE, IBinder::Probe(mService));
@@ -849,10 +851,12 @@ ECode UiModeManagerService::UpdateTwilight()
 
 ECode UiModeManagerService::UpdateComputedNightModeLocked()
 {
-    AutoPtr<ITwilightState> state;
-    mTwilightManager->GetCurrentState((ITwilightState **)&state);
-    if (state != NULL) {
-        state->IsNight(&mComputedNightMode);
+    if (mTwilightManager) {
+        AutoPtr<ITwilightState> state;
+        mTwilightManager->GetCurrentState((ITwilightState **)&state);
+        if (state != NULL) {
+            state->IsNight(&mComputedNightMode);
+        }
     }
     return NOERROR;
 }

@@ -45,7 +45,8 @@ using Elastos::Droid::Graphics::CRegion;
 using Elastos::Droid::Graphics::GraphicsNative;
 using Elastos::Droid::Graphics::INinePatchInsetStruct;
 using Elastos::Core::AutoLock;
-using Elastos::Core::CCloseGuard;
+using Elastos::Core::ICloseGuardHelper;
+using Elastos::Core::CCloseGuardHelper;
 using Elastos::Utility::Logging::Slogger;
 
 namespace Elastos {
@@ -103,7 +104,9 @@ SurfaceControl::SurfaceControl()
     : mNativeObject(0)
     , mName(NULL)
 {
-    CCloseGuard::New((ICloseGuard**)&mCloseGuard);
+    AutoPtr<ICloseGuardHelper> helper;
+    CCloseGuardHelper::AcquireSingleton((ICloseGuardHelper**)&helper);
+    helper->Get((ICloseGuard**)&mCloseGuard);
 }
 
 SurfaceControl::~SurfaceControl()
