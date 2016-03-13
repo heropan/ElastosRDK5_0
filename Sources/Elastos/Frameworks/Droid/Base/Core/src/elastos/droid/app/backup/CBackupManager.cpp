@@ -170,7 +170,7 @@ ECode CBackupManager::BeginRestoreSession(
             return ec;
         }
         if (binder != NULL) {
-            return CRestoreSession::New(mContext, binder, )session);
+            return CRestoreSession::New(mContext, binder, session);
         }
         //} catch (RemoteException e) {
         //    Log.w(TAG, "beginRestoreSession() couldn't connect");

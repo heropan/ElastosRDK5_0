@@ -7032,11 +7032,8 @@ void PhoneWindowManager::UpdateUiMode()
         mUiModeManager = IIUiModeManager::Probe(tmpObj);
         assert(mUiModeManager != NULL);
     }
-
     //try {
-    if (mUiModeManager) {
         mUiModeManager->GetCurrentModeType(&mUiMode);
-    }
     //} catch (RemoteException e) {
     //}
 }

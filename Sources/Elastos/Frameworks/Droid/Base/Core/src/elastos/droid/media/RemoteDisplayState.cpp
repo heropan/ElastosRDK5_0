@@ -11,7 +11,6 @@ namespace Media {
 //==========================================================================
 //          RemoteDisplayState::RemoteDisplayInfo
 //==========================================================================
-
 RemoteDisplayState::RemoteDisplayInfo::RemoteDisplayInfo()
 {}
 
@@ -237,7 +236,6 @@ ECode RemoteDisplayState::RemoteDisplayInfo::SetPresentationDisplayId(
 //==========================================================================
 //          RemoteDisplayState
 //==========================================================================
-
 RemoteDisplayState::RemoteDisplayState()
 {}
 

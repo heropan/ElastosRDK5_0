@@ -34,8 +34,8 @@
 #include "elastos/droid/internal/utility/XmlUtils.h"
 #include "elastos/droid/R.h"
 #include "elastos/droid/Manifest.h"
-#include <elastos/core/StringUtils.h>
 #include <elastos/core/CoreUtils.h>
+#include <elastos/core/StringUtils.h>
 #include <elastos/utility/Arrays.h>
 #include <elastos/utility/logging/Logger.h>
 #include <elastos/utility/logging/Slogger.h>

@@ -400,6 +400,7 @@ CResources::CResources()
     ASSERT_SUCCEEDED(CConfiguration::NewByFriend((CConfiguration**)&mTmpConfig));
 
     mTypedArrayPool = new Pools::SynchronizedPool<ITypedArray>(5);
+
     mCachedXmlBlockIds = ArrayOf<Int32>::Alloc(4);
     mCachedXmlBlocks = ArrayOf<XmlBlock*>::Alloc(4);
 

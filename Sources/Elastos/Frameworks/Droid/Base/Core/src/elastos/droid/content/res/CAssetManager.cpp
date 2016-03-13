@@ -938,6 +938,7 @@ ECode CAssetManager::SetConfiguration(
     if (am == NULL) {
         return NOERROR;
     }
+
     android::ResTable_config config;
     memset(&config, 0, sizeof(config));
 

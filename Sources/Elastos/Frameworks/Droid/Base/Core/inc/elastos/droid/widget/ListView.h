@@ -16,7 +16,6 @@ using Elastos::Droid::View::IKeyEvent;
 using Elastos::Droid::View::IView;
 using Elastos::Droid::Widget::IListAdapter;
 
-
 /**
  * A view that shows items in a vertically scrolling list. The items
  * come from the {@link ListAdapter} associated with this view.

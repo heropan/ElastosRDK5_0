@@ -749,8 +749,7 @@ void EnterTransitionCoordinator::PrepareEnter()
         if (background != NULL) {
             AutoPtr<IWindow> window;
             window->SetBackgroundDrawable(NULL);
-            AutoPtr<IDrawable> tmp = background;
-            tmp->Mutate();
+            background->Mutate();
             background->SetAlpha(0);
             window->SetBackgroundDrawable(background);
         }
@@ -979,8 +978,7 @@ void EnterTransitionCoordinator::StartEnterTransition(
         AutoPtr<IDrawable> background;
         decorView->GetBackground((IDrawable**)&background);
         if (background != NULL) {
-            AutoPtr<IDrawable> tmp = background;
-            tmp->Mutate();
+            background->Mutate();
             AutoPtr<IWindow> window;
             GetWindow((IWindow**)&window);
             window->SetBackgroundDrawable(background);

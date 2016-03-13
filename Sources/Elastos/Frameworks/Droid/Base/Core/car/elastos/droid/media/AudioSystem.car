@@ -518,7 +518,6 @@ module
         GetAudioHwSyncForSession(
             [in] Int32 sessionId,
             [out] Int32* result);
-
     }
 
     } // namespace Media

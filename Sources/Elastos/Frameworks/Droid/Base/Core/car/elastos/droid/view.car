@@ -419,15 +419,15 @@ module
         interface IDispatcherState;
     }
 
-    //     [local]
-    //     class CDragShadowBuilder {
-    //         constructor();
+     [local]
+     class CDragShadowBuilder {
+         constructor();
 
-    //         constructor(
-    //             [in] IView* view);
+         constructor(
+             [in] IView* view);
 
-    //         interface IDragShadowBuilder;
-    //     }
+         interface IDragShadowBuilder;
+     }
 
     singleton class CGravity {
         interface IGravity;

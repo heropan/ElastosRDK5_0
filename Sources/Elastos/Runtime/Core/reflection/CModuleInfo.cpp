@@ -4,8 +4,6 @@
 #include "CModuleInfo.h"
 // #include "_pubcrt.h"
 
-#include <cutils/log.h>
-
 CModuleInfo::CModuleInfo(
     /* [in] */ CClsModule* clsModule,
     /* [in] */ const String& path)

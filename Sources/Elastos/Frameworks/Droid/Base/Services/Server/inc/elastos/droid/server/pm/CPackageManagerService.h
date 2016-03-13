@@ -3184,7 +3184,6 @@ private:
     static AutoPtr<IComparator> sResolvePrioritySorter;
     static AutoPtr<IComparator> sProviderInitOrderSorter;
 
-
     Boolean mMediaMounted;
 
     static Int32 sLastScanError;

@@ -57,8 +57,6 @@ void ActivityManagerNative::NoteWakeupAlarm(
     GetDefault()->NoteWakeupAlarm(target, sourceUid, sourcePkg);
 }
 
-
-
 } // namespace App
 } // namespace Droid
 } // namespace Elastos
