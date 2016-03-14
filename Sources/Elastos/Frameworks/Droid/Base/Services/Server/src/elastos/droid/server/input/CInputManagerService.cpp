@@ -1884,15 +1884,19 @@ void CInputManagerService::VisitKeyboardLayoutsInPackage(
     /* [in] */ Int32 requestedPriority,
     /* [in] */ IKeyboardLayoutVisitor* visitor)
 {
+    IPackageItemInfo* pi = IPackageItemInfo::Probe(receiver);
+    IComponentInfo* ci = IComponentInfo::Probe(receiver);
+    assert(pi != NULL && ci != NULL);
+
     AutoPtr<IBundle> metaData;
-    IPackageItemInfo::Probe(receiver)->GetMetaData((IBundle**)&metaData);
+    pi->GetMetaData((IBundle**)&metaData);
     if (metaData == NULL) {
         return;
     }
 
     String packageName, receiverName;
-    IPackageItemInfo::Probe(receiver)->GetPackageName(&packageName);
-    IPackageItemInfo::Probe(receiver)->GetName(&receiverName);
+    pi->GetPackageName(&packageName);
+    pi->GetName(&receiverName);
 
     Int32 configResId;
     metaData->GetInt32(IInputManager::META_DATA_KEYBOARD_LAYOUTS, &configResId);
@@ -1904,16 +1908,16 @@ void CInputManagerService::VisitKeyboardLayoutsInPackage(
     }
 
     AutoPtr<ICharSequence> receiverLabel;
-    IPackageItemInfo::Probe(receiver)->LoadLabel(pm, (ICharSequence**)&receiverLabel);
+    pi->LoadLabel(pm, (ICharSequence**)&receiverLabel);
     String collection("");
     if (receiverLabel != NULL) {
         receiverLabel->ToString(&collection);
     }
     Int32 priority;
-    AutoPtr<IApplicationInfo> info;
-    IComponentInfo::Probe(receiver)->GetApplicationInfo((IApplicationInfo**)&info);
+    AutoPtr<IApplicationInfo> appInfo;
+    ci->GetApplicationInfo((IApplicationInfo**)&appInfo);
     Int32 flags;
-    if (info->GetFlags(&flags), (flags & IApplicationInfo::FLAG_SYSTEM) != 0) {
+    if (appInfo->GetFlags(&flags), (flags & IApplicationInfo::FLAG_SYSTEM) != 0) {
         priority = requestedPriority;
     }
     else {
@@ -1921,12 +1925,10 @@ void CInputManagerService::VisitKeyboardLayoutsInPackage(
     }
 
     ECode ec;
-    AutoPtr<IApplicationInfo> appInfo;
     AutoPtr<IResources> resources;
     AutoPtr<IXmlResourceParser> parser;
     AutoPtr<IXmlPullParser> pullParser;
 
-    IComponentInfo::Probe(receiver)->GetApplicationInfo((IApplicationInfo**)&appInfo);
     ec = pm->GetResourcesForApplication(appInfo, (IResources**)&resources);
     FAIL_GOTO(ec, _Exit3_);
     ec = resources->GetXml(configResId, (IXmlResourceParser**)&parser);

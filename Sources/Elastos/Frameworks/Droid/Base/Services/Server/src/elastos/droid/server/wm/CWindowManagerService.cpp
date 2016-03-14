@@ -8950,6 +8950,13 @@ const Int32 CWindowManagerService::H::SHOW_CIRCULAR_DISPLAY_MASK = 35;
 const Int32 CWindowManagerService::H::SHOW_EMULATOR_DISPLAY_OVERLAY = 36;
 const Int32 CWindowManagerService::H::CHECK_IF_BOOT_ANIMATION_FINISHED = 37;
 
+CWindowManagerService::H::H(
+    /* [in] */ CWindowManagerService * host)
+    : mHost(host)
+{
+    Handler::constructor();
+}
+
 ECode CWindowManagerService::H::HandleMessage(
     /* [in] */ IMessage* msg)
 {

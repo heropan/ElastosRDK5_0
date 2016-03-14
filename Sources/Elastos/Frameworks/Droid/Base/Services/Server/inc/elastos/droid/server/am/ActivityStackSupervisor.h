@@ -7,7 +7,7 @@
 #include "elastos/droid/server/am/ActivityRecord.h"
 #include "elastos/droid/server/am/CActivityManagerService.h"
 #include "elastos/droid/server/am/LockTaskNotify.h"
-//TODO #include "elastos/droid/server/wm/CWindowManagerService.h"
+#include "elastos/droid/server/wm/CWindowManagerService.h"
 
 using Elastos::Droid::App::Admin::IDevicePolicyManager;
 using Elastos::Droid::App::Admin::IIDevicePolicyManager;
@@ -35,7 +35,7 @@ using Elastos::Droid::Os::ILooper;
 using Elastos::Droid::Os::IMessage;
 using Elastos::Droid::Os::IPowerManagerWakeLock;
 using Elastos::Droid::Server::Am::IUserStartedState;
-//TODO using Elastos::Droid::Server::Wm::CWindowManagerService;
+using Elastos::Droid::Server::Wm::CWindowManagerService;
 using Elastos::Droid::Service::Voice::IIVoiceInteractionSession;
 using Elastos::Droid::Utility::ISparseArray;
 using Elastos::Droid::Utility::ISparseInt32Array;
@@ -345,7 +345,7 @@ public:
     virtual CARAPI InitPowerManagement();
 
     virtual CARAPI SetWindowManager(
-        /* [in] */ /*TODO CWindowManagerService*/IInterface* wm);
+        /* [in] */ CWindowManagerService* wm);
 
     virtual CARAPI NotifyActivityDrawnForKeyguard();
 
@@ -818,7 +818,7 @@ public:
     AutoPtr<CActivityManagerService> mService;
     AutoPtr<ActivityStackSupervisorHandler> mHandler;
     /** Short cut */
-    //TODO AutoPtr<CWindowManagerService> mWindowManager;
+    AutoPtr<CWindowManagerService> mWindowManager;
     AutoPtr<IDisplayManager> mDisplayManager;
     /** List of activities that are waiting for a new activity to become visible before completing
       * whatever operation they are supposed to do. */

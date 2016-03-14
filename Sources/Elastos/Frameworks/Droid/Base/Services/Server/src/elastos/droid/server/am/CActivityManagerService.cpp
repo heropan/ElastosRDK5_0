@@ -2812,7 +2812,7 @@ void CActivityManagerService::SetWindowManager(
     /* [in] */ CWindowManagerService* wm)
 {
     mWindowManager = wm;
-    mStackSupervisor->SetWindowManager(TO_IINTERFACE(wm));
+    mStackSupervisor->SetWindowManager(wm);
 }
 
 void CActivityManagerService::SetUsageStatsManager(
@@ -3842,6 +3842,7 @@ ECode CActivityManagerService::StartProcessLocked(
     /* [in] */ const String& _entryPoint,
     /* [in] */ ArrayOf<String>* entryPointArgs)
 {
+    ECode ec = NOERROR;
     String entryPoint = _entryPoint;
     Int64 startTime = SystemClock::GetElapsedRealtime();
     if (app->mPid > 0 && app->mPid != MY_PID) {
@@ -3998,10 +3999,15 @@ ECode CActivityManagerService::StartProcessLocked(
     String seinfo;
     app->mInfo->GetSeinfo(&seinfo);
     AutoPtr<IProcessStartResult> startResult;
-    Process::Start(sourcePath.EndWith(".apk") ? entryPoint : String("CActivityThreadHelper"),
+    ec = Process::Start(sourcePath.EndWith(".apk") ? entryPoint : String("CActivityThreadHelper"),
         app->mProcessName, uid, uid, gids, debugFlags, mountExternal,
         targetSdkVersion, seinfo, requiredAbi, instructionSet, dataDir,
         entryPointArgs, (IProcessStartResult**)&startResult);
+    if (FAILED(ec)) {
+        Slogger::E(TAG, "faield to StartProcessLocked %s, ProcessName:%s",
+            sourcePath.string(), app->mProcessName.string());
+        assert(0 && "TODO");
+    }
     CheckTime(startTime, String("startProcess: returned from zygote!"));
 
     Int32 infoUid;
@@ -4154,8 +4160,9 @@ Boolean CActivityManagerService::StartHomeActivityLocked(
     AutoPtr<IActivityInfo> aInfo = ResolveActivityInfo(intent, STOCK_PM_FLAGS, userId);
     Slogger::I(TAG, "StartHomeActivityLocked, ResolveActivityInfo: %s", TO_CSTR(aInfo));
     if (aInfo != NULL) {
+        IComponentInfo* ci = IComponentInfo::Probe(aInfo);
         AutoPtr<IApplicationInfo> appInfo;
-        IComponentInfo::Probe(aInfo)->GetApplicationInfo((IApplicationInfo**)&appInfo);
+        ci->GetApplicationInfo((IApplicationInfo**)&appInfo);
 
         String cname, name, pname;
         IPackageItemInfo::Probe(appInfo)->GetPackageName(&cname);
@@ -4166,17 +4173,23 @@ Boolean CActivityManagerService::StartHomeActivityLocked(
 
         // Don't do this if the home app is currently being
         // instrumented.
-        AutoPtr<IActivityInfo> newActivityInfo;
-        CActivityInfo::New(aInfo, (IActivityInfo**)&newActivityInfo);
+        AutoPtr<IActivityInfo> temp = aInfo;
+        aInfo = NULL;
+        CActivityInfo::New(temp, (IActivityInfo**)&aInfo);
+        ci = IComponentInfo::Probe(aInfo);
+
+        appInfo = NULL;
+        ci->GetApplicationInfo((IApplicationInfo**)&appInfo);
+
         AutoPtr<IApplicationInfo> newAppInfo = GetAppInfoForUser(appInfo, userId);
-        IComponentInfo::Probe(newActivityInfo)->SetApplicationInfo(newAppInfo);
+        ci->SetApplicationInfo(newAppInfo);
+
         Int32 uid;
         newAppInfo->GetUid(&uid);
-        IComponentInfo::Probe(newActivityInfo)->GetProcessName(&pname);
+        ci->GetProcessName(&pname);
         AutoPtr<ProcessRecord> app = GetProcessRecordLocked(pname, uid, TRUE);
         if (app == NULL || app->mInstrumentationClass == NULL) {
             Int32 flags;
-            String nullStr;
             intent->GetFlags(&flags);
             intent->SetFlags(flags | IIntent::FLAG_ACTIVITY_NEW_TASK);
             mStackSupervisor->StartHomeActivity(intent, aInfo);
@@ -4210,6 +4223,9 @@ AutoPtr<IActivityInfo> CActivityManagerService::ResolveActivityInfo(
 
             if (info != NULL) {
                 info->GetActivityInfo((IActivityInfo**)&ai);
+            }
+            else {
+                Slogger::E(TAG, "Failed to resolve activity info for %s", TO_CSTR(intent));
             }
         }
 //    } catch (RemoteException e) {
@@ -4269,19 +4285,22 @@ ECode CActivityManagerService::StartSetupActivityLocked()
         if (ri != NULL) {
             AutoPtr<IActivityInfo> aInfo;
             ri->GetActivityInfo((IActivityInfo**)&aInfo);
+            IPackageItemInfo* pi = IPackageItemInfo::Probe(aInfo);
             AutoPtr<IBundle> metaData;
-            IPackageItemInfo::Probe(aInfo)->GetMetaData((IBundle**)&metaData);
+            pi->GetMetaData((IBundle**)&metaData);
             String vers;
             if (metaData != NULL) {
                 metaData->GetString(IIntent::METADATA_SETUP_VERSION, &vers);
             }
-            AutoPtr<IApplicationInfo> appInfo;
-            IComponentInfo::Probe(aInfo)->GetApplicationInfo((IApplicationInfo**)&appInfo);
-            AutoPtr<IBundle> appMetaData;
-            IPackageItemInfo::Probe(appInfo)->GetMetaData((IBundle**)&appMetaData);
-            if (vers.IsNull() && appMetaData != NULL) {
-                appMetaData->GetString(
-                       IIntent::METADATA_SETUP_VERSION, &vers);
+
+            if (vers.IsNull()) {
+                AutoPtr<IApplicationInfo> appInfo;
+                IComponentInfo::Probe(pi)->GetApplicationInfo((IApplicationInfo**)&appInfo);
+                AutoPtr<IBundle> appMetaData;
+                IPackageItemInfo::Probe(appInfo)->GetMetaData((IBundle**)&appMetaData);
+                if (appMetaData != NULL) {
+                    appMetaData->GetString(IIntent::METADATA_SETUP_VERSION, &vers);
+                }
             }
 
             String lastVers;
@@ -4289,8 +4308,8 @@ ECode CActivityManagerService::StartSetupActivityLocked()
             if (!vers.IsNull() && !vers.Equals(lastVers)) {
                 intent->SetFlags(IIntent::FLAG_ACTIVITY_NEW_TASK);
                 String pkgName, name;
-                IPackageItemInfo::Probe(aInfo)->GetPackageName(&pkgName);
-                IPackageItemInfo::Probe(aInfo)->GetName(&name);
+                pi->GetPackageName(&pkgName);
+                pi->GetName(&name);
                 AutoPtr<IComponentName> component;
                 CComponentName::New(pkgName, name, (IComponentName**)&component);
                 intent->SetComponent(component);
@@ -14143,14 +14162,15 @@ Boolean CActivityManagerService::DeliverPreBootCompleted(
         if (userId == IUserHandle::USER_OWNER) {
             AutoPtr<IList> lastDoneReceivers = ReadLastDonePreBootReceivers();
             ris->GetSize(&size);
+            String packageName, name;
             for (Int32 i = 0; i < size; i++) {
                 AutoPtr<IInterface> item;
                 ris->Get(i, (IInterface**)&item);
                 AutoPtr<IActivityInfo> ai;
                 IResolveInfo::Probe(item)->GetActivityInfo((IActivityInfo**)&ai);
-                String packageName, name;
-                IPackageItemInfo::Probe(ai)->GetPackageName(&packageName);
-                IPackageItemInfo::Probe(ai)->GetName(&name);
+                IPackageItemInfo* pi = IPackageItemInfo::Probe(ai);
+                pi->GetPackageName(&packageName);
+                pi->GetName(&name);
                 AutoPtr<IComponentName> comp;
                 CComponentName::New(packageName, name, (IComponentName**)&comp);
                 Boolean contains;
@@ -14169,17 +14189,20 @@ Boolean CActivityManagerService::DeliverPreBootCompleted(
         // If primary user, send broadcast to all available users, else just to userId
         AutoPtr<ArrayOf<Int32> > users = userId == IUserHandle::USER_OWNER ? GetUsersLocked()
                 : AutoPtr<ArrayOf<Int32> >(ArrayOf<Int32>::Alloc(1));
-        if (userId != IUserHandle::USER_OWNER)
-             (*users)[0] = userId;
+        if (userId != IUserHandle::USER_OWNER) {
+            (*users)[0] = userId;
+        }
+
         ris->GetSize(&size);
+        String packageName, name;
         for (Int32 i = 0; i < size; i++) {
             AutoPtr<IInterface> item;
             ris->Get(i, (IInterface**)&item);
             AutoPtr<IActivityInfo> ai;
             IResolveInfo::Probe(item)->GetActivityInfo((IActivityInfo**)&ai);
-            String packageName, name;
-            IPackageItemInfo::Probe(ai)->GetPackageName(&packageName);
-            IPackageItemInfo::Probe(ai)->GetName(&name);
+            IPackageItemInfo* pi = IPackageItemInfo::Probe(ai);
+            pi->GetPackageName(&packageName);
+            pi->GetName(&name);
             AutoPtr<IComponentName> comp;
             CComponentName::New(packageName, name, (IComponentName**)&comp);
             doneReceivers->PushBack(comp);
@@ -14208,7 +14231,6 @@ Boolean CActivityManagerService::DeliverPreBootCompleted(
 ECode CActivityManagerService::SystemReady(
     /* [in] */ IRunnable* goingCallback)
 {
-    Slogger::I(TAG, " >>>>>>>SystemReady ");
     {
         AutoLock lock(this);
 
@@ -14219,7 +14241,6 @@ ECode CActivityManagerService::SystemReady(
                 goingCallback->Run();
             return NOERROR;
         }
-
         // Make sure we have the current profile info, since it is needed for
         // security checks.
         UpdateCurrentProfileIdsLocked();
@@ -14238,9 +14259,10 @@ ECode CActivityManagerService::SystemReady(
             if (mWaitingUpdate) {
                 return NOERROR;
             }
+            Slogger::I(TAG, " >> TODO SystemReady(): DeliverPreBootCompleted");
             AutoPtr<List<AutoPtr<IComponentName> > > doneReceivers = new List<AutoPtr<IComponentName> >();
             AutoPtr<IRunnable> runnable = new OnFinishCallback(this, doneReceivers.Get(), goingCallback);
-            mWaitingUpdate = DeliverPreBootCompleted(runnable, doneReceivers, IUserHandle::USER_OWNER);
+            // mWaitingUpdate = DeliverPreBootCompleted(runnable, doneReceivers, IUserHandle::USER_OWNER);
 
             if (mWaitingUpdate) {
                 return NOERROR;
@@ -14406,6 +14428,7 @@ ECode CActivityManagerService::SystemReady(
         // } catch (RemoteException e) {
         // }
 
+    Slogger::I(TAG, " >> 10");
         Int64 ident = Binder::ClearCallingIdentity();
         // try {
         AutoPtr<IIntent> intent;
@@ -14419,6 +14442,7 @@ ECode CActivityManagerService::SystemReady(
             String(NULL), NULL, 0, String(NULL), NULL, String(NULL), IAppOpsManager::OP_NONE,
             FALSE, FALSE, MY_PID, IProcess::SYSTEM_UID, mCurrentUserId, &result);
 
+    Slogger::I(TAG, " >> 11");
         AutoPtr<IIntent> newIntent;
         CIntent::New(IIntent::ACTION_USER_STARTING, (IIntent**)&newIntent);
         newIntent->AddFlags(IIntent::FLAG_RECEIVER_REGISTERED_ONLY);
@@ -14433,10 +14457,14 @@ ECode CActivityManagerService::SystemReady(
         // }
         // } finally {
         Binder::RestoreCallingIdentity(ident);
+
+    Slogger::I(TAG, " >> 12");
         // }
         mStackSupervisor->ResumeTopActivitiesLocked();
         SendUserSwitchBroadcastsLocked(-1, mCurrentUserId);
     }
+
+    Slogger::I(TAG, " >> 13");
     return NOERROR;
 }
 

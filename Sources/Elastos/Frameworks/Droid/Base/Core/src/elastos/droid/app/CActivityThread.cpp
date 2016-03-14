@@ -1642,8 +1642,6 @@ ECode CActivityThread::InstallSystemApplicationInfo(
     /* [in] */ IApplicationInfo* info,
     /* [in] */ IClassLoader* classLoader)
 {
-    Slogger::D(TAG, " > TODO: CActivityThread::InstallSystemApplicationInfo: %s", TO_CSTR(info));
-
     synchronized(this) {
         AutoPtr<IContextImpl> ctx;
         GetSystemContext((IContextImpl**)&ctx);
@@ -4109,6 +4107,7 @@ ECode CActivityThread::OnCoreSettingsChange()
 ECode CActivityThread::HandleUpdatePackageCompatibilityInfo(
     /* [in] */ UpdateCompatibilityData* data)
 {
+    Slogger::I(TAG, " === HandleUpdatePackageCompatibilityInfo SetCompatibilityInfo");
     assert(data != NULL);
     AutoPtr<ILoadedPkg> pkg;
     PeekPackageInfo(data->mPkg, FALSE, (ILoadedPkg**)&pkg);

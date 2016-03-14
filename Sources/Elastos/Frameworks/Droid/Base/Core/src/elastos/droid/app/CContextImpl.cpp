@@ -2494,7 +2494,7 @@ ECode CContextImpl::GetSystemService(
     }
     else if (IContext::LOCATION_SERVICE.Equals(name)) {
         Slogger::E(TAG, " >>> TODO: Service %s is not ready!", name.string());
-        assert(0 && "TODO");
+        // assert(0 && "TODO");
         // AutoPtr<IInterface> service = ServiceManager::GetService(IContext::LOCATION_SERVICE);
         // AutoPtr<IILocationManager> mgr = IILocationManager::Probe(service);
         // AutoPtr<ILocationManager> lm;

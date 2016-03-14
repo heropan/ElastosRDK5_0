@@ -3,9 +3,7 @@
       package="ImageViewDemo"
       android:versionCode="1"
       android:versionName="1.0">
-    <uses-sdk
-        android:minSdkVersion="8"
-        android:targetSdkVersion="17" />
+
     <application android:icon="@null" android:label="@string/app_name">
         <activity android:name="CActivityOne"
                   android:label="@string/app_name"

@@ -287,7 +287,7 @@ ECode WebViewFactory::OnWebViewUpdateInstalled()
 
 AutoPtr< ArrayOf<String> > WebViewFactory::GetWebViewNativeLibraryPaths()
 {
-    assert(0);
+    // assert(0);
     // TODO
     // final String NATIVE_LIB_FILE_NAME = "libwebviewchromium.so";
 
@@ -331,7 +331,7 @@ void WebViewFactory::CreateRelroFile(
     /* [in] */ Boolean is64Bit,
     /* [in] */ ArrayOf<String>* nativeLibraryPaths)
 {
-    assert(0);
+    // assert(0);
     // TODO
     // final String abi =
     //         is64Bit ? Build.SUPPORTED_64_BIT_ABIS[0] : Build.SUPPORTED_32_BIT_ABIS[0];
@@ -368,6 +368,9 @@ void WebViewFactory::CreateRelroFile(
 
 void WebViewFactory::LoadNativeLibrary()
 {
+    Logger::W(LOGTAG, "TODO WebViewFactory::LoadNativeLibrary()");
+    return;
+
     if (!sAddressSpaceReserved) {
         Logger::E(LOGTAG, "can't load with relro file; address space not reserved");
         return;

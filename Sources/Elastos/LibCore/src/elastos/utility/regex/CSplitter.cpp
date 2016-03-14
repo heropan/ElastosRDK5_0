@@ -25,8 +25,9 @@ ECode CSplitter::FastSplit(
     /* [in] */ Int32 limit,
     /* [out, callee] */ ArrayOf<String>** array)
 {
-    VALIDATE_NOT_NULL(array);
+    VALIDATE_NOT_NULL(array)
     *array = NULL;
+    VALIDATE_NOT_NULL(input)
 
     // Can we do it cheaply?
     Int32 len = regularExpression.GetLength();
