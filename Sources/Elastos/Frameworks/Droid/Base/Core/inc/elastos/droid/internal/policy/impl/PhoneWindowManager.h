@@ -549,7 +549,6 @@ private:
     {
     public:
         ScreenshotHandler(
-            /* [in] */ ILooper* looper,
             /* [in] */ IServiceConnection *conn,
             /* [in] */ PhoneWindowManager* host);
 

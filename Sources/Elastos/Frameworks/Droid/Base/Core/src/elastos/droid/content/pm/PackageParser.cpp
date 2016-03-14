@@ -98,7 +98,7 @@ namespace Droid {
 namespace Content {
 namespace Pm {
 
-const Boolean PackageParser::DEBUG_JAR = FALSE;
+const Boolean PackageParser::DEBUG_JAR = TRUE;
 const Boolean PackageParser::DEBUG_PARSER = FALSE;
 const Boolean PackageParser::DEBUG_BACKUP = FALSE;
 
@@ -2134,7 +2134,9 @@ String PackageParser::ValidateName(
         return String(NULL);
     }
     else {
-        return String("must have at least one '.' separator");
+        StringBuilder sb(name);
+        sb += " must have at least one '.' separator";
+        return sb.ToString();
     }
 }
 

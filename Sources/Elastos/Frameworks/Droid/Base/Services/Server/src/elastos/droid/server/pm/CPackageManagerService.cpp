@@ -7338,6 +7338,7 @@ ECode CPackageManagerService::QueryIntentActivities(
     /* [out, callee] */ IList** infos)
 {
     VALIDATE_NOT_NULL(infos)
+    *infos = NULL;
 
     AutoPtr<IIntent> intent = _intent;
     if (!sUserManager->Exists(userId)) {
@@ -7392,6 +7393,7 @@ ECode CPackageManagerService::QueryIntentActivities(
                 REFCOUNT_ADD(*infos)
                 return NOERROR;
             }
+
             // Check for cross profile results.
             resolveInfo = QueryCrossProfileIntents(
                     matchingFilters, intent, resolvedType, flags, userId);
@@ -7412,8 +7414,10 @@ ECode CPackageManagerService::QueryIntentActivities(
                 cols->Sort(list, sResolvePrioritySorter);
             }
             *infos = list;
+            REFCOUNT_ADD(*infos)
             return NOERROR;
         }
+
         AutoPtr<PackageParser::Package> pkg;
         HashMap<String, AutoPtr<PackageParser::Package> >::Iterator pit = mPackages.Find(pkgName);
         if (pit != mPackages.End()) {
@@ -7432,9 +7436,10 @@ ECode CPackageManagerService::QueryIntentActivities(
             REFCOUNT_ADD(*infos)
             return NOERROR;
         }
-        AutoPtr<IArrayList> al;
-        CArrayList::New((IArrayList**)&al);
-        *infos = IList::Probe(al);
+
+        AutoPtr<IList> al;
+        CArrayList::New((IList**)&al);
+        *infos = al;
         REFCOUNT_ADD(*infos)
     }
     return NOERROR;

@@ -243,7 +243,8 @@ ECode SystemServer::Run()
     // Prepare the main looper thread (this thread).
     Process::SetThreadPriority(IProcess::THREAD_PRIORITY_FOREGROUND);
     Process::SetCanSelfBackground(false);
-    Looper::PrepareMainLooper();
+    ec = Looper::PrepareMainLooper();
+    if (FAILED(ec)) ReportWtf("failed to PrepareMainLooper", ec);
 
     // Initialize native services.
     // System.loadLibrary("android_servers");
@@ -288,8 +289,9 @@ ECode SystemServer::Run()
     return E_RUNTIME_EXCEPTION;
 
 _EXIT_:
-    Slogger::E(TAG, "******************************************");
-    Slogger::E(TAG, "************ Failure starting system services, error ecode: %08x", ec);
+    Slogger::E(TAG, "****************************************************************");
+    Slogger::E(TAG, "************ Failure starting system services, error code: %08x", ec);
+    Slogger::E(TAG, "****************************************************************");
     return ec;
 }
 
@@ -299,6 +301,8 @@ void SystemServer::ReportWtf(
 {
     Slogger::W(TAG, "***********************************************");
     Slogger::W(TAG, "BOOT FAILURE %s, error code: %08x", msg, ec);
+    Slogger::W(TAG, "***********************************************");
+    assert(0);
 }
 
 ECode SystemServer::PerformPendingShutdown()
@@ -929,10 +933,12 @@ ECode SystemServer::StartOtherServices()
         mSystemServiceManager->StartService(systemService);
 
         Slogger::I(TAG, "Job Scheduler Service todo");
-        //mSystemServiceManager->StartService(JobSchedulerService.class);
+        // AutoPtr<JobSchedulerService> jss = new JobSchedulerService();
+        // ec = jss->constructor(context);
+        // if (FAILED(ec)) ReportWtf("making Job Scheduler Service ready", ec);
+        //mSystemServiceManager->StartService(JobSchedulerService.Get());
 
         if (!disableNonCoreServices) {
-
             mPackageManager->HasSystemFeature(IPackageManager::FEATURE_BACKUP, &bval);
             if (bval) {
                 Slogger::I(TAG, "Bacup manager Service todo");

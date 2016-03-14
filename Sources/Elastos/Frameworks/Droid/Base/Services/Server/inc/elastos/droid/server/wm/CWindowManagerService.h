@@ -250,9 +250,7 @@ public:
     {
     public:
         H(
-            /* [in] */ CWindowManagerService * host)
-            : mHost(host)
-        {}
+            /* [in] */ CWindowManagerService * host);
 
         ECode HandleMessage(
             /* [in] */ IMessage* msg);

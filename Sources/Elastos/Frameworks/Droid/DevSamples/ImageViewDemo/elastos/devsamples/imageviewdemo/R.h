@@ -7,10 +7,11 @@
 
 #ifndef __Elastos_DevSamples_ImageViewDemo_R_H__
 #define __Elastos_DevSamples_ImageViewDemo_R_H__
+#include <elatypes.h>
 namespace Elastos {
 namespace DevSamples {
 namespace ImageViewDemo {
-class R {
+class ECO_PUBLIC R {
     public: class attr {
     };
     public: class drawable {

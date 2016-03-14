@@ -97,7 +97,9 @@ Watchdog::DropboxThread::DropboxThread(
     : mSubject(subject)
     , mStack(stack)
     , mHost(dog)
-{}
+{
+    Thread::constructor(String("DropboxThread"));
+}
 
 // @Override
 ECode Watchdog::DropboxThread::Run()
@@ -520,7 +522,7 @@ ECode Watchdog::Run()
             // positive on when to kill things.
             Int64 start = SystemClock::GetUptimeMillis();
             while (timeout > 0) {
-                assert(0 && "TODO");
+                // assert(0 && "TODO");
                 // if (Debug.isDebuggerConnected()) {
                 //     debuggerWasConnected = 2;
                 // }
@@ -576,7 +578,7 @@ ECode Watchdog::Run()
         // Pass !waitedHalf so that just in case we somehow wind up here without having
         // dumped the halfway stacks, we properly re-initialize the trace file.
         AutoPtr<IFile> stack;
-        assert(0 && "TODO");
+        // assert(0 && "TODO");
         //stack = CActivityManagerService::DumpStackTraces(
         //    !waitedHalf, pids, NULL, NULL, NATIVE_STACKS_OF_INTEREST);
 
@@ -608,7 +610,6 @@ ECode Watchdog::Run()
         // itself may be deadlocked.  (which has happened, causing this statement to
         // deadlock and the watchdog as a whole to be ineffective)
         AutoPtr<DropboxThread> dropboxThread = new DropboxThread(subject, stack, this);
-        dropboxThread->constructor();
         dropboxThread->Start();
         // try {
             dropboxThread->Join(2000);  // wait up to 2 seconds for it to return.
@@ -635,7 +636,7 @@ ECode Watchdog::Run()
         }
 
         // Only kill the process if the debugger is not attached.
-        assert(0 && "TODO");
+        // assert(0 && "TODO");
         // if (Debug.isDebuggerConnected()) {
         //     debuggerWasConnected = 2;
         // }
