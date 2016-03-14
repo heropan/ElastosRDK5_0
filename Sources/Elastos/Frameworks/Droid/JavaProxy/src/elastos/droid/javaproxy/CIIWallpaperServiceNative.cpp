@@ -3,6 +3,7 @@
 #include <elastos/utility/logging/Logger.h>
 #include "elastos/droid/javaproxy/Util.h"
 
+using Elastos::Droid::Os::EIID_IBinder;
 using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
@@ -10,6 +11,10 @@ namespace Droid {
 namespace JavaProxy {
 
 const String CIIWallpaperServiceNative::TAG("CIIWallpaperServiceNative");
+
+CAR_INTERFACE_IMPL_2(CApplicationThreadNative, Object, IApplicationThread, IBinder)
+
+CAR_OBJECT_IMPL(CApplicationThreadNative)
 
 CIIWallpaperServiceNative::~CIIWallpaperServiceNative()
 {
@@ -45,10 +50,10 @@ ECode CIIWallpaperServiceNative::Attach(
         jclass c = env->FindClass("android/service/wallpaper/ElWallpaperConnectionProxy");
         Util::CheckErrorAndLog(env, TAG, "FindClass: ElWallpaperConnectionProxy %d", __LINE__);
 
-        jmethodID m = env->GetMethodID(c, "<init>", "(I)V");
+        jmethodID m = env->GetMethodID(c, "<init>", "(J)V");
         Util::CheckErrorAndLog(env, TAG, "GetMethodID: ElWallpaperConnectionProxy %d", __LINE__);
 
-        jconnection = env->NewObject(c, m, (jint)connection);
+        jconnection = env->NewObject(c, m, (jlong)connection);
         Util::CheckErrorAndLog(env, TAG, "NewObject: ElWallpaperConnectionProxy %d", __LINE__);
         connection->AddRef();
 
@@ -60,10 +65,10 @@ ECode CIIWallpaperServiceNative::Attach(
         jclass c = env->FindClass("android/os/ElBinderProxy");
         Util::CheckErrorAndLog(env, TAG, "FindClass: ElBinderProxy %d", __LINE__);
 
-        jmethodID m = env->GetMethodID(c, "<init>", "(I)V");
+        jmethodID m = env->GetMethodID(c, "<init>", "(J)V");
         Util::CheckErrorAndLog(env, TAG, "GetMethodID: ElBinderProxy %d", __LINE__);
 
-        jwindowToken = env->NewObject(c, m, (jint)windowToken);
+        jwindowToken = env->NewObject(c, m, (jlong)windowToken);
         Util::CheckErrorAndLog(env, TAG, "NewObject: ElBinderProxy %d", __LINE__);
         windowToken->AddRef();
 

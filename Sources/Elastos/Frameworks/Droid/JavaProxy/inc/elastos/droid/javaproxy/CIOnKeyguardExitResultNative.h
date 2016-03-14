@@ -3,16 +3,24 @@
 #define __ELASTOS_DROID_JAVAPROXY_CIONKEYGUARDEXITRESULTNATIVE_H__
 
 #include "_Elastos_Droid_JavaProxy_CIOnKeyguardExitResultNative.h"
+#include <elastos/core/Object.h>
 #include <jni.h>
 
+using Elastos::Droid::Os::IBinder;
 namespace Elastos {
 namespace Droid {
 namespace JavaProxy {
 
 CarClass(CIOnKeyguardExitResultNative)
+    , public Object
+    , public IBinder
 {
 public:
     ~CIOnKeyguardExitResultNative();
+
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
 
     CARAPI constructor(
         /* [in] */ Handle32 jVM,

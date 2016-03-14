@@ -8,6 +8,10 @@ namespace JavaProxy {
 
 const String CIRemoteVolumeObserver::TAG("CIRemoteVolumeObserver");
 
+CAR_INTERFACE_IMPL_2(CApplicationThreadNative, Object, IApplicationThread, IBinder)
+
+CAR_OBJECT_IMPL(CApplicationThreadNative)
+
 CIRemoteVolumeObserver::~CIRemoteVolumeObserver()
 {
     JNIEnv* env;

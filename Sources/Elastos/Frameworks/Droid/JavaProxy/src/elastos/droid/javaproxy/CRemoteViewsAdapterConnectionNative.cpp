@@ -3,6 +3,7 @@
 #include "elastos/droid/javaproxy/Util.h"
 #include <elastos/utility/logging/Logger.h>
 
+using Elastos::Droid::Os::EIID_IBinder;
 using Elastos::Utility::Logging::Logger;
 using Elastos::Droid::Widget::Internal::IIRemoteViewsFactory;
 
@@ -11,6 +12,10 @@ namespace Droid {
 namespace JavaProxy {
 
 const String CRemoteViewsAdapterConnectionNative::TAG("CRemoteViewsAdapterConnectionNative");
+
+CAR_INTERFACE_IMPL_2(CApplicationThreadNative, Object, IApplicationThread, IBinder)
+
+CAR_OBJECT_IMPL(CApplicationThreadNative)
 
 CRemoteViewsAdapterConnectionNative::CRemoteViewsAdapterConnectionNative(){
 }
@@ -45,10 +50,10 @@ ECode CRemoteViewsAdapterConnectionNative::OnServiceConnected(
         jclass proxyClass = env->FindClass("com/android/internal/widget/ElIRemoteViewsFactoryProxy");
         Util::CheckErrorAndLog(env, TAG, "FindClass: ElIRemoteViewsFactoryProxy %d", __LINE__);
 
-        jmethodID mid = env->GetMethodID(proxyClass, "<init>", "(I)V");
+        jmethodID mid = env->GetMethodID(proxyClass, "<init>", "(J)V");
         Util::CheckErrorAndLog(env, TAG, "Fail GetMethodID: ElIRemoteViewsFactoryProxy(I) %d", __LINE__);
 
-        jobject jfactoryProxy = env->NewObject(proxyClass, mid, (Int32)factory.Get());
+        jobject jfactoryProxy = env->NewObject(proxyClass, mid, (jlong)factory.Get());
         Util::CheckErrorAndLog(env, "ToJavaComponentName", "Fail NewObject: componentNameKlass", __LINE__);
         factory->AddRef();
 

@@ -3,8 +3,10 @@
 #define __ELASTOS_DROID_JAVAPROXY_CIIWALLPAPERSERVICENATIVE_H__
 
 #include "_Elastos_Droid_JavaProxy_CIIWallpaperServiceNative.h"
+#include <elastos/core/Object.h>
 #include <jni.h>
 
+using Elastos::Droid::Os::IBinder;
 using Elastos::Droid::Os::IBinder;
 using Elastos::Droid::Service::Wallpaper::IWallpaperConnection;
 
@@ -13,9 +15,15 @@ namespace Droid {
 namespace JavaProxy {
 
 CarClass(CIIWallpaperServiceNative)
+    , public Object
+    , public IBinder
 {
 public:
     ~CIIWallpaperServiceNative();
+
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
 
     CARAPI constructor(
         /* [in] */ Handle32 jVM,

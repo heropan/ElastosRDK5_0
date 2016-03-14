@@ -5,6 +5,7 @@
 #include <elastos/utility/logging/Logger.h>
 #include <binder/Parcel.h>
 
+using Elastos::Droid::Os::EIID_IBinder;
 using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
@@ -12,6 +13,10 @@ namespace Droid {
 namespace JavaProxy {
 
 const String CServiceNative::TAG("CServiceNative");
+
+CAR_INTERFACE_IMPL_2(CServiceNative, Object, IParcelable, IBinder)
+
+CAR_OBJECT_IMPL(CServiceNative)
 
 CServiceNative::~CServiceNative()
 {
@@ -41,9 +46,26 @@ ECode CServiceNative::constructor(
 ECode CServiceNative::ToString(
     /* [out] */ String* str)
 {
-    LOGGERD(TAG, String("CServiceNative E_NOT_IMPLEMENTED Line:%d"), __LINE__);
-    assert(0);
-    return E_NOT_IMPLEMENTED;
+    // LOGGERD(TAG, "+ CServiceNative::ToString()");
+    JNIEnv* env;
+    mJVM->AttachCurrentThread(&env, NULL);
+
+    jclass c = env->FindClass("java/lang/Object");
+    Util::CheckErrorAndLog(env, "ToString", "FindClass: Object", __LINE__);
+
+    jmethodID m = env->GetMethodID(c, "toString", "()Ljava/lang/String;");
+    Util::CheckErrorAndLog(env, TAG, "GetMethodID: toString", __LINE__);
+
+    jstring jstr = (jstring)env->CallObjectMethod(mJInstance, m);
+    Util::CheckErrorAndLog(env, TAG, "CallVoidMethod: toString", __LINE__);
+
+    *str = Util::GetElString(env, jstr);
+
+    env->DeleteLocalRef(c);
+    env->DeleteLocalRef(jstr);
+
+    // LOGGERD(TAG, "- CServiceNative::ToString()");
+    return NOERROR;
 }
 
 ECode CServiceNative::ReadFromParcel(
@@ -86,14 +108,15 @@ ECode CServiceNative::WriteToParcel(
     Handle32 parcel;
     dest->GetElementPayload(&parcel);
 
-    if(mJVM == NULL){
+    if (mJVM == NULL) {
         if(mibinder.get() != NULL) {
             ((android::Parcel*)parcel)->writeStrongBinder(mibinder);
             LOGGERD(TAG, "CServiceNative::WriteToParcel(), write mibinder, this=%p", this);
         } else {
             LOGGERE(TAG, "CServiceNative::WriteToParcel(), mJVM and mibinder is NULL, this=%p", this);
         }
-    } else {
+    }
+    else {
         JNIEnv* env;
         mJVM->AttachCurrentThread(&env, NULL);
 
@@ -110,7 +133,6 @@ ECode CServiceNative::WriteToParcel(
 
     return NOERROR;
 }
-
 
 } // JavaProxy
 } // Droid

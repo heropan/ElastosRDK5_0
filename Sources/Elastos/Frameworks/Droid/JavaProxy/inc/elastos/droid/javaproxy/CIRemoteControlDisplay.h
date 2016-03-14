@@ -3,8 +3,10 @@
 #define __ELASTOS_DROID_JAVAPROXY_CIREMOTECONTROLDISPLAY_H__
 
 #include "_Elastos_Droid_JavaProxy_CIRemoteControlDisplay.h"
+#include <elastos/core/Object.h>
 #include <jni.h>
 
+using Elastos::Droid::Os::IBinder;
 using Elastos::Droid::App::IPendingIntent;
 using Elastos::Droid::Graphics::IBitmap;
 using Elastos::Droid::Os::IBundle;
@@ -14,9 +16,15 @@ namespace Droid {
 namespace JavaProxy {
 
 CarClass(CIRemoteControlDisplay)
+    , public Object
+    , public IBinder
 {
 public:
     ~CIRemoteControlDisplay();
+
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
 
     CARAPI constructor(
         /* [in] */ Handle32 jVM,

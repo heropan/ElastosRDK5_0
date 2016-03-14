@@ -3,16 +3,24 @@
 #define __ELASTOS_DROID_JAVAPROXY_CIFULLBACKUPRESTOREOBSERVERNATIVE_H__
 
 #include "_Elastos_Droid_JavaProxy_CIFullBackupRestoreObserverNative.h"
+#include <elastos/core/Object.h>
 #include <jni.h>
 
+using Elastos::Droid::Os::IBinder;
 namespace Elastos {
 namespace Droid {
 namespace JavaProxy {
 
 CarClass(CIFullBackupRestoreObserverNative)
+    , public Object
+    , public IBinder
 {
 public:
     ~CIFullBackupRestoreObserverNative();
+
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
 
     CARAPI constructor(
         /* [in] */ Handle32 jVM,

@@ -3,16 +3,27 @@
 #define __ELASTOS_DROID_JAVAPROXY_CLOCALACTIVITYRECORDNATIVE_H__
 
 #include "_Elastos_Droid_JavaProxy_CLocalActivityRecordNative.h"
+#include <elastos/core/Object.h>
 #include <jni.h>
+
+using Elastos::Droid::App::ILocalActivityRecord;
+using Elastos::Droid::Os::IBinder;
 
 namespace Elastos {
 namespace Droid {
 namespace JavaProxy {
 
 CarClass(CLocalActivityRecordNative)
+    , public Object
+    , public ILocalActivityRecord
+    , public IBinder
 {
 public:
     ~CLocalActivityRecordNative();
+
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
 
     CARAPI constructor(
         /* [in] */ Handle32 jVM,

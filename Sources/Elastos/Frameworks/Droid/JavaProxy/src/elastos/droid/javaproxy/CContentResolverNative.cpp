@@ -3,6 +3,7 @@
 #include "elastos/droid/javaproxy/Util.h"
 #include <elastos/utility/logging/Logger.h>
 
+using Elastos::Droid::Os::EIID_IBinder;
 using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
@@ -10,6 +11,10 @@ namespace Droid {
 namespace JavaProxy {
 
 const String CContentResolverNative::TAG("CContentResolverNative");
+
+CAR_INTERFACE_IMPL_2(CApplicationThreadNative, Object, IApplicationThread, IBinder)
+
+CAR_OBJECT_IMPL(CApplicationThreadNative)
 
 CContentResolverNative::~CContentResolverNative()
 {

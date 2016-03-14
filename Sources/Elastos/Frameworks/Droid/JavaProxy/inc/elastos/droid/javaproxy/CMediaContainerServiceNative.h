@@ -3,13 +3,17 @@
 #define __ELASTOS_DROID_JAVAPROXY_CMEDIACONTAINERSERVICENATIVE_H__
 
 #include "_Elastos_Droid_JavaProxy_CMediaContainerServiceNative.h"
+#include <elastos/core/Object.h>
 #include <jni.h>
 
+using Elastos::Droid::Os::IBinder;
 namespace Elastos {
 namespace Droid {
 namespace JavaProxy {
 
 CarClass(CMediaContainerServiceNative)
+    , public Object
+    , public IBinder
 {
 public:
     ~CMediaContainerServiceNative();
@@ -69,6 +73,10 @@ public:
 
     CARAPI ToString(
         /* [out] */ String* str);
+
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
 
     CARAPI constructor(
         /* [in] */ Handle32 jVM,

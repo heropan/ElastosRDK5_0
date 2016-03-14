@@ -2323,14 +2323,14 @@ ECode ActivityStackSupervisor::RealStartActivityLocked(
         CArrayList::New((IList**)&resultsList);
         List< AutoPtr<ActivityResult> >::Iterator iter = results->Begin();
         while (iter != results->End()) {
-            resultsList->Add(TO_IINTERFACE(*iter));
+            resultsList->Add(TO_IINTERFACE((*iter)->mResultInfo));
             ++iter;
         }
         AutoPtr<IList> newIntentsList;
         CArrayList::New((IList**)&newIntentsList);
         List< AutoPtr<IIntent> >::Iterator iter2 = newIntents->Begin();
         while (iter2 != newIntents->End()) {
-            newIntentsList->Add(TO_IINTERFACE(*iter2));
+            newIntentsList->Add(*iter2);
             ++iter2;
         }
 

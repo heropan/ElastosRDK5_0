@@ -3,6 +3,7 @@
 #include <elastos/utility/logging/Logger.h>
 #include "elastos/droid/javaproxy/Util.h"
 
+using Elastos::Droid::Os::EIID_IBinder;
 using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
@@ -10,6 +11,10 @@ namespace Droid {
 namespace JavaProxy {
 
 const String CIWallpaperConnectionNative::TAG("CIWallpaperConnectionNative");
+
+CAR_INTERFACE_IMPL_2(CApplicationThreadNative, Object, IApplicationThread, IBinder)
+
+CAR_OBJECT_IMPL(CApplicationThreadNative)
 
 CIWallpaperConnectionNative::~CIWallpaperConnectionNative()
 {
@@ -46,10 +51,10 @@ ECode CIWallpaperConnectionNative::AttachEngine(
         jclass weKlass = env->FindClass("android/service/wallpaper/ElWallpaperEngineProxy");
         Util::CheckErrorAndLog(env, TAG, "FindClass: ElWallpaperEngineProxy line: %d", __LINE__);
 
-        jmethodID m = env->GetMethodID(weKlass, "<init>", "(I)V");
+        jmethodID m = env->GetMethodID(weKlass, "<init>", "(J)V");
         Util::CheckErrorAndLog(env, TAG, "GetMethodID: ElWallpaperEngineProxy line: %d", __LINE__);
 
-        jengine = env->NewObject(weKlass, m, (jint)engine);
+        jengine = env->NewObject(weKlass, m, (jlong)engine);
         Util::CheckErrorAndLog(env, TAG, "NewObject: ElWallpaperEngineProxy line: %d", __LINE__);
         engine->AddRef();
 
@@ -85,10 +90,10 @@ ECode CIWallpaperConnectionNative::EngineShown(
         jclass weKlass = env->FindClass("android/service/wallpaper/ElWallpaperEngineProxy");
         Util::CheckErrorAndLog(env, TAG, "FindClass: ElWallpaperEngineProxy line: %d", __LINE__);
 
-        jmethodID m = env->GetMethodID(weKlass, "<init>", "(I)V");
+        jmethodID m = env->GetMethodID(weKlass, "<init>", "(J)V");
         Util::CheckErrorAndLog(env, TAG, "GetMethodID: ElWallpaperEngineProxy line: %d", __LINE__);
 
-        jengine = env->NewObject(weKlass, m, (jint)engine);
+        jengine = env->NewObject(weKlass, m, (jlong)engine);
         Util::CheckErrorAndLog(env, TAG, "NewObject: ElWallpaperEngineProxy line: %d", __LINE__);
         engine->AddRef();
 

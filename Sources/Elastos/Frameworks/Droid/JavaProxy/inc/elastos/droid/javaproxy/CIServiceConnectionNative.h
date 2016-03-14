@@ -3,8 +3,10 @@
 #define __ELASTOS_DROID_JAVAPROXY_CISERVICECONNECTIONNATIVE_H__
 
 #include "_Elastos_Droid_JavaProxy_CIServiceConnectionNative.h"
+#include <elastos/core/Object.h>
 #include <jni.h>
 
+using Elastos::Droid::App::IIServiceConnection;
 using Elastos::Droid::Content::IComponentName;
 using Elastos::Droid::Os::IBinder;
 
@@ -13,9 +15,16 @@ namespace Droid {
 namespace JavaProxy {
 
 CarClass(CIServiceConnectionNative)
+    , public Object
+    , public IIServiceConnection
+    , public IBinder
 {
 public:
     ~CIServiceConnectionNative();
+
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
 
     CARAPI constructor(
         /* [in] */ Handle32 jVM,

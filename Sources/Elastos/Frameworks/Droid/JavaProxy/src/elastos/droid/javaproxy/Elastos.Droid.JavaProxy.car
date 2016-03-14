@@ -6,6 +6,7 @@ module
     using interface Elastos.Droid.Accounts.IAccountManagerResponse;
     using interface Elastos.Droid.App.IIActivityController;
     using interface Elastos.Droid.App.IApplicationThread;
+    using interface Elastos.Droid.App.ILocalActivityRecord;
     using interface Elastos.Droid.App.IPendingIntent;
     using interface Elastos.Droid.App.IProcessObserver;
     using interface Elastos.Droid.App.IStopUserCallback;
@@ -18,7 +19,7 @@ module
     using interface Elastos.Droid.App.Backup.IIFullBackupRestoreObserver;
     using interface Elastos.Droid.App.Backup.IIRestoreObserver;
     using interface Elastos.Droid.Internal.App.IMediaContainerService;
-    using interface Elastos.Droid.AppWidget.IIAppWidgetHost;
+    using interface Elastos.Droid.Internal.AppWidget.IIAppWidgetHost;
     using interface Elastos.Droid.Content.IOnPrimaryClipChangedListener;
     using interface Elastos.Droid.Content.IContentResolver;
     using interface Elastos.Droid.Content.IIContentProvider;
@@ -30,7 +31,7 @@ module
     using interface Elastos.Droid.Content.Pm.IPackageDeleteObserver;
     using interface Elastos.Droid.Content.Pm.IPackageInstallObserver;
     using interface Elastos.Droid.Content.Pm.IPackageMoveObserver;
-    using interface Elastos.Droid.Content.Pm.IPackageStatsObserver;
+    using interface Elastos.Droid.Content.Pm.IIPackageStatsObserver;
     using interface Elastos.Droid.Database.ICursor;
     using interface Elastos.Droid.Database.IContentObserver;
     using interface Elastos.Droid.Database.IDataSetObserver;
@@ -42,7 +43,7 @@ module
     using interface Elastos.Droid.Os.Storage.IIMountServiceListener;
     using interface Elastos.Droid.Os.Storage.IIMountShutdownObserver;
     using interface Elastos.Droid.Os.Storage.IObbActionListener;
-    using interface Elastos.Droid.Hardware.Display.IDisplayManagerCallback;
+    using interface Elastos.Droid.Hardware.Display.IIDisplayManagerCallback;
     using interface Elastos.Droid.Hardware.Input.IInputDevicesChangedListener;
     using interface Elastos.Droid.Internal.View.IInputMethodClient;
     using interface Elastos.Droid.Internal.View.IIInputContext;
@@ -94,14 +95,14 @@ module
             [in] Boolean enabled);
     }
 
-    // class CApplicationThreadNative {
-    //     constructor(
-    //         [in] Handle32 jVM,
-    //         [in] Handle32 jInstance);
+    class CApplicationThreadNative {
+        constructor(
+            [in] Handle32 jVM,
+            [in] Handle32 jInstance);
 
-    //     interface IApplicationThread;
-    //     interface IBinder;
-    // }
+        interface IApplicationThread;
+        interface IBinder;
+    }
 
     class CBinderNative {
         constructor(
@@ -111,220 +112,233 @@ module
         interface IBinder;
     }
 
-    // class CDisplayManagerCallbackNative {
-    //     constructor(
-    //         [in] Handle32 jVM,
-    //         [in] Handle32 jInstance);
+    class CDisplayManagerCallbackNative {
+        constructor(
+            [in] Handle32 jVM,
+            [in] Handle32 jInstance);
 
-    //     interface IDisplayManagerCallback;
-    // }
+        interface IIDisplayManagerCallback;
+        interface IBinder;
+    }
 
-    // class CInputMethodClientNative {
-    //     constructor(
-    //         [in] Handle32 jVM,
-    //         [in] Handle32 jInstance);
+    class CInputMethodClientNative {
+        constructor(
+            [in] Handle32 jVM,
+            [in] Handle32 jInstance);
 
-    //     interface IInputMethodClient;
-    //     interface IBinder;
-    // }
+        interface IInputMethodClient;
+        interface IBinder;
+    }
 
-    // class CInputContextNative {
-    //     constructor(
-    //         [in] Handle32 jVM,
-    //         [in] Handle32 jInstance);
+    class CInputContextNative {
+        constructor(
+            [in] Handle32 jVM,
+            [in] Handle32 jInstance);
 
-    //     interface IIInputContext;
-    //     interface IBinder;
-    // }
+        interface IIInputContext;
+        interface IBinder;
+    }
 
-    // class CWindowNative {
-    //     constructor(
-    //         [in] Handle32 jVM,
-    //         [in] Handle32 jInstance);
+    class CWindowNative {
+        constructor(
+            [in] Handle32 jVM,
+            [in] Handle32 jInstance);
 
-    //     interface IIWindow;
-    //     interface IBinder;
-    // }
+        interface IIWindow;
+        interface IBinder;
+    }
 
-    // class CInputDevicesChangedListenerNative {
-    //     constructor(
-    //         [in] Handle32 jVM,
-    //         [in] Handle32 jInstance);
+    class CInputDevicesChangedListenerNative {
+        constructor(
+            [in] Handle32 jVM,
+            [in] Handle32 jInstance);
 
-    //     interface IInputDevicesChangedListener;
-    // }
+        interface IInputDevicesChangedListener;
+        interface IBinder;
+    }
 
-    // class CIntentReceiverNative {
-    //     constructor(
-    //         [in] Handle32 jVM,
-    //         [in] Handle32 jInstance);
+    class CIntentReceiverNative {
+        constructor(
+            [in] Handle32 jVM,
+            [in] Handle32 jInstance);
 
-    //     interface IIntentReceiver;
-    //     interface IBinder;
-    // }
+        interface IIntentReceiver;
+        interface IBinder;
+    }
 
-    // class CPackageStatusObserverNative {
-    //     constructor(
-    //         [in] Handle32 jVM,
-    //         [in] Handle32 jInstance);
+    class CPackageStatusObserverNative {
+        constructor(
+            [in] Handle32 jVM,
+            [in] Handle32 jInstance);
 
-    //     interface IPackageStatsObserver;
-    //     interface IBinder;
-    // }
+        interface IIPackageStatsObserver;
+        interface IBinder;
+    }
 
-    // class CCursorNative {
-    //     constructor(
-    //         [in] Handle32 jVM,
-    //         [in] Handle32 jInstance);
+    class CCursorNative {
+        constructor(
+            [in] Handle32 jVM,
+            [in] Handle32 jInstance);
 
-    //     interface ICursor;
-    // }
+        interface ICursor;
+        interface IBinder;
+    }
 
-    // class CContentProviderNative {
-    //     constructor(
-    //         [in] Handle32 jVM,
-    //         [in] Handle32 jInstance);
+    class CContentProviderNative {
+        constructor(
+            [in] Handle32 jVM,
+            [in] Handle32 jInstance);
 
-    //     interface IIContentProvider;
-    //     interface IBinder;
-    // }
+        interface IIContentProvider;
+        interface IBinder;
+    }
 
-    // class CInputMethodCallbackNative {
-    //     constructor(
-    //         [in] Handle32 jVM,
-    //         [in] Handle32 jInstance);
+    class CInputMethodCallbackNative {
+        constructor(
+            [in] Handle32 jVM,
+            [in] Handle32 jInstance);
 
-    //     interface IInputMethodCallback;
-    // }
+        interface IInputMethodCallback;
+        interface IBinder;
+    }
 
-    // class CIContentObserverNative {
-    //     constructor(
-    //         [in] Handle32 jVM,
-    //         [in] Handle32 jInstance);
+    class CIContentObserverNative {
+        constructor(
+            [in] Handle32 jVM,
+            [in] Handle32 jInstance);
 
-    //     interface IIContentObserver;
-    //     interface IBinder;
-    // }
+        interface IIContentObserver;
+        interface IBinder;
+    }
 
-    // class CLocalActivityRecordNative {
-    //     constructor(
-    //         [in] Handle32 jVM,
-    //         [in] Handle32 jInstance);
+    class CLocalActivityRecordNative {
+        constructor(
+            [in] Handle32 jVM,
+            [in] Handle32 jInstance);
 
-    //     interface IBinder;
-    // }
+        interface ILocalActivityRecord;
+        interface IBinder;
+    }
 
-    // class CMessengerNative {
-    //     constructor(
-    //         [in] Handle32 jVM,
-    //         [in] Handle32 jInstance);
+    class CMessengerNative {
+        constructor(
+            [in] Handle32 jVM,
+            [in] Handle32 jInstance);
 
-    //     interface IIMessenger;
-    // }
+        interface IIMessenger;
+        interface IBinder;
+    }
 
-    // class CIIntentSenderNative {
-    //     constructor(
-    //         [in] Handle32 jVM,
-    //         [in] Handle32 jInstance);
+    class CIIntentSenderNative {
+        constructor(
+            [in] Handle32 jVM,
+            [in] Handle32 jInstance);
 
-    //     interface IIIntentSender;
-    //     interface IBinder;
-    // }
+        interface IIIntentSender;
+        interface IBinder;
+    }
 
-    // class CGpsStatusListener {
-    //     constructor(
-    //         [in] Handle32 jVM,
-    //         [in] Handle32 jInstance);
+    class CGpsStatusListener {
+        constructor(
+            [in] Handle32 jVM,
+            [in] Handle32 jInstance);
 
-    //     interface IIGpsStatusListener;
-    // }
+        interface IIGpsStatusListener;
+        interface IBinder;
+    }
 
-    // class CLocationListener {
-    //     constructor(
-    //         [in] Handle32 jVM,
-    //         [in] Handle32 jInstance);
+    class CLocationListener {
+        constructor(
+            [in] Handle32 jVM,
+            [in] Handle32 jInstance);
 
-    //     interface IILocationListener;
-    // }
+        interface IILocationListener;
+        interface IBinder;
+    }
 
-    // class CMountServiceListener {
-    //     constructor(
-    //         [in] Handle32 jVM,
-    //         [in] Handle32 jInstance);
+    class CMountServiceListener {
+        constructor(
+            [in] Handle32 jVM,
+            [in] Handle32 jInstance);
 
-    //     interface IIMountServiceListener;
-    // }
+        interface IIMountServiceListener;
+        interface IBinder;
+    }
 
-    // class CIServiceConnectionNative {
-    //     constructor(
-    //         [in] Handle32 jVM,
-    //         [in] Handle32 jInstance);
+    class CIServiceConnectionNative {
+        constructor(
+            [in] Handle32 jVM,
+            [in] Handle32 jInstance);
 
-    //     interface IIServiceConnection;
-    //     interface IBinder;
+        interface IIServiceConnection;
+        interface IBinder;
+    }
 
-    // }
+    class CServiceNative {
+        constructor();
 
-    // class CServiceNative {
-    //     constructor();
+        constructor(
+            [in] Handle32 jVM,
+            [in] Handle32 jInstance);
 
-    //     constructor(
-    //         [in] Handle32 jVM,
-    //         [in] Handle32 jInstance);
+        interface IBinder;
+        interface IParcelable;
+    }
 
-    //     interface IBinder;
-    //     interface IParcelable;
-    // }
+    class CAccountManagerResponseNative {
+        constructor(
+            [in] Handle32 jVM,
+            [in] Handle32 jInstance);
 
-    // class CAccountManagerResponseNative {
-    //     constructor(
-    //         [in] Handle32 jVM,
-    //         [in] Handle32 jInstance);
+        interface IAccountManagerResponse;
+        interface IBinder;
+    }
 
-    //     interface IAccountManagerResponse;
-    // }
+    class CAppWidgetHostCallbacksNative {
+        constructor(
+            [in] Handle32 jVM,
+            [in] Handle32 jInstance);
 
-    // class CAppWidgetHostCallbacksNative {
-    //     constructor(
-    //         [in] Handle32 jVM,
-    //         [in] Handle32 jInstance);
+        interface IIAppWidgetHost;
+        interface IBinder;
+    }
 
-    //     interface IIAppWidgetHost;
-    // }
+    class CInputMethodServiceNative {
+        constructor(
+           [in] Handle32 jVM,
+           [in] Handle32 jInstance);
 
-    // class CInputMethodServiceNative {
-    //     constructor(
-    //        [in] Handle32 jVM,
-    //        [in] Handle32 jInstance);
+        interface IIInputMethod;
+        interface IBinder;
+    }
 
-    //     interface IIInputMethod;
-    //     interface IBinder;
-    // }
+    class CIInputMethodSessionNative {
+        constructor(
+           [in] Handle32 jVM,
+           [in] Handle32 jInstance);
 
-    // class CIInputMethodSessionNative {
-    //     constructor(
-    //        [in] Handle32 jVM,
-    //        [in] Handle32 jInstance);
+        interface IIInputMethodSession;
+        interface IBinder;
+    }
 
-    //     interface IIInputMethodSession;
-    //     interface IBinder;
-    // }
+    class CInputMethodSessionNative {
+        constructor(
+           [in] Handle32 jVM,
+           [in] Handle32 jInstance);
 
-    // class CInputMethodSessionNative {
-    //     constructor(
-    //        [in] Handle32 jVM,
-    //        [in] Handle32 jInstance);
+        interface IInputMethodSession;
+        interface IInputMethodSessionNative;
+        interface IBinder;
+    }
 
-    //     interface IInputMethodSessionNative;
-    // }
+    class CIInputContextCallbackNative {
+        constructor(
+           [in] Handle32 jVM,
+           [in] Handle32 jInstance);
 
-    // class CIInputContextCallbackNative {
-    //     constructor(
-    //        [in] Handle32 jVM,
-    //        [in] Handle32 jInstance);
-
-    //     interface IIInputContextCallback;
-    // }
+        interface IIInputContextCallback;
+        interface IBinder;
+    }
 
     // class CRemoteViewsAdapterConnectionNative{
 
@@ -681,14 +695,14 @@ module
     //     interface IBinder;
     // }
 
-    // class CICancellationSignalNative {
-    //     constructor(
-    //         [in] Handle32 jVM,
-    //         [in] Handle32 jInstance);
+    class CICancellationSignalNative {
+        constructor(
+            [in] Handle32 jVM,
+            [in] Handle32 jInstance);
 
-    //     interface IICancellationSignal;
-    //     interface IBinder;
-    // }
+        interface IICancellationSignal;
+        interface IBinder;
+    }
 
     // class CTextServicesSessionListenerNative {
     //     constructor(

@@ -3,8 +3,10 @@
 #define __ELASTOS_DROID_JAVAPROXY_CCONTENTRESOLVERNATIVE_H__
 
 #include "_Elastos_Droid_JavaProxy_CContentResolverNative.h"
+#include <elastos/core/Object.h>
 #include <jni.h>
 
+using Elastos::Droid::Os::IBinder;
 using Elastos::Droid::Content::IContentProviderClient;
 using Elastos::Droid::Content::IContentResolverOpenResourceIdResult;
 using Elastos::Droid::Content::IContentValues;
@@ -24,9 +26,15 @@ namespace Droid {
 namespace JavaProxy {
 
 CarClass(CContentResolverNative)
+    , public Object
+    , public IBinder
 {
 public:
     ~CContentResolverNative();
+
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
 
     CARAPI constructor(
         /* [in] */ Handle32 jVM,

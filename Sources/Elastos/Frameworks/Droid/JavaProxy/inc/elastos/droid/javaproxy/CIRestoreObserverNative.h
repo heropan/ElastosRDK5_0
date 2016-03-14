@@ -3,8 +3,10 @@
 #define __ELASTOS_DROID_JAVAPROXY_CIRESTOREOBSERVERNATIVE_H__
 
 #include "_Elastos_Droid_JavaProxy_CIRestoreObserverNative.h"
+#include <elastos/core/Object.h>
 #include <jni.h>
 
+using Elastos::Droid::Os::IBinder;
 using Elastos::Droid::App::Backup::IRestoreSet;
 
 namespace Elastos {
@@ -12,9 +14,15 @@ namespace Droid {
 namespace JavaProxy {
 
 CarClass(CIRestoreObserverNative)
+    , public Object
+    , public IBinder
 {
 public:
     ~CIRestoreObserverNative();
+
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
 
     CARAPI constructor(
         /* [in] */ Handle32 jVM,

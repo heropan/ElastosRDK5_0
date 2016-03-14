@@ -3,8 +3,10 @@
 #define __ELASTOS_DROID_JAVAPROXY_CIACTIVITYCONTROLLERNATIVE_H__
 
 #include "_Elastos_Droid_JavaProxy_CIActivityControllerNative.h"
+#include <elastos/core/Object.h>
 #include <jni.h>
 
+using Elastos::Droid::Os::IBinder;
 using Elastos::Droid::Content::IIntent;
 
 namespace Elastos {
@@ -12,9 +14,15 @@ namespace Droid {
 namespace JavaProxy {
 
 CarClass(CIActivityControllerNative)
+    , public Object
+    , public IBinder
 {
 public:
     ~CIActivityControllerNative();
+
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
 
     CARAPI constructor(
         /* [in] */ Handle32 jVM,

@@ -3,8 +3,10 @@
 #define __ELASTOS_DROID_JAVAPROXY_CIRINGTONEPLAYER_H__
 
 #include "_Elastos_Droid_JavaProxy_CIRingtonePlayer.h"
+#include <elastos/core/Object.h>
 #include <jni.h>
 
+using Elastos::Droid::Os::IBinder;
 using Elastos::Droid::Net::IUri;
 using Elastos::Droid::Os::IBinder;
 using Elastos::Droid::Os::IUserHandle;
@@ -14,9 +16,15 @@ namespace Droid {
 namespace JavaProxy {
 
 CarClass(CIRingtonePlayer)
+    , public Object
+    , public IBinder
 {
 public:
     ~CIRingtonePlayer();
+
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
 
     CARAPI constructor(
         /* [in] */ Handle32 jVM,

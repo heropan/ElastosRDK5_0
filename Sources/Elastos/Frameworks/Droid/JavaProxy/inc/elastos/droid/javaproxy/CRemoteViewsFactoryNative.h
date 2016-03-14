@@ -3,8 +3,10 @@
 #define __ELASTOS_DROID_JAVAPROXY_CREMOTEVIEWSFACTORYNATIVE_H__
 
 #include "_Elastos_Droid_JavaProxy_CRemoteViewsFactoryNative.h"
+#include <elastos/core/Object.h>
 #include <jni.h>
-#include "elastos/droid/ext/frameworkdef.h"
+
+using Elastos::Droid::Os::IBinder;#include "elastos/droid/ext/frameworkdef.h"
 
 using Elastos::Droid::Content::IIntent;
 using Elastos::Droid::Widget::IRemoteViews;
@@ -14,6 +16,8 @@ namespace Droid {
 namespace JavaProxy {
 
 CarClass(CRemoteViewsFactoryNative)
+    , public Object
+    , public IBinder
 {
 public:
     ~CRemoteViewsFactoryNative();
@@ -50,6 +54,10 @@ public:
 
     CARAPI IsCreated(
         /* [out] */ Boolean* res);
+
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
 
     CARAPI constructor(
         /* [in] */ Handle32 jVM,

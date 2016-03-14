@@ -3,8 +3,10 @@
 #define __ELASTOS_DROID_JAVAPROXY_CIBACKUPAGENTNATIVE_H__
 
 #include "_Elastos_Droid_JavaProxy_CIBackupAgentNative.h"
+#include <elastos/core/Object.h>
 #include <jni.h>
 
+using Elastos::Droid::Os::IBinder;
 using Elastos::Droid::App::Backup::IIBackupManager;
 using Elastos::Droid::Os::IParcelFileDescriptor;
 
@@ -13,9 +15,15 @@ namespace Droid {
 namespace JavaProxy {
 
 CarClass(CIBackupAgentNative)
+    , public Object
+    , public IBinder
 {
 public:
     ~CIBackupAgentNative();
+
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
 
     CARAPI constructor(
         /* [in] */ Handle32 jVM,

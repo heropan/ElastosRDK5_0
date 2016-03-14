@@ -6,6 +6,7 @@
 using Elastos::Droid::Net::IUri;
 using Elastos::Droid::Content::Pm::IContainerEncryptionParams;
 using Elastos::Droid::Content::Res::IObbInfo;
+using Elastos::Droid::Os::EIID_IBinder;
 using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
@@ -13,6 +14,10 @@ namespace Droid {
 namespace JavaProxy {
 
 const String CMediaContainerServiceNative::TAG("CMediaContainerServiceNative");
+
+CAR_INTERFACE_IMPL_2(CApplicationThreadNative, Object, IApplicationThread, IBinder)
+
+CAR_OBJECT_IMPL(CApplicationThreadNative)
 
 CMediaContainerServiceNative::~CMediaContainerServiceNative(){
     JNIEnv* env;

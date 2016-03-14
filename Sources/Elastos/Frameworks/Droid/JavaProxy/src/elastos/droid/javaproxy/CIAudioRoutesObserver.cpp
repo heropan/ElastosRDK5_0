@@ -8,6 +8,10 @@ namespace JavaProxy {
 
 const String CIAudioRoutesObserver::TAG("CIAudioRoutesObserver");
 
+CAR_INTERFACE_IMPL_2(CApplicationThreadNative, Object, IApplicationThread, IBinder)
+
+CAR_OBJECT_IMPL(CApplicationThreadNative)
+
 CIAudioRoutesObserver::~CIAudioRoutesObserver()
 {
     JNIEnv* env;

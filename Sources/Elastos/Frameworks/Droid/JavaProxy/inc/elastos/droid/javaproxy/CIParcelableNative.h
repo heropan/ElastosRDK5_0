@@ -3,13 +3,17 @@
 #define __ELASTOS_DROID_JAVAPROXY_CIPARCELABLENATIVE_H__
 
 #include "_Elastos_Droid_JavaProxy_CIParcelableNative.h"
+#include <elastos/core/Object.h>
 #include <jni.h>
 
+using Elastos::Droid::Os::IBinder;
 namespace Elastos {
 namespace Droid {
 namespace JavaProxy {
 
 CarClass(CIParcelableNative)
+    , public Object
+    , public IBinder
 {
 public:
     CARAPI constructor();

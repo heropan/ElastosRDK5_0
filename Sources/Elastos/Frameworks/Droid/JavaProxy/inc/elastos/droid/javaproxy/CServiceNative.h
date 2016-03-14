@@ -3,19 +3,29 @@
 #define __ELASTOS_DROID_JAVAPROXY_CSERVICENATIVE_H__
 
 #include "_Elastos_Droid_JavaProxy_CServiceNative.h"
-#include <jni.h>
+#include <elastos/core/Object.h>
 #include <binder/Binder.h>
+#include <jni.h>
+
+using Elastos::Droid::Os::IBinder;
 
 namespace Elastos {
 namespace Droid {
 namespace JavaProxy {
 
 CarClass(CServiceNative)
+    , public Object
+    , public IParcelable
+    , public IBinder
 {
 public:
     ~CServiceNative();
 
     CARAPI constructor();
+
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
 
     CARAPI constructor(
         /* [in] */ Handle32 jVM,

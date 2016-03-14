@@ -4,6 +4,7 @@
 #include "elastos/droid/javaproxy/Util.h"
 #include <elastos/utility/logging/Logger.h>
 
+using Elastos::Droid::Os::EIID_IBinder;
 using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {

@@ -3,16 +3,24 @@
 #define __ELASTOS_DROID_JAVAPROXY_CIREMOTEVOLUMEOBSERVER_H__
 
 #include "_Elastos_Droid_JavaProxy_CIRemoteVolumeObserver.h"
+#include <elastos/core/Object.h>
 #include <jni.h>
 
+using Elastos::Droid::Os::IBinder;
 namespace Elastos {
 namespace Droid {
 namespace JavaProxy {
 
 CarClass(CIRemoteVolumeObserver)
+    , public Object
+    , public IBinder
 {
 public:
     ~CIRemoteVolumeObserver();
+
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
 
     CARAPI constructor(
         /* [in] */ Handle32 jVM,

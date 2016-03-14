@@ -3,19 +3,27 @@
 #define __ELASTOS_DROID_JAVAPROXY_CCONTENTOBSERVERNATIVE_H__
 
 #include "_Elastos_Droid_JavaProxy_CContentObserverNative.h"
+#include <elastos/core/Object.h>
 #include <jni.h>
 
 using Elastos::Droid::Database::IIContentObserver;
 using Elastos::Droid::Net::IUri;
+using Elastos::Droid::Os::IBinder;
 
 namespace Elastos {
 namespace Droid {
 namespace JavaProxy {
 
 CarClass(CContentObserverNative)
+    , public Object
+    , public IBinder
 {
 public:
     ~CContentObserverNative();
+
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
 
     CARAPI constructor(
         /* [in] */ Handle32 jVM,
