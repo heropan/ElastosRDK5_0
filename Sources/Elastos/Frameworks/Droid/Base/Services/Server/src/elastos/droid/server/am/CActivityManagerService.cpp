@@ -4140,6 +4140,7 @@ AutoPtr<IIntent> CActivityManagerService::GetHomeIntent()
 Boolean CActivityManagerService::StartHomeActivityLocked(
     /* [in] */ Int32 userId)
 {
+    Slogger::I(TAG, "StartHomeActivityLocked, mTopAction: %s", mTopAction.string());
     if (mFactoryTest == FactoryTest::FACTORY_TEST_LOW_LEVEL
             && mTopAction.IsNull()) {
         // We are running in factory test mode, but unable to find
@@ -4149,7 +4150,9 @@ Boolean CActivityManagerService::StartHomeActivityLocked(
     }
 
     AutoPtr<IIntent> intent = GetHomeIntent();
+    Slogger::I(TAG, "StartHomeActivityLocked, GetHomeIntent: %s", TO_CSTR(intent));
     AutoPtr<IActivityInfo> aInfo = ResolveActivityInfo(intent, STOCK_PM_FLAGS, userId);
+    Slogger::I(TAG, "StartHomeActivityLocked, ResolveActivityInfo: %s", TO_CSTR(aInfo));
     if (aInfo != NULL) {
         AutoPtr<IApplicationInfo> appInfo;
         IComponentInfo::Probe(aInfo)->GetApplicationInfo((IApplicationInfo**)&appInfo);
@@ -14205,6 +14208,7 @@ Boolean CActivityManagerService::DeliverPreBootCompleted(
 ECode CActivityManagerService::SystemReady(
     /* [in] */ IRunnable* goingCallback)
 {
+    Slogger::I(TAG, " >>>>>>>SystemReady ");
     {
         AutoLock lock(this);
 
