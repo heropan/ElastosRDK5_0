@@ -5,13 +5,13 @@
  * should not be modified by hand.
  */
 
-#ifndef __Elastos_Droid_DevSamples_ImageViewDemo_R_H__
-#define __Elastos_Droid_DevSamples_ImageViewDemo_R_H__
+#ifndef __Elastos_DevSamples_ImageViewDemo_R_H__
+#define __Elastos_DevSamples_ImageViewDemo_R_H__
+#include <elatypes.h>
 namespace Elastos {
-namespace Droid {
 namespace DevSamples {
 namespace ImageViewDemo {
-class R {
+class ECO_PUBLIC R {
     public: class attr {
     };
     public: class drawable {
@@ -34,6 +34,5 @@ class R {
 };
 };
 };
-};
 
-#endif // __Elastos_Droid_DevSamples_ImageViewDemo_R_H__
+#endif // __Elastos_DevSamples_ImageViewDemo_R_H__

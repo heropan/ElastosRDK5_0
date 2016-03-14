@@ -1,15 +1,14 @@
 
-#ifndef __CACTIVITYONE_H__
-#define __CACTIVITYONE_H__
+#ifndef __Elastos_DevSamples_ImageViewDemo_CActivityOne_H__
+#define __Elastos_DevSamples_ImageViewDemo_CActivityOne_H__
 
-#include "elastos/droid/app/Activity.h"
-#include "_CActivityOne.h"
+#include <elastos/droid/app/Activity.h>
+#include "_Elastos_DevSamples_ImageViewDemo_CActivityOne.h"
 
 using Elastos::Droid::App::Activity;
 using Elastos::Droid::View::IViewOnClickListener;
 
 namespace Elastos {
-namespace Droid {
 namespace DevSamples {
 namespace ImageViewDemo {
 
@@ -17,33 +16,29 @@ class CActivityOne : public Activity
 {
 public:
     class MyListener
-        : public ElRefBase
+        : public Object
         , public IViewOnClickListener
     {
     public:
+        CAR_INTERFACE_DECL()
+
         MyListener(
             /* [in] */ CActivityOne* host);
-
-        CARAPI_(PInterface) Probe(
-            /* [in]  */ REIID riid);
-
-        CARAPI_(UInt32) AddRef();
-
-        CARAPI_(UInt32) Release();
-
-        CARAPI GetInterfaceID(
-            /* [in] */ IInterface *pObject,
-            /* [out] */ InterfaceID *pIID);
 
         CARAPI OnClick(
             /* [in] */ IView* v);
 
     private:
-        AutoPtr<CActivityOne> mHost;
-        Int32 mRef;
+        CActivityOne* mHost;
     };
 
+public:
+    CAR_OBJECT_DECL()
+
+    CARAPI constructor();
+
 protected:
+
     CARAPI OnCreate(
         /* [in] */ IBundle* savedInstanceState);
 
@@ -68,7 +63,6 @@ private:
 
 } // namespace ImageViewDemo
 } // namespace DevSamples
-} // namespace Droid
 } // namespace Elastos
 
-#endif // __CACTIVITYONE_H__
+#endif // __Elastos_DevSamples_ImageViewDemo_CActivityOne_H__
