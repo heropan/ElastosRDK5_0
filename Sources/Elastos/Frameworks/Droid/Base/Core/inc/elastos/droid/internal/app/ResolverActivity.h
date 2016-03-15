@@ -36,7 +36,7 @@ namespace Droid {
 namespace Internal {
 namespace App {
 
-class ResolverActivity
+class ECO_PUBLIC ResolverActivity
     : public Activity
     , public IResolverActivity
     , public IAdapterViewOnItemClickListener
