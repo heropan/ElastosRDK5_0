@@ -45,6 +45,7 @@ module
     interface Elastos.Droid.Os.IHandler;
     interface Elastos.Droid.Telecomm.Internal.IRemoteServiceCallback;
     interface Elastos.Droid.Telecomm.Internal.IIVideoProvider;
+    interface Elastos.Droid.Telecomm.Internal.IIInCallService;
 
     namespace Elastos {
     namespace Droid {
@@ -72,6 +73,13 @@ module
             [in] IHandler* handler);
 
         interface IIVideoProvider;
+    }
+
+    class CInCallServiceBinder {
+        constructor(
+            [in] IHandler* handler);
+
+        interface IIInCallService;
     }
 
     } // namespace Telecom
