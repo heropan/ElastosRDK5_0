@@ -10,6 +10,7 @@
 #include "elastos/droid/server/am/ActivityRecord.h"
 #include "elastos/droid/server/am/ActivityStack.h"
 #include "elastos/droid/server/am/ActivityState.h"
+#include "elastos/droid/server/am/ActivityContainer.h"
 #include "elastos/droid/server/wm/AppTransition.h"
 #include "elastos/droid/server/wm/TaskGroup.h"
 #include "elastos/droid/server/Watchdog.h"
@@ -222,7 +223,7 @@ const Int32 ActivityStack::FINISH_AFTER_PAUSE;
 const Int32 ActivityStack::FINISH_AFTER_VISIBLE;
 
 ActivityStack::ActivityStack(
-    /* [in] */ ActivityStackSupervisor::ActivityContainer* activityContainer)
+    /* [in] */ IIActivityContainer* activityContainer)
     : mConfigWillChange(FALSE)
     , mLaunchStartTime(0)
     , mFullyDrawnStartTime(0)
@@ -230,14 +231,15 @@ ActivityStack::ActivityStack(
     , mDisplayId(0)
     , mInResumeTopActivity(FALSE)
 {
+    ActivityContainer* ac = (ActivityContainer*)activityContainer;
     mActivityContainer = activityContainer;
-    mStackSupervisor = activityContainer->GetOuter();
+    mStackSupervisor = ac->GetOuter();
     mService = mStackSupervisor->mService;
     AutoPtr<ILooper> looper;
     mService->mHandler->GetLooper((ILooper**)&looper);
     mHandler = new ActivityStackHandler(looper, this);
     mWindowManager = mService->mWindowManager;
-    mStackId = activityContainer->mStackId;
+    mStackId = ac->mStackId;
     mCurrentUser = mService->mCurrentUserId;//TODO friend this class in ActivityManagerService
 
     CArrayList::New((IArrayList**)&mTaskHistory);
@@ -429,8 +431,8 @@ Boolean ActivityStack::IsHomeStack()
 
 Boolean ActivityStack::IsOnHomeDisplay()
 {
-    return IsAttached() &&
-            mActivityContainer->mActivityDisplay->mDisplayId == IDisplay::DEFAULT_DISPLAY;
+    ActivityContainer* ac = (ActivityContainer*)mActivityContainer.Get();
+    return IsAttached() && ac->mActivityDisplay->mDisplayId == IDisplay::DEFAULT_DISPLAY;
 }
 
 void ActivityStack::MoveToFront()
@@ -829,7 +831,8 @@ Boolean ActivityStack::StartPausingLocked(
         return FALSE;
     }
 
-    if (mActivityContainer->mParentActivity == NULL) {
+    ActivityContainer* ac = (ActivityContainer*)mActivityContainer.Get();
+    if (ac->mParentActivity == NULL) {
         // Top level stack, not a child. Look for child stacks.
         mStackSupervisor->PauseChildStacks(prev, userLeaving, uiSleeping, resuming, dontWait);
     }
@@ -982,7 +985,9 @@ void ActivityStack::ActivityStoppedLocked(
         mHandler->RemoveMessages(STOP_TIMEOUT_MSG, TO_IINTERFACE(r));
         r->mStopped = TRUE;
         r->mState = ActivityState_STOPPED;
-        if (mActivityContainer->mActivityDisplay->mVisibleBehindActivity.Get() == r) {
+
+        ActivityContainer* ac = (ActivityContainer*)mActivityContainer.Get();
+        if (ac->mActivityDisplay->mVisibleBehindActivity.Get() == r) {
             mStackSupervisor->RequestVisibleBehindLocked(r, FALSE);
         }
         if (r->mFinishing) {
@@ -1269,7 +1274,8 @@ void ActivityStack::ConvertToTranslucent(
 void ActivityStack::NotifyActivityDrawnLocked(
     /* [in] */ ActivityRecord* r)
 {
-    mActivityContainer->SetDrawn();
+    ActivityContainer* ac = (ActivityContainer*)mActivityContainer.Get();
+    ac->SetDrawn();
     if (r == NULL){
         Boolean remove, isEmpty;
         mUndrawnActivitiesBelowTopTranslucent->Remove(TO_IINTERFACE(r), &remove);
@@ -1365,9 +1371,10 @@ Boolean ActivityStack::ResumeTopActivityInnerLocked(
         return FALSE;
     }
 
-    AutoPtr<ActivityRecord> parent = mActivityContainer->mParentActivity;
+    ActivityContainer* ac = (ActivityContainer*)mActivityContainer.Get();
+    AutoPtr<ActivityRecord> parent = (ActivityRecord*)ac->mParentActivity.Get();
     if ((parent != NULL && parent->mState != ActivityState_RESUMED) ||
-            !mActivityContainer->IsAttachedLocked()) {
+            !ac->IsAttachedLocked()) {
         // Do not resume this stack if its parent is not resumed.
         // TODO: If in a loop, make sure that parent stack resumeTopActivity is called 1st.
         return FALSE;
@@ -2855,7 +2862,8 @@ void ActivityStack::FinishAllActivitiesLocked(
         }
     }
     if (noActivitiesInStack) {
-        mActivityContainer->OnTaskListEmptyLocked();
+        ActivityContainer* ac = (ActivityContainer*)mActivityContainer.Get();
+        ac->OnTaskListEmptyLocked();
     }
 }
 
@@ -3412,20 +3420,26 @@ void ActivityStack::BackgroundResourcesReleased(
 
 Boolean ActivityStack::HasVisibleBehindActivity()
 {
-    return IsAttached() && mActivityContainer->mActivityDisplay->HasVisibleBehindActivity();
+    ActivityContainer* ac = (ActivityContainer*)mActivityContainer.Get();
+    return IsAttached() && ac->mActivityDisplay->HasVisibleBehindActivity();
 }
 
 void ActivityStack::SetVisibleBehindActivity(
     /* [in] */ ActivityRecord* r)
 {
     if (IsAttached()) {
-        mActivityContainer->mActivityDisplay->SetVisibleBehindActivity(r);
+        ActivityContainer* ac = (ActivityContainer*)mActivityContainer.Get();
+        ac->mActivityDisplay->SetVisibleBehindActivity(r);
     }
 }
 
 AutoPtr<ActivityRecord> ActivityStack::GetVisibleBehindActivity()
 {
-    return IsAttached() ? mActivityContainer->mActivityDisplay->mVisibleBehindActivity : NULL;
+    ActivityContainer* ac = (ActivityContainer*)mActivityContainer.Get();
+    if (IsAttached()) {
+        return (ActivityRecord*)ac->mActivityDisplay->mVisibleBehindActivity.Get();
+    }
+    return NULL;
 }
 
 Boolean ActivityStack::RemoveHistoryRecordsForAppLocked(
@@ -4315,7 +4329,8 @@ void ActivityStack::RemoveTask(
             mStacks->Remove(TO_IINTERFACE(this));
             mStacks->Add(0, TO_IINTERFACE(this));
         }
-        mActivityContainer->OnTaskListEmptyLocked();
+        ActivityContainer* ac = (ActivityContainer*)mActivityContainer.Get();
+        ac->OnTaskListEmptyLocked();
     }
 }
 
@@ -4584,9 +4599,10 @@ void ActivityStack::CompleteResumeLocked(
     }
     next->mReturningOptions = NULL;
 
-    if (mActivityContainer->mActivityDisplay->mVisibleBehindActivity.Get() == next) {
+    ActivityContainer* ac = (ActivityContainer*)mActivityContainer.Get();
+    if (ac->mActivityDisplay->mVisibleBehindActivity.Get() == next) {
         // When resuming an activity, require it to call requestVisibleBehind() again.
-        mActivityContainer->mActivityDisplay->SetVisibleBehindActivity(NULL);
+        ac->mActivityDisplay->SetVisibleBehindActivity(NULL);
     }
 }
 
@@ -4596,11 +4612,10 @@ void ActivityStack::SetVisibile(
 {
     r->mVisible = visible;
     mWindowManager->SetAppVisibility(IBinder::Probe(r->mAppToken), visible);
-    //final ArrayList<ActivityContainer> containers = r.mChildContainers;
     List<AutoPtr<IIActivityContainer> > containers = r->mChildContainers;
     for (Int32 containerNdx = containers.GetSize() - 1; containerNdx >= 0; --containerNdx) {
         AutoPtr<IIActivityContainer> icontainer = containers[containerNdx];
-        ActivityStackSupervisor::ActivityContainer* container = (ActivityStackSupervisor::ActivityContainer*)(icontainer.Get());
+        ActivityContainer* container = (ActivityContainer*)(icontainer.Get());
         container->SetVisible(visible);
     }
 }

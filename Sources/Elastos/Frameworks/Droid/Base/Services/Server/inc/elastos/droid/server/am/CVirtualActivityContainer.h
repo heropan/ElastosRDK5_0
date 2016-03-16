@@ -2,8 +2,8 @@
 #define __ELASTOS_DROID_SERVER_AM_CVIRTUAL_ACTIVITYCONTAINER_H__
 
 #include "_Elastos_Droid_Server_Am_CVirtualActivityContainer.h"
-#include "elastos/droid/server/am/ActivityStackSupervisor.h"
-#include "elastos/droid/server/am/ActivityStack.h"
+#include "elastos/droid/server/am/ActivityContainer.h"
+
 
 namespace Elastos {
 namespace Droid {
@@ -11,7 +11,7 @@ namespace Server {
 namespace Am {
 
 CarClass(CVirtualActivityContainer)
-    , public ActivityStackSupervisor::VirtualActivityContainer
+    , public VirtualActivityContainer
 {
 public:
     CAR_OBJECT_DECL()

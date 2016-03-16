@@ -18,6 +18,7 @@ SOURCES += CActivityRecordToken.cpp
 SOURCES += ActivityRecord.cpp
 SOURCES += ActivityResult.cpp
 SOURCES += ActivityStack.cpp
+SOURCES += ActivityContainer.cpp
 SOURCES += ActivityStackSupervisor.cpp
 SOURCES += AppErrorResult.cpp
 SOURCES += AppBindRecord.cpp

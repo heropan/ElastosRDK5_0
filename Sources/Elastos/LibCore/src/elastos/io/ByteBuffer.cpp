@@ -7,12 +7,14 @@
 #include "CoreUtils.h"
 #include "Arrays.h"
 #include "Memory.h"
+#include "logging/Logger.h"
 
 using Elastos::Core::IComparable;
 using Elastos::Core::CArrayOf;
 using Elastos::Core::CoreUtils;
 using Elastos::Core::EIID_IByte;
 using Elastos::Utility::Arrays;
+using Elastos::Utility::Logging::Logger;
 using Elastos::IO::Channels::FileChannelMapMode_NONE;
 using Libcore::IO::Memory;
 
@@ -29,12 +31,20 @@ ECode ByteBuffer::Allocate(
     *buf = NULL;
 
     if (capacity < 0) {
-        // throw new IllegalArgumentException("capacity < 0: " + capacity);
+        Logger::E("ByteBuffer", "capacity < 0: %d", capacity);
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
 
+    AutoPtr<ArrayOf<Byte> > bytesTemp = ArrayOf<Byte>::Alloc(capacity);
+    Logger::E("ByteBuffer", "capacity 1: %d, bytesTemp:%p, lenght: %d", capacity, bytesTemp.Get(), bytesTemp->GetLength());
+    AutoPtr<ByteArrayBuffer> bbTemp = new ByteArrayBuffer();
+    Logger::E("ByteBuffer", "capacity 2: %d, bytesTemp:%p, lenght: %d", capacity, bytesTemp.Get(), bytesTemp->GetLength());
+
     AutoPtr<ArrayOf<Byte> > bytes = ArrayOf<Byte>::Alloc(capacity);
+    Logger::E("ByteBuffer", "capacity 3: %d, bytesTemp:%p, lenght: %d", capacity, bytes.Get(), bytes->GetLength());
     AutoPtr<ByteArrayBuffer> bb = new ByteArrayBuffer();
+    Logger::E("ByteBuffer", "capacity 4: %d, bytesTemp:%p, lenght: %d", capacity, bytes.Get(), bytes->GetLength());
+
     FAIL_RETURN(bb->constructor(bytes))
     *buf = IByteBuffer::Probe(bb);
     REFCOUNT_ADD(*buf);
@@ -49,9 +59,10 @@ ECode ByteBuffer::AllocateDirect(
     *buf = NULL;
 
     if (capacity < 0) {
-        // throw new IllegalArgumentException("capacity < 0: " + capacity);
+        Logger::E("ByteBuffer", "capacity < 0: %d", capacity);
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
+
     // Ensure alignment by 8.
     AutoPtr<MemoryBlock> memoryBlock = MemoryBlock::Allocate(capacity + 7);
     Int64 address = memoryBlock->ToInt64();
