@@ -27,7 +27,7 @@ namespace Elastos {
 namespace Droid {
 namespace View {
 
-class ECO_LOCAL VelocityTracker
+class ECO_PUBLIC VelocityTracker
     : public Object
     , public IVelocityTracker
 {
