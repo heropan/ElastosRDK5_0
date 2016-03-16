@@ -749,14 +749,14 @@ ECode BroadcastQueue::ProcessNextBroadcast(
                 CIntent::New(r->mIntent, (IIntent**)&newIntent);
                 ECode ec = PerformReceiveLocked(r->mCallerApp, r->mResultTo, newIntent, r->mResultCode,
                         r->mResultData, r->mResultExtras, FALSE, FALSE, r->mUserId);
-                if (FAILED(ec)) {
-                    r->mResultTo = NULL;
-                    Slogger::W(TAG, "Failure [%s] sending broadcast result of %s, ec=0x%08x",
-                        mQueueName.string(), TO_CSTR(r->mIntent), ec);
-                }
                 // Set this to NULL so that the reference
                 // (local and remote) isn't kept in the mBroadcastHistory.
                 r->mResultTo = NULL;
+                if (FAILED(ec)) {
+                    r->mResultTo = NULL;
+                    Slogger::W(TAG, "Failure [%s] sending broadcast result of %s, ec=0x%08x",
+                            mQueueName.string(), TO_CSTR(r->mIntent), ec);
+                }
                 // } catch (RemoteException e) {
                 //     Slog.w(TAG, "Failure ["
                 //             + mQueueName + "] sending broadcast result of "

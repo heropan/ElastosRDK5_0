@@ -462,6 +462,8 @@ public:
 
     CWindowManagerService();
 
+    ~CWindowManagerService();
+
     CAR_INTERFACE_DECL()
 
     CAR_OBJECT_DECL()
@@ -2100,7 +2102,7 @@ public:
      * NOTE: Never call into methods that lock ActivityManagerService while holding this object.
      */
     HashMap<AutoPtr<IBinder>, AutoPtr<WindowState> > mWindowMap;
-    Object mWindowMapLock;
+    AutoPtr<Object> mWindowMapLock;
 
     /**
      * Mapping from a token IBinder to a WindowToken object.
