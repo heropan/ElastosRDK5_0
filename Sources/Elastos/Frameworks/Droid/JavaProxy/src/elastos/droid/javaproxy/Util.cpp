@@ -8246,7 +8246,7 @@ Boolean Util::GetElPendingIntent(
     jobject jInstance = env->NewGlobalRef(jtarget);
 
     AutoPtr<IIIntentSender> iisender;
-    // if (NOERROR != CIIntentSenderNative::New((Handle32)jvm, (Handle32)jInstance, (IIIntentSender**)&iisender)) {
+    // if (NOERROR != CIIntentSenderNative::New((Handle64)jvm, (Handle64)jInstance, (IIIntentSender**)&iisender)) {
     //     LOGGERD(TAG, "GetElPendingIntent new CIIntentSenderNative fail!\n");
     //     return FALSE;
     // }
@@ -12099,15 +12099,127 @@ jobject Util::ToJavaResultInfo(
     Util::CheckErrorAndLog(env, "ToJavaResultInfo", "Fail FindClass: ResultInfo %d", __LINE__);
 
     jmethodID m = env->GetMethodID(riKlass, "<init>", "(Ljava/lang/String;IILandroid/content/Intent;)V");
-    Util::CheckErrorAndLog(env, "ToJavaResultInfo", "Fail GetMethodID: riKlass %d", __LINE__);
+    Util::CheckErrorAndLog(env, "ToJavaResultInfo", "Fail GetMethodID: ResultInfo %d", __LINE__);
 
     jobject jresultInfo = env->NewObject(riKlass, m, jresultWho, requestCode, resultCode, jdata);
-    Util::CheckErrorAndLog(env, "ToJavaResultInfo", "Fail NewObject: riKlass %d", __LINE__);
+    Util::CheckErrorAndLog(env, "ToJavaResultInfo", "Fail NewObject: ResultInfo %d", __LINE__);
 
     env->DeleteLocalRef(jresultWho);
     env->DeleteLocalRef(jdata);
     env->DeleteLocalRef(riKlass);
     return jresultInfo;
+}
+
+jobject Util::ToJavaRating(
+    /* [in] */ JNIEnv* env,
+    /* [in] */ IRating* rating)
+{
+    if (env == NULL || rating == NULL) {
+        LOGGERE("ToJavaRating", "Invalid arguments!");
+        return NULL;
+    }
+
+    AutoPtr<IParcel> parcel;
+    Elastos::Droid::Os::CParcel::New((IParcel**)&parcel);
+    IParcelable::Probe(rating)->WriteToParcel(parcel);
+    parcel->SetDataPosition(0);
+
+    Int32 ratingStyle;
+    parcel->ReadInt32(&ratingStyle);
+
+    Float ratingValue;
+    parcel->ReadFloat(&ratingValue);
+
+    jclass rKlass = env->FindClass("android/meida/Rating");
+    Util::CheckErrorAndLog(env, "ToJavaRating", "Fail FindClass: Rating %d", __LINE__);
+
+    jmethodID m = env->GetMethodID(rKlass, "<init>", "(IF)V");
+    Util::CheckErrorAndLog(env, "ToJavaRating", "Fail GetMethodID: Rating %d", __LINE__);
+
+    jobject jrating = env->NewObject(rKlass, m, ratingStyle, ratingValue);
+    Util::CheckErrorAndLog(env, "ToJavaRating", "Fail NewObject: Rating %d", __LINE__);
+
+    env->DeleteLocalRef(rKlass);
+    return jrating;
+}
+
+jobject Util::ToJavaAudioAttributes(
+    /* [in] */ JNIEnv* env,
+    /* [in] */ IAudioAttributes* aa)
+{
+    if (env == NULL || aa == NULL) {
+        LOGGERE("ToJavaAudioAttributes", "Invalid arguments!");
+        return NULL;
+    }
+
+    jclass aaKlass = env->FindClass("android/meida/AudioAttributes");
+    Util::CheckErrorAndLog(env, "ToJavaAudioAttributes", "Fail FindClass: AudioAttributes %d", __LINE__);
+
+    jmethodID m = env->GetMethodID(aaKlass, "<init>", "()V");
+    Util::CheckErrorAndLog(env, "ToJavaAudioAttributes", "Fail GetMethodID: AudioAttributes %d", __LINE__);
+
+    jobject jaa = env->NewObject(aaKlass, m);
+    Util::CheckErrorAndLog(env, "ToJavaAudioAttributes", "Fail NewObject: AudioAttributes %d", __LINE__);
+
+    AutoPtr<IParcel> parcel;
+    Elastos::Droid::Os::CParcel::New((IParcel**)&parcel);
+    IParcelable::Probe(aa)->WriteToParcel(parcel);
+    parcel->SetDataPosition(0);
+
+    Int32 tempInt;
+    parcel->ReadInt32(&tempInt);
+    Util::SetJavaIntField(env, aaKlass, jaa, tempInt, "mUsage", "ToJavaAudioAttributes");
+
+    parcel->ReadInt32(&tempInt);
+    Util::SetJavaIntField(env, aaKlass, jaa, tempInt, "mContentType", "ToJavaAudioAttributes");
+
+    parcel->ReadInt32(&tempInt);
+    Util::SetJavaIntField(env, aaKlass, jaa, tempInt, "mSource", "ToJavaAudioAttributes");
+
+    parcel->ReadInt32(&tempInt);
+    Util::SetJavaIntField(env, aaKlass, jaa, tempInt, "mFlags", "ToJavaAudioAttributes");
+
+    String formattedTags;
+    parcel->ReadString(&formattedTags);
+    Util::SetJavaStringField(env, aaKlass, jaa, formattedTags, "mFormattedTags", "ToJavaAudioAttributes");
+
+    AutoPtr<ISet> set;
+    aa->GetTags((ISet**)&set);
+    if (set != NULL) {
+        AutoPtr<ArrayOf<IInterface*> > tags;
+        set->ToArray((ArrayOf<IInterface*>**)&tags);
+
+        jclass hsKlass = env->FindClass("java/util/HashSet");
+        Util::CheckErrorAndLog(env, "ToJavaAudioAttributes", "FindClass: HashSet line: %d", __LINE__);
+
+        jmethodID m = env->GetMethodID(hsKlass, "<init>", "()V");
+        Util::CheckErrorAndLog(env, "ToJavaAudioAttributes", "GetMethodID: HashSet line: %d", __LINE__);
+
+        jobject jset = env->NewObject(hsKlass, m);
+        Util::CheckErrorAndLog(env, "ToJavaAudioAttributes", "NewObject: HashSet line: %d", __LINE__);
+
+        m = env->GetMethodID(hsKlass, "add", "(Ljava/lang/Object;)Z");
+        Util::CheckErrorAndLog(env, "ToJavaAudioAttributes", "GetMethodID: add line: %d", __LINE__);
+
+        for (Int32 i = 0; i < tags->GetLength(); i++) {
+            AutoPtr<IInterface> item = (*tags)[i];
+            String tag;
+            ICharSequence::Probe(item)->ToString(&tag);
+            jstring jtag = Util::ToJavaString(env, tag);
+            env->CallBooleanMethod(jset, m, jtag);
+            env->DeleteLocalRef(jtag);
+        }
+        jfieldID f = env->GetFieldID(aaKlass, "mTags", "Ljava/util/HashSet;");
+        Util::CheckErrorAndLog(env, "ToJavaAudioAttributes", "GetFieldID: mTags %d", __LINE__);
+
+        env->SetObjectField(jaa, f, jset);
+        Util::CheckErrorAndLog(env, "ToJavaAudioAttributes", "SetObjectField: jdata %d", __LINE__);
+        env->DeleteLocalRef(hsKlass);
+        env->DeleteLocalRef(jset);
+    }
+
+    env->DeleteLocalRef(aaKlass);
+    return jaa;
 }
 
 } // JavaProxy

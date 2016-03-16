@@ -33,8 +33,8 @@ ECode CServiceNative::constructor()
 }
 
 ECode CServiceNative::constructor(
-    /* [in] */ Handle32 jVM,
-    /* [in] */ Handle32 jInstance)
+    /* [in] */ Handle64 jVM,
+    /* [in] */ Handle64 jInstance)
 {
     mJVM = (JavaVM*)jVM;
     JNIEnv* env;
@@ -78,7 +78,9 @@ ECode CServiceNative::ReadFromParcel(
     return NOERROR;
 }
 
-ECode CServiceNative::GetRemoteInstance(JNIEnv* env, Handle32* obj)
+ECode CServiceNative::GetRemoteInstance(
+    /* [in] */ JNIEnv* env,
+    /* [out] */ Handle64* obj)
 {
     // LOGGERD(TAG, "+ CServiceNative::GetRemoteInstance()");
 
@@ -96,7 +98,7 @@ ECode CServiceNative::GetRemoteInstance(JNIEnv* env, Handle32* obj)
     jobject jbinder = env->CallStaticObjectMethod(binderClass, m, (int)mibinder.get());
     Util::CheckErrorAndLog(env, TAG, "call Binder::ibinderForJavaObject : %d!\n", __LINE__);
     env->DeleteLocalRef(binderClass);
-    *obj = (Handle32)jbinder;
+    *obj = (Handle64)jbinder;
 
     // LOGGERD(TAG, "- CServiceNative::GetRemoteInstance()");
     return NOERROR;

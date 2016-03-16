@@ -27,8 +27,8 @@ CInputMethodServiceNative::~CInputMethodServiceNative()
 }
 
 ECode CInputMethodServiceNative::constructor(
-    /* [in] */ Handle32 jVM,
-    /* [in] */ Handle32 jInstance)
+    /* [in] */ Handle64 jVM,
+    /* [in] */ Handle64 jInstance)
 {
     mJVM = (JavaVM*)jVM;
     mJInstance = (jobject)jInstance;

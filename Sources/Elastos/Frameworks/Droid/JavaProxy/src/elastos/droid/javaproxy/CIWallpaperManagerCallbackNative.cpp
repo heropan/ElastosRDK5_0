@@ -3,6 +3,7 @@
 #include <elastos/utility/logging/Logger.h>
 #include "elastos/droid/javaproxy/Util.h"
 
+using Elastos::Droid::App::EIID_IIWallpaperManagerCallback;
 using Elastos::Droid::Os::EIID_IBinder;
 using Elastos::Utility::Logging::Logger;
 
@@ -12,19 +13,20 @@ namespace JavaProxy {
 
 const String CIWallpaperManagerCallbackNative::TAG("CIWallpaperManagerCallbackNative");
 
-CAR_INTERFACE_IMPL_2(CApplicationThreadNative, Object, IApplicationThread, IBinder)
+CAR_INTERFACE_IMPL_2(CIWallpaperManagerCallbackNative, Object, IIWallpaperManagerCallback, IBinder)
 
-CAR_OBJECT_IMPL(CApplicationThreadNative)
+CAR_OBJECT_IMPL(CIWallpaperManagerCallbackNative)
 
-CIWallpaperManagerCallbackNative::~CIWallpaperManagerCallbackNative(){
+CIWallpaperManagerCallbackNative::~CIWallpaperManagerCallbackNative()
+{
     JNIEnv* env;
     mJVM->AttachCurrentThread(&env, NULL);
     env->DeleteGlobalRef(mJInstance);
 }
 
 ECode CIWallpaperManagerCallbackNative::constructor(
-    /* [in] */ Handle32 jVM,
-    /* [in] */ Handle32 jInstance)
+    /* [in] */ Handle64 jVM,
+    /* [in] */ Handle64 jInstance)
 {
     mJVM = (JavaVM*)jVM;
     mJInstance = (jobject)jInstance;
@@ -33,7 +35,7 @@ ECode CIWallpaperManagerCallbackNative::constructor(
 
 ECode CIWallpaperManagerCallbackNative::OnWallpaperChanged()
 {
-    // LOGGERD(TAG, String("+ CIWallpaperManagerCallbackNative::OnWallpaperChanged()"));
+    // LOGGERD(TAG, "+ CIWallpaperManagerCallbackNative::OnWallpaperChanged()");
 
     JNIEnv* env;
     mJVM->AttachCurrentThread(&env, NULL);
@@ -49,7 +51,33 @@ ECode CIWallpaperManagerCallbackNative::OnWallpaperChanged()
 
     env->DeleteLocalRef(c);
 
-    // LOGGERD(TAG, String("- CIWallpaperManagerCallbackNative::OnWallpaperChanged()"));
+    // LOGGERD(TAG, "- CIWallpaperManagerCallbackNative::OnWallpaperChanged()");
+    return NOERROR;
+}
+
+ECode CIWallpaperManagerCallbackNative::ToString(
+    /* [out] */ String* str)
+{
+    // LOGGERD(TAG, "+ CIWallpaperManagerCallbackNative::ToString()");
+
+    JNIEnv* env;
+    mJVM->AttachCurrentThread(&env, NULL);
+
+    jclass c = env->FindClass("java/lang/Object");
+    Util::CheckErrorAndLog(env, "ToString", "FindClass: Object", __LINE__);
+
+    jmethodID m = env->GetMethodID(c, "toString", "()Ljava/lang/String;");
+    Util::CheckErrorAndLog(env, TAG, "GetMethodID: toString", __LINE__);
+
+    jstring jstr = (jstring)env->CallObjectMethod(mJInstance, m);
+    Util::CheckErrorAndLog(env, TAG, "CallVoidMethod: toString", __LINE__);
+
+    *str = Util::GetElString(env, jstr);
+
+    env->DeleteLocalRef(c);
+    env->DeleteLocalRef(jstr);
+
+    // LOGGERD(TAG, "- CIWallpaperManagerCallbackNative::ToString()");
     return NOERROR;
 }
 

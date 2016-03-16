@@ -3,6 +3,7 @@
 #include "elastos/droid/javaproxy/Util.h"
 #include <elastos/utility/logging/Logger.h>
 
+using Elastos::Droid::App::Backup::EIID_IIRestoreObserver;
 using Elastos::Droid::Os::EIID_IBinder;
 using Elastos::Utility::Logging::Logger;
 
@@ -12,9 +13,9 @@ namespace JavaProxy {
 
 const String CIRestoreObserverNative::TAG("CIRestoreObserverNative");
 
-CAR_INTERFACE_IMPL_2(CApplicationThreadNative, Object, IApplicationThread, IBinder)
+CAR_INTERFACE_IMPL_2(CIRestoreObserverNative, Object, IIRestoreObserver, IBinder)
 
-CAR_OBJECT_IMPL(CApplicationThreadNative)
+CAR_OBJECT_IMPL(CIRestoreObserverNative)
 
 CIRestoreObserverNative::~CIRestoreObserverNative()
 {
@@ -24,8 +25,8 @@ CIRestoreObserverNative::~CIRestoreObserverNative()
 }
 
 ECode CIRestoreObserverNative::constructor(
-    /* [in] */ Handle32 jVM,
-    /* [in] */ Handle32 jInstance)
+    /* [in] */ Handle64 jVM,
+    /* [in] */ Handle64 jInstance)
 {
     mJVM = (JavaVM*)jVM;
     mJInstance = (jobject)jInstance;
@@ -35,7 +36,7 @@ ECode CIRestoreObserverNative::constructor(
 ECode CIRestoreObserverNative::RestoreSetsAvailable(
     /* [in] */ ArrayOf<IRestoreSet*>* results)
 {
-    // LOGGERD(TAG, String("+ CIRestoreObserverNative::RestoreSetsAvailable()"));
+    // LOGGERD(TAG, "+ CIRestoreObserverNative::RestoreSetsAvailable()");
 
     JNIEnv* env;
     mJVM->AttachCurrentThread(&env, NULL);
@@ -74,14 +75,14 @@ ECode CIRestoreObserverNative::RestoreSetsAvailable(
 
     env->DeleteLocalRef(c);
     env->DeleteLocalRef(jresults);
-    // LOGGERD(TAG, String("- CIRestoreObserverNative::RestoreSetsAvailable()"));
+    // LOGGERD(TAG, "- CIRestoreObserverNative::RestoreSetsAvailable()");
     return NOERROR;
 }
 
 ECode CIRestoreObserverNative::RestoreStarting(
     /* [in] */ Int32 numPackages)
 {
-    // LOGGERD(TAG, String("+ CIRestoreObserverNative::RestoreStarting()"));
+    // LOGGERD(TAG, "+ CIRestoreObserverNative::RestoreStarting()");
 
     JNIEnv* env;
     mJVM->AttachCurrentThread(&env, NULL);
@@ -96,7 +97,7 @@ ECode CIRestoreObserverNative::RestoreStarting(
     Util::CheckErrorAndLog(env, TAG, "CallVoidMethod: restoreStarting Line: %d", __LINE__);
 
     env->DeleteLocalRef(c);
-    // LOGGERD(TAG, String("- CIRestoreObserverNative::RestoreStarting()"));
+    // LOGGERD(TAG, "- CIRestoreObserverNative::RestoreStarting()");
     return NOERROR;
 }
 
@@ -104,7 +105,7 @@ ECode CIRestoreObserverNative::OnUpdate(
     /* [in] */ Int32 nowBeingRestored,
     /* [in] */ const String& curentPackage)
 {
-    LOGGERD(TAG, String("+ CIRestoreObserverNative::OnUpdate()"));
+    LOGGERD(TAG, "+ CIRestoreObserverNative::OnUpdate()");
 
     JNIEnv* env;
     mJVM->AttachCurrentThread(&env, NULL);
@@ -122,14 +123,14 @@ ECode CIRestoreObserverNative::OnUpdate(
 
     env->DeleteLocalRef(c);
     env->DeleteLocalRef(jcurentPackage);
-    LOGGERD(TAG, String("- CIRestoreObserverNative::OnUpdate()"));
+    LOGGERD(TAG, "- CIRestoreObserverNative::OnUpdate()");
     return NOERROR;
 }
 
 ECode CIRestoreObserverNative::RestoreFinished(
     /* [in] */ Int32 error)
 {
-    // LOGGERD(TAG, String("+ CIRestoreObserverNative::RestoreFinished()"));
+    // LOGGERD(TAG, "+ CIRestoreObserverNative::RestoreFinished()");
 
     JNIEnv* env;
     mJVM->AttachCurrentThread(&env, NULL);
@@ -144,20 +145,20 @@ ECode CIRestoreObserverNative::RestoreFinished(
     Util::CheckErrorAndLog(env, TAG, "CallVoidMethod: restoreFinished Line: %d", __LINE__);
 
     env->DeleteLocalRef(c);
-    // LOGGERD(TAG, String("- CIRestoreObserverNative::RestoreFinished()"));
+    // LOGGERD(TAG, "- CIRestoreObserverNative::RestoreFinished()");
     return NOERROR;
 }
 
 ECode CIRestoreObserverNative::ToString(
     /* [out] */ String* str)
 {
-    // LOGGERD(TAG, String("+ CIRestoreObserverNative::ToString()"));
+    // LOGGERD(TAG, "+ CIRestoreObserverNative::ToString()");
 
     JNIEnv* env;
     mJVM->AttachCurrentThread(&env, NULL);
     *str = Util::GetJavaToStringResult(env, mJInstance);
 
-    // LOGGERD(TAG, String("- CIRestoreObserverNative::ToString()"));
+    // LOGGERD(TAG, "- CIRestoreObserverNative::ToString()");
     return NOERROR;
 }
 

@@ -6,8 +6,9 @@
 #include <elastos/core/Object.h>
 #include <jni.h>
 
-using Elastos::Droid::Os::IBinder;
 using Elastos::Droid::Location::ICountry;
+using Elastos::Droid::Location::IICountryListener;
+using Elastos::Droid::Os::IBinder;
 
 namespace Elastos {
 namespace Droid {
@@ -15,6 +16,7 @@ namespace JavaProxy {
 
 CarClass(CICountryListenerNative)
     , public Object
+    , public IICountryListener
     , public IBinder
 {
 public:
@@ -25,8 +27,8 @@ public:
     CAR_OBJECT_DECL()
 
     CARAPI constructor(
-        /* [in] */ Handle32 jVM,
-        /* [in] */ Handle32 jInstance);
+        /* [in] */ Handle64 jVM,
+        /* [in] */ Handle64 jInstance);
 
     CARAPI OnCountryDetected(
         /* [in] */ ICountry* country);

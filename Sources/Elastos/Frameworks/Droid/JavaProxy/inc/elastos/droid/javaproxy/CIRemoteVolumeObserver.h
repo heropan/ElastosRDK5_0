@@ -6,13 +6,16 @@
 #include <elastos/core/Object.h>
 #include <jni.h>
 
+using Elastos::Droid::Media::IIRemoteVolumeObserver;
 using Elastos::Droid::Os::IBinder;
+
 namespace Elastos {
 namespace Droid {
 namespace JavaProxy {
 
 CarClass(CIRemoteVolumeObserver)
     , public Object
+    , public IIRemoteVolumeObserver
     , public IBinder
 {
 public:
@@ -23,8 +26,8 @@ public:
     CAR_OBJECT_DECL()
 
     CARAPI constructor(
-        /* [in] */ Handle32 jVM,
-        /* [in] */ Handle32 jInstance);
+        /* [in] */ Handle64 jVM,
+        /* [in] */ Handle64 jInstance);
 
     CARAPI DispatchRemoteVolumeUpdate(
         /* [in] */ Int32 direction,

@@ -6,8 +6,9 @@
 #include <elastos/core/Object.h>
 #include <jni.h>
 
-using Elastos::Droid::Os::IBinder;
+using Elastos::Droid::App::IIBackupAgent;
 using Elastos::Droid::App::Backup::IIBackupManager;
+using Elastos::Droid::Os::IBinder;
 using Elastos::Droid::Os::IParcelFileDescriptor;
 
 namespace Elastos {
@@ -16,6 +17,7 @@ namespace JavaProxy {
 
 CarClass(CIBackupAgentNative)
     , public Object
+    , public IIBackupAgent
     , public IBinder
 {
 public:
@@ -26,8 +28,8 @@ public:
     CAR_OBJECT_DECL()
 
     CARAPI constructor(
-        /* [in] */ Handle32 jVM,
-        /* [in] */ Handle32 jInstance);
+        /* [in] */ Handle64 jVM,
+        /* [in] */ Handle64 jInstance);
 
     CARAPI DoBackup(
         /* [in] */ IParcelFileDescriptor* oldState,
@@ -57,6 +59,20 @@ public:
         /* [in] */ Int64 mode,
         /* [in] */ Int64 mtime,
         /* [in] */ Int32 token,
+        /* [in] */ IIBackupManager* callbackBinder);
+
+    CARAPI DoRestoreFinished(
+        /* [in] */ Int32 token,
+        /* [in] */ IIBackupManager* callbackBinder);
+
+    CARAPI Fail(
+        /* [in] */ const String& message);
+
+    CARAPI DoBackupFiles(
+        /* [in] */ IParcelFileDescriptor* data,
+        /* [in] */ Int32 token,
+        /* [in] */ ArrayOf<String>* domainTokens,
+        /* [in] */ const String& excludeFilesRegex,
         /* [in] */ IIBackupManager* callbackBinder);
 
     CARAPI ToString(

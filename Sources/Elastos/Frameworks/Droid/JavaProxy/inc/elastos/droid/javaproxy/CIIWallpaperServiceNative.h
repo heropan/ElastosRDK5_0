@@ -6,9 +6,10 @@
 #include <elastos/core/Object.h>
 #include <jni.h>
 
+using Elastos::Droid::Graphics::IRect;
 using Elastos::Droid::Os::IBinder;
-using Elastos::Droid::Os::IBinder;
-using Elastos::Droid::Service::Wallpaper::IWallpaperConnection;
+using Elastos::Droid::Service::Wallpaper::IIWallpaperConnection;
+using Elastos::Droid::Service::Wallpaper::IIWallpaperService;
 
 namespace Elastos {
 namespace Droid {
@@ -16,6 +17,7 @@ namespace JavaProxy {
 
 CarClass(CIIWallpaperServiceNative)
     , public Object
+    , public IIWallpaperService
     , public IBinder
 {
 public:
@@ -26,16 +28,17 @@ public:
     CAR_OBJECT_DECL()
 
     CARAPI constructor(
-        /* [in] */ Handle32 jVM,
-        /* [in] */ Handle32 jInstance);
+        /* [in] */ Handle64 jVM,
+        /* [in] */ Handle64 jInstance);
 
     CARAPI Attach(
-        /* [in] */ IWallpaperConnection* connection,
+        /* [in] */ IIWallpaperConnection* connection,
         /* [in] */ IBinder* windowToken,
         /* [in] */ Int32 windowType,
         /* [in] */ Boolean isPreview,
         /* [in] */ Int32 reqWidth,
-        /* [in] */ Int32 reqHeight);
+        /* [in] */ Int32 reqHeight,
+        /* [in] */ IRect* padding);
 
     CARAPI ToString(
         /* [out] */ String* str);

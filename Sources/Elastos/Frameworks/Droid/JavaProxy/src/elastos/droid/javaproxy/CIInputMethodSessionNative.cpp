@@ -28,8 +28,8 @@ CIInputMethodSessionNative::~CIInputMethodSessionNative()
 }
 
 ECode CIInputMethodSessionNative::constructor(
-    /* [in] */ Handle32 jVM,
-    /* [in] */ Handle32 jInstance)
+    /* [in] */ Handle64 jVM,
+    /* [in] */ Handle64 jInstance)
 {
     mJVM = (JavaVM*)jVM;
     mJInstance = (jobject)jInstance;
@@ -58,7 +58,7 @@ ECode CIInputMethodSessionNative::GetInternalInputMethodSession(
 
     if (jsession != NULL) {
         jobject jInstance = env->NewGlobalRef(jsession);
-        ECode ec = CInputMethodSessionNative::New((Handle32)mJVM, (Handle32)jInstance, session);
+        ECode ec = CInputMethodSessionNative::New((Handle64)mJVM, (Handle64)jInstance, session);
         if (FAILED(ec)) {
             LOGGERW(TAG, "new CIServiceConnectionNative fail!");
         }

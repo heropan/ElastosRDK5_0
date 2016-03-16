@@ -6,8 +6,9 @@
 #include <elastos/core/Object.h>
 #include <jni.h>
 
-using Elastos::Droid::Os::IBinder;
+using Elastos::Droid::App::IIActivityController;
 using Elastos::Droid::Content::IIntent;
+using Elastos::Droid::Os::IBinder;
 
 namespace Elastos {
 namespace Droid {
@@ -15,6 +16,7 @@ namespace JavaProxy {
 
 CarClass(CIActivityControllerNative)
     , public Object
+    , public IIActivityController
     , public IBinder
 {
 public:
@@ -25,8 +27,8 @@ public:
     CAR_OBJECT_DECL()
 
     CARAPI constructor(
-        /* [in] */ Handle32 jVM,
-        /* [in] */ Handle32 jInstance);
+        /* [in] */ Handle64 jVM,
+        /* [in] */ Handle64 jInstance);
 
     CARAPI ActivityStarting(
         /* [in] */ IIntent* intent,
@@ -56,6 +58,10 @@ public:
         /* [in] */ const String& processName,
         /* [in] */ Int32 pid,
         /* [in] */ const String& processStats,
+        /* [out] */ Int32* res);
+
+    CARAPI SystemNotResponding(
+        /* [in] */ const String& msg,
         /* [out] */ Int32* res);
 
     CARAPI ToString(

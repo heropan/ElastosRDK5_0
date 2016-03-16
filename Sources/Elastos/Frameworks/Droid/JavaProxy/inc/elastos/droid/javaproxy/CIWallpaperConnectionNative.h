@@ -7,7 +7,8 @@
 #include <jni.h>
 
 using Elastos::Droid::Os::IBinder;
-using Elastos::Droid::Service::Wallpaper::IWallpaperEngine;
+using Elastos::Droid::Service::Wallpaper::IIWallpaperConnection;
+using Elastos::Droid::Service::Wallpaper::IIWallpaperEngine;
 using Elastos::Droid::Os::IParcelFileDescriptor;
 
 namespace Elastos {
@@ -16,6 +17,7 @@ namespace JavaProxy {
 
 CarClass(CIWallpaperConnectionNative)
     , public Object
+    , public IIWallpaperConnection
     , public IBinder
 {
 public:
@@ -26,14 +28,14 @@ public:
     CAR_OBJECT_DECL()
 
     CARAPI constructor(
-        /* [in] */ Handle32 jVM,
-        /* [in] */ Handle32 jInstance);
+        /* [in] */ Handle64 jVM,
+        /* [in] */ Handle64 jInstance);
 
     CARAPI AttachEngine(
-        /* [in] */ IWallpaperEngine* engine);
+        /* [in] */ IIWallpaperEngine* engine);
 
     CARAPI EngineShown(
-        /* [in] */ IWallpaperEngine* engine);
+        /* [in] */ IIWallpaperEngine* engine);
 
     CARAPI SetWallpaper(
         /* [in] */ const String& name,
