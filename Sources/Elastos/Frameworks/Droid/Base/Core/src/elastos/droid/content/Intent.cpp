@@ -2033,6 +2033,7 @@ ECode Intent::SetClassName(
     /* [in] */ IContext* packageContext,
     /* [in] */ const String& className)
 {
+    mComponent = NULL;
     return CComponentName::New(packageContext, className, (IComponentName**)&mComponent);
 }
 
@@ -2040,6 +2041,7 @@ ECode Intent::SetClassName(
     /* [in] */ const String& packageName,
     /* [in] */ const String& className)
 {
+    mComponent = NULL;
     return CComponentName::New(packageName, className, (IComponentName**)&mComponent);
 }
 
@@ -2047,6 +2049,7 @@ ECode Intent::SetClass(
     /* [in] */ IContext* packageContext,
     /* [in] */ const ClassID& clsId)
 {
+    mComponent = NULL;
     AutoPtr<IClassInfo> info = TransformClassInfo(clsId);
     return CComponentName::New(packageContext, info, (IComponentName**)&mComponent);
 }

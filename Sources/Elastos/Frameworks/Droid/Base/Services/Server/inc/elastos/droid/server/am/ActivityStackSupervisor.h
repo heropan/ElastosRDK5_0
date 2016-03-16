@@ -149,8 +149,8 @@ public:
 
     class ActivityContainer
         : public Object
-        , public IBinder
         , public IIActivityContainer
+        , public IBinder
     {
     public:
         CAR_INTERFACE_DECL();
@@ -159,11 +159,7 @@ public:
 
         CARAPI constructor(
             /* [in] */ Int32 stackId,
-            /* [in] */ IInterface* owner);//ActivityStackSupervisor
-
-        ActivityContainer(
-            /* [in] */ Int32 stackId,
-            /* [in] */ ActivityStackSupervisor* owner);
+            /* [in] */ IDisplayListener* owner);//ActivityStackSupervisor
 
         CARAPI AttachToDisplayLocked(
             /* [in] */ ActivityDisplay* activityDisplay);
@@ -289,15 +285,16 @@ public:
         AutoPtr<IVirtualDisplay> mVirtualDisplay;
     };
 
-private:
     class VirtualActivityContainer
         : public ActivityContainer
     {
     public:
-        VirtualActivityContainer(
-            /* [in] */ ActivityRecord* parent,
+        VirtualActivityContainer();
+
+        CARAPI constructor(
+            /* [in] */ IActivityRecord* parent,
             /* [in] */ IActivityContainerCallback* callback,
-            /* [in] */ ActivityStackSupervisor* owner);
+            /* [in] */ IDisplayListener* owner);
 
         // @Override
         CARAPI SetSurface(

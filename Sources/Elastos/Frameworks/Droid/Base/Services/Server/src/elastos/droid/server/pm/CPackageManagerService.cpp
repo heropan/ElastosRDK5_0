@@ -7804,6 +7804,7 @@ ECode CPackageManagerService::QueryIntentReceivers(
     VALIDATE_NOT_NULL(receivers)
     *receivers = NULL;
 
+    Slogger::D(TAG, " >> QueryIntentReceivers %s", TO_CSTR(_intent));
     AutoPtr<IIntent> intent = _intent;
     if (!sUserManager->Exists(userId)) {
         AutoPtr<ICollections> cols;

@@ -15,6 +15,8 @@
 #include "elastos/droid/server/am/CPendingIntentRecord.h"
 #include "elastos/droid/server/am/ProcessRecord.h"
 #include "elastos/droid/server/am/UserStartedState.h"
+#include "elastos/droid/server/am/CActivityContainer.h"
+#include "elastos/droid/server/am/CVirtualActivityContainer.h"
 #include "elastos/droid/server/LocalServices.h"
 #include "elastos/core/AutoLock.h"
 #include "elastos/core/Math.h"
@@ -363,7 +365,7 @@ ECode ActivityStackSupervisor::ActivityStackSupervisorHandler::HandleMessage(
 //=====================================================================
 //              ActivityStackSupervisor::ActivityContainer
 //=====================================================================
-CAR_INTERFACE_IMPL_2(ActivityStackSupervisor::ActivityContainer, Object, IBinder, IIActivityContainer)
+CAR_INTERFACE_IMPL_2(ActivityStackSupervisor::ActivityContainer, Object, IIActivityContainer, IBinder)
 
 const Int32 ActivityStackSupervisor::ActivityContainer::FORCE_NEW_TASK_FLAGS =
             IIntent::FLAG_ACTIVITY_NEW_TASK | IIntent::FLAG_ACTIVITY_MULTIPLE_TASK | IIntent::FLAG_ACTIVITY_NO_ANIMATION;
@@ -377,11 +379,11 @@ ActivityStackSupervisor::ActivityContainer::ActivityContainer()
 
 ECode ActivityStackSupervisor::ActivityContainer::constructor(
     /* [in] */ Int32 stackId,
-    /* [in] */ IInterface* owner)
+    /* [in] */ IDisplayListener* owner)
 {
     mVisible = TRUE;
     mContainerState = CONTAINER_STATE_HAS_SURFACE;
-    mOwner = (ActivityStackSupervisor*)(IObject::Probe(owner));
+    mOwner = (ActivityStackSupervisor*)owner;
 
     {
         AutoLock lock(mOwner->mService);
@@ -391,23 +393,6 @@ ECode ActivityStackSupervisor::ActivityContainer::constructor(
         //if (CActivityManagerService::DEBUG_STACK) Slog.d(CActivityManagerService::TAG, "Creating " + this);
     }
     return NOERROR;
-}
-
-
-ActivityStackSupervisor::ActivityContainer::ActivityContainer(
-    /* [in] */ Int32 stackId,
-    /* [in] */ ActivityStackSupervisor* owner)
-    : mVisible(TRUE)
-    , mContainerState(CONTAINER_STATE_HAS_SURFACE)
-    , mOwner(owner)
-{
-    {
-        AutoLock lock(mOwner->mService);
-        mStackId = stackId;
-        mStack = new ActivityStack(this);
-        mIdString = String("ActivtyContainer{") + StringUtils::ToString(mStackId) + String("}");
-        //if (CActivityManagerService::DEBUG_STACK) Slog.d(CActivityManagerService::TAG, "Creating " + this);
-    }
 }
 
 ECode ActivityStackSupervisor::ActivityContainer::AttachToDisplayLocked(
@@ -811,14 +796,14 @@ ECode ActivityStackSupervisor::ActivityDisplay::ToString(
 {
     VALIDATE_NOT_NULL(result);
     // return "ActivityDisplay={" + mDisplayId + " numStacks=" + mStacks.size() + "}";
-    String res = String("ActivityDisplay={");
-    res += StringUtils::ToString(mDisplayId);
-    res += String(" numStacks=");
+    StringBuilder res("ActivityDisplay={");
+    res += mDisplayId;
+    res += " numStacks=";
     Int32 size;
     mStacks->GetSize(&size);
-    res += StringUtils::ToString(size);
-    res += String("}");
-    *result = res;
+    res += size;
+    res += "}";
+    *result = res.ToString();
     return NOERROR;
 }
 
@@ -837,9 +822,10 @@ ActivityStackSupervisor::VirtualActivityDisplay::VirtualActivityDisplay(
     AutoPtr<IDisplayManagerGlobal> dm;
     helper->GetInstance((IDisplayManagerGlobal**)&dm);
     dm->CreateVirtualDisplay(mOwner->mService->mContext, NULL,
-            VIRTUAL_DISPLAY_BASE_NAME, width, height, density, NULL,
-            IDisplayManager::VIRTUAL_DISPLAY_FLAG_PUBLIC |
-            IDisplayManager::VIRTUAL_DISPLAY_FLAG_OWN_CONTENT_ONLY, NULL, NULL, (IVirtualDisplay**)&mVirtualDisplay);
+        VIRTUAL_DISPLAY_BASE_NAME, width, height, density, NULL,
+        IDisplayManager::VIRTUAL_DISPLAY_FLAG_PUBLIC |
+        IDisplayManager::VIRTUAL_DISPLAY_FLAG_OWN_CONTENT_ONLY,
+        NULL, NULL, (IVirtualDisplay**)&mVirtualDisplay);
 
     AutoPtr<IDisplay> display;
     mVirtualDisplay->GetDisplay((IDisplay**)&display);
@@ -880,28 +866,39 @@ ECode ActivityStackSupervisor::VirtualActivityDisplay::ToString(
 {
     //return "VirtualActivityDisplay={" + mDisplayId + "}";
     VALIDATE_NOT_NULL(result);
-    String res("VirtualActivityDisplay={");
-    res += StringUtils::ToString(mDisplayId);
+    StringBuilder res("VirtualActivityDisplay={");
+    res += mDisplayId;
     res += "}";
-    *result = res;
+    *result = res.ToString();
     return NOERROR;
 }
 
 //=====================================================================
 //          ActivityStackSupervisor::VirtualActivityContainer
 //=====================================================================
-ActivityStackSupervisor::VirtualActivityContainer::VirtualActivityContainer(
-    /* [in] */ ActivityRecord* parent,
+ActivityStackSupervisor::VirtualActivityContainer::VirtualActivityContainer()
+    : mDrawn(FALSE)
+{}
+
+ECode ActivityStackSupervisor::VirtualActivityContainer::constructor(
+    /* [in] */ IActivityRecord* parent,
     /* [in] */ IActivityContainerCallback* callback,
-    /* [in] */ ActivityStackSupervisor* owner)
-    : ActivityContainer(owner->GetNextStackId(), owner)
-    , mDrawn(FALSE)
+    /* [in] */ IDisplayListener* owner)
 {
+    mOwner = (ActivityStackSupervisor*)owner;
+    FAIL_RETURN(ActivityContainer::constructor(mOwner->GetNextStackId(), owner))
+
     //ActivityContainer(GetNextStackId());
-    mParentActivity = parent;
+    mParentActivity = (ActivityRecord*)parent;
     mCallback = callback;
     mContainerState = CONTAINER_STATE_NO_SURFACE;
-    mIdString = String("VirtualActivityContainer{") + StringUtils::ToString(mStackId) + String(", parent=") + mParentActivity->ToString() + String("}");
+    StringBuilder sb("VirtualActivityContainer{");
+    sb += mStackId;
+    sb += ", parent=";
+    sb += Object::ToString(mParentActivity);
+    sb += "}";
+    mIdString = sb.ToString();
+    return NOERROR;
 }
 
 ECode ActivityStackSupervisor::VirtualActivityContainer::SetSurface(
@@ -4135,9 +4132,10 @@ AutoPtr<ActivityStackSupervisor::ActivityContainer> ActivityStackSupervisor::Cre
     /* [in] */ ActivityRecord* parentActivity,
     /* [in] */ IActivityContainerCallback* callback)
 {
-    AutoPtr<ActivityContainer> activityContainer =
-            new VirtualActivityContainer(parentActivity, callback, this);
-    mActivityContainers->Put(activityContainer->mStackId, TO_IINTERFACE(activityContainer));
+    AutoPtr<IIActivityContainer> ac;
+    CVirtualActivityContainer::New((IActivityRecord*)parentActivity, callback, this, (IIActivityContainer**)&ac);
+    AutoPtr<ActivityContainer> activityContainer = (ActivityContainer*)ac.Get();
+    mActivityContainers->Put(activityContainer->mStackId, ac.Get());
     //if (DEBUG_CONTAINERS) Slog.d(CActivityManagerService::TAG, "createActivityContainer: " + activityContainer);
     parentActivity->mChildContainers.PushBack(activityContainer);
     return activityContainer;
@@ -5460,8 +5458,10 @@ Int32 ActivityStackSupervisor::CreateStackOnDisplay(
         return -1;
     }
 
-    AutoPtr<ActivityContainer> activityContainer = new ActivityContainer(stackId, this);
-    mActivityContainers->Put(stackId, TO_IINTERFACE(activityContainer));
+    AutoPtr<IIActivityContainer> ac;
+    CActivityContainer::New(stackId, this, (IIActivityContainer**)&ac);
+    mActivityContainers->Put(stackId, ac.Get());
+    AutoPtr<ActivityContainer> activityContainer = (ActivityContainer*)ac.Get();
     activityContainer->AttachToDisplayLocked(activityDisplay);
     return stackId;
 }
