@@ -104,12 +104,10 @@ ECode Intent::constructor(
     AutoPtr<IComponentName> componentName;
     intent->GetComponent((IComponentName**)&componentName);
     if (componentName != NULL) {
-        String packageName;
-        String className;
+        String packageName, className;
         componentName->GetPackageName(&packageName);
         componentName->GetClassName(&className);
-        CComponentName::New(
-            packageName, className, (IComponentName**)&mComponent);
+        CComponentName::New(packageName, className, (IComponentName**)&mComponent);
     }
     AutoPtr< ArrayOf<String> > categories;
     intent->GetCategories((ArrayOf<String>**)&categories);
@@ -161,12 +159,10 @@ ECode Intent::constructor(
     AutoPtr<IComponentName> componentName;
     intent->GetComponent((IComponentName**)&componentName);
     if (componentName != NULL) {
-        String packageName;
-        String className;
+        String packageName, className;
         componentName->GetPackageName(&packageName);
         componentName->GetClassName(&className);
-        CComponentName::New(
-            packageName, className, (IComponentName**)&mComponent);
+        CComponentName::New(packageName, className, (IComponentName**)&mComponent);
     }
     AutoPtr< ArrayOf<String> > categories;
     intent->GetCategories((ArrayOf<String>**)&categories);

@@ -82,7 +82,7 @@ AutoPtr<IHdmiDeviceInfo> HdmiMhlLocalDeviceStub::InitINFO()
 {
     AutoPtr<IHdmiDeviceInfo> rev;
     // TODO: Waiting for CHdmiDeviceInfo
-    assert(0);
+    // assert(0);
     // CHdmiDeviceInfo::New(Constants::INVALID_PHYSICAL_ADDRESS, Constants::INVALID_PORT_ID, -1, -1, (IHdmiDeviceInfo**)&rev);
     return rev;
 }

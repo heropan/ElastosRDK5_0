@@ -4,6 +4,9 @@
 #include "elastos/droid/hardware/display/CDisplayManager.h"
 #include "elastos/droid/hardware/display/DisplayManagerGlobal.h"
 #include <elastos/core/AutoLock.h>
+#include <elastos/utility/logging/Logger.h>
+
+using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
 namespace Droid {
@@ -136,8 +139,10 @@ AutoPtr<IDisplay> CDisplayManager::GetOrCreateDisplayLocked(
 {
     AutoPtr<IDisplay> display;
     HashMap<Int32, AutoPtr<IDisplay> >::Iterator iter = mDisplays.Find(displayId);
-    if(iter != mDisplays.End())
+    if (iter != mDisplays.End()) {
         display = iter->mSecond;
+    }
+
     Boolean isValid;
     if (display == NULL) {
         AutoPtr<IDisplayAdjustments> infoHolder;
@@ -147,7 +152,7 @@ AutoPtr<IDisplay> CDisplayManager::GetOrCreateDisplayLocked(
             mDisplays[displayId] = display;
         }
     }
-    else if (!assumeValid && !(display->IsValid(&isValid), isValid)) {
+    else if (!assumeValid && (display->IsValid(&isValid), !isValid)) {
         display = NULL;
     }
 

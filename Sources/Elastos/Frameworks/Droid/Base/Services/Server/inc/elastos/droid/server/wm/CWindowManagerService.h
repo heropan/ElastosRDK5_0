@@ -120,7 +120,7 @@ class WindowAnimator;
 class DragInputEventReceiver : public InputEventReceiver
 {
 public:
-    DragInputEventReceiver(
+    CARAPI constructor(
         /* [in] */ IInputChannel* inputChannel,
         /* [in] */ ILooper* looper,
         /* [in] */ CWindowManagerService* host);

@@ -99,8 +99,8 @@ namespace Content {
 namespace Pm {
 
 const Boolean PackageParser::DEBUG_JAR = TRUE;
-const Boolean PackageParser::DEBUG_PARSER = FALSE;
-const Boolean PackageParser::DEBUG_BACKUP = FALSE;
+const Boolean PackageParser::DEBUG_PARSER = TRUE;
+const Boolean PackageParser::DEBUG_BACKUP = TRUE;
 
 const String PackageParser::TAG("PackageParser");
 
@@ -499,8 +499,20 @@ ECode PackageParser::Package::ToString(
     VALIDATE_NOT_NULL(str)
     StringBuilder sb("Package(");
     sb += StringUtils::ToHexString((Int32)this);
-    sb += " ";
+    sb += " packageName=";
     sb += mPackageName;
+    sb += " codePath=";
+    sb += mCodePath;
+    sb += " baseCodePath=";
+    sb += mBaseCodePath;
+    sb += " realPackage=";
+    sb += mRealPackage;
+    sb += " path=";
+    sb += mPath;
+    sb += " versionName=";
+    sb += mVersionName;
+    sb += " sharedUserId=";
+    sb += mSharedUserId;
     sb += "}";
     *str = sb.ToString();
     return NOERROR;
@@ -1400,17 +1412,31 @@ ECode PackageParser::ParsePackage(
     /* [in] */ IFile* packageFile,
     /* [in] */ Int32 flags,
     /* [in] */ ArrayOf<Byte>* readBuffer,
+    /* [in] */ Boolean isEpk,
     /* [out] */ Package** pkgLite)
 {
     VALIDATE_NOT_NULL(pkgLite)
 
+    ECode ec = NOERROR;
     Boolean isDir;
     packageFile->IsDirectory(&isDir);
     if (isDir) {
-        return ParseClusterPackage(packageFile, flags, readBuffer, pkgLite);
+        ec = ParseClusterPackage(packageFile, flags, readBuffer, pkgLite);
+    }
+    else {
+        ec = ParseMonolithicPackage(packageFile, flags, readBuffer, pkgLite);
     }
 
-    return ParseMonolithicPackage(packageFile, flags, readBuffer, pkgLite);
+    // for epk
+    if (*pkgLite != NULL) {
+        String name;
+        packageFile->GetName(&name);
+        if (isEpk || name.EndWith(".epk")) {
+            (*pkgLite)->mIsEpk = TRUE;
+        }
+    }
+
+    return ec;
 }
 
 ECode PackageParser::ParseClusterPackage(
@@ -2053,8 +2079,6 @@ ECode PackageParser::ParseApkLite(
     FAIL_GOTO(ec, _EXIT_)
 
     if (cookie == 0) {
-//         throw new PackageParserException(INSTALL_PARSE_FAILED_NOT_APK,
-//                 "Failed to parse " + apkPath);
         Logger::E(TAG, "INSTALL_PARSE_FAILED_NOT_APK : Failed to parse %s", apkPath.string());
         ec = E_PACKAGE_PARSER_EXCEPTION;
         goto _EXIT_;

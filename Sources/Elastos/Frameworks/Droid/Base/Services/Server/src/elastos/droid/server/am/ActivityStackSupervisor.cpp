@@ -77,6 +77,7 @@ using Elastos::Droid::Server::Am::IPendingIntentRecord;
 using Elastos::Droid::Server::Am::LockTaskNotify;
 using Elastos::Droid::Server::LocalServices;
 using Elastos::Droid::Utility::CArraySet;
+using Elastos::Droid::Utility::CSparseArray;
 using Elastos::Droid::Utility::CSparseInt32Array;
 using Elastos::Droid::Utility::IArraySet;
 using Elastos::Droid::View::CDisplayInfo;
@@ -98,6 +99,8 @@ namespace Elastos {
 namespace Droid {
 namespace Server {
 namespace Am {
+
+static const String TAG("ActivityStackSupervisor");
 
 //=====================================================================
 //            ActivityStackSupervisor::PendingActivityLaunch
@@ -1058,8 +1061,8 @@ ActivityStackSupervisor::ActivityStackSupervisor(
     CArrayList::New((IArrayList**)&mStartingUsers);
     CArrayList::New((IArrayList**)&mStartingBackgroundUsers);
     CSparseInt32Array::New(2, (ISparseInt32Array**)&mUserStackInFront);
-    CSparseInt32Array::New((ISparseInt32Array**)&mActivityContainers);
-    CSparseInt32Array::New((ISparseInt32Array**)&mActivityDisplays);
+    CSparseArray::New((ISparseArray**)&mActivityContainers);
+    CSparseArray::New((ISparseArray**)&mActivityDisplays);
     CArrayList::New((IArrayList**)&mPendingActivityLaunches);
 
     mService = service;
@@ -1073,46 +1076,50 @@ ECode ActivityStackSupervisor::InitPowerManagement()
     AutoPtr<IInterface> obj;
     mService->mContext->GetSystemService(IContext::POWER_SERVICE, (IInterface**)&obj);
     IPowerManager* pm = IPowerManager::Probe(obj);
-    pm->NewWakeLock(IPowerManager::PARTIAL_WAKE_LOCK, String("ActivityManager-Sleep"), (IPowerManagerWakeLock**)&mGoingToSleep);
-    pm->NewWakeLock(IPowerManager::PARTIAL_WAKE_LOCK, String("ActivityManager-Launch"), (IPowerManagerWakeLock**)&mLaunchingActivity);
-    mLaunchingActivity->SetReferenceCounted(FALSE);
+    if (pm != NULL) {
+        pm->NewWakeLock(IPowerManager::PARTIAL_WAKE_LOCK,
+            String("ActivityManager-Sleep"), (IPowerManagerWakeLock**)&mGoingToSleep);
+        pm->NewWakeLock(IPowerManager::PARTIAL_WAKE_LOCK,
+            String("ActivityManager-Launch"), (IPowerManagerWakeLock**)&mLaunchingActivity);
+        mLaunchingActivity->SetReferenceCounted(FALSE);
+    }
     return NOERROR;
 }
 
 ECode ActivityStackSupervisor::SetWindowManager(
     /* [in] */ CWindowManagerService* wm)
 {
-    {
-        AutoLock lock(mService);
-        mWindowManager = wm;
+    AutoLock lock(mService);
+    mWindowManager = wm;
 
-        AutoPtr<IInterface> obj;
-        mService->mContext->GetSystemService(IContext::DISPLAY_SERVICE, (IInterface**)&obj);
-        mDisplayManager = IDisplayManager::Probe(obj);
-        mDisplayManager->RegisterDisplayListener(this, NULL);
+    AutoPtr<IInterface> obj;
+    mService->mContext->GetSystemService(IContext::DISPLAY_SERVICE, (IInterface**)&obj);
+    mDisplayManager = IDisplayManager::Probe(obj);
+    mDisplayManager->RegisterDisplayListener(this, NULL);
 
-        AutoPtr<ArrayOf<IDisplay*> > displays;
-        mDisplayManager->GetDisplays((ArrayOf<IDisplay*>**)&displays);
-        for (Int32 displayNdx = displays->GetLength() - 1; displayNdx >= 0; --displayNdx) {
-            Int32 displayId;
-            (*displays)[displayNdx]->GetDisplayId(&displayId);
-            AutoPtr<ActivityDisplay> activityDisplay = new ActivityDisplay(displayId, this);
-            if (activityDisplay->mDisplay == NULL) {
-                //throw new IllegalStateException("Default Display does not exist");
-                return E_ILLEGAL_STATE_EXCEPTION;
-            }
-            mActivityDisplays->Put(displayId, TO_IINTERFACE(activityDisplay));
+    AutoPtr<ArrayOf<IDisplay*> > displays;
+    mDisplayManager->GetDisplays((ArrayOf<IDisplay*>**)&displays);
+    for (Int32 displayNdx = displays->GetLength() - 1; displayNdx >= 0; --displayNdx) {
+        Int32 displayId;
+        (*displays)[displayNdx]->GetDisplayId(&displayId);
+        AutoPtr<ActivityDisplay> activityDisplay = new ActivityDisplay(displayId, this);
+        if (activityDisplay->mDisplay == NULL) {
+            Slogger::E(TAG, "displayId %d, Default Display does not exist", displayId);
+            return E_ILLEGAL_STATE_EXCEPTION;
         }
 
-        CreateStackOnDisplay(HOME_STACK_ID, IDisplay::DEFAULT_DISPLAY);
-        mHomeStack = mFocusedStack = mLastFocusedStack = GetStack(HOME_STACK_ID);
-        //LocalServices.getService(InputManagerInternal.class);
-        AutoPtr<IInterface> s = LocalServices::GetService(EIID_IInputManagerInternal);
-        mInputManagerInternal = IInputManagerInternal::Probe(s.Get());
-
-        // Initialize this here, now that we can get a valid reference to PackageManager.
-        mLeanbackOnlyDevice = IsLeanbackOnlyDevice();
+        mActivityDisplays->Put(displayId, TO_IINTERFACE(activityDisplay));
     }
+
+    CreateStackOnDisplay(HOME_STACK_ID, IDisplay::DEFAULT_DISPLAY);
+    mHomeStack = mFocusedStack = mLastFocusedStack = GetStack(HOME_STACK_ID);
+    assert(mHomeStack != NULL);
+    AutoPtr<IInterface> s = LocalServices::GetService(EIID_IInputManagerInternal);
+    mInputManagerInternal = IInputManagerInternal::Probe(s.Get());
+
+    // Initialize this here, now that we can get a valid reference to PackageManager.
+    mLeanbackOnlyDevice = IsLeanbackOnlyDevice();
+
     return NOERROR;
 }
 
@@ -1136,7 +1143,12 @@ AutoPtr<ActivityStack> ActivityStackSupervisor::GetLastStack()
 Boolean ActivityStackSupervisor::IsFrontStack(
     /* [in] */ ActivityStack* stack)
 {
-    AutoPtr<ActivityRecord> parent = stack->mActivityContainer->mParentActivity;
+    if (stack == NULL) return FALSE;
+
+    AutoPtr<ActivityRecord> parent;
+    if(stack->mActivityContainer != NULL) {
+        parent = stack->mActivityContainer->mParentActivity;
+    }
     if (parent != NULL) {
         stack = parent->mTask->mStack;
     }
@@ -1156,6 +1168,7 @@ Boolean ActivityStackSupervisor::IsFrontStack(
 ECode ActivityStackSupervisor::MoveHomeStack(
     /* [in] */ Boolean toFront)
 {
+    assert(mHomeStack != NULL);
     AutoPtr<IArrayList> stacks = mHomeStack->mStacks;// ActivityStack
     Int32 topNdx;
     stacks->GetSize(&topNdx);
@@ -1169,14 +1182,16 @@ ECode ActivityStackSupervisor::MoveHomeStack(
     Boolean homeInFront = topStack == mHomeStack;
     if (homeInFront != toFront) {
         mLastFocusedStack = topStack;
-        stacks->Remove(TO_IINTERFACE(mHomeStack));
-        stacks->Add(toFront ? topNdx : 0, TO_IINTERFACE(mHomeStack));
+        IInterface* obj = TO_IINTERFACE(mHomeStack);
+        stacks->Remove(obj);
+        stacks->Add(toFront ? topNdx : 0, obj);
         stackobj = NULL;
         stacks->Get(topNdx, (IInterface**)&stackobj);
         mFocusedStack = (ActivityStack*)(IObject::Probe(stackobj));
-        //if (CActivityManagerService::DEBUG_STACK)
-        //    Slogger::D(CActivityManagerService::TAG, "moveHomeTask: topStack old=" + topStack + " new="
-        //        + mFocusedStack);
+        if (CActivityManagerService::DEBUG_STACK) {
+            Slogger::D(TAG, "moveHomeTask: topStack old=%s new=%s",
+                TO_CSTR(topStack), TO_CSTR(mFocusedStack));
+        }
     }
     return NOERROR;
 }
@@ -1746,21 +1761,14 @@ AutoPtr<IActivityInfo> ActivityStackSupervisor::ResolveActivity(
     // Collect information about the target of the Intent.
     AutoPtr<IActivityInfo> aInfo;
     //try {
-        AutoPtr<IResolveInfo> rInfo;
-        ECode ec = AppGlobals::GetPackageManager()->ResolveIntent(
-                    intent, resolvedType,
-                    IPackageManager::MATCH_DEFAULT_ONLY
-                                | CActivityManagerService::STOCK_PM_FLAGS, userId,
-                    (IResolveInfo**)&rInfo);
-
-        //aInfo = rInfo != NULL ? rInfo.activityInfo : NULL;
-        if (rInfo != NULL) {
-            rInfo->GetActivityInfo((IActivityInfo**)&rInfo);
-        }
-    //} catch (RemoteException e) {
-        if (FAILED(ec))
-            aInfo = NULL;
-    //}
+    AutoPtr<IResolveInfo> rInfo;
+    AppGlobals::GetPackageManager()->ResolveIntent(
+        intent, resolvedType,
+        IPackageManager::MATCH_DEFAULT_ONLY | CActivityManagerService::STOCK_PM_FLAGS, userId,
+        (IResolveInfo**)&rInfo);
+    if (rInfo != NULL) {
+        rInfo->GetActivityInfo((IActivityInfo**)&aInfo);
+    }
 
     if (aInfo != NULL) {
         // Store the found target back into the intent, because now that
@@ -2323,14 +2331,14 @@ ECode ActivityStackSupervisor::RealStartActivityLocked(
         CArrayList::New((IList**)&resultsList);
         List< AutoPtr<ActivityResult> >::Iterator iter = results->Begin();
         while (iter != results->End()) {
-            resultsList->Add(TO_IINTERFACE((*iter)->mResultInfo));
+            resultsList->Add(TO_IINTERFACE(*iter));
             ++iter;
         }
         AutoPtr<IList> newIntentsList;
         CArrayList::New((IList**)&newIntentsList);
         List< AutoPtr<IIntent> >::Iterator iter2 = newIntents->Begin();
         while (iter2 != newIntents->End()) {
-            newIntentsList->Add(*iter2);
+            newIntentsList->Add(TO_IINTERFACE(*iter2));
             ++iter2;
         }
 
@@ -5461,14 +5469,8 @@ Int32 ActivityStackSupervisor::CreateStackOnDisplay(
 Boolean ActivityStackSupervisor::IsLeanbackOnlyDevice()
 {
     Boolean onLeanbackOnly = FALSE;
-    //try {
-        //onLeanbackOnly = AppGlobals.getPackageManager().hasSystemFeature(
-        //        PackageManager.FEATURE_LEANBACK_ONLY);
-        AppGlobals::GetPackageManager()->HasSystemFeature(IPackageManager::FEATURE_LEANBACK_ONLY, &onLeanbackOnly);
-    //} catch (RemoteException e) {
-        // noop
-    //}
-
+    AppGlobals::GetPackageManager()->HasSystemFeature(
+        IPackageManager::FEATURE_LEANBACK_ONLY, &onLeanbackOnly);
     return onLeanbackOnly;
 }
 

@@ -315,13 +315,14 @@ CWindowManagerService::LayoutFields::LayoutFields()
 //                  DragInputEventReceiver
 //==============================================================================
 
-DragInputEventReceiver::DragInputEventReceiver(
+ECode DragInputEventReceiver::constructor(
     /* [in] */ IInputChannel* inputChannel,
     /* [in] */ ILooper* looper,
     /* [in] */ CWindowManagerService* host)
-    : InputEventReceiver(inputChannel, looper)
-    , mHost(host)
-{}
+{
+    mHost = host;
+    return InputEventReceiver::constructor(inputChannel, looper);
+}
 
 ECode DragInputEventReceiver::OnInputEvent(
     /* [in] */ IInputEvent* event)
@@ -724,35 +725,35 @@ ECode CWindowManagerService::LocalService::WaitForAllWindowsDrawn(
 
 const String CWindowManagerService::TAG("CWindowManagerService");
 const Boolean CWindowManagerService::DEBUG = TRUE;
-const Boolean CWindowManagerService::DEBUG_ADD_REMOVE = FALSE;
-const Boolean CWindowManagerService::DEBUG_FOCUS = FALSE;
+const Boolean CWindowManagerService::DEBUG_ADD_REMOVE = TRUE;
+const Boolean CWindowManagerService::DEBUG_FOCUS = TRUE;
 const Boolean CWindowManagerService::DEBUG_FOCUS_LIGHT = DEBUG_FOCUS;
-const Boolean CWindowManagerService::DEBUG_ANIM = FALSE;
-const Boolean CWindowManagerService::DEBUG_LAYOUT = FALSE;
-const Boolean CWindowManagerService::DEBUG_RESIZE = FALSE;
-const Boolean CWindowManagerService::DEBUG_LAYERS = FALSE;
-const Boolean CWindowManagerService::DEBUG_INPUT = FALSE;
-const Boolean CWindowManagerService::DEBUG_INPUT_METHOD = FALSE;
-const Boolean CWindowManagerService::DEBUG_VISIBILITY = FALSE;
-const Boolean CWindowManagerService::DEBUG_WINDOW_MOVEMENT = FALSE;
-const Boolean CWindowManagerService::DEBUG_TOKEN_MOVEMENT = FALSE;
-const Boolean CWindowManagerService::DEBUG_ORIENTATION = FALSE;
-const Boolean CWindowManagerService::DEBUG_APP_ORIENTATION = FALSE;
-const Boolean CWindowManagerService::DEBUG_CONFIGURATION = FALSE;
-const Boolean CWindowManagerService::DEBUG_APP_TRANSITIONS = FALSE;
+const Boolean CWindowManagerService::DEBUG_ANIM = TRUE;
+const Boolean CWindowManagerService::DEBUG_LAYOUT = TRUE;
+const Boolean CWindowManagerService::DEBUG_RESIZE = TRUE;
+const Boolean CWindowManagerService::DEBUG_LAYERS = TRUE;
+const Boolean CWindowManagerService::DEBUG_INPUT = TRUE;
+const Boolean CWindowManagerService::DEBUG_INPUT_METHOD = TRUE;
+const Boolean CWindowManagerService::DEBUG_VISIBILITY = TRUE;
+const Boolean CWindowManagerService::DEBUG_WINDOW_MOVEMENT = TRUE;
+const Boolean CWindowManagerService::DEBUG_TOKEN_MOVEMENT = TRUE;
+const Boolean CWindowManagerService::DEBUG_ORIENTATION = TRUE;
+const Boolean CWindowManagerService::DEBUG_APP_ORIENTATION = TRUE;
+const Boolean CWindowManagerService::DEBUG_CONFIGURATION = TRUE;
+const Boolean CWindowManagerService::DEBUG_APP_TRANSITIONS = TRUE;
 const Boolean CWindowManagerService::DEBUG_STARTING_WINDOW = TRUE;
-const Boolean CWindowManagerService::DEBUG_REORDER = FALSE;
-const Boolean CWindowManagerService::DEBUG_WALLPAPER = FALSE;
+const Boolean CWindowManagerService::DEBUG_REORDER = TRUE;
+const Boolean CWindowManagerService::DEBUG_WALLPAPER = TRUE;
 const Boolean CWindowManagerService::DEBUG_WALLPAPER_LIGHT = DEBUG_WALLPAPER;
-const Boolean CWindowManagerService::DEBUG_DRAG = FALSE;
-const Boolean CWindowManagerService::DEBUG_SCREEN_ON = FALSE;
-const Boolean CWindowManagerService::DEBUG_SCREENSHOT = FALSE;
-const Boolean CWindowManagerService::DEBUG_BOOT = FALSE;
+const Boolean CWindowManagerService::DEBUG_DRAG = TRUE;
+const Boolean CWindowManagerService::DEBUG_SCREEN_ON = TRUE;
+const Boolean CWindowManagerService::DEBUG_SCREENSHOT = TRUE;
+const Boolean CWindowManagerService::DEBUG_BOOT = TRUE;
 const Boolean CWindowManagerService::DEBUG_LAYOUT_REPEATS = TRUE;
-const Boolean CWindowManagerService::DEBUG_SURFACE_TRACE = FALSE;
-const Boolean CWindowManagerService::DEBUG_WINDOW_TRACE = FALSE;
-const Boolean CWindowManagerService::DEBUG_TASK_MOVEMENT = FALSE;
-const Boolean CWindowManagerService::DEBUG_STACK = FALSE;
+const Boolean CWindowManagerService::DEBUG_SURFACE_TRACE = TRUE;
+const Boolean CWindowManagerService::DEBUG_WINDOW_TRACE = TRUE;
+const Boolean CWindowManagerService::DEBUG_TASK_MOVEMENT = TRUE;
+const Boolean CWindowManagerService::DEBUG_STACK = TRUE;
 const Boolean CWindowManagerService::DEBUG_DISPLAY = TRUE;
 const Boolean CWindowManagerService::SHOW_SURFACE_ALLOC = FALSE;
 const Boolean CWindowManagerService::SHOW_TRANSACTIONS = FALSE;
@@ -972,7 +973,8 @@ ECode CWindowManagerService::constructor(
 
     AutoPtr<IInputChannel> inputChannel;
     mInputManager->MonitorInput(TAG, (IInputChannel**)&inputChannel);
-    mPointerEventDispatcher = new PointerEventDispatcher(inputChannel);
+    mPointerEventDispatcher = new PointerEventDispatcher();
+    mPointerEventDispatcher->constructor(inputChannel);
 
     FAIL_RETURN(CSurfaceSession::New((ISurfaceSession**)&mFxSession))
     service = NULL;
@@ -6520,15 +6522,13 @@ void CWindowManagerService::DispatchNewAnimatorScaleLocked(
 ECode CWindowManagerService::RegisterPointerEventListener(
     /* [in] */ IPointerEventListener* listener)
 {
-    mPointerEventDispatcher->RegisterInputEventListener(listener);
-    return NOERROR;
+    return mPointerEventDispatcher->RegisterInputEventListener(listener);
 }
 
 ECode CWindowManagerService::UnregisterPointerEventListener(
     /* [in] */ IPointerEventListener* listener)
 {
-    mPointerEventDispatcher->UnregisterInputEventListener(listener);
-    return NOERROR;
+    return mPointerEventDispatcher->UnregisterInputEventListener(listener);
 }
 
 ECode CWindowManagerService::GetLidState(
@@ -8847,9 +8847,8 @@ ECode CWindowManagerService::DisplayReady()
     AutoPtr< ArrayOf<IDisplay*> > displays;
     mDisplayManager->GetDisplays((ArrayOf<IDisplay*>**)&displays);
     for (Int32 i = 0; i < displays->GetLength(); ++i) {
-        AutoPtr<IDisplay> display = (*displays)[i];
         Int32 displayId;
-        display->GetDisplayId(&displayId);
+        (*displays)[i]->GetDisplayId(&displayId);
         DisplayReady(displayId);
     }
     synchronized(mWindowMapLock) {
@@ -12935,7 +12934,7 @@ AutoPtr<DisplayContent> CWindowManagerService::NewDisplayContentLocked(
     AutoPtr<DisplayContent> displayContent = new DisplayContent(display, this);
     Int32 displayId;
     display->GetDisplayId(&displayId);
-    if (DEBUG_DISPLAY) Slogger::V(TAG, "Adding %d - %p, display=%s",
+    if (DEBUG_DISPLAY) Slogger::V(TAG, "Adding displayContent %d - %p, display=%s",
         displayId, displayContent.Get(), TO_CSTR(displayContent));
     mDisplayContents->Put(displayId, (IObject*)displayContent.Get());
 

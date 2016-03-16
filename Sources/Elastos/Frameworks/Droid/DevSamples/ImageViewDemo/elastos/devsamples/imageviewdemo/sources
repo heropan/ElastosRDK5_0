@@ -8,10 +8,10 @@ include $(MAKEDIR)/../../../../../sources.inc
 INCLUDES += $(MAKEDIR)
 INCLUDES += $(MAKEDIR)/../../../
 
-SOURCES  = ImageViewDemo.car
+SOURCES = ImageViewDemo.car
+SOURCES += R.cpp
 SOURCES += Elastos.CoreLibrary.cpp
 SOURCES += Elastos.Droid.Core.cpp
-SOURCES += R.cpp
 SOURCES += CActivityOne.cpp
 
 LIBRARIES  = $(XDK_USER_LIB)/Elastos.Runtime.lib

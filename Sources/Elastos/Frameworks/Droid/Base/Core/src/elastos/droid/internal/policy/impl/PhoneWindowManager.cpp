@@ -680,13 +680,13 @@ ECode PhoneWindowManager::MyOrientationListener::OnProposedRotationChanged(
 //          ++ PhoneWindowManager::HideNavInputEventReceiver ++
 //==============================================================================
 
-PhoneWindowManager::HideNavInputEventReceiver::HideNavInputEventReceiver(
+ECode PhoneWindowManager::HideNavInputEventReceiver::constructor(
     /* [in] */ IInputChannel* inputChannel,
     /* [in] */ ILooper* looper,
     /* [in] */ PhoneWindowManager* host)
-    : InputEventReceiver(inputChannel, looper)
-    , mHost(host)
 {
+    mHost = host;
+    return InputEventReceiver::constructor(inputChannel, looper);
 }
 
 ECode PhoneWindowManager::HideNavInputEventReceiver::OnInputEvent(
@@ -764,7 +764,9 @@ ECode PhoneWindowManager::HideNavInputEventReceiverFactory::CreateInputEventRece
    /* [out] */ IInputEventReceiver** receiver)
 {
     VALIDATE_NOT_NULL(receiver);
-    *receiver = new HideNavInputEventReceiver(inputChannel, looper, mHost);
+    AutoPtr<HideNavInputEventReceiver> hner = new HideNavInputEventReceiver();
+    hner->constructor(inputChannel, looper, mHost);
+    *receiver = (IInputEventReceiver*)hner.Get();
     REFCOUNT_ADD(*receiver);
     return NOERROR;
 }

@@ -986,8 +986,7 @@ ECode CActivityManagerService::BootCompletedReceiver::PerformReceive(
     /* [in] */ Int32 sendingUser)
 {
     synchronized(mHost) {
-        mHost->RequestPssAllProcsLocked(SystemClock::GetUptimeMillis(),
-            TRUE, FALSE);
+        mHost->RequestPssAllProcsLocked(SystemClock::GetUptimeMillis(), TRUE, FALSE);
     }
     return NOERROR;
 }
@@ -995,7 +994,9 @@ ECode CActivityManagerService::BootCompletedReceiver::PerformReceive(
 ECode CActivityManagerService::BootCompletedReceiver::ToString(
     /* [out] */ String* str)
 {
-    return Object::ToString(str);
+    VALIDATE_NOT_NULL(str)
+    *str = "CActivityManagerService::BootCompletedReceiver";
+    return NOERROR;
 }
 
 //==============================================================================
@@ -1019,7 +1020,9 @@ ECode CActivityManagerService::SwitchUserIntentReceiver::PerformReceive(
 ECode CActivityManagerService::SwitchUserIntentReceiver::ToString(
     /* [out] */ String* str)
 {
-    return Object::ToString(str);
+    VALIDATE_NOT_NULL(str)
+    *str = "CActivityManagerService::SwitchUserIntentReceiver";
+    return NOERROR;
 }
 
 //==============================================================================
@@ -1043,7 +1046,9 @@ ECode CActivityManagerService::NeedStartIntentReceiver::PerformReceive(
 ECode CActivityManagerService::NeedStartIntentReceiver::ToString(
     /* [out] */ String* str)
 {
-    return Object::ToString(str);
+    VALIDATE_NOT_NULL(str)
+    *str = "CActivityManagerService::NeedStartIntentReceiver";
+    return NOERROR;
 }
 
 //==============================================================================
@@ -1437,7 +1442,9 @@ ECode CActivityManagerService::PreBootCompletedIntentReceiver::PerformReceive(
 ECode CActivityManagerService::PreBootCompletedIntentReceiver::ToString(
     /* [out] */ String* str)
 {
-    return Object::ToString(str);
+    VALIDATE_NOT_NULL(str)
+    *str = "CActivityManagerService::PreBootCompletedIntentReceiver";
+    return NOERROR;
 }
 
 //==============================================================================
@@ -1502,7 +1509,9 @@ ECode CActivityManagerService::SystemBroadcastReceiver::PerformReceive(
 ECode CActivityManagerService::SystemBroadcastReceiver::ToString(
     /* [out] */ String* str)
 {
-    return Object::ToString(str);
+    VALIDATE_NOT_NULL(str)
+    *str = "CActivityManagerService::SystemBroadcastReceiver";
+    return NOERROR;
 }
 
 //==============================================================================
@@ -1723,7 +1732,9 @@ CActivityManagerService::DispatchUserSwitchCallback::SendResult(
 ECode CActivityManagerService::DispatchUserSwitchCallback::ToString(
     /* [out] */ String* str)
 {
-    return Object::ToString(str);
+    VALIDATE_NOT_NULL(str)
+    *str = "CActivityManagerService::DispatchUserSwitchCallback";
+    return NOERROR;
 }
 
 //==============================================================================
@@ -2211,7 +2222,9 @@ ECode CActivityManagerService::ShutdownReceiver::PerformReceive(
 ECode CActivityManagerService::ShutdownReceiver::ToString(
     /* [out] */ String* str)
 {
-    return Object::ToString(str);
+    VALIDATE_NOT_NULL(str)
+    *str = "CActivityManagerService::ShutdownReceiver";
+    return NOERROR;
 }
 
 //==============================================================================
@@ -2267,7 +2280,9 @@ ECode CActivityManagerService::StoppingReceiver::PerformReceive(
 ECode CActivityManagerService::StoppingReceiver::ToString(
     /* [out] */ String* str)
 {
-    return Object::ToString(str);
+    VALIDATE_NOT_NULL(str)
+    *str = "CActivityManagerService::StoppingReceiver";
+    return NOERROR;
 }
 
 //==============================================================================
@@ -4147,6 +4162,8 @@ Boolean CActivityManagerService::StartHomeActivityLocked(
     /* [in] */ Int32 userId)
 {
     Slogger::I(TAG, "StartHomeActivityLocked, mTopAction: %s", mTopAction.string());
+    return FALSE;
+
     if (mFactoryTest == FactoryTest::FACTORY_TEST_LOW_LEVEL
             && mTopAction.IsNull()) {
         // We are running in factory test mode, but unable to find
@@ -19496,6 +19513,9 @@ ECode CActivityManagerService::BroadcastIntentLocked(
     /* [in] */ Int32 userId,
     /* [out] */ Int32* result)
 {
+    VALIDATE_NOT_NULL(result)
+    *result = IActivityManager::BROADCAST_STICKY_CANT_HAVE_PERMISSION;
+
     AutoPtr<IIntent> intent;
     CIntent::New(_intent, (IIntent **)&intent);
 
@@ -20257,9 +20277,7 @@ ECode CActivityManagerService::FinishReceiver(
     /* [in] */ Boolean resultAbort)
 {
     if (DEBUG_BROADCAST) {
-        String whoDes;
-        who->ToString(&whoDes);
-        Slogger::V(TAG, "Finish receiver: %s", whoDes.string());
+        Slogger::V(TAG, "Finish receiver: %s", TO_CSTR(who));
     }
 
     // Refuse possible leaked file descriptors

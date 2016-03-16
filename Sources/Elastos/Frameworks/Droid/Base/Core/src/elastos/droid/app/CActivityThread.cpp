@@ -137,7 +137,7 @@ namespace App {
 const String CActivityThread::TAG("CActivityThread");
 const Boolean CActivityThread::localLOGV = FALSE;
 const Boolean CActivityThread::DEBUG_MESSAGES = TRUE;
-const Boolean CActivityThread::DEBUG_BROADCAST = FALSE;
+const Boolean CActivityThread::DEBUG_BROADCAST = TRUE;
 const Boolean CActivityThread::DEBUG_RESULTS = FALSE;
 const Boolean CActivityThread::DEBUG_BACKUP = FALSE;
 const Boolean CActivityThread::DEBUG_CONFIGURATION = FALSE;

@@ -1033,7 +1033,8 @@ void CInputManagerService::SetWiredAccessoryCallbacks(
 
 ECode CInputManagerService::Start()
 {
-    Slogger::I(TAG, "Starting input manager");
+    Slogger::D(TAG, "CInputManagerService::Start()");
+
     FAIL_RETURN(NativeStart());
 
     // Add ourself to the Watchdog monitors.
