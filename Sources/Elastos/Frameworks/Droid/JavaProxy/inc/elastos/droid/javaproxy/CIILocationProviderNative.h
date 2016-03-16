@@ -6,9 +6,10 @@
 #include <elastos/core/Object.h>
 #include <jni.h>
 
+using Elastos::Droid::Internal::Location::IILocationProvider;
+using Elastos::Droid::Internal::Location::IProviderProperties;
+using Elastos::Droid::Internal::Location::IProviderRequest;
 using Elastos::Droid::Os::IBinder;
-using Elastos::Droid::Location::IProviderProperties;
-using Elastos::Droid::Location::IProviderRequest;
 using Elastos::Droid::Os::IBundle;
 using Elastos::Droid::Os::IWorkSource;
 
@@ -18,6 +19,7 @@ namespace JavaProxy {
 
 CarClass(CIILocationProviderNative)
     , public Object
+    , public IILocationProvider
     , public IBinder
 {
 public:
@@ -28,8 +30,8 @@ public:
     CAR_OBJECT_DECL()
 
     CARAPI constructor(
-        /* [in] */ Handle32 jVM,
-        /* [in] */ Handle32 jInstance);
+        /* [in] */ Handle64 jVM,
+        /* [in] */ Handle64 jInstance);
 
     CARAPI Enable();
 
@@ -51,7 +53,8 @@ public:
 
     CARAPI SendExtraCommand(
         /* [in] */ const String& command,
-        /* [out] */ IBundle** extras,
+        /* [in] */ IBundle* inExtras,
+        /* [out] */ IBundle** outExtras,
         /* [out] */ Boolean* result);
 
     CARAPI ToString(

@@ -6,13 +6,16 @@
 #include <elastos/core/Object.h>
 #include <jni.h>
 
+using Elastos::Droid::Content::Pm::IIPackageMoveObserver;
 using Elastos::Droid::Os::IBinder;
+
 namespace Elastos {
 namespace Droid {
 namespace JavaProxy {
 
 CarClass(CIPackageMoveObserverNative)
     , public Object
+    , public IIPackageMoveObserver
     , public IBinder
 {
 public:
@@ -23,8 +26,8 @@ public:
     CAR_OBJECT_DECL()
 
     CARAPI constructor(
-        /* [in] */ Handle32 jVM,
-        /* [in] */ Handle32 jInstance);
+        /* [in] */ Handle64 jVM,
+        /* [in] */ Handle64 jInstance);
 
     CARAPI PackageMoved(
         /* [in] */ const String& packageName,

@@ -12,9 +12,9 @@ namespace JavaProxy {
 
 const String CIParcelableNative::TAG("CIParcelableNative");
 
-CAR_INTERFACE_IMPL_2(CApplicationThreadNative, Object, IApplicationThread, IBinder)
+CAR_INTERFACE_IMPL_2(CIParcelableNative, Object, IParcelable, IBinder)
 
-CAR_OBJECT_IMPL(CApplicationThreadNative)
+CAR_OBJECT_IMPL(CIParcelableNative)
 
 ECode CIParcelableNative::constructor()
 {
@@ -58,6 +58,12 @@ ECode CIParcelableNative::WriteToParcel(
     dest->WriteString(mPkgPath);
     dest->WriteArrayOf((Handle32)mObject.Get());
     return NOERROR;
+}
+
+ECode CIParcelableNative::ToString(
+    /* [out] */ String* str)
+{
+    return Object::ToString(str);
 }
 
 }

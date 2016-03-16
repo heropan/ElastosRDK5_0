@@ -4,6 +4,7 @@
 #include "elastos/droid/javaproxy/Util.h"
 
 using Elastos::Droid::Os::EIID_IBinder;
+using Elastos::IO::EIID_ISerializable;
 using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
@@ -12,9 +13,9 @@ namespace JavaProxy {
 
 const String CISerializableNative::TAG("CISerializableNative");
 
-CAR_INTERFACE_IMPL_2(CApplicationThreadNative, Object, IApplicationThread, IBinder)
+CAR_INTERFACE_IMPL_3(CISerializableNative, Object, ISerializable, IParcelable, IBinder)
 
-CAR_OBJECT_IMPL(CApplicationThreadNative)
+CAR_OBJECT_IMPL(CISerializableNative)
 
 ECode CISerializableNative::constructor()
 {
@@ -52,6 +53,12 @@ ECode CISerializableNative::WriteToParcel(
     dest->WriteString(mOptimizedDirectory);
     dest->WriteArrayOf((Handle32)mObject.Get());
     return NOERROR;
+}
+
+ECode CISerializableNative::ToString(
+    /* [out] */ String* str)
+{
+    return Object::ToString(str);
 }
 
 }

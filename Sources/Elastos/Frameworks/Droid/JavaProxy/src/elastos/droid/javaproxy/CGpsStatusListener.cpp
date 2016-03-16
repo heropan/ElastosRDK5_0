@@ -25,8 +25,8 @@ CGpsStatusListener::~CGpsStatusListener()
 }
 
 ECode CGpsStatusListener::constructor(
-    /* [in] */ Handle32 jVM,
-    /* [in] */ Handle32 jInstance)
+    /* [in] */ Handle64 jVM,
+    /* [in] */ Handle64 jInstance)
 {
     mJVM = (JavaVM*)jVM;
     JNIEnv* env;
@@ -45,7 +45,7 @@ ECode CGpsStatusListener::OnGpsStarted()
     jclass c = env->FindClass("android/location/IGpsStatusListener");
     Util::CheckErrorAndLog(env, TAG, "FindClass: IGpsStatusListener %d", __LINE__);
 
-    jmethodID m = env->GetMethodID(c, "onGpsStarted", "(V)V");
+    jmethodID m = env->GetMethodID(c, "onGpsStarted", "()V");
     Util::CheckErrorAndLog(env, TAG, "GetMethodID: onGpsStarted %d", __LINE__);
 
     env->CallVoidMethod(mJInstance, m);
@@ -67,7 +67,7 @@ ECode CGpsStatusListener::OnGpsStopped()
     jclass c = env->FindClass("android/location/IGpsStatusListener");
     Util::CheckErrorAndLog(env, TAG, "FindClass: IGpsStatusListener %d", __LINE__);
 
-    jmethodID m = env->GetMethodID(c, "onGpsStopped", "(V)V");
+    jmethodID m = env->GetMethodID(c, "onGpsStopped", "()V");
     Util::CheckErrorAndLog(env, TAG, "GetMethodID: onGpsStopped %d", __LINE__);
 
     env->CallVoidMethod(mJInstance, m);

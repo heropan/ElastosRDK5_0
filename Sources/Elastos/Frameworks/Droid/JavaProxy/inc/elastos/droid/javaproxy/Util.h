@@ -47,6 +47,8 @@ using Elastos::Droid::Internal::Location::IProviderProperties;
 using Elastos::Droid::Internal::Location::IProviderRequest;
 using Elastos::Droid::Location::ILocation;
 using Elastos::Droid::Location::ILocationRequest;
+using Elastos::Droid::Media::IAudioAttributes;
+using Elastos::Droid::Media::IRating;
 using Elastos::Droid::Os::IBaseBundle;
 using Elastos::Droid::Os::IBundle;
 using Elastos::Droid::Os::IDebugMemoryInfo;
@@ -564,6 +566,14 @@ public:
     static jobject ToJavaResultInfo(
         /* [in] */ JNIEnv* env,
         /* [in] */ IResultInfo* resultInfo);
+
+    static jobject ToJavaRating(
+        /* [in] */ JNIEnv* env,
+        /* [in] */ IRating* rating);
+
+    static jobject ToJavaAudioAttributes(
+        /* [in] */ JNIEnv* env,
+        /* [in] */ IAudioAttributes* aa);
 
     static String GetElString(
         /* [in] */ JNIEnv* env,

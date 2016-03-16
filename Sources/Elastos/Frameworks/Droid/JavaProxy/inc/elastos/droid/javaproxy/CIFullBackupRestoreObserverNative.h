@@ -6,13 +6,16 @@
 #include <elastos/core/Object.h>
 #include <jni.h>
 
+using Elastos::Droid::App::Backup::IIFullBackupRestoreObserver;
 using Elastos::Droid::Os::IBinder;
+
 namespace Elastos {
 namespace Droid {
 namespace JavaProxy {
 
 CarClass(CIFullBackupRestoreObserverNative)
     , public Object
+    , public IIFullBackupRestoreObserver
     , public IBinder
 {
 public:
@@ -23,8 +26,8 @@ public:
     CAR_OBJECT_DECL()
 
     CARAPI constructor(
-        /* [in] */ Handle32 jVM,
-        /* [in] */ Handle32 jInstance);
+        /* [in] */ Handle64 jVM,
+        /* [in] */ Handle64 jInstance);
 
     CARAPI OnStartBackup();
 
@@ -33,12 +36,18 @@ public:
 
     CARAPI OnEndBackup();
 
+    CARAPI OnEndBackupWithResult(
+        /* [in] */ Int32 result);
+
     CARAPI OnStartRestore();
 
     CARAPI OnRestorePackage(
         /* [in] */ const String& name);
 
     CARAPI OnEndRestore();
+
+    CARAPI OnEndRestoreWithResult(
+        /* [in] */ Int32 result);
 
     CARAPI OnTimeout();
 

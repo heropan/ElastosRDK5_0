@@ -7,7 +7,8 @@
 #include <jni.h>
 
 using Elastos::Droid::Os::IBinder;
-using Elastos::Droid::View::TextService::IISpellCheckerSession;
+using Elastos::Droid::Internal::TextService::IISpellCheckerSession;
+using Elastos::Droid::Internal::TextService::IITextServicesSessionListener;
 
 namespace Elastos {
 namespace Droid {
@@ -15,6 +16,7 @@ namespace JavaProxy {
 
 CarClass(CTextServicesSessionListenerNative)
     , public Object
+    , public IITextServicesSessionListener
     , public IBinder
 {
 public:
@@ -25,8 +27,8 @@ public:
     CAR_OBJECT_DECL()
 
     CARAPI constructor(
-        /* [in] */ Handle32 jVM,
-        /* [in] */ Handle32 jInstance);
+        /* [in] */ Handle64 jVM,
+        /* [in] */ Handle64 jInstance);
 
     CARAPI OnServiceConnected(
         /* [in] */ IISpellCheckerSession* spellCheckerSession);
