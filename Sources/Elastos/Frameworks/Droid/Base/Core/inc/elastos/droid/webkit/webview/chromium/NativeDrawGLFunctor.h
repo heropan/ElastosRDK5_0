@@ -1,5 +1,3 @@
-// Provides a webviewchromium glue layer adapter from the internal Android
-// graphics types into the types the chromium stack expects, and back.
 #ifndef _ELASTOS_DROID_WEBKIT_WEBVIEW_CHROMIUM_NATIVE_DRAWGL_FUNCTOR_H_
 #define _ELASTOS_DROID_WEBKIT_WEBVIEW_CHROMIUM_NATIVE_DRAWGL_FUNCTOR_H_
 
