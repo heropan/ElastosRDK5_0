@@ -5,7 +5,7 @@
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/settings/SettingsActivity.h"
 
-using Elastos::Droid::Settings::Applications::IAppOpsSummary;
+using Elastos::Droid::Settings::SettingsActivity;
 
 namespace Elastos {
 namespace Droid {
@@ -14,7 +14,7 @@ namespace Settings {
 /**
  * Top-level Settings activity
  */
-class Settings
+class CSettings
     : public SettingsActivity
 {
 public:
