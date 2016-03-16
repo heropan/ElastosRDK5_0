@@ -395,7 +395,7 @@ private:
     CARAPI_(void) CreateListView(
         /* [in] */ IAlertController* dialog);
 
-private:
+public:
     AutoPtr<IContext> mContext;
     AutoPtr<ILayoutInflater> mInflater;
 
