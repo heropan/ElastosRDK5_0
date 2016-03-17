@@ -1,6 +1,7 @@
 
 module
 {
+    interface Elastos.Droid.Telecomm.Internal.IIConnectionServiceAdapter;
 
     namespace Elastos {
     namespace Droid {
@@ -34,6 +35,9 @@ module
         const Int32 MSG_SET_ADDRESS = 18;
         const Int32 MSG_SET_CALLER_DISPLAY_NAME = 19;
         const Int32 MSG_SET_CONFERENCEABLE_CONNECTIONS = 20;
+
+        GetStub(
+            [out] IIConnectionServiceAdapter** result);
     }
 
     } // namespace Telecom

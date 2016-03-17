@@ -126,6 +126,7 @@ ECode DisconnectCause::GetHashCode(
     res = mDisconnectCode;
     IObject::Probe(mDisconnectLabel)->GetHashCode(&hc);
     res += hc;
+    hc = 0;
     IObject::Probe(mDisconnectDescription)->GetHashCode(&hc);
     res += hc;
     res += mDisconnectReason.GetHashCode();
