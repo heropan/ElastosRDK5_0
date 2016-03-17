@@ -3768,7 +3768,6 @@ AutoPtr<ProcessRecord> CActivityManagerService::StartProcessLocked(
     // (3) There is a pid assigned to it, so it is either starting or
     //     already running.
     if (DEBUG_PROCESSES) {
-        String appDes = app->ToString();
         Slogger::V(TAG, "startProcess: name=%s app=%s knownToBeDead=%d thread=%s pid=%d",
             processName.string(), TO_CSTR(app), knownToBeDead,
             (app != NULL ? TO_CSTR(app->mThread) : "NULL"), (app != NULL ? app->mPid : -1));
@@ -3779,8 +3778,7 @@ AutoPtr<ProcessRecord> CActivityManagerService::StartProcessLocked(
             // We already have the app running, or are waiting for it to
             // come up (we have a pid but not yet its thread), so keep it.
             if (DEBUG_PROCESSES) {
-                String appDes = app->ToString();
-                Slogger::V(TAG, "App already running: %s", appDes.string());
+                Slogger::V(TAG, "App already running: %s", TO_CSTR(app));
             }
             // If this is a new package in the process, add the package to the list
             String packageName;
@@ -3793,8 +3791,9 @@ AutoPtr<ProcessRecord> CActivityManagerService::StartProcessLocked(
         }
         // An application record is attached to a previous process,
         // clean it up now.
-        if (DEBUG_PROCESSES || DEBUG_CLEANUP)
+        if (DEBUG_PROCESSES || DEBUG_CLEANUP) {
             Slogger::V(TAG, "App died: %s", TO_CSTR(app));
+        }
         CheckTime(startTime, String("startProcess: bad proc running, killing"));
         Int32 uid;
         app->mInfo->GetUid(&uid);
@@ -3803,13 +3802,12 @@ AutoPtr<ProcessRecord> CActivityManagerService::StartProcessLocked(
         CheckTime(startTime, String("startProcess: done killing old proc"));
     }
 
-    String hostingNameStr;
+    String hostingNameStr, infoProcName;
+    info->GetProcessName(&infoProcName);
     if (hostingName != NULL) {
         hostingName->FlattenToShortString(&hostingNameStr);
     }
 
-    String infoProcName;
-    info->GetProcessName(&infoProcName);
     if (!isolated) {
         if ((intentFlags & IIntent::FLAG_FROM_BACKGROUND) != 0) {
             // If we are in the background, then check to see if this process
@@ -3905,8 +3903,9 @@ ECode CActivityManagerService::StartProcessLocked(
     /* [in] */ const String& hostingType,
     /* [in] */ const String& hostingNameStr)
 {
-    return StartProcessLocked(app, hostingType, hostingNameStr, String(NULL) /* abiOverride */,
-            String(NULL) /* entryPoint */, NULL /* entryPointArgs */);
+    String nullStr;
+    return StartProcessLocked(app, hostingType, hostingNameStr, nullStr /* abiOverride */,
+        nullStr /* entryPoint */, NULL /* entryPointArgs */);
 }
 
 ECode CActivityManagerService::StartProcessLocked(
@@ -3917,6 +3916,8 @@ ECode CActivityManagerService::StartProcessLocked(
     /* [in] */ const String& _entryPoint,
     /* [in] */ ArrayOf<String>* entryPointArgs)
 {
+    Slogger::I(TAG, " >> StartProcessLocked: hostingType:%s, hostingName:%s, abiOverride:%s, entryPoint:%s",
+        hostingType.string(), hostingNameStr.string(), abiOverride.string(), _entryPoint.string());
     ECode ec = NOERROR;
     String entryPoint = _entryPoint;
     Int64 startTime = SystemClock::GetElapsedRealtime();
@@ -3925,8 +3926,7 @@ ECode CActivityManagerService::StartProcessLocked(
         {
             AutoLock lock(mPidsSelfLockedLock);
             mPidsSelfLocked.Erase(app->mPid);
-            mHandler->RemoveMessages(PROC_START_TIMEOUT_MSG,
-                app ? app->Probe(EIID_IInterface) : NULL);
+            mHandler->RemoveMessages(PROC_START_TIMEOUT_MSG, TO_IINTERFACE(app));
         }
         CheckTime(startTime, String("startProcess: done removing from pids map"));
         app->SetPid(0);
@@ -3935,8 +3935,7 @@ ECode CActivityManagerService::StartProcessLocked(
     AutoPtr<ProcessRecord> temp = app;
     if (DEBUG_PROCESSES &&
             Find(mProcessesOnHold.Begin(), mProcessesOnHold.End(), temp) != mProcessesOnHold.End()) {
-        String appDes = app->ToString();
-        Slogger::V(TAG, "startProcessLocked removing on hold: ", appDes.string());
+        Slogger::V(TAG, "startProcessLocked removing on hold: ", TO_CSTR(app));
     }
     mProcessesOnHold.Remove(app);
 
@@ -3965,8 +3964,8 @@ ECode CActivityManagerService::StartProcessLocked(
                 CheckTime(startTime, String("startProcess: checking external storage perm"));
                 Int32 res;
                 pm->CheckPermission(
-                        Manifest::permission::ACCESS_ALL_EXTERNAL_STORAGE,
-                        packageName, &res);
+                    Manifest::permission::ACCESS_ALL_EXTERNAL_STORAGE,
+                    packageName, &res);
                 if (res == IPackageManager::PERMISSION_GRANTED) {
                     mountExternal = IZygote::MOUNT_EXTERNAL_MULTIUSER_ALL;
                 }
@@ -4062,20 +4061,25 @@ ECode CActivityManagerService::StartProcessLocked(
     // Start the process.  It will either succeed and return a result containing
     // the PID of the new process, or else throw a RuntimeException.
     Boolean isActivityProcess = (entryPoint == NULL);
-    if (entryPoint == NULL)
+    if (isActivityProcess) {
         entryPoint = "android.app.ActivityThread";
+    }
     CheckTime(startTime, String("startProcess: asking zygote to start proc"));
 
-    String sourcePath, dataDir;
+    Int32 targetSdkVersion;
+    String sourcePath, dataDir, seinfo, processClass;
     app->mInfo->GetSourceDir(&sourcePath);
     app->mInfo->GetDataDir(&dataDir);
-    Int32 targetSdkVersion;
     app->mInfo->GetTargetSdkVersion(&targetSdkVersion);
-    String seinfo;
     app->mInfo->GetSeinfo(&seinfo);
+    processClass = sourcePath.EndWith(".apk") ? entryPoint : String("CActivityThreadHelper");
+    Slogger::I(TAG, " >>> StartProcessLocked %s, ProcessName:%s, processClass: %s, dataDir: %s, seinfo: %s",
+        sourcePath.string(), app->mProcessName.string(), processClass.string(),
+        dataDir.string(), seinfo.string());
+
     AutoPtr<IProcessStartResult> startResult;
-    ec = Process::Start(sourcePath.EndWith(".apk") ? entryPoint : String("CActivityThreadHelper"),
-        app->mProcessName, uid, uid, gids, debugFlags, mountExternal,
+    ec = Process::Start(processClass, app->mProcessName,
+        uid, uid, gids, debugFlags, mountExternal,
         targetSdkVersion, seinfo, requiredAbi, instructionSet, dataDir,
         entryPointArgs, (IProcessStartResult**)&startResult);
     if (FAILED(ec)) {
@@ -4150,7 +4154,7 @@ ECode CActivityManagerService::StartProcessLocked(
         if (isActivityProcess) {
             AutoPtr<IMessage> msg;
             mHandler->ObtainMessage(PROC_START_TIMEOUT_MSG, (IMessage**)&msg);
-            msg->SetObj(app->Probe(EIID_IInterface));
+            msg->SetObj(TO_IINTERFACE(app));
             Boolean result;
             mHandler->SendMessageDelayed(msg,
                 usingWrapper ? PROC_START_TIMEOUT_WITH_WRAPPER : PROC_START_TIMEOUT,
@@ -4221,8 +4225,7 @@ AutoPtr<IIntent> CActivityManagerService::GetHomeIntent()
 Boolean CActivityManagerService::StartHomeActivityLocked(
     /* [in] */ Int32 userId)
 {
-    Slogger::I(TAG, "TODO StartHomeActivityLocked, mTopAction: %s", mTopAction.string());
-    return FALSE;
+    Slogger::I(TAG, "StartHomeActivityLocked, mTopAction: %s", mTopAction.string());
 
     if (mFactoryTest == FactoryTest::FACTORY_TEST_LOW_LEVEL
             && mTopAction.IsNull()) {
@@ -6375,6 +6378,9 @@ void CActivityManagerService::DumpStackTraces(
     /* [in] */ HashMap<Int32, Boolean>* lastPids,
     /* [in] */ ArrayOf<String>* nativeProcs)
  {
+    //assert(0 && "TODO");
+    return;
+
     // Use a FileObserver to detect when traces finish writing.
     // The order of traces is considered important to maintain for legibility.
     AutoPtr<DumpStackTracesFileObserver> observer =
@@ -12957,13 +12963,13 @@ ECode CActivityManagerService::LogLockScreen(
     /* [in] */ const String& msg)
 {
     if (DEBUG_LOCKSCREEN) {
-        AutoPtr<IDebug> debug;
-        assert(0);
-        // CDebug::AcquireSingleton((IDebug**)&debug);
-        String callers;
-        // debug->GetCallers(2, &callers);
-        Slogger::D(TAG, "%s:%s mLockScreenShown=%d mWentToSleep=%d mSleeping=%d",
-            callers.string(), msg.string(), mLockScreenShown, mWentToSleep, mSleeping);
+        // AutoPtr<IDebug> debug;
+        // assert(0 && "TODO");
+        // // CDebug::AcquireSingleton((IDebug**)&debug);
+        // String callers;
+        // // debug->GetCallers(2, &callers);
+        // Slogger::D(TAG, "%s:%s mLockScreenShown=%d mWentToSleep=%d mSleeping=%d",
+        //     callers.string(), msg.string(), mLockScreenShown, mWentToSleep, mSleeping);
     }
     return NOERROR;
 }

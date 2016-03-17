@@ -8963,7 +8963,7 @@ ECode CWindowManagerService::H::HandleMessage(
     msg->GetArg2(&arg2);
 
     if (CWindowManagerService::DEBUG_WINDOW_TRACE) {
-        Slogger::V(CWindowManagerService::TAG, "handleMessage: entry what=%d", what);
+        Slogger::V(CWindowManagerService::TAG, "handleMessage: start what=%d", what);
     }
 
     switch (what) {
@@ -9207,7 +9207,7 @@ ECode CWindowManagerService::H::HandleMessage(
     }
 
     if (CWindowManagerService::DEBUG_WINDOW_TRACE) {
-        Slogger::V(CWindowManagerService::TAG, "handleMessage: exit");
+        Slogger::V(CWindowManagerService::TAG, "handleMessage: end");
     }
     return NOERROR;
 }

@@ -79,6 +79,7 @@ using Elastos::Droid::Provider::ISettingsSystem;
 using Elastos::Droid::Server::Am::IPendingIntentRecord;
 using Elastos::Droid::Server::Am::LockTaskNotify;
 using Elastos::Droid::Server::LocalServices;
+using Elastos::Droid::Utility::IEventLogTags;
 using Elastos::Droid::Utility::CArraySet;
 using Elastos::Droid::Utility::CSparseArray;
 using Elastos::Droid::Utility::CSparseInt32Array;
@@ -494,7 +495,8 @@ Boolean ActivityStackSupervisor::IsFrontStack(
 
     AutoPtr<ActivityRecord> parent;
     if(stack->mActivityContainer != NULL) {
-        parent = stack->mActivityContainer->mParentActivity;
+        ActivityContainer* ac = (ActivityContainer*)stack->mActivityContainer.Get();
+        parent = (ActivityRecord*)ac->mParentActivity.Get();
     }
 
     if (parent != NULL) {
@@ -1607,7 +1609,7 @@ ECode ActivityStackSupervisor::RealStartActivityLocked(
         //        + " with results=" + results + " newIntents=" + newIntents
         //        + " andResume=" + andResume);
         if (andResume) {
-            //TODO EventLog.writeEvent(EventLogTags.AM_RESTART_ACTIVITY,
+            //TODO EventLog.writeEvent(IEventLogTags::AM_RESTART_ACTIVITY,
             //        r.userId, System.identityHashCode(r),
             //        r.task.taskId, r.shortComponentName);
         }
@@ -2669,7 +2671,7 @@ ECode ActivityStackSupervisor::StartActivityUncheckedLocked(
                     Boolean isEqual;
                     if (((launchFlags&IIntent::FLAG_ACTIVITY_SINGLE_TOP) != 0 || launchSingleTop)
                             && compareResult == 0) {
-                        //TODO ActivityStack::LogStartActivity(EventLogTags.AM_NEW_INTENT, r,
+                        //TODO ActivityStack::LogStartActivity(IEventLogTags::AM_NEW_INTENT, r,
                         //        intentActivity->mTask);
                         if (intentActivity->mFrontOfTask) {
                             intentActivity->mTask->SetIntent(r);
@@ -2738,7 +2740,7 @@ ECode ActivityStackSupervisor::StartActivityUncheckedLocked(
                 if (top->mApp != NULL && top->mApp->mThread != NULL) {
                     if ((launchFlags & IIntent::FLAG_ACTIVITY_SINGLE_TOP) != 0
                         || launchSingleTop || launchSingleTask) {
-                        //TODO ActivityStack.logStartActivity(EventLogTags.AM_NEW_INTENT, top,
+                        //TODO ActivityStack.logStartActivity(IEventLogTags::AM_NEW_INTENT, top,
                         //        top.task);
                         // For paranoia, make sure we have correctly
                         // resumed the top activity.
@@ -2836,7 +2838,7 @@ ECode ActivityStackSupervisor::StartActivityUncheckedLocked(
             AutoPtr<ActivityRecord> top = sourceTask->PerformClearTaskLocked(r, launchFlags);
             keepCurTransition = TRUE;
             if (top != NULL) {
-                //ActivityStack.logStartActivity(EventLogTags.AM_NEW_INTENT, r, top.task);
+                //ActivityStack.logStartActivity(IEventLogTags::AM_NEW_INTENT, r, top.task);
                 top->DeliverNewIntentLocked(callingUid, r->mIntent);
                 // For paranoia, make sure we have correctly
                 // resumed the top activity.
@@ -2899,7 +2901,7 @@ ECode ActivityStackSupervisor::StartActivityUncheckedLocked(
         if (top != NULL && compareResult == 0 && top->mUserId == r->mUserId) {
             if ((launchFlags & IIntent::FLAG_ACTIVITY_SINGLE_TOP) != 0
                     || launchSingleTop || launchSingleTask) {
-                //TODO ActivityStack::LogStartActivity(EventLogTags.AM_NEW_INTENT, top, top->mTask);
+                //TODO ActivityStack::LogStartActivity(IEventLogTags::AM_NEW_INTENT, top, top->mTask);
                 if ((startFlags&IActivityManager::START_FLAG_ONLY_IF_NEEDED) != 0) {
                     // We don't need to start a new activity, and
                     // the client said not to do anything if that
@@ -2948,9 +2950,9 @@ ECode ActivityStackSupervisor::StartActivityUncheckedLocked(
         r->mTask->SetTaskToReturnTo(ActivityRecord::RECENTS_ACTIVITY_TYPE);
     }
     if (newTask) {
-        //TODO EventLog.writeEvent(EventLogTags.AM_CREATE_TASK, r.userId, r.task.taskId);
+        //TODO EventLog.writeEvent(IEventLogTags::AM_CREATE_TASK, r.userId, r.task.taskId);
     }
-    //TODO ActivityStack::LogStartActivity(EventLogTags.AM_CREATE_ACTIVITY, r, r->mTask);
+    ActivityStack::LogStartActivity(IEventLogTags::AM_CREATE_ACTIVITY, r, r->mTask);
     targetStack->mLastPausedActivity = NULL;
     targetStack->StartActivityLocked(r, newTask, doResume, keepCurTransition, options);
     if (!launchTaskBehind) {

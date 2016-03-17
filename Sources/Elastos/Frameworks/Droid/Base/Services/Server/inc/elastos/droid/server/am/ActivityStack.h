@@ -564,7 +564,7 @@ private:
       * the resumed state (either by launching it or explicitly telling it),
       * this function updates the rest of our state to match that fact.
       */
-    CARAPI_(void) CompleteResumeLocked(
+    CARAPI CompleteResumeLocked(
         /* [in] */ ActivityRecord* next);
 
     CARAPI_(void) SetVisibile(

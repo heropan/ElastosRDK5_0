@@ -1536,8 +1536,8 @@ void CInputManagerService::DeliverInputDevicesChanged(
 {
     // Scan for changes.
     Int32 numFullKeyboardsAdded = 0;
-    mTempInputDevicesChangedListenersToNotify.Clear();
-    mTempFullKeyboards.Clear();
+    mTempInputDevicesChangedListenersToNotify->Clear();
+    mTempFullKeyboards->Clear();
     AutoPtr<ArrayOf<Int32> > deviceIdAndGeneration;
     synchronized (mInputDevicesLock) {
         if (!mInputDevicesChangedPending) {
@@ -1587,7 +1587,7 @@ void CInputManagerService::DeliverInputDevicesChanged(
         InputDevicesChangedListenerRecord* inputDeviceRec = (InputDevicesChangedListenerRecord*)IObject::Probe(obj);
         inputDeviceRec->NotifyInputDevicesChanged(deviceIdAndGeneration);
     }
-    mTempInputDevicesChangedListenersToNotify.Clear();
+    mTempInputDevicesChangedListenersToNotify->Clear();
 
     // Check for missing keyboard layouts.
     if (mNotificationManager != NULL) {
@@ -1637,7 +1637,7 @@ void CInputManagerService::DeliverInputDevicesChanged(
             HideMissingKeyboardLayoutNotification();
         }
     }
-    mTempFullKeyboards.Clear();
+    mTempFullKeyboards->Clear();
 }
 
 // @Override // Binder call & native callback

@@ -104,11 +104,9 @@ Watchdog::DropboxThread::DropboxThread(
 // @Override
 ECode Watchdog::DropboxThread::Run()
 {
-    assert(0 && "TODO");
-    return NOERROR;
-    // return mHost->mActivity->AddErrorToDropBox(
-    //     String("watchdog"), NULL, String("system_server"), NULL, NULL,
-    //     mSubject, String(NULL), mStack, NULL);
+    return mHost->mActivity->AddErrorToDropBox(
+        String("watchdog"), NULL, String("system_server"), NULL, NULL,
+        mSubject, String(NULL), mStack, NULL);
 }
 
 ECode Watchdog::DropboxThread::ToString(
@@ -553,8 +551,7 @@ ECode Watchdog::Run()
                     // trace and wait another half.
                     List<Int32> pids;
                     pids.PushBack(Process::MyPid());
-                    assert(0 && "TODO");
-                    // CActivityManagerService::DumpStackTraces(TRUE, pids, NULL, NULL, NATIVE_STACKS_OF_INTEREST);
+                    CActivityManagerService::DumpStackTraces(TRUE, &pids, NULL, NULL, NATIVE_STACKS_OF_INTEREST);
                     waitedHalf = TRUE;
                 }
                 continue;
@@ -651,6 +648,7 @@ ECode Watchdog::Run()
         }
         else {
             Slogger::W(TAG, "*** WATCHDOG KILLING SYSTEM PROCESS: %s", subject.string());
+            assert(blockedCheckers != NULL);
             List<AutoPtr<HandlerChecker> >::Iterator it;
             for (it = blockedCheckers->Begin(); it != blockedCheckers->End(); ++it) {
                 AutoPtr<HandlerChecker> hc = *it;

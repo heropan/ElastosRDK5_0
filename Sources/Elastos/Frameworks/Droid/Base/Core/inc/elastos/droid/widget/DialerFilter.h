@@ -4,6 +4,7 @@
 
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/widget/RelativeLayout.h"
+#include "Elastos.Droid.Text.h"
 
 using Elastos::Droid::View::IKeyEvent;
 using Elastos::Droid::Graphics::IRect;

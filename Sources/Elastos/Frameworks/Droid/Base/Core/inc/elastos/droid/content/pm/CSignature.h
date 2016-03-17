@@ -4,6 +4,7 @@
 
 #include "_Elastos_Droid_Content_Pm_CSignature.h"
 #include <elastos/core/Object.h>
+#include <Elastos.CoreLibrary.Security.h>
 
 using Elastos::Security::IPublicKey;
 using Elastos::Security::Cert::ICertificate;

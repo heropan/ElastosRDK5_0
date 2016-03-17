@@ -35,16 +35,8 @@ ECode ByteBuffer::Allocate(
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
 
-    AutoPtr<ArrayOf<Byte> > bytesTemp = ArrayOf<Byte>::Alloc(capacity);
-    Logger::E("ByteBuffer", "capacity 1: %d, bytesTemp:%p, lenght: %d", capacity, bytesTemp.Get(), bytesTemp->GetLength());
-    AutoPtr<ByteArrayBuffer> bbTemp = new ByteArrayBuffer();
-    Logger::E("ByteBuffer", "capacity 2: %d, bytesTemp:%p, lenght: %d", capacity, bytesTemp.Get(), bytesTemp->GetLength());
-
     AutoPtr<ArrayOf<Byte> > bytes = ArrayOf<Byte>::Alloc(capacity);
-    Logger::E("ByteBuffer", "capacity 3: %d, bytesTemp:%p, lenght: %d", capacity, bytes.Get(), bytes->GetLength());
     AutoPtr<ByteArrayBuffer> bb = new ByteArrayBuffer();
-    Logger::E("ByteBuffer", "capacity 4: %d, bytesTemp:%p, lenght: %d", capacity, bytes.Get(), bytes->GetLength());
-
     FAIL_RETURN(bb->constructor(bytes))
     *buf = IByteBuffer::Probe(bb);
     REFCOUNT_ADD(*buf);

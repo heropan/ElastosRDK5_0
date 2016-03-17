@@ -478,8 +478,8 @@ ECode Process::StartViaZygote(
                 }
                 sb.Append((*gids)[i]);
             }
-            String temp;
-            Logger::I("permissionRelated", "processClass:%s niceName:%s groups:%s", processClass.string(), niceName.string(), (sb.ToString(&temp), temp.string()));
+            Logger::I("permissionRelated", "processClass:%s niceName:%s groups:%s",
+                processClass.string(), niceName.string(), sb.ToString().string());
             argsForZygote->PushBack(sb.ToString());
         }
 
