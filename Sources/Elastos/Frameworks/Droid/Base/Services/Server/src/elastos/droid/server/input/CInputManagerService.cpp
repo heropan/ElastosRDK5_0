@@ -1033,8 +1033,7 @@ void CInputManagerService::SetWiredAccessoryCallbacks(
 
 ECode CInputManagerService::Start()
 {
-    Slogger::D(TAG, "TODO CInputManagerService::Start()");
-    return NOERROR;
+    Slogger::D(TAG, "CInputManagerService::Start()");
 
     FAIL_RETURN(NativeStart());
 

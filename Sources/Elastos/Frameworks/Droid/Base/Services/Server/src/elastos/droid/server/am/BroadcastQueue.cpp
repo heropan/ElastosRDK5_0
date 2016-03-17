@@ -753,7 +753,6 @@ ECode BroadcastQueue::ProcessNextBroadcast(
                 // (local and remote) isn't kept in the mBroadcastHistory.
                 r->mResultTo = NULL;
                 if (FAILED(ec)) {
-                    r->mResultTo = NULL;
                     Slogger::W(TAG, "Failure [%s] sending broadcast result of %s, ec=0x%08x",
                             mQueueName.string(), TO_CSTR(r->mIntent), ec);
                 }
