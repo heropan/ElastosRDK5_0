@@ -416,7 +416,7 @@ ECode Database::GetTable(
             Compile(sql, (IVm**)&vm);
             SetLastError(((CVm *)vm.Get())->mError_code);
             Boolean vmflag = FALSE;
-            ((CVm *)vm.Get())->Step((ICallback *)ret.Get(),&vmflag);
+            ((CVm *)vm.Get())->Step(ICallback::Probe(ret),&vmflag);
             if (((CTableResult *)ret.Get())->mMaxRows > 0) {
                while (((CTableResult *)ret.Get())->mNrows < ((CTableResult *)ret.Get())->mMaxRows
                         && vmflag) {
@@ -424,7 +424,7 @@ ECode Database::GetTable(
                 }
             } else {
                 vmflag = FALSE;
-                ((CVm *)vm.Get())->Step((ICallback *)ret.Get(),&vmflag);
+                ((CVm *)vm.Get())->Step(ICallback::Probe(ret),&vmflag);
                 while (vmflag) {
                     SetLastError(((CVm *)vm.Get())->mError_code);
                 }
@@ -457,7 +457,7 @@ ECode Database::GetTable(
     CTableResult::New(maxrows,(ITableResult **)&ret);
     Boolean is3 = FALSE;
     if (Is3(&is3), !is3) {
-        ECode ec = Exec(sql, (ICallback *)ret.Get(), args);
+        ECode ec = Exec(sql, ICallback::Probe(ret), args);
         if (ec != NOERROR) {
             if (maxrows <= 0 || !((CTableResult *)ret.Get())->mAtMaxRows) {
                 return NOERROR;
@@ -471,14 +471,14 @@ ECode Database::GetTable(
         SetLastError(((CVm *)vm.Get())->mError_code);
         Boolean vmflag = FALSE;
         if (((CTableResult *)ret.Get())->mMaxRows > 0) {
-            ((CVm *)vm.Get())->Step((ICallback *)ret.Get(),&vmflag);
+            ((CVm *)vm.Get())->Step(ICallback::Probe(ret),&vmflag);
             while (((CTableResult *)ret.Get())->mNrows < ((CTableResult *)ret.Get())->mMaxRows
                     && vmflag) {
                 SetLastError(((CVm *)vm.Get())->mError_code);
             }
         } else {
             vmflag = FALSE;
-            ((CVm *)vm.Get())->Step((ICallback *)ret.Get(),&vmflag);
+            ((CVm *)vm.Get())->Step(ICallback::Probe(ret),&vmflag);
             while (vmflag) {
             SetLastError(((CVm *)vm.Get())->mError_code);
             }
@@ -1338,6 +1338,7 @@ ECode Database::_Exec(
             // throwoom(env, "unable to allocate arg vector");
             return E_NULL_POINTER_EXCEPTION;
         }
+        memset(cargv, 0, (sizeof (*argv) + sizeof (char *)) * MAX_PARAMS);
         argv = (struct args *) (cargv + MAX_PARAMS);
         for (i = 0; i < MAX_PARAMS; i++) {
             cargv[i] = 0;

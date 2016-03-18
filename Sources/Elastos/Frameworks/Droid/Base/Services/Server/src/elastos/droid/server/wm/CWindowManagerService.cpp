@@ -875,12 +875,6 @@ CWindowManagerService::CWindowManagerService()
     mWindowMapLock = new Object();
 }
 
-CWindowManagerService::~CWindowManagerService()
-{
-    assert(0);
-    ALOGD("=============================================");
-}
-
 AutoPtr<CWindowManagerService> CWindowManagerService::Main(
     /* [in] */ IContext* context,
     /* [in] */ IIInputManager* im,

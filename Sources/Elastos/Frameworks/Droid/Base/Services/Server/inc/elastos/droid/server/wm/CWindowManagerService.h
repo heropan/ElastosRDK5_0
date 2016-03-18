@@ -462,8 +462,6 @@ public:
 
     CWindowManagerService();
 
-    ~CWindowManagerService();
-
     CAR_INTERFACE_DECL()
 
     CAR_OBJECT_DECL()

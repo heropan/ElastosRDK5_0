@@ -1,4 +1,5 @@
 
+#include "_Elastos.CoreLibrary.IO.h"
 #include "Locale.h"
 #include "ICUUtil.h"
 #include "StringBuilder.h"

@@ -53,6 +53,15 @@ AutoPtr<IInteger32> CoreUtils::Convert(
     return (IInteger32*)obj.Get();
 }
 
+Int32 CoreUtils::Unbox(
+    /* [in] */ IInteger32* value)
+{
+    if (value == NULL) return 0;
+    Int32 iVal;
+    value->GetValue(&iVal);
+    return iVal;
+}
+
 AutoPtr<IInteger64> CoreUtils::Convert(
     /* [in] */ Int64 value)
 {
@@ -83,6 +92,21 @@ AutoPtr<ICharSequence> CoreUtils::Convert(
     AutoPtr<CString> obj;
     CString::NewByFriend(value, (CString**)&obj);
     return (ICharSequence*)obj.Get();
+}
+
+String CoreUtils::Unbox(
+    /* [in] */ ICharSequence* value)
+{
+    if (value == NULL) return String(NULL);
+    String str;
+    value->ToString(&str);
+    return str;
+}
+
+String CoreUtils::Unbox(
+    /* [in] */ IString* value)
+{
+    return Unbox(ICharSequence::Probe(value));
 }
 
 AutoPtr<ICharSequence> CoreUtils::Convert(

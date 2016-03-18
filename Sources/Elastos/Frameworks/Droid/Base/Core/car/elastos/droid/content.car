@@ -1149,29 +1149,29 @@ module
         interface ICloseable;
     }
 
-     [deprecated]
-     class CManifestDigest {
-         constructor();
+    [deprecated]
+    class CManifestDigest {
+        constructor();
 
-         constructor(
-             [in] ArrayOf<Byte>* digest);
+        constructor(
+            [in] ArrayOf<Byte>* digest);
 
-         interface IManifestDigest;
-         interface IParcelable;
-     }
+        interface IManifestDigest;
+        interface IParcelable;
+    }
 
-     /** @hide */
-     class CPackageCleanItem {
-         constructor();
+    /** @hide */
+    class CPackageCleanItem {
+        constructor();
 
-         constructor(
-             [in] Int32 userId,
-             [in] String packageName,
-             [in] Boolean andCode);
+        constructor(
+            [in] Int32 userId,
+            [in] String packageName,
+            [in] Boolean andCode);
 
-         interface IPackageCleanItem;
-         interface IParcelable;
-     }
+        interface IPackageCleanItem;
+        interface IParcelable;
+    }
 
     class CPackageInfo {
         constructor();

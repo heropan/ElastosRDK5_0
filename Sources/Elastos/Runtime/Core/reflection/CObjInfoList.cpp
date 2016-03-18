@@ -612,7 +612,7 @@ ECode CObjInfoList::AcquireStaticEnumInfo(
             return ec;
         }
 
-         interfaceObj = (IInterface*)enumInfoObj.Get();
+        interfaceObj = (IInterface*)enumInfoObj.Get();
         if (!mEnumInfos.Put(&enumDirEntry, (IInterface**)&interfaceObj)) {
             UnlockHashTable(EntryType_Enum);
             return E_OUT_OF_MEMORY;

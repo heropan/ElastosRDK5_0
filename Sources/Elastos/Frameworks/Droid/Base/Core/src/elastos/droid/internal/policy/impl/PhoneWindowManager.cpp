@@ -6920,7 +6920,7 @@ ECode PhoneWindowManager::SystemReady()
     ECode ec = mHandler->Post(updateSettingRunnable, &isSuccess);
     if (FAILED(ec)) {
         Logger::E(TAG, " =========PhoneWindowManager::SystemReady() %08x", ec);
-        assert(0);
+        assert(0 && "TODO");
     }
     return ec;
 }

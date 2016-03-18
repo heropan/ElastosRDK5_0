@@ -4,7 +4,9 @@
 #include "Math.h"
 #include "AutoLock.h"
 #include "CSystem.h"
+#if defined(_DEBUG)
 #include "cutils/log.h"
+#endif
 
 namespace Elastos {
 namespace Core {

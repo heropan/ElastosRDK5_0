@@ -4,9 +4,6 @@
 #include "elastos/droid/hardware/display/CDisplayManager.h"
 #include "elastos/droid/hardware/display/DisplayManagerGlobal.h"
 #include <elastos/core/AutoLock.h>
-#include <elastos/utility/logging/Logger.h>
-
-using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
 namespace Droid {

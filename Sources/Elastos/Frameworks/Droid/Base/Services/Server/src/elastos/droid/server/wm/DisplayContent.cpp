@@ -262,7 +262,6 @@ void DisplayContent::ResetDimming()
 {
     List<AutoPtr<TaskStack> >::ReverseIterator rit = mStacks.RBegin();
     for (; rit != mStacks.REnd(); ++rit) {
-        ALOGD("======== (*rit): %p ========", (*rit).Get());
         (*rit)->ResetDimmingTag();
     }
 }

@@ -26,8 +26,8 @@ ECode CSplitter::FastSplit(
     /* [out, callee] */ ArrayOf<String>** array)
 {
     VALIDATE_NOT_NULL(array)
+    if (input.IsNull()) return E_ILLEGAL_ARGUMENT_EXCEPTION;
     *array = NULL;
-    VALIDATE_NOT_NULL(input)
 
     // Can we do it cheaply?
     Int32 len = regularExpression.GetLength();

@@ -39,6 +39,9 @@ public:
     static CARAPI_(AutoPtr<IInteger32>) Convert(
         /* [in] */ Int32 value);
 
+    static CARAPI_(Int32) Unbox(
+        /* [in] */ IInteger32* value);
+
     static CARAPI_(AutoPtr<IInteger64>) Convert(
         /* [in] */ Int64 value);
 
@@ -50,6 +53,12 @@ public:
 
     static CARAPI_(AutoPtr<ICharSequence>) Convert(
         /* [in] */ const String & value);
+
+    static CARAPI_(String) Unbox(
+        /* [in] */ ICharSequence* value);
+
+    static CARAPI_(String) Unbox(
+        /* [in] */ IString* value);
 
     static CARAPI_(AutoPtr<ICharSequence>) Convert(
         /* [in] */ const char* str);
