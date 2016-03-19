@@ -578,7 +578,7 @@ private:
      * the original window as when the Runnable was created.
      *
      */
-    class WindowRunnnable
+    class ECO_LOCAL WindowRunnnable
         : public Runnable
     {
     public:
@@ -598,7 +598,7 @@ private:
         Int32 mOriginalAttachCount;
     };
 
-    class PerformClick
+    class ECO_LOCAL PerformClick
         : public WindowRunnnable
     {
     public:
@@ -611,7 +611,7 @@ private:
         Int32 mClickMotionPosition;
     };
 
-    class CheckForLongPress
+    class ECO_LOCAL CheckForLongPress
         : public WindowRunnnable
     {
     public:
@@ -621,7 +621,7 @@ private:
         virtual CARAPI Run();
     };
 
-    class CheckForKeyLongPress
+    class ECO_LOCAL CheckForKeyLongPress
         : public WindowRunnnable
     {
     public:
@@ -631,7 +631,7 @@ private:
         CARAPI Run();
     };
 
-    class CheckForTap
+    class ECO_LOCAL CheckForTap
         : public Runnable
     {
     public:
@@ -652,7 +652,7 @@ private:
      * so you need implement it here
      */
     class FlingRunnable;
-    class FlingRunnableInner
+    class ECO_LOCAL FlingRunnableInner
         : public Runnable
     {
     public:
@@ -673,7 +673,7 @@ private:
      * A FlingRunnable will keep re-posting itself until the fling is done.
      *
      */
-    class FlingRunnable
+    class ECO_LOCAL FlingRunnable
         : public Runnable
     {
     public:
@@ -723,7 +723,7 @@ private:
         friend class AbsListView;
     };
 
-    class InputConnectionWrapper
+    class ECO_LOCAL InputConnectionWrapper
         : public Object
         , public IInputConnection
     {
@@ -861,7 +861,7 @@ private:
     };
 
     // This class is create for the runnable in PositionScroller::Start functions
-    class PositionScrollerStartRunnable
+    class ECO_LOCAL PositionScrollerStartRunnable
         : public Runnable
     {
     public:
@@ -882,9 +882,8 @@ private:
         PositionScroller* mHost;
     };
 
-private:
     // The sub-Runnable in AbsListView::SetFastScrollEnabled, SetFastScrollAlwaysVisible
-    class SetFastScrollRunnable
+    class ECO_LOCAL SetFastScrollRunnable
         : public Runnable
     {
     public:
@@ -902,7 +901,7 @@ private:
     };
 
     // The sub-Runnable in AbsListView::ClearScrollingCache
-    class ClearScrollingCacheRunnable
+    class ECO_LOCAL ClearScrollingCacheRunnable
         : public Runnable
     {
     public:
@@ -916,7 +915,7 @@ private:
     };
 
     // The sub-Runnable for AbsListView::OnTouchUp
-    class TouchModeResetRunnable
+    class ECO_LOCAL TouchModeResetRunnable
         : public Runnable
     {
     public:
@@ -1883,6 +1882,14 @@ public:
 
     virtual CARAPI HideSelector();
 
+    /**
+     * Returns the number of header views in the list. Header views are special views
+     * at the top of the list that should not be recycled during a layout.
+     *
+     * @return The number of header views, 0 in the default implementation.
+     */
+    virtual CARAPI_(Int32) GetHeaderViewsCount();
+
 protected:
     /**
      * What is the distance between the source and destination rectangles given the direction of
@@ -1900,7 +1907,6 @@ protected:
         /* [in] */ Int32 direction,
         /* [out] */ Int32* result);
 
-protected:
     /**
      * If fast scroll is enabled, then don't draw the vertical scrollbar.
      * @hide
@@ -2122,14 +2128,6 @@ protected:
         /* [in] */ Int32 incrementalDeltaY);
 
     /**
-     * Returns the number of header views in the list. Header views are special views
-     * at the top of the list that should not be recycled during a layout.
-     *
-     * @return The number of header views, 0 in the default implementation.
-     */
-    virtual CARAPI_(Int32) GetHeaderViewsCount();
-
-    /**
      * Returns the number of footer views in the list. Footer views are special views
      * at the bottom of the list that should not be recycled during a layout.
      *
@@ -2249,101 +2247,101 @@ protected:
         /* [in] */ Int32 position);
 
 private:
-    CARAPI InitAbsListView();
+    ECO_LOCAL CARAPI InitAbsListView();
 
     /**
      * Perform a quick, in-place update of the checked or activated state
      * on all visible item views. This should only be called when a valid
      * choice mode is active.
      */
-    CARAPI_(void) UpdateOnScreenCheckedViews();
+    ECO_LOCAL CARAPI_(void) UpdateOnScreenCheckedViews();
 
-    CARAPI_(Boolean) ContentFits();
+    ECO_LOCAL CARAPI_(Boolean) ContentFits();
 
-    CARAPI_(void) SetFastScrollerEnabledUiThread(
+    ECO_LOCAL CARAPI_(void) SetFastScrollerEnabledUiThread(
         /* [in] */ Boolean enabled);
 
-    CARAPI_(void) SetFastScrollerAlwaysVisibleUiThread(
+    ECO_LOCAL CARAPI_(void) SetFastScrollerAlwaysVisibleUiThread(
         /* [in] */ Boolean alwaysShow);
 
     /**
      * @return whether the current thread is the one that created the view
      */
-    CARAPI_(Boolean) IsOwnerThread();
+    ECO_LOCAL CARAPI_(Boolean) IsOwnerThread();
 
-    CARAPI UseDefaultSelector();
+    ECO_LOCAL CARAPI UseDefaultSelector();
 
-    CARAPI_(Boolean) AcceptFilter();
+    ECO_LOCAL CARAPI_(Boolean) AcceptFilter();
 
-    CARAPI_(Boolean) CanScrollUp();
+    ECO_LOCAL CARAPI_(Boolean) CanScrollUp();
 
-    CARAPI_(Boolean) CanScrollDown();
+    ECO_LOCAL CARAPI_(Boolean) CanScrollDown();
 
-    CARAPI_(void) SetItemViewLayoutParams(
+    ECO_LOCAL CARAPI_(void) SetItemViewLayoutParams(
         /* [in] */ IView* child,
         /* [in] */ Int32 position);
 
-    CARAPI_(void) DrawSelector(
+    ECO_LOCAL CARAPI_(void) DrawSelector(
         /* [in] */ ICanvas* canvas);
 
-    CARAPI_(Boolean) StartScrollIfNeeded(
+    ECO_LOCAL CARAPI_(Boolean) StartScrollIfNeeded(
         /* [in] */ Int32 x,
         /* [in] */ Int32 y,
         /* [in] */ IMotionEvent* vtev);
 
-    CARAPI_(void) ScrollIfNeeded(
+    ECO_LOCAL CARAPI_(void) ScrollIfNeeded(
         /* [in] */ Int32 x,
         /* [in] */ Int32 y,
         /* [in] */ IMotionEvent* vtev);
 
-    CARAPI_(void) OnTouchDown(
+    ECO_LOCAL CARAPI_(void) OnTouchDown(
         /* [in] */ IMotionEvent* ev);
 
-    CARAPI_(void) OnTouchMove(
+    ECO_LOCAL CARAPI_(void) OnTouchMove(
         /* [in] */ IMotionEvent* ev,
         /* [in] */ IMotionEvent* vtev);
 
-    CARAPI_(void) OnTouchUp(
+    ECO_LOCAL CARAPI_(void) OnTouchUp(
         /* [in] */ IMotionEvent* ev);
 
-    CARAPI_(void) OnTouchCancel();
+    ECO_LOCAL CARAPI_(void) OnTouchCancel();
 
-    CARAPI_(void) InitOrResetVelocityTracker();
+    ECO_LOCAL CARAPI_(void) InitOrResetVelocityTracker();
 
-    CARAPI_(void) InitVelocityTrackerIfNotExists();
+    ECO_LOCAL CARAPI_(void) InitVelocityTrackerIfNotExists();
 
-    CARAPI_(void) RecycleVelocityTracker();
+    ECO_LOCAL CARAPI_(void) RecycleVelocityTracker();
 
-    CARAPI_(void) OnSecondaryPointerUp(
+    ECO_LOCAL CARAPI_(void) OnSecondaryPointerUp(
         /* [in] */ IMotionEvent* ev);
 
-    CARAPI_(void) CreateScrollingCache();
+    ECO_LOCAL CARAPI_(void) CreateScrollingCache();
 
-    CARAPI_(void) ClearScrollingCache();
+    ECO_LOCAL CARAPI_(void) ClearScrollingCache();
 
     /**
      * Removes the filter window
      */
-    CARAPI_(void) DismissPopup();
+    ECO_LOCAL CARAPI_(void) DismissPopup();
 
     /**
      * Shows the filter window
      */
-    CARAPI_(void) ShowPopup();
+    ECO_LOCAL CARAPI_(void) ShowPopup();
 
-    CARAPI_(void) PositionPopup();
+    ECO_LOCAL CARAPI_(void) PositionPopup();
 
     /**
      * Creates the window for the text filter and populates it with an EditText field;
      *
      * @param animateEntrance true if the window should appear with an animation
      */
-    CARAPI_(void) CreateTextFilter(
+    ECO_LOCAL CARAPI_(void) CreateTextFilter(
         /* [in] */ Boolean animateEntrance);
 
-    CARAPI_(AutoPtr<IEditText>) GetTextFilterInput();
+    ECO_LOCAL CARAPI_(AutoPtr<IEditText>) GetTextFilterInput();
 
-    CARAPI_(void) FinishGlows();
+    ECO_LOCAL CARAPI_(void) FinishGlows();
 
 protected:
     /**

@@ -183,3 +183,6 @@ EXPORT_HEADERS += elastos/droid/widget/SeekBar.h
 EXPORT_HEADERS += elastos/droid/widget/Switch.h
 EXPORT_HEADERS += elastos/droid/widget/AbsSeekBar.h
 EXPORT_HEADERS += elastos/droid/widget/ProgressBar.h
+EXPORT_HEADERS += elastos/droid/widget/AbsListView.h
+EXPORT_HEADERS += elastos/droid/widget/AdapterView.h
+
