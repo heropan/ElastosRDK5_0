@@ -213,6 +213,9 @@ private:
 
     CARAPI CheckNotReleasedLocked();
 
+    CARAPI GetNativeSurface(
+        /* [out] */ Int64* result);
+
 private:
     static const char* TAG;
 

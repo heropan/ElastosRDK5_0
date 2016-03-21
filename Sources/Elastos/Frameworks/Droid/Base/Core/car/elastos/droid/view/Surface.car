@@ -141,6 +141,8 @@ module
              */
             AllocateBuffers();
 
+            GetNativeSurface(
+                [out] Int64* result);
         }
 
         interface ISurfaceHelper {

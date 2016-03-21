@@ -745,6 +745,16 @@ ANativeWindow* Surface::GetSurface()
     return surface.get();
 }
 
+ECode Surface::GetNativeSurface(
+    /* [out] */ Int64* result)
+{
+
+    VALIDATE_NOT_NULL(result)
+
+    *result = mNativeObject;
+    return NOERROR;
+}
+
 } // namespace View
 } // namespace Droid
 } // namespace Elastos

@@ -12,6 +12,7 @@
 #include "elastos/droid/view/SurfaceControl.h"
 #include <elastos/core/AutoLock.h>
 #include <elastos/utility/logging/Logger.h>
+#include <Elastos.Droid.Graphics.h>
 
 using Elastos::Droid::AccessibilityService::IAccessibilityServiceInfo;
 using Elastos::Droid::AccessibilityService::CAccessibilityServiceInfo;
