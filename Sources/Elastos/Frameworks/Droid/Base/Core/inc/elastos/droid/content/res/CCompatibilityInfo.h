@@ -28,6 +28,7 @@ namespace Res {
 CarClass(CCompatibilityInfo)
     , public Object
     , public ICompatibilityInfo
+    , public IParcelable
 {
 public:
     /**

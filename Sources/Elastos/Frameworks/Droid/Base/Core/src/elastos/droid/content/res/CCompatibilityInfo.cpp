@@ -25,6 +25,9 @@ namespace Droid {
 namespace Content {
 namespace Res {
 
+//===============================================================
+// CCompatibilityInfo::Translator
+//===============================================================
 CAR_INTERFACE_IMPL(CCompatibilityInfo::Translator, Object, ICompatibilityInfoTranslator)
 
 CCompatibilityInfo::Translator::Translator(
@@ -201,7 +204,9 @@ ECode CCompatibilityInfo::Translator::GetTranslatedTouchableArea(
     return NOERROR;
 }
 
-
+//===============================================================
+// CCompatibilityInfo
+//===============================================================
 static AutoPtr<ICompatibilityInfo> InitDefaultCompatibilityInfo()
 {
     AutoPtr<ICompatibilityInfo> info;
@@ -217,7 +222,7 @@ const Int32 CCompatibilityInfo::ALWAYS_NEEDS_COMPAT = 2;
 const Int32 CCompatibilityInfo::NEVER_NEEDS_COMPAT = 4;
 const Int32 CCompatibilityInfo::NEEDS_SCREEN_COMPAT = 8;
 
-CAR_INTERFACE_IMPL(CCompatibilityInfo, Object, ICompatibilityInfo)
+CAR_INTERFACE_IMPL_2(CCompatibilityInfo, Object, ICompatibilityInfo, IParcelable)
 
 CAR_OBJECT_IMPL(CCompatibilityInfo)
 
