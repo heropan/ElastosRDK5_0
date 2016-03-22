@@ -1,5 +1,4 @@
 
-#include <Elastos.CoreLibrary.Utility.h>
 #include <Elastos.CoreLibrary.Utility.Concurrent.h>
 #include "Elastos.Droid.Net.h"
 #include "Elastos.Droid.Os.h"

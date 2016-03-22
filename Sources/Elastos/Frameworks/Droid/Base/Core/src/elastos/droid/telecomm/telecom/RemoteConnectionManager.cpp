@@ -14,6 +14,7 @@ namespace Telecom {
 //===============================================================
 // RemoteConnectionManager::
 //===============================================================
+CAR_INTERFACE_IMPL(RemoteConnectionManager, Object, IRemoteConnectionManager)
 
 RemoteConnectionManager::RemoteConnectionManager()
 {

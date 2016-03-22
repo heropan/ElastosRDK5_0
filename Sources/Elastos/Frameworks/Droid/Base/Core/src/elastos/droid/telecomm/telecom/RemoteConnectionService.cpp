@@ -653,6 +653,8 @@ static AutoPtr<IRemoteConference> InitConf()
 
 AutoPtr<IRemoteConference> RemoteConnectionService::NULL_CONFERENCE = InitConf();
 
+CAR_INTERFACE_IMPL(RemoteConnectionService, Object, IRemoteConnectionService)
+
 RemoteConnectionService::RemoteConnectionService()
 {
     mServantDelegate = new MyConnectionServiceAdapter(this);

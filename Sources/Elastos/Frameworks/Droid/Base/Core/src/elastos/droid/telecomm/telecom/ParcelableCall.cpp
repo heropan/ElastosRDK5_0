@@ -33,6 +33,27 @@ ECode ParcelableCall::constructor()
     return NOERROR;
 }
 
+// ECode ParcelableCall::constructor(
+//     /* [in] */ String id,
+//     /* [in] */ Int32 state,
+//     /* [in] */ IDisconnectCause* disconnectCause,
+//     /* [in] */ IList* cannedSmsResponses,
+//     /* [in] */ Int32 capabilities,
+//     /* [in] */ Int32 properties,
+//     /* [in] */ Int64 connectTimeMillis,
+//     /* [in] */ IUri* handle,
+//     /* [in] */ Int32 handlePresentation,
+//     /* [in] */ String callerDisplayName,
+//      [in]  Int32 callerDisplayNamePresentation,
+//     /* [in] */ IGatewayInfo* gatewayInfo,
+//     /* [in] */ IPhoneAccountHandle* accountHandle,
+//     /* [in] */ IIVideoProvider* videoCallProvider,
+//     /* [in] */ String parentCallId,
+//     /* [in] */ IList* childCallIds,
+//     /* [in] */ IStatusHints* statusHints,
+//     /* [in] */ Int32 videoState,
+//     /* [in] */ IList* conferenceableCallIds,
+//     /* [in] */ IBundle* extras)
 ECode ParcelableCall::constructor(
     /* [in] */ String id,
     /* [in] */ Int32 state,
@@ -51,9 +72,7 @@ ECode ParcelableCall::constructor(
     /* [in] */ String parentCallId,
     /* [in] */ IList* childCallIds,
     /* [in] */ IStatusHints* statusHints,
-    /* [in] */ Int32 videoState,
-    /* [in] */ IList* conferenceableCallIds,
-    /* [in] */ IBundle* extras)
+    /* [in] */ Int32 videoState)
 {
     mId = id;
     mState = state;
@@ -73,10 +92,10 @@ ECode ParcelableCall::constructor(
     mChildCallIds = childCallIds;
     mStatusHints = statusHints;
     mVideoState = videoState;
-    AutoPtr<ICollections> cls;
-    CCollections::AcquireSingleton((ICollections**)&cls);
-    cls->UnmodifiableList(conferenceableCallIds, (IList**)&mConferenceableCallIds);
-    mExtras = extras;
+    // AutoPtr<ICollections> cls;
+    // CCollections::AcquireSingleton((ICollections**)&cls);
+    // cls->UnmodifiableList(conferenceableCallIds, (IList**)&mConferenceableCallIds);
+    // mExtras = extras;
     return NOERROR;
 }
 

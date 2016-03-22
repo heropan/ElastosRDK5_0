@@ -52,9 +52,29 @@ public:
         /* [in] */ String parentCallId,
         /* [in] */ IList* childCallIds,
         /* [in] */ IStatusHints* statusHints,
-        /* [in] */ Int32 videoState,
-        /* [in] */ IList* conferenceableCallIds,
-        /* [in] */ IBundle* extras);
+        /* [in] */ Int32 videoState);
+
+    // CARAPI constructor(
+    //     /* [in] */ String id,
+    //     /* [in] */ Int32 state,
+    //     /* [in] */ IDisconnectCause* disconnectCause,
+    //     /* [in] */ IList* cannedSmsResponses,
+    //     /* [in] */ Int32 capabilities,
+    //     /* [in] */ Int32 properties,
+    //     /* [in] */ Int64 connectTimeMillis,
+    //     /* [in] */ IUri* handle,
+    //     /* [in] */ Int32 handlePresentation,
+    //     /* [in] */ String callerDisplayName,
+    //      [in]  Int32 callerDisplayNamePresentation,
+    //     /* [in] */ IGatewayInfo* gatewayInfo,
+    //     /* [in] */ IPhoneAccountHandle* accountHandle,
+    //     /* [in] */ IIVideoProvider* videoCallProvider,
+    //     /* [in] */ String parentCallId,
+    //     /* [in] */ IList* childCallIds,
+    //     /* [in] */ IStatusHints* statusHints,
+    //     /* [in] */ Int32 videoState,
+    //     /* [in] */ IList* conferenceableCallIds,
+    //     /* [in] */ IBundle* extras);
 
     /** The unique ID of the call. */
     CARAPI GetId(

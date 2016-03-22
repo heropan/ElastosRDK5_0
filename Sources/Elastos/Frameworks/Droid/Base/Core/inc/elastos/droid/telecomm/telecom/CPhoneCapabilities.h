@@ -1,7 +1,7 @@
-#ifndef __ELASTOS_DROID_TELECOMM_TELECOM_PHONECAPABILITIES_H__
-#define __ELASTOS_DROID_TELECOMM_TELECOM_PHONECAPABILITIES_H__
+#ifndef __ELASTOS_DROID_TELECOMM_TELECOM_CPHONECAPABILITIES_H__
+#define __ELASTOS_DROID_TELECOMM_TELECOM_CPHONECAPABILITIES_H__
 
-#include "Elastos.Droid.Telecomm.h"
+#include "_Elastos_Droid_Telecomm_Telecom_CPhoneCapabilities.h"
 #include <elastos/core/Singleton.h>
 
 using Elastos::Core::Singleton;
@@ -16,14 +16,16 @@ namespace Telecom {
  * Also defines properties of a phone call, such as whether it is using VoLTE technology.
  * @hide
  */
-class PhoneCapabilities
-    : public Singleton
+CarClass(CPhoneCapabilities)
+    , public Singleton
     , public IPhoneCapabilities
 {
 public:
+    CAR_SINGLETON_DECL()
+
     CAR_INTERFACE_DECL()
 
-    static CARAPI ToString(
+    CARAPI ToString(
         /* [in] */ Int32 capabilities,
         /* [out] */ String* result);
 };
@@ -33,4 +35,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__ELASTOS_DROID_TELECOMM_TELECOM_PHONECAPABILITIES_H__
+#endif //__ELASTOS_DROID_TELECOMM_TELECOM_CPHONECAPABILITIES_H__

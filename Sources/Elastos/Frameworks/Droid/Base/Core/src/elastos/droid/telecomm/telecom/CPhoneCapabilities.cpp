@@ -1,6 +1,6 @@
 
 #include "elastos/droid/ext/frameworkext.h"
-#include "elastos/droid/telecomm/telecom/PhoneCapabilities.h"
+#include "elastos/droid/telecomm/telecom/CPhoneCapabilities.h"
 #include <elastos/core/StringBuilder.h>
 
 using Elastos::Core::StringBuilder;
@@ -11,11 +11,13 @@ namespace Telecomm {
 namespace Telecom {
 
 //===============================================================
-// PhoneCapabilities::
+// CPhoneCapabilities::
 //===============================================================
-CAR_INTERFACE_IMPL(PhoneCapabilities, Singleton, IPhoneCapabilities)
+CAR_SINGLETON_IMPL(CPhoneCapabilities)
 
-ECode PhoneCapabilities::ToString(
+CAR_INTERFACE_IMPL(CPhoneCapabilities, Singleton, IPhoneCapabilities)
+
+ECode CPhoneCapabilities::ToString(
     /* [in] */ Int32 capabilities,
     /* [out] */ String* result)
 {

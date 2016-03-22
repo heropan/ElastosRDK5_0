@@ -1,6 +1,4 @@
 
-#include "Elastos.Droid.Net.h"
-#include "Elastos.Droid.Os.h"
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/telecomm/telecom/ConnectionRequest.h"
 #include "elastos/droid/telecomm/telecom/Connection.h"
