@@ -241,10 +241,9 @@ ECode CResourcesManager::GetTopLevelResources(
         }
     }
 
-    //if (r != NULL) {
-    //    Logger::W(TAG, "Throwing away out-of-date resources!!!! "
-    //            + r + " " + resDir);
-    //}
+    if (r != NULL) {
+        Logger::W(TAG, "Throwing away out-of-date resources!!!! %s %s", TO_CSTR(r), resDir.string());
+    }
 
     AutoPtr<IAssetManager> assets;
     CAssetManager::New((IAssetManager**)&assets);
@@ -255,6 +254,7 @@ ECode CResourcesManager::GetTopLevelResources(
         Int32 cookie;
         assets->AddAssetPath(resDir, &cookie);
         if (cookie == 0) {
+            Logger::I(TAG, " return 1");
             return NOERROR;
         }
     }
@@ -264,6 +264,7 @@ ECode CResourcesManager::GetTopLevelResources(
         for (Int32 i = 0; i < splitResDirs->GetLength(); ++i) {
             assets->AddAssetPath((*splitResDirs)[i], &cookie);
             if (cookie == 0) {
+            Logger::I(TAG, " return 2");
                 return NOERROR;
             }
         }
@@ -329,13 +330,11 @@ ECode CResourcesManager::GetTopLevelResources(
     synchronized(this) {
         AutoPtr<IInterface> obj, resObj;
         mActiveResources->Get(TO_IINTERFACE(key), (IInterface**)&obj);
-
-        AutoPtr<IResources> existing;
         if (obj != NULL) {
             IWeakReference* wr = IWeakReference::Probe(obj);
             wr->Resolve(EIID_IInterface, (IInterface**)&resObj);
             if (resObj != NULL) {
-                existing = IResources::Probe(resObj);
+                AutoPtr<IResources> existing = IResources::Probe(resObj);
                 AutoPtr<IAssetManager> assets;
                 existing->GetAssets((IAssetManager**)&assets);
                 Boolean bval;
@@ -349,17 +348,18 @@ ECode CResourcesManager::GetTopLevelResources(
                     return NOERROR;
                 }
             }
-
-            // XXX need to remove entries when weak references go away
-            IWeakReferenceSource* wrs = IWeakReferenceSource::Probe(r);
-            wr = NULL;
-            wrs->GetWeakReference((IWeakReference**)&wr);
-            mActiveResources->Put(TO_IINTERFACE(key), TO_IINTERFACE(wr));
-            *result = r;
-            REFCOUNT_ADD(*result)
         }
+
+        // XXX need to remove entries when weak references go away
+        IWeakReferenceSource* wrs = IWeakReferenceSource::Probe(r);
+        AutoPtr<IWeakReference> wr;
+        wrs->GetWeakReference((IWeakReference**)&wr);
+        mActiveResources->Put(TO_IINTERFACE(key), wr.Get());
+        *result = r;
+        REFCOUNT_ADD(*result)
     }
 
+    Logger::I(TAG, " return 3");
     return NOERROR;
 }
 

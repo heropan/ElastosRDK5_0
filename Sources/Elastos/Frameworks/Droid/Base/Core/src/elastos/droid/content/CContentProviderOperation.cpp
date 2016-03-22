@@ -126,8 +126,7 @@ ECode CContentProviderOperation::ReadFromParcel(
 
     Int32 value = 0;
 
-    assert(0 && "TODO");
-    // Uri::ReadFromParcel(source, (IUri**)&mUri);
+    Uri::ReadFromParcel(source, (IUri**)&mUri);
 
     if (source->ReadInt32(&value), value != 0) {
         AutoPtr<IContentValues> values;
