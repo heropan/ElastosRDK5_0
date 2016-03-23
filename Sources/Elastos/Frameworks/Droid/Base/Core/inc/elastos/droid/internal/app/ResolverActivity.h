@@ -156,7 +156,7 @@ public:
     };
 
 private:
-    ECO_LOCAL class _PackageMonitor
+    class _PackageMonitor
         : public PackageMonitor
     {
     public:
@@ -171,7 +171,7 @@ private:
         ResolverActivity* mHost;
     };
 
-    ECO_LOCAL class ActionTitle : public Object
+    class ActionTitle : public Object
     {
     public:
         ActionTitle(
@@ -203,7 +203,7 @@ private:
         static const AutoPtr<ArrayOf<ActionTitle*> > sArray;
     };
 
-    ECO_LOCAL class ViewOnClickListener
+    class ViewOnClickListener
         : public Object
         , public IViewOnClickListener
     {
@@ -221,7 +221,7 @@ private:
         ResolverActivity* mHost;
     };
 
-    ECO_LOCAL class DisplayResolveInfo : public Object
+    class DisplayResolveInfo : public Object
     {
     public:
         DisplayResolveInfo(
@@ -243,7 +243,7 @@ private:
         AutoPtr<IIntent> mOrigIntent;
     };
 
-    ECO_LOCAL class ResolveListAdapter
+    class ResolveListAdapter
         : public BaseAdapter
     {
     public:

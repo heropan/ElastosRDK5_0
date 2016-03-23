@@ -103,7 +103,7 @@ String GetCanonicalPathOrNull(
     return cp;
 }
 
-AutoPtr<IUserEnvironment> InitForCurrentUser()
+static AutoPtr<IUserEnvironment> InitCurrentUser()
 {
     Int32 userId = UserHandle::GetMyUserId();
     AutoPtr<CUserEnvironment> ue;
@@ -126,7 +126,7 @@ const String Environment::CANONCIAL_EMULATED_STORAGE_TARGET =
 
 const String Environment::SYSTEM_PROPERTY_EFS_ENABLED("persist.security.efs.enabled");
 
-AutoPtr<IUserEnvironment> Environment::sCurrentUser = InitForCurrentUser();
+AutoPtr<IUserEnvironment> Environment::sCurrentUser = InitCurrentUser();
 Boolean Environment::sUserRequired;
 
 //===========================================================================================
@@ -404,6 +404,12 @@ ECode Environment::UserEnvironment::BuildExternalStorageAppCacheDirs(
 //===========================================================================================
 // Environment::UserEnvironment
 //===========================================================================================
+
+ECode Environment::InitForCurrentUser()
+{
+    sCurrentUser = InitCurrentUser();
+    return NOERROR;
+}
 
 AutoPtr<IFile> Environment::GetRootDirectory()
 {

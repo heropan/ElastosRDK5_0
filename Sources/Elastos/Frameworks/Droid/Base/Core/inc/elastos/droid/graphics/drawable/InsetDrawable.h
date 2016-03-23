@@ -21,7 +21,7 @@ public:
     {
     public:
         InsetState(
-            /* [in] */ InsetState* orig,
+            /* [in] */ IDrawableConstantState* orig,
             /* [in] */ InsetDrawable* owner,
             /* [in] */ IResources* res);
 
@@ -187,7 +187,6 @@ public:
     virtual CARAPI GetDrawable(
         /* [out] */ IDrawable** drawable);
 
-protected:
     CARAPI constructor();
 
     CARAPI constructor(
@@ -202,7 +201,7 @@ protected:
         /* [in] */ Int32 insetBottom);
 
     CARAPI constructor(
-        /* [in] */ InsetState* state,
+        /* [in] */ IDrawableConstantState* state,
         /* [in] */ IResources* res);
 
     //@Override

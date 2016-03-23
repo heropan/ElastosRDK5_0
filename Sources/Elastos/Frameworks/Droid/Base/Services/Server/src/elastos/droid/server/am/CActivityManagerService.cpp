@@ -487,9 +487,9 @@ const String CActivityManagerService::TAG_MU("CActivityManagerServiceMU");
 const Boolean CActivityManagerService::DEBUG = TRUE;
 const Boolean CActivityManagerService::localLOGV = DEBUG;
 const Boolean CActivityManagerService::DEBUG_BACKUP = localLOGV || FALSE;
-const Boolean CActivityManagerService::DEBUG_BROADCAST = localLOGV || FALSE;
-const Boolean CActivityManagerService::DEBUG_BROADCAST_LIGHT = DEBUG_BROADCAST || FALSE;
-const Boolean CActivityManagerService::DEBUG_BACKGROUND_BROADCAST = DEBUG_BROADCAST || FALSE;
+const Boolean CActivityManagerService::DEBUG_BROADCAST = FALSE;//localLOGV || FALSE;
+const Boolean CActivityManagerService::DEBUG_BROADCAST_LIGHT = FALSE;//DEBUG_BROADCAST || FALSE;
+const Boolean CActivityManagerService::DEBUG_BACKGROUND_BROADCAST = FALSE;//DEBUG_BROADCAST || FALSE;
 const Boolean CActivityManagerService::DEBUG_CLEANUP = localLOGV || FALSE;
 const Boolean CActivityManagerService::DEBUG_CONFIGURATION = localLOGV || FALSE;
 const Boolean CActivityManagerService::DEBUG_FOCUS = FALSE;
@@ -4062,7 +4062,7 @@ ECode CActivityManagerService::StartProcessLocked(
     // the PID of the new process, or else throw a RuntimeException.
     Boolean isActivityProcess = (entryPoint == NULL);
     if (isActivityProcess) {
-        entryPoint = "android.app.ActivityThread";
+        entryPoint = "LElastos/Droid/App/CActivityThread;";//"android.app.ActivityThread";
     }
     CheckTime(startTime, String("startProcess: asking zygote to start proc"));
 
@@ -4072,7 +4072,7 @@ ECode CActivityManagerService::StartProcessLocked(
     app->mInfo->GetDataDir(&dataDir);
     app->mInfo->GetTargetSdkVersion(&targetSdkVersion);
     app->mInfo->GetSeinfo(&seinfo);
-    processClass = sourcePath.EndWith(".apk") ? entryPoint : String("CActivityThreadHelper");
+    processClass = sourcePath.EndWith(".apk") ? entryPoint : String("LElastos/Droid/App/CActivityThreadHelper;");
     Slogger::I(TAG, " >>> StartProcessLocked %s, ProcessName:%s, processClass: %s, dataDir: %s, seinfo: %s",
         sourcePath.string(), app->mProcessName.string(), processClass.string(),
         dataDir.string(), seinfo.string());
@@ -4085,7 +4085,6 @@ ECode CActivityManagerService::StartProcessLocked(
     if (FAILED(ec)) {
         Slogger::E(TAG, "faield to StartProcessLocked %s, ProcessName:%s",
             sourcePath.string(), app->mProcessName.string());
-        assert(0 && "TODO");
     }
     CheckTime(startTime, String("startProcess: returned from zygote!"));
 
@@ -4103,9 +4102,9 @@ ECode CActivityManagerService::StartProcessLocked(
 //            app.processName, hostingType,
 //            hostingNameStr != NULL ? hostingNameStr : "");
 
-//    if (app.persistent) {
-//        Watchdog.getInstance().processStarted(app.processName, startResult.pid);
-//    }
+   if (app->mPersistent) {
+       Watchdog::GetInstance()->ProcessStarted(app->mProcessName, pid);
+   }
 
     CheckTime(startTime, String("startProcess: building log message"));
     StringBuilder* buf = mStringBuilder;
@@ -7904,9 +7903,11 @@ Boolean CActivityManagerService::AttachApplicationLocked(
         profileFd = pfd;
     }
     AutoPtr<IProfilerInfo> profilerInfo;
-    if (profileFile != NULL)
+    if (profileFile != NULL) {
         CProfilerInfo::New(profileFile, profileFd, samplingInterval,
             profileAutoStop, (IProfilerInfo**)&profilerInfo);
+    }
+    ECode ec = NOERROR;
     AutoPtr<IHashMap> services = GetCommonServicesLocked();
     AutoPtr<IConfiguration> configuration;
     CConfiguration::New(mConfiguration, (IConfiguration**)&configuration);
@@ -7938,26 +7939,24 @@ Boolean CActivityManagerService::AttachApplicationLocked(
     }
     mProcessesOnHold.Remove(app);
 
-    Boolean badApp = FALSE;
-    Boolean didSomething = FALSE;
+    Boolean badApp = FALSE, didSomething = FALSE, bval = FALSE;
 
     // See if the top visible activity is waiting to run in this process...
     if (normalMode) {
-        // try {
-            if (mStackSupervisor->AttachApplicationLocked(app)) {
-                didSomething = TRUE;
-            }
-        // } catch (Exception e) {
-        //     Slog.wtf(TAG, "Exception thrown launching activities in " + app, e);
-        //     badApp = TRUE;
-        // }
+        ec = mStackSupervisor->AttachApplicationLocked(app, &bval);
+        if (bval) {
+            didSomething = TRUE;
+        }
+        if (FAILED(ec)) {
+            Slogger::W/*wtf*/(TAG, "Exception thrown starting activities in %s", TO_CSTR(app));
+            badApp = TRUE;
+        }
     }
 
     // Find any services that should be running in this process...
     if (!badApp) {
-        Boolean result = FALSE;
-        ECode ec = mServices->AttachApplicationLocked(app, processName, &result);
-        didSomething |= result;
+        ec = mServices->AttachApplicationLocked(app, processName, &bval);
+        didSomething |= bval;
         if (FAILED(ec)) {
             Slogger::W/*wtf*/(TAG, "Exception thrown starting services in %s", TO_CSTR(app));
             badApp = TRUE;
@@ -11787,6 +11786,10 @@ void CActivityManagerService::CheckTime(
         Slogger::W(TAG, "Slow operation: %lldms so far, now at %s",
             (now-startTime), where.string());
     }
+
+    // if (DEBUG) {
+    //     Slogger::I(TAG, where.string());
+    // }
 }
 
 ECode CActivityManagerService::GetContentProviderImpl(
@@ -12533,37 +12536,38 @@ ECode CActivityManagerService::AppNotRespondingViaProvider(
 
 ECode CActivityManagerService::InstallSystemProviders()
 {
-    AutoPtr<IList> providers;
-    {
-        AutoLock lock(this);
-        AutoPtr<ProcessRecord> app = mProcessNames->Get(String("system"), IProcess::SYSTEM_UID);
-        providers = GenerateApplicationProvidersLocked(app);
-        if (providers != NULL) {
-            Int32 size;
-            providers->GetSize(&size);
-            for (Int32 i = size - 1; i >= 0; i--) {
-                AutoPtr<IInterface> item;
-                providers->Get(i, (IInterface**)&item);
-                AutoPtr<IProviderInfo> pi = IProviderInfo::Probe(item);
-                AutoPtr<IApplicationInfo> appInfo;
-                IComponentInfo::Probe(pi)->GetApplicationInfo((IApplicationInfo**)&appInfo);
-                Int32 flags;
-                appInfo->GetFlags(&flags);
-                String name;
-                IPackageItemInfo::Probe(pi)->GetName(&name);
-                if ((flags&IApplicationInfo::FLAG_SYSTEM) == 0) {
-                    Slogger::W(TAG, "Not installing system proc provider %s: not system .apk", name.string());
-                    providers->Remove(item);
-                }
-            }
-        }
-    }
+    Slogger::W(TAG, " >> TODO: InstallSystemProviders");
+    // AutoPtr<IList> providers;
+    // {
+    //     AutoLock lock(this);
+    //     AutoPtr<ProcessRecord> app = mProcessNames->Get(String("system"), IProcess::SYSTEM_UID);
+    //     providers = GenerateApplicationProvidersLocked(app);
+    //     if (providers != NULL) {
+    //         Int32 size, flags;
+    //         String name;
+    //         providers->GetSize(&size);
+    //         for (Int32 i = size - 1; i >= 0; i--) {
+    //             AutoPtr<IInterface> item;
+    //             providers->Get(i, (IInterface**)&item);
+    //             // AutoPtr<IProviderInfo> pi = IProviderInfo::Probe(item);
+    //             AutoPtr<IApplicationInfo> appInfo;
+    //             IComponentInfo::Probe(item)->GetApplicationInfo((IApplicationInfo**)&appInfo);
+    //             appInfo->GetFlags(&flags);
+    //             IPackageItemInfo::Probe(item)->GetName(&name);
+    //             if ((flags&IApplicationInfo::FLAG_SYSTEM) == 0) {
+    //                 Slogger::W(TAG, "Not installing system proc provider %s: not system .apk", name.string());
+    //                 providers->Remove(item);
+    //             }
+    //         }
+    //     }
+    // }
 
-    if (providers != NULL) {
-        mSystemThread->InstallSystemProviders(providers);
-    }
+    // if (providers != NULL) {
+    //     mSystemThread->InstallSystemProviders(providers);
+    // }
 
-    mCoreSettingsObserver = new CoreSettingsObserver(this);
+    mCoreSettingsObserver = new CoreSettingsObserver();
+    mCoreSettingsObserver->constructor(this);
 
     // TODO
     // mUsageStatsService->MonitorPackages();
