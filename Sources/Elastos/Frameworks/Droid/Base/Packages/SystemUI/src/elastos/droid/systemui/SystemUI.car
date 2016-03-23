@@ -37,16 +37,17 @@ module
     merge("../../../../car/elastos/droid/usb/StorageNotification.car");
     merge("../../../../car/elastos/droid/usb/UsbStorageActivity.car");
 
-    //media
-    merge("../../../../car/elastos/droid/media/MediaProjectionPermissionActivity.car");
-    merge("../../../../car/elastos/droid/media/NotificationPlayer.car");
-    merge("../../../../car/elastos/droid/media/RingtonePlayer.car");
+    //volume
+    merge("../../../../car/elastos/droid/volume/InteractionCallback.car");
+    merge("../../../../car/elastos/droid/volume/SegmentedButtons.car");
+    merge("../../../../car/elastos/droid/volume/VolumeComponent.car");
+    merge("../../../../car/elastos/droid/volume/VolumePanel.car");
+    merge("../../../../car/elastos/droid/volume/ZenModePanel.car");
 
     //net
     merge("../../../../car/elastos/droid/net/NetworkOverLimitActivity.car");
 
     //power
-    merge("../../../../car/elastos/droid/power/PowerNotificationWarnings.car");
     merge("../../../../car/elastos/droid/power/PowerUI.car");
 
     //qs
@@ -260,6 +261,8 @@ module
     using interface Elastos.Droid.Content.IDialogInterfaceOnClickListener;
     using interface Elastos.Droid.Content.IIntent;
     using interface Elastos.Droid.Content.Pm.IResolveInfo;
+    using interface Elastos.Droid.Media.IIRemoteVolumeController;
+    using interface Elastos.Droid.Media.IIVolumeController;
     using interface Elastos.Droid.Utility.IAttributeSet;
     using interface Elastos.Droid.Graphics.Drawable.IDrawable;
     using interface Elastos.Droid.Graphics.Drawable.IDrawableCallback;
@@ -273,6 +276,7 @@ module
     using interface Elastos.Droid.Internal.StatusBar.IIStatusBar;
     using interface Elastos.Droid.Internal.StatusBar.IStatusBarIconList;
     using interface Elastos.Droid.Os.IBinder;
+    using interface Elastos.Droid.Os.IHandler;
     using interface Elastos.Droid.Service.Dreams.IDreamService;
     using interface Elastos.Droid.Service.Wallpaper.IWallpaperService;
     using interface Elastos.Droid.View.IView;
@@ -321,6 +325,7 @@ module
     interface Elastos.Droid.SystemUI.StatusBar.Policy.INetworkControllerImplSignalCluster;
     interface Elastos.Droid.SystemUI.StatusBar.Policy.IScrollAdapter;
     interface Elastos.Droid.SystemUI.StatusBar.Policy.ISecurityControllerCallback;
+    interface Elastos.Droid.SystemUI.StatusBar.Policy.IZenModeController;
     interface Elastos.Droid.SystemUI.StatusBar.Phone.IIconMerger;
     interface Elastos.Droid.SystemUI.StatusBar.Phone.ISystemUIDialog;
 
@@ -757,23 +762,97 @@ module
 
     } // namespace Usb
 
-//     //===========================================================================
-//     //                              Media
-//     //===========================================================================
-//     namespace Media {
-//         class CNotificationPlayer {
-//             constructor(
-//                 [in] String tag);
+    //===========================================================================
+    //                              volume
+    //===========================================================================
+    namespace Volume {
 
-//             interface INotificationPlayer;
-//         }
+        class CSegmentedButtons {
+            constructor(
+                [in] IContext* context,
+                [in] IAttributeSet* attrs);
 
-//         class CRingtonePlayer {
-//             constructor();
+            interface IView;
+            interface IViewGroup;
+            interface IViewParent;
+            interface IViewManager;
+            interface IKeyEventCallback;
+            interface IAccessibilityEventSource;
+            interface IDrawableCallback;
+            interface ILinearLayout;
+            interface ISegmentedButtons;
+        }
 
-//             interface IRingtonePlayer;
-//         }
-//     }
+        class CVolumeController {
+            constructor(
+                [in] Handle32 host);
+
+            interface IIVolumeController;
+            interface IBinder;
+            interface IVolumeComponent;
+        }
+
+        class CRemoteVolumeController {
+            constructor(
+                [in] Handle32 host);
+
+            interface IIRemoteVolumeController;
+            interface IBinder;
+        }
+
+        class CZenModePanel {
+            constructor(
+                [in] IContext* context,
+                [in] IAttributeSet* attrs);
+
+            interface IView;
+            interface IViewGroup;
+            interface IViewParent;
+            interface IViewManager;
+            interface IKeyEventCallback;
+            interface IAccessibilityEventSource;
+            interface IDrawableCallback;
+            interface ILinearLayout;
+            interface IZenModePanel;
+        }
+
+        [deprecated]
+        class CVolumePanel {
+            constructor(
+                [in] IContext* context,
+                [in] IZenModeController* zenController);
+
+            interface IHandler;
+            interface IVolumePanel;
+        }
+    }
+
+     //===========================================================================
+     //                              Media
+     //===========================================================================
+     namespace Media {
+
+        class CMediaProjectionPermissionActivity {
+            constructor();
+
+            interface IContext;
+            interface IContextWrapper;
+            interface IContextThemeWrapper;
+            interface ILayoutInflaterFactory;
+            interface ILayoutInflaterFactory2;
+            interface IWindowCallback;
+            interface IKeyEventCallback;
+            interface IViewOnCreateContextMenuListener;
+            interface IComponentCallbacks;
+            interface IComponentCallbacks2;
+            interface IOnWindowDismissedCallback;
+            interface IActivity;
+            interface IAlertActivity;
+            interface IDialogInterfaceOnClickListener;
+            interface ICompoundButtonOnCheckedChangeListener;
+        }
+
+     } // namespace Media
 
     //===========================================================================
     //                              Net

@@ -1,87 +1,97 @@
-#ifndef __ELASTOS_DROID_SYSTEMUI_MEDIA_CNOTIFICATIONPLAYER_H__
-#define __ELASTOS_DROID_SYSTEMUI_MEDIA_CNOTIFICATIONPLAYER_H__
+#ifndef __ELASTOS_DROID_SYSTEMUI_MEDIA_NOTIFICATIONPLAYER_H__
+#define __ELASTOS_DROID_SYSTEMUI_MEDIA_NOTIFICATIONPLAYER_H__
 
-#include "_Elastos_Droid_SystemUI_Media_CNotificationPlayer.h"
-#include "elastos/droid/ext/frameworkext.h"
-#include <elastos/utility/etl/List.h>
+#include "_SystemUI.h"
+#include "Elastos.Droid.Content.h"
+#include "Elastos.Droid.Media.h"
+#include "Elastos.Droid.Net.h"
+#include "Elastos.Droid.Os.h"
+#include "Elastos.CoreLibrary.Utility.h"
+#include <elastos/core/Thread.h>
 
-using Elastos::Utility::Etl::List;
-using Elastos::Droid::Os::IBinder;
+using Elastos::Droid::Content::IContext;
+using Elastos::Droid::Media::IAudioAttributes;
+using Elastos::Droid::Media::IAudioManager;
+using Elastos::Droid::Media::IMediaPlayer;
+using Elastos::Droid::Media::IMediaPlayerOnCompletionListener;
+using Elastos::Droid::Net::IUri;
 using Elastos::Droid::Os::ILooper;
 using Elastos::Droid::Os::IPowerManagerWakeLock;
-using Elastos::Droid::Net::IUri;
-using Elastos::Droid::Media::IMediaPlayer;
-using Elastos::Droid::Media::IAudioManager;
-using Elastos::Droid::Content::IContext;
+using Elastos::Core::Thread;
+using Elastos::Utility::ILinkedList;
 
 namespace Elastos {
 namespace Droid {
 namespace SystemUI{
 namespace Media{
 
-CarClass(CNotificationPlayer)
+/**
+ * @hide
+ * This class is provides the same interface and functionality as android.media.AsyncPlayer
+ * with the following differences:
+ * - whenever audio is played, audio focus is requested,
+ * - whenever audio playback is stopped or the playback completed, audio focus is abandoned.
+ */
+class NotificationPlayer
+    : public Object
+    , public IMediaPlayerOnCompletionListener
 {
 private:
     class Command
-        : public ElRefBase
+        : public Object
     {
     public:
-        Command()
-            : mCode(0)
-            , mLooping(FALSE)
-            , mStream(0)
-            , mRequestTime(0)
-        {}
+        Command();
 
-        CARAPI_(String) ToString();
+        CARAPI ToString(
+            /* [out] */ String* str);
 
     public:
         Int32 mCode;
         AutoPtr<IContext> mContext;
         AutoPtr<IUri> mUri;
         Boolean mLooping;
-        Int32 mStream;
+        AutoPtr<IAudioAttributes> mAttributes;
         Int64 mRequestTime;
     };
 
     class CreationAndCompletionThread
-        : public ThreadBase
+        : public Thread
     {
     public:
         CreationAndCompletionThread(
             /* [in] */ Command* cmd,
-            /* [in] */ CNotificationPlayer* host);
+            /* [in] */ NotificationPlayer* host);
 
-        virtual CARAPI Run();
+        CARAPI Run();
 
     private:
         AutoPtr<Command> mCmd;
-        CNotificationPlayer* mHost;
-        Object mLock;
+        NotificationPlayer* mHost;
     };
 
     class CmdThread
-        : public ThreadBase
+        : public Thread
     {
     public:
         CmdThread(
-            /* [in] */ CNotificationPlayer* host);
+            /* [in] */ NotificationPlayer* host);
 
-        virtual CARAPI Run();
+        CARAPI Run();
 
     private:
-        CNotificationPlayer* mHost;
+        NotificationPlayer* mHost;
     };
 
 public:
-    CNotificationPlayer();
+    CAR_INTERFACE_DECL()
 
     /**
      * Construct a NotificationPlayer object.
      *
      * @param tag a string to use for debugging
      */
-    CARAPI constructor(
+    NotificationPlayer(
         /* [in] */ const String& tag);
 
     CARAPI OnCompletion(
@@ -99,12 +109,33 @@ public:
      *          (see {@link MediaPlayer#setLooping(boolean)})
      * @param stream the AudioStream to use.
      *          (see {@link MediaPlayer#setAudioStreamType(int)})
+     * @deprecated use {@link #play(Context, Uri, boolean, AudioAttributes)} instead.
      */
+    // @Deprecated
     CARAPI Play(
         /* [in] */ IContext* context,
         /* [in] */ IUri* uri,
         /* [in] */ Boolean looping,
         /* [in] */ Int32 stream);
+
+    /**
+     * Start playing the sound.  It will actually start playing at some
+     * point in the future.  There are no guarantees about latency here.
+     * Calling this before another audio file is done playing will stop
+     * that one and start the new one.
+     *
+     * @param context Your application's context.
+     * @param uri The URI to play.  (see {@link MediaPlayer#setDataSource(Context, Uri)})
+     * @param looping Whether the audio should loop forever.
+     *          (see {@link MediaPlayer#setLooping(boolean)})
+     * @param attributes the AudioAttributes to use.
+     *          (see {@link MediaPlayer#setAudioAttributes(AudioAttributes)})
+     */
+    CARAPI Play(
+        /* [in] */ IContext* context,
+        /* [in] */ IUri* uri,
+        /* [in] */ Boolean looping,
+        /* [in] */ IAudioAttributes* attributes);
 
     /**
      * Stop a previously played sound.  It can't be played again or unpaused
@@ -140,26 +171,25 @@ private:
         /* [in] */ Command* cmd);
 
 private:
-    static const Int32 PLAY; // = 1;
-    static const Int32 STOP; // = 2;
-    static const Boolean mDebug; // = false;
-    List< AutoPtr<Command> > mCmdQueue; // LinkedList<Command> mCmdQueue; // = new LinkedList();
+    static const Int32 PLAY;
+    static const Int32 STOP;
+    static const Boolean mDebug;
+    AutoPtr<ILinkedList> mCmdQueue;
 
     AutoPtr<ILooper> mLooper;
 
     String mTag;
     AutoPtr<CmdThread> mThread;
     AutoPtr<CreationAndCompletionThread> mCompletionThread;
-    Object mCompletionHandlingLock; // = new Object();
+    AutoPtr<Object> mCompletionHandlingLock;
     AutoPtr<IMediaPlayer> mPlayer;
     AutoPtr<IPowerManagerWakeLock> mWakeLock;
-    AutoPtr<IAudioManager> mAudioManager;
+    AutoPtr<Object> mQueueAudioFocusLock;
+    AutoPtr<IAudioManager> mAudioManagerWithAudioFocus; // synchronized on mQueueAudioFocusLock
 
     // The current state according to the caller.  Reality lags behind
     // because of the asynchronous nature of this class.
-    Int32 mState; // = STOP;
-    Object mCmdQueueLock;
-    Object mCompletionThreadLock;
+    Int32 mState;
 };
 
 } // namespace Media
@@ -167,4 +197,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif // __ELASTOS_DROID_SYSTEMUI_MEDIA_CNOTIFICATIONPLAYER_H__
+#endif // __ELASTOS_DROID_SYSTEMUI_MEDIA_NOTIFICATIONPLAYER_H__
