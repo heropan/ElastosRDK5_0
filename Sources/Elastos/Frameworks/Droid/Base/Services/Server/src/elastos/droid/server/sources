@@ -109,6 +109,7 @@ ELASTOS_LIBS += content/content.lib
 #ELASTOS_LIBS += devicepolicy/devicepolicy.lib
 ELASTOS_LIBS += display/display.lib
 ELASTOS_LIBS += dreams/dreams.lib
+ELASTOS_LIBS += firewall/firewall.lib
 ELASTOS_LIBS += hdmi/hdmi.lib
 ELASTOS_LIBS += input/input.lib
 ELASTOS_LIBS += lights/lights.lib
