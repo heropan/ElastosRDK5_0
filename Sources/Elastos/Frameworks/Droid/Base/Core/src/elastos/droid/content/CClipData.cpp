@@ -410,8 +410,7 @@ ECode CClipData::ReadFromParcel(
         source->ReadInt32(&value);
         AutoPtr<IUri> uri;
         if (value != 0) {
-            assert(0 && "TODO");
-            // Uri::ReadFromParcel(source, (IUri**)&uri);
+            Uri::ReadFromParcel(source, (IUri**)&uri);
         }
         AutoPtr<IClipDataItem> item;
         ASSERT_SUCCEEDED(CClipDataItem::New(text, htmlText, intent, uri, (IClipDataItem**)&item));

@@ -3028,12 +3028,9 @@ Boolean CPackageManagerService::FileInstallArgs::DoRename(
                 pkg->mSplitCodePaths);
 
         // Reflect the rename in app info
-        pkg->mApplicationInfo->SetCodePath(pkg->mCodePath);
-        pkg->mApplicationInfo->SetBaseCodePath(pkg->mBaseCodePath);
-        pkg->mApplicationInfo->SetSplitCodePaths(pkg->mSplitCodePaths);
-        pkg->mApplicationInfo->SetResourcePath(pkg->mCodePath);
-        pkg->mApplicationInfo->SetBaseResourcePath(pkg->mBaseCodePath);
-        pkg->mApplicationInfo->SetSplitResourcePaths(pkg->mSplitCodePaths);
+        SetApplicationInfoPaths(pkg,
+            pkg->mCodePath, pkg->mBaseCodePath, pkg->mSplitCodePaths,
+            pkg->mCodePath, pkg->mBaseCodePath, pkg->mSplitCodePaths);
 
         return TRUE;
     }
@@ -3409,12 +3406,9 @@ Boolean CPackageManagerService::AsecInstallArgs::DoRename(
             pkg->mSplitCodePaths);
 
     // Reflect the rename in app info
-    pkg->mApplicationInfo->SetCodePath(pkg->mCodePath);
-    pkg->mApplicationInfo->SetBaseCodePath(pkg->mBaseCodePath);
-    pkg->mApplicationInfo->SetSplitCodePaths(pkg->mSplitCodePaths);
-    pkg->mApplicationInfo->SetResourcePath(pkg->mCodePath);
-    pkg->mApplicationInfo->SetBaseResourcePath(pkg->mBaseCodePath);
-    pkg->mApplicationInfo->SetSplitResourcePaths(pkg->mSplitCodePaths);
+    SetApplicationInfoPaths(pkg,
+        pkg->mCodePath, pkg->mBaseCodePath, pkg->mSplitCodePaths,
+        pkg->mCodePath, pkg->mBaseCodePath, pkg->mSplitCodePaths);
     return TRUE;
 }
 
@@ -8995,12 +8989,9 @@ ECode CPackageManagerService::ScanPackageLI(
     }
 
     // Set application objects path explicitly.
-    pkg->mApplicationInfo->SetCodePath(pkg->mCodePath);
-    pkg->mApplicationInfo->SetBaseCodePath(pkg->mBaseCodePath);
-    pkg->mApplicationInfo->SetSplitCodePaths(pkg->mSplitCodePaths);
-    pkg->mApplicationInfo->SetResourcePath(resourcePath);
-    pkg->mApplicationInfo->SetBaseResourcePath(baseResourcePath);
-    pkg->mApplicationInfo->SetSplitResourcePaths(pkg->mSplitCodePaths);
+    SetApplicationInfoPaths(pkg,
+        pkg->mCodePath, pkg->mBaseCodePath, pkg->mSplitCodePaths,
+        resourcePath, baseResourcePath, pkg->mSplitCodePaths);
 
     // Note that we invoke the following method only if we are about to unpack an application
     AutoPtr<PackageParser::Package> scannedPkg;
@@ -9027,6 +9018,24 @@ ECode CPackageManagerService::ScanPackageLI(
     *_pkg = scannedPkg;
     REFCOUNT_ADD(*_pkg)
     return NOERROR;
+}
+
+void CPackageManagerService::SetApplicationInfoPaths(
+    /* [in] */ PackageParser::Package* pkg,
+    /* [in] */ const String& codePath,
+    /* [in] */ const String& baseCodePath,
+    /* [in] */ ArrayOf<String>* splitCodePaths,
+    /* [in] */ const String& resourcePath,
+    /* [in] */ const String& baseResourcePath,
+    /* [in] */ ArrayOf<String>* splitResourcePaths)
+{
+    pkg->mPath = baseCodePath;
+    pkg->mApplicationInfo->SetCodePath(codePath);
+    pkg->mApplicationInfo->SetBaseCodePath(baseCodePath);
+    pkg->mApplicationInfo->SetSplitCodePaths(splitCodePaths);
+    pkg->mApplicationInfo->SetResourcePath(resourcePath);
+    pkg->mApplicationInfo->SetBaseResourcePath(baseResourcePath);
+    pkg->mApplicationInfo->SetSplitResourcePaths(splitResourcePaths);
 }
 
 String CPackageManagerService::FixProcessName(
@@ -10967,12 +10976,12 @@ Slogger::I(TAG, "  codePath:%s, resPath:%s", codePath.string(), resPath.string()
     }
 
     // for epk
-    // if (pkg->mIsEpk) {
-    //     if (MoveEcoFilesLI(pkg) != IPackageManager::INSTALL_SUCCEEDED) {
-    //         sLastScanError = IPackageManager::INSTALL_FAILED_INVALID_APK;
-    //         return E_PACKAGE_MANAGER_EXCEPTION;
-    //     }
-    // }
+    if (pkg->mIsEpk) {
+        if (MoveEcoFilesLI(pkg) != IPackageManager::INSTALL_SUCCEEDED) {
+            sLastScanError = IPackageManager::INSTALL_FAILED_INVALID_APK;
+            return E_PACKAGE_MANAGER_EXCEPTION;
+        }
+    }
 
     if (mFactoryTest &&
             Find(pkg->mRequestedPermissions.Begin(), pkg->mRequestedPermissions.End(),
@@ -11065,15 +11074,6 @@ Slogger::I(TAG, "  codePath:%s, resPath:%s", codePath.string(), resPath.string()
         }
     }
 
-    // for epk
-    // if (pkg->mIsEpk) {
-    //     if (MoveEcoFilesLI(pkg) != IPackageManager::INSTALL_SUCCEEDED) {
-    //         sLastScanError = IPackageManager::INSTALL_FAILED_INVALID_APK;
-    //         *outPkg = NULL;
-    //         return NOERROR;
-    //     }
-    // }
-
     // Request the ActivityManager to kill the process(only for existing packages)
     // so that we do not end up in a confused state while the user is still using the older
     // version of the application while the new one gets installed.
@@ -11084,6 +11084,7 @@ Slogger::I(TAG, "  codePath:%s, resPath:%s", codePath.string(), resPath.string()
         pkg->mApplicationInfo->GetUid(&pkgAppUid);
         KillApplication(pkgAppPkgName, pkgAppUid, String("update pkg"));
     }
+
     // writer
     synchronized (mPackagesLock) {
         // We don't expect installation to fail beyond this point
@@ -14151,8 +14152,12 @@ Int32 CPackageManagerService::MoveEcoFilesLI(
     Int32 retCode;
     nlHelper->CopyEcoLI(newPackage->mPath, newPackage->mPackageName + ".eco", String("/data/elastos"), &retCode);
     if (retCode != 1) {
-        Slogger::E(TAG, "eco file doesn't exist, skipping move: %s", newPackage->mPath.string());
+        Slogger::E(TAG, "MoveEcoFilesLI: eco file doesn't exist, skipping move: %s", newPackage->mPath.string());
         return IPackageManager::INSTALL_FAILED_INVALID_APK;
+    }
+    else {
+        Slogger::I(TAG, "MoveEcoFilesLI: from %s to /data/elastos/%s.eco",
+            newPackage->mPath.string(), newPackage->mPackageName.string());
     }
 
     return IPackageManager::INSTALL_SUCCEEDED;
