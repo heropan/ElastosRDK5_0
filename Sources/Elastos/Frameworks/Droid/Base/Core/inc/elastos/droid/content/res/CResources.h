@@ -1387,7 +1387,7 @@ private:
 
     AutoPtr<ICompatibilityInfo> mCompatibilityInfo;
 
-    AutoPtr<IWeakReference> mToken;//WeakReference<IBinder> mToken;
+    // AutoPtr<IWeakReference> mToken;//WeakReference<IBinder> mToken;
 
     static const String WIDGET_SUFFIX;
 

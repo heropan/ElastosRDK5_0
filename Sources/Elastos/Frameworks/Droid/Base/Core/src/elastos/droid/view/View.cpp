@@ -17706,7 +17706,7 @@ ECode View::constructor(
     /* [in] */ Int32 defStyleAttr,
     /* [in] */ Int32 defStyleRes)
 {
-    constructor(context);
+    FAIL_RETURN(constructor(context))
 
     //printf("View::Init\n");
     AutoPtr<ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(

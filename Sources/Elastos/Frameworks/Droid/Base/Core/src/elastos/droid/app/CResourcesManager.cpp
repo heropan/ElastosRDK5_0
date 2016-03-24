@@ -254,7 +254,6 @@ ECode CResourcesManager::GetTopLevelResources(
         Int32 cookie;
         assets->AddAssetPath(resDir, &cookie);
         if (cookie == 0) {
-            Logger::I(TAG, " return 1");
             return NOERROR;
         }
     }
@@ -264,7 +263,6 @@ ECode CResourcesManager::GetTopLevelResources(
         for (Int32 i = 0; i < splitResDirs->GetLength(); ++i) {
             assets->AddAssetPath((*splitResDirs)[i], &cookie);
             if (cookie == 0) {
-            Logger::I(TAG, " return 2");
                 return NOERROR;
             }
         }
@@ -359,7 +357,6 @@ ECode CResourcesManager::GetTopLevelResources(
         REFCOUNT_ADD(*result)
     }
 
-    Logger::I(TAG, " return 3");
     return NOERROR;
 }
 

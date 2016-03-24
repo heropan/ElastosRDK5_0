@@ -1149,7 +1149,7 @@ ECode ViewGroup::constructor(
     /* [in] */ Int32 defStyleAttr,
     /* [in] */ Int32 defStyleRes)
 {
-    View::constructor(context, attrs, defStyleAttr, defStyleRes);
+    FAIL_RETURN(View::constructor(context, attrs, defStyleAttr, defStyleRes))
     InitViewGroup();
     InitFromAttributes(context, attrs, defStyleAttr, defStyleRes);
     return NOERROR;
