@@ -2,11 +2,13 @@
 #include "Elastos.Droid.Internal.h"
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/telecomm/telecom/VideoCallImpl.h"
+#include "elastos/droid/telecomm/telecom/CVideoCallListenerBinder.h"
 #include "elastos/droid/os/CLooperHelper.h"
 
 using Elastos::Droid::Internal::Os::ISomeArgs;
 using Elastos::Droid::Os::ILooperHelper;
 using Elastos::Droid::Os::CLooperHelper;
+using Elastos::Droid::Os::IBinder;
 using Elastos::Core::IInteger32;
 
 namespace Elastos {
@@ -154,8 +156,8 @@ ECode VideoCallImpl::constructor(
         pro->LinkToDeath(mDeathRecipient, 0);
     }
 
-    // mBinder = new VideoCallListenerBinder();
-    // mVideoProvider->SetVideoCallback(mBinder);
+    CVideoCallListenerBinder::New(mHandler, (IVideoCallListenerBinder**)&mBinder);
+    mVideoProvider->SetVideoCallback(IBinder::Probe(mBinder));
     return NOERROR;
 }
 
