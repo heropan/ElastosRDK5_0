@@ -1664,6 +1664,10 @@ module
         interface IStatusBarManager;
     }
 
+    singleton class CStatusBarManagerHelper {
+        interface IStatusBarManagerHelper;
+    }
+
     class CTaskStackBuilder {
         constructor(
             [in] IContext * ctx);

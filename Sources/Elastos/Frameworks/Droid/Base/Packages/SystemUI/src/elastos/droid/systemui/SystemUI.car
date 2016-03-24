@@ -95,7 +95,6 @@ module
     merge("../../../../car/elastos/droid/statusbar/ExpandableNotificationRow.car");
     merge("../../../../car/elastos/droid/statusbar/ExpandableView.car");
     merge("../../../../car/elastos/droid/statusbar/ExpandableOutlineView.car");
-    merge("../../../../car/elastos/droid/statusbar/FlingAnimationUtils.car");
     merge("../../../../car/elastos/droid/statusbar/GestureRecorder.car");
     merge("../../../../car/elastos/droid/statusbar/KeyguardAffordanceView.car");
     merge("../../../../car/elastos/droid/statusbar/KeyguardIndicationController.car");
@@ -297,6 +296,7 @@ module
     using interface Elastos.Droid.View.IViewGroup;
     using interface Elastos.Droid.View.IViewManager;
     using interface Elastos.Droid.View.IViewParent;
+    using interface Elastos.Droid.View.IViewStubOnInflateListener;
     using interface Elastos.Droid.View.IWindowCallback;
     using interface Elastos.Droid.View.IKeyEventCallback;
     using interface Elastos.Droid.View.IViewOnCreateContextMenuListener;
@@ -307,7 +307,11 @@ module
     using interface Elastos.Droid.Widget.IImageView;
     using interface Elastos.Droid.Widget.ILinearLayout;
     using interface Elastos.Droid.Widget.IRelativeLayout;
+    using interface Elastos.Droid.Widget.IScrollView;
     using interface Elastos.Droid.Widget.ITextView;
+    using interface Elastos.Droid.Widget.ITextSwitcher;
+    using interface Elastos.Droid.Widget.IViewAnimator;
+    using interface Elastos.Droid.Widget.IViewSwitcher;
     using interface Elastos.Core.ICharSequence;
     interface Elastos.Droid.SystemUI.IDemoMode;
     interface Elastos.Droid.SystemUI.IExpandHelperCallback;
@@ -318,11 +322,13 @@ module
     interface Elastos.Droid.SystemUI.StatusBar.IExpandableViewOnHeightChangedListener;
     interface Elastos.Droid.SystemUI.StatusBar.INotificationOverflowIconsView;
     interface Elastos.Droid.SystemUI.StatusBar.IStatusBarPanel;
+    interface Elastos.Droid.SystemUI.StatusBar.Stack.IOnOverscrollTopChangedListener;
     interface Elastos.Droid.SystemUI.StatusBar.Policy.IAccessibilityStateChangedCallback;
     interface Elastos.Droid.SystemUI.StatusBar.Policy.IBatteryStateChangeCallback;
     interface Elastos.Droid.SystemUI.StatusBar.Policy.IClock;
     interface Elastos.Droid.SystemUI.StatusBar.Policy.IKeyguardUserSwitcher;
     interface Elastos.Droid.SystemUI.StatusBar.Policy.INetworkControllerImplSignalCluster;
+    interface Elastos.Droid.SystemUI.StatusBar.Policy.INextAlarmChangeCallback;
     interface Elastos.Droid.SystemUI.StatusBar.Policy.IScrollAdapter;
     interface Elastos.Droid.SystemUI.StatusBar.Policy.ISecurityControllerCallback;
     interface Elastos.Droid.SystemUI.StatusBar.Policy.IZenModeController;
@@ -1935,13 +1941,6 @@ module
             interface IOnWindowDismissedCallback;
         }
 
-//     class CFastColorDrawable {
-//         constructor(
-//             [in] Int32 color);
-
-//         interface IFastColorDrawable;
-//     }
-
         [local]
         class CIconMerger {
             constructor(
@@ -1950,6 +1949,24 @@ module
 
             interface IIconMerger;
             interface ILinearLayout;
+            interface IViewGroup;
+            interface IView;
+            interface IViewParent;
+            interface IViewManager;
+            interface IDrawableCallback;
+            interface IKeyEventCallback;
+            interface IAccessibilityEventSource;
+        }
+
+        [local]
+        class CObservableScrollView {
+            constructor(
+                [in] IContext* ctx,
+                [in] IAttributeSet* attrs);
+
+            interface IObservableScrollView;
+            interface IScrollView;
+            interface IFrameLayout;
             interface IViewGroup;
             interface IView;
             interface IViewParent;
@@ -2069,62 +2086,165 @@ module
             interface IAccessibilityEventSource;
         }
 
-// //     [local]
-// //    class CTickerView {
-// //        constructor(
-// //            [in] IContext* ctx,
-// //            [in] IAttributeSet* attrs);
-// //
-// //        interface INavigationBarView;
-// //        interface IViewParent;
-// //        interface IViewManager;
-// //        interface IDrawableCallback;
-// //        interface IKeyEventCallback;
-// //        interface IAccessibilityEventSource;
-// //    }
+        [local]
+        class CNotificationsQuickSettingsContainer {
+            constructor(
+                [in] IContext* ctx,
+                [in] IAttributeSet* attrs);
 
-//     [local]
-//     class CPanelBar {
-//         constructor(
-//             [in] IContext* ctx,
-//             [in] IAttributeSet* attrs);
+            interface INotificationsQuickSettingsContainer;
+            interface IViewStubOnInflateListener;
+            interface IFrameLayout;
+            interface IViewGroup;
+            interface IView;
+            interface IViewParent;
+            interface IViewManager;
+            interface IDrawableCallback;
+            interface IKeyEventCallback;
+            interface IAccessibilityEventSource;
+        }
 
-//         interface IPanelBar;
-//         interface IViewParent;
-//         interface IViewManager;
-//         interface IDrawableCallback;
-//         interface IKeyEventCallback;
-//         interface IAccessibilityEventSource;
-//     }
+        [local]
+        class CNotificationPanelView {
+            constructor(
+                [in] IContext* ctx,
+                [in] IAttributeSet* attrs);
 
-//     [local]
-//     class CPanelView {
-//         constructor(
-//             [in] IContext* ctx,
-//             [in] IAttributeSet* attrs);
+            interface INotificationPanelView;
+            interface IExpandableViewOnHeightChangedListener;
+            interface IListener;
+            interface IViewOnClickListener;
+            interface IOnOverscrollTopChangedListener;
+            interface IKeyguardAffordanceHelperCallback;
+            interface IPanelView;
+            interface IFrameLayout;
+            interface IViewGroup;
+            interface IView;
+            interface IViewParent;
+            interface IViewManager;
+            interface IDrawableCallback;
+            interface IKeyEventCallback;
+            interface IAccessibilityEventSource;
+        }
 
-//         interface IPanelView;
-//         interface IViewParent;
-//         interface IViewManager;
-//         interface IDrawableCallback;
-//         interface IKeyEventCallback;
-//         interface IAccessibilityEventSource;
-//     }
+        [local]
+        class CTickerView {
+            constructor(
+                [in] IContext* ctx,
+                [in] IAttributeSet* attrs);
 
-//     [local]
-//     class CPanelHolder {
-//         constructor(
-//             [in] IContext* ctx,
-//             [in] IAttributeSet* attrs);
+            interface ITickerView;
+            interface ITextSwitcher;
+            interface IViewSwitcher;
+            interface IViewAnimator;
+            interface IFrameLayout;
+            interface IViewGroup;
+            interface IView;
+            interface IViewParent;
+            interface IViewManager;
+            interface IDrawableCallback;
+            interface IKeyEventCallback;
+            interface IAccessibilityEventSource;
+        }
 
-//         interface IPanelHolder;
-//         interface IViewParent;
-//         interface IViewManager;
-//         interface IDrawableCallback;
-//         interface IKeyEventCallback;
-//         interface IAccessibilityEventSource;
-//     }
+        [local]
+        class CPanelHolder {
+            constructor(
+                [in] IContext* ctx,
+                [in] IAttributeSet* attrs);
 
+            interface IPanelHolder;
+            interface IFrameLayout;
+            interface IViewGroup;
+            interface IView;
+            interface IViewParent;
+            interface IViewManager;
+            interface IDrawableCallback;
+            interface IKeyEventCallback;
+            interface IAccessibilityEventSource;
+        }
+
+        [local]
+        class CUserAvatarView {
+            constructor(
+                [in] IContext* ctx);
+
+            constructor(
+                [in] IContext* ctx,
+                [in] IAttributeSet* attrs);
+
+            constructor(
+                [in] IContext* ctx,
+                [in] IAttributeSet* attrs,
+                [in] Int32 defStyleAttr);
+
+            constructor(
+                [in] IContext* ctx,
+                [in] IAttributeSet* attrs,
+                [in] Int32 defStyleAttr,
+                [in] Int32 defStyleRes);
+
+            interface IUserAvatarView;
+            interface IView;
+            interface IDrawableCallback;
+            interface IKeyEventCallback;
+            interface IAccessibilityEventSource;
+        }
+
+        [local]
+        class CStatusBarWindowView {
+            constructor(
+                [in] IContext* ctx,
+                [in] IAttributeSet* attrs);
+
+            interface IStatusBarWindowView;
+            interface IFrameLayout;
+            interface IViewGroup;
+            interface IView;
+            interface IViewParent;
+            interface IViewManager;
+            interface IDrawableCallback;
+            interface IKeyEventCallback;
+            interface IAccessibilityEventSource;
+        }
+
+        [local]
+        class CStatusBarHeaderView {
+            constructor(
+                [in] IContext* ctx,
+                [in] IAttributeSet* attrs);
+
+            interface IStatusBarHeaderView;
+            interface IViewOnClickListener;
+            interface IBatteryStateChangeCallback;
+            interface INextAlarmChangeCallback;
+            interface IRelativeLayout;
+            interface IViewGroup;
+            interface IView;
+            interface IViewParent;
+            interface IViewManager;
+            interface IDrawableCallback;
+            interface IKeyEventCallback;
+            interface IAccessibilityEventSource;
+        }
+
+        [local]
+        class CPhoneStatusBarView {
+            constructor(
+                [in] IContext* ctx,
+                [in] IAttributeSet* attrs);
+
+            interface IPhoneStatusBarView;
+            interface IPanelBar;
+            interface IFrameLayout;
+            interface IViewGroup;
+            interface IView;
+            interface IViewParent;
+            interface IViewManager;
+            interface IDrawableCallback;
+            interface IKeyEventCallback;
+            interface IAccessibilityEventSource;
+        }
 
     } // namespace Phone
 

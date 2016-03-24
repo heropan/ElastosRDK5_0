@@ -1,5 +1,6 @@
 
 #include "Elastos.Droid.Os.h"
+#include "elastos/droid/graphics/CRect.h"
 #include "elastos/droid/widget/ScrollView.h"
 // #include "elastos/droid/os/CStrictMode.h";
 #include "elastos/droid/widget/COverScroller.h"
@@ -19,6 +20,7 @@
 #include <elastos/core/StringUtils.h>
 
 using Elastos::Droid::Content::Pm::IApplicationInfo;
+using Elastos::Droid::Graphics::CRect;
 using Elastos::Droid::Os::Build;
 using Elastos::Droid::Os::IStrictMode;
 using Elastos::Droid::R;
@@ -120,7 +122,7 @@ ScrollView::ScrollView()
     , mActivePointerId(INVALID_POINTER)
     , mNestedYOffset(0)
 {
-    ASSERT_SUCCEEDED(CRect::NewByFriend((CRect**)&mTempRect));
+    ASSERT_SUCCEEDED(CRect::New((IRect**)&mTempRect));
 
     mScrollOffset = ArrayOf<Int32>::Alloc(2);
     mScrollConsumed = ArrayOf<Int32>::Alloc(2);
@@ -1182,8 +1184,9 @@ ECode ScrollView::PageScroll(
     GetHeight(&height);
 
     Int32 sy = 0;
+    CRect* temp = (CRect*)mTempRect.Get();
     if (down) {
-        mTempRect->mTop = (GetScrollY(&sy), sy) + height;
+        temp->mTop = (GetScrollY(&sy), sy) + height;
         Int32 count = 0;
         GetChildCount(&count);
         if (count > 0) {
@@ -1191,21 +1194,21 @@ ECode ScrollView::PageScroll(
             GetChildAt(count - 1, (IView**)&view);
             Int32 bottom;
             view->GetBottom(&bottom);
-            if (mTempRect->mTop + height > bottom) {
-                mTempRect->mTop = bottom - height;
+            if (temp->mTop + height > bottom) {
+                temp->mTop = bottom - height;
             }
         }
     }
     else {
-        mTempRect->mTop = (GetScrollY(&sy), sy) - height;
-        if (mTempRect->mTop < 0) {
-            mTempRect->mTop = 0;
+        temp->mTop = (GetScrollY(&sy), sy) - height;
+        if (temp->mTop < 0) {
+            temp->mTop = 0;
         }
     }
-    mTempRect->mBottom = mTempRect->mTop + height;
+    temp->mBottom = temp->mTop + height;
 
     *result = ScrollAndFocus(direction,
-            mTempRect->mTop, mTempRect->mBottom);
+            temp->mTop, temp->mBottom);
     return NOERROR;
 }
 
@@ -1218,8 +1221,9 @@ ECode ScrollView::FullScroll(
     Int32 height = 0;
     GetHeight(&height);
 
-    mTempRect->mTop = 0;
-    mTempRect->mBottom = height;
+    CRect* temp = (CRect*)mTempRect.Get();
+    temp->mTop = 0;
+    temp->mBottom = height;
 
     if (down) {
         Int32 count = 0;
@@ -1227,15 +1231,15 @@ ECode ScrollView::FullScroll(
         if (count > 0) {
             AutoPtr<IView> view;
             GetChildAt(count - 1, (IView**)&view);
-            view->GetBottom(&mTempRect->mBottom);
+            view->GetBottom(&temp->mBottom);
 
-            mTempRect->mBottom += mPaddingBottom;
-            mTempRect->mTop = mTempRect->mBottom - height;
+            temp->mBottom += mPaddingBottom;
+            temp->mTop = temp->mBottom - height;
         }
     }
 
     *result = ScrollAndFocus(direction,
-            mTempRect->mTop, mTempRect->mBottom);
+            temp->mTop, temp->mBottom);
     return NOERROR;
 }
 
@@ -1370,8 +1374,9 @@ Boolean ScrollView::IsWithinDeltaOfScreen(
 
     Int32 sy = 0;
     GetScrollY(&sy);
-    return (mTempRect->mBottom + delta) >= sy
-            && (mTempRect->mTop - delta) <= (sy + height);
+    CRect* temp = (CRect*)mTempRect.Get();
+    return (temp->mBottom + delta) >= sy
+            && (temp->mTop - delta) <= (sy + height);
 }
 
 void ScrollView::DoScrollY(

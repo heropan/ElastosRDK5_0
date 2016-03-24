@@ -10,7 +10,6 @@ module
      * @hide
      */
     interface IStatusBarManager {
-
         const Int32 DISABLE_EXPAND = 0x00010000; //IView::STATUS_BAR_DISABLE_EXPAND;
         const Int32 DISABLE_NOTIFICATION_ICONS = 0x00020000; //IView::STATUS_BAR_DISABLE_NOTIFICATION_ICONS;
         const Int32 DISABLE_NOTIFICATION_ALERTS
@@ -81,6 +80,12 @@ module
         SetIconVisibility(
             [in] String slot,
             [in] Boolean visible);
+    }
+
+    interface IStatusBarManagerHelper {
+        WindowStateToString(
+            [in] Int32 state,
+            [out] String* value);
     }
 
     } // namespace App

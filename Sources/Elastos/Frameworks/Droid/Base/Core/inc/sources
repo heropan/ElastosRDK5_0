@@ -77,6 +77,7 @@ EXPORT_HEADERS += elastos/droid/internal/os/SomeArgs.h
 
 EXPORT_HEADERS += elastos/droid/media/MediaRouterSimpleCallback.h
 EXPORT_HEADERS += elastos/droid/media/VolumeProvider.h
+EXPORT_HEADERS += elastos/droid/media/session/MediaControllerCallback.h
 
 EXPORT_HEADERS += elastos/droid/net/ConnectivityManagerNetworkCallback.h
 EXPORT_HEADERS += elastos/droid/net/ReturnOutValue.h
@@ -182,10 +183,13 @@ EXPORT_HEADERS += elastos/droid/widget/CompoundButton.h
 EXPORT_HEADERS += elastos/droid/widget/RemoteViews.h
 EXPORT_HEADERS += elastos/droid/widget/TextView.h
 EXPORT_HEADERS += elastos/droid/widget/RelativeLayout.h
+EXPORT_HEADERS += elastos/droid/widget/ScrollView.h
 EXPORT_HEADERS += elastos/droid/widget/SeekBar.h
 EXPORT_HEADERS += elastos/droid/widget/Switch.h
 EXPORT_HEADERS += elastos/droid/widget/AbsSeekBar.h
 EXPORT_HEADERS += elastos/droid/widget/ProgressBar.h
 EXPORT_HEADERS += elastos/droid/widget/AbsListView.h
 EXPORT_HEADERS += elastos/droid/widget/AdapterView.h
-
+EXPORT_HEADERS += elastos/droid/widget/ViewAnimator.h
+EXPORT_HEADERS += elastos/droid/widget/ViewSwitcher.h
+EXPORT_HEADERS += elastos/droid/widget/TextSwitcher.h
