@@ -51,6 +51,7 @@ module
     interface Elastos.Droid.Net.IUri;
     interface Elastos.Droid.Os.IHandler;
     interface Elastos.Droid.Os.IBundle;
+    interface Elastos.Droid.Os.IBinder;
     interface Elastos.Droid.Telecomm.Internal.IRemoteServiceCallback;
     interface Elastos.Droid.Telecomm.Internal.IIVideoProvider;
     interface Elastos.Droid.Telecomm.Internal.IIInCallService;
@@ -73,6 +74,7 @@ module
             [in] IHandler* handler);
 
         interface IConnectionService;
+        interface IBinder;
     }
 
     class CRemoteServiceCallback {
@@ -250,30 +252,10 @@ module
             [in] String parentCallId,
             [in] IList* childCallIds,
             [in] IStatusHints* statusHints,
-            [in] Int32 videoState);
+            [in] Int32 videoState,
+            [in] IList* c,
+            [in] IBundle* e);
 
-//        constructor(
-//            [in] String id,
-//            [in] Int32 state,
-//            [in] IDisconnectCause* disconnectCause,
-//            [in] IList* cannedSmsResponses,
-//            [in] Int32 capabilities,
-//            [in] Int32 properties,
-//            [in] Int64 connectTimeMillis,
-//            [in] IUri* handle,
-//            [in] Int32 handlePresentation,
-//            [in] String callerDisplayName,
-//            [in] Int32 callerDisplayNamePresentation,
-//            [in] IGatewayInfo* gatewayInfo,
-//            [in] IPhoneAccountHandle* accountHandle,
-//            [in] IIVideoProvider* videoCallProvider,
-//            [in] String parentCallId,
-//            [in] IList* childCallIds,
-//            [in] IStatusHints* statusHints,
-//            [in] Int32 videoState,
-//            [in] IList* conferenceableCallIds,
-//            [in] IBundle* extras);
-//
         interface IParcelableCall;
         interface IParcelable;
     }
@@ -427,6 +409,26 @@ module
 
         interface IVideoProfile;
         interface IParcelable;
+    }
+
+    singleton class CAudioStateHelper {
+        interface IAudioStateHelper;
+    }
+
+    singleton class CConnectionHelper {
+        interface IConnectionHelper;
+    }
+
+    singleton class CPhoneAccountHelper {
+        interface IPhoneAccountHelper;
+    }
+
+    singleton class CRemoteConnectionHelper {
+        interface IRemoteConnectionHelper;
+    }
+
+    singleton class CTelecomManagerHelper {
+        interface ITelecomManagerHelper;
     }
 
     } // namespace Telecom

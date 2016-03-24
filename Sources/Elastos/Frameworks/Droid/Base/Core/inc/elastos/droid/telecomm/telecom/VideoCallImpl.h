@@ -122,7 +122,7 @@ public:
     static const Int32 MSG_CHANGE_CAMERA_CAPABILITIES;
 
     AutoPtr<IIVideoProvider> mVideoProvider;
-    // AutoPtr<IVideoCallListenerBinder> mBinder;
+    AutoPtr<IVideoCallListenerBinder> mBinder;
     AutoPtr<IVideoCallListener> mVideoCallListener;
 
     AutoPtr<IProxyDeathRecipient> mDeathRecipient;

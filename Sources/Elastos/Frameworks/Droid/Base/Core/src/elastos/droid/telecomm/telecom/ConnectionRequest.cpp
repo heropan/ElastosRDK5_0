@@ -31,9 +31,7 @@ ECode ConnectionRequest::constructor(
     /* [in] */ IUri* handle,
     /* [in] */ IBundle* extras)
 {
-    assert(0 && "TODO");
-    // return constructor(accountHandle, handle, extras, VideoProfile.VideoState.AUDIO_ONLY);
-    return NOERROR;
+    return constructor(accountHandle, handle, extras, IVideoProfileVideoState::AUDIO_ONLY);
 }
 
 ECode ConnectionRequest::constructor(
@@ -99,6 +97,7 @@ ECode ConnectionRequest::ToString(
     }
     else {
         String str;
+        assert(0 && "TODO");
         // mAddress->ToString(&str);
         String phoneNumber;
         Connection::ToLogSafePhoneNumber(str, &phoneNumber);
