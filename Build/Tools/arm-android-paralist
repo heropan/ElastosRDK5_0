@@ -378,6 +378,7 @@
   Elastos/Frameworks/Droid/Base/Packages/Settings/src/elastos/droid/settings/drawable
   Elastos/Frameworks/Droid/Base/Packages/Settings/src/elastos/droid/settings/search
   Elastos/Frameworks/Droid/Base/Packages/Settings/src/elastos/droid/settings/widget
+  Elastos/Frameworks/Droid/Base/Packages/Settings/src/elastos/droid/settings/wifi
 > Elastos/Frameworks/Droid/Base/Packages/Settings/src/elastos/droid/settings
   Elastos/Frameworks/Droid/Base/Packages/SettingsProvider/src/elastos/droid/settingsprovider SettingsProvider.car
 > Elastos/Frameworks/Droid/Base/Packages/SettingsProvider/src/elastos/droid/settingsprovider

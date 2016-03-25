@@ -326,7 +326,7 @@ ECode SettingsActivity::OnResumeOnSharedPreferenceChangeListener::OnSharedPrefer
 //                  SettingsActivity
 //===============================================================================
 
-CAR_INTERFACE_IMPL_7(SettingsActivity, Activity, IPreferenceManagerOnPreferenceTreeClickListener,
+CAR_INTERFACE_IMPL_8(SettingsActivity, Activity, ISettingsActivity, IPreferenceManagerOnPreferenceTreeClickListener,
         IPreferenceFragmentOnPreferenceStartFragmentCallback, IButtonBarHandler,
         IFragmentManagerOnBackStackChangedListener, ISearchViewOnQueryTextListener,
         ISearchViewOnCloseListener, IOnActionExpandListener);
