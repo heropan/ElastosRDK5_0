@@ -4013,11 +4013,8 @@ ECode Activity::Attach(
     /* [in] */ IConfiguration* config,
     /* [in] */ IIVoiceInteractor* voiceInteractor)
 {
-    Slogger::I(TAG, " >>> Activity::Attach");
     FAIL_RETURN(AttachBaseContext(context));
-Slogger::I(TAG, "    Attach 1 ");
     FAIL_RETURN(mFragments->AttachActivity((IActivity*)this, mContainer, NULL));
-Slogger::I(TAG, "    Attach 2 ");
     AutoPtr<IPolicyManager> pm;
     CPolicyManager::AcquireSingleton((IPolicyManager**)&pm);
     mWindow = NULL;
@@ -4038,7 +4035,7 @@ Slogger::I(TAG, "    Attach 2 ");
     if (uiOptions != 0) {
         FAIL_RETURN(mWindow->SetUiOptions(uiOptions));
     }
-Slogger::I(TAG, "    Attach 3 ");
+
     mUiThread = Thread::GetCurrentThread();
 
     mMainThread = aThread;
@@ -4066,7 +4063,7 @@ Slogger::I(TAG, "    Attach 3 ");
                 looper, (IVoiceInteractor**)&mVoiceInteractor);
         }
     }
-Slogger::I(TAG, "    Attach 4 ");
+
     AutoPtr<IInterface> service;
     FAIL_RETURN(context->GetSystemService(IContext::WINDOW_SERVICE, (IInterface**)&service))
     AutoPtr<IWindowManager> wm = IWindowManager::Probe(service);
@@ -4076,18 +4073,16 @@ Slogger::I(TAG, "    Attach 4 ");
     info->GetFlags(&flags);
     FAIL_RETURN(mWindow->SetWindowManager(wm, mToken, str,
             (flags & IActivityInfo::FLAG_HARDWARE_ACCELERATED) != 0));
-Slogger::I(TAG, "    Attach 5 ");
     if (mParent != NULL) {
         AutoPtr<IWindow> pWindow;
         FAIL_RETURN(mParent->GetWindow((IWindow**)&pWindow));
         FAIL_RETURN(mWindow->SetContainer(pWindow));
     }
-Slogger::I(TAG, "    Attach 6 ");
+
     mWindowManager = NULL;
     FAIL_RETURN(mWindow->GetWindowManager((IWindowManager**)&mWindowManager));
     mCurrentConfig = config;
 
-    Slogger::I(TAG, " <<< Activity::Attach");
     return NOERROR;
 }
 

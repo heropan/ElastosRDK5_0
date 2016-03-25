@@ -677,6 +677,8 @@ ECode LayoutInflater::CreateView(
         prefix = "Elastos.Droid.View.Menu.";
     }
 
+    Slogger::I(TAG, " CreateView: name:%s, prefix_:%s, prefix:%s",
+        name.string(), prefix_.string(), prefix.string());
     AutoPtr<IConstructorInfo> constructor;
     AutoPtr<IClassInfo> clazz;
 
@@ -689,7 +691,8 @@ ECode LayoutInflater::CreateView(
     if (value == NULL) {
         // Class not found in the cache, see if it's real, and try to add it
         AutoPtr<IClassLoader> cl;
-        // LAYOUT_INFLATOR_CATCH_EXCEPTION1(mContext->GetClassLoader((IClassLoader**)&cl))
+        LAYOUT_INFLATOR_CATCH_EXCEPTION1(mContext->GetClassLoader((IClassLoader**)&cl))
+        assert(cl != NULL);
         if (!prefix.IsNull()) {
             LAYOUT_INFLATOR_CATCH_EXCEPTION1(cl->LoadClass(prefix + name, (IClassInfo**)&clazz));
         }
