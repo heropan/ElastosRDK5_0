@@ -124,6 +124,8 @@ const Boolean PhoneStatusBar::SHOW_LOCKSCREEN_MEDIA_ARTWORK = TRUE;
 const Int32 PhoneStatusBar::FADE_KEYGUARD_START_DELAY = 100;
 const Int32 PhoneStatusBar::FADE_KEYGUARD_DURATION = 300;
 Boolean PhoneStatusBar::sInit = InitStatic();
+AutoPtr<IInterpolator> PhoneStatusBar::ALPHA_IN;
+AutoPtr<IInterpolator> PhoneStatusBar::ALPHA_OUT;
 const Int32 PhoneStatusBar::MSG_OPEN_NOTIFICATION_PANEL = 1000;
 const Int32 PhoneStatusBar::MSG_CLOSE_PANELS = 1001;
 const Int32 PhoneStatusBar::MSG_OPEN_SETTINGS_PANEL = 1002;
