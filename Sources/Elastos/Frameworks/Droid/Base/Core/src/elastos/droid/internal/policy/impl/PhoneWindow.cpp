@@ -871,11 +871,15 @@ AutoPtr<IWindowInsets> PhoneWindow::_DecorView::UpdateColorViews(
     Int32 consumedRight = consumingNavBar ? mLastRightInset : 0;
     Int32 consumedBottom = consumingNavBar ? mLastBottomInset : 0;
 
+    IView* contentRootView = IView::Probe(mHost->mContentRoot);
+    AutoPtr<IViewGroupMarginLayoutParams> lp;
     AutoPtr<IViewGroupLayoutParams> vglParams;
-    IView::Probe(mHost->mContentRoot)->GetLayoutParams((IViewGroupLayoutParams**)&vglParams);
-    IViewGroupMarginLayoutParams* lp = IViewGroupMarginLayoutParams::Probe(vglParams);
-    if (mHost->mContentRoot != NULL
-            && lp != NULL) {
+    if (contentRootView != NULL) {
+        contentRootView->GetLayoutParams((IViewGroupLayoutParams**)&vglParams);
+        lp = IViewGroupMarginLayoutParams::Probe(vglParams);
+    }
+
+    if (lp != NULL) {
         Int32 right;
         lp->GetRightMargin(&right);
         Int32 bottom;
@@ -883,7 +887,7 @@ AutoPtr<IWindowInsets> PhoneWindow::_DecorView::UpdateColorViews(
         if (right != consumedRight || bottom != consumedBottom) {
             lp->SetRightMargin(consumedRight);
             lp->SetBottomMargin(consumedRight);
-            IView::Probe(mHost->mContentRoot)->SetLayoutParams(vglParams);
+            contentRootView->SetLayoutParams(vglParams);
 
             if (insets == NULL) {
                 // The insets have changed, but we're not currently in the process
