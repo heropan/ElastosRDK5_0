@@ -253,8 +253,8 @@ module
             [in] IList* childCallIds,
             [in] IStatusHints* statusHints,
             [in] Int32 videoState,
-            [in] IList* c,
-            [in] IBundle* e);
+            [in] IList* conferenceableCallIds,
+            [in] IBundle* extras);
 
         interface IParcelableCall;
         interface IParcelable;
