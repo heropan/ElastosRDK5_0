@@ -175,7 +175,7 @@ public:
      * @see PreferenceGroup#findPreference(CharSequence)
      */
     CARAPI FindPreference(
-        /*[in]*/ const String& key,
+        /*[in]*/ ICharSequence* key,
         /*[out]*/ IPreference** preference);
 
     /** @hide */

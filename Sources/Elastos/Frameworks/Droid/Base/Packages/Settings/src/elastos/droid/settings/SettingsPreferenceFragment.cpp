@@ -492,7 +492,7 @@ void SettingsPreferenceFragment::RemovePreference(
     /* [in] */ const String& key)
 {
     AutoPtr<IPreference> pref;
-    FindPreference(key, (IPreference**)&pref);
+    FindPreference(CoreUtils::Convert(key), (IPreference**)&pref);
     if (pref != NULL) {
         AutoPtr<IPreferenceScreen> screen;
         GetPreferenceScreen((IPreferenceScreen**)&screen);
