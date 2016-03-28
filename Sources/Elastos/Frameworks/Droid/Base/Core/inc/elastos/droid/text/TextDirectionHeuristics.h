@@ -25,7 +25,7 @@ namespace Text {
  * class.
  *
  */
-class ECO_PUBLIC TextDirectionHeuristics
+class TextDirectionHeuristics
 {
 public:
     static AutoPtr<ITextDirectionHeuristic> GetLTR();
@@ -72,9 +72,9 @@ public:
     static AutoPtr<ITextDirectionHeuristic> FIRSTSTRONG_RTL;
 
 private:
-    ECO_LOCAL static const Int32 STATE_TRUE;// = 0;
-    ECO_LOCAL static const Int32 STATE_FALSE;// = 1;
-    ECO_LOCAL static const Int32 STATE_UNKNOWN;// = 2;
+    static const Int32 STATE_TRUE;// = 0;
+    static const Int32 STATE_FALSE;// = 1;
+    static const Int32 STATE_UNKNOWN;// = 2;
 
 private:
 
@@ -82,7 +82,7 @@ private:
      * Interface for an algorithm to guess the direction of a paragraph of text.
      *
      */
-    class ECO_LOCAL TextDirectionAlgorithm : public Object
+    class TextDirectionAlgorithm : public Object
     {
     public:
         /**
@@ -103,7 +103,7 @@ private:
      * {@link #defaultIsRtl} to handle cases where the algorithm cannot determine the
      * direction from the text alone.
      */
-    class ECO_LOCAL TextDirectionHeuristicImpl
+    class TextDirectionHeuristicImpl
         : public Object
         , public ITextDirectionHeuristic
     {
@@ -146,7 +146,7 @@ private:
         AutoPtr<TextDirectionAlgorithm> mAlgorithm;
     };
 
-    class ECO_LOCAL TextDirectionHeuristicInternal
+    class TextDirectionHeuristicInternal
         : public TextDirectionHeuristicImpl
     {
         friend class TextDirectionHeuristics;
@@ -174,7 +174,7 @@ private:
      * Algorithm that uses the first strong directional character to determine the paragraph
      * direction. This is the standard Unicode Bidirectional algorithm.
      */
-    class ECO_LOCAL FirstStrong
+    class FirstStrong
         : public TextDirectionAlgorithm
     {
     public:
@@ -221,7 +221,7 @@ private:
      * direction of text.
      *
      */
-    class ECO_LOCAL AnyStrong
+    class AnyStrong
         : public TextDirectionAlgorithm
     {
     public:
@@ -296,7 +296,7 @@ private:
     /**
      * Algorithm that uses the Locale direction to force the direction of a paragraph.
      */
-    class ECO_LOCAL TextDirectionHeuristicLocale
+    class TextDirectionHeuristicLocale
         : public TextDirectionHeuristicImpl
     {
     public:
@@ -328,11 +328,10 @@ private:
     };
 
 private:
-
-    ECO_LOCAL static Int32 IsRtlText(
+    static Int32 IsRtlText(
         /* [in] */ Int32 directionality);
 
-    ECO_LOCAL static Int32 IsRtlTextOrFormat(
+    static Int32 IsRtlTextOrFormat(
         /* [in] */ Int32 directionality);
 };
 
