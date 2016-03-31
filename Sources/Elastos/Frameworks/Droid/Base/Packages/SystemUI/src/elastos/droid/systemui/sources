@@ -37,7 +37,7 @@ SOURCES += Elastos.Droid.Core.cpp
 SOURCES += Elastos.CoreLibrary.cpp
 
 ELASTOS_LIBS += statusbar/statusbar.lib
-//ELASTOS_LIBS += recent/recent.lib
+ELASTOS_LIBS += recent/recent.lib
 ELASTOS_LIBS += media/media.lib
 ELASTOS_LIBS += doze/doze.lib
 ELASTOS_LIBS += egg/egg.lib

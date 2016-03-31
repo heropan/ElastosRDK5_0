@@ -106,6 +106,7 @@ module
     merge("../../../../car/elastos/droid/statusbar/StatusBarIconView.car");
     merge("../../../../car/elastos/droid/statusbar/SystemBars.car");
     merge("../../../../car/elastos/droid/statusbar/NotificationContentView.car");
+    merge("../../../../car/elastos/droid/statusbar/StatusBarPanel.car");
 
     //statusbar/phone
     merge("../../../../car/elastos/droid/statusbar/phone/ActivityStarter.car");
@@ -198,15 +199,12 @@ module
     merge("../../../../car/elastos/droid/statusbar/policy/ZenModeController.car");
 
     //recent
+    merge("../../../../car/elastos/droid/recent/Constants.car");
+    merge("../../../../car/elastos/droid/recent/RecentsCallback.car");
+    merge("../../../../car/elastos/droid/recent/TaskDescription.car");
+    merge("../../../../car/elastos/droid/recent/RecentsPanelView.car");
     merge("../../../../car/elastos/droid/recent/RecentTasksLoader.car");
     merge("../../../../car/elastos/droid/recent/RecentsActivity.car");
-    merge("../../../../car/elastos/droid/recent/RecentsCallback.car");
-    merge("../../../../car/elastos/droid/recent/RecentsHorizontalScrollView.car");
-    merge("../../../../car/elastos/droid/recent/TaskDescriptionAdapter.car");
-    merge("../../../../car/elastos/droid/recent/RecentsPanelView.car");
-    merge("../../../../car/elastos/droid/recent/RecentsVerticalScrollView.car");
-    merge("../../../../car/elastos/droid/recent/StatusBarTouchProxy.car");
-    merge("../../../../car/elastos/droid/recent/TaskDescription.car");
 
     //recents
     merge("../../../../car/elastos/droid/recents/AlternateRecentsComponent.car");

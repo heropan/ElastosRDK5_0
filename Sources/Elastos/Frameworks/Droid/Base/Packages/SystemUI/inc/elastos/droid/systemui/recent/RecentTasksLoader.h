@@ -1,134 +1,147 @@
-#ifndef __ELASTOS_DROID_SYSTEMUI_RECENT_CRECENTTASKSLOADER_H__
-#define __ELASTOS_DROID_SYSTEMUI_RECENT_CRECENTTASKSLOADER_H__
+#ifndef __ELASTOS_DROID_SYSTEMUI_RECENT_RECENTTASKSLOADER_H__
+#define __ELASTOS_DROID_SYSTEMUI_RECENT_RECENTTASKSLOADER_H__
 
-#include "_Elastos_Droid_SystemUI_Recent_CRecentTasksLoader.h"
-#include "elastos/droid/app/Activity.h"
+#include "_SystemUI.h"
+#include "Elastos.Droid.Content.h"
+#include "Elastos.Droid.Graphics.h"
+#include "Elastos.Droid.Os.h"
+#include "Elastos.Droid.View.h"
+#include "Elastos.CoreLibrary.Core.h"
+#include "Elastos.CoreLibrary.Utility.h"
 #include "elastos/droid/os/Runnable.h"
 #include "elastos/droid/os/AsyncTask.h"
+#include "elastos/droid/systemui/recent/ColorDrawableWithDimensions.h"
+#include "elastos/droid/systemui/recent/RecentsPanelView.h"
+#include <elastos/core/Thread.h>
 
-using Elastos::Utility::Concurrent::IBlockingQueue;
-using Elastos::Core::ICharSequence;
+using Elastos::Droid::Content::IComponentName;
+using Elastos::Droid::Content::IContext;
+using Elastos::Droid::Content::IIntent;
+using Elastos::Droid::Content::Pm::IActivityInfo;
+using Elastos::Droid::Content::Pm::IPackageManager;
+using Elastos::Droid::Content::Pm::IResolveInfo;
+using Elastos::Droid::Content::Res::IResources;
+using Elastos::Droid::Graphics::Drawable::IDrawable;
+using Elastos::Droid::Os::AsyncTask;
 using Elastos::Droid::Os::IHandler;
 using Elastos::Droid::Os::Runnable;
-using Elastos::Droid::Os::AsyncTask;
-using Elastos::Droid::View::IView;
+using Elastos::Droid::SystemUI::Recent::ColorDrawableWithDimensions;
 using Elastos::Droid::View::IMotionEvent;
-using Elastos::Droid::Graphics::IBitmap;
-using Elastos::Droid::Graphics::Drawable::IDrawable;
-using Elastos::Droid::Content::IIntent;
-using Elastos::Droid::Content::IContext;
-using Elastos::Droid::Content::IComponentName;
-using Elastos::Droid::Content::Pm::IActivityInfo;
-using Elastos::Droid::Content::Pm::IResolveInfo;
-using Elastos::Droid::Content::Pm::IPackageManager;
-using Elastos::Droid::Content::Res::IResources;
-using Elastos::Droid::SystemUI::Recent::IRecentsPanelView;
-using Elastos::Droid::SystemUI::Recent::ITaskDescription;
-using Elastos::Droid::SystemUI::Recent::IRecentTasksLoader;
+using Elastos::Droid::View::IView;
+using Elastos::Droid::View::IViewOnTouchListener;
+using Elastos::Core::ICharSequence;
+using Elastos::Core::IRunnable;
+using Elastos::Core::Thread;
+using Elastos::Utility::IArrayList;
+using Elastos::Utility::Concurrent::IBlockingQueue;
 
 namespace Elastos {
 namespace Droid {
 namespace SystemUI {
 namespace Recent {
 
-CarClass(CRecentTasksLoader)
+class RecentTasksLoader
+    : public Object
+    , public IViewOnTouchListener
+    , public IRecentTasksLoader
 {
 public:
-    class PreloadTasksRunnable : public Runnable
+    class PreloadTasksRunnable
+        : public Runnable
     {
     public:
         PreloadTasksRunnable(
-            /* [in] */ CRecentTasksLoader* host) : mHost(host)
-        {}
+            /* [in] */ RecentTasksLoader* host);
 
         CARAPI Run();
 
     private:
-        CRecentTasksLoader* mHost;
+        RecentTasksLoader* mHost;
     };
 
 private:
-    class BgLoadThread : public ThreadBase
+    class BgLoadThread
+        : public Thread
     {
     public:
         BgLoadThread(
-            /* [in] */ CRecentTasksLoader* host);
+            /* [in] */ RecentTasksLoader* host);
 
         CARAPI Run();
 
     private:
-        CRecentTasksLoader* mHost;
+        RecentTasksLoader* mHost;
     };
 
-    class TaskLoaderAsyncTask : public AsyncTask
+    class TaskLoaderAsyncTask
+        : public AsyncTask
     {
     public:
         TaskLoaderAsyncTask(
             /* [in] */ IBlockingQueue* queue,
-            /* [in] */ CRecentTasksLoader* host)
-            : mTasksWaitingForThumbnails(queue)
-            , mHost(host)
-        {}
+            /* [in] */ RecentTasksLoader* host);
 
     protected:
-        CARAPI_(void) OnProgressUpdate(
+        CARAPI OnProgressUpdate(
             /* [in] */ ArrayOf<IInterface*>* values);
 
-        CARAPI_(AutoPtr<IInterface>) DoInBackground(
-            /* [in] */ ArrayOf<IInterface*>* params);
+        CARAPI DoInBackground(
+                /* [in] */ ArrayOf<IInterface*>* params,
+                /* [out] */ IInterface** result);
 
     private:
         AutoPtr<IBlockingQueue> mTasksWaitingForThumbnails;
-        CRecentTasksLoader* mHost;
+        RecentTasksLoader* mHost;
     };
 
-    class ThumbnailLoaderAsyncTask : public AsyncTask
+    class ThumbnailLoaderAsyncTask
+        : public AsyncTask
     {
     public:
         ThumbnailLoaderAsyncTask(
             /* [in] */ IBlockingQueue* queue,
-            /* [in] */ CRecentTasksLoader* host)
+            /* [in] */ RecentTasksLoader* host)
             : mTasksWaitingForThumbnails(queue)
             , mHost(host)
         {}
 
     protected:
-        CARAPI_(void) OnProgressUpdate(
+        CARAPI OnProgressUpdate(
             /* [in] */ ArrayOf<IInterface*>* values);
 
-        CARAPI_(AutoPtr<IInterface>) DoInBackground(
-            /* [in] */ ArrayOf<IInterface*>* params);
+        CARAPI DoInBackground(
+                /* [in] */ ArrayOf<IInterface*>* params,
+                /* [out] */ IInterface** result);
 
     private:
         AutoPtr<IBlockingQueue> mTasksWaitingForThumbnails;
-        CRecentTasksLoader* mHost;
+        RecentTasksLoader* mHost;
     };
 
 public:
-    CRecentTasksLoader();
+    CAR_INTERFACE_DECL()
 
-    ~CRecentTasksLoader();
-
-    CARAPI constructor(
+    RecentTasksLoader(
         /* [in] */ IContext* context);
 
-    static CARAPI_(AutoPtr<IRecentTasksLoader>) GetInstance(
+    static CARAPI_(AutoPtr<RecentTasksLoader>) GetInstance(
         /* [in] */ IContext* context);
 
     CARAPI SetRecentsPanel(
         /* [in] */ IRecentsPanelView* newRecentsPanel,
         /* [in] */ IRecentsPanelView* caller);
 
-    CARAPI_(AutoPtr<IRecentsPanelView>) GetRecentsPanel();
+    CARAPI GetRecentsPanel(
+        /* [out] */ IRecentsPanelView** rp);
 
     CARAPI GetDefaultThumbnail(
-        /* [out] */ IBitmap** bitmap);
+        /* [out] */ IDrawable** drawable);
 
     CARAPI GetDefaultIcon(
-        /* [out] */ IBitmap** bitmap);
+        /* [out] */ IDrawable** drawable);
 
     CARAPI GetLoadedTasks(
-        /* [out, callee] */ IObjectContainer** tasks);
+        /* [out, callee] */ IArrayList** tasks);
 
     CARAPI Remove(
         /* [in] */ ITaskDescription* td);
@@ -136,21 +149,25 @@ public:
     CARAPI IsFirstScreenful(
         /* [out] */ Boolean* result);
 
-    CARAPI_(AutoPtr<ITaskDescription>) CreateTaskDescription(
+    CARAPI CreateTaskDescription(
         /* [in] */ Int32 taskId,
         /* [in] */ Int32 persistentTaskId,
         /* [in] */ IIntent* baseIntent,
         /* [in] */ IComponentName* origActivity,
-        /* [in] */ ICharSequence* description);
+        /* [in] */ ICharSequence* description,
+        /* [in] */ Int32 userId,
+        /* [out] */ ITaskDescription** td);
 
-    CARAPI_(void) LoadThumbnailAndIcon(
+    CARAPI LoadThumbnailAndIcon(
         /* [in] */ ITaskDescription* td);
 
-    CARAPI_(AutoPtr<IDrawable>) GetFullResDefaultActivityIcon();
+    CARAPI GetFullResDefaultActivityIcon(
+        /* [out] */ IDrawable** drawable);
 
-    CARAPI_(AutoPtr<IDrawable>) GetFullResIcon(
+    CARAPI GetFullResIcon(
         /* [in] */ IResources* resources,
-        /* [in] */ Int32 iconId);
+        /* [in] */ Int32 iconId,
+        /* [out] */ IDrawable** drawable);
 
     CARAPI OnTouch(
         /* [in] */ IView* v,
@@ -215,12 +232,12 @@ private:
     AutoPtr<IHandler> mHandler;
 
     Int32 mIconDpi;
-    AutoPtr<IBitmap> mDefaultThumbnailBackground;
-    AutoPtr<IBitmap> mDefaultIconBackground;
+    AutoPtr<ColorDrawableWithDimensions> mDefaultThumbnailBackground;
+    AutoPtr<ColorDrawableWithDimensions> mDefaultIconBackground;
     Int32 mNumTasksInFirstScreenful;
 
     Boolean mFirstScreenful;
-    AutoPtr<IObjectContainer> mLoadedTasks;
+    AutoPtr<IArrayList> mLoadedTasks;
 
     typedef enum {
         State_LOADING,
@@ -229,7 +246,7 @@ private:
     } State;
     State mState;
 
-    static AutoPtr<IRecentTasksLoader> sInstance;
+    static AutoPtr<RecentTasksLoader> sInstance;
 
     AutoPtr<IRunnable> mPreloadTasksRunnable;
 
@@ -242,4 +259,4 @@ private:
 }// namespace Droid
 }// namespace Elastos
 
-#endif //__ELASTOS_DROID_SYSTEMUI_RECENT_CRECENTTASKSLOADER_H__
+#endif //__ELASTOS_DROID_SYSTEMUI_RECENT_RECENTTASKSLOADER_H__

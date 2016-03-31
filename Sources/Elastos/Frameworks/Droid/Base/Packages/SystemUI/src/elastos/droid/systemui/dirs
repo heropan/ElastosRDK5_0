@@ -1,7 +1,7 @@
 
 DIRS += doze
 DIRS += media
-#DIRS += recent
+DIRS += recent
 DIRS += statusbar
 DIRS += recents
 DIRS += egg
