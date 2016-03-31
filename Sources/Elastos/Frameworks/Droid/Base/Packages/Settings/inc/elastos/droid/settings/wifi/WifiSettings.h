@@ -62,8 +62,7 @@ public:
         : public BaseSearchIndexProvider
     {
     public:
-        MyBaseSearchIndexProvider(
-            /* [in] */ WifiSettings* host);
+        MyBaseSearchIndexProvider();
 
         ~MyBaseSearchIndexProvider();
 
@@ -72,9 +71,6 @@ public:
             /* [in] */ IContext* context,
             /* [in] */ Boolean enabled,
             /* [out] */ IList** list);//List<SearchIndexableRaw>
-
-    private:
-        WifiSettings* mHost;
     };
 
 private:
@@ -403,9 +399,11 @@ public:
 
     /* End of "used in Wifi Setup context" */
 
-    static const AutoPtr<IIndexableSearchIndexProvider> SEARCH_INDEX_DATA_PROVIDER;
+    static AutoPtr<IIndexableSearchIndexProvider> GetSEARCH_INDEX_DATA_PROVIDER();
 
 private:
+    static AutoPtr<IIndexableSearchIndexProvider> SEARCH_INDEX_DATA_PROVIDER;
+
     static const String TAG;
 
     static const Int32 REQUEST_ENABLE_WIFI_ASSISTANT;

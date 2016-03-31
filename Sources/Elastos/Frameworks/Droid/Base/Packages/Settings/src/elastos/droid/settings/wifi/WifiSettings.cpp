@@ -76,13 +76,7 @@ const Int32 WifiSettings::MENU_ID_ADD_NETWORK;
 const Int32 WifiSettings::WPS_PBC_DIALOG_ID;
 Int32 WifiSettings::mVerboseLogging = 0;
 
-static AutoPtr<IIndexableSearchIndexProvider> InitSEARCH_INDEX_DATA_PROVIDER()
-{
-    AutoPtr<BaseSearchIndexProvider> bsip = new BaseSearchIndexProvider();
-    return (IIndexableSearchIndexProvider*)bsip.Get();
-}
-
-const AutoPtr<IIndexableSearchIndexProvider> WifiSettings::SEARCH_INDEX_DATA_PROVIDER = InitSEARCH_INDEX_DATA_PROVIDER();
+AutoPtr<IIndexableSearchIndexProvider> WifiSettings::SEARCH_INDEX_DATA_PROVIDER;
 
 const String WifiSettings::TAG("WifiSettings");
 const Int32 WifiSettings::REQUEST_ENABLE_WIFI_ASSISTANT = 1;
@@ -103,13 +97,20 @@ const String WifiSettings::SAVE_DIALOG_ACCESS_POINT_STATE("wifi_ap_state");
 Boolean WifiSettings::mSavedNetworksExist;
 const String WifiSettings::EXTRA_ENABLE_NEXT_ON_CONNECT("wifi_enable_next_on_connect");
 
+AutoPtr<IIndexableSearchIndexProvider> WifiSettings::GetSEARCH_INDEX_DATA_PROVIDER()
+{
+    if (SEARCH_INDEX_DATA_PROVIDER == NULL) {
+        SEARCH_INDEX_DATA_PROVIDER = new WifiSettings::MyBaseSearchIndexProvider();
+    }
+
+    return SEARCH_INDEX_DATA_PROVIDER;
+}
+
 //===============================================================================
 //                  WifiSettings::MyBaseSearchIndexProvider
 //===============================================================================
 
-WifiSettings::MyBaseSearchIndexProvider::MyBaseSearchIndexProvider(
-    /* [in] */ WifiSettings* host)
-    : mHost(host)
+WifiSettings::MyBaseSearchIndexProvider::MyBaseSearchIndexProvider()
 {}
 
 WifiSettings::MyBaseSearchIndexProvider::~MyBaseSearchIndexProvider()
@@ -139,7 +140,7 @@ ECode WifiSettings::MyBaseSearchIndexProvider::GetRawDataToIndex(
     AutoPtr<IInterface> obj;
     context->GetSystemService(IContext::WIFI_SERVICE, (IInterface**)&obj);
     AutoPtr<IWifiManager> wifiManager = IWifiManager::Probe(obj);
-    AutoPtr<IList> ap = mHost->ConstructAccessPoints(context, wifiManager,
+    AutoPtr<IList> ap = ConstructAccessPoints(context, wifiManager,
             NULL, NetworkInfoDetailedState_NONE);
     AutoPtr<ICollection> accessPoints = ICollection::Probe(ap);
     AutoPtr<IIterator> iter;

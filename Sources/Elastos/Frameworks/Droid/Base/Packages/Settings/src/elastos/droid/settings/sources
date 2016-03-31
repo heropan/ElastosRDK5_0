@@ -31,6 +31,7 @@ SOURCES += SubSettings.cpp
 
 ELASTOS_LIBS += dashboard/dashboard.lib
 ELASTOS_LIBS += drawable/drawable.lib
+ELASTOS_LIBS += inputmethod/inputmethod.lib
 ELASTOS_LIBS += search/search.lib
 ELASTOS_LIBS += widget/widget.lib
 ELASTOS_LIBS += wifi/wifi.lib

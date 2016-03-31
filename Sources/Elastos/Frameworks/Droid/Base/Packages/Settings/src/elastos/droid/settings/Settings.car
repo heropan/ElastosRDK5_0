@@ -8,6 +8,8 @@ module
     merge("../../../../car/elastos/droid/SettingsPreferenceFragment.car");
     merge("../../../../car/elastos/droid/ZonePicker.car");
     merge("../../../../car/elastos/droid/dashboard/SearchResultsSummary.car");
+    merge("../../../../car/elastos/droid/inputmethod/InputMethodPreference.car");
+    merge("../../../../car/elastos/droid/inputmethod/KeyboardLayoutDialogFragment.car");
     merge("../../../../car/elastos/droid/search/Indexable.car");
     merge("../../../../car/elastos/droid/search/IndexDatabaseHelper.car");
     merge("../../../../car/elastos/droid/search/SearchIndexableRaw.car");
