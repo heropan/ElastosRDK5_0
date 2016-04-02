@@ -23,6 +23,7 @@ CarClass(CTreeMap)
     , public INavigableMap
     , public ICloneable
     , public ISerializable
+    , public ITreeMap
 {
 public:
     class Node
@@ -758,15 +759,15 @@ public:
         };
 
     public:
-        BoundedMap(
+        CAR_INTERFACE_DECL()
+
+        CARAPI constructor(
             /* [in] */ Boolean ascending,
             /* [in] */ IInterface* from,
             /* [in] */ Bound fromBound,
             /* [in] */ IInterface* to,
             /* [in] */ Bound toBound,
             /* [in] */ CTreeMap* host);
-
-        CAR_INTERFACE_DECL()
 
         CARAPI Clear();
 
@@ -971,11 +972,12 @@ public:
             /* [in] */ IInterface* key,
             /* [in] */ Relation relation);
 
-        CARAPI_(AutoPtr<INavigableMap>) SubMap(
+        CARAPI SubMap(
             /* [in] */ IInterface* from,
             /* [in] */ Bound fromBound,
             /* [in] */ IInterface* to,
-            /* [in] */ Bound toBound);
+            /* [in] */ Bound toBound,
+            /* [out] */ INavigableMap** outnav);
 
         CARAPI OutOfBounds(
             /* [in] */ IInterface* value,
@@ -1058,7 +1060,8 @@ public:
 
     protected:
         // @SuppressWarnings("unchecked") // we have to trust that the bounds are Ks
-        CARAPI_(AutoPtr<IInterface>) ReadResolve();
+        CARAPI ReadResolve(
+            /* [out] */ IInterface** outface);
 
     public:
         AutoPtr<CTreeMap> mM;
@@ -1157,7 +1160,8 @@ public:
 
         // @SuppressWarnings("unchecked") // we have to trust that the bounds are Ks
     protected:
-        CARAPI_(AutoPtr<IInterface>) ReadResolve();
+        CARAPI ReadResolve(
+            /* [out] */ IInterface** outface);
 
     public:
         AutoPtr<IInterface> mFromKey;
@@ -1905,8 +1909,9 @@ public:
         /* [out] */ Node ** node);
 
     // @SuppressWarnings("unchecked") // this method throws ClassCastExceptions!
-    CARAPI_(AutoPtr<Node>) FindByObject(
-        /* [in] */ IInterface* key);
+    CARAPI FindByObject(
+        /* [in] */ IInterface* key,
+        /* [out] */ Node** node);
 
     /**
      * Returns this map's entry that has the same key and value as {@code
@@ -1917,8 +1922,9 @@ public:
      * {@code String.CASE_INSENSITIVE_ORDER}), then {@code remove()} and {@code
      * contains()} will violate the collections API.
      */
-    CARAPI_(AutoPtr<Node>) FindByEntry(
-        /* [in] */ IMapEntry* entry);
+    CARAPI FindByEntry(
+        /* [in] */ IMapEntry* entry,
+        /* [out] */ Node** node);
 
     /**
      * Removes {@code node} from this tree, rearranging the tree's structure as
@@ -1927,8 +1933,9 @@ public:
     CARAPI RemoveInternal(
         /* [in] */ Node* node);
 
-    CARAPI_(AutoPtr<Node>) RemoveInternalByKey(
-        /* [in] */ IInterface* key);
+    CARAPI RemoveInternalByKey(
+        /* [in] */ IInterface* key,
+        /* [out] */ Node** removement);
 
     /**
      * Returns the number of elements in the iteration.

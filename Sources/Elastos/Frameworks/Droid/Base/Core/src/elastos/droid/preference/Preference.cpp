@@ -658,7 +658,7 @@ ECode Preference::CallChangeListener(
     }
     else {
         return mOnChangeListener->OnPreferenceChange(
-                THIS_PROBE(IPreference), newValue, shouldSetValue);
+                this, newValue, shouldSetValue);
     }
 }
 
@@ -706,7 +706,7 @@ ECode Preference::PerformClick(
 
     Boolean clickResult;
     if (mOnClickListener != NULL &&
-            (mOnClickListener->OnPreferenceClick(THIS_PROBE(IPreference), &clickResult), clickResult)) {
+            (mOnClickListener->OnPreferenceClick(this, &clickResult), clickResult)) {
         return NOERROR;
     }
 
@@ -716,7 +716,7 @@ ECode Preference::PerformClick(
         AutoPtr<IPreferenceManagerOnPreferenceTreeClickListener> listener;
         preferenceManager->GetOnPreferenceTreeClickListener((IPreferenceManagerOnPreferenceTreeClickListener**)&listener);
         if (preferenceScreen != NULL && listener != NULL
-                && (listener->OnPreferenceTreeClick(preferenceScreen, THIS_PROBE(IPreference), &clickResult), clickResult)) {
+                && (listener->OnPreferenceTreeClick(preferenceScreen, this, &clickResult), clickResult)) {
             return NOERROR;
         }
     }
@@ -826,7 +826,7 @@ ECode Preference::SetOnPreferenceChangeInternalListener(
 ECode Preference::NotifyChanged()
 {
     if (mListener != NULL) {
-        return mListener->OnPreferenceChange(THIS_PROBE(IPreference));
+        return mListener->OnPreferenceChange(this);
     }
     return NOERROR;
 }
@@ -834,7 +834,7 @@ ECode Preference::NotifyChanged()
 ECode Preference::NotifyHierarchyChanged()
 {
     if (mListener != NULL) {
-        return mListener->OnPreferenceHierarchyChange(THIS_PROBE(IPreference));
+        return mListener->OnPreferenceHierarchyChange(this);
     }
     return NOERROR;
 }
@@ -920,7 +920,7 @@ ECode Preference::RegisterDependent(
 
     Boolean shouldDisableDependents;
     ShouldDisableDependents(&shouldDisableDependents);
-    return dependent->OnDependencyChanged(THIS_PROBE(IPreference), shouldDisableDependents);
+    return dependent->OnDependencyChanged(this, shouldDisableDependents);
 }
 
 void Preference::UnRegisterDependent(
@@ -940,7 +940,7 @@ ECode Preference::NotifyDependencyChange(
 
     List<AutoPtr<IPreference> >::Iterator it;
     for (it = dependents->Begin(); it != dependents->End(); ++it) {
-        (*it)->OnDependencyChanged(THIS_PROBE(IPreference), disableDependents);
+        (*it)->OnDependencyChanged(this, disableDependents);
     }
     return NOERROR;
 }

@@ -221,7 +221,7 @@ ECode ViewStub::Inflate(
             wrs->GetWeakReference((IWeakReference**)&mInflatedViewRef);
 
             if (mInflateListener != NULL) {
-                mInflateListener->OnInflate(THIS_PROBE(IViewStub), view);
+                mInflateListener->OnInflate(this, view);
             }
 
             *retView = view;

@@ -33,7 +33,6 @@ CAR_OBJECT_IMPL(CSparseInt32Array)
 CAR_OBJECT_IMPL(CLinearSpline)
 CAR_OBJECT_IMPL(CMonotoneCubicSpline)
 
-
 } // namespace Utility
 } // namespace Droid
 } // namespace Elastos

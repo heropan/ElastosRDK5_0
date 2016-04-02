@@ -457,7 +457,7 @@ ECode CActivityOne::SetupEqualizerFxAndUI()
 
 ECode CActivityOne::SetupVisualizerFxAndUI()
 {
-    CSurfaceView::New((IContext*)this->Probe(EIID_IContext),
+    CSurfaceView::New(this,
             (ISurfaceView**)&mSurfaceView);
     assert(mSurfaceView != NULL);
 

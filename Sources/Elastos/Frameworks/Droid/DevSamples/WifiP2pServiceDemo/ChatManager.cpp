@@ -86,7 +86,7 @@ ECode ChatManager::Run()
     AutoPtr<IMessageHelper> helper;
     CMessageHelper::AcquireSingleton((IMessageHelper**)&helper);
     AutoPtr<IMessage> msg;
-    helper->Obtain(mHandler, CActivityOne::MY_HANDLE, this->Probe(EIID_IInterface),
+    helper->Obtain(mHandler, CActivityOne::MY_HANDLE, TO_IINTERFACE(this),
         (IMessage**)&msg);
     msg->SendToTarget();
 

@@ -119,7 +119,7 @@ ECode PreferenceFragment::OnCreate(
     AutoPtr<IActivity> activity;
     GetActivity((IActivity**)&activity);
     CPreferenceManager::New(activity, FIRST_REQUEST_CODE, (IPreferenceManager**)&mPreferenceManager);
-    mPreferenceManager->SetFragment((IPreferenceFragment*)this->Probe(EIID_IPreferenceFragment));
+    mPreferenceManager->SetFragment(this);
     return NOERROR;
 }
 
@@ -175,8 +175,7 @@ ECode PreferenceFragment::OnActivityCreated(
 ECode PreferenceFragment::OnStart()
 {
     Fragment::OnStart();
-    mPreferenceManager->SetOnPreferenceTreeClickListener(
-            (IPreferenceManagerOnPreferenceTreeClickListener*)this->Probe(EIID_IPreferenceManagerOnPreferenceTreeClickListener));
+    mPreferenceManager->SetOnPreferenceTreeClickListener(this);
     return NOERROR;
 }
 

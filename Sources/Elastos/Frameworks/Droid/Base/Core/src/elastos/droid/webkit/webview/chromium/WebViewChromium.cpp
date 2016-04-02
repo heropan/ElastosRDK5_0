@@ -286,7 +286,7 @@ ECode WebViewChromium::InnerContextWrapper::GetClassLoader(
     AutoPtr<IContext> baseContext;
     GetBaseContext((IContext**)&baseContext);
     AutoPtr<IClassLoader> appCl;
-    //baseContext->GetClassLoader((IClassLoader**)&appCl);
+    // baseContext->GetClassLoader((IClassLoader**)&appCl);
 
     AutoPtr<IClassLoader> webViewCl;
     //final ClassLoader webViewCl = this.getClass().getClassLoader();
@@ -317,7 +317,7 @@ ECode WebViewChromium::InnerContextWrapper::GetClassLoader(
 //        baseContext->GetSystemService(name, (IInterface**)&iTmp);
 //        AutoPtr<ILayoutInflater> i = ILayoutInflater::Probe(iTmp);
 
-//        AutoPtr<IContext> contextTmp = IContext::Probe((IContextWrapper*)this);
+//        AutoPtr<IContext> contextTmp = this;
 //        AutoPtr<ILayoutInflater> cloneTmp;
 //        i->CloneInContext(contextTmp, (ILayoutInflater**)&cloneTmp);
 //        *object = cloneTmp->Probe(EIID_IInterface);

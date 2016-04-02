@@ -140,7 +140,7 @@ ECode NativeActivity::OnCreate(
         IWindowManagerLayoutParams::SOFT_INPUT_STATE_UNSPECIFIED
         | IWindowManagerLayoutParams::SOFT_INPUT_ADJUST_RESIZE);
 
-    CNativeContentView::New(THIS_PROBE(IContext), (INativeContentView**)&mNativeContentView);
+    CNativeContentView::New(this, (INativeContentView**)&mNativeContentView);
     mNativeContentView->SetNativeActivity(this);
     IView* view = IView::Probe(mNativeContentView);
     SetContentView(view);

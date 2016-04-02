@@ -30,7 +30,7 @@ PInterface SharedUserSetting::Probe(
     /* [in] */ REIID riid)
 {
     if (riid == EIID_SharedUserSetting) {
-        return reinterpret_cast<PInterface>((SharedUserSetting*)this);;
+        return reinterpret_cast<PInterface>(this);
     }
     return GrantedPermissions::Probe(riid);
 }

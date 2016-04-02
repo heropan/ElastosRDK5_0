@@ -153,7 +153,7 @@ ECode CActivityOne::OnCreate(
     Activity::OnCreate(savedInstanceState);
     PRINT_ENTER_LEAVE("CActivityOne::OnCreate");
     //SetContentView(0x7f030000);
-    ECode ec = CSurfaceView::New((IContext*)this->Probe(EIID_IContext),
+    ECode ec = CSurfaceView::New(this,
             (ISurfaceView**)&mSurfaceView);
     assert(mSurfaceView != NULL);
 

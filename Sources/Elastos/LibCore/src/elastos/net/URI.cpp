@@ -490,8 +490,20 @@ ECode URI::CompareTo(
 
     // compare schemes
     URI* uriObj = (URI*)uo;
-    if (!mScheme.IsNull() || !uriObj->mScheme.IsNull()) {
-        return mScheme.Compare(uriObj->mScheme);
+    if (mScheme.IsNull() && !uriObj->mScheme.IsNull()) {
+        *result = -1;
+        return NOERROR;
+    }
+    else if (!mScheme.IsNull() && uriObj->mScheme.IsNull()) {
+        *result = 1;
+        return NOERROR;
+    }
+    else if (!mScheme.IsNull() && !uriObj->mScheme.IsNull()) {
+        ret = mScheme.CompareIgnoreCase(uriObj->mScheme);
+        if (ret != 0) {
+            *result = ret;
+            return NOERROR;
+        }
     }
 
     // compare opacities
@@ -550,7 +562,8 @@ ECode URI::CompareTo(
 
                 // compare port
                 if (mPort != uriObj->mPort) {
-                    return mPort - uriObj->mPort;
+                    *result = mPort - uriObj->mPort;
+                    return NOERROR;
                 }
             }
             else { // one or both are registry based, compare the whole
@@ -619,7 +632,7 @@ ECode URI::Create(
     VALIDATE_NOT_NULL(obj);
 
 //    try {
-    AutoPtr<URI> outuri;
+    AutoPtr<CURI> outuri;
     ECode ec = CURI::NewByFriend(uri, (CURI**)&outuri);
     if (ec == (ECode)E_URI_SYNTAX_EXCEPTION) {
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
@@ -634,7 +647,7 @@ ECode URI::Create(
 
 AutoPtr<IURI> URI::Duplicate()
 {
-    AutoPtr<URI> clone;
+    AutoPtr<CURI> clone;
     CURI::NewByFriend((CURI**)&clone);
     clone->mAbsolute = mAbsolute;
     clone->mAuthority = mAuthority;
@@ -1036,7 +1049,7 @@ ECode URI::Normalize(
     VALIDATE_NOT_NULL(uri)
 
     if (mOpaque) {
-        *uri = THIS_PROBE(IURI);
+        *uri = this;
         REFCOUNT_ADD(*uri);
         return NOERROR;
     }
@@ -1044,7 +1057,7 @@ ECode URI::Normalize(
     String normalizedPath = Normalize(mPath, FALSE);
     // if the path is already normalized, return this
     if (mPath.Equals(normalizedPath)) {
-        *uri = THIS_PROBE(IURI);
+        *uri = this;
         REFCOUNT_ADD(*uri);
         return NOERROR;
     }
@@ -1067,7 +1080,7 @@ ECode URI::ParseServerAuthority(
     if (!mServerAuthority) {
         ParseAuthority(TRUE);
     }
-    *uri = THIS_PROBE(IURI);
+    *uri = this;
     REFCOUNT_ADD(*uri);
     return NOERROR;
 }
@@ -1122,7 +1135,7 @@ ECode URI::Relativize(
         }
     }
 
-    AutoPtr<URI> result;
+    AutoPtr<CURI> result;
     CURI::NewByFriend((CURI**)&result);
     result->mFragment = relativeObj->mFragment;
     result->mQuery = relativeObj->mQuery;

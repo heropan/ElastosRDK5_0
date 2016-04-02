@@ -440,7 +440,7 @@ ECode WebViewChromiumFactoryProvider::CreateWebView(
     //
     // return wvc;
 
-    IWebViewChromiumFactoryProvider* factoryProvider = IWebViewChromiumFactoryProvider::Probe(this);
+    IWebViewChromiumFactoryProvider* factoryProvider = this;
     AutoPtr<WebViewChromium> wvc = new WebViewChromium(factoryProvider, webView, privateAccess);
     AutoLock lock(mLock);
     if (mWebViewsToStart != NULL) {
@@ -449,7 +449,7 @@ ECode WebViewChromiumFactoryProvider::CreateWebView(
         mWebViewsToStart->Add(wr);
     }
 
-    *result = IWebViewProvider::Probe(wvc);
+    *result = (IWebViewProvider*)wvc.Get();
     REFCOUNT_ADD(*result);
     return NOERROR;
 }

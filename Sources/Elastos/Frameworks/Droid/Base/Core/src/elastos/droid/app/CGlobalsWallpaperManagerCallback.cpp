@@ -112,7 +112,7 @@ AutoPtr<IBitmap> CGlobalsWallpaperManagerCallback::GetCurrentWallpaperLocked(
     // try {
     AutoPtr<IBundle> params;
     AutoPtr<IParcelFileDescriptor> fd;
-    ASSERT_SUCCEEDED(mService->GetWallpaper((IIWallpaperManagerCallback*)this,
+    ASSERT_SUCCEEDED(mService->GetWallpaper(this,
         (IBundle**)&params, (IParcelFileDescriptor**)&fd));
     if (fd != NULL) {
 

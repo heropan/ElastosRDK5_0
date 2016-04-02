@@ -274,7 +274,7 @@ AutoPtr<IAppWidgetHostView> CActivityOne::GetHostView(
 {
 printf("File=[%s], Func=[%s], line=[%d]. \n", __FILE__, __FUNCTION__, __LINE__);
     AutoPtr<IAppWidgetHostView> hostView;
-    m_appWidgetHost->CreateView((IContext*)this->Probe(EIID_IContext), appwidgetId,
+    m_appWidgetHost->CreateView(this, appwidgetId,
             appwidgetInfo, (IAppWidgetHostView**)&hostView);
 printf("File=[%s], Func=[%s], line=[%d]. \n", __FILE__, __FUNCTION__, __LINE__);
     assert(hostView != NULL);

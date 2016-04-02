@@ -146,6 +146,7 @@ module
             [out] IComponentName** name);
     }
 
+    [local]
     interface INotificationManagerHelper {
         /** @hide */
         GetService(

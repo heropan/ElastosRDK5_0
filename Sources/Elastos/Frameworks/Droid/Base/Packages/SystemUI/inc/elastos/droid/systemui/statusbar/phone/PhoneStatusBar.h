@@ -1401,7 +1401,7 @@ protected:
     CARAPI_(void) UpdateSearchPanel();
 
     // @Override
-    CARAPI_(void) UpdateNotificationRanking(
+    CARAPI UpdateNotificationRanking(
         /* [in] */ INotificationListenerServiceRankingMap* ranking);
 
     // @Override

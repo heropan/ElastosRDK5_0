@@ -1660,7 +1660,7 @@ ECode ViewRootImpl::SetView(
             assert(mInputEventReceiver != NULL);
         }
 
-        VIEW_PROBE(view)->AssignParent(THIS_PROBE(IViewParent));
+        VIEW_PROBE(view)->AssignParent(this);
         mAddedTouchMode = (res & IWindowManagerGlobal::ADD_FLAG_IN_TOUCH_MODE) != 0;
         mAppVisible = (res & IWindowManagerGlobal::ADD_FLAG_APP_VISIBLE) != 0;
 

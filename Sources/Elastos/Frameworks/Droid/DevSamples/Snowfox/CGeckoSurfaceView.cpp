@@ -314,8 +314,8 @@ ECode CGeckoSurfaceView::constructor(
     ASSERT_SUCCEEDED(CSurfaceView::New(context, (ISurfaceView**)&mSurfaceView));
     AutoPtr<MyTouchDelegate> delegate = new MyTouchDelegate(this);
     mSurfaceView->SetTouchDelegate(delegate);
-    mSurfaceView->SetCreateInputConnectionDelegate((IView*)this);
-    mSurfaceView->SetKeyEventCallbackDelegate((IKeyEventCallback*)this);
+    mSurfaceView->SetCreateInputConnectionDelegate(this);
+    mSurfaceView->SetKeyEventCallbackDelegate(this);
 
     AutoPtr<ISurfaceHolder> holder;
     ASSERT_SUCCEEDED(GetHolder((ISurfaceHolder**)&holder));

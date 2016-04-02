@@ -389,6 +389,7 @@ module
         interface IComponentCallbacks;
     }
 
+    [local]
     class CBatteryMeterView {
         constructor(
             [in] IContext* context);
@@ -440,6 +441,7 @@ module
         interface IWindowCallback;
     }
 
+    [local]
     class CDessertCaseView {
         constructor(
             [in] IContext* context);
@@ -501,6 +503,7 @@ module
         interface IBroadcastReceiver;
     }
 
+    [local]
     class CResetSessionDialog {
         constructor(
             [in] IContext* ctx,
@@ -561,6 +564,7 @@ module
     //                              Egg
     //===========================================================================
     namespace Egg {
+        [local]
         class CLLand {
             constructor(
                 [in] IContext* context);
@@ -771,6 +775,7 @@ module
     //===========================================================================
     namespace Volume {
 
+        [local]
         class CSegmentedButtons {
             constructor(
                 [in] IContext* context,
@@ -804,6 +809,7 @@ module
             interface IBinder;
         }
 
+        [local]
         class CZenModePanel {
             constructor(
                 [in] IContext* context,
@@ -820,7 +826,7 @@ module
             interface IZenModePanel;
         }
 
-        [deprecated]
+        [local]
         class CVolumePanel {
             constructor(
                 [in] IContext* context,
@@ -995,7 +1001,7 @@ module
     //===========================================================================
     namespace Recents {
     namespace Views {
-
+        [local]
         class CDebugOverlayView {
             constructor(
                 [in] IContext* ctx);
@@ -1026,6 +1032,7 @@ module
             interface IAccessibilityEventSource;
         }
 
+        [local]
         class CFixedSizeImageView {
             constructor(
                 [in] IContext* ctx);
@@ -1053,6 +1060,7 @@ module
             interface IAccessibilityEventSource;
         }
 
+        [local]
         class CRecentsView {
             constructor(
                 [in] IContext* ctx);
@@ -1083,6 +1091,7 @@ module
             interface IAccessibilityEventSource;
         }
 
+        [local]
         class CTaskStackView {
             constructor(
                 [in] IContext* context,
@@ -1099,6 +1108,7 @@ module
             interface IAccessibilityEventSource;
         }
 
+        [local]
         class CTaskView {
             constructor(
                 [in] IContext* ctx);
@@ -1129,6 +1139,7 @@ module
             interface IAccessibilityEventSource;
         }
 
+        [local]
         class CTaskViewFooter {
             constructor(
                 [in] IContext* ctx);
@@ -1159,6 +1170,7 @@ module
             interface IAccessibilityEventSource;
         }
 
+        [local]
         class CTaskViewHeader {
             constructor(
                 [in] IContext* ctx);
@@ -1189,6 +1201,7 @@ module
             interface IAccessibilityEventSource;
         }
 
+        [local]
         class CTaskViewThumbnail {
             constructor(
                 [in] IContext* ctx);
@@ -1329,6 +1342,7 @@ module
             interface IAccessibilityEventSource;
         }
 
+        [local]
         class CAlphaOptimizedFrameLayout {
             constructor(
                 [in] IContext* ctx);
@@ -1359,6 +1373,7 @@ module
             interface IAccessibilityEventSource;
         }
 
+        [local]
         class CNotificationContentView {
             constructor(
                 [in] IContext* ctx,
@@ -1375,6 +1390,7 @@ module
             interface IAccessibilityEventSource;
         }
 
+        [local]
         class CDismissView {
             constructor(
                 [in] IContext* ctx,
@@ -1393,6 +1409,7 @@ module
             interface IAccessibilityEventSource;
         }
 
+        [local]
         class CEmptyShadeView {
             constructor(
                 [in] IContext* ctx,
@@ -1411,6 +1428,7 @@ module
             interface IAccessibilityEventSource;
         }
 
+        [local]
         class CSpeedBumpView {
             constructor(
                 [in] IContext* ctx,
@@ -1439,6 +1457,7 @@ module
             interface IBinder;
         }
 
+        [local]
         class CBackDropView {
             constructor(
                 [in] IContext* ctx);
@@ -1565,6 +1584,7 @@ module
             interface IAccessibilityEventSource;
         }
 
+        [local]
         class CNotificationGuts {
             constructor(
                 [in] IContext* context,
@@ -1678,6 +1698,7 @@ module
         //                              Stack
         //===========================================================================
         namespace Stack {
+            [local]
             class CNotificationStackScrollLayout {
                 constructor(
                     [in] IContext* ctx);
@@ -1925,6 +1946,7 @@ module
     //                                  Phone
     //===========================================================================
     namespace Phone {
+        [local]
         class CSystemUIDialog {
             constructor(
                 [in] IContext* ctx);
@@ -1974,6 +1996,7 @@ module
             interface IAccessibilityEventSource;
         }
 
+        [local]
         class CKeyguardBottomAreaView {
             constructor(
                 [in] IContext* context);

@@ -189,7 +189,6 @@ ECode ContentResolver::constructor(
     /* [in] */ IContext* context)
 {
     CRandom::New((IRandom**)&mRandom);
-
     if (context != NULL) {
         mContext = context;
     }
@@ -1260,7 +1259,7 @@ ECode ContentResolver::AcquireContentProviderClient(
     AutoPtr<IIContentProvider> provider;
     FAIL_RETURN(AcquireProvider(uri, (IIContentProvider**)&provider))
     if (NULL != provider) {
-        return CContentProviderClient::New(THIS_PROBE(IContentResolver), provider, TRUE, client);
+        return CContentProviderClient::New(this, provider, TRUE, client);
     }
 
     return NOERROR;
@@ -1276,7 +1275,7 @@ ECode ContentResolver::AcquireContentProviderClient(
     AutoPtr<IIContentProvider> provider;
     FAIL_RETURN(AcquireProvider(name, (IIContentProvider**)&provider))
     if (NULL != provider) {
-        return CContentProviderClient::New(THIS_PROBE(IContentResolver), provider, TRUE, client);
+        return CContentProviderClient::New(this, provider, TRUE, client);
     }
 
     return NOERROR;
@@ -1292,7 +1291,7 @@ ECode ContentResolver::AcquireUnstableContentProviderClient(
     AutoPtr<IIContentProvider> provider;
     FAIL_RETURN(AcquireUnstableProvider(uri, (IIContentProvider**)&provider))
     if (NULL != provider) {
-        return CContentProviderClient::New(THIS_PROBE(IContentResolver), provider, FALSE, client);
+        return CContentProviderClient::New(this, provider, FALSE, client);
     }
 
     return NOERROR;
@@ -1308,7 +1307,7 @@ ECode ContentResolver::AcquireUnstableContentProviderClient(
     AutoPtr<IIContentProvider> provider;
     FAIL_RETURN(AcquireUnstableProvider(name, (IIContentProvider**)&provider))
     if (NULL != provider) {
-        return CContentProviderClient::New(THIS_PROBE(IContentResolver), provider, FALSE, client);
+        return CContentProviderClient::New(this, provider, FALSE, client);
     }
 
     return NOERROR;

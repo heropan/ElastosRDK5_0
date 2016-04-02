@@ -161,7 +161,7 @@ ECode CActivityOne::StartStatusBarNotification()
 
     // Set the info for the views that show in the notification panel.
     ASSERT_SUCCEEDED(notification->SetLatestEventInfo(
-        THIS_PROBE(IContext), titleSeq, msgSeq, pendingIntent));
+        this, titleSeq, msgSeq, pendingIntent));
 
     String notificationStr;
     notification->ToString(&notificationStr);
@@ -200,7 +200,7 @@ ECode CActivityOne::NotifyNotification(
     assert(notificationManager != NULL);
 
     /* Invoking the default notification service */
-    AutoPtr<IContext> context =  (IContext*)this->Probe(EIID_IContext);
+    AutoPtr<IContext> context =  this;
     AutoPtr<INotificationBuilder> builder;
     CNotificationBuilder::New(context, (INotificationBuilder**)&builder);
 

@@ -1141,13 +1141,13 @@ ECode View::SendViewStateChangedAccessibilityEvent::RunOrPost(
         // If we're already posted with a delay, remove that.
         if (mPostedWithDelay) {
             Boolean res;
-            mHost->RemoveCallbacks(THIS_PROBE(IRunnable), &res);
+            mHost->RemoveCallbacks(this, &res);
             mPostedWithDelay = FALSE;
         }
         // Only post if we're not already posted.
         if (!mPosted) {
             Boolean res;
-            mHost->Post(THIS_PROBE(IRunnable), &res);
+            mHost->Post(this, &res);
             mPosted = TRUE;
         }
         return NOERROR;
@@ -1161,11 +1161,11 @@ ECode View::SendViewStateChangedAccessibilityEvent::RunOrPost(
     Int64 minEventIntevalMillis = CViewConfiguration::GetSendRecurringAccessibilityEventsInterval();
     if (timeSinceLastMillis >= minEventIntevalMillis) {
         Boolean res;
-        mHost->RemoveCallbacks(THIS_PROBE(IRunnable), &res);
+        mHost->RemoveCallbacks(this, &res);
         Run();
     } else {
         Boolean res;
-        mHost->PostDelayed(THIS_PROBE(IRunnable), minEventIntevalMillis - timeSinceLastMillis, &res);
+        mHost->PostDelayed(this, minEventIntevalMillis - timeSinceLastMillis, &res);
         mPostedWithDelay = TRUE;
     }
     return NOERROR;
@@ -1237,10 +1237,10 @@ View::View()
 {
     if (InputEventConsistencyVerifier::IsInstrumentationEnabled()) {
         mInputEventConsistencyVerifier =
-            new InputEventConsistencyVerifier((IInterface*)this->Probe(EIID_IInterface), 0);
+            new InputEventConsistencyVerifier(TO_IINTERFACE(this), 0);
     }
 
-    mRenderNode = RenderNode::Create(String("View"), THIS_PROBE(IView));
+    mRenderNode = RenderNode::Create(String("View"), this);
 }
 
 View::~View()
@@ -1834,7 +1834,7 @@ ECode View::PerformClick(
     AutoPtr<ListenerInfo> li = mListenerInfo;
     if (li != NULL && li->mOnClickListener != NULL) {
         PlaySoundEffect(SoundEffectConstants::CLICK);
-        li->mOnClickListener->OnClick(IVIEW_PROBE(this));
+        li->mOnClickListener->OnClick(this);
         result = TRUE;
     } else {
         result = FALSE;
@@ -1851,7 +1851,7 @@ ECode View::CallOnClick(
     VALIDATE_NOT_NULL(res)
     AutoPtr<ListenerInfo> li = mListenerInfo;
     if (li != NULL && li->mOnClickListener != NULL) {
-        li->mOnClickListener->OnClick(IVIEW_PROBE(this));
+        li->mOnClickListener->OnClick(this);
         *res = TRUE;
         return NOERROR;
     }
@@ -1874,7 +1874,7 @@ ECode View::PerformLongClick(
     Boolean handled = FALSE;
     AutoPtr<ListenerInfo> li = mListenerInfo;
     if (li != NULL && li->mOnLongClickListener != NULL) {
-        li->mOnLongClickListener->OnLongClick(IVIEW_PROBE(this), &handled);
+        li->mOnLongClickListener->OnLongClick(this, &handled);
     }
 
     if (!handled) {
@@ -1929,8 +1929,7 @@ ECode View::ShowContextMenu(
     VALIDATE_NOT_NULL(res)
     AutoPtr<IViewParent> parent;
     GetParent((IViewParent**)&parent);
-    parent->ShowContextMenuForChild(
-        IVIEW_PROBE(this), res);
+    parent->ShowContextMenuForChild(this, res);
 
     return NOERROR;
 }
@@ -1957,7 +1956,7 @@ ECode View::StartActionMode(
         *mode = NULL;
         return NOERROR;
     }
-    parent->StartActionModeForChild(IVIEW_PROBE(this), callback, mode);
+    parent->StartActionModeForChild(this, callback, mode);
     return NOERROR;
 }
 
@@ -2038,13 +2037,11 @@ ECode View::HandleFocusGainInternal(
         }
 
         if (mParent != NULL) {
-            mParent->RequestChildFocus(
-                IVIEW_PROBE(this),
-                IVIEW_PROBE(this));
+            mParent->RequestChildFocus(this, this);
         }
 
         if (mAttachInfo) {
-            ((ViewTreeObserver*)mAttachInfo->mTreeObserver.Get())->DispatchOnGlobalFocusChange(oldFocus, THIS_PROBE(IView));
+            ((ViewTreeObserver*)mAttachInfo->mTreeObserver.Get())->DispatchOnGlobalFocusChange(oldFocus, this);
         }
 
         OnFocusChanged(TRUE, direction, previouslyFocusedRect);
@@ -2212,7 +2209,7 @@ ECode View::ClearFocusInternal(
         mPrivateFlags &= ~PFLAG_FOCUSED;
 
         if (propagate && mParent) {
-            mParent->ClearChildFocus(THIS_PROBE(IView));
+            mParent->ClearChildFocus(this);
         }
 
         OnFocusChanged(FALSE, 0, NULL);
@@ -2221,7 +2218,7 @@ ECode View::ClearFocusInternal(
         Boolean res;
         RootViewRequestFocus(&res);
         if (propagate && (!refocus || !res)) {
-            NotifyGlobalFocusCleared(THIS_PROBE(IView));
+            NotifyGlobalFocusCleared(this);
         }
     }
     return NOERROR;
@@ -2566,7 +2563,7 @@ void View::OnInitializeAccessibilityEventInternal(
             focusablesTempList->GetSize(&focusablesTempListSize);
             (IAccessibilityRecord::Probe(event))->SetItemCount(focusablesTempListSize);
             Int32 index;
-            focusablesTempList->IndexOf(THIS_PROBE(IInterface), &index);
+            focusablesTempList->IndexOf(TO_IINTERFACE(this), &index);
             (IAccessibilityRecord::Probe(event))->SetCurrentItemIndex(index);
 
             if (mAttachInfo) {
@@ -2959,7 +2956,7 @@ ECode View::ComputeClickPointInScreenForAccessibility(
     if (IViewGroup::Probe(mParent)) {
         Boolean windowCoordinates;
         VIEWGROUP_PROBE(mParent)->TranslateBoundsAndIntersectionsInWindowCoordinates(
-            THIS_PROBE(IView), bounds, IList::Probe(intersections), &windowCoordinates);
+            this, bounds, IList::Probe(intersections), &windowCoordinates);
         if (!windowCoordinates) {
             intersections->Clear();
             *res = FALSE;
@@ -3716,7 +3713,7 @@ ECode View::DispatchApplyWindowInsets(
     //try {
     mPrivateFlags3 |= PFLAG3_APPLYING_INSETS;
     if (mListenerInfo != NULL && mListenerInfo->mOnApplyWindowInsetsListener != NULL) {
-        mListenerInfo->mOnApplyWindowInsetsListener->OnApplyWindowInsets(THIS_PROBE(IView), insets, res);
+        mListenerInfo->mOnApplyWindowInsetsListener->OnApplyWindowInsets(this, insets, res);
         return NOERROR;
     } else {
         OnApplyWindowInsets(insets, res);
@@ -5355,7 +5352,7 @@ ECode View::NotifySubtreeAccessibilityStateChangedIfNeeded()
         mPrivateFlags2 |= PFLAG2_SUBTREE_ACCESSIBILITY_STATE_CHANGED;
         //try {
             ECode ec = mParent->NotifySubtreeAccessibilityStateChanged(
-                    THIS_PROBE(IView), THIS_PROBE(IView), IAccessibilityEvent::CONTENT_CHANGE_TYPE_SUBTREE);
+                    this, this, IAccessibilityEvent::CONTENT_CHANGE_TYPE_SUBTREE);
         //} catch (AbstractMethodError e) {
         //    Log.e(VIEW_LOG_TAG, mParent.getClass().getSimpleName() +
         //            " does not fully implement ViewParent", e);
@@ -5872,9 +5869,9 @@ ECode View::DispatchKeyEvent(
 
     Boolean result = FALSE;
     event->Dispatch(
-        THIS_PROBE(IKeyEventCallback),
+        this,
         mAttachInfo != NULL ? mAttachInfo->mKeyDispatchState : NULL,
-        THIS_PROBE(IInterface), &result);
+        TO_IINTERFACE(this), &result);
     if (result) {
         *res = TRUE;
         return NOERROR;
@@ -8485,7 +8482,7 @@ ECode View::SetStateListAnimator(
     }
     mStateListAnimator = stateListAnimator;
     if (stateListAnimator != NULL) {
-        stateListAnimator->SetTarget(THIS_PROBE(IView));
+        stateListAnimator->SetTarget(this);
         Boolean res;
         IsAttachedToWindow(&res);
         if (res) {
@@ -9205,7 +9202,7 @@ Boolean View::SkipInvalidate()
 {
     return (mViewFlags & VISIBILITY_MASK) != IView::VISIBLE && mCurrentAnimation == NULL &&
         (mParent == NULL || IViewGroup::Probe(mParent) == NULL ||
-        !VIEWGROUP_PROBE(mParent)->IsViewTransitioning(THIS_PROBE(IView)));
+        !VIEWGROUP_PROBE(mParent)->IsViewTransitioning(this));
 }
 
 /**
@@ -9293,7 +9290,7 @@ void View::InvalidateInternal(
         if (p && ai && l < r && t < b) {
             AutoPtr<IRect> damage = ai->mTmpInvalRect;
             damage->Set(l, t, r, b);
-            p->InvalidateChild(THIS_PROBE(IView), (IRect*)damage);
+            p->InvalidateChild(this, (IRect*)damage);
         }
 
         // Damage the entire projection receiver, if necessary.
@@ -9394,10 +9391,10 @@ ECode View::DamageInParent()
         AutoPtr<IRect> r = ai->mTmpInvalRect;
         r->Set(0, 0, mRight - mLeft, mBottom - mTop);
         if (IViewGroup::Probe(mParent)) {
-            (IViewGroup::Probe(mParent))->DamageChild(THIS_PROBE(IView), r);
+            (IViewGroup::Probe(mParent))->DamageChild(this, r);
         }
         else {
-            mParent->InvalidateChild(THIS_PROBE(IView), r);
+            mParent->InvalidateChild(this, r);
         }
     }
     return NOERROR;
@@ -10945,7 +10942,7 @@ void View::CleanupDraw()
 {
     ResetDisplayList();
     if (mAttachInfo != NULL) {
-        mAttachInfo->mViewRootImpl->CancelInvalidate(THIS_PROBE(IView));
+        mAttachInfo->mViewRootImpl->CancelInvalidate(this);
     }
 }
 
@@ -12473,7 +12470,7 @@ void View::SetDisplayListProperties(
                 ViewGroup::FLAG_SUPPORT_STATIC_TRANSFORMATIONS) != 0) {
             ViewGroup* parentVG = VIEWGROUP_PROBE(mParent);
             AutoPtr<ITransformation> t = parentVG->GetChildTransformation();
-            if (parentVG->GetChildStaticTransformation(THIS_PROBE(IView), t)) {
+            if (parentVG->GetChildStaticTransformation(this, t)) {
                 Int32 transformType;
                 t->GetTransformationType(&transformType);
                 if (transformType != ITransformation::TYPE_IDENTITY) {
@@ -12561,7 +12558,7 @@ Boolean View::Draw(
         if (!usingRenderNodeProperties &&
                 (flags & ViewGroup::FLAG_SUPPORT_STATIC_TRANSFORMATIONS) != 0) {
             AutoPtr<ITransformation> t = parent->GetChildTransformation();
-            Boolean hasTransform = parent->GetChildStaticTransformation(THIS_PROBE(IView), t);
+            Boolean hasTransform = parent->GetChildStaticTransformation(this, t);
             if (hasTransform) {
                 Int32 transformType = 0;
                 t->GetTransformationType(&transformType);
@@ -13152,7 +13149,7 @@ void View::DrawAccessibilityFocus(
     GetViewRootImpl((IViewRootImpl**)&viewRoot);
     AutoPtr<IView> leftHandle;
     if (viewRoot == NULL ||
-        (viewRoot->GetAccessibilityFocusedHost((IView**)&viewRoot), IView::Probe(viewRoot)) != THIS_PROBE(IView)) {
+        (viewRoot->GetAccessibilityFocusedHost((IView**)&viewRoot), IView::Probe(viewRoot)) != (IView*)this) {
         return;
     }
 
@@ -13261,7 +13258,7 @@ AutoPtr<IRenderNode> View::GetDrawableRenderNode(
 {
     if (renderNode == NULL) {
         assert(0 && "TODO");
-        //renderNode = RenderNode::Create(drawable.getClass().getName(), THIS_PROBE(IView));
+        //renderNode = RenderNode::Create(drawable.getClass().getName(), this);
     }
 
     AutoPtr<IRect> bounds;
@@ -13307,7 +13304,7 @@ ECode View::GetOverlay(
 {
     if (mOverlay == NULL) {
         assert(0);
-        CViewOverlay::New(mContext, THIS_PROBE(IView), (IViewOverlay**)&mOverlay);
+        CViewOverlay::New(mContext, this, (IViewOverlay**)&mOverlay);
     }
     *clipBounds = mOverlay;
     REFCOUNT_ADD(*clipBounds)
@@ -14244,7 +14241,7 @@ ECode View::SetBackgroundDrawable(
             }
         }
 
-        background->SetCallback(THIS_PROBE(IDrawableCallback));
+        background->SetCallback(this);
         background->IsStateful(&result);
         if (result) {
             Boolean stateful;
@@ -15688,11 +15685,11 @@ ECode View::RequestLayout()
         Boolean isInLayout;
         if (viewRoot != NULL
             && (viewRoot->IsInLayout(&isInLayout), isInLayout)) {
-            if (viewRoot->RequestLayoutDuringLayout(THIS_PROBE(IView), &isInLayout), isInLayout) {
+            if (viewRoot->RequestLayoutDuringLayout(this, &isInLayout), isInLayout) {
                 return NOERROR;
             }
         }
-        mAttachInfo->mViewRequestingLayout = THIS_PROBE(IView);
+        mAttachInfo->mViewRequestingLayout = this;
     }
 
     mPrivateFlags |= PFLAG_FORCE_LAYOUT;
@@ -15706,7 +15703,7 @@ ECode View::RequestLayout()
         }
     }
 
-    if (mAttachInfo != NULL && THIS_PROBE(IView) == mAttachInfo->mViewRequestingLayout) {
+    if (mAttachInfo != NULL && (IView*)this == mAttachInfo->mViewRequestingLayout) {
         mAttachInfo->mViewRequestingLayout = NULL;
     }
 
@@ -15751,7 +15748,7 @@ ECode View::Measure(
     /* [in] */ Int32 widthMeasureSpec,
     /* [in] */ Int32 heightMeasureSpec)
 {
-    Boolean optical = IsLayoutModeOptical(THIS_PROBE(IInterface));
+    Boolean optical = IsLayoutModeOptical(TO_IINTERFACE(this));
     if (optical != IsLayoutModeOptical((IInterface*)mParent->Probe(EIID_IInterface))) {
         AutoPtr<IInsets> insets;
         GetOpticalInsets((IInsets**)&insets);
@@ -15876,7 +15873,7 @@ void View::SetMeasuredDimension(
     /* [in] */ Int32 measuredWidth,
     /* [in] */ Int32 measuredHeight)
 {
-    Boolean optical = IsLayoutModeOptical(THIS_PROBE(IInterface));
+    Boolean optical = IsLayoutModeOptical(TO_IINTERFACE(this));
     Boolean parentOptical = IsLayoutModeOptical((IInterface*)mParent->Probe(EIID_IInterface));
     if (optical != parentOptical) {
         AutoPtr<IInsets> insets;
@@ -16895,7 +16892,7 @@ ECode View::StartNestedScroll(
     if (IsNestedScrollingEnabled(&isNestedScrollingEnabled), isNestedScrollingEnabled) {
         AutoPtr<IViewParent> p;
         GetParent((IViewParent**)&p);
-        AutoPtr<IView> child = THIS_PROBE(IView);
+        AutoPtr<IView> child = this;
         while (p != NULL) {
             //try {
                 Boolean isScroll;
@@ -16930,7 +16927,7 @@ ECode View::StartNestedScroll(
 ECode View::StopNestedScroll()
 {
     if (mNestedScrollingParent != NULL) {
-        mNestedScrollingParent->OnStopNestedScroll(THIS_PROBE(IView));
+        mNestedScrollingParent->OnStopNestedScroll(this);
         mNestedScrollingParent = NULL;
     }
     return NOERROR;
@@ -16996,7 +16993,7 @@ ECode View::DispatchNestedScroll(
                 startY = (*offsetInWindow)[1];
             }
 
-            mNestedScrollingParent->OnNestedScroll(THIS_PROBE(IView), dxConsumed, dyConsumed,
+            mNestedScrollingParent->OnNestedScroll(this, dxConsumed, dyConsumed,
                     dxUnconsumed, dyUnconsumed);
 
             if (offsetInWindow != NULL) {
@@ -17063,7 +17060,7 @@ ECode View::DispatchNestedPreScroll(
             }
             (*consumed)[0] = 0;
             (*consumed)[1] = 0;
-            mNestedScrollingParent->OnNestedPreScroll(THIS_PROBE(IView), dx, dy, consumed);
+            mNestedScrollingParent->OnNestedPreScroll(this, dx, dy, consumed);
 
             if (offsetInWindow != NULL) {
                 GetLocationInWindow(offsetInWindow);
@@ -17109,7 +17106,7 @@ ECode View::DispatchNestedFling(
     Boolean isNestedScrollingEnabled;
     IsNestedScrollingEnabled(&isNestedScrollingEnabled);
     if (isNestedScrollingEnabled && mNestedScrollingParent != NULL) {
-        return mNestedScrollingParent->OnNestedFling(THIS_PROBE(IView), velocityX, velocityY, consumed, res);
+        return mNestedScrollingParent->OnNestedFling(this, velocityX, velocityY, consumed, res);
     }
     *res = FALSE;
     return NOERROR;
@@ -17154,7 +17151,7 @@ ECode View::DispatchNestedPreFling(
     Boolean isNestedScrollingEnabled;
     IsNestedScrollingEnabled(&isNestedScrollingEnabled);
     if (isNestedScrollingEnabled && mNestedScrollingParent != NULL) {
-        return mNestedScrollingParent->OnNestedPreFling(THIS_PROBE(IView), velocityX, velocityY, res);
+        return mNestedScrollingParent->OnNestedPreFling(this, velocityX, velocityY, res);
     }
     *res = FALSE;
     return NOERROR;
@@ -17614,7 +17611,7 @@ ECode View::CaptureTransitioningViews(
     Int32 visibility;
     GetVisibility(&visibility);
     if (visibility == IView::VISIBLE) {
-        transitioningViews->Add(THIS_PROBE(IView));
+        transitioningViews->Add(TO_IINTERFACE(this));
     }
     return NOERROR;
 }
@@ -17635,7 +17632,7 @@ ECode View::FindNamedViews(
         if (!transitionName.IsNullOrEmpty()) {
             AutoPtr<ICharSequence> csq;
             CString::New(transitionName, (ICharSequence**)&csq);
-            namedElements->Put(csq, THIS_PROBE(IView));
+            namedElements->Put(csq, TO_IINTERFACE(this));
         }
     }
     return NOERROR;
@@ -17663,7 +17660,7 @@ ECode View::constructor(
     mUserPaddingStart = UNDEFINED_PADDING;
     mUserPaddingEnd = UNDEFINED_PADDING;
 
-    mRenderNode = RenderNode::Create(String("View"), THIS_PROBE(IView));
+    mRenderNode = RenderNode::Create(String("View"), this);
 
     if (!sCompatibilityDone && context) {
         AutoPtr<IApplicationInfo> info;
@@ -18398,7 +18395,7 @@ ECode View::Log()
     GetResources((IResources**)&res);
     if (res) res->GetResourceEntryName(mID, &name);
     Logger::D("View", "type = %s, id = 0x%08x, this = %p, view = %p",
-        name.string(), mID, this, THIS_PROBE(IView));
+        name.string(), mID, this, this);
 #endif
     return NOERROR;
 }

@@ -215,7 +215,7 @@ ECode CActivityOne::ShowToast(
     // AutoPtr<IToastHelper> helper;
     // CToastHelper::AcquireSingleton((IToastHelper**)&helper);
     // AutoPtr<IToast> toast;
-    // helper->MakeText((IContext*)this->Probe(EIID_IContext), cs, style, (IToast**)&toast);
+    // helper->MakeText(this, cs, style, (IToast**)&toast);
     // toast->Show();
 
     AppendInfo(info);

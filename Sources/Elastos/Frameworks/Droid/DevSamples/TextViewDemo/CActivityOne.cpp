@@ -533,7 +533,7 @@ ECode CActivityOne::ShowAlert(
     /* [in] */ const String& info)
 {
     AutoPtr<IAlertDialogBuilder> builder;
-    CAlertDialogBuilder::New(THIS_PROBE(IContext), (IAlertDialogBuilder**)&builder);
+    CAlertDialogBuilder::New(this, (IAlertDialogBuilder**)&builder);
 
     AutoPtr<ICharSequence> cs;
     CStringWrapper::New(String("Bingo!"), (ICharSequence**)&cs);
@@ -568,7 +568,7 @@ AutoPtr<IDialog> CActivityOne::OnCreateDialog(
 {
     Slogger::D("CActivityOne", "CActivityOne::OnCreateDialog");
     AutoPtr<IAlertDialogBuilder> builder;
-    CAlertDialogBuilder::New(THIS_PROBE(IContext), (IAlertDialogBuilder**)&builder);
+    CAlertDialogBuilder::New(this, (IAlertDialogBuilder**)&builder);
 
     AutoPtr<ICharSequence> cs;
     CStringWrapper::New(String("普通对话框"), (ICharSequence**)&cs);

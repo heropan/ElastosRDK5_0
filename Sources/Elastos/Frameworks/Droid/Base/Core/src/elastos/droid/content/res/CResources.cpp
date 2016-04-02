@@ -105,7 +105,7 @@ ECode CResources::Theme::ObtainStyledAttributes(
     AutoPtr<ITypedArray> ta = CTypedArray::Obtain(IResources::Probe(mHost), len);;
     CTypedArray* array = (CTypedArray*)ta.Get();
     assert(array);
-    array->mTheme = THIS_PROBE(IResourcesTheme);
+    array->mTheme = this;
     Boolean result;
     FAIL_RETURN(CAssetManager::ApplyStyle(mTheme, 0, 0, 0, *attrs,
             array->mData, array->mIndices, &result));
@@ -125,7 +125,7 @@ ECode CResources::Theme::ObtainStyledAttributes(
     AutoPtr<ITypedArray> ta = CTypedArray::Obtain(IResources::Probe(mHost), len);;
     CTypedArray* array = (CTypedArray*)ta.Get();
     assert(array);
-    array->mTheme = THIS_PROBE(IResourcesTheme);
+    array->mTheme = this;
 
     Boolean result;
     FAIL_RETURN(CAssetManager::ApplyStyle(mTheme, 0, resid, 0, *attrs,
@@ -189,7 +189,7 @@ ECode CResources::Theme::ObtainStyledAttributes(
         parser != NULL ? parser->mParseState : 0, *attrs,
                 array->mData, array->mIndices, &result));
 
-    array->mTheme = THIS_PROBE(IResourcesTheme);
+    array->mTheme = this;
     array->mXml = parser;
 
     // if (false) {
@@ -246,7 +246,7 @@ ECode CResources::Theme::ResolveAttribute(
     Boolean bval;
     CAssetManager::ResolveAttrs(mTheme, 0, 0, *values, *attrs, array->mData, array->mIndices, &bval);
 
-    array->mTheme = THIS_PROBE(IResourcesTheme);
+    array->mTheme = this;
     array->mXml = NULL;
 
     *result = array;
@@ -291,7 +291,7 @@ ECode CResources::Theme::GetDrawable(
     /* [in] */ Int32 id,
     /* [out] */ IDrawable** drawable)
 {
-    return IResources::Probe(mHost)->GetDrawable(id, THIS_PROBE(IResourcesTheme), drawable);
+    return IResources::Probe(mHost)->GetDrawable(id, this, drawable);
 }
 
 ECode CResources::Theme::Dump(

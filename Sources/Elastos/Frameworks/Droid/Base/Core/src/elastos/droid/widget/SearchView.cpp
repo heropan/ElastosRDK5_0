@@ -437,7 +437,7 @@ ECode SearchView::constructor(
     view = NULL;
     FindViewById(R::id::search_src_text, (IView**)&view);
     mQueryTextView = ISearchViewSearchAutoComplete::Probe(view);
-    mQueryTextView->SetSearchView(THIS_PROBE(ISearchView));
+    mQueryTextView->SetSearchView(this);
 
     FindViewById(R::id::search_edit_frame, (IView**)&mSearchEditFrame);
     FindViewById(R::id::search_plate, (IView**)&mSearchPlate);

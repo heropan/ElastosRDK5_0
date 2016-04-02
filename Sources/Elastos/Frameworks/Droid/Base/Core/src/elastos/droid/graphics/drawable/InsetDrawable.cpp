@@ -168,7 +168,7 @@ ECode InsetDrawable::Inflate(
         ec = Drawable::CreateFromXmlInner(r, parser, attrs, theme, (IDrawable**)&dr);
         FAIL_GOTO(ec, error);
         mInsetState->mDrawable = dr;
-        dr->SetCallback((IDrawableCallback*)this->Probe(EIID_IDrawableCallback));
+        dr->SetCallback(this);
     }
 
     ec = VerifyRequiredAttributes(a);
@@ -217,7 +217,7 @@ ECode InsetDrawable::UpdateStateFromTypedArray(
                 a->GetDrawable(attr, (IDrawable**)&dr);
                 if (dr != NULL) {
                     state->mDrawable = dr;
-                    dr->SetCallback((IDrawableCallback*)this->Probe(EIID_IDrawableCallback));
+                    dr->SetCallback(this);
                 }
                 break;
             case R::styleable::InsetDrawable_inset:
@@ -291,7 +291,7 @@ ECode InsetDrawable::InvalidateDrawable(
     AutoPtr<IDrawableCallback> callback;
     GetCallback((IDrawableCallback**)&callback);
     if (callback != NULL) {
-        callback->InvalidateDrawable(THIS_PROBE(IDrawable));
+        callback->InvalidateDrawable(this);
     }
     return NOERROR;
 }
@@ -304,7 +304,7 @@ ECode InsetDrawable::ScheduleDrawable(
     AutoPtr<IDrawableCallback> callback;
     GetCallback((IDrawableCallback**)&callback);
     if (callback != NULL) {
-        callback->ScheduleDrawable(THIS_PROBE(IDrawable), what, when);
+        callback->ScheduleDrawable(this, what, when);
     }
     return NOERROR;
 }
@@ -316,7 +316,7 @@ ECode InsetDrawable::UnscheduleDrawable(
     AutoPtr<IDrawableCallback> callback;
     GetCallback((IDrawableCallback**)&callback);
     if (callback != NULL) {
-        callback->UnscheduleDrawable(THIS_PROBE(IDrawable), what);
+        callback->UnscheduleDrawable(this, what);
     }
     return NOERROR;
 }
@@ -566,8 +566,7 @@ ECode InsetDrawable::constructor(
     mInsetState->mInsetBottom = insetBottom;
 
     if (drawable != NULL) {
-        drawable->SetCallback(
-                (IDrawableCallback*)this->Probe(EIID_IDrawableCallback));
+        drawable->SetCallback(this);
     }
     return NOERROR;
 }

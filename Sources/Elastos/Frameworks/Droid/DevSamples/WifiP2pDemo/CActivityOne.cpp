@@ -457,7 +457,7 @@ ECode CActivityOne::ShowToast(
     // AutoPtr<IToastHelper> helper;
     // CToastHelper::AcquireSingleton((IToastHelper**)&helper);
     // AutoPtr<IToast> toast;
-    // helper->MakeText((IContext*)this->Probe(EIID_IContext), cs, style, (IToast**)&toast);
+    // helper->MakeText(this, cs, style, (IToast**)&toast);
     // toast->Show();
 
     AppendInfo(info);
@@ -519,7 +519,7 @@ ECode CActivityOne::SetupWifi()
 
     mWifiP2pManagerChannelListener = new WifiP2pManagerChannelListener(this);
     mP2pManager->Initialize(
-        (IContext*)this->Probe(EIID_IContext), looper,
+        this, looper,
         mWifiP2pManagerChannelListener,
         (IWifiP2pManagerChannel**)&mChannel);
 
@@ -628,7 +628,7 @@ ECode CActivityOne::OnChannelDisconnected()
         AutoPtr<ILooper> looper;
         GetMainLooper((ILooper**)&looper);
         mP2pManager->Initialize(
-            (IContext*)this->Probe(EIID_IContext), looper,
+            this, looper,
             mWifiP2pManagerChannelListener,
             (IWifiP2pManagerChannel**)&mChannel);
     }

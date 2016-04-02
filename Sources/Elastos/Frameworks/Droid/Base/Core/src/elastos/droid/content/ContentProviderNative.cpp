@@ -655,7 +655,7 @@ ECode ContentProviderNative::Equals(
 
     IContentProviderNative * o = IContentProviderNative::Probe(other);
     if (o != NULL) {
-        *result = (o == THIS_PROBE(IContentProviderNative));
+        *result = (o == (IContentProviderNative*)this);
     }
     return NOERROR;
 }
@@ -664,7 +664,7 @@ ECode ContentProviderNative::GetHashCode(
     /* [out] */ Int32* hash)
 {
     VALIDATE_NOT_NULL(hash);
-    *hash = (Int32)THIS_PROBE(IContentProviderNative);
+    *hash = (Int32)this;
     return NOERROR;
 }
 
@@ -673,7 +673,7 @@ ECode ContentProviderNative::ToString(
 {
     VALIDATE_NOT_NULL(info);
     StringBuilder sb("ContentProviderNative:(");
-    sb += (Int32)THIS_PROBE(IContentProviderNative);
+    sb += (Int32)this;
     sb += ")";
     sb.ToString(info);
     return NOERROR;

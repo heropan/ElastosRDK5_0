@@ -227,7 +227,7 @@ ECode CActivityOne::OnCreate(
     assert(mExternalText != NULL);
 
     //database
-    mDbHelper = new FeedReaderDbHelper(THIS_PROBE(IContext));
+    mDbHelper = new FeedReaderDbHelper(this);
 
     return NOERROR;
 }

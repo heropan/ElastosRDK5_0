@@ -311,6 +311,7 @@ module
             interface IParcelable;
         }
 
+        [local]
         class CUsageStatsManager {
             constructor(
                 [in] IContext* ctx,
@@ -363,6 +364,7 @@ module
         interface IContext;
     }
 
+        [local]
         class CAlarmManager {
             constructor(
                 [in] IIAlarmManager* service,
@@ -598,6 +600,7 @@ module
         interface IOnWindowDismissedCallback;
     }
 
+    [local]
     class CActivityView {
         constructor(
             [in] IContext* ctx);
@@ -660,6 +663,7 @@ module
         interface IOnWindowDismissedCallback;
     }
 
+    [local]
     class CNativeContentView {
         constructor(
             [in] IContext* ctx);
@@ -705,6 +709,7 @@ module
         interface IParcelable;
     }
 
+    [local]
     class CSearchManager {
         constructor(
             [in] IContext* ctx,
@@ -734,6 +739,7 @@ module
     }
 
     /** hide */
+    [local]
     class CSearchBar {
         constructor(
             [in] IContext* ctx,
@@ -1027,6 +1033,7 @@ module
         interface IParcelable;
     }
 
+    [local]
     class CAppOpsManager {
         constructor(
             [in] IContext* ctx,
@@ -1034,6 +1041,7 @@ module
 
         interface IAppOpsManager;
     }
+
     singleton class CAppOpsManagerHelper {
         interface IAppOpsManagerHelper;
     }
@@ -1220,6 +1228,7 @@ module
         interface INotificationHelper;
     }
 
+    [local]
     class CNotificationManager {
         constructor(
             [in] IContext* ctx,
@@ -1502,6 +1511,7 @@ module
         interface IAlertDialogBuilder;
     }
 
+    [local]
     class CTimePickerDialog {
         constructor(
             [in] IContext* ctx,
@@ -1530,6 +1540,7 @@ module
         interface IOnWindowDismissedCallback;
     }
 
+    [local]
     class CDatePickerDialog {
         constructor(
             [in] IContext* ctx,
@@ -1668,6 +1679,7 @@ module
         interface IStatusBarManagerHelper;
     }
 
+    [local]
     class CTaskStackBuilder {
         constructor(
             [in] IContext * ctx);
@@ -1863,6 +1875,7 @@ module
         interface IVoiceInteractorRequest;
     }
 
+    [local]
     class CFragmentBreadCrumbs {
         constructor(
             [in] IContext* ctx);
@@ -1903,6 +1916,7 @@ module
         interface IJobScheduler;
     }
 
+    [local]
     class CMediaRouteButton {
 
         constructor(

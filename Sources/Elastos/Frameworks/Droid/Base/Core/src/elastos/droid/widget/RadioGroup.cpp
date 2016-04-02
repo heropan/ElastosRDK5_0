@@ -304,7 +304,7 @@ void RadioGroup::SetCheckedId(
 {
     mCheckedId = id;
     if (mOnCheckedChangeListener != NULL) {
-        mOnCheckedChangeListener->OnCheckedChanged(THIS_PROBE(IRadioGroup), mCheckedId);
+        mOnCheckedChangeListener->OnCheckedChanged(this, mCheckedId);
     }
 }
 

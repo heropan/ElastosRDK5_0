@@ -141,7 +141,7 @@ ECode PopupWindow::PopupViewContainer::DispatchTouchEvent(
 
     if (mHost->mTouchInterceptor != NULL) {
         Boolean result;
-        mHost->mTouchInterceptor->OnTouch(THIS_PROBE(IView), event, &result);
+        mHost->mTouchInterceptor->OnTouch(this, event, &result);
         if (result) {
             *res = TRUE;
             return NOERROR;

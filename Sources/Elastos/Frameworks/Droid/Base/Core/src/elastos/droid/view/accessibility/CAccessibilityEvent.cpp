@@ -351,7 +351,7 @@ ECode CAccessibilityEvent::WriteToParcel(
     // TextUtils::WriteToParcel(mPackageName, parcel);
     parcel->WriteInt64(mEventTime);
     parcel->WriteInt32(mConnectionId);
-    WriteAccessibilityRecordToParcel(THIS_PROBE(IAccessibilityRecord), parcel);
+    WriteAccessibilityRecordToParcel(this, parcel);
 
     // Write the records.
     Int32 recordCount;

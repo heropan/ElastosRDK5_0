@@ -60,6 +60,7 @@ namespace StatusBar {
 
 class BaseStatusBar
     : public SystemUI
+    , public IBaseStatusBar
     , public ICommandQueueCallbacks
     , public IActivatableNotificationViewOnActivatedListener
     , public IRecentsComponentCallbacks
@@ -128,7 +129,7 @@ protected:
         BaseStatusBar* mHost;
     };
 
-    class H: public Handler
+    class H : public Handler
     {
     public:
         H(
@@ -727,7 +728,7 @@ protected:
 
     virtual CARAPI_(Boolean) ShouldDisableNavbarGestures() = 0;
 
-    virtual CARAPI_(void) UpdateNotificationRanking(
+    virtual CARAPI UpdateNotificationRanking(
         /* [in] */ INotificationListenerServiceRankingMap* ranking) = 0;
 
     virtual CARAPI_(void) NotifyHeadsUpScreenOn(

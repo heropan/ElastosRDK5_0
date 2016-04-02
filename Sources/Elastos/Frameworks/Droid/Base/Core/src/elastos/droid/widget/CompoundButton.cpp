@@ -222,11 +222,11 @@ ECode CompoundButton::SetChecked(
         mBroadcasting = TRUE;
         if (mOnCheckedChangeListener != NULL) {
             mOnCheckedChangeListener->OnCheckedChanged(
-                THIS_PROBE(ICompoundButton), mChecked);
+                this, mChecked);
         }
         if (mOnCheckedChangeWidgetListener != NULL) {
             mOnCheckedChangeWidgetListener->OnCheckedChanged(
-                THIS_PROBE(ICompoundButton), mChecked);
+                this, mChecked);
         }
 
         mBroadcasting = FALSE;
@@ -280,7 +280,7 @@ ECode CompoundButton::SetButtonDrawable(
         mButtonDrawable = d;
 
         if (d != NULL) {
-            d->SetCallback(THIS_PROBE(IDrawableCallback));
+            d->SetCallback(this);
             Int32 direction;
             GetLayoutDirection(&direction);
             d->SetLayoutDirection(direction);

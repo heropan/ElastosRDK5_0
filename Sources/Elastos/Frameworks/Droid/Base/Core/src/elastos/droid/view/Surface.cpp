@@ -751,7 +751,7 @@ ECode Surface::GetNativeSurface(
 
     VALIDATE_NOT_NULL(result)
 
-    *result = mNativeObject;
+    *result = reinterpret_cast<Int64>(mNativeObject);
     return NOERROR;
 }
 

@@ -299,7 +299,7 @@ void PanelView::RunPeekAnimation()
 
     AutoPtr<ArrayOf<Float> > fvs = ArrayOf<Float>::Alloc(1);
     (*fvs)[0] = mPeekHeight;
-    helper->OfFloat(THIS_PROBE(IInterface), String("expandedHeight"), fvs, (IObjectAnimator**)&mPeekAnimator);
+    helper->OfFloat(TO_IINTERFACE(this), String("expandedHeight"), fvs, (IObjectAnimator**)&mPeekAnimator);
     IAnimator::Probe(mPeekAnimator)->SetDuration(250);
     IAnimator::Probe(mPeekAnimator)->SetInterpolator(ITimeInterpolator::Probe(mLinearOutSlowInInterpolator));
     AutoPtr<AnimatorListenerAdapter1> listener = new AnimatorListenerAdapter1(this);

@@ -305,7 +305,7 @@ ECode CActivityOne::OnCreate(
 
     AutoPtr<IGallery> gallery = IGallery::Probe(view);
     AutoPtr<IBaseAdapter> adapter = new ImageAdapter(
-        (IContext*)this->Probe(EIID_IContext));
+        this);
 
     return gallery->SetAdapter(adapter);
 }

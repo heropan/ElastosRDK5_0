@@ -1710,7 +1710,7 @@ ECode Collections::_SynchronizedCollection::Equals(
     /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result);
-    *result = this->Probe(EIID_IInterface) == object;
+    *result = TO_IINTERFACE(this) == object;
     return NOERROR;
 }
 
@@ -2122,7 +2122,7 @@ AutoPtr<IInterface> Collections::_SynchronizedList::ReadResolve()
         AutoPtr<SynchronizedRandomAccessList> p = new SynchronizedRandomAccessList(mList, mLock);
         return (IInterface*)p->Probe(EIID_IInterface);
     }
-    return (IInterface*)this->Probe(EIID_IInterface);
+    return (IInterface*)TO_IINTERFACE(this);
 }
 
 //====================================================================
@@ -3136,7 +3136,7 @@ ECode Collections::_UnmodifiableCollection::Equals(
     /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result);
-    *result = this->Probe(EIID_IInterface) == object;
+    *result = TO_IINTERFACE(this) == object;
     return NOERROR;
 }
 
@@ -3182,7 +3182,7 @@ AutoPtr<IInterface> Collections::UnmodifiableRandomAccessList::WriteReplace()
 //====================================================================
 // Collections::_UnmodifiableList::ListIterator::
 //====================================================================
-CAR_INTERFACE_IMPL(Collections::_UnmodifiableList::ListIterator, Object, IListIterator)
+CAR_INTERFACE_IMPL_2(Collections::_UnmodifiableList::ListIterator, Object, IListIterator, IIterator)
 
 Collections::_UnmodifiableList::ListIterator::ListIterator(
     /* [in] */ _UnmodifiableList* owner,
@@ -3483,7 +3483,7 @@ AutoPtr<IInterface> Collections::_UnmodifiableList::ReadResolve()
         AutoPtr<UnmodifiableRandomAccessList> res = new UnmodifiableRandomAccessList(mList);
         return res->Probe(EIID_IInterface);
     }
-    return this->Probe(EIID_IInterface);
+    return TO_IINTERFACE(this);
 }
 
 ECode Collections::_UnmodifiableList::AddAll(
@@ -5856,7 +5856,7 @@ ECode Collections::_AsLIFOQueue::Equals(
     /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result);
-    *result = this->Probe(EIID_IInterface) == object;
+    *result = TO_IINTERFACE(this) == object;
     return NOERROR;
 }
 
@@ -6052,7 +6052,7 @@ ECode Collections::_CheckedCollection::Equals(
     /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result);
-    *result = this->Probe(EIID_IInterface) == object;
+    *result = TO_IINTERFACE(this) == object;
     return NOERROR;
 }
 
@@ -6067,7 +6067,7 @@ ECode Collections::_CheckedCollection::GetHashCode(
 //====================================================================
 // Collections::CheckedListIterator::
 //====================================================================
-CAR_INTERFACE_IMPL(Collections::CheckedListIterator, Object, IListIterator)
+CAR_INTERFACE_IMPL_2(Collections::CheckedListIterator, Object, IListIterator, IIterator)
 
 Collections::CheckedListIterator::CheckedListIterator(
     /* [in] */ IListIterator* i,

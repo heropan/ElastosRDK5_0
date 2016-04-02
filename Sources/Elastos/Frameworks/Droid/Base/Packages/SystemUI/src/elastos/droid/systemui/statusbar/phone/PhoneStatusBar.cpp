@@ -1484,7 +1484,7 @@ ECode PhoneStatusBar::Start()
 
     mDozeServiceHost = new DozeServiceHost(this);
     PutComponent(EIID_IDozeHost, mDozeServiceHost->Probe(EIID_IInterface));
-    PutComponent(EIID_IPhoneStatusBar, THIS_PROBE(IInterface));
+    PutComponent(EIID_IPhoneStatusBar, TO_IINTERFACE(this));
 
     SetControllerUsers();
 
@@ -1567,7 +1567,7 @@ AutoPtr<IPhoneStatusBarView> PhoneStatusBar::MakeStatusBarView()
             mNavigationBarView = INavigationBarView::Probe(view);
 
             mNavigationBarView->SetDisabledFlags(mDisabled);
-            mNavigationBarView->SetBar(THIS_PROBE(IBaseStatusBar));
+            mNavigationBarView->SetBar(this);
 
             AutoPtr<VerticalChangedListener> cl = new VerticalChangedListener(this);
             mNavigationBarView->SetOnVerticalChangedListener(cl);
@@ -2391,11 +2391,12 @@ ECode PhoneStatusBar::ScheduleHeadsUpEscalation()
     return NOERROR;
 }
 
-void PhoneStatusBar::UpdateNotificationRanking(
+ECode PhoneStatusBar::UpdateNotificationRanking(
     /* [in] */ INotificationListenerServiceRankingMap* ranking)
 {
     mNotificationData->UpdateRanking(ranking);
     UpdateNotifications();
+    return NOERROR;
 }
 
 ECode PhoneStatusBar::RemoveNotification(

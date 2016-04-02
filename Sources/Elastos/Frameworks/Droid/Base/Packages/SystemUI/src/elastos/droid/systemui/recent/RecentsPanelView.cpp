@@ -803,7 +803,7 @@ ECode RecentsPanelView::OnFinishInflate()
     GetContext((IContext**)&context);
     mListAdapter = new TaskDescriptionAdapter(context, this);
     mRecentsContainer->SetAdapter(mListAdapter);
-    mRecentsContainer->SetCallback((IRecentsCallback*)this);
+    mRecentsContainer->SetCallback(this);
 
     FindViewById(R::id::recents_bg_protect, (IView**)&mRecentsScrim);
     FindViewById(R::id::recents_no_apps, (IView**)&mRecentsNoApps);

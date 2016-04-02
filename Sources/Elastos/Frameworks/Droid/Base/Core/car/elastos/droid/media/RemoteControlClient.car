@@ -176,6 +176,7 @@ module
      *
      * @deprecated Use {@link MediaSession} instead.
      */
+    [deprecated, local]
     interface IRemoteControlClient {
         /**
          * Playback state of a RemoteControlClient which is stopped.

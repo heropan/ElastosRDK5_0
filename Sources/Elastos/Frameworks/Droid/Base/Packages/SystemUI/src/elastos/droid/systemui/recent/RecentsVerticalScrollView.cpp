@@ -201,8 +201,8 @@ RecentsVerticalScrollView::RecentsVerticalScrollView(
     , mNumItemsInOneScreenful(0)
 {
     ScrollView::constructor(ctx, attrs, 0);
-    CSwipeHelper::New(ISwipeHelper::X, (ISwipeHelperCallback*)this, ctx, (ISwipeHelper**)&mSwipeHelper);
-    mFadedEdgeDrawHelper = FadedEdgeDrawHelper::Create(ctx, attrs, (IView*)this, TRUE);
+    CSwipeHelper::New(ISwipeHelper::X, this, ctx, (ISwipeHelper**)&mSwipeHelper);
+    mFadedEdgeDrawHelper = FadedEdgeDrawHelper::Create(ctx, attrs, this, TRUE);
     CHashSet::New((IHashSet**)&mRecycledViews);
 }
 

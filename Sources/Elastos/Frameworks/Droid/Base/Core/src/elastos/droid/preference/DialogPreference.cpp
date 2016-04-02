@@ -269,8 +269,8 @@ ECode DialogPreference::ShowDialog(
     CAlertDialogBuilder::New(context, (IAlertDialogBuilder**)&mBuilder);
     mBuilder->SetTitle(mDialogTitle);
     mBuilder->SetIcon(mDialogIcon);
-    mBuilder->SetPositiveButton(mPositiveButtonText, (IDialogInterfaceOnClickListener*)this);
-    mBuilder->SetNegativeButton(mNegativeButtonText, (IDialogInterfaceOnClickListener*)this);
+    mBuilder->SetPositiveButton(mPositiveButtonText, this);
+    mBuilder->SetNegativeButton(mNegativeButtonText, this);
 
     AutoPtr<IView> contentView;
     OnCreateDialogView((IView**)&contentView);
@@ -286,7 +286,7 @@ ECode DialogPreference::ShowDialog(
 
     AutoPtr<IPreferenceManager> manager;
     GetPreferenceManager((IPreferenceManager**)&manager);
-    manager->RegisterOnActivityDestroyListener(THIS_PROBE(IPreferenceManagerOnActivityDestroyListener));
+    manager->RegisterOnActivityDestroyListener(this);
 
     // Create the dialog
     AutoPtr<IAlertDialog> alertDialog;
@@ -300,7 +300,7 @@ ECode DialogPreference::ShowDialog(
     if (NeedInputMethod(&isNeed), isNeed) {
         RequestInputMethod(dialog);
     }
-    dialog->SetOnDismissListener(THIS_PROBE(IDialogInterfaceOnDismissListener));
+    dialog->SetOnDismissListener(this);
     dialog->Show();
     return NOERROR;
 }
@@ -379,7 +379,7 @@ ECode DialogPreference::OnDismiss(
 {
     AutoPtr<IPreferenceManager> manager;
     GetPreferenceManager((IPreferenceManager**)&manager);
-    manager->UnregisterOnActivityDestroyListener(THIS_PROBE(IPreferenceManagerOnActivityDestroyListener));
+    manager->UnregisterOnActivityDestroyListener(this);
 
     mDialog = NULL;
     OnDialogClosed(mWhichButtonClicked == IDialogInterface::BUTTON_POSITIVE);

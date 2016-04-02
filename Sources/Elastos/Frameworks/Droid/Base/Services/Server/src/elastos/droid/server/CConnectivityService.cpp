@@ -2966,7 +2966,7 @@ void CConnectivityService::Dump(
     // pw.decreaseIndent();
     // pw.println();
 
-    //ISynchronize* syncObj = THIS_PROBE(ISynchronize);
+    //ISynchronize* syncObj = this;
     // synchronized(syncObj) {
     //     pw.println("NetworkTransitionWakeLock is currently " +
     //             (mNetTransitionWakeLock.isHeld() ? "" : "not ") + "held.");
@@ -4557,7 +4557,7 @@ ECode CConnectivityService::RegisterNetworkAgent(
     AutoPtr<NetworkAgentInfo> nai = new NetworkAgentInfo(messenger, channel,
         ni, lp, nc, currentScore, mContext, mTrackerHandler, nm);
 
-    ISynchronize* syncObj = THIS_PROBE(ISynchronize);
+    ISynchronize* syncObj = this;
     synchronized(syncObj) {
         nai->mNetworkMonitor->mSystemReady = mSystemReady;
     }
@@ -5196,7 +5196,7 @@ void CConnectivityService::RematchNetworkAndRequests(
         if (isNewDefault) {
             // Notify system services that this network is up.
             MakeDefault(newNetwork);
-            ISynchronize* syncObj = THIS_PROBE(ISynchronize);
+            ISynchronize* syncObj = this;
             synchronized(syncObj) {
                 // have a new default network, release the transition wakelock in
                 // a second if it's held.  The second pause is to allow apps

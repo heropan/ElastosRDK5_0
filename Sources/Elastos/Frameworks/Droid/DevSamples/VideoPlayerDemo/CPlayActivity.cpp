@@ -155,7 +155,7 @@ ECode CPlayActivity::OnCreate(
     mVideoView->SetVideoPath(videoPath);
 
     AutoPtr<IMediaController> mc;
-    CMediaController::New((IContext*)this->Probe(EIID_IContext), (IMediaController**)&mc);
+    CMediaController::New(this, (IMediaController**)&mc);
     mVideoView->SetMediaController(mc);
     mc->SetMediaPlayer(IMediaPlayerControl::Probe(mVideoView));
     Boolean rst;

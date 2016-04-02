@@ -1273,9 +1273,9 @@ PInterface StackView::StackFrame::Probe(
     } else if (riid == EIID_IFrameLayout) {
         return (IFrameLayout*)this;
     } else if (riid == EIID_IViewGroup) {
-        return (IViewGroup*)(IFrameLayout*)this;
+        return (IViewGroup*)this;
     } else if (riid == EIID_IView) {
-        return (IView*)(IViewGroup*)(IFrameLayout*)this;
+        return (IView*)this;
     } else if (riid == EIID_IViewParent) {
         return (IViewParent*)this;
     } else if (riid == EIID_IViewManager) {

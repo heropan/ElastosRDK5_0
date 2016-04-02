@@ -45,7 +45,7 @@ ECode AlphabetIndexer::constructor(
     }
     CSparseInt32Array::New(mAlphabetLength, (ISparseInt32Array**)&mAlphaMap);
     if (cursor != NULL) {
-        cursor->RegisterDataSetObserver(THIS_PROBE(IDataSetObserver));
+        cursor->RegisterDataSetObserver(this);
     }
 
     // Get a Collator for the current locale for string comparisons.

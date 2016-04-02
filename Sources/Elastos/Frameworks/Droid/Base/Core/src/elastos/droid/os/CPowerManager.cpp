@@ -62,7 +62,7 @@ ECode CPowerManager::NewWakeLock(
     FAIL_RETURN(ValidateWakeLockParameters(levelAndFlags, tag));
     String name;
     mContext->GetOpPackageName(&name);
-    return CPowerManagerWakeLock::New(levelAndFlags, tag, name, THIS_PROBE(IPowerManager), wakeLock);
+    return CPowerManagerWakeLock::New(levelAndFlags, tag, name, this, wakeLock);
 }
 
 ECode CPowerManager::ValidateWakeLockParameters(

@@ -990,7 +990,7 @@ AutoPtr<IView> Gallery::MakeAndAddView(
         }
     }
     child = NULL;
-    IAdapter::Probe(mAdapter)->GetView(position, NULL, THIS_PROBE(IViewGroup), (IView**)&child);
+    IAdapter::Probe(mAdapter)->GetView(position, NULL, this, (IView**)&child);
 
     SetUpChild(child, offset, x, fromLeft);
 
@@ -1323,13 +1323,13 @@ Boolean Gallery::DispatchLongPress(
     Boolean handled = FALSE;
 
     if (mOnItemLongClickListener != NULL) {
-        mOnItemLongClickListener->OnItemLongClick(THIS_PROBE(IAdapterView),
+        mOnItemLongClickListener->OnItemLongClick(this,
                 mDownTouchView, mDownTouchPosition, id, &handled);
     }
 
     if (!handled) {
         mContextMenuInfo = new AdapterContextMenuInfo(view, position, id);
-        AbsSpinner::ShowContextMenuForChild(THIS_PROBE(IView), &handled);
+        AbsSpinner::ShowContextMenuForChild(this, &handled);
     }
 
     if (handled) {
@@ -1345,7 +1345,7 @@ ECode Gallery::DispatchKeyEvent(
     /* [out] */ Boolean* res)
 {
     VALIDATE_NOT_NULL(res);
-    return event->Dispatch(THIS_PROBE(IKeyEventCallback), NULL, NULL, res);
+    return event->Dispatch(this, NULL, NULL, res);
 }
 
 ECode Gallery::OnKeyDown(

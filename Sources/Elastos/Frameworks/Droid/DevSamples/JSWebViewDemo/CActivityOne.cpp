@@ -165,8 +165,8 @@ ECode CActivityOne::OnCreate(
     FindViewById(R::id::test_button, (IView**)&testButton);
     testButton->SetOnClickListener(mClickListener);
 
-    mWebView->AddJavascriptInterface(THIS_PROBE(IObjectFactory), String("CarObjectFactory"));
-    mWebView->AddJavascriptInterface(THIS_PROBE(ILogger), String("CarLogger"));
+    mWebView->AddJavascriptInterface(this, String("CarObjectFactory"));
+    mWebView->AddJavascriptInterface(this, String("CarLogger"));
 
     return NOERROR;
 }

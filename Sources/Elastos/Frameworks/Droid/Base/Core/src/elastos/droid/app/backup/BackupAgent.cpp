@@ -508,7 +508,7 @@ ECode BackupAgent::Equals(
 
     IBackupAgent * o = IBackupAgent::Probe(other);
     if (o != NULL) {
-        *result = (o == THIS_PROBE(IBackupAgent));
+        *result = (o == (IBackupAgent*)this);
     }
     return NOERROR;
 }

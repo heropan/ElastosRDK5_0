@@ -362,7 +362,7 @@ ECode CMusicService::OnBind(
     /* [out] */ IBinder** binder)
 {
     VALIDATE_NOT_NULL(binder);
-    *binder = THIS_PROBE(IBinder);
+    *binder = this;
     REFCOUNT_ADD(*binder);
 
     Logger::D("CMusicService", "OnBind() %d", *binder);

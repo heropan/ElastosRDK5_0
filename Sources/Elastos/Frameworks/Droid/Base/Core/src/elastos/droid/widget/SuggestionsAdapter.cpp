@@ -300,7 +300,7 @@ ECode _SuggestionsAdapter::BindView(
         AutoPtr<ICharSequence> cs;
         views->mText1->GetText((ICharSequence**)&cs);
         views->mIconRefine->SetTag(cs);
-        views->mIconRefine->SetOnClickListener(THIS_PROBE(IViewOnClickListener));
+        views->mIconRefine->SetOnClickListener(this);
     }
     else {
         views->mIconRefine->SetVisibility(IView::GONE);
@@ -783,19 +783,19 @@ PInterface SuggestionsAdapter::Probe(
         return (ISuggestionsAdapter*)this;
     }
     else if (riid == EIID_IResourceCursorAdapter) {
-        return (ISuggestionsAdapter*)this;
+        return (IResourceCursorAdapter*)this;
     }
     else if (riid == EIID_ICursorAdapter) {
-        return (ISuggestionsAdapter*)this;
+        return (ICursorAdapter*)this;
     }
     else if (riid == EIID_IBaseAdapter) {
-        return (ISuggestionsAdapter*)this;
+        return (IBaseAdapter*)this;
     }
     else if (riid == EIID_IListAdapter) {
-        return (ISuggestionsAdapter*)this;
+        return (IListAdapter*)this;
     }
     else if (riid == EIID_IAdapter) {
-        return (ISuggestionsAdapter*)this;
+        return (IAdapter*)this;
     }
     else if (riid == EIID_IInterface) {
         return (ISuggestionsAdapter*)this;

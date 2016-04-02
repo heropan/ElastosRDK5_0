@@ -170,13 +170,13 @@ ECode CColorMatrix::SetConcat(
 ECode CColorMatrix::PreConcat(
     /* [in] */ IColorMatrix* prematrix)
 {
-    return SetConcat((IColorMatrix*)this, prematrix);
+    return SetConcat(this, prematrix);
 }
 
 ECode CColorMatrix::PostConcat(
     /* [in] */ IColorMatrix* postmatrix)
 {
-    return SetConcat(postmatrix, (IColorMatrix*)this);
+    return SetConcat(postmatrix, this);
 }
 
 ECode CColorMatrix::SetSaturation(

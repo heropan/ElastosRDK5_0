@@ -991,7 +991,7 @@ AutoPtr<IAccessibilityNodeInfo> NumberPicker::AccessibilityNodeProviderImpl::Cre
     if (HasVirtualDecrementButton()) {
         info->AddChild(IVIEW_PROBE(mHost), VIRTUAL_VIEW_ID_DECREMENT);
     }
-    info->AddChild(THIS_PROBE(IView), VIRTUAL_VIEW_ID_INPUT);
+    info->AddChild((IView*)mHost, VIRTUAL_VIEW_ID_INPUT);
     if (HasVirtualIncrementButton()) {
         info->AddChild(IVIEW_PROBE(mHost), VIRTUAL_VIEW_ID_INCREMENT);
     }
@@ -1397,7 +1397,7 @@ ECode NumberPicker::constructor(
     con->GetSystemService(IContext::LAYOUT_INFLATER_SERVICE, (IInterface**)&i);
     AutoPtr<ILayoutInflater> inflater = ILayoutInflater::Probe(i);
     AutoPtr<IView> v;
-    inflater->Inflate(layoutResID, THIS_PROBE(IViewGroup), TRUE, (IView**)&v);
+    inflater->Inflate(layoutResID, this, TRUE, (IView**)&v);
 
     AutoPtr<IViewOnClickListener> onClickListener = new NumberPickerOnClickListener(this);
     AutoPtr<IViewOnLongClickListener> onLongClickListener = new NumberPickerOnLongCliskListener(this);

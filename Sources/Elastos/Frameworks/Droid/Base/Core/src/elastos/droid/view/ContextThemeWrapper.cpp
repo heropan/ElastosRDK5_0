@@ -133,9 +133,7 @@ ECode ContextThemeWrapper::GetSystemService(
         if (mInflater == NULL) {
             AutoPtr<ILayoutInflater> inflater;
             LayoutInflater::From(mBase, (ILayoutInflater**)&inflater);
-            inflater->CloneInContext(
-                (IContext*)this->Probe(EIID_IContext),
-                (ILayoutInflater**)&mInflater);
+            inflater->CloneInContext(this, (ILayoutInflater**)&mInflater);
         }
         *object = mInflater;
         REFCOUNT_ADD(*object);

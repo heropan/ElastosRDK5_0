@@ -165,9 +165,9 @@ RecentsHorizontalScrollView::RecentsHorizontalScrollView(
     //TODO
     // HorizontalScrollView::constructor(ctx, attrs, 0);
 
-    CSwipeHelper::New(ISwipeHelper::Y, (ISwipeHelperCallback*)this, ctx, (ISwipeHelper**)&mSwipeHelper);
+    CSwipeHelper::New(ISwipeHelper::Y, this, ctx, (ISwipeHelper**)&mSwipeHelper);
 
-    mFadedEdgeDrawHelper = FadedEdgeDrawHelper::Create(ctx, attrs, (IView*)this, FALSE);
+    mFadedEdgeDrawHelper = FadedEdgeDrawHelper::Create(ctx, attrs, this, FALSE);
     CHashSet::New((IHashSet**)&mRecycledViews);
 }
 

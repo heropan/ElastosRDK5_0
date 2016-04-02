@@ -163,7 +163,7 @@ ECode SwitchBar::constructor(
     AutoPtr<ILayoutInflater> inflater;
     LayoutInflater::From(context, (ILayoutInflater**)&inflater);
     AutoPtr<IView> view;
-    inflater->Inflate(R::layout::switch_bar, (IViewGroup*)this, (IView**)&view);
+    inflater->Inflate(R::layout::switch_bar, this, (IView**)&view);
 
     AutoPtr<ITypedArray> a;
     context->ObtainStyledAttributes(attrs, MARGIN_ATTRIBUTES, (ITypedArray**)&a);
