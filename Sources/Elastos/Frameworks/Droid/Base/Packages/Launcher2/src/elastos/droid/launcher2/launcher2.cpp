@@ -7,6 +7,7 @@
 #include "elastos/droid/launcher2/CDragLayer.h"
 #include "elastos/droid/launcher2/CFolderIcon.h"
 #include "elastos/droid/launcher2/CLauncherProvider.h"
+#include "elastos/droid/launcher2/CCellLayout.h"
 
 namespace Elastos {
 namespace Droid {
@@ -20,6 +21,7 @@ CAR_OBJECT_IMPL(CWallpaperChooserDialogFragment)
 CAR_OBJECT_IMPL(CDragLayer)
 CAR_OBJECT_IMPL(CFolderIcon)
 CAR_OBJECT_IMPL(CLauncherProvider)
+CAR_OBJECT_IMPL(CCellLayout)
 
 } // namespace Launcher2
 } // namespace Droid

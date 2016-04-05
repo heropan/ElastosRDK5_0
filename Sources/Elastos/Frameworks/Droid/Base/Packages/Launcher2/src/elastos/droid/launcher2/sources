@@ -13,6 +13,9 @@ IMPORTS += Elastos.CoreLibrary.eco
 
 SOURCES = Launcher2.car
 SOURCES += R.cpp
+SOURCES += CellLayout.cpp
+SOURCES += CCellLayoutHelper.cpp
+SOURCES += PagedView.cpp
 SOURCES += LauncherViewPropertyAnimator.cpp
 SOURCES += LauncherProvider.cpp
 SOURCES += CLauncherProviderHelper.cpp

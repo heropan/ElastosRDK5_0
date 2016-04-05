@@ -41,6 +41,7 @@ module
     merge("../../../../car/elastos/droid/launcher2/LauncherSettings.car");
     merge("../../../../car/elastos/droid/launcher2/LauncherAppWidgetHostView.car");
     merge("../../../../car/elastos/droid/launcher2/LauncherAppWidgetHost.car");
+    merge("../../../../car/elastos/droid/launcher2/PagedView.car");
     merge("../../../../car/elastos/droid/launcher2/PagedViewWidget.car");
     merge("../../../../car/elastos/droid/launcher2/PagedViewWidgetImageView.car");
     merge("../../../../car/elastos/droid/launcher2/PendingAddItemInfo.car");
