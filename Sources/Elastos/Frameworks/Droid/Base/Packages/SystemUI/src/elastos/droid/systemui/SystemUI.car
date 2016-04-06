@@ -214,11 +214,11 @@ module
     //merge("../../../../car/elastos/droid/recents/RecentsConfiguration.car");
 
     //recents/model
-    merge("../../../../car/elastos/droid/recents/model/BitmapLruCache.car");
-    merge("../../../../car/elastos/droid/recents/model/DrawableLruCache.car");
-    merge("../../../../car/elastos/droid/recents/model/KeyStoreLruCache.car");
+    //merge("../../../../car/elastos/droid/recents/model/BitmapLruCache.car");
+    //merge("../../../../car/elastos/droid/recents/model/DrawableLruCache.car");
+    //merge("../../../../car/elastos/droid/recents/model/KeyStoreLruCache.car");
     merge("../../../../car/elastos/droid/recents/model/RecentsPackageMonitor.car");
-    merge("../../../../car/elastos/droid/recents/model/StringLruCache.car");
+    //merge("../../../../car/elastos/droid/recents/model/StringLruCache.car");
     merge("../../../../car/elastos/droid/recents/model/Task.car");
     merge("../../../../car/elastos/droid/recents/model/TaskGrouping.car");
     merge("../../../../car/elastos/droid/recents/model/TaskStack.car");

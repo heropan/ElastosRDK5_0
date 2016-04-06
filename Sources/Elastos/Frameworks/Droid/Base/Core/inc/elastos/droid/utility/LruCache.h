@@ -307,7 +307,7 @@ V LruCache<K, V>::Get(
 
     V createdValue = Create(key);
     if (createdValue == NULL) {
-        return NULL;
+        return (V)NULL;
     }
 
     synchronized(this) {
@@ -398,7 +398,7 @@ void LruCache<K, V>::TrimToSize(
             mEvictionCount++;
         }
 
-        EntryRemoved(TRUE, key, value, NULL);
+        EntryRemoved(TRUE, key, value, (V)NULL);
     }
 }
 
@@ -425,7 +425,7 @@ V LruCache<K, V>::Remove(
     }
 
     if (previous != NULL) {
-        EntryRemoved(FALSE, key, previous, NULL);
+        EntryRemoved(FALSE, key, previous, (V)NULL);
     }
     return previous;
 }
@@ -442,7 +442,7 @@ template<typename K, typename V>
 V LruCache<K, V>::Create(
     /* [in] */ K key)
 {
-    return NULL;
+    return (V)NULL;
 }
 
 template<typename K, typename V>
