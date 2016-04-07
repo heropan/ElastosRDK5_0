@@ -3474,8 +3474,7 @@ ECode PhoneStatusBar::AnimateCollapsePanels()
 ECode PhoneStatusBar::PostAnimateCollapsePanels()
 {
     Boolean tmp = FALSE;
-    mHandler->Post(mAnimateCollapsePanels, &tmp);
-    return NOERROR;
+    return mHandler->Post(mAnimateCollapsePanels, &tmp);
 }
 
 ECode PhoneStatusBar::AnimateCollapsePanels(
